@@ -1,0 +1,555 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-04-07 14:04+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n "
+">= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
+
+msgid "STORE_UPDATED"
+msgstr ""
+
+#, javascript-format
+msgid "Missing a %s file, which is required"
+msgstr ""
+
+msgid "ESRI Shapefile"
+msgstr ""
+
+msgid "ASCII Text File"
+msgstr ""
+
+msgid "GeoTIFF"
+msgstr ""
+
+msgid "Comma Separated Value"
+msgstr ""
+
+msgid "Google Earth KML"
+msgstr ""
+
+msgid "Google Earth KML with a GroundOverlay"
+msgstr ""
+
+msgid "Google Earth KMZ"
+msgstr ""
+
+msgid "GeoJSON"
+msgstr ""
+
+msgid "Zip Archive"
+msgstr ""
+
+msgid "ERDAS Imagine"
+msgstr ""
+
+msgid "National Imagery Transmission Format"
+msgstr ""
+
+msgid "Controlled Image Base-1 Meter"
+msgstr ""
+
+msgid "Controlled Image Base-5 Meter"
+msgstr ""
+
+msgid "Controlled Image Base-10 Meter"
+msgstr ""
+
+msgid "CADRG-Global Navigation Chart"
+msgstr ""
+
+msgid "CADRG-Jet Navigation Chart"
+msgstr ""
+
+msgid "CADRG-Operational Navigation Chart"
+msgstr ""
+
+msgid "CADRG-Tactical Pilotage Chart"
+msgstr ""
+
+msgid "CADRG-Joint Operations Graphic"
+msgstr ""
+
+msgid "CADRG-Topographic Line Map 100K"
+msgstr ""
+
+msgid "CADRG-Topographic Line Map 50K"
+msgstr ""
+
+msgid "JPEG2000"
+msgstr ""
+
+msgid "MrSID-Multi-resolution Seamless Image Database"
+msgstr ""
+
+msgid "XML Metadata File"
+msgstr ""
+
+msgid "Style Layer Descriptor"
+msgstr ""
+
+msgid "JPEG"
+msgstr ""
+
+msgid "PNG"
+msgstr ""
+
+msgid "GIF"
+msgstr ""
+
+msgid "Unexpected error!"
+msgstr ""
+
+msgid ""
+" - 400 Bad Request. Server cannot or will not process the request due to "
+"something that is perceived to be a client error (e.g., malformed request "
+"syntax, invalid request message framing, or deceptive request routing)."
+msgstr ""
+
+msgid ""
+" - 401 Unauthorized. Request was not sent with the proper authentication "
+"credentials."
+msgstr ""
+
+msgid ""
+" - 403 Forbidden. This is generally related to permission rules on your "
+"server. Contact the system administrator for more information regarding this "
+"error message."
+msgstr ""
+
+msgid ""
+" - 404 Not Found. Origin server was unable or unwilling to find the resource "
+"requested."
+msgstr ""
+
+msgid ""
+" - 405 Method Not Allowed. Origin server is aware of the requested resource, "
+"but the request method used is not supported."
+msgstr ""
+
+msgid ""
+" - 406 Not Acceptable. Resource is not available at the origin that adheres "
+"to negotiation headers that were  set prior (e.g. via 'Accept-Charset' and "
+"'Accept-Language' headers)."
+msgstr ""
+
+msgid ""
+" - 407 Authentication Required. The client did not send the required "
+"authentication with the request."
+msgstr ""
+
+msgid ""
+" - 408 Request Timeout. The origin server did not receive the complete "
+"request in what it considers a reasonable time."
+msgstr ""
+
+msgid ""
+" - 409 Conflict. The request did not complete because of a conflict with the "
+"current state of the resource. Typically happens on a PUT request where "
+"multiple clients are attempting to edit the same resource."
+msgstr ""
+
+msgid ""
+" - 410 Gone. The resource requested is permanently missing at the origin."
+msgstr ""
+
+msgid ""
+" - 411 Length Required. Client did not define the 'Content-Length' of the "
+"request body in the headers and this is required to obtain the resource."
+msgstr ""
+
+msgid ""
+" - 412 Precondition Failed. Server denies the request because the resource "
+"failed to meet the conditions specified by the client."
+msgstr ""
+
+msgid ""
+" - 413 Payload Too Large. Refusal from the server to process the request "
+"because the payload sent from the client is larger than the server wished to "
+"accept. Server has the optional to close the connection."
+msgstr ""
+
+msgid ""
+" - 414 URI Too Long. Refusal from the server that the URI was too long to be "
+"processed. For example, if a client is attempting a GET request with an "
+"unusually long URI after a POST, this could be seen as a security risk and a "
+"414 gets generated."
+msgstr ""
+
+msgid ""
+" - 415 Unsupported Media Type. Refusal from the server to process the format "
+"of the current payload. One way to identify and fix this issue would be to "
+"look at the 'Content-Type' or 'Content-Encoding' headers sent in the "
+"client’s request."
+msgstr ""
+
+msgid ""
+" - 417 Expectation Failed. Failure of server to meet the requirements "
+"specified in the 'Expect' header of the client’s request."
+msgstr ""
+
+msgid ""
+" - 429 Too Many Requests. Client has sent too many requests in the specified "
+"amount of time according to the server."
+msgstr ""
+
+msgid ""
+" - 499 Client Close Request. Nginx specific response code to indicate when "
+"the connection has been closed by the client while the server is still "
+"processing its request, making server unable to send a status code back."
+msgstr ""
+
+msgid ""
+" - 500 Internal Server Error. This error indicates that the server has "
+"encountered an unexpected condition. This often occurs when an application "
+"request cannot be fulfilled due to the application being configured "
+"incorrectly on the server."
+msgstr ""
+
+msgid ""
+" - 501 Not Implemented. This error indicates that the HTTP method sent by "
+"the client is not supported by the server. This is most often caused by the "
+"server being out of date. It is a very rare error and generally requires "
+"that the web server be updated."
+msgstr ""
+
+msgid ""
+" - 502 Bad Gateway. This error is usually due to improperly configured proxy "
+"servers. The first step in resolving the issue is to clear the client's "
+"cache."
+msgstr ""
+
+msgid ""
+" - 503 Service Unavailable. This error occurs when the server is unable to "
+"handle requests due to a temporary overload or due to the server being "
+"temporarily closed for maintenance. The error indicates that the server will "
+"only temporarily be down."
+msgstr ""
+
+msgid ""
+" - 504 Gateway Timeout. GeoNode lost the connection with GeoServer or DB due "
+"to a connection timeout. Consider using the management commands to import "
+"data!"
+msgstr ""
+
+msgid ""
+" - 505 HTTP Version Not Supported. This error occurs when the server refuses "
+"to support the HTTP protocol that has been specified by the client computer. "
+"This can be caused by the protocol not being specified properly by the "
+"client computer; for example, if an invalid version number has been "
+"specified."
+msgstr ""
+
+msgid ""
+" - 506 Variant Also Negotiates. This error indicates that the server is not "
+"properly configured. Contact the system administrator to resolve this issue."
+msgstr ""
+
+msgid ""
+" - 507 Insufficient Storage. This error indicates that the server is out of "
+"free memory. This is most likely to occur when an application that is being "
+"requested cannot allocate the necessary system resources to run. To resolve "
+"the issue, the server's hard disk may need to be cleaned of any unnecessary "
+"documents to free up more hard disk space, its memory may need to be "
+"expanded, or it may simply need to be restarted. Contact the system "
+"administrator for more information regarding this error message."
+msgstr ""
+
+msgid ""
+" - 509 Bandwidth Limit Exceeded. This error occurs when the bandwidth limit "
+"imposed by the system administrator has been reached. The only fix for this "
+"issue is to wait until the limit is reset in the following cycle. Consult "
+"the system administrator for information about acquiring more bandwidth."
+msgstr ""
+
+msgid ""
+" - 510 Not Extended. This error occurs when an extension attached to the "
+"HTTP request is not supported by the web server. To resolve the issue, you "
+"may need to update the server."
+msgstr ""
+
+msgid ""
+" Error Code. Contact the system administrator for more information regarding "
+"this error message."
+msgstr ""
+
+msgid "Finalizing"
+msgstr ""
+
+msgid "Unexpected Error"
+msgstr ""
+
+msgid " Info"
+msgstr ""
+
+msgid "Edit Metadata"
+msgstr ""
+
+msgid "Upload Metadata"
+msgstr ""
+
+msgid "Upload SLD"
+msgstr ""
+
+msgid "Manage Styles"
+msgstr ""
+
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+msgid "Your "
+msgstr ""
+
+msgid "Performing Final GeoServer Config Step"
+msgstr ""
+
+msgid "You need to specify more information in order to complete your upload"
+msgstr ""
+
+msgid "Files are ready to be ingested!"
+msgstr ""
+
+msgid "A temporal dimension may be added to this Layer."
+msgstr ""
+
+msgid "Performing GeoServer Config Step"
+msgstr ""
+
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+
+msgid "<br>"
+msgstr ""
+
+msgid "<br>Bad request or URL not found."
+msgstr ""
+
+msgid "<br>Unknown."
+msgstr ""
+
+msgid "Layer files uploaded, configuring in GeoServer"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+#, javascript-format
+msgid "The file %s is an unsupported file type, please select another file."
+msgstr ""
+
+msgid ""
+"You are trying to upload an incomplete set of files or not all mandatory "
+"options have been validated.\n"
+"\n"
+"Please check for errors in the form!"
+msgstr ""
+
+#, javascript-format
+msgid "Available %s"
+msgstr ""
+
+#, javascript-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+
+#, javascript-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "Choose all"
+msgstr ""
+
+#, javascript-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+msgid "Choose"
+msgstr ""
+
+#, javascript-format
+msgid "Chosen %s"
+msgstr ""
+
+#, javascript-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+
+msgid "Remove all"
+msgstr ""
+
+#, javascript-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+msgid "'"
+msgstr ""
+
+msgid "trailingComments"
+msgstr ""
+
+msgid "leadingComments"
+msgstr ""
+
+msgid "innerComments"
+msgstr ""
+
+msgid "Multiselect"
+msgstr ""
+
+msgid "SelectList"
+msgstr ""
+
+msgid "error"
+msgstr ""
+
+msgid "show:"
+msgstr ""
+
+msgid "uirevision"
+msgstr ""
+
+msgid "bgcolor"
+msgstr ""
+
+msgid "bordercolor"
+msgstr ""
+
+msgid "borderwidth"
+msgstr ""
+
+msgid "orientation"
+msgstr ""
+
+msgid "traceorder"
+msgstr ""
+
+msgid "tracegroupgap"
+msgstr ""
+
+msgid "itemsizing"
+msgstr ""
+
+msgid "itemclick"
+msgstr ""
+
+msgid "itemdoubleclick"
+msgstr ""
+
+msgid "x"
+msgstr ""
+
+msgid "xanchor"
+msgstr ""
+
+msgid "y"
+msgstr ""
+
+msgid "yanchor"
+msgstr ""
+
+msgid "valign"
+msgstr ""
+
+msgid "title.text"
+msgstr ""
+
+msgid "title.side"
+msgstr ""
+
+msgid "visible"
+msgstr ""
+
+msgid "thickness"
+msgstr ""
+
+msgid "autorange"
+msgstr ""
+
+msgid "range"
+msgstr ""
+
+msgid "bingroup"
+msgstr ""
+
+msgid "layerProperties.visibilityLimits.rangeError"
+msgstr ""
+
+msgid "layerProperties.visibilityLimits.serverValuesError"
+msgstr ""
+
+msgid "typed_constructor"
+msgstr ""
+
+msgid "def_constructor"
+msgstr ""
+
+msgid "POP"
+msgstr ""
+
+msgid "PUSH"
+msgstr ""
+
+msgid "layerdownload.exportResultsMessages.newExport"
+msgstr ""
+
+msgid "layerdownload.exportResultsMessages.exportSuccess"
+msgstr ""
+
+msgid "layerdownload.exportResultsMessages.exportFailure"
+msgstr ""
+
+msgid "data-grid"
+msgstr ""
+
+msgid "Abort"
+msgstr ""
+
+msgid "As Sibling"
+msgstr ""
+
+msgid "As child"
+msgstr ""

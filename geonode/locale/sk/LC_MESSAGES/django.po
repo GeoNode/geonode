@@ -1,0 +1,7372 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoNode\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-04-07 14:01+0200\n"
+"PO-Revision-Date: 2021-03-11 16:40+0100\n"
+"Last-Translator: \n"
+"Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
+"en/)\n"
+"Language: sk_SK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
+"X-Generator: Poedit 2.4.2\n"
+
+#, fuzzy
+msgid "Request to download a resource"
+msgstr "Žiadosť o stiahnutie zdroja"
+
+#, fuzzy
+msgid "A request for downloading a resource was sent"
+msgstr "Bola odoslaná žiadosť o stiahnutie zdroja"
+
+#, fuzzy
+msgid "Request resource change"
+msgstr "Vyžiadajte si zmenu zdroja"
+
+#, fuzzy
+msgid "Owner has requested permissions to modify a resource"
+msgstr "Vlastník požiadal o povolenie na úpravu zdroja"
+
+#, fuzzy
+msgid "series"
+msgstr "série"
+
+#, fuzzy
+msgid "computer program or routine"
+msgstr "počítačový program alebo rutina"
+
+#, fuzzy
+msgid "feature type"
+msgstr "typ funkcie"
+
+#, fuzzy
+msgid "copy or imitation of an existing or hypothetical object"
+msgstr "kópia alebo napodobenina existujúceho alebo hypotetického objektu"
+
+#, fuzzy
+msgid "collection hardware"
+msgstr "zberový hardvér"
+
+#, fuzzy
+msgid "collection session"
+msgstr "relácia zbierky"
+
+#, fuzzy
+msgid "non-geographic data"
+msgstr "negeografické údaje"
+
+#, fuzzy
+msgid "property type"
+msgstr "typ nehnuteľnosti"
+
+#, fuzzy
+msgid "field session"
+msgstr "poľná relácia"
+
+#, fuzzy
+msgid "dataset"
+msgstr "množina údajov"
+
+#, fuzzy
+msgid "service interfaces"
+msgstr "servisné rozhrania"
+
+#, fuzzy
+msgid "attribute class"
+msgstr "trieda atribútov"
+
+#, fuzzy
+msgid "characteristic of a feature"
+msgstr "charakteristika znaku"
+
+#, fuzzy
+msgid "tile or spatial subset of geographic data"
+msgstr "dlaždice alebo priestorová podmnožina geografických údajov"
+
+#, fuzzy
+msgid "feature"
+msgstr "vlastnosť"
+
+#, fuzzy
+msgid "dimension group"
+msgstr "dimenzionálna skupina"
+
+#, fuzzy
+msgid "frequency of maintenance for the data is not known"
+msgstr "frekvencia údržby údajov nie je známa"
+
+#, fuzzy
+msgid "data is repeatedly and frequently updated"
+msgstr "údaje sa opakovane a často aktualizujú"
+
+#, fuzzy
+msgid "there are no plans to update the data"
+msgstr "neexistujú žiadne plány na aktualizáciu údajov"
+
+#, fuzzy
+msgid "data is updated each day"
+msgstr "údaje sa aktualizujú každý deň"
+
+#, fuzzy
+msgid "data is updated every year"
+msgstr "údaje sa aktualizujú každý rok"
+
+#, fuzzy
+msgid "data is updated as deemed necessary"
+msgstr "údaje sa podľa potreby aktualizujú"
+
+#, fuzzy
+msgid "data is updated each month"
+msgstr "údaje sa aktualizujú každý mesiac"
+
+#, fuzzy
+msgid "data is updated every two weeks"
+msgstr "údaje sa aktualizujú každé dva týždne"
+
+#, fuzzy
+msgid "data is updated in intervals that are uneven in duration"
+msgstr "údaje sa aktualizujú v intervaloch, ktoré nie sú rovnomerné"
+
+#, fuzzy
+msgid "data is updated on a weekly basis"
+msgstr "údaje sa aktualizujú každý týždeň"
+
+#, fuzzy
+msgid "data is updated twice each year"
+msgstr "údaje sa aktualizujú dvakrát ročne"
+
+#, fuzzy
+msgid "data is updated every three months"
+msgstr "údaje sa aktualizujú každé tri mesiace"
+
+#, fuzzy
+msgid "No information provided"
+msgstr "Informácie neboli poskytnuté"
+
+msgid "Category"
+msgstr "Kategória"
+
+#, fuzzy
+msgid "Category is required."
+msgstr "Kategória je povinná."
+
+#, fuzzy
+msgid "Keywords from Thesaurus"
+msgstr "Kľúčové slová z tezauru"
+
+#, fuzzy
+msgid "List of keywords from Thesaurus"
+msgstr "Zoznam kľúčových slov z tezauru"
+
+#, fuzzy
+msgid "Abstract"
+msgstr "Abstrakt"
+
+msgid "Purpose"
+msgstr "Účel"
+
+#, fuzzy
+msgid "Other constraints"
+msgstr "Ďalšie obmedzenia"
+
+#, fuzzy
+msgid "Supplemental information"
+msgstr "Doplňujúce informácie"
+
+#, fuzzy
+msgid "Data quality statement"
+msgstr "Vyhlásenie o kvalite údajov"
+
+msgid "Owner"
+msgstr "Vlastník"
+
+msgid "Date"
+msgstr "Dátum"
+
+#, fuzzy
+msgid "temporal extent start"
+msgstr "časový rozsah začať"
+
+#, fuzzy
+msgid "temporal extent end"
+msgstr "časový rozsah koniec"
+
+#, fuzzy
+msgid "Person outside GeoNode (fill form)"
+msgstr "Osoba mimo GeoNode (vyplňte formulár)"
+
+#, fuzzy
+msgid "Point of Contact"
+msgstr "Kontaktný bod"
+
+#, fuzzy
+msgid "Metadata Author"
+msgstr "Autor metadát"
+
+#, fuzzy
+msgid "Free-text Keywords"
+msgstr "Kľúčové slová vo voľnom texte"
+
+#, fuzzy
+msgid ""
+"A space or comma-separated list of keywords. Use the widget to select from "
+"Hierarchical tree."
+msgstr ""
+"Zoznam kľúčových slov oddelených medzerou alebo čiarkami. Pomocou widgetu "
+"vyberte z hierarchického stromu."
+
+msgid "Regions"
+msgstr "Oblasti"
+
+msgid "Group"
+msgstr "Skupina"
+
+msgid "License"
+msgstr "Licencia"
+
+msgid "Language"
+msgstr "Jazyk"
+
+msgid "User"
+msgid_plural "Users"
+msgstr[0] "User"
+msgstr[1] "Users"
+msgstr[2] ""
+
+#, fuzzy
+msgid "Permission Type"
+msgstr "Typ povolenia"
+
+msgid "Mode"
+msgstr "Mód"
+
+#, fuzzy
+msgid "Resource"
+msgstr "Zdroj"
+
+msgid "Reason"
+msgstr "Dôvod"
+
+#, fuzzy
+msgid "Short reasoning behind the request"
+msgstr "Krátke odôvodnenie žiadosti"
+
+#, fuzzy
+msgid "function performed by the responsible party"
+msgstr "funkcia vykonávaná zodpovednou stranou"
+
+#, fuzzy
+msgid "reference date for the cited resource"
+msgstr "referenčný dátum pre citovaný zdroj"
+
+#, fuzzy
+msgid "identification of when a given event occurred"
+msgstr "identifikácia, kedy došlo k danej udalosti"
+
+#, fuzzy
+msgid "version of the cited resource"
+msgstr "verzia citovaného zdroja"
+
+#, fuzzy
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "krátke naratívne zhrnutie obsahu zdrojov"
+
+#, fuzzy
+msgid "summary of the intentions with which the resource(s) was developed"
+msgstr "súhrn zámerov, s ktorými boli zdroje vyvinuté"
+
+#, fuzzy
+msgid ""
+"frequency with which modifications and deletions are made to the data after "
+"it is first produced"
+msgstr ""
+"frekvencia, s akou sa údaje upravujú a vymazávajú po ich prvom vytvorení"
+
+#, fuzzy
+msgid ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject (space or comma-separated)"
+msgstr ""
+"bežne používané slovo (slová) alebo formálne slovo (slová) alebo fráza (y) "
+"používané na opis predmetu (oddelené medzerou alebo čiarkou)"
+
+#, fuzzy
+msgid ""
+"formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
+"subject (space or comma-separated)"
+msgstr ""
+"formalizované slovo (slová) alebo fráza (y) z fixného tezauru používané na "
+"opis predmetu (oddelené medzerou alebo čiarkou)"
+
+#, fuzzy
+msgid "keyword identifies a location"
+msgstr "kľúčové slovo identifikuje umiestnenie"
+
+#, fuzzy
+msgid "limitation(s) placed upon the access or use of the data."
+msgstr "obmedzenie (-ia) kladené na prístup alebo použitie údajov."
+
+#, fuzzy
+msgid ""
+"other restrictions and legal prerequisites for accessing and using the "
+"resource or metadata"
+msgstr ""
+"ďalšie obmedzenia a právne predpoklady pre prístup a používanie zdroja alebo "
+"metadát"
+
+#, fuzzy
+msgid "license of the dataset"
+msgstr "licenciu súboru údajov"
+
+#, fuzzy
+msgid "language used within the dataset"
+msgstr "jazyk používaný v množine údajov"
+
+#, fuzzy
+msgid ""
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
+msgstr ""
+"tematická klasifikácia geografických údajov na vysokej úrovni, ktorá pomáha "
+"pri zoskupovaní a vyhľadávaní dostupných súborov geografických údajov."
+
+#, fuzzy
+msgid "method used to represent geographic information in the dataset."
+msgstr ""
+"metóda používaná na reprezentáciu geografických informácií v súbore údajov."
+
+#, fuzzy
+msgid "time period covered by the content of the dataset (start)"
+msgstr "časové obdobie pokryté obsahom súboru údajov (začiatok)"
+
+#, fuzzy
+msgid "time period covered by the content of the dataset (end)"
+msgstr "časové obdobie pokryté obsahom súboru údajov (koniec)"
+
+#, fuzzy
+msgid ""
+"general explanation of the data producer's knowledge about the lineage of a "
+"dataset"
+msgstr "všeobecné vysvetlenie znalostí výrobcu údajov o pôvode súboru údajov"
+
+#, fuzzy
+msgid "a DOI will be added by Admin before publication."
+msgstr "DOI pridá administrátor pred zverejnením."
+
+#, fuzzy
+msgid "DOI"
+msgstr "DOI"
+
+#, fuzzy
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+"orgán alebo funkcia, ktorá je im pridelená, pokiaľ ide o vládcu, zákonodarné "
+"zhromaždenie, delegáta alebo podobne."
+
+msgid "Attribution"
+msgstr "Priznanie"
+
+msgid "title"
+msgstr "názov"
+
+#, fuzzy
+msgid "name by which the cited resource is known"
+msgstr "názov, pod ktorým je citovaný zdroj známy"
+
+msgid "date"
+msgstr "dátum"
+
+#, fuzzy
+msgid "date type"
+msgstr "typ dátumu"
+
+#, fuzzy
+msgid "edition"
+msgstr "vydanie"
+
+#, fuzzy
+msgid "abstract"
+msgstr "abstraktné"
+
+#, fuzzy
+msgid "purpose"
+msgstr "účel"
+
+#, fuzzy
+msgid "maintenance frequency"
+msgstr "frekvencia údržby"
+
+msgid "keywords"
+msgstr "kľúčové slová"
+
+#, fuzzy
+msgid "keywords region"
+msgstr "oblasť kľúčových slov"
+
+#, fuzzy
+msgid "restrictions"
+msgstr "obmedzenia"
+
+#, fuzzy
+msgid "restrictions other"
+msgstr "obmedzenia iné"
+
+#, fuzzy
+msgid "language"
+msgstr "Jazyk"
+
+#, fuzzy
+msgid "spatial representation type"
+msgstr "typ priestorového znázornenia"
+
+#, fuzzy
+msgid "supplemental information"
+msgstr "doplňujúce informácie"
+
+#, fuzzy
+msgid "any other descriptive information about the dataset"
+msgstr "akékoľvek ďalšie popisné informácie o množine údajov"
+
+#, fuzzy
+msgid "data quality statement"
+msgstr "vyhlásenie o kvalite údajov"
+
+#, fuzzy
+msgid "CSW typename"
+msgstr "Typové meno CSW"
+
+#, fuzzy
+msgid "CSW schema"
+msgstr "Schéma CSW"
+
+#, fuzzy
+msgid "CSW source"
+msgstr "Zdroj CSW"
+
+#, fuzzy
+msgid "CSW insert date"
+msgstr "CSW vložiť dátum"
+
+#, fuzzy
+msgid "CSW type"
+msgstr "Typ CSW"
+
+#, fuzzy
+msgid "CSW anytext"
+msgstr "CSW akýkoľvek text"
+
+#, fuzzy
+msgid "CSW WKT geometry"
+msgstr "Geometria CSW WKT"
+
+#, fuzzy
+msgid "Metadata uploaded preserve"
+msgstr "Zachované metaúdaje"
+
+msgid "Featured"
+msgstr "Odporúčané"
+
+#, fuzzy
+msgid "Should this resource be advertised in home page?"
+msgstr "Mal by byť tento zdroj inzerovaný na domovskej stránke?"
+
+#, fuzzy
+msgid "Is Published"
+msgstr "Je zverejnené"
+
+#, fuzzy
+msgid "Should this resource be published and searchable?"
+msgstr "Mal by byť tento zdroj zverejnený a prehľadateľný?"
+
+msgid "Approved"
+msgstr "Schválené"
+
+#, fuzzy
+msgid "Is this resource validated from a publisher or editor?"
+msgstr "Je tento zdroj overený vydavateľom alebo editorom?"
+
+#, fuzzy
+msgid "Thumbnail url"
+msgstr "Miniatúra adresy URL"
+
+#, fuzzy
+msgid "Dirty State"
+msgstr "Dirty State"
+
+#, fuzzy
+msgid "Security Rules Are Not Synched with GeoServer!"
+msgstr "Bezpečnostné pravidlá sa nesynchronizujú s GeoServerom!"
+
+msgid "Resource Type"
+msgstr "Typ zdroja"
+
+#, fuzzy
+msgid "For example \"kml\""
+msgstr "Napríklad „kml“"
+
+#, fuzzy
+msgid "For example \"View in Google Earth\""
+msgstr "Napríklad „Zobraziť v aplikácii Google Earth“"
+
+#, fuzzy
+msgid "For example \"text/xml\""
+msgstr "Napríklad „text / xml“"
+
+msgid "About"
+msgstr "O"
+
+#, fuzzy
+msgid "Responsible, Point of Contact, Metadata Author"
+msgstr "Zodpovedný, kontaktný bod, autor metadát"
+
+#, fuzzy
+msgid "Responsible"
+msgstr "Zodpovedný"
+
+msgid "Title"
+msgstr "Názov"
+
+#, fuzzy
+msgid "SRID"
+msgstr "SRID"
+
+#, fuzzy
+msgid "For more info see"
+msgstr "Viac informácií nájdete na"
+
+msgid "Creation Date"
+msgstr "Dátum vytvorenia"
+
+#, fuzzy
+msgid "Publication Date"
+msgstr "Dátum publikácie"
+
+#, fuzzy
+msgid "Revision Date"
+msgstr "Dátum kontroly"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Keywords"
+msgstr "Kľúčové slová"
+
+msgid "More info"
+msgstr "Viac informácii"
+
+#, fuzzy
+msgid "Maintenance Frequency"
+msgstr "Frekvencia údržby"
+
+msgid "Restrictions"
+msgstr "Obmedzenia"
+
+msgid "Edition"
+msgstr "Edition"
+
+#, fuzzy
+msgid "Temporal Extent"
+msgstr "Časový rozsah"
+
+#, fuzzy
+msgid "Data Quality"
+msgstr "Kvalita údajov"
+
+#, fuzzy
+msgid "Supplemental Information"
+msgstr "Doplňujúce informácie"
+
+#, fuzzy
+msgid "Spatial Representation Type"
+msgstr "Typ priestorového znázornenia"
+
+#, fuzzy
+msgid "No content created yet."
+msgstr "Zatiaľ nie je vytvorený žiadny obsah."
+
+#, fuzzy
+msgid "Temporal Serie"
+msgstr "Časová séria"
+
+msgid "Select"
+msgstr "Vybrať"
+
+#, fuzzy
+msgid "Service is"
+msgstr "Služba je"
+
+msgid "online"
+msgstr "priamo pripojené"
+
+msgid "offline"
+msgstr "offline"
+
+#, fuzzy
+msgid "Layer not ready yet. Still finalizing layer ingestion..."
+msgstr "Vrstva ešte nie je pripravená. Stále sa dokončuje príjem vrstvy ..."
+
+#, fuzzy
+msgid "SECURITY NOT YET SYNCHRONIZED"
+msgstr "BEZPEČNOSŤ NIE JE EŠTE SYNCHRONIZOVANÁ"
+
+#, fuzzy
+msgid "Sync permissions immediately"
+msgstr "Okamžite synchronizujte povolenia"
+
+#, fuzzy
+msgid "PENDING APPROVAL"
+msgstr "ČAKÁ NA SCHVÁLENIE"
+
+#, fuzzy
+msgid "UNPUBLISHED"
+msgstr "NEZVEREJNENÉ"
+
+#, fuzzy
+msgid "Create a Map"
+msgstr "Vytvorte mapu"
+
+#, fuzzy
+msgid "View Map"
+msgstr "Zobraziť mapu"
+
+#, fuzzy
+msgid "Batch Edit"
+msgstr "Dávková úprava"
+
+#, fuzzy
+msgid "batch edit"
+msgstr "dávková úprava"
+
+msgid "Cancel"
+msgstr "Zrušiť"
+
+msgid "Submit"
+msgstr "Odoslať"
+
+#, fuzzy
+msgid "Set Permissions"
+msgstr "Nastaviť povolenia"
+
+#, fuzzy
+msgid "set permissions"
+msgstr "nastaviť povolenia"
+
+#, fuzzy
+msgid "Discover the available datasets."
+msgstr "Objavte dostupné súbory údajov."
+
+#, fuzzy
+msgid "Upload a Thumbnail"
+msgstr "Nahrajte miniatúru"
+
+#, fuzzy
+msgid "Remove (and use auto generated thumbnail)"
+msgstr "Odstrániť (a použiť automaticky generovanú miniatúru)"
+
+msgid "Upload"
+msgstr "Nahrať"
+
+#, fuzzy
+msgid "Auto generated thumbnail"
+msgstr "Automaticky generovaná miniatúra"
+
+#, fuzzy
+msgid "Raster Layer"
+msgstr "Rastrová vrstva"
+
+#, fuzzy
+msgid "Vector Layer"
+msgstr "Vektorová vrstva"
+
+#, fuzzy
+msgid "Vector Temporal Serie"
+msgstr "Vektorová časová séria"
+
+#, fuzzy
+msgid "Remote Layer"
+msgstr "Vzdialená vrstva"
+
+#, fuzzy
+msgid "WMS Cascade Layer"
+msgstr "Kaskádová vrstva WMS"
+
+msgid "me"
+msgstr "ma"
+
+#, fuzzy
+msgid "System message: A request to modify resource"
+msgstr "Systémová správa: Žiadosť o úpravu prostriedku"
+
+#, fuzzy
+msgid "The resource owner has requested to modify the resource"
+msgstr "Vlastník zdroja požiadal o úpravu zdroja"
+
+#, fuzzy
+msgid "Resource title"
+msgstr "Názov zdroja"
+
+#, fuzzy
+msgid "Reason for the request"
+msgstr "Dôvod žiadosti"
+
+#, fuzzy
+msgid ""
+"To allow the change, set the resource to not \"Approved\" under the metadata "
+"settingsand write message to the owner to notify him"
+msgstr ""
+"Ak chcete povoliť zmenu, v nastaveniach metadát nastavte zdroj na "
+"„Neschválené“ a napíšte správu vlastníkovi, aby ho upozornil"
+
+#, fuzzy
+msgid "Resource Metadata"
+msgstr "Metadáta zdrojov"
+
+msgid "Thumbnail"
+msgstr "Náhľad"
+
+#, fuzzy
+msgid "Resource ID"
+msgstr "ID zdroja"
+
+msgid "Start"
+msgstr "Štart"
+
+msgid "End"
+msgstr "Koniec"
+
+#, fuzzy
+msgid "Extent"
+msgstr "Rozsah"
+
+#, fuzzy
+msgid "Spatial Reference System Identifier"
+msgstr "Identifikátor priestorového referenčného systému"
+
+msgid "Attributes"
+msgstr "Atribúty"
+
+msgid "Attribute name"
+msgstr "Názov vlastnosti"
+
+msgid "Description"
+msgstr "Popis"
+
+#, fuzzy
+msgid "GeoNode Client Library"
+msgstr "Knižnica klienta GeoNode"
+
+#, fuzzy
+msgid "Upload QML Style"
+msgstr "Odovzdajte štýl vrstvy"
+
+#, fuzzy
+msgid "Explore Maps"
+msgstr "Preskúmajte Mapy"
+
+#, fuzzy
+msgid "Edit Map"
+msgstr "Upraviť mapu"
+
+msgid "Update"
+msgstr "Aktualizovať"
+
+#, fuzzy
+msgid "Create a New Map"
+msgstr "Vytvorte novú mapu"
+
+#, fuzzy
+msgid "Available layers"
+msgstr "Dostupné vrstvy"
+
+msgid "Save"
+msgstr "Uložiť"
+
+#, fuzzy
+msgid "Save Map"
+msgstr "Uložiť mapu"
+
+msgid "Close"
+msgstr "Zatvoriť"
+
+#, fuzzy
+msgid ""
+"Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
+"biological sciences, ecology, wilderness, sealife, wetlands, habitat."
+msgstr ""
+"Flóra a / alebo fauna v prírodnom prostredí. Príklady: divoká zver, "
+"vegetácia, biologické vedy, ekológia, divočina, tuleň, mokrade, biotop."
+
+#, fuzzy
+msgid "Biota"
+msgstr "Biota"
+
+#, fuzzy
+msgid ""
+"Legal land descriptions. Examples: political and administrative boundaries."
+msgstr ""
+"Legálne popisy pozemkov. Príklady: politické a administratívne hranice."
+
+msgid "Boundaries"
+msgstr "Okraje"
+
+#, fuzzy
+msgid ""
+"Processes and phenomena of the atmosphere. Examples: cloud cover, weather, "
+"climate, atmospheric conditions, climate change, precipitation."
+msgstr ""
+"Procesy a javy atmosféry. Príklady: oblačnosť, počasie, podnebie, "
+"atmosférické podmienky, zmena podnebia, zrážky."
+
+msgid "Climatology Meteorology Atmosphere"
+msgstr ""
+
+#, fuzzy
+msgid ""
+"Economic activities, conditions and employment. Examples: production, "
+"labour, revenue, commerce, industry, tourism and ecotourism, forestry, "
+"fisheries, commercial or subsistence hunting, exploration and exploitation "
+"of resources such as minerals, oil and gas."
+msgstr ""
+"Ekonomické činnosti, podmienky a zamestnanosť. Príklady: výroba, práca, "
+"príjmy, obchod, priemysel, cestovný ruch a ekoturistika, lesníctvo, "
+"rybárstvo, komerčný alebo existenčný lov, prieskum a ťažba zdrojov, ako sú "
+"nerasty, ropa a plyn."
+
+#, fuzzy
+msgid "Economy"
+msgstr "Ekonomika"
+
+#, fuzzy
+msgid ""
+"Height above or below sea level. Examples: altitude, bathymetry, digital "
+"elevation models, slope, derived products."
+msgstr ""
+"Výška nad alebo pod úrovňou mora. Príklady: nadmorská výška, batymetria, "
+"digitálne výškové modely, sklon, odvodené produkty."
+
+#, fuzzy
+msgid ""
+"Environmental resources, protection and conservation. Examples: "
+"environmental pollution, waste storage and treatment, environmental impact "
+"assessment, monitoring environmental risk, nature reserves, landscape."
+msgstr ""
+"Ochrana a zachovanie zdrojov životného prostredia. Príklady: znečistenie "
+"životného prostredia, skladovanie a úprava odpadu, hodnotenie vplyvov na "
+"životné prostredie, monitorovanie environmentálnych rizík, prírodné "
+"rezervácie, krajina."
+
+msgid "Environment"
+msgstr "Prostredie."
+
+#, fuzzy
+msgid ""
+"Rearing of animals and/or cultivation of plants. Examples: agriculture, "
+"irrigation, aquaculture, plantations, herding, pests and diseases affecting "
+"crops and livestock."
+msgstr ""
+"Chov zvierat a / alebo pestovanie rastlín. Príklady: poľnohospodárstvo, "
+"zavlažovanie, akvakultúra, plantáže, stádo, škodcovia a choroby ovplyvňujúce "
+"plodiny a dobytok."
+
+#, fuzzy
+msgid "Farming"
+msgstr "Farmárčenie"
+
+#, fuzzy
+msgid ""
+"Information pertaining to earth sciences. Examples: geophysical features and "
+"processes, geology, minerals, sciences dealing with the composition, "
+"structure and origin of the earth s rocks, risks of earthquakes, volcanic "
+"activity, landslides, gravity information, soils, permafrost, hydrogeology, "
+"erosion."
+msgstr ""
+"Informácie týkajúce sa vied o Zemi. Príklady: geofyzikálne vlastnosti a "
+"procesy, geológia, minerály, vedy zaoberajúce sa zložením, štruktúrou a "
+"pôvodom zemských hornín, riziká zemetrasení, sopečná činnosť, zosuvy pôdy, "
+"gravitačné informácie, pôdy, permafrost, hydrogeológia, erózia."
+
+#, fuzzy
+msgid "Geoscientific Information"
+msgstr "Doplňujúce informácie"
+
+#, fuzzy
+msgid ""
+"Health, health services, human ecology, and safety. Examples: disease and "
+"illness, factors affecting health, hygiene, substance abuse, mental and "
+"physical health, health services."
+msgstr ""
+"Zdravie, zdravotné služby, ekológia človeka a bezpečnosť. Príklady: choroba "
+"a choroba, faktory ovplyvňujúce zdravie, hygiena, zneužívanie návykových "
+"látok, duševné a fyzické zdravie, zdravotnícke služby."
+
+msgid "Health"
+msgstr "Zdravie"
+
+#, fuzzy
+msgid ""
+"Base maps. Examples: land cover, topographic maps, imagery, unclassified "
+"images, annotations."
+msgstr ""
+"Základné mapy. Príklady: krajinná pokrývka, topografické mapy, snímky, "
+"nezaradené obrázky, anotácie."
+
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
+#, fuzzy
+msgid ""
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
+msgstr ""
+"Základné mapyVlastnosti vnútrozemskej vody, drenážne systémy a ich "
+"charakteristiky. Príklady: rieky a ľadovce, soľné jazerá, plány využívania "
+"vody, priehrady, prúdy, záplavy, kvalita vody, hydrografické mapy."
+
+#, fuzzy
+msgid "Inland Waters"
+msgstr "Vnútrozemské vody"
+
+#, fuzzy
+msgid ""
+"Military bases, structures, activities. Examples: barracks, training "
+"grounds, military transportation, information collection."
+msgstr ""
+"Vojenské základne, štruktúry, činnosti. Príklady: kasárne, cvičiská, "
+"vojenská doprava, zber informácií."
+
+#, fuzzy
+msgid "Intelligence Military"
+msgstr "Inteligencia"
+
+#, fuzzy
+msgid ""
+"Positional information and services. Examples: addresses, geodetic networks, "
+"control points, postal zones and services, place names."
+msgstr ""
+"Pozičné informácie a služby. Príklady: adresy, geodetické siete, kontrolné "
+"body, poštové zóny a služby, názvy miest."
+
+#, fuzzy
+msgid ""
+"Features and characteristics of salt water bodies (excluding inland waters). "
+"Examples: tides, tidal waves, coastal information, reefs."
+msgstr ""
+"Vlastnosti a vlastnosti útvarov slanej vody (okrem vnútrozemských vôd). "
+"Príklady: prílivy a odlivy, prílivové vlny, pobrežné informácie, útesy."
+
+#, fuzzy
+msgid "Oceans"
+msgstr "Oceány"
+
+#, fuzzy
+msgid ""
+"Information used for appropriate actions for future use of the land. "
+"Examples: land use maps, zoning maps, cadastral surveys, land ownership."
+msgstr ""
+"Informácie použité na prijatie vhodných opatrení na budúce využitie pozemku. "
+"Príklady: mapy využívania pôdy, územné mapy, katastrálne prieskumy, "
+"vlastníctvo pôdy."
+
+#, fuzzy
+#| msgid "Planning"
+msgid "Planning Cadastre"
+msgstr "Plánovanie"
+
+#, fuzzy
+msgid ""
+"Settlements, anthropology, archaeology, education, traditional beliefs, "
+"manners and customs, demographic data, recreational areas and activities, "
+"social impact assessments, crime and justice, census information. Economic "
+"activities, conditions and employment."
+msgstr ""
+"Osady, antropológia, archeológia, vzdelávanie, tradičné viery, mravy a "
+"zvyky, demografické údaje, rekreačné oblasti a činnosti, hodnotenie "
+"sociálnych vplyvov, kriminalita a spravodlivosť, informácie o sčítaní ľudu. "
+"Ekonomické činnosti, podmienky a zamestnanosť."
+
+#, fuzzy
+msgid "Population"
+msgstr "Populácia"
+
+#, fuzzy
+msgid ""
+"Characteristics of society and cultures. Examples: settlements, "
+"anthropology, archaeology, education, traditional beliefs, manners and "
+"customs, demographic data, recreational areas and activities, social impact "
+"assessments, crime and justice, census information."
+msgstr ""
+"Charakteristika spoločnosti a kultúr. Príklady: osady, antropológia, "
+"archeológia, vzdelávanie, tradičné viery, mravy a zvyky, demografické údaje, "
+"rekreačné oblasti a činnosti, hodnotenie sociálneho vplyvu, kriminalita a "
+"spravodlivosť, informácie o sčítaní ľudu."
+
+#, fuzzy
+msgid "Society"
+msgstr "Spoločnosti"
+
+#, fuzzy
+msgid ""
+"Man-made construction. Examples: buildings, museums, churches, factories, "
+"housing, monuments, shops, towers."
+msgstr ""
+"Konštrukcia vyrobená človekom. Príklady: budovy, múzeá, kostoly, továrne, "
+"bývanie, pamiatky, obchody, veže."
+
+msgid "Structure"
+msgstr "Štruktúra"
+
+#, fuzzy
+msgid ""
+"Means and aids for conveying persons and/or goods. Examples: roads, airports/"
+"airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel "
+"location, aeronautical charts, railways."
+msgstr ""
+"Prostriedky a pomôcky na prepravu osôb a / alebo tovaru. Príklady: cesty, "
+"letiská / rozjazdové dráhy, námorné trasy, tunely, námorné mapy, umiestnenie "
+"vozidla alebo plavidla, letecké mapy, železnice."
+
+msgid "Transportation"
+msgstr "Doprava"
+
+#, fuzzy
+msgid ""
+"Energy, water and waste systems and communications infrastructure and "
+"services. Examples: hydroelectricity, geothermal, solar and nuclear sources "
+"of energy, water purification and distribution, sewage collection and "
+"disposal, electricity and gas distribution, data communication, "
+"telecommunication, radio, communication networks."
+msgstr ""
+"Energetické, vodné a odpadové systémy a komunikačná infraštruktúra a služby. "
+"Príklady: vodná elektrina, geotermálne, solárne a jadrové zdroje energie, "
+"čistenie a distribúcia vody, zber a likvidácia odpadových vôd, distribúcia "
+"elektriny a plynu, dátová komunikácia, telekomunikácie, rádio, komunikačné "
+"siete."
+
+msgid "Utilities Communication"
+msgstr ""
+
+#, fuzzy
+msgid "Document Created"
+msgstr "Dokument bol vytvorený"
+
+#, fuzzy
+msgid "A Document was created"
+msgstr "Bol vytvorený dokument"
+
+#, fuzzy
+msgid "Document Updated"
+msgstr "Dokument bol aktualizovaný"
+
+#, fuzzy
+msgid "A Document was updated"
+msgstr "Dokument bol aktualizovaný"
+
+#, fuzzy
+msgid "Document Approved"
+msgstr "Dokument bol schválený"
+
+#, fuzzy
+msgid "A Document was approved by a Manager"
+msgstr "Správca schválil dokument"
+
+#, fuzzy
+msgid "Document Published"
+msgstr "Dokument bol zverejnený"
+
+#, fuzzy
+msgid "A Document was published"
+msgstr "Bol zverejnený dokument"
+
+#, fuzzy
+msgid "Document Deleted"
+msgstr "Dokument bol odstránený"
+
+#, fuzzy
+msgid "A Document was deleted"
+msgstr "Dokument bol odstránený"
+
+#, fuzzy
+msgid "Comment on Document"
+msgstr "Komentár k dokumentu"
+
+#, fuzzy
+msgid "A Document was commented on"
+msgstr "Dokument bol komentovaný"
+
+#, fuzzy
+msgid "Rating for Document"
+msgstr "Hodnotenie dokumentu"
+
+#, fuzzy
+msgid "A rating was given to a document"
+msgstr "Dokumentu bolo udelené hodnotenie"
+
+msgid "Width"
+msgstr "Šírka"
+
+msgid "Height"
+msgstr "Výška"
+
+msgid "Make"
+msgstr "Značka"
+
+msgid "Model"
+msgstr "Model"
+
+msgid "Latitude"
+msgstr "Zemepisná šírka"
+
+msgid "Not specified"
+msgstr "Neurčená"
+
+msgid "Longitude"
+msgstr "Zemepisná dĺžka"
+
+msgid "Flash"
+msgstr "Flash"
+
+msgid "True"
+msgstr "Pravda"
+
+msgid "False"
+msgstr "Nesprávne"
+
+#, fuzzy
+msgid "Speed Rating"
+msgstr "Rýchlostné hodnotenie"
+
+msgid "Link to"
+msgstr "Odkaz na"
+
+#, fuzzy
+msgid "Document must be a file or url."
+msgstr "Dokument musí byť súbor alebo webová adresa."
+
+#, fuzzy
+msgid "A document cannot have both a file and a url."
+msgstr "Dokument nemôže obsahovať súbor aj adresu URL."
+
+#, fuzzy
+msgid "This file type is not allowed"
+msgstr "Tento typ súboru nie je povolený"
+
+#, fuzzy
+msgid "Permissions must be valid JSON."
+msgstr "Povolenia musia byť platné súbory JSON."
+
+msgid "File"
+msgstr "Súbor"
+
+#, fuzzy
+msgid "The URL of the document if it is external."
+msgstr "URL dokumentu, ak je externý."
+
+msgid "URL"
+msgstr "Url"
+
+msgid "documents"
+msgstr "dokumenty"
+
+#, fuzzy
+msgid "Your browser does not support the audio element."
+msgstr "Prehliadač nepodporuje zvukový prvok."
+
+msgid "Your browser does not support the video tag."
+msgstr "Váš prehliadač nepodporuje video tag."
+
+#, fuzzy
+msgid "Download the"
+msgstr "Stiahnite si"
+
+msgid "document"
+msgstr "dokument"
+
+#, fuzzy
+msgid "External Resource"
+msgstr "Externý zdroj"
+
+#, fuzzy
+msgid "Rate this document"
+msgstr "Ohodnoťte tento dokument"
+
+msgid "Average Rating"
+msgstr "Priemerné hodnotenie"
+
+#, fuzzy
+msgid "Metadata Detail"
+msgstr "Detail metadát"
+
+#, fuzzy
+msgid "Download Document"
+msgstr "Stiahnite si dokument"
+
+#, fuzzy
+msgid "Request Download"
+msgstr "Vyžiadajte si stiahnutie"
+
+#, fuzzy
+msgid "Edit Document"
+msgstr "Upraviť dokument"
+
+#, fuzzy
+msgid "Request change"
+msgstr "Vyžiadajte si zmenu"
+
+msgid "Metadata"
+msgstr "Metaúdaje"
+
+msgid "Wizard"
+msgstr "Sprievodca"
+
+msgid "Advanced Edit"
+msgstr "Pokročilé úpravy"
+
+msgid "Document"
+msgid_plural "Documents"
+msgstr[0] "Document"
+msgstr[1] "Documents"
+msgstr[2] ""
+
+msgid "Replace"
+msgstr "Vymeniť"
+
+msgid "Remove"
+msgstr "Odstrániť"
+
+#, fuzzy
+msgid "Download Metadata"
+msgstr "Stiahnite si metadáta"
+
+#, fuzzy
+msgid "Full metadata"
+msgstr "Úplné metadáta"
+
+#, fuzzy
+msgid "Text format"
+msgstr "Textový formát"
+
+#, fuzzy
+msgid "HTML format"
+msgstr "Formát HTML"
+
+#, fuzzy
+msgid "Standard Metadata - XML format"
+msgstr "Štandardné metadáta - formát XML"
+
+#, fuzzy
+msgid "Resources using this document"
+msgstr "Zdroje využívajúce tento dokument"
+
+#, fuzzy
+msgid "List of resources using this document:"
+msgstr "Zoznam zdrojov využívajúcich tento dokument:"
+
+#, fuzzy
+msgid "This document is not related to any maps or layers"
+msgstr "Tento dokument nesúvisí so žiadnymi mapami ani vrstvami"
+
+msgid "Permissions"
+msgstr "Oprávnenia"
+
+#, fuzzy
+msgid "Click the button below to change the permissions of this document."
+msgstr "Kliknutím na tlačidlo nižšie zmeníte povolenia tohto dokumentu."
+
+#, fuzzy
+msgid "Change Document Permissions"
+msgstr "Zmena povolení dokumentu"
+
+#, fuzzy
+msgid "Explore Documents"
+msgstr "Preskúmať dokumenty"
+
+#, fuzzy
+msgid "Upload Documents"
+msgstr "Odovzdajte dokumenty"
+
+#, fuzzy
+msgid "data"
+msgstr "údaje"
+
+#, fuzzy, python-format
+msgid "for %(document_title)s"
+msgstr "pre% (document_title) s"
+
+#, fuzzy
+msgid "Completeness"
+msgstr "Úplnosť"
+
+#, fuzzy
+msgid "Metadata Schema mandatory fields completed"
+msgstr "Vyplnené sú povinné polia schémy metadát"
+
+#, fuzzy
+msgid "Check Schema mandatory fields"
+msgstr "Začiarknite povinné políčka Schéma"
+
+#, fuzzy
+msgid "Error updating metadata.  Please check the following fields: "
+msgstr "Chyba pri aktualizácii metadát. Skontrolujte nasledujúce polia:"
+
+msgid "Done"
+msgstr "Hotovo"
+
+#, fuzzy
+msgid "Metadata Provider"
+msgstr "Poskytovateľ metadát"
+
+msgid "<< Back"
+msgstr "<< Späť"
+
+#, fuzzy
+msgid "Next >>"
+msgstr "Ďalej >>"
+
+msgid "Select an option"
+msgstr "Vyberte možnosť"
+
+#, fuzzy
+msgid "Edit Metadata"
+msgstr "Upravte metadáta"
+
+#, fuzzy
+msgid "Editing details for"
+msgstr "Úpravy podrobností pre"
+
+msgid "Deleting"
+msgstr "Mazanie"
+
+#, fuzzy
+msgid "Remove Document"
+msgstr "Odstrániť dokument"
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"          Are you sure you want to remove <a href="
+"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
+"        "
+msgstr ""
+"Naozaj chcete odstrániť <a href=\"%(document.get_absolute_url)s\">% "
+"(document_title) s</a> ?"
+
+#, fuzzy
+msgid "Yes, I am sure"
+msgstr "Áno, som si istý"
+
+#, fuzzy
+msgid "No, don't remove it"
+msgstr "Nie, neodstraňujte to"
+
+#, fuzzy
+msgid "Replace Document"
+msgstr "Vymeniť dokument"
+
+#, fuzzy
+msgid "Replace "
+msgstr "Vymeniť"
+
+msgid "Clear"
+msgstr "Vyčistiť"
+
+#, fuzzy
+msgid "Upload Document's Thumbnail"
+msgstr "Nahrajte miniatúru dokumentu"
+
+msgid "Drop files here"
+msgstr "Sem vložte prílohy"
+
+#, fuzzy
+msgid " or select them one by one:"
+msgstr " alebo ich vyberte jeden po druhom:"
+
+msgid "Choose Files"
+msgstr "Vybrať súbory"
+
+#, fuzzy
+msgid "Files to be uploaded"
+msgstr "Súbory, ktoré sa majú nahrať"
+
+#, fuzzy
+msgid "Is Upload Metadata XML Form"
+msgstr "Je upload XML metadátový formulár"
+
+msgid "Upload files"
+msgstr "Nahrať súbory"
+
+#, fuzzy
+msgid "Upload Document"
+msgstr "Nahrať dokument"
+
+#, fuzzy
+msgid "Allowed document types"
+msgstr "Povolené typy dokumentov"
+
+msgid "Done!"
+msgstr "Hotovo!"
+
+msgid "Edit"
+msgstr "Upraviť"
+
+msgid "Settings"
+msgstr "Nastavenia"
+
+msgid "Mandatory"
+msgstr "Povinné"
+
+msgid "Optional"
+msgstr "Voliteľné"
+
+#, fuzzy
+msgid "Basic Metadata"
+msgstr "Základné metadáta"
+
+#, fuzzy
+msgid "Location and Licenses"
+msgstr "Umiestnenie a licencie"
+
+#, fuzzy
+msgid "Optional Metadata"
+msgstr "Nepovinné metadáta"
+
+#, fuzzy
+msgid "Choose one of the following..."
+msgstr "Vyberte jednu z nasledujúcich možností ..."
+
+#, fuzzy
+msgid "Other, Optional, Metadata"
+msgstr "Ostatné, voliteľné, metaúdaje"
+
+#, fuzzy
+msgid "Responsible Parties"
+msgstr "Zodpovedné strany"
+
+#, fuzzy
+msgid "Responsible and Permissions"
+msgstr "Zodpovedný a povolenia"
+
+msgid "Publishing"
+msgstr "Publikovanie"
+
+#, fuzzy
+msgid "You are not allowed to view this document."
+msgstr "Nemáte povolenie na prezeranie tohto dokumentu."
+
+#, fuzzy
+msgid "You are not permitted to delete this document"
+msgstr "Tento dokument nemáte oprávnenie mazať"
+
+#, fuzzy
+msgid "You do not have permissions for this document."
+msgstr "Pre tento dokument nemáte povolenie."
+
+#, fuzzy
+msgid "You are not permitted to modify this document"
+msgstr "Tento dokument nemôžete upravovať"
+
+#, fuzzy
+msgid "You are not permitted to modify this document's metadata"
+msgstr "Nie ste oprávnení upravovať metadáta tohto dokumentu"
+
+#, fuzzy
+msgid "You are not permitted to view this document"
+msgstr "Nemáte oprávnenie prezerať tento dokument"
+
+#, fuzzy
+msgid "Not allowed"
+msgstr "Nepovolené"
+
+msgid "Not found"
+msgstr "Nenájdené"
+
+#, fuzzy
+msgid "You must set a point of contact for this resource"
+msgstr "Pre tento zdroj musíte nastaviť kontaktné miesto"
+
+#, fuzzy
+msgid "You must set an author for this resource"
+msgstr "Pre tento zdroj musíte nastaviť autora"
+
+msgid "Favorite"
+msgstr "Obľúbené"
+
+msgid "Add to Favorites"
+msgstr "Pridať k obľúbeným"
+
+#, fuzzy
+msgid "Go to Favorites"
+msgstr "Prejdite do obľúbených položiek"
+
+#, fuzzy
+msgid "Log in to add/delete Favorites."
+msgstr "Ak chcete pridať alebo odstrániť obľúbené položky, prihláste sa."
+
+#, fuzzy
+msgid "Delete from Favorites"
+msgstr "Odstrániť z obľúbených"
+
+msgid "Favorites"
+msgstr "Moje obľúbené"
+
+#, fuzzy
+msgid "Favorites for"
+msgstr "Obľúbené pre"
+
+msgid "Item"
+msgstr "Položka"
+
+#, fuzzy
+msgid "Layer Uploaded"
+msgstr "Vrstva bola nahraná"
+
+#, fuzzy
+msgid "A layer was uploaded"
+msgstr "Bola nahraná vrstva"
+
+#, fuzzy
+msgid "Comment on Layer"
+msgstr "Komentár k vrstve"
+
+#, fuzzy
+msgid "A layer was commented on"
+msgstr "Vrstva bola komentovaná"
+
+#, fuzzy
+msgid "Rating for Layer"
+msgstr "Hodnotenie pre vrstvu"
+
+#, fuzzy
+msgid "A rating was given to a layer"
+msgstr "Vrstve bolo pridelené hodnotenie"
+
+#, fuzzy
+msgid "Layer name"
+msgstr "Názov vrstvy"
+
+#, fuzzy
+msgid "Layer title"
+msgstr "Názov vrstvy"
+
+#, fuzzy
+msgid "Geometry type"
+msgstr "Typ geometrie"
+
+#, fuzzy
+msgid "Create Layer"
+msgstr "Vytvorte vrstvu"
+
+#, fuzzy
+msgid "Explore Layers"
+msgstr "Preskúmajte vrstvy"
+
+#, fuzzy
+msgid "Create an empty layer"
+msgstr "Vytvorte prázdnu vrstvu"
+
+msgid "Add Attribute"
+msgstr "Pridať vlastnosť"
+
+msgid "Create"
+msgstr "Vytvoriť"
+
+#, fuzzy
+msgid "No abstract provided"
+msgstr "Nebol poskytnutý žiadny abstrakt"
+
+#, fuzzy
+msgid "An exception occurred loading data to PostGIS"
+msgstr "Pri načítaní údajov do PostGIS nastala výnimka"
+
+#, fuzzy
+msgid " Additionally an error occured during database cleanup"
+msgstr " Počas čistenia databázy sa vyskytla chyba"
+
+#, fuzzy
+msgid "GZIP"
+msgstr "GZIP"
+
+#, fuzzy
+msgid "GeoTIFF"
+msgstr "GeoTIFF"
+
+#, fuzzy
+msgid "Zipped Shapefile"
+msgstr "Súbor Shapefile"
+
+#, fuzzy
+msgid "GML 2.0"
+msgstr "GML 2.0"
+
+#, fuzzy
+msgid "GML 3.1.1"
+msgstr "GML 3.1.1"
+
+msgid "CSV"
+msgstr "CSV"
+
+#, fuzzy
+msgid "Excel"
+msgstr "Excel"
+
+#, fuzzy
+msgid "GeoJSON"
+msgstr "GeoJSON"
+
+#, fuzzy
+msgid "JPEG"
+msgstr "JPEG"
+
+msgid "PDF"
+msgstr "PDF"
+
+#, fuzzy
+msgid "PNG"
+msgstr "PNG"
+
+#, fuzzy
+msgid "You don't have permissions to change style for this layer"
+msgstr "Pre túto vrstvu nemáte povolenie na zmenu štýlu"
+
+#, fuzzy
+msgid "Bad HTTP Authorization Credentials."
+msgstr "Chybné autorizačné poverenia HTTP."
+
+#, fuzzy
+msgid ""
+"a short version of the name consisting only of letters, numbers, underscores "
+"and hyphens."
+msgstr ""
+"krátka verzia mena, ktorá obsahuje iba písmená, číslice, podčiarkovníky a "
+"spojovníky."
+
+#, fuzzy
+msgid "A group already exists with that slug."
+msgstr "Skupina už s týmto slimákom existuje."
+
+#, fuzzy
+msgid "A group already exists with that name."
+msgstr "Skupina s týmto názvom už existuje."
+
+#, fuzzy
+msgid "User Identifiers"
+msgstr "Identifikátory používateľov"
+
+#, fuzzy
+msgid "Assign manager role"
+msgstr "Priraďte rolu manažéra"
+
+#, fuzzy, python-format
+msgid ""
+"The following are not valid usernames: %(errors)s; not added to the group"
+msgstr ""
+"Toto nie sú platné používateľské mená:% (errors) s; nebol pridaný do skupiny"
+
+msgid "Name"
+msgstr "Meno"
+
+msgid "Group Categories"
+msgstr "Kategórie skupín"
+
+msgid "Public"
+msgstr "Verejné"
+
+#, fuzzy
+msgid "Public (invite-only)"
+msgstr "Verejné (iba na pozvanie)"
+
+msgid "Private"
+msgstr "Súkromné"
+
+#, fuzzy
+msgid ""
+"Public: Any registered user can view and join a public group.<br>Public "
+"(invite-only):Any registered user can view the group.  Only invited users "
+"can join.<br>Private: Registered users cannot see any details about the "
+"group, including membership.  Only invited users can join."
+msgstr ""
+"Verejné: Každý registrovaný používateľ môže zobraziť a pripojiť sa k "
+"verejnej skupine.<br> Verejné (iba na pozvanie): Skupinu môže zobraziť každý "
+"registrovaný používateľ. Pripojiť sa môžu iba pozvaní používatelia.<br> "
+"Súkromné: Registrovaní používatelia nemôžu vidieť žiadne podrobnosti o "
+"skupine vrátane členstva. Pripojiť sa môžu iba pozvaní používatelia."
+
+#, fuzzy
+msgid ""
+"Email used to contact one or all group members, such as a mailing list, "
+"shared email, or exchange group."
+msgstr ""
+"E-mail používaný na kontaktovanie jedného alebo všetkých členov skupiny, "
+"napríklad zoznam adries, zdieľaný e-mail alebo výmenná skupina."
+
+msgid "Logo"
+msgstr "Logo"
+
+msgid "Email"
+msgstr "E-mail"
+
+#, fuzzy
+msgid "A space or comma-separated list of keywords"
+msgstr "Zoznam kľúčových slov oddelených medzerou alebo čiarkami"
+
+msgid "Access"
+msgstr "Prístup"
+
+msgid "Categories"
+msgstr "Kategórie"
+
+msgid "Manager"
+msgstr "Správca"
+
+msgid "Member"
+msgstr "Člen"
+
+#, fuzzy
+msgid "Activity Feed for"
+msgstr "Informačný kanál aktivít pre"
+
+msgid "All"
+msgstr "Všetko"
+
+msgid "Layers"
+msgstr "Vrstva"
+
+msgid "Maps"
+msgstr "Mapy"
+
+msgid "Documents"
+msgstr "Dokumenty"
+
+msgid "Comments"
+msgstr "Komentáre"
+
+#, fuzzy
+msgid "No actions yet"
+msgstr "Zatiaľ žiadne akcie"
+
+#, fuzzy
+msgid "Explore Group Categories"
+msgstr "Preskúmajte kategórie skupín"
+
+#, fuzzy
+msgid "groups explore"
+msgstr "skupiny skúmajú"
+
+#, fuzzy
+msgid "Create a New Group Category"
+msgstr "Vytvorte novú kategóriu skupiny"
+
+#, fuzzy
+msgid "Explore Groups"
+msgstr "Preskúmajte skupiny"
+
+msgid "Create a Group"
+msgstr "Vytvoriť Skupinu"
+
+#, fuzzy
+msgid "Update Group"
+msgstr "Aktualizovať skupinu"
+
+#, fuzzy
+msgid "Remove Group"
+msgstr "Odstrániť skupinu"
+
+msgid "Create Group"
+msgstr "& Vytvoriť skupinu"
+
+#, fuzzy
+msgid "groups create"
+msgstr "skupiny vytvárajú"
+
+msgid "groups"
+msgstr "skupiny"
+
+msgid "Last Modified"
+msgstr "Naposledy zmenené"
+
+#, fuzzy
+msgid "This group has not created a logo."
+msgstr "Táto skupina nevytvorila logo."
+
+#, fuzzy
+msgid "Edit Group Details"
+msgstr "Upraviť podrobnosti skupiny"
+
+#, fuzzy
+msgid "Manage Group Members"
+msgstr "Spravujte členov skupiny"
+
+#, fuzzy
+msgid "Delete this Group"
+msgstr "Odstrániť túto skupinu"
+
+#, fuzzy
+msgid "Group Activities"
+msgstr "Skupinové aktivity"
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"            This group is <strong>%(access)s</strong>.\n"
+"          "
+msgstr "Táto skupina je <strong>% (access) s</strong> ."
+
+#, fuzzy
+msgid "Anyone may join this group."
+msgstr "K tejto skupine sa môže pripojiť ktokoľvek."
+
+msgid "Join Group"
+msgstr "Pridať sa do skupiny"
+
+#, fuzzy
+msgid "Anyone may view this group but membership is by invitation only."
+msgstr "Ktokoľvek môže zobraziť túto skupinu, ale členstvo je iba na pozvanie."
+
+#, fuzzy
+msgid "Membership is by invitation only."
+msgstr "Členstvo je iba na pozvanie."
+
+#, fuzzy
+msgid "Managers"
+msgstr "Manažéri"
+
+msgid "Members"
+msgstr "Členovia"
+
+#, fuzzy
+msgid "Create a New Group"
+msgstr "Vytvorte novú skupinu"
+
+#, fuzzy
+msgid "Edit Members for"
+msgstr "Upraviť členov pre"
+
+#, fuzzy
+msgid "Current Members"
+msgstr "Súčasní členovia"
+
+msgid "Promote"
+msgstr "Propagovať"
+
+#, fuzzy
+msgid "Demote"
+msgstr "Znížiť úroveň"
+
+msgid "Role"
+msgstr "Rola"
+
+#, fuzzy
+msgid "Add new members"
+msgstr "Pridajte nových členov"
+
+#, fuzzy
+msgid "Add Group Members"
+msgstr "Pridajte členov skupiny"
+
+#, fuzzy
+msgid "groups remove"
+msgstr "skupiny odstrániť"
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"          Are you sure you want to remove the group: %(group_title)s?\n"
+"        "
+msgstr ""
+"\n"
+"          Naozaj chcete odstrániť skupinu:% (group_title) s?\n"
+"        "
+
+#, fuzzy
+msgid "Remove Maps/Data from Group"
+msgstr "Odstrániť mapy / údaje zo skupiny"
+
+#, fuzzy
+msgid "Remove selected maps/data"
+msgstr "Odstrániť vybrané mapy / údaje"
+
+#, fuzzy
+msgid "groups update"
+msgstr "skupiny aktualizovať"
+
+#, fuzzy
+msgid "Edit Group Category Details"
+msgstr "Upravte podrobnosti o kategórii skupiny"
+
+msgid "Groups"
+msgstr "Skupiny"
+
+#, fuzzy
+msgid "Create Group Category"
+msgstr "Vytvorte kategóriu skupiny"
+
+#, fuzzy
+msgid "Create a Group Category"
+msgstr "Vytvorte kategóriu skupiny"
+
+#, fuzzy
+msgid "Edit Group Category"
+msgstr "Upraviť kategóriu skupiny"
+
+#, fuzzy, python-format
+msgid "The e-mail address '%(email)s' has already been invited."
+msgstr "E-mailová adresa '% (email) s' už bola pozvaná."
+
+#, fuzzy, python-format
+msgid "The e-mail address '%(email)s' has already accepted an invite."
+msgstr "E-mailová adresa '% (email) s' už prijala pozvanie."
+
+#, fuzzy, python-format
+msgid "An active user is already using the e-mail address '%(email)s'"
+msgstr "Aktívny používateľ už používa e-mailovú adresu '% (email) s'"
+
+msgid "E-mail"
+msgstr "E-mail"
+
+#, fuzzy, python-format
+msgid "Invitations succefully sent to '%(email)s'"
+msgstr "Pozvánky boli úspešne odoslané na adresu „% (email) s“"
+
+#, fuzzy, python-format
+msgid ""
+"Sorry, it was not possible to invite '%(email)s' due to the following isse: "
+"%(error)s (%(type)s)"
+msgstr ""
+"Ľutujeme, ale nebolo možné pozvať '% (email) s' z dôvodu nasledujúceho "
+"problému:% (error) s (% (type) s)"
+
+#, fuzzy
+msgid "Layer Created"
+msgstr "Bola vytvorená vrstva"
+
+#, fuzzy
+msgid "A Layer was created"
+msgstr "Bola vytvorená vrstva"
+
+#, fuzzy
+msgid "Layer Updated"
+msgstr "Vrstva aktualizovaná"
+
+#, fuzzy
+msgid "A Layer was updated"
+msgstr "Vrstva bola aktualizovaná"
+
+#, fuzzy
+msgid "Layer Approved"
+msgstr "Vrstva schválená"
+
+#, fuzzy
+msgid "A Layer was approved by a Manager"
+msgstr "Vrstva bola schválená manažérom"
+
+#, fuzzy
+msgid "Layer Published"
+msgstr "Vrstva zverejnená"
+
+#, fuzzy
+msgid "A Layer was published"
+msgstr "Bola zverejnená vrstva"
+
+#, fuzzy
+msgid "Layer Deleted"
+msgstr "Vrstva bola odstránená"
+
+#, fuzzy
+msgid "A Layer was deleted"
+msgstr "Vrstva bola odstránená"
+
+#, fuzzy
+msgid "YYYYMMDD"
+msgstr "RRRRMMDD"
+
+#, fuzzy
+msgid "YYYYMMDD'T'hhmmss"
+msgstr "RRRRMMDD'T'hhmmss"
+
+#, fuzzy
+msgid "YYYYMMDD'T'hhmmss'Z'"
+msgstr "RRRRMMDD'T'hhmmss'Z '"
+
+#, fuzzy
+msgid "style name"
+msgstr "názov štýlu"
+
+#, fuzzy
+msgid "sld text"
+msgstr "sld text"
+
+#, fuzzy
+msgid "sld version"
+msgstr "sld verzia"
+
+#, fuzzy
+msgid "sld url"
+msgstr "sld url"
+
+msgid "Workspace"
+msgstr "Pracovný priestor"
+
+msgid "Store"
+msgstr "Obchod"
+
+#, fuzzy
+msgid "Storetype"
+msgstr "Typ príbehu"
+
+#, fuzzy
+msgid "Typename"
+msgstr "Typename"
+
+#, fuzzy
+msgid "Is mosaic?"
+msgstr "Je mozaika?"
+
+#, fuzzy
+msgid "Has time?"
+msgstr "Má čas?"
+
+#, fuzzy
+msgid "Has elevation?"
+msgstr "Má prevýšenie?"
+
+#, fuzzy
+msgid "Time regex"
+msgstr "Regulárny výraz času"
+
+#, fuzzy
+msgid "Elevation regex"
+msgstr "Výškový regulárny výraz"
+
+#, fuzzy
+msgid "use featureinfo custom template?"
+msgstr "použiť vlastnú šablónu featureinfo?"
+
+#, fuzzy
+msgid "specifies wether or not use a custom GetFeatureInfo template."
+msgstr "určuje, či sa má alebo nemá používať vlastná šablóna GetFeatureInfo."
+
+#, fuzzy
+msgid "featureinfo custom template"
+msgstr "vlastná šablóna"
+
+#, fuzzy
+msgid "the custom GetFeatureInfo template HTML contents."
+msgstr "vlastný obsah HTML šablóny GetFeatureInfo."
+
+#, fuzzy
+msgid "File cannot be opened, maybe check the encoding"
+msgstr "Súbor sa nedá otvoriť, možno skontrolujte kódovanie"
+
+#, fuzzy
+msgid "attribute name"
+msgstr "názov atribútu"
+
+#, fuzzy
+msgid "name of attribute as stored in shapefile/spatial database"
+msgstr "názov atribútu uloženého v shapefile / priestorovej databáze"
+
+#, fuzzy
+msgid "attribute description"
+msgstr "popis atribútu"
+
+#, fuzzy
+msgid "description of attribute to be used in metadata"
+msgstr "popis atribútu, ktorý sa má použiť v metaúdajoch"
+
+#, fuzzy
+msgid "attribute label"
+msgstr "atribút štítok"
+
+#, fuzzy
+msgid "title of attribute as displayed in GeoNode"
+msgstr "názov atribútu zobrazený v GeoNode"
+
+#, fuzzy
+msgid "attribute type"
+msgstr "typ atribútu"
+
+#, fuzzy
+msgid "the data type of the attribute (integer, string, geometry, etc)"
+msgstr "údajový typ atribútu (celé číslo, reťazec, geometria atď.)"
+
+#, fuzzy
+msgid "visible?"
+msgstr "viditeľné?"
+
+#, fuzzy
+msgid "specifies if the attribute should be displayed in identify results"
+msgstr "určuje, či sa má atribút zobraziť vo výsledkoch identifikácie"
+
+#, fuzzy
+msgid "display order"
+msgstr "Zobraziť poradie"
+
+#, fuzzy
+msgid ""
+"specifies the order in which attribute should be displayed in identify "
+"results"
+msgstr ""
+"určuje poradie, v ktorom sa má atribút zobraziť pri identifikácii výsledkov"
+
+msgid "Label"
+msgstr "Štítok"
+
+msgid "Image"
+msgstr "Obrázok"
+
+#, fuzzy
+msgid "Video (mp4)"
+msgstr "Video (mp4)"
+
+#, fuzzy
+msgid "Video (ogg)"
+msgstr "Video (ogg)"
+
+#, fuzzy
+msgid "Video (webm)"
+msgstr "Video (webm)"
+
+#, fuzzy
+msgid "Video (3gp)"
+msgstr "Video (3gp)"
+
+#, fuzzy
+msgid "Video (flv)"
+msgstr "Video (flv)"
+
+#, fuzzy
+msgid "Video (YouTube/VIMEO - embedded)"
+msgstr "Video (YouTube / VIMEO - vložené)"
+
+msgid "Audio"
+msgstr "Audio"
+
+#, fuzzy
+msgid "IFRAME"
+msgstr "IFRAME"
+
+#, fuzzy
+msgid "featureinfo type"
+msgstr "featureinfo typ"
+
+#, fuzzy
+msgid ""
+"specifies if the attribute should be rendered with an HTML widget on "
+"GetFeatureInfo template."
+msgstr ""
+"určuje, či sa má atribút vykresliť pomocou widgetu HTML v šablóne "
+"GetFeatureInfo."
+
+msgid "count"
+msgstr "počet"
+
+#, fuzzy
+msgid "count value for this field"
+msgstr "spočítať hodnotu pre toto pole"
+
+msgid "min"
+msgstr "min."
+
+#, fuzzy
+msgid "minimum value for this field"
+msgstr "minimálna hodnota pre toto pole"
+
+msgid "max"
+msgstr "max"
+
+#, fuzzy
+msgid "maximum value for this field"
+msgstr "maximálna hodnota pre toto pole"
+
+msgid "average"
+msgstr "priemer"
+
+#, fuzzy
+msgid "average value for this field"
+msgstr "priemerná hodnota pre toto pole"
+
+#, fuzzy
+msgid "median"
+msgstr "medián"
+
+#, fuzzy
+msgid "median value for this field"
+msgstr "stredná hodnota pre toto pole"
+
+#, fuzzy
+msgid "standard deviation"
+msgstr "štandardná odchýlka"
+
+#, fuzzy
+msgid "standard deviation for this field"
+msgstr "štandardná odchýlka pre toto pole"
+
+#, fuzzy
+msgid "sum"
+msgstr "súčet"
+
+#, fuzzy
+msgid "sum value for this field"
+msgstr "súhrnná hodnota pre toto pole"
+
+#, fuzzy
+msgid "unique values for this field"
+msgstr "jedinečné hodnoty pre toto pole"
+
+#, fuzzy
+msgid "last modified"
+msgstr "naposledy zmenené"
+
+#, fuzzy
+msgid "date when attribute statistics were last updated"
+msgstr "dátum poslednej aktualizácie štatistík atribútov"
+
+msgid "Home"
+msgstr "Domov"
+
+#, fuzzy
+msgid "Change point of contact"
+msgstr "Zmeňte kontaktné miesto"
+
+#, fuzzy
+msgid "Assign a new point of contact to the layers below:"
+msgstr "Priraďte nový kontaktný bod vrstvám uvedeným nižšie:"
+
+#, fuzzy
+msgid "layers"
+msgstr "vrstiev"
+
+#, fuzzy
+msgid "Layer WMS GetCapabilities document"
+msgstr "Vrstvový dokument WMS GetCapabilities"
+
+#, fuzzy
+msgid "Filter Granules"
+msgstr "Filtračné granule"
+
+#, fuzzy
+msgid "Active Filter:"
+msgstr "Aktívny filter:"
+
+#, fuzzy
+msgid "Granule ID"
+msgstr "ID granule"
+
+msgid "Bounding Box"
+msgstr "Pole ohraničenia"
+
+msgid "Time"
+msgstr "Čas"
+
+#, fuzzy
+msgid "Elevation"
+msgstr "Nadmorská výška"
+
+msgid "Actions"
+msgstr "Akcie"
+
+#, fuzzy
+msgid "Granule Preview"
+msgstr "Ukážka granúl"
+
+#, fuzzy
+msgid "Granule Remove"
+msgstr "Granule odstrániť"
+
+msgid "Dimension"
+msgstr "Rozmery"
+
+msgid "Enabled"
+msgstr "Povolené"
+
+#, fuzzy
+msgid "Regex"
+msgstr "Regulárny výraz"
+
+#, fuzzy
+msgid "TIME"
+msgstr "TIME"
+
+#, fuzzy
+msgid "ELEVATION"
+msgstr "ELEVÁCIA"
+
+msgid "Attribute Name"
+msgstr "Názov vlastnosti"
+
+msgid "Range"
+msgstr "Rozsah"
+
+msgid "Average"
+msgstr "Priemerné"
+
+msgid "Median"
+msgstr "Medián"
+
+#, fuzzy
+msgid "Standard Deviation"
+msgstr "Štandardná odchýlka"
+
+#, fuzzy
+msgid "Rate this layer"
+msgstr "Ohodnoťte túto vrstvu"
+
+#, fuzzy
+msgid "Analyze with"
+msgstr "Analyzujte s"
+
+#, fuzzy
+msgid "Download Layer"
+msgstr "Stiahnite si vrstvu"
+
+msgid "Images"
+msgstr "Obrázky"
+
+msgid "Data"
+msgstr "Dáta"
+
+#, fuzzy
+msgid "Click to filter the layer"
+msgstr "Kliknutím vrstvu odfiltrujete"
+
+#, fuzzy
+msgid "Do you want to filter it?"
+msgstr "Chcete to filtrovať?"
+
+msgid "Loading..."
+msgstr "Načítavam…"
+
+#, fuzzy
+msgid "Filter by attributes"
+msgstr "Filtrovať podľa atribútov"
+
+msgid "Match"
+msgstr "Prispôsobiť"
+
+msgid "all"
+msgstr "všetky"
+
+msgid "any"
+msgstr "všetky"
+
+#, fuzzy
+msgid "of the following:"
+msgstr "z nasledujúcich:"
+
+msgid "Attribute"
+msgstr "Parametre"
+
+msgid "Operator"
+msgstr "Operátor"
+
+#, fuzzy
+msgid "Feature limit"
+msgstr "Limit funkcií"
+
+#, fuzzy
+msgid "Pick your download format:"
+msgstr "Vyberte formát sťahovania:"
+
+#, fuzzy
+msgid ""
+"No data available for this resource. Please contact a system administrator "
+"or a manager."
+msgstr ""
+"Pre tento zdroj nie sú k dispozícii žiadne údaje. Kontaktujte správcu "
+"systému alebo správcu."
+
+msgid "Warning"
+msgstr "Upozornenie"
+
+#, fuzzy
+msgid "Editing Tools"
+msgstr "Nástroje na úpravy"
+
+#, fuzzy
+msgid "Edit Layer"
+msgstr "Upraviť vrstvu"
+
+#, fuzzy
+msgid "Upload Metadata"
+msgstr "Odovzdajte metadáta"
+
+msgid "Styles"
+msgstr "Štyly"
+
+msgid "Manage"
+msgstr "Spravovať"
+
+msgid "Set"
+msgstr "Nastaviť"
+
+msgid "Layer"
+msgid_plural "Layers"
+msgstr[0] "Layer"
+msgstr[1] "Layers"
+msgstr[2] ""
+
+#, fuzzy
+msgid "Edit data"
+msgstr "Upraviť údaje"
+
+msgid "View Layer"
+msgstr "Zobraziť vrstvy"
+
+#, fuzzy
+msgid "Attribute Information"
+msgstr "Informácie o atribútoch"
+
+#, fuzzy
+msgid "ISO Feature Catalogue"
+msgstr "Katalóg funkcií ISO"
+
+msgid "Legend"
+msgstr "Vysvetlivky"
+
+#, fuzzy
+msgid "Maps using this layer"
+msgstr "Mapy používajúce túto vrstvu"
+
+#, fuzzy
+msgid "List of maps using this layer:"
+msgstr "Zoznam máp využívajúcich túto vrstvu:"
+
+#, fuzzy
+msgid "This layer is not currently used in any maps."
+msgstr "Táto vrstva sa momentálne nepoužíva na žiadnych mapách."
+
+#, fuzzy
+msgid "Create a map using this layer"
+msgstr "Vytvorte mapu pomocou tejto vrstvy"
+
+#, fuzzy
+msgid "Click the button below to generate a new map based on this layer."
+msgstr ""
+"Kliknutím na tlačidlo nižšie vygenerujete novú mapu na základe tejto vrstvy."
+
+#, fuzzy
+msgid "Add the layer to an existing map"
+msgstr "Pridajte vrstvu na existujúcu mapu"
+
+#, fuzzy
+msgid "Click the button below to add the layer to the selected map."
+msgstr "Kliknutím na tlačidlo nižšie pridáte vrstvu na vybranú mapu."
+
+#, fuzzy
+msgid "Add to Map"
+msgstr "Pridať na mapu"
+
+#, fuzzy
+msgid "Documents related to this layer"
+msgstr "Dokumenty súvisiace s touto vrstvou"
+
+#, fuzzy
+msgid "List of documents related to this layer:"
+msgstr "Zoznam dokumentov týkajúcich sa tejto vrstvy:"
+
+#, fuzzy
+msgid ""
+"The following styles are associated with this layer. Choose a style to view "
+"it in the preview map."
+msgstr ""
+"S touto vrstvou sú spojené nasledujúce štýly. Vyberte štýl, ktorý chcete "
+"zobraziť na mape ukážky."
+
+#, fuzzy
+msgid "(default style)"
+msgstr "(predvolený štýl)"
+
+#, fuzzy
+msgid "No styles associated with this layer"
+msgstr "S touto vrstvou nie sú spojené žiadne štýly"
+
+#, fuzzy
+msgid "External service layer"
+msgstr "Externá obslužná vrstva"
+
+msgid "Source"
+msgstr "Zdroj"
+
+#, fuzzy
+msgid "Refresh Attributes and Statistics of this layer"
+msgstr "Obnovte atribúty a štatistiku tejto vrstvy"
+
+#, fuzzy
+msgid ""
+"Click the button below to allow GeoNode refreshing the list of available "
+"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"backend, it will recalculate their statistics too."
+msgstr ""
+"Kliknutím na tlačidlo nižšie povolíte GeoNode obnovenie zoznamu dostupných "
+"atribútov vrstvy. Pokiaľ bola na backende nastavená aj možnosť "
+"„WPS_ENABLED“, prepočíta sa to aj s ich štatistikami."
+
+#, fuzzy
+msgid "Refresh Attributes and Statistics"
+msgstr "Obnovte atribúty a štatistiku"
+
+#, fuzzy
+msgid "Clear the Server Cache of this layer"
+msgstr "Vymažte medzipamäť servera tejto vrstvy"
+
+#, fuzzy
+msgid "Click the button below to wipe the tile-cache of this layer."
+msgstr ""
+"Kliknutím na tlačidlo nižšie vymažete vyrovnávaciu pamäť dlaždíc tejto "
+"vrstvy."
+
+#, fuzzy
+msgid "Empty Tiled-Layer Cache"
+msgstr "Prázdna medzipamäť kachľovej vrstvy"
+
+#, fuzzy
+msgid "Click the button below to change the permissions of this layer."
+msgstr "Kliknutím na tlačidlo nižšie zmeníte povolenia tejto vrstvy."
+
+#, fuzzy
+msgid "Change Layer Permissions"
+msgstr "Zmena povolení vrstvy"
+
+msgid "Processing..."
+msgstr "Spracováva sa..."
+
+#, fuzzy
+msgid "Updating Permissions..."
+msgstr "Aktualizujú sa povolenia ..."
+
+#, fuzzy
+msgid "Remove Mosaic Granules"
+msgstr "Vyberte mozaikové granule"
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"          Are you sure you want to remove Granule %(granule_id)s of the "
+"Mosaic <a href=\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+"        "
+msgstr ""
+"Naozaj chcete odstrániť granule% (granule_id) s z mozaiky <a href=\"%(layer."
+"get_absolute_url)s\">% (layer_title) s</a> ?"
+
+#, fuzzy
+msgid "This action affects the following maps:"
+msgstr "Táto akcia ovplyvňuje nasledujúce mapy:"
+
+#, fuzzy
+msgid "No maps are using this layer"
+msgstr "Túto vrstvu nepoužívajú žiadne mapy"
+
+#, fuzzy
+msgid "layers explore"
+msgstr "vrstvy preskúmať"
+
+#, fuzzy
+msgid "Upload Layers"
+msgstr "Odovzdajte vrstvy"
+
+#, fuzzy, python-format
+msgid "for %(layer_title)s"
+msgstr "pre% (layer_title) s"
+
+#, fuzzy
+msgid ""
+"Note: this layer's orginal metadata was populated and preserved by importing "
+"a metadata XML file.\n"
+"          This metadata cannot be edited."
+msgstr ""
+"Poznámka: Originálne metadáta tejto vrstvy boli vyplnené a konzervované "
+"importom súboru XML metadát.\n"
+"          Tieto metadáta nie je možné upraviť."
+
+#, fuzzy
+msgid ""
+"Note: this layer's orginal metadata was populated by importing a metadata "
+"XML file.\n"
+"          GeoNode's metadata import supports a subset of ISO, FGDC, and "
+"Dublin Core metadata elements.\n"
+"          Some of your original metadata may have been lost."
+msgstr ""
+"Poznámka: Originálne metadáta tejto vrstvy boli vyplnené importom súboru XML "
+"metadát.\n"
+"          Import metadát GeoNode podporuje podmnožinu prvkov metadát ISO, "
+"FGDC a Dublin Core.\n"
+"          Niektoré z vašich pôvodných metadát mohli byť stratené."
+
+#, fuzzy
+msgid "Return to Layer"
+msgstr "Vráťte sa do vrstvy"
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"        Editing details for %(layer_title)s\n"
+"      "
+msgstr ""
+"\n"
+"        Úpravy podrobností pre% (layer_title) s\n"
+"      "
+
+#, fuzzy
+msgid "Use a custom template?"
+msgstr "Použiť vlastnú šablónu?"
+
+msgid "Display Order"
+msgstr "Zobraziť poradie"
+
+msgid "Display Type"
+msgstr "Typ zobrazenia"
+
+msgid "Visible"
+msgstr "Viditeľné"
+
+#, fuzzy
+msgid "Upload Layer Metadata"
+msgstr "Nahrajte metadáta vrstvy"
+
+#, fuzzy
+msgid "layers upload"
+msgstr "upload vrstiev"
+
+#, fuzzy
+msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
+msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
+
+#, fuzzy
+msgid "Incomplete Uploads"
+msgstr "Neúplné nahrávanie"
+
+#, fuzzy
+msgid "You have the following incomplete uploads"
+msgstr "Máte nasledujúce neúplné nahratia"
+
+#, fuzzy
+msgid "last updated on"
+msgstr "naposledy aktualizované dňa"
+
+msgid "Resume"
+msgstr "Životopis"
+
+#, fuzzy
+msgid "Delete"
+msgstr "Zmazať"
+
+#, fuzzy
+msgid "Are you sure you want to delete this upload?"
+msgstr "Naozaj chcete odstrániť toto nahrávanie?"
+
+#, fuzzy
+msgid "Delete, and don't ask me again."
+msgstr "Odstrániť a viac sa ma nepýtať."
+
+#, fuzzy
+msgid "Remove Layers"
+msgstr "Odstrániť vrstvy"
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"          Are you sure you want to remove <a href="
+"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+"        "
+msgstr ""
+"Naozaj chcete odstrániť <a href=\"%(layer.get_absolute_url)s\">% "
+"(layer_title) s</a> ?"
+
+#, fuzzy
+msgid "Replace Layer"
+msgstr "Vymeňte vrstvu"
+
+#, fuzzy
+msgid "Preserve Metadata XML"
+msgstr "Zachovať XML metaúdajov"
+
+#, fuzzy
+msgid "Select the charset or leave default"
+msgstr "Vyberte znakovú sadu alebo nechajte predvolenú"
+
+#, fuzzy
+msgid "Manage Styles"
+msgstr "Spravujte štýly"
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"%(layer_title)s</a>\n"
+"    "
+msgstr ""
+"Spravujte dostupné štýly pre <a href=\"/layers/%(layer_title)s\">% "
+"(layer_title) s</a>"
+
+#, fuzzy
+msgid "Layer Default Style"
+msgstr "Predvolený štýl vrstvy"
+
+#, fuzzy
+msgid "Available styles"
+msgstr "Dostupné štýly"
+
+#, fuzzy
+msgid ""
+"Click on an available style in the upper box to assign it to this layer. "
+"Selected styles appear in the lower box."
+msgstr ""
+"Kliknutím na dostupný štýl v hornom poli ho priraďte k tejto vrstve. Vybrané "
+"štýly sa zobrazia v dolnom poli."
+
+#, fuzzy
+msgid "Update Available Styles"
+msgstr "Aktualizujte dostupné štýly"
+
+#, fuzzy
+msgid "Upload Layer Style"
+msgstr "Odovzdajte štýl vrstvy"
+
+#, fuzzy
+msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
+msgstr "(SLD - Deskriptor vrstiev štýlov 1.0, 1.1)"
+
+msgid "WARNING"
+msgstr "UPOZORNENIE"
+
+#, fuzzy
+msgid "This will most probably overwrite the current default style!"
+msgstr "Týmto sa pravdepodobne prepíše aktuálny predvolený štýl!"
+
+msgid "Preview"
+msgstr "Náhľad"
+
+#, fuzzy
+msgid "Dataset Attributes"
+msgstr "Atribúty množiny údajov"
+
+msgid "Other Settings"
+msgstr "Ďalšie nastavenia"
+
+#, fuzzy
+msgid "Upload Layer"
+msgstr "Odovzdať vrstvu"
+
+#, fuzzy
+msgid "Upload Layer Step: Set SRS"
+msgstr "Krok odovzdania vrstvy: Nastavte SRS"
+
+#, fuzzy
+msgid "Provide CRS for "
+msgstr "Poskytnite PRS pre"
+
+#, fuzzy
+msgid "Coordinate Reference System"
+msgstr "Súradnicový referenčný systém"
+
+#, fuzzy
+msgid ""
+"\n"
+"                A coordinate reference system for this layer could not be "
+"determined.\n"
+"                Locate or enter the appropriate ESPG code for this layer "
+"below.\n"
+"                One way to do this is do visit:\n"
+"                <a href=\"http://prj2epsg.org/search\" target=\"_"
+"\">prj2epsg</a>\n"
+"                and enter the following:\n"
+"            "
+msgstr ""
+"Pre túto vrstvu sa nepodarilo určiť referenčný súradnicový systém. Nižšie "
+"vyhľadajte alebo zadajte vhodný kód ESPG pre túto vrstvu. Jedným zo "
+"spôsobov, ako to urobiť, je navštíviť: <a href=\"http://prj2epsg.org/search"
+"\" target=\"_\">prj2epsg</a> a zadať nasledujúce:"
+
+#, fuzzy
+msgid "Native CRS could not be found!"
+msgstr "Natívne CRS sa nepodarilo nájsť!"
+
+#, fuzzy
+msgid "Provide EPSG code for Source SRS"
+msgstr "Zadajte kód EPSG pre zdroj SRS"
+
+#, fuzzy
+msgid "EPSG Code (Source SRS)"
+msgstr "Kód EPSG (zdroj SRS)"
+
+#, fuzzy
+msgid "Select a Source SRS"
+msgstr "Vyberte zdroj SRS"
+
+#, fuzzy
+msgid ""
+"Source SRS EPSG Code is mandatory and represents the native data Spatial "
+"Reference System.\n"
+"                    <br><br>\n"
+"                    This must be coherent with the Geometry values (lon/lat "
+"coordinates as an instance) stored on the geospatial dataset.\n"
+"                    <br><br>\n"
+"                    If not specified on the geospatial data itself, it must "
+"be manually declared by the operator.\n"
+"                    <br><br>\n"
+"                    More information is provided at the bottom of the page "
+"in the \"Additional Help\" sections.\n"
+"                    "
+msgstr ""
+"Zdrojový kód SRS EPSG je povinný a predstavuje natívny údajový priestorový "
+"referenčný systém.<br><br> To musí byť v súlade s hodnotami Geometrie (lon / "
+"lat súradnice ako inštancia) uloženými v súbore geopriestorových údajov."
+"<br><br> Ak to nie je uvedené na samotných geopriestorových údajoch, musí "
+"ich operátor deklarovať ručne.<br><br> Viac informácií sa nachádza v dolnej "
+"časti stránky v sekciách „Ďalšia pomoc“."
+
+msgid "Next"
+msgstr "Ďalej"
+
+msgid "Advanced Options"
+msgstr "Rozšírené možnosti"
+
+#, fuzzy
+msgid "Target SRS"
+msgstr "Cieľ SRS"
+
+#, fuzzy
+msgid "EPSG Code (Target SRS)"
+msgstr "Kód EPSG (cieľový SRS)"
+
+#, fuzzy
+msgid "Select a Target SRS"
+msgstr "Vyberte cieľový SRS"
+
+#, fuzzy
+msgid "leave it empty to use only Source SRS"
+msgstr "ponechajte prázdne, aby ste mohli používať iba zdroj SRS"
+
+#, fuzzy
+msgid "Additional Help"
+msgstr "Dodatočná pomoc"
+
+#, fuzzy
+msgid "Spatial Reference System"
+msgstr "Priestorový referenčný systém"
+
+#, fuzzy
+msgid ""
+"A spatial reference system (SRS) or coordinate reference system (CRS) is a "
+"coordinate-based local,\n"
+"                            regional or global system used to locate "
+"geographical entities. A spatial reference system defines a specific map\n"
+"                            projection, as well as transformations between "
+"different spatial reference systems. Spatial reference systems are\n"
+"                            defined by the OGC's Simple feature access using "
+"well-known text, and support has been implemented by several\n"
+"                            standards-based geographic information systems. "
+"Spatial reference systems can be referred to using a SRID integer,\n"
+"                            including EPSG codes defined by the "
+"International Association of Oil and Gas Producers.\n"
+"                            It is specified in ISO 19111:2007 Geographic "
+"information—Spatial referencing by coordinates, also published as\n"
+"                            OGC Abstract Specification, Topic 2: Spatial "
+"referencing by coordinate."
+msgstr ""
+"Priestorový referenčný systém (SRS) alebo súradnicový referenčný systém "
+"(CRS) je lokálny súradnicový,\n"
+"                            regionálny alebo globálny systém používaný na "
+"lokalizáciu geografických entít. Priestorový referenčný systém definuje "
+"konkrétnu mapu\n"
+"                            projekcie, ako aj transformácie medzi rôznymi "
+"priestorovými referenčnými systémami. Priestorové referenčné systémy sú\n"
+"                            definované prístupom OGC k jednoduchým funkciám "
+"pomocou dobre známeho textu, a podporu implementovalo niekoľko\n"
+"                            štandardné geografické informačné systémy. Na "
+"priestorové referenčné systémy sa dá odkazovať pomocou celého čísla SRID,\n"
+"                            vrátane kódov EPSG definovaných Medzinárodnou "
+"asociáciou výrobcov ropy a zemného plynu.\n"
+"                            Je špecifikovaná v ISO 19111: 2007 Geografické "
+"informácie — Priestorové referencovanie pomocou súradníc, tiež publikované "
+"ako\n"
+"                            Abstraktná špecifikácia OGC, téma 2: Priestorové "
+"referencovanie podľa súradníc."
+
+#, fuzzy
+msgid "Identifiers"
+msgstr "Identifikátory"
+
+#, fuzzy
+msgid ""
+"\n"
+"                        A Spatial Reference System Identifier (SRID) is a "
+"unique value used to unambiguously identify projected, unprojected,\n"
+"                        and local spatial coordinate system definitions. "
+"These coordinate systems form the heart of all GIS applications.\n"
+"\n"
+"                        Virtually all major spatial vendors have created "
+"their own SRID implementation or refer to those of an authority,\n"
+"                        such as the European Petroleum Survey Group (EPSG).\n"
+"                        "
+msgstr ""
+"\n"
+"                        Identifikátor priestorového referenčného systému "
+"(SRID) je jedinečná hodnota používaná na jednoznačnú identifikáciu "
+"projektovaných,\n"
+"                        a definície lokálnych priestorových súradníc. Tieto "
+"súradnicové systémy tvoria jadro všetkých aplikácií GIS.\n"
+"\n"
+"                        Prakticky všetci významní predajcovia priestoru "
+"vytvorili vlastnú implementáciu SRID alebo sa odvolávajú na autority,\n"
+"                        ako je Európska skupina pre ropný prieskum (EPSG).\n"
+"                        "
+
+#, fuzzy
+msgid ""
+"NOTE: As of 2005 the EPSG SRID values are now maintained by the "
+"International\n"
+"                            Association of Oil & Gas Producers (OGP) "
+"Surveying & Positioning Committee"
+msgstr ""
+"POZNÁMKA: Od roku 2005 hodnoty EPSG SRID v súčasnosti udržuje medzinárodná "
+"organizácia\n"
+"                            Výbor pre geodetické a pozičné združenie "
+"Asociácie producentov ropy a zemného plynu (OGP)"
+
+#, fuzzy
+msgid ""
+"\n"
+"                        SRIDs are the primary key for the Open Geospatial "
+"Consortium (OGC) spatial_ref_sys metadata table for the Simple\n"
+"                        Features for SQL Specification, Versions 1.1 and "
+"1.2, which is defined as follows:\n"
+"                        "
+msgstr ""
+"\n"
+"                        SRID sú primárnym kľúčom pre tabuľku metadát metadát "
+"Open Geospatial Consortium (OGC) spatial_ref_sys pre Simple\n"
+"                        Funkcie pre špecifikáciu SQL, verzie 1.1 a 1.2, "
+"ktorá je definovaná takto:\n"
+"                        "
+
+#, fuzzy
+msgid ""
+"\n"
+"                        In spatially enabled databases (such as IBM DB2, IBM "
+"Informix, Microsoft SQL Server, MySQL, Oracle RDBMS, Teradata, PostGIS and\n"
+"                        SQL Anywhere), SRIDs are used to uniquely identify "
+"the coordinate systems used to define columns of spatial data or individual\n"
+"                        spatial objects in a spatial column (depending on "
+"the spatial implementation). SRIDs are typically associated with a well "
+"known\n"
+"                        text (WKT) string definition of the coordinate "
+"system (SRTEXT, above). From the Well Known Text Wikipedia page\n"
+"                        "
+msgstr ""
+"\n"
+"                        V priestorovo povolených databázach (ako IBM DB2, "
+"IBM Informix, Microsoft SQL Server, MySQL, Oracle RDBMS, Teradata, PostGIS "
+"a\n"
+"                        SQL Anywhere), identifikátory SRID sa používajú na "
+"jednoznačnú identifikáciu súradnicových systémov používaných na definovanie "
+"stĺpcov priestorových údajov alebo jednotlivcov\n"
+"                        priestorové objekty v priestorovom stĺpci (v "
+"závislosti od priestorovej realizácie). SRID sú zvyčajne spojené s dobre "
+"známymi\n"
+"                        textová (WKT) definícia reťazca súradnicového "
+"systému (SRTEXT, vyššie). Zo stránky Wikipedia Well Known Text\n"
+"                        "
+
+#, fuzzy
+msgid ""
+"“A WKT string for a spatial reference system describes the datum, geoid, "
+"coordinate system,\n"
+"                            and map projection of the spatial objects”."
+msgstr ""
+"„Reťazec WKT pre priestorový referenčný systém popisuje základný, geoidný, "
+"súradnicový systém,\n"
+"                            a mapová projekcia priestorových objektov “."
+
+#, fuzzy
+msgid ""
+"\n"
+"                        Here are two common coordinate systems with their "
+"EPSG SRID value followed by their well known text:\n"
+"                        "
+msgstr ""
+"\n"
+"                        Tu sú dva bežné súradnicové systémy s ich hodnotou "
+"EPSG SRID, za ktorými nasleduje ich dobre známy text:\n"
+"                        "
+
+#, fuzzy
+msgid ""
+"\n"
+"                        UTM, Zone 17N, NAD27 — SRID 2029\n"
+"                        "
+msgstr ""
+"\n"
+"                        UTM, zóna 17N, NAD27 - SRID 2029\n"
+"                        "
+
+#, fuzzy
+msgid ""
+"\n"
+"                        WGS84 — SRID 4326\n"
+"                        "
+msgstr ""
+"\n"
+"                        WGS84 - SRID 4326\n"
+"                        "
+
+#, fuzzy
+msgid ""
+"\n"
+"                        SRID values associated with spatial data can be used "
+"to constrain spatial operations — for instance, spatial operations cannot be "
+"performed\n"
+"                        between spatial objects with differing SRIDs in some "
+"systems, or trigger coordinate system transformations between spatial "
+"objects in others.\n"
+"                        "
+msgstr ""
+"\n"
+"                        Hodnoty SRID spojené s priestorovými údajmi možno "
+"použiť na obmedzenie priestorových operácií - napríklad nie je možné vykonať "
+"priestorové operácie\n"
+"                        medzi priestorovými objektmi s odlišnými SRID v "
+"niektorých systémoch alebo v iných spustiť transformácie súradnicových "
+"systémov medzi priestorovými objektmi.\n"
+"                        "
+
+#, fuzzy
+msgid ""
+"Source SRS EPSG Code is mandatory and represents the native data Spatial "
+"Reference System. This must be coherent with the\n"
+"                            Geometry values (lon/lat coordinates as an "
+"instance) stored on the geospatial dataset. If not specified on the "
+"geospatial data itself, it\n"
+"                            must be manually declared by the operator."
+msgstr ""
+"Zdrojový kód SRS EPSG je povinný a predstavuje natívny údajový priestorový "
+"referenčný systém. Musí to byť v súlade s\n"
+"                            Hodnoty geometrie (lon / lat súradnice ako "
+"inštancia) uložené v súbore geopriestorových údajov. Pokiaľ to nie je "
+"uvedené na samotných geopriestorových údajoch, tak to\n"
+"                            musí byť ručne deklarované operátorom."
+
+#, fuzzy
+msgid ""
+"Target SRS EPSG Code is optional. This must be used only if we need to re-"
+"project the coordinates from Source SRS to another one.\n"
+"                        "
+msgstr ""
+"Cieľový kód SRS EPSG je voliteľný. Toto sa musí použiť iba v prípade, že "
+"potrebujeme premietnuť súradnice zo zdroja SRS na iný.\n"
+"                        "
+
+#, fuzzy
+msgid "Upload Layer Step: CSV Field Mapping"
+msgstr "Krok odovzdania vrstvy: Mapovanie poľa CSV"
+
+#, fuzzy
+msgid "Geospatial Data"
+msgstr "Geopriestorové údaje"
+
+#, fuzzy
+msgid ""
+"Please indicate which attributes contain the latitude and longitude "
+"coordinates in the CSV data."
+msgstr ""
+"V údajoch CSV uveďte, ktoré atribúty obsahujú súradnice zemepisnej šírky a "
+"dĺžky."
+
+#, fuzzy
+msgid ""
+"With this data, GeoNode was able to guess which attributes contain the\n"
+"                latitude and longitude coordinates, but please confirm that "
+"the correct\n"
+"                attributes are selected below."
+msgstr ""
+"Pomocou týchto údajov mohol GeoNode uhádnuť, ktoré atribúty obsahujú\n"
+"                súradnice zemepisnej šírky a dĺžky, ale potvrďte, že sú "
+"správne\n"
+"                atribúty sú vybrané nižšie."
+
+#, fuzzy
+msgid "Select an attribute"
+msgstr "Vyberte atribút"
+
+#, fuzzy
+msgid ""
+"We did not detect columns that could be used for the latitude and "
+"longitude.\n"
+"        Please verify that you have two columns in your csv file that can be "
+"used for\n"
+"        the latitude and longitude."
+msgstr ""
+"Nezistili sme stĺpce, ktoré by sa dali použiť pre zemepisnú šírku a dĺžku.\n"
+"        Overte, či máte v súbore CSV dva stĺpce, ktoré je možné použiť na\n"
+"        zemepisná šírka a dĺžka."
+
+#, fuzzy
+msgid "Your upload is either complete or you haven't resumed an earlier one."
+msgstr "Vaše nahrávanie je dokončené alebo ste neobnovili predchádzajúce."
+
+msgid "Return to"
+msgstr "Návrat na"
+
+#, fuzzy
+msgid "Upload Form"
+msgstr "Nahrať formulár"
+
+#, fuzzy
+msgid "Upload Layer Step: Time"
+msgstr "Nahrajte krok vrstvy: čas"
+
+#, fuzzy
+msgid "Inspect data for "
+msgstr "Skontrolujte údaje"
+
+#, fuzzy
+msgid "Configure as Time-Series"
+msgstr "Konfigurovať ako časové rady"
+
+#, fuzzy
+msgid ""
+"Toggling this selector allows you to configure (or not) this data as a time "
+"series; in this case you will also have to select an attribute\n"
+"                      to drive the time dimension.\n"
+"                      <br><br>\n"
+"                      If GeoNode is not able to parse any of the values for "
+"the selected attribute red markers will appear to highlight the problems.\n"
+"                      <br><br>\n"
+"                      More information is provided at the bottom of the page "
+"in the \"Additional Help\" sections.\n"
+"                      "
+msgstr ""
+"Prepnutie tohto selektora umožňuje konfigurovať (alebo nie) tieto údaje ako "
+"časové rady; v takom prípade budete tiež musieť zvoliť atribút, ktorý bude "
+"riadiť časovú dimenziu.<br><br> Ak GeoNode nie je schopný analyzovať žiadnu "
+"z hodnôt pre vybraný atribút, objavia sa červené značky na zvýraznenie "
+"problémov.<br><br> Viac informácií sa nachádza v dolnej časti stránky v "
+"sekciách „Ďalšia pomoc“."
+
+msgid "No"
+msgstr "Nie"
+
+#, fuzzy
+msgid "Use an existing timestamp attribute in the data"
+msgstr "V údajoch použite existujúci atribút časovej pečiatky"
+
+#, fuzzy
+msgid "Yes: with an existing Time-Attribute"
+msgstr "Áno: s existujúcim časovým atribútom"
+
+#, fuzzy
+msgid ""
+"Yes: by converting data to a timestamp using standard date/time "
+"representation"
+msgstr ""
+"Áno: prevodom údajov na časovú pečiatku pomocou štandardného znázornenia "
+"dátumu a času"
+
+#, fuzzy
+msgid "Convert a number field into a year"
+msgstr "Preveďte číselné pole na rok"
+
+#, fuzzy
+msgid "Yes: by converting a number as Year"
+msgstr "Áno: prevedením čísla na Rok"
+
+#, fuzzy
+msgid ""
+"Convert data to a timestamp using standard date/time representation or a "
+"custom format"
+msgstr ""
+"Prevod údajov na časovú pečiatku pomocou štandardného znázornenia dátumu a "
+"času alebo vlastného formátu"
+
+#, fuzzy
+msgid "Start Importer"
+msgstr "Spustiť dovozcu"
+
+msgid "Date Format"
+msgstr "Formát dátumu"
+
+#, fuzzy
+msgid "Text Attribute Date Format"
+msgstr "Formát dátumu atribútu textu"
+
+#, fuzzy
+msgid "Best Guess"
+msgstr "Najlepšie hádam"
+
+msgid "Custom"
+msgstr "Vlastné"
+
+#, fuzzy
+msgid "Optional End-Time attribute"
+msgstr "Voliteľný atribút konca času"
+
+#, fuzzy
+msgid "Existing Time Attribute"
+msgstr "Existujúci časový atribút"
+
+#, fuzzy
+msgid "Convert Text Attribute"
+msgstr "Preveďte textový atribút"
+
+#, fuzzy
+msgid "Convert Number (As Year)"
+msgstr "Prepočítať číslo (ako rok)"
+
+#, fuzzy
+msgid "Time attribute Presentation"
+msgstr "Časový atribút Prezentácia"
+
+msgid "List"
+msgstr "Zoznam"
+
+#, fuzzy
+msgid "of all the distinct time values"
+msgstr "všetkých zreteľných časových hodnôt"
+
+#, fuzzy
+msgid "Intervals"
+msgstr "Intervaly"
+
+#, fuzzy
+msgid "defined by the resolution"
+msgstr "definované uznesením"
+
+#, fuzzy
+msgid "Continuous Intervals"
+msgstr "Priebežné intervaly"
+
+#, fuzzy
+msgid ""
+"for data that is frequently updated, resolution describes the frequency of "
+"updates"
+msgstr ""
+"pre údaje, ktoré sa často aktualizujú, rozlíšenie popisuje frekvenciu "
+"aktualizácií"
+
+#, fuzzy
+msgid "Resolution of time attribute"
+msgstr "Atribút rozlíšenie času"
+
+#, fuzzy
+msgid "Enabling Time"
+msgstr "Aktivačný čas"
+
+#, fuzzy
+msgid ""
+"A layer can support one or two time attributes. If a single\n"
+"                        attribute is used, the layer is considered to "
+"contain data that is valid at single points in time. If two\n"
+"                        attributes are used, the second attribute represents "
+"the end of a valid period  hence the layer is considered\n"
+"                        to contain data that is valid at certain periods in "
+"time."
+msgstr ""
+"Vrstva môže podporovať jeden alebo dva časové atribúty. Ako slobodný\n"
+"                        Ak sa použije tento atribút, vrstva sa považuje za "
+"údaj, ktorý obsahuje údaje platné v jednom časovom okamihu. Ako dvaja\n"
+"                        atribúty, druhý atribút predstavuje koniec platného "
+"obdobia, preto sa zohľadní vrstva\n"
+"                        obsahovať údaje, ktoré sú platné v určitých časových "
+"obdobiach."
+
+#, fuzzy
+msgid "Selecting an Attribute"
+msgstr "Výber atribútu"
+
+#, fuzzy
+msgid "A time attribute can be"
+msgstr "Atribút času môže byť"
+
+#, fuzzy
+msgid "An existing date"
+msgstr "Existujúci dátum"
+
+#, fuzzy
+msgid "Text that can be converted to a timestamp"
+msgstr "Text, ktorý je možné previesť na časovú pečiatku"
+
+#, fuzzy
+msgid "A number representing a year"
+msgstr "Číslo predstavujúce rok"
+
+#, fuzzy
+msgid ""
+"\n"
+"                        For text attributes, one can specify a custom format "
+"(as part of the \"Advanced Options\") or use the 'best guess' approach which "
+"will try to\n"
+"                        automatically translate well-known recognized "
+"patterns into valid times.\n"
+"                        "
+msgstr ""
+"\n"
+"                        Pre textové atribúty možno určiť vlastný formát (ako "
+"súčasť „Pokročilých možností“) alebo použiť prístup „najlepšieho odhadu“, "
+"ktorý sa pokúsi\n"
+"                        automaticky prekladať známe rozpoznané vzory do "
+"platných časov.\n"
+"                        "
+
+#, fuzzy
+msgid "The 'best guess' will handle date and optional time variants of"
+msgstr "„Najlepší odhad“ spracuje dátum a voliteľné časové varianty čísla"
+
+#, fuzzy
+msgid "In terms of the formatting flags noted above, these are"
+msgstr "Pokiaľ ide o príznaky formátovania uvedené vyššie, tieto sú"
+
+#, fuzzy
+msgid "Modal Header"
+msgstr "Modálna hlavička"
+
+#, fuzzy
+msgid "Some text in the modal"
+msgstr "Niektoré texty v modálnom formáte"
+
+#, fuzzy
+msgid " does NOT match any valid ISO-8601 Date-Time string!"
+msgstr ""
+" sa nezhoduje so žiadnym platným reťazcom dátumu a času podľa normy ISO-8601!"
+
+#, fuzzy
+msgid "Valid ISO-8601 for"
+msgstr "Platné ISO-8601 pre"
+
+#, fuzzy
+msgid "matches a valid ISO-8601 Date-Time string!"
+msgstr "sa zhoduje s platným reťazcom dátumu a času ISO-8601!"
+
+#, fuzzy
+msgid "Not Valid ISO-8601 for"
+msgstr "Nie je platné ISO-8601 pre"
+
+#, fuzzy
+msgid "does NOT match any valid ISO-8601 Date-Time string!"
+msgstr ""
+"sa nezhoduje so žiadnym platným reťazcom dátumu a času podľa normy ISO-8601!"
+
+#, fuzzy
+msgid "Wrong Selection"
+msgstr "Nesprávny výber"
+
+#, fuzzy
+msgid "Please, select one Time Attribute to test!"
+msgstr "Vyberte jeden časový atribút na testovanie!"
+
+#, fuzzy
+msgid ""
+"Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
+msgstr ""
+"<span id=\"cnt\">Za 5</span> sekúnd sa vrátite na úvodnú stránku nahrávania"
+
+#, fuzzy
+msgid " Or just go "
+msgstr " Alebo jednoducho choď"
+
+msgid "now"
+msgstr "teraz"
+
+#, fuzzy
+msgid "You are attempting to replace a vector layer with an unknown format."
+msgstr "Pokúšate sa nahradiť vektorovú vrstvu neznámym formátom."
+
+#, fuzzy
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "Pokúšate sa nahradiť vektorovú vrstvu rastrom."
+
+#, fuzzy
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "Pokúšate sa nahradiť rastrovú vrstvu vektorom."
+
+#, fuzzy
+msgid ""
+"Please ensure the name is consistent with the file you are trying to replace."
+msgstr ""
+"Skontrolujte, či je názov v súlade so súborom, ktorý sa pokúšate nahradiť."
+
+#, fuzzy
+msgid "Local GeoNode layer has no geometry type."
+msgstr "Lokálna vrstva GeoNode nemá žiadny typ geometrie."
+
+#, fuzzy
+msgid ""
+"Please ensure there is at least one geometry "
+"type                                 that is consistent with the file you "
+"are trying to replace."
+msgstr ""
+"Uistite sa, že existuje aspoň jeden typ geometrie, ktorý je v súlade so "
+"súborom, ktorý sa pokúšate nahradiť."
+
+#, fuzzy, python-format
+msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgstr "Pri pokuse o prístup k nahranej schéme sa vyskytla chyba: %s"
+
+#, fuzzy
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr "Identifikátor UUID z metaúdajov XML sa v tomto systéme už používa."
+
+#, fuzzy
+msgid ""
+"There was an error while attempting to upload your data. Please try again, "
+"or contact and administrator if the problem continues."
+msgstr ""
+"Pri pokuse o nahranie vašich údajov sa vyskytla chyba. Skúste to znova, "
+"alebo ak problém pretrváva, kontaktujte administrátora."
+
+#, fuzzy
+msgid ""
+"Note: this layer's orginal metadata was populated and preserved by importing "
+"a metadata XML file. This metadata cannot be edited."
+msgstr ""
+"Poznámka: Originálne metadáta tejto vrstvy boli vyplnené a konzervované "
+"importom súboru XML metadát. Tieto metadáta nie je možné upraviť."
+
+#, fuzzy
+msgid "You are not permitted to delete this layer"
+msgstr "Túto vrstvu nemáte oprávnenie mazať"
+
+#, fuzzy
+msgid "You do not have permissions for this layer."
+msgstr "Pre túto vrstvu nemáte oprávnenie."
+
+#, fuzzy
+msgid "You are not permitted to modify this layer"
+msgstr "Túto vrstvu nemôžete upravovať"
+
+#, fuzzy
+msgid "You are not permitted to modify this layer's metadata"
+msgstr "Nie ste oprávnení upravovať metadáta tejto vrstvy"
+
+#, fuzzy
+msgid "You are not permitted to view this layer"
+msgstr "Nemáte povolenie na zobrazenie tejto vrstvy"
+
+#, fuzzy
+msgid "Failed to upload the layer"
+msgstr "Nepodarilo sa nahrať vrstvu"
+
+#, fuzzy
+msgid "Unable to delete layer"
+msgstr "Vrstvu nie je možné odstrániť"
+
+#, fuzzy
+msgid ""
+"This layer is a member of a layer group, you must remove the layer from the "
+"group before deleting."
+msgstr ""
+"Táto vrstva je členom skupiny vrstiev. Pred odstránením musíte vrstvu zo "
+"skupiny odstrániť."
+
+#, fuzzy, python-format
+msgid "couldn't generate thumbnail: %s"
+msgstr "sa nepodarilo vygenerovať miniatúru"
+
+#, fuzzy
+msgid "Map Created"
+msgstr "Mapa bola vytvorená"
+
+#, fuzzy
+msgid "A Map was created"
+msgstr "Bola vytvorená mapa"
+
+#, fuzzy
+msgid "Map Updated"
+msgstr "Mapa bola aktualizovaná"
+
+#, fuzzy
+msgid "A Map was updated"
+msgstr "Mapa bola aktualizovaná"
+
+#, fuzzy
+msgid "Map Approved"
+msgstr "Mapa schválená"
+
+#, fuzzy
+msgid "A Map was approved by a Manager"
+msgstr "Mapa bola schválená manažérom"
+
+#, fuzzy
+msgid "Map Published"
+msgstr "Mapa bola zverejnená"
+
+#, fuzzy
+msgid "A Map was published"
+msgstr "Bola zverejnená Mapa"
+
+#, fuzzy
+msgid "Map Deleted"
+msgstr "Mapa bola odstránená"
+
+#, fuzzy
+msgid "A Map was deleted"
+msgstr "Mapa bola odstránená"
+
+#, fuzzy
+msgid "Comment on Map"
+msgstr "Komentár k mape"
+
+#, fuzzy
+msgid "A map was commented on"
+msgstr "Mapa bola komentovaná"
+
+#, fuzzy
+msgid "Rating for Map"
+msgstr "Hodnotenie pre mapu"
+
+#, fuzzy
+msgid "A rating was given to a map"
+msgstr "Mapa bola ohodnotená"
+
+msgid "zoom"
+msgstr "priblíženie"
+
+#, fuzzy
+msgid "projection"
+msgstr "projekcia"
+
+#, fuzzy
+msgid "center X"
+msgstr "centrum X"
+
+#, fuzzy
+msgid "center Y"
+msgstr "centrum Y"
+
+msgid "Site URL"
+msgstr "Stránka URL"
+
+#, fuzzy
+msgid "Featured Map URL"
+msgstr "Odporúčaná adresa URL mapy"
+
+#, fuzzy
+msgid "stack order"
+msgstr "poradie stohu"
+
+#, fuzzy
+msgid "format"
+msgstr "formát"
+
+msgid "name"
+msgstr "meno"
+
+msgid "store"
+msgstr "obchod"
+
+msgid "opacity"
+msgstr "nepriehľadnosť"
+
+#, fuzzy
+msgid "styles"
+msgstr "štýly"
+
+msgid "transparent"
+msgstr "priesvitné"
+
+msgid "fixed"
+msgstr "Pevné"
+
+#, fuzzy
+msgid "group"
+msgstr "skupina"
+
+#, fuzzy
+msgid "visibility"
+msgstr "viditeľnosť"
+
+#, fuzzy
+msgid "ows URL"
+msgstr "ows URL"
+
+#, fuzzy
+msgid "layer params"
+msgstr "parametre vrstvy"
+
+#, fuzzy
+msgid "source params"
+msgstr "parametre zdroja"
+
+#, fuzzy
+msgid "maps"
+msgstr "mapy"
+
+#, fuzzy
+msgid "Map layers WMS GetCapabilities document"
+msgstr "Mapujte vrstvy dokument WMS GetCapabilities"
+
+#, fuzzy
+msgid "Rate this Map"
+msgstr "Ohodnoťte túto mapu"
+
+#, fuzzy
+msgid "Download Map"
+msgstr "Stiahnite si mapu"
+
+msgid "Map"
+msgid_plural "Maps"
+msgstr[0] "Map"
+msgstr[1] "Maps"
+msgstr[2] ""
+
+#, fuzzy
+msgid "Map Layers"
+msgstr "Vrstvy mapy"
+
+#, fuzzy
+msgid "This map uses the following layers:"
+msgstr "Táto mapa používa nasledujúce vrstvy:"
+
+#, fuzzy
+msgid "Documents related to this map"
+msgstr "Dokumenty súvisiace s touto mapou"
+
+#, fuzzy
+msgid "List of documents related to this map:"
+msgstr "Zoznam dokumentov týkajúcich sa tejto mapy:"
+
+#, fuzzy
+msgid "Specify which users can view or modify this map"
+msgstr "Zadajte, ktorí používatelia môžu túto mapu zobraziť alebo upraviť"
+
+#, fuzzy
+msgid "Change Permissions of this Map"
+msgstr "Zmeniť povolenia tejto mapy"
+
+#, fuzzy
+msgid "Copy this map"
+msgstr "Skopírujte túto mapu"
+
+#, fuzzy
+msgid "Duplicate this map and modify it for your own purposes"
+msgstr "Duplikujte túto mapu a upravte ju pre svoje vlastné účely"
+
+#, fuzzy
+msgid "Embed this map"
+msgstr "Skopírujte túto mapu"
+
+#, fuzzy
+msgid "Embed this map to your own sites"
+msgstr "Duplikujte túto mapu a upravte ju pre svoje vlastné účely"
+
+#, fuzzy
+msgid "Embed Map"
+msgstr "Upraviť mapu"
+
+#, fuzzy
+msgid "Embed Iframe Link"
+msgstr "Vložte iframe"
+
+#, fuzzy
+msgid "Download Leaflet page"
+msgstr "Stiahnite si vrstvu"
+
+#, fuzzy
+msgid "Embed Iframe"
+msgstr "Vložte iframe"
+
+#, fuzzy
+msgid ""
+"To embed this map, add the following code snippet and customize its "
+"properties (scrolling, width, height) based on your needs to your site"
+msgstr ""
+"Ak chcete vložiť túto mapu, pridajte na svoj web nasledujúci útržok kódu a "
+"prispôsobte jeho vlastnosti (posúvanie, šírku, výšku) podľa svojich potrieb."
+
+msgid "Download"
+msgstr "Stiahnuť"
+
+#, fuzzy
+msgid ""
+"\n"
+"      Here you can download all the layers of this map that\n"
+"      are hosted on this GeoNode.\n"
+"    "
+msgstr ""
+"\n"
+"      Tu si môžete stiahnuť všetky vrstvy tejto mapy, ktoré\n"
+"      sú hostené v tomto GeoNode.\n"
+"    "
+
+#, fuzzy
+msgid ""
+"\n"
+"      <div class=\"alert alert-warning\">Could not find downloadable layers "
+"for this map. You can go back to  \n"
+"      "
+msgstr ""
+"<div class=\"alert alert-warning\">Pre túto mapu sa nepodarilo nájsť vrstvy "
+"na stiahnutie. Môžete sa vrátiť k"
+
+#, fuzzy
+msgid ""
+"\n"
+"        Additionally, the map contains these layers which will not be "
+"downloaded\n"
+"        due to security restrictions:\n"
+"      "
+msgstr ""
+"\n"
+"        Mapa navyše obsahuje tieto vrstvy, ktoré sa nestiahnu\n"
+"        z dôvodu bezpečnostných obmedzení:\n"
+"      "
+
+#, fuzzy
+msgid ""
+"\n"
+"        Finally, the map contains these layers which will not be downloaded\n"
+"        because they are not available directly from this GeoNode:\n"
+"      "
+msgstr ""
+"\n"
+"        Nakoniec mapa obsahuje tieto vrstvy, ktoré sa nestiahnu\n"
+"        pretože nie sú k dispozícii priamo z tohto GeoNode:\n"
+"      "
+
+msgid "Downloading"
+msgstr "Sťahovanie"
+
+msgid "Retry"
+msgstr "Skúsiť znova"
+
+#, fuzzy
+msgid "Start downloading this map"
+msgstr "Začnite sťahovať túto mapu"
+
+#, fuzzy
+msgid "Download Complete"
+msgstr "Sťahovanie dokončené"
+
+#, fuzzy
+msgid "Download Failed"
+msgstr "Sťahovanie zlyhalo"
+
+#, fuzzy
+msgid "maps explore"
+msgstr "mapy preskúmať"
+
+#, fuzzy, python-format
+msgid "for %(map_title)s"
+msgstr "pre% (map_title) s"
+
+#, fuzzy
+msgid ""
+"Note: this map's orginal metadata was populated by importing a metadata XML "
+"file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
+"        Some of your original metadata may have been lost."
+msgstr ""
+"Poznámka: Originálne metadáta tejto mapy boli vyplnené importom súboru XML "
+"metadát.\n"
+"        Import metadát GeoNode podporuje podmnožinu prvkov metadát ISO, FGDC "
+"a Dublin Core.\n"
+"        Niektoré z vašich pôvodných metadát mohli byť stratené."
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"        Editing details for %(map_title)s\n"
+"      "
+msgstr ""
+"\n"
+"        Úpravy podrobností pre% (map_title) s\n"
+"      "
+
+#, fuzzy
+msgid "New Map"
+msgstr "Nová mapa"
+
+#, fuzzy
+msgid "Remove Map"
+msgstr "Odstrániť mapu"
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a>?\n"
+"        "
+msgstr ""
+"Naozaj chcete odstrániť <a href=\"%(map.get_absolute_url)s\">% (map_title) "
+"s</a> ?"
+
+#, fuzzy
+msgid "You are not permitted to delete this map."
+msgstr "Nemáte oprávnenie túto mapu mazať."
+
+#, fuzzy
+msgid "You do not have permissions for this map."
+msgstr "Pre túto mapu nemáte povolenie."
+
+#, fuzzy
+msgid "You must be logged in to save this map"
+msgstr "Ak chcete uložiť túto mapu, musíte sa prihlásiť"
+
+#, fuzzy
+msgid "You are not permitted to save or edit this map."
+msgstr "Túto mapu nemôžete ukladať ani upravovať."
+
+#, fuzzy
+msgid "You are not allowed to modify this map's metadata."
+msgstr "Nemáte oprávnenie upravovať metadáta tejto mapy."
+
+#, fuzzy
+msgid "You are not allowed to view this map."
+msgstr "Na túto mapu nemáte povolenie."
+
+#, fuzzy
+msgid "An unknown error has occured."
+msgstr "Vyskytla sa neznáma chyba."
+
+#, fuzzy
+msgid "error saving thumbnail"
+msgstr "chyba pri ukladaní miniatúry"
+
+#, fuzzy
+msgid "Message received"
+msgstr "Správa prijatá"
+
+#, fuzzy
+msgid "New message received in one of your threads"
+msgstr "Nová správa bola prijatá v jednom z vašich vlákien"
+
+#, fuzzy
+msgid "Monitoring alert"
+msgstr "Monitorovacie varovanie"
+
+#, fuzzy
+msgid "Alert situation reported by monitoring"
+msgstr "Výstražná situácia hlásená monitorovaním"
+
+#, fuzzy
+msgid "GeoNode Monitoring on {} reports errors: {}"
+msgstr "Monitorovanie GeoNode v službe {} hlási chyby: {}"
+
+#, fuzzy
+msgid "Enter valid email addresses."
+msgstr "Zadajte platné e-mailové adresy."
+
+#, fuzzy
+msgid "Show list of services"
+msgstr "Zobraziť zoznam služieb"
+
+#, fuzzy
+msgid ""
+"Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
+"provided, last sync will be used."
+msgstr ""
+"Spracovať údaje od konkrétnej časovej pečiatky (RRRR-MM-DD HH: MM: SS "
+"formát). Ak nie je uvedená, použije sa posledná synchronizácia."
+
+#, fuzzy
+msgid ""
+"Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
+"provided, now will be used."
+msgstr ""
+"Spracovávať údaje do konkrétnej časovej pečiatky (RRRR-MM-DD HH: MM: SS "
+"formát). Ak nie je uvedené, použije sa teraz."
+
+#, fuzzy
+msgid "Force check"
+msgstr "Kontrola sily"
+
+#, fuzzy
+msgid "Format of audit log (xml, json)"
+msgstr "Formát protokolu auditu (xml, json)"
+
+#, fuzzy
+msgid ""
+"Should old data be preserved (default: no, data older than settings."
+"MONITORING_DATA_TTL will be removed)"
+msgstr ""
+"Mali by sa zachovať staré údaje (predvolené nastavenie: nie, údaje staršie "
+"ako nastavenia. MONITORING_DATA_TTL budú odstránené)"
+
+#, fuzzy
+msgid "Should stop on first error occured (default: no)"
+msgstr "Malo by sa zastaviť pri prvej chybe (predvolené: nie)"
+
+#, fuzzy
+msgid "Should process and send notifications as well (default: no)"
+msgstr "Mali by sa spracovávať a odosielať aj oznámenia (predvolené: nie)"
+
+#, fuzzy
+msgid "Collect data from this service only"
+msgstr "Zhromažďujte údaje iba z tejto služby"
+
+#, fuzzy
+msgid "Show list of metrics"
+msgstr "Zobraziť zoznam metrík"
+
+#, fuzzy
+msgid "Show list of labels for metric"
+msgstr "Zobraziť zoznam štítkov pre metriku"
+
+#, fuzzy
+msgid "Show list of resources for metric"
+msgstr "Zobraziť zoznam zdrojov pre metriku"
+
+#, fuzzy
+msgid "Data aggregation interval in seconds (default: 60)"
+msgstr "Interval agregácie údajov v sekundách (predvolené nastavenie: 60)"
+
+#, fuzzy
+msgid "Metric name"
+msgstr "Metrický názov"
+
+#, fuzzy
+msgid "Show data for specific resource in resource_type=resource_name format"
+msgstr ""
+"Zobraziť údaje pre konkrétny zdroj vo formáte resource_type = resource_name"
+
+#, fuzzy
+msgid "Show data for specific resource"
+msgstr "Zobraziť údaje pre konkrétny zdroj"
+
+#, fuzzy
+msgid "Show data for specific label"
+msgstr "Zobraziť údaje pre konkrétny štítok"
+
+#, fuzzy
+msgid "Write result to file, default GEOIP_PATH: {}"
+msgstr "Výsledok zapísať do súboru, predvolené GEOIP_PATH: {}"
+
+#, fuzzy
+msgid ""
+"Fetch database from specific url. If nothing provided, default {} will be "
+"used"
+msgstr ""
+"Načítanie databázy z konkrétnej adresy URL. Ak nie je uvedené nič, použije "
+"sa predvolené nastavenie {}"
+
+#, fuzzy
+msgid "Overwrite file if exists"
+msgstr "Prepísať súbor, ak existuje"
+
+#, fuzzy
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#, fuzzy
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#, fuzzy
+msgid "Host (GeoServer)"
+msgstr "Hostiteľ (GeoServer)"
+
+#, fuzzy
+msgid "Host (GeoNode)"
+msgstr "Hostiteľ (GeoNode)"
+
+#, fuzzy
+msgid "No resource"
+msgstr "Žiadny zdroj"
+
+#, fuzzy
+msgid "Resource base"
+msgstr "Zdrojová základňa"
+
+msgid "Style"
+msgstr "Štýl"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Other"
+msgstr "Iné"
+
+msgid "Rate"
+msgstr "Hodnotenie"
+
+msgid "Count"
+msgstr "Počet"
+
+msgid "Value"
+msgstr "Hodnota"
+
+#, fuzzy
+msgid "Value numeric"
+msgstr "Hodnota číselná"
+
+#, fuzzy
+msgid "Bytes"
+msgstr "Bajty"
+
+#, fuzzy
+msgid "Kilobytes"
+msgstr "Kilobajtov"
+
+#, fuzzy
+msgid "Megabytes"
+msgstr "Megabajtov"
+
+#, fuzzy
+msgid "Gigabytes"
+msgstr "Gigabajty"
+
+#, fuzzy
+msgid "Bytes per second"
+msgstr "Bajtov za sekundu"
+
+#, fuzzy
+msgid "Kilobytes per second"
+msgstr "Kilobajtov za sekundu"
+
+#, fuzzy
+msgid "Megabytes per second"
+msgstr "Megabajtov za sekundu"
+
+#, fuzzy
+msgid "Gigabytes per second"
+msgstr "Gigabajtov za sekundu"
+
+msgid "Seconds"
+msgstr "Sekundy"
+
+msgid "Percentage"
+msgstr "Percentá"
+
+#, fuzzy
+msgid "Not OWS"
+msgstr "Nie VLASTNÉ"
+
+#, fuzzy
+msgid "Any OWS"
+msgstr "Akékoľvek OWS"
+
+msgid "Change"
+msgstr "Zmeniť"
+
+#, fuzzy
+msgid "Change Metadata"
+msgstr "Zmena metadát"
+
+#, fuzzy
+msgid "View Metadata"
+msgstr "Zobraziť metadáta"
+
+msgid "View"
+msgstr "Zobraziť"
+
+msgid "Publish"
+msgstr "Zverejniť"
+
+#, fuzzy
+msgid "Geoserver event"
+msgstr "Udalosť geoserveru"
+
+#, fuzzy
+msgid "List of resources affected"
+msgstr "Zoznam ovplyvnených zdrojov"
+
+#, fuzzy
+msgid "Response processing time in ms"
+msgstr "Čas spracovania odpovede v ms"
+
+msgid "1 minute"
+msgstr "1 minúta"
+
+msgid "5 minutes"
+msgstr "5 minút"
+
+msgid "10 minutes"
+msgstr "pred 10"
+
+msgid "30 minutes"
+msgstr "30 minút"
+
+msgid "1 hour"
+msgstr "1 hodina"
+
+msgid "Error"
+msgstr "Chyba"
+
+#, fuzzy
+msgid "Fatal"
+msgstr "Fatálne"
+
+#, fuzzy
+msgid "Expected min/max values for user configuration"
+msgstr "Očakávané min / max hodnoty pre konfiguráciu používateľa"
+
+#, fuzzy
+msgid "Marker of last delivery"
+msgstr "Značka poslednej dodávky"
+
+#, fuzzy
+msgid "Minimum time between subsequent notifications"
+msgstr "Minimálny čas medzi následnými oznámeniami"
+
+#, fuzzy
+msgid "How severe would be error from this notification"
+msgstr "Aké závažné by boli chyby z tohto oznámenia"
+
+#, fuzzy
+msgid "Is it active"
+msgstr "Je to aktívne?"
+
+#, fuzzy
+msgid "{}: {}"
+msgstr "{}: {}"
+
+#, fuzzy
+msgid "Value must be above"
+msgstr "Hodnota musí byť vyššia"
+
+#, fuzzy
+msgid "Value must be below"
+msgstr "Hodnota musí byť nižšia"
+
+#, fuzzy
+msgid "Last update must not be older than"
+msgstr "Posledná aktualizácia nesmie byť staršia ako"
+
+#, fuzzy
+msgid "Max timeout for given metric before error should be raised"
+msgstr "Pred chybou by sa mal zvýšiť maximálny časový limit pre danú metriku"
+
+#, fuzzy
+msgid "Monitoring & Analytics"
+msgstr "Monitorovanie a analýza"
+
+#, fuzzy
+msgid "Only superusers can monitor performance"
+msgstr "Výkon môžu sledovať iba superužívatelia"
+
+msgid "Hi,"
+msgstr "Ahoj,"
+
+#, fuzzy
+msgid "Monitoring on"
+msgstr "Monitorovanie zapnuté"
+
+#, fuzzy
+msgid "has detected following problems :"
+msgstr "zistil nasledujúce problémy:"
+
+#, fuzzy
+msgid "spotted"
+msgstr "bodkovaný"
+
+msgid "ago"
+msgstr "pred"
+
+#, fuzzy
+msgid "emerged"
+msgstr "vynoril sa"
+
+#, fuzzy
+msgid "User following you"
+msgstr "Používateľ, ktorý vás sleduje"
+
+#, fuzzy
+msgid "Another user has started following you"
+msgstr "Začal vás sledovať iný používateľ"
+
+#, fuzzy
+msgid "User requested access"
+msgstr "Používateľ požadoval prístup"
+
+#, fuzzy
+msgid "A new user has requested access to the site"
+msgstr "Nový používateľ požiadal o prístup na web"
+
+#, fuzzy
+msgid "Account activated"
+msgstr "Účet bol aktivovaný"
+
+#, fuzzy
+msgid "This account is now active and can log in the site"
+msgstr "Tento účet je teraz aktívny a môže sa na ňom prihlásiť"
+
+#, fuzzy
+msgid "Personal info"
+msgstr "Osobné informácie"
+
+#, fuzzy
+msgid "Important dates"
+msgstr "Dôležité dátumy"
+
+#, fuzzy
+msgid "Extended profile"
+msgstr "Rozšírený profil"
+
+#, fuzzy
+msgid "Password changed successfully."
+msgstr "Heslo bolo úspešne zmenené."
+
+#, fuzzy, python-format
+msgid "Change password: %s"
+msgstr "Zmena hesla: %s"
+
+#, fuzzy
+msgid "party who authored the resource"
+msgstr "strana, ktorá je autorom zdroja"
+
+#, fuzzy
+msgid ""
+"party who has processed the data in a manner such that the resource has been "
+"modified"
+msgstr ""
+"strana, ktorá spracovala údaje takým spôsobom, že došlo k úprave zdroja"
+
+#, fuzzy
+msgid "party who published the resource"
+msgstr "strana, ktorá zdroj zverejnila"
+
+#, fuzzy
+msgid ""
+"party that accepts accountability and responsibility for the data and "
+"ensures         appropriate care and maintenance of the resource"
+msgstr ""
+"strana, ktorá prijíma zodpovednosť a zodpovednosť za údaje a zaisťuje "
+"primeranú starostlivosť a údržbu zdroja"
+
+#, fuzzy
+msgid ""
+"party who can be contacted for acquiring knowledge about or acquisition of "
+"the resource"
+msgstr ""
+"strana, ktorú je možné kontaktovať za účelom získania vedomostí alebo "
+"získania zdroja"
+
+#, fuzzy
+msgid "party who distributes the resource"
+msgstr "strana, ktorá zdroj distribuuje"
+
+#, fuzzy
+msgid "party who uses the resource"
+msgstr "strana, ktorá zdroj používa"
+
+#, fuzzy
+msgid "party that supplies the resource"
+msgstr "strana, ktorá zdroj dodáva"
+
+#, fuzzy
+msgid "party who created the resource"
+msgstr "strana, ktorá zdroj vytvorila"
+
+#, fuzzy
+msgid "party that owns the resource"
+msgstr "strana, ktorá vlastní zdroj"
+
+#, fuzzy
+msgid "key party responsible for gathering information and conducting research"
+msgstr ""
+"kľúčová strana zodpovedná za zhromažďovanie informácií a vykonávanie výskumu"
+
+msgid "Email Address"
+msgstr "Emailová adresa"
+
+#, fuzzy
+msgid "Organization Name"
+msgstr "Názov organizácie"
+
+#, fuzzy
+msgid "name of the responsible organization"
+msgstr "názov zodpovednej organizácie"
+
+msgid "Profile"
+msgstr "Profil"
+
+#, fuzzy
+msgid "introduce yourself"
+msgstr "predstav sa"
+
+#, fuzzy
+msgid "Position Name"
+msgstr "Názov pozície"
+
+#, fuzzy
+msgid "role or position of the responsible person"
+msgstr "rola alebo pozícia zodpovednej osoby"
+
+#, fuzzy
+msgid "Voice"
+msgstr "Hlas"
+
+#, fuzzy
+msgid ""
+"telephone number by which individuals can speak to the responsible "
+"organization or individual"
+msgstr ""
+"telefónne číslo, pomocou ktorého môžu jednotlivci hovoriť so zodpovednou "
+"organizáciou alebo jednotlivcom"
+
+#, fuzzy
+msgid "Facsimile"
+msgstr "Faksimile"
+
+#, fuzzy
+msgid ""
+"telephone number of a facsimile machine for the responsible organization or "
+"individual"
+msgstr "telefónne číslo faxu na zodpovednú organizáciu alebo jednotlivca"
+
+#, fuzzy
+msgid "Delivery Point"
+msgstr "Miesto dodania"
+
+#, fuzzy
+msgid ""
+"physical and email address at which the organization or individual may be "
+"contacted"
+msgstr ""
+"fyzická a e-mailová adresa, na ktorej je možné kontaktovať organizáciu alebo "
+"jednotlivca"
+
+msgid "City"
+msgstr "Mesto"
+
+#, fuzzy
+msgid "city of the location"
+msgstr "mesto miesta"
+
+#, fuzzy
+msgid "Administrative Area"
+msgstr "Administratívna oblasť"
+
+#, fuzzy
+msgid "state, province of the location"
+msgstr "štát, provincia miesta"
+
+#, fuzzy
+msgid "Postal Code"
+msgstr "poštové smerovacie číslo"
+
+#, fuzzy
+msgid "ZIP or other postal code"
+msgstr "PSČ alebo iné poštové smerovacie číslo"
+
+msgid "Country"
+msgstr "Krajina"
+
+#, fuzzy
+msgid "country of the physical address"
+msgstr "krajina fyzickej adresy"
+
+#, fuzzy
+msgid ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject             (space or comma-separated"
+msgstr ""
+"bežne používané slovo (slová) alebo formálne slovo (slová) alebo fráza (y) "
+"používané na opis predmetu (oddelené medzerou alebo čiarkou)"
+
+msgid "Timezone"
+msgstr "Časové pásmo"
+
+#, fuzzy
+msgid "No Group"
+msgstr "Žiadna skupina"
+
+#, fuzzy
+msgid "All contents"
+msgstr "Celý obsah"
+
+#, fuzzy
+msgid "No Organization Info"
+msgstr "Žiadne informácie o organizácii"
+
+#, fuzzy
+msgid "Forgot Username"
+msgstr "Zabudli ste použivateľské meno"
+
+#, fuzzy
+msgid ""
+"Enter your email address and click the submit button. <br />Your username "
+"will be sent to you."
+msgstr ""
+"Zadajte svoju e-mailovú adresu a kliknite na tlačidlo Odoslať.<br /> Vaše "
+"používateľské meno vám bude zaslané."
+
+msgid "Create Profile"
+msgstr "Vytvoriť profil"
+
+#, fuzzy
+msgid "Profile of "
+msgstr "Profil používateľa"
+
+#, fuzzy
+msgid "people explore"
+msgstr "ľudia skúmajú"
+
+#, fuzzy
+msgid "Not provided."
+msgstr "Neboli poskytnuté."
+
+msgid "Position"
+msgstr "Pozícia"
+
+msgid "Organization"
+msgstr "Názov organizácie"
+
+msgid "Location"
+msgstr "Lokalita"
+
+#, fuzzy
+msgid "Not provided"
+msgstr "Neboli poskytnuté"
+
+msgid "Fax"
+msgstr "Fax"
+
+#, fuzzy
+msgid "User layers WMS GetCapabilities document"
+msgstr "Dokumenty používateľských vrstiev WMS GetCapabilities"
+
+#, fuzzy
+msgid "Message User"
+msgstr "Správa používateľovi"
+
+msgid "Edit profile"
+msgstr "Upraviť profil"
+
+#, fuzzy
+msgid "Connected social accounts"
+msgstr "Prepojené sociálne účty"
+
+#, fuzzy
+msgid "Associated e-mails"
+msgstr "Súvisiace e-maily"
+
+#, fuzzy
+msgid "Set/Change password"
+msgstr "Nastaviť / zmeniť heslo"
+
+#, fuzzy
+msgid "Upload new layers"
+msgstr "Odovzdajte nové vrstvy"
+
+msgid "Create a new layer"
+msgstr "Vytvorte novú vrstvu"
+
+#, fuzzy
+msgid "Upload new document"
+msgstr "Nahrajte nový dokument"
+
+#, fuzzy
+msgid "Create a new map"
+msgstr "Vytvorte novú mapu"
+
+#, fuzzy
+msgid "My Activities"
+msgstr "Moje aktivity"
+
+msgid "Notifications"
+msgstr "Oznámenia"
+
+msgid "Announcements"
+msgstr "Oznamy"
+
+#, fuzzy
+msgid "Invite Users"
+msgstr "Pozvať používateľov"
+
+#, fuzzy
+msgid "User Activities"
+msgstr "Činnosti používateľov"
+
+msgid "Resources"
+msgstr "Zdroje"
+
+#, fuzzy
+msgid "edit people"
+msgstr "upravovať ľudí"
+
+msgid "Edit Your Profile"
+msgstr "Upraviť profil"
+
+#, fuzzy
+msgid "Edit Profile for"
+msgstr "Upraviť profil pre"
+
+#, fuzzy
+msgid "Change your avatar"
+msgstr "Zmeňte svoj avatar"
+
+msgid "Update profile"
+msgstr "Upraviť profil"
+
+#, fuzzy
+msgid "Explore People"
+msgstr "Preskúmajte ľudí"
+
+#, fuzzy
+msgid "Your username for "
+msgstr "Vaše používateľské meno pre"
+
+#, fuzzy
+msgid "Your username has been emailed to you."
+msgstr "Vaše používateľské meno vám bolo zaslané e-mailom."
+
+#, fuzzy
+msgid "No user could be found with that email address."
+msgstr "S touto e-mailovou adresou sa nepodarilo nájsť žiadneho používateľa."
+
+#, fuzzy
+msgid "You are not permitted to save or edit this resource."
+msgstr "Nemáte oprávnenie ukladať alebo upravovať tento zdroj."
+
+#, fuzzy
+msgid "You are not authorized to download this resource."
+msgstr "Na stiahnutie tohto zdroja nemáte oprávnenie."
+
+#, fuzzy
+msgid ""
+"No files have been found for this resource. Please, contact a system "
+"administrator."
+msgstr "Pre tento zdroj sa nenašli žiadne súbory. Kontaktujte správcu systému."
+
+#, fuzzy
+msgid "No files found."
+msgstr "Neboli nájdené žiadne súbory."
+
+#, fuzzy
+msgid "Not Authorized"
+msgstr "Neautorizované"
+
+#, fuzzy
+msgid "style xml"
+msgstr "názov štýlu"
+
+#, fuzzy
+msgid "style url"
+msgstr "sld url"
+
+#, fuzzy
+msgid "style legend url"
+msgstr "sld url"
+
+msgid "Layer Style changed. Redirecting to apply changes..."
+msgstr ""
+
+msgid "You may also use browser reload."
+msgstr ""
+
+#, fuzzy
+#| msgid "Actions"
+msgid "Action"
+msgstr "Akcie"
+
+#, fuzzy
+msgid "Set As Default Style"
+msgstr "Predvolený štýl vrstvy"
+
+#, fuzzy
+msgid "Download Style"
+msgstr "Stiahnite si"
+
+#, fuzzy
+msgid "Remove Style"
+msgstr "Odstrániť vrstvy"
+
+msgid "Reload to see changes"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You should use a GIS software or a library which support TMS service to use "
+"this URL : {url}"
+msgstr ""
+
+#, fuzzy
+msgid "Session is Expired. Please login again!"
+msgstr "Platnosť relácie vypršala. Prihláste sa znova!"
+
+#, fuzzy
+msgid "Permissions successfully updated!"
+msgstr "Povolenia sa úspešne aktualizovali!"
+
+#, fuzzy
+msgid "Error updating permissions :("
+msgstr "Chyba pri aktualizácii povolení :("
+
+#, fuzzy
+msgid "You are not allowed to change permissions for this resource"
+msgstr "Nemáte oprávnenie meniť povolenia pre tento zdroj"
+
+#, fuzzy
+msgid "Security Rules Cache Refreshed!"
+msgstr "Vyrovnávacia pamäť bezpečnostných pravidiel bola obnovená!"
+
+#, fuzzy
+msgid "You cannot modify this resource!"
+msgstr "Tento zdroj nemôžete upraviť!"
+
+#, fuzzy
+msgid "Attributes/Stats Refreshed Successfully!"
+msgstr "Atribúty / štatistiky sa úspešne obnovili!"
+
+#, fuzzy
+msgid "GeoWebCache Tiled Layer Emptied!"
+msgstr "Kachľová vrstva GeoWebCache je vyprázdnená!"
+
+#, fuzzy
+msgid "Wrong permissions specification"
+msgstr "Chybná špecifikácia povolení"
+
+#, fuzzy
+msgid "error delivering notification"
+msgstr "chyba pri doručovaní oznámenia"
+
+msgid "Auto-detect"
+msgstr "Automatické zistenie"
+
+#, fuzzy
+msgid "Paired WMS/WFS/WCS"
+msgstr "Spárované WMS / WFS / WCS"
+
+#, fuzzy
+msgid "Web Map Service"
+msgstr "Webová mapová služba"
+
+#, fuzzy
+msgid "Catalogue Service"
+msgstr "Katalógová služba"
+
+#, fuzzy
+msgid "ArcGIS REST MapServer"
+msgstr "ArcGIS REST MapServer"
+
+#, fuzzy
+msgid "ArcGIS REST ImageServer"
+msgstr "ArcGIS REST ImageServer"
+
+#, fuzzy
+msgid "OpenGeoPortal"
+msgstr "OpenGeoPortal"
+
+#, fuzzy
+msgid "Harvard Geospatial Library"
+msgstr "Harvardská geopriestorová knižnica"
+
+#, fuzzy
+msgid "GeoNode (Web Map Service)"
+msgstr "GeoNode (webová mapová služba)"
+
+#, fuzzy
+msgid "GeoNode (Catalogue Service)"
+msgstr "GeoNode (katalógová služba)"
+
+#, fuzzy
+msgid "Service URL"
+msgstr "URL služby"
+
+msgid "Service Type"
+msgstr "Typ služby"
+
+#, fuzzy, python-format
+msgid "Service %(url)s is already registered"
+msgstr "Služba% (url) s je už zaregistrovaná"
+
+#, fuzzy, python-format
+msgid "Could not connect to the service at %(url)s"
+msgstr "Nepodarilo sa pripojiť k službe na adrese% (url) s"
+
+#, fuzzy, python-format
+msgid "Could not find importable resources for the service at %(url)s"
+msgstr ""
+"Na adrese% (url) s sa nepodarilo nájsť importovateľné zdroje pre službu"
+
+#, fuzzy, python-format
+msgid "Found service of type %(found_type)s instead of %(service_type)s"
+msgstr "Nájdená služba typu% (found_type) s namiesto% (service_type) s"
+
+msgid "Local"
+msgstr "Lokálne"
+
+#, fuzzy
+msgid "Cascaded"
+msgstr "Kaskádovito"
+
+#, fuzzy
+msgid "Harvested"
+msgstr "Zozbierané"
+
+#, fuzzy
+msgid "Indexed"
+msgstr "Indexované"
+
+msgid "Live"
+msgstr "Naživo"
+
+#, fuzzy
+msgid "Resource is queued"
+msgstr "Zdroj je v poradí"
+
+#, fuzzy
+msgid "Remote service unavailable"
+msgstr "Vzdialená služba nie je k dispozícii"
+
+#, fuzzy
+msgid "Service unavailable"
+msgstr "Služba nie je k dispozícií"
+
+#, fuzzy
+msgid "Could not contact"
+msgstr "Nepodarilo sa kontaktovať"
+
+msgid "Contact"
+msgstr "Kontakt"
+
+#, fuzzy
+msgid "Service Resources"
+msgstr "Zdroje služieb"
+
+#, fuzzy
+msgid "No resources have been imported yet."
+msgstr "Zatiaľ neboli importované žiadne zdroje."
+
+#, fuzzy
+msgid "Retry job"
+msgstr "Skúste to znova"
+
+msgid "previous"
+msgstr "predchádzajúca"
+
+msgid "next"
+msgstr "ďalšia"
+
+#, fuzzy
+msgid "Connecting to service..."
+msgstr "Pripája sa k službe ..."
+
+#, fuzzy
+msgid "Edit Service Metadata"
+msgstr "Upravte metadáta služby"
+
+#, fuzzy
+msgid "Import Service Resources"
+msgstr "Importujte zdroje služieb"
+
+#, fuzzy
+msgid "Remove Service"
+msgstr "Odstrániť službu"
+
+msgid "Edit Service"
+msgstr "Upraviť službu"
+
+msgid "Services"
+msgstr "Služby"
+
+#, fuzzy
+msgid "Register a new Service"
+msgstr "Zaregistrujte si novú službu"
+
+#, fuzzy
+msgid "Remote Services"
+msgstr "Služby na diaľku"
+
+#, fuzzy
+msgid "No services registered"
+msgstr "Nie sú zaregistrované žiadne služby"
+
+#, fuzzy
+msgid "Register Service"
+msgstr "Registrovať službu"
+
+#, fuzzy
+msgid "Register New Service"
+msgstr "Registrovať novú službu"
+
+#, fuzzy
+msgid "Service has been created:"
+msgstr "Služba bola vytvorená:"
+
+#, fuzzy
+msgid "The following layers will be imported"
+msgstr "Importujú sa nasledujúce vrstvy"
+
+#, fuzzy
+msgid "Remove Remote Service"
+msgstr "Odstrániť vzdialenú službu"
+
+msgid "Are you sure you want to remove"
+msgstr "Ste si istý že to chcete zmazať"
+
+#, fuzzy
+msgid "Deleting service and its associated resources..."
+msgstr "Odstraňuje sa služba a súvisiace zdroje ..."
+
+#, fuzzy
+msgid "Import resources"
+msgstr "Importujte zdroje"
+
+msgid "no"
+msgstr "nie"
+
+#, fuzzy
+msgid "resources can be imported"
+msgstr "zdroje je možné importovať"
+
+#, fuzzy
+msgid "- These will be cascaded through your local geoserver instance"
+msgstr "- Budú kaskádované cez inštanciu miestneho geoserveru"
+
+msgid "Id"
+msgstr "ID"
+
+msgid "Clear Filter"
+msgstr "Vyčistiť filter"
+
+#, fuzzy
+msgid "Back to service details"
+msgstr "Späť na podrobnosti služby"
+
+#, fuzzy
+msgid "Import Resources"
+msgstr "Importujte zdroje"
+
+msgid "Previous"
+msgstr "Predchádzajúci"
+
+#, fuzzy
+msgid "All resources have already been imported"
+msgstr "Všetky zdroje už boli importované"
+
+#, fuzzy
+msgid "Harvesting resources..."
+msgstr "Získavanie zdrojov ..."
+
+#, fuzzy
+msgid "Re-scan Service for new Resources"
+msgstr "Služba opätovného skenovania pre nové zdroje"
+
+#, fuzzy
+msgid "Service registered successfully"
+msgstr "Služba bola úspešne zaregistrovaná"
+
+#, fuzzy
+msgid "The selected resources are being imported"
+msgstr "Importujú sa vybraté zdroje"
+
+#, fuzzy
+msgid "The selected resources have been imported"
+msgstr "Vybraté zdroje sa importovali"
+
+#, fuzzy
+msgid "Resource is already being processed"
+msgstr "Zdroj sa už spracováva"
+
+#, fuzzy
+msgid "Resource {} is being processed"
+msgstr "Zdroj {} sa spracováva"
+
+#, fuzzy
+msgid "Service rescanned successfully"
+msgstr "Služba bola úspešne znova skenovaná"
+
+#, fuzzy
+msgid "You are not permitted to change this service."
+msgstr "Nemáte oprávnenie meniť túto službu."
+
+#, fuzzy
+msgid "You are not permitted to remove this service."
+msgstr "Nemáte oprávnenie túto službu odstraňovať."
+
+#, fuzzy
+msgid "Service {} has been deleted"
+msgstr "Služba {} bola odstránená"
+
+msgid "created"
+msgstr "vytvorený"
+
+msgid "deleted"
+msgstr "odstránené"
+
+msgid "updated"
+msgstr "aktualizované"
+
+#, fuzzy
+msgid "added a comment"
+msgstr "pridal komentár"
+
+#, fuzzy
+msgid "updated a comment"
+msgstr "aktualizoval komentár"
+
+#, fuzzy
+msgid "uploaded"
+msgstr "nahrané"
+
+#, fuzzy
+msgid "Recent activity"
+msgstr "Posledná aktivita"
+
+msgid "to"
+msgstr "do"
+
+msgid "on"
+msgstr "na"
+
+#, fuzzy
+msgid "Not Permitted"
+msgstr "Nepovolené"
+
+#, fuzzy
+msgid ""
+"\n"
+"          You are not allowed to perform this operation.\n"
+"      "
+msgstr ""
+"\n"
+"          Túto operáciu nemáte povolené.\n"
+"      "
+
+#, fuzzy
+msgid "Please verify that you are logged in as the correct user."
+msgstr "Overte, či ste prihlásený ako správny používateľ."
+
+#, fuzzy
+msgid "Please login or register and retry."
+msgstr "Prihláste sa alebo zaregistrujte a skúste to znova."
+
+msgid "Page Not Found"
+msgstr "Stránka nebola nájdená"
+
+#, fuzzy
+msgid ""
+"\n"
+"          The page you requested does not exist.  Perhaps you are using an "
+"outdated bookmark?\n"
+"      "
+msgstr ""
+"\n"
+"          Požadovaná stránka neexistuje. Možno používate zastaranú záložku?\n"
+"      "
+
+msgid "Toggle navigation"
+msgstr "Prepnúť navigáciu"
+
+msgid "People"
+msgstr "Ľudia"
+
+msgid "Search"
+msgstr "Hľadať"
+
+msgid "Register"
+msgstr "Registrácia"
+
+msgid "Sign in"
+msgstr "Prihlásiť sa"
+
+#, fuzzy
+msgid "You are using an outdated browser that is not supported by GeoNode."
+msgstr "Používate zastaralý prehliadač, ktorý služba GeoNode nepodporuje."
+
+#, fuzzy
+msgid ""
+"Please use a <strong>modern browser</strong> like Mozilla Firefox, Google "
+"Chrome or Safari."
+msgstr ""
+"Používajte <strong>moderný prehliadač,</strong> ako je Mozilla Firefox, "
+"Google Chrome alebo Safari."
+
+#, fuzzy
+msgid "There was a problem loading this page"
+msgstr "Pri načítavaní tejto stránky sa vyskytol problém"
+
+#, fuzzy
+msgid ""
+"\n"
+"            Please contact your GeoNode administrator (they may have "
+"received an email automatically if they configured it properly).\n"
+"            If you are the site administrator, enable debug mode to see the "
+"actual error and fix it or file an issue in <a href=\"http://github.com/"
+"GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
+"            "
+msgstr ""
+"Kontaktujte svojho správcu GeoNode (možno dostal e-mail automaticky, ak ho "
+"nakonfiguroval správne). Ak ste administrátorom stránky, povoľte režim "
+"ladenia, aby ste videli aktuálnu chybu a opravili ju, alebo <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">nahlásili problém v sledovači problémov "
+"GeoNode</a>"
+
+#, fuzzy
+msgid "Add Remote Service"
+msgstr "Pridajte vzdialenú službu"
+
+#, fuzzy
+msgid "Create Map"
+msgstr "Vytvoriť mapu"
+
+msgid "Add User"
+msgstr "Pridať používateľa"
+
+msgid "Powered by"
+msgstr "Funguje pod"
+
+msgid "version"
+msgstr "verzia"
+
+#, fuzzy
+msgid "Developers"
+msgstr "Vývojári"
+
+msgid "Username"
+msgstr "Užívateľské meno"
+
+msgid "Password"
+msgstr "Heslo"
+
+msgid "Remember Me"
+msgstr "Pamätať si ma"
+
+#, fuzzy
+msgid "Menu"
+msgstr "Menu"
+
+#, fuzzy
+msgid "Recent Activity"
+msgstr "Posledná aktivita"
+
+msgid "Inbox"
+msgstr "Prijatá pošta"
+
+msgid "Help"
+msgstr "Pomoc"
+
+msgid "Log out"
+msgstr "Odhlásiť sa"
+
+msgid "Info"
+msgstr "Informácie"
+
+#, fuzzy
+msgid "Granules"
+msgstr "Granule"
+
+msgid "Share"
+msgstr "Zdieľať"
+
+msgid "Ratings"
+msgstr "Hodnotenia"
+
+msgid "Exif"
+msgstr "Exif"
+
+#, fuzzy
+msgid "Set permissions on selected resources"
+msgstr "Nastavte povolenia pre vybrané zdroje"
+
+#, fuzzy
+msgid "Apply Changes"
+msgstr "Aplikovať zmeny"
+
+msgid "total"
+msgstr "spolu"
+
+msgid "Add Comment"
+msgstr "Pridať komentár"
+
+#, fuzzy
+msgid "Log in to add a comment"
+msgstr "Ak chcete pridať komentár, prihláste sa"
+
+msgid "By"
+msgstr "Od"
+
+msgid "Submit Comment"
+msgstr "Odoslať komentár"
+
+#, fuzzy
+msgid "Who can view it?"
+msgstr "Kto si to môže pozrieť?"
+
+msgid "Anyone"
+msgstr "Niekto"
+
+#, fuzzy
+msgid "The following users:"
+msgstr "Nasledujúci používatelia:"
+
+#, fuzzy
+msgid "The following groups:"
+msgstr "Nasledujúce skupiny:"
+
+#, fuzzy
+msgid "Who can download it?"
+msgstr "Kto si ho môže stiahnuť?"
+
+#, fuzzy
+msgid "Who can change metadata for it?"
+msgstr "Kto za to môže zmeniť metadáta?"
+
+#, fuzzy
+msgid "Who can edit data for this layer?"
+msgstr "Kto môže upravovať údaje pre túto vrstvu?"
+
+#, fuzzy
+msgid "Who can edit styles for this layer?"
+msgstr "Kto môže upravovať štýly pre túto vrstvu?"
+
+#, fuzzy
+msgid ""
+"Who can manage it? (update, delete, change permissions, publish/unpublish it)"
+msgstr ""
+"Kto to môže spravovať? (aktualizácia, odstránenie, zmena povolení, "
+"zverejnenie / zrušenie zverejnenia)"
+
+#, fuzzy
+msgid "Set permissions for this resource"
+msgstr "Nastavte povolenia pre tento zdroj"
+
+#, fuzzy
+msgid "People and Groups"
+msgstr "Ľudia a skupiny"
+
+#, fuzzy
+msgid "Geo Limits"
+msgstr "Geo limity"
+
+msgid "Users"
+msgstr "Užívatelia"
+
+#, fuzzy
+msgid "Show Geo Limits"
+msgstr "Zobraziť geografické limity"
+
+#, fuzzy
+msgid "Upload Geo Limits"
+msgstr "Nahrajte geografické limity"
+
+#, fuzzy
+msgid "Save Geo Limits"
+msgstr "Ušetrite geografické limity"
+
+#, fuzzy
+msgid "Delete Geo Limits"
+msgstr "Odstrániť geografické limity"
+
+#, fuzzy
+msgid "Message box"
+msgstr "Schránka správ"
+
+msgid "OK"
+msgstr "OK"
+
+#, fuzzy
+msgid "Mandatory files : SHP , DBF"
+msgstr "Povinné súbory: SHP, DBF"
+
+#, fuzzy
+msgid ""
+"Upload a ZIP file containing an ESRI Shapefile. If the ZIP provides also a ."
+"prj file, you don't have to specify the EPSG SRID"
+msgstr ""
+"Nahrajte súbor ZIP obsahujúci súbor tvarov ESRI. Ak ZIP poskytuje aj súbor ."
+"prj, nemusíte zadávať EPSG SRID"
+
+msgid "Choose"
+msgstr "Vybrať"
+
+msgid "Choose a file..."
+msgstr "Vyberte súbor..."
+
+msgid "Reset"
+msgstr "Resetovať"
+
+#, fuzzy
+msgid "Only the SRID number without the 'EPSG:' prefix!"
+msgstr "Iba číslo SRID bez predpony „EPSG:“!"
+
+#, fuzzy
+msgid "Default : 4326"
+msgstr "Predvolené: 4326"
+
+#, fuzzy
+msgid "Set your desired encoding UTF-8, Big5, Big5-HKSCS ..."
+msgstr "Nastavte požadované kódovanie UTF-8, Big5, Big5-HKSCS ..."
+
+#, fuzzy
+msgid "Load SHP-ZIP"
+msgstr "Vložte SHP-ZIP"
+
+#, fuzzy
+msgid ""
+"<p>This will remove the Geo Limits currently drawn on the map.</p><p>In "
+"order to store the Geo Limits you will need to <strong>save</strong> them "
+"anyway.</p><p>Do you want to proceed?</p>"
+msgstr ""
+"<p>Týmto odstránite geografické limity, ktoré sú momentálne nakreslené na "
+"mape.</p><p> Aby ste mohli uložiť geografické limity, musíte ich aj tak "
+"<strong>uložiť.</strong></p><p> Chcete pokračovať?</p>"
+
+#, fuzzy
+msgid ""
+"<p>This will override the current stored Geo Limits on the DB.</p><p>To "
+"apply them you will need to click on <strong>Apply Changes</strong> button "
+"anyway.</p><p><strong>WARNING:</strong> This operation cannot be reverted!</"
+"p><p>Do you want to proceed?</p>"
+msgstr ""
+"<p>Toto prepíše aktuálne uložené geografické limity v databáze.</p><p> Ak "
+"ich chcete použiť, musíte aj tak kliknúť na tlačidlo <strong>Použiť zmeny</"
+"strong> .</p><p> <strong>UPOZORNENIE:</strong> Túto operáciu nie je možné "
+"vrátiť späť!</p><p> Chcete pokračovať?</p>"
+
+#, fuzzy
+msgid "Save Geo Limit"
+msgstr "Uložiť geografický limit"
+
+#, fuzzy
+msgid ""
+"<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you "
+"will need to click on <strong>Apply Changes</strong> button.</p>"
+msgstr ""
+"<p>Geometria bola <strong>úspešne</strong> uložená!</p><p> Ak ich chcete "
+"použiť, musíte kliknúť na tlačidlo <strong>Použiť zmeny</strong> .</p>"
+
+#, fuzzy
+msgid "<p><strong>Error</strong> while trying to save the Geometry!</p>"
+msgstr "<p><strong>Chyba</strong> pri pokuse o uloženie Geometry!</p>"
+
+#, fuzzy
+msgid "Load Geo Limits"
+msgstr "Načítať geografické limity"
+
+#, fuzzy
+msgid "Load Geo Limit"
+msgstr "Načítať geografický limit"
+
+#, fuzzy
+msgid "<p><strong>No Geometry</strong> found!</p>"
+msgstr "<p><strong>Nenašla sa žiadna geometria</strong> !</p>"
+
+#, fuzzy
+msgid ""
+"<p>This will <strong>permanently</strong> remove the Geo Limits from the DB."
+"</p><p>To apply them you will need to click on <strong>Apply Changes</"
+"strong> button.</p><p>Do you want to proceed?</p>"
+msgstr ""
+"<p>Týmto <strong>natrvalo</strong> odstránite geografické limity z databázy."
+"</p><p> Ak ich chcete použiť, musíte kliknúť na tlačidlo <strong>Použiť "
+"zmeny</strong> .</p><p> Chcete pokračovať?</p>"
+
+#, fuzzy
+msgid "Delete Geo Limit"
+msgstr "Odstrániť geografický limit"
+
+#, fuzzy
+msgid "<p><strong>Geo Limitsy</strong> successfully deleted!</p>"
+msgstr "<p><strong>Geo Limitsy bol</strong> úspešne odstránený!</p>"
+
+#, fuzzy
+msgid ""
+"<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>"
+msgstr ""
+"<p><strong>Pri</strong> pokuse o odstránenie geografických limitov sa "
+"vyskytla chyba:</p>"
+
+#, fuzzy
+msgid "Choose users..."
+msgstr "Vyberte používateľov ..."
+
+#, fuzzy
+msgid "Choose groups..."
+msgstr "Vyberte skupiny ..."
+
+#, fuzzy
+msgid "Placeholder for status-message"
+msgstr "Zástupný symbol pre správu o stave"
+
+#, fuzzy
+msgid "Placeholder for status-message-body"
+msgstr "Zástupný symbol pre status-message-body"
+
+#, fuzzy
+msgid "About GeoNode"
+msgstr "Informácie o GeoNode"
+
+#, fuzzy
+msgid ""
+"GeoNode is a geospatial content management system, a platform for the "
+"management and publication of geospatial data. It brings together mature and "
+"stable open-source software projects under a consistent and easy-to-use "
+"interface allowing non-specialized users to share data and create "
+"interactive maps."
+msgstr ""
+"GeoNode je systém na správu geopriestorového obsahu, platforma pre správu a "
+"publikáciu geopriestorových údajov. Združuje vyspelé a stabilné softvérové "
+"projekty typu open-source pod konzistentným a ľahko použiteľným rozhraním, "
+"ktoré umožňuje nešpecializovaným používateľom zdieľať údaje a vytvárať "
+"interaktívne mapy."
+
+#, fuzzy
+msgid ""
+"Data management tools built into GeoNode allow for integrated creation of "
+"data, metadata, and map visualizations. Each dataset in the system can be "
+"shared publicly or restricted to allow access to only specific users. Social "
+"features like user profiles and commenting and rating systems allow for the "
+"development of communities around each platform to facilitate the use, "
+"management, and quality control of the data the GeoNode instance contains."
+msgstr ""
+"Nástroje na správu údajov zabudované do GeoNode umožňujú integrované "
+"vytváranie údajov, metadát a vizualizácií máp. Každý súbor údajov v systéme "
+"je možné zdieľať verejne alebo obmedziť, aby sa umožnil prístup iba "
+"konkrétnym používateľom. Sociálne funkcie, ako sú profily používateľov a "
+"systémy komentovania a hodnotenia, umožňujú rozvoj komunít okolo každej "
+"platformy, aby sa uľahčilo používanie, správa a kontrola kvality údajov, "
+"ktoré obsahuje inštancia GeoNode."
+
+#, fuzzy
+msgid ""
+"It is also designed to be a flexible platform that software developers can "
+"extend, modify or integrate against to meet requirements in their own "
+"applications."
+msgstr ""
+"Je tiež navrhnutý tak, aby predstavoval flexibilnú platformu, ktorú môžu "
+"vývojári softvéru rozširovať, upravovať alebo integrovať podľa svojich "
+"vlastných aplikácií."
+
+#, fuzzy
+msgid "Account Inactive"
+msgstr "Konto neaktívne"
+
+#, fuzzy
+msgid "This account is inactive."
+msgstr "Tento účet je neaktívny."
+
+#, fuzzy
+msgid "Account Pending Approval"
+msgstr "Účet čaká na schválenie"
+
+#, fuzzy, python-format
+msgid ""
+"We have sent the administrators a notice to approve your account associated "
+"with <b>%(email)s</b>. If the account is approved, you will receive a "
+"confirmation notice."
+msgstr ""
+"Poslali sme správcom oznámenie o schválení vášho účtu spojeného s <b>% "
+"(email) s</b> . Ak bude účet schválený, dostanete potvrdenie."
+
+msgid "Account"
+msgstr "Účet"
+
+#, fuzzy
+msgid "E-mail Addresses"
+msgstr "Emailové adresy"
+
+#, fuzzy
+msgid "The following e-mail addresses are associated with your account:"
+msgstr "K vášmu účtu sú priradené nasledujúce e-mailové adresy:"
+
+msgid "Verified"
+msgstr "Overený"
+
+#, fuzzy
+msgid "Unverified"
+msgstr "Neoverené"
+
+msgid "Primary"
+msgstr "Primárne"
+
+#, fuzzy
+msgid "Make Primary"
+msgstr "Nastaviť ako primárne"
+
+#, fuzzy
+msgid "Re-send Verification"
+msgstr "Znova odoslať overenie"
+
+msgid "Warning:"
+msgstr "Varovanie:"
+
+#, fuzzy
+msgid ""
+"You currently do not have any e-mail address set up. You should really add "
+"an e-mail address so you can receive notifications, reset your password, etc."
+msgstr ""
+"Momentálne nemáte nastavenú žiadnu e-mailovú adresu. Mali by ste skutočne "
+"pridať e-mailovú adresu, aby ste mohli dostávať oznámenia, resetovať heslo "
+"atď."
+
+#, fuzzy
+msgid "Add E-mail Address"
+msgstr "Pridajte e-mailovú adresu"
+
+#, fuzzy
+msgid "Add E-mail"
+msgstr "Pridajte e-mail"
+
+#, fuzzy
+msgid "Do you really want to remove the selected e-mail address?"
+msgstr "Naozaj chcete odstrániť vybratú e-mailovú adresu?"
+
+#, fuzzy, python-format
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because user %(user_display)s has given yours "
+"as an e-mail address to connect their account.\n"
+"\n"
+"To confirm this is correct, go to %(activate_url)s\n"
+msgstr ""
+"Dobrý deň od% (site_name) s!\n"
+"\n"
+"Tento e-mail ste dostali, pretože používateľ% (user_display) s uviedol váš "
+"ako e-mailovú adresu na pripojenie svojho účtu.\n"
+"\n"
+"Ak chcete potvrdiť, že je to správne, prejdite na adresu% (activated_url) s\n"
+
+#, fuzzy, python-format
+msgid ""
+"Thank you from %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+"Ďakujeme od% (site_name) s!\n"
+"% (site_domain) s"
+
+#, fuzzy, python-format
+msgid "Please confirm email address for %(site_name)s"
+msgstr "Potvrďte e-mailovú adresu pre% (site_name) s"
+
+#, fuzzy, python-format
+msgid "You have been invited to sign up at %(site_name)s."
+msgstr "Boli ste pozvaní zaregistrovať sa na webe% (site_name) s."
+
+#, fuzzy, python-format
+msgid "Create an account on %(site_name)s"
+msgstr "Vytvorte si účet na% (site_name) s"
+
+#, fuzzy
+msgid ""
+"This is the email notification to confirm your password has been changed on"
+msgstr "Toto je e-mailové upozornenie na potvrdenie zmeny vášho hesla dňa"
+
+#, fuzzy
+msgid "Change password email notification"
+msgstr "E-mailové upozornenie na zmenu hesla"
+
+#, fuzzy, python-format
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+"Dobrý deň od% (site_name) s!\n"
+"\n"
+"Tento e-mail ste dostali, pretože ste vy alebo niekto iný požiadal o heslo "
+"pre váš používateľský účet.\n"
+"Ak ste nepožiadali o obnovenie hesla, môžete ho bezpečne ignorovať. "
+"Kliknutím na odkaz nižšie obnovíte svoje heslo."
+
+#, fuzzy, python-format
+msgid "In case you forgot, your username is %(username)s."
+msgstr "Ak ste zabudli, vaše používateľské meno je% (používateľské meno) s."
+
+#, fuzzy, python-format
+msgid ""
+"Thank you for using %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+"Ďakujeme, že používate% (site_name) s!\n"
+"% (site_domain) s"
+
+#, fuzzy, python-format
+msgid "[%(site_name)s] Password reset"
+msgstr "[% (site_name) s] Obnovenie hesla"
+
+#, fuzzy
+msgid "Confirm E-mail Address"
+msgstr "Potvrďte e-mailovú adresu"
+
+#, fuzzy, python-format
+msgid ""
+"Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
+"address for user %(user_display)s."
+msgstr ""
+"Potvrďte, že <a href=\"mailto:%(email)s\">% (email) s</a> je e-mailová "
+"adresa pre používateľa% (user_display) s."
+
+msgid "Confirm"
+msgstr "Potvrdiť"
+
+#, fuzzy, python-format
+msgid ""
+"This e-mail confirmation link expired or is invalid. Please <a href="
+"\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr ""
+"Platnosť tohto e-mailového potvrdzovacieho odkazu vypršala alebo je "
+"neplatná. Zadajte <a href=\"%(email_url)s\">novú žiadosť o potvrdenie e-"
+"mailom</a> ."
+
+msgid "Log in"
+msgstr "Prihlásiť sa"
+
+#, fuzzy
+msgid "Log in to an existing account"
+msgstr "Prihláste sa do existujúceho účtu"
+
+#, fuzzy, python-format
+msgid ""
+"Please sign in with one\n"
+"      of your existing third party accounts. Or, <a href=\"%(signup_url)s"
+"\">sign up</a>\n"
+"      for a %(site_name)s account and sign in below:"
+msgstr ""
+"Prihláste sa pomocou niektorého zo svojich existujúcich účtov tretích strán. "
+"Alebo sa <a href=\"%(signup_url)s\">zaregistrujte do</a> účtu% (site_name) s "
+"a prihláste sa nižšie:"
+
+msgid "or"
+msgstr "alebo"
+
+#, fuzzy, python-format
+msgid ""
+"If you have not created an account yet, then please\n"
+"      <a href=\"%(signup_url)s\">sign up</a> first."
+msgstr ""
+"Ak ste si ešte nevytvorili účet, najskôr sa <a href=\"%(signup_url)s"
+"\">zaregistrujte</a> ."
+
+msgid "Forgot Password?"
+msgstr " Zabudli ste heslo?"
+
+msgid "Sign In"
+msgstr "Prihlásiť sa"
+
+#, fuzzy
+msgid "Are you sure you want to log out?"
+msgstr "Naozaj sa chcete odhlásiť?"
+
+msgid "Password change"
+msgstr "Zmena hesla"
+
+msgid "Password Change"
+msgstr "Zmena hesla"
+
+#, fuzzy
+msgid "Change your password here"
+msgstr "Tu si môžete zmeniť heslo"
+
+msgid "Change my password"
+msgstr "Zmeniť heslo"
+
+#, fuzzy
+msgid "Password reset"
+msgstr "Resetovanie hesla"
+
+msgid "Password Reset"
+msgstr "Reset hesla"
+
+#, fuzzy
+msgid "Forgotten your password?"
+msgstr "Zabudnuté heslo?"
+
+#, fuzzy
+msgid ""
+"Enter your email address below, and we'll send you an email allowing you to "
+"reset it."
+msgstr ""
+"Nižšie zadajte svoju e-mailovú adresu a my vám pošleme e-mail, ktorý vám "
+"umožní resetovať ju."
+
+msgid "Reset my password"
+msgstr "Obnoviť moje heslo"
+
+#, fuzzy, python-format
+msgid ""
+"If you have any trouble resetting your password, contact us at <a href="
+"\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">%(THEME_ACCOUNT_CONTACT_EMAIL)s</"
+"a>."
+msgstr ""
+"Ak máte problémy s obnovením hesla, kontaktujte nás na adrese <a href="
+"\"mailto:%(THEME_ACCOUNT_CONTACT_EMAIL)s\">% (THEME_ACCOUNT_CONTACT_EMAIL) "
+"s</a> ."
+
+#, fuzzy
+msgid ""
+"We have sent you an e-mail. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr ""
+"Poslali sme vám e-mail. Kontaktujte nás, prosím, ak to nedostanete do "
+"niekoľkých minút."
+
+msgid "Change Password"
+msgstr "Zmeniť heslo"
+
+#, fuzzy
+msgid "Bad Token"
+msgstr "Zlý token"
+
+#, fuzzy, python-format
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
+"a>."
+msgstr ""
+"Odkaz na obnovenie hesla bol neplatný, pravdepodobne preto, že už bol "
+"použitý. Vyžiadajte si <a href=\"%(passwd_reset_url)s\">nové nastavenie "
+"hesla</a> ."
+
+#, fuzzy
+msgid "change password"
+msgstr "zmeniť heslo"
+
+#, fuzzy
+msgid "Your password is now changed."
+msgstr "Vaše heslo je teraz zmenené."
+
+#, fuzzy
+msgid "Set Password"
+msgstr "Nastaviť heslo"
+
+#, fuzzy
+msgid "Password Set"
+msgstr "Heslo nastavené"
+
+#, fuzzy
+msgid "Set your password here"
+msgstr "Tu zadajte svoje heslo"
+
+#, fuzzy
+msgid "Set password"
+msgstr "Nastaviť heslo"
+
+msgid "Sign up"
+msgstr "Registrácia"
+
+#, fuzzy
+msgid ""
+"Sign up with one\n"
+"              of your existing third party accounts"
+msgstr ""
+"Zaregistrujte sa pomocou jedného\n"
+"              vašich existujúcich účtov tretích strán"
+
+#, fuzzy
+msgid "Create a new local account"
+msgstr "Vytvorte nový miestny účet"
+
+#, fuzzy
+msgid "Sign Up Closed"
+msgstr "Zaregistrujte sa zatvorené"
+
+#, fuzzy
+msgid "We are sorry, but the sign up is currently closed."
+msgstr "Je nám ľúto, ale registrácia je momentálne zatvorená."
+
+msgid "Note"
+msgstr "Poznámka"
+
+#, fuzzy, python-format
+msgid "you are already logged in as %(user_display)s."
+msgstr "už ste prihlásení ako% (user_display) s."
+
+#, fuzzy
+msgid "Verify your email address"
+msgstr "Overte svoju e-mailovú adresu"
+
+#, fuzzy
+msgid ""
+"We have sent an email to you for verification. Follow the\n"
+"    link provided to finalize the signup process. Please contact us if you "
+"do\n"
+"    not receive it within a few minutes"
+msgstr ""
+"Poslali sme vám e-mail na overenie. Nasleduj\n"
+"    uvedený odkaz na dokončenie procesu registrácie. Ak áno, kontaktujte "
+"nás\n"
+"    nedostane do niekoľkých minút"
+
+#, fuzzy
+msgid "Verify Your E-mail Address"
+msgstr "Overte svoju e-mailovú adresu"
+
+#, fuzzy
+msgid ""
+"This part of the site requires us to verify that\n"
+"you are who you claim to be. For this purpose, we require that you\n"
+"verify ownership of your e-mail address. "
+msgstr ""
+"Táto časť stránky vyžaduje, aby sme to overili\n"
+"si tým, za koho sa vydávaš. Z tohto dôvodu od vás požadujeme\n"
+"overte vlastníctvo svojej e-mailovej adresy."
+
+#, fuzzy
+msgid ""
+"We have sent an e-mail to you for\n"
+"verification. Please click on the link inside this e-mail. Please\n"
+"contact us if you do not receive it within a few minutes."
+msgstr ""
+"Poslali sme vám e-mail pre adresu\n"
+"overenie. Kliknite na odkaz v tomto e-maile. Prosím\n"
+"kontaktujte nás, ak ho nedostanete do niekoľkých minút."
+
+#, fuzzy, python-format
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
+"mail address</a>."
+msgstr ""
+"<strong>Poznámka:</strong> Stále môžete <a href=\"%(email_url)s\">zmeniť "
+"svoju e-mailovú adresu</a> ."
+
+#, fuzzy
+msgid "My Activity feed"
+msgstr "Informačný kanál Moja aktivita"
+
+#, fuzzy
+msgid "Activity Feed"
+msgstr "Informačný kanál aktivít"
+
+#, fuzzy
+msgid "Are you sure you want to run the selected"
+msgstr "Naozaj chcete spustiť vybraté"
+
+#, fuzzy
+msgid "Yes, I'm sure"
+msgstr "Áno som si istý"
+
+#, fuzzy
+msgid "GeoNode site admin"
+msgstr "Správca stránky GeoNode"
+
+#, fuzzy
+msgid "GeoNode administration"
+msgstr "Správa GeoNode"
+
+#, fuzzy
+msgid "Delete Announcement?"
+msgstr "Odstrániť oznámenie?"
+
+#, fuzzy
+msgid "Are you sure you want to delete this announcement?"
+msgstr "Naozaj chcete odstrániť toto oznámenie?"
+
+msgid "Edit Announcement"
+msgstr "Upraviť oznámenie"
+
+#, fuzzy
+msgid "Create Announcement"
+msgstr "Vytvorte oznámenie"
+
+msgid "New Announcement"
+msgstr "Nové oznámenie"
+
+msgid "Level"
+msgstr "Úroveň"
+
+msgid "Announcement"
+msgstr "Oznam"
+
+#, fuzzy
+msgid "Published From"
+msgstr "Publikované od"
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"          Published from <b>%(publish_start)s</b> to <b>%(publish_end)s</"
+"b>.\n"
+"          "
+msgstr "Zverejnené od <b>% (publish_start) s</b> do <b>% (publish_end) s</b> ."
+
+#, fuzzy, python-format
+msgid "Announcements : %(announcement)s"
+msgstr "Oznamy:% (oznámenie) s"
+
+#, fuzzy
+msgid "Back to edit your profile information"
+msgstr "Späť a upravte informácie vo svojom profile"
+
+#, fuzzy
+msgid "Your current avatar: "
+msgstr "Váš aktuálny avatar:"
+
+#, fuzzy
+msgid "You haven't uploaded an avatar yet. Please upload one now."
+msgstr "Zatiaľ ste nenahrali avatar. Teraz nahrajte jednu."
+
+#, fuzzy
+msgid "Upload New Image"
+msgstr "Nahrajte nový obrázok"
+
+#, fuzzy
+msgid "Choose new Default"
+msgstr "Vyberte nové predvolené"
+
+#, fuzzy
+msgid "Delete Your Avatar"
+msgstr "Odstráňte svojho avatara"
+
+#, fuzzy
+msgid "Please select the avatars that you would like to delete."
+msgstr "Vyberte avatary, ktoré chcete odstrániť."
+
+#, fuzzy, python-format
+msgid ""
+"You have no avatars to delete. Please <a href=\"%(avatar_change_url)s"
+"\">upload one</a> now."
+msgstr ""
+"Nemáte žiadne avatary na odstránenie. Teraz <a href=\"%(avatar_change_url)s"
+"\">nahrajte jednu.</a>"
+
+#, fuzzy
+msgid "Delete These"
+msgstr "Odstrániť tieto"
+
+#, fuzzy
+msgid "GeoNode Search"
+msgstr "Vyhľadávanie GeoNode"
+
+msgid "Contact Us"
+msgstr "Kontaktujte nás"
+
+msgid "Tel"
+msgstr "Tel"
+
+msgid "Uploading..."
+msgstr "Nahrávam..."
+
+#, fuzzy
+msgid "Upload in progress..."
+msgstr "Prebieha nahrávanie ..."
+
+#, fuzzy
+msgid "Updating Thumbnail..."
+msgstr "Aktualizuje sa miniatúra ..."
+
+#, fuzzy
+msgid "Message. Do you want to proceed?"
+msgstr "Správa. Chcete pokračovať?"
+
+#, fuzzy
+msgid "Information for Developers"
+msgstr "Informácie pre vývojárov"
+
+#, fuzzy
+msgid "Useful information for developers interested in GeoNode."
+msgstr "Užitočné informácie pre vývojárov zaujímajúcich sa o GeoNode."
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
+"on open source software. We encourage you to build new applications using "
+"the components and resources it provides. This page is a starting point for "
+"developers interesting in taking full advantage of GeoNode. It also includes "
+"links to the project's source code so anyone can build and customize their "
+"own GeoNode. </p>\n"
+"\n"
+"    <h3>GeoNode Software</h3>\n"
+"\n"
+"    <p>All the code that runs GeoNode is open source. The code is available "
+"at <a href=\"http://github.com/GeoNode/geonode\">http://github.com/GeoNode/"
+"geonode/</a>. The issue tracker for the project is at <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/geonode/"
+"issues</a>.</p>\n"
+"\n"
+"    <p>GeoNode is built using several open source projects, each with its "
+"own community. If you are interested in contributing new features to the "
+"GeoNode, we encourage you to do so by contributing to one of the projects on "
+"which it is built:</p>\n"
+"    <ul>\n"
+"      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
+"server for geospatial information</li>\n"
+"      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
+"for WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> - "
+"Pure JavaScript library powering the maps of GeoExt</li>\n"
+"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW, OpenSearch and OAI-"
+"PMH metadata catalogue server</li>\n"
+"    </ul>\n"
+"\n"
+"    <h3>What are OGC Services?</h3>\n"
+"    <p>The data in this application is served using open standards endorsed "
+"by ISO and the <a href=\"http://opengeospatial.org/\">Open Geospatial "
+"Consortium</a>; in particular, WMS (Web Map Service) is used for accessing "
+"maps, WFS (Web Feature Service) is used for accessing vector data, and WCS "
+"(Web Coverage Service) is used for accessing raster data.  WMC (Web Map "
+"Context Documents) is used for sharing maps. You can use these services in "
+"your own applications using libraries such as OpenLayers, GeoTools, and OGR "
+"(all of which are open-source software and available at zero cost). "
+"Additionally, CSW (Catalog Service for the Web) supports access to "
+"collections of descriptive information (metadata) about data and services.</"
+"p>\n"
+"\n"
+"    <h3>What is GeoWebCache?</h3>\n"
+"    <p>GeoWebCache provides mapping tiles that are compatible with a number "
+"of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the "
+"data hosted by GeoNode is also available through GeoWebCache. GeoWebCache "
+"improves on WMS by caching data and providing more responsive maps.</p>\n"
+"\n"
+"    <h3>CSW Example Code</h3>\n"
+"    <p>To interact with GeoNode's CSW you can use any CSW client (QGIS "
+"MetaSearch, GRASS, etc.).  The following example illustrates a simple "
+"invocation using the OWSLib Python package:</p>\n"
+"    <p><code>from owslib.csw import CatalogueServiceWeb</code></p>\n"
+"    <p><code>from owslib.fes import PropertyIsLike</code></p>\n"
+"    <p><code>csw = CatalogueServiceWeb('%(CATALOGUE_BASE_URL)s')</code></p>\n"
+"    <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></p>\n"
+"    <p><code>csw.getrecords2(constraints=[anytext])</code></p>\n"
+"    <p><code>print csw.results</code></p>\n"
+"    <p><code>print csw.records</code></p>\n"
+"\n"
+"    <h3>OpenLayers Example Code</h3>\n"
+"\n"
+"    <p>To include a GeoNode map layer in an OpenLayers map, first find the "
+"name for that layer. This is found in the layer's <code>name</code> field "
+"(not <code>title</code>) of the layer list. For this example, we will use "
+"the Nicaraguan political boundaries background layer, whose name is "
+"<code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers."
+"Layer.WMS:</p>\n"
+"    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
+"nicaragua_admin\" });</code></p>\n"
+"\n"
+"    <h3>Google Maps Example Code</h3>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the layer "
+"namein the URL template.</p>\n"
+"    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
+"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
+"opacity:0.5 } );</code></p>\n"
+"\n"
+"    <h3>Shapefile/GeoJSON/GML Output</h3>\n"
+"    <p>To get data from the GeoNode web services use the WFS protocol. For "
+"example, to get the full Nicaraguan admin boundaries use:</p>\n"
+"    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+"    <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+"<code>GML3</code>, or <code>csv</code> will get data in those formats. The "
+"WFS protocol also can handle more precise queries, specifying a bounding box "
+"or various spatial and non-spatial filters based on the attributes of the "
+"data.</p>\n"
+"\n"
+"    <h3>GeoTools Example Code</h3>\n"
+"    <p>Create a DataStore and extract a FeatureType from it, then run a "
+"Query. It is all documented on the wiki at <code>http://geotools.org/</code>."
+"</p>\n"
+"    "
+msgstr ""
+"<p><a href=\"http://geonode.org/\">GeoNode</a> je otvorená služba postavená "
+"na softvéri otvoreného zdroja. Odporúčame vám vytvárať nové aplikácie "
+"pomocou komponentov a zdrojov, ktoré poskytuje. Táto stránka je "
+"východiskovým bodom pre vývojárov zaujímavých pre plné využitie funkcie "
+"GeoNode. Zahŕňa tiež odkazy na zdrojový kód projektu, aby si každý mohol "
+"vytvoriť a prispôsobiť svoj vlastný GeoNode.</p><h3> Softvér GeoNode</h3><p> "
+"Celý kód, na ktorom je spustený GeoNode, je open source. Tento kód je k "
+"dispozícii na <a href=\"http://github.com/GeoNode/geonode\">stránke http://"
+"github.com/GeoNode/geonode/</a> . Sledovač problémov projektu je na <a href="
+"\"http://github.com/GeoNode/geonode/issues\">stránke http://github.com/"
+"GeoNode/geonode/issues</a> .</p><p> GeoNode je zostavený z niekoľkých open "
+"source projektov, z ktorých každý má svoju vlastnú komunitu. Ak máte záujem "
+"prispievať do GeoNode novými funkciami, odporúčame vám prispieť do jedného z "
+"projektov, na ktorých je postavený:</p><ul><li> <a href=\"http://geoserver."
+"org\">GeoServer</a> - server založený na štandardoch pre geopriestorové "
+"informácie</li><li> <a href=\"http://geowebcache.org\">GeoWebCache</a> - "
+"modul medzipamäte pre dlaždice WMS</li><li> <a href=\"http://openlayers.org"
+"\">OpenLayers</a> - čistá knižnica JavaScript napájajúca mapy GeoExt</"
+"li><li> <a href=\"http://pycsw.org\">pycsw</a> - server katalógov metadát "
+"CSW, OpenSearch a OAI-PMH</li></ul><h3> Čo sú OGC služby?</h3><p> Údaje v "
+"tejto aplikácii sa poskytujú pomocou otvorených štandardov schválených ISO a "
+"<a href=\"http://opengeospatial.org/\">Open Geospatial Consortium</a> ; "
+"predovšetkým sa na prístup k mapám používa WMS (Web Map Service), na prístup "
+"k vektorovým údajom sa používa WFS (Web Feature Service) a na prístup k "
+"rastrovým údajom sa používa služba WCS (Web Coverage Service). Na zdieľanie "
+"máp sa používa WMC (Web Map Context Documents). Tieto služby môžete používať "
+"vo svojich vlastných aplikáciách pomocou knižníc ako OpenLayers, GeoTools a "
+"OGR (všetky sú softvérom typu open-source a sú k dispozícii za nulové "
+"náklady). CSW (katalógová služba pre web) navyše podporuje prístup k "
+"zbierkam popisných informácií (metadát) o údajoch a službách.</p><h3> Čo je "
+"to GeoWebCache?</h3><p> GeoWebCache poskytuje mapovacie dlaždice, ktoré sú "
+"kompatibilné s mnohými mapovacími strojmi, vrátane Google Maps, Bing Maps a "
+"OpenLayers. Všetky údaje hostené na serveri GeoNode sú dostupné aj na "
+"serveri GeoWebCache. GeoWebCache vylepšuje WMS ukladaním údajov do "
+"medzipamäte a poskytovaním citlivejších máp.</p><h3> Príklad kódu CSW</"
+"h3><p> Na interakciu s CSW GeoNode môžete použiť ľubovoľného klienta CSW "
+"(QGIS MetaSearch, GRASS atď.). Nasledujúci príklad ilustruje jednoduché "
+"vyvolanie pomocou balíka OWSLib Python:</p><p> <code>from owslib.csw import "
+"CatalogueServiceWeb</code></p><p> <code>from owslib.fes import "
+"PropertyIsLike</code></p><p> <code>csw = CatalogueServiceWeb(&#39;"
+"%(CATALOGUE_BASE_URL)s&#39;)</code></p><p> <code>anytext = "
+"PropertyIsLike(&#39;csw:AnyText&#39;, &#39;birds&#39;)&#39;)</code></p><p> "
+"<code>csw.getrecords2(constraints=[anytext])</code></p><p> <code>print csw."
+"results</code></p><p> <code>print csw.records</code></p><h3> Príklad kódu "
+"OpenLayers</h3><p> Ak chcete zahrnúť vrstvu mapy GeoNode do mapy OpenLayers, "
+"najskôr vyhľadajte názov tejto vrstvy. Nachádza sa v <code>name</code> "
+"vrstvy (nie v <code>title</code> ) zoznamu vrstiev. V tomto príklade "
+"použijeme nikaragujskú vrstvu pozadí politických hraníc, ktorej meno je "
+"<code>risk:nicaragua_admin</code> . Potom vytvorte inštanciu OpenLayers."
+"Layer.WMS:</p><p> <code>var geonodeLayer = new OpenLayers.Layer.WMS(&quot;"
+"GeoNode Risk Data&quot;, &quot;http://demo.geonode.org/geoserver/wms&quot;,"
+"{ layers: &quot;risk:nicaragua_admin&quot; });</code></p><h3> Vzorový kód "
+"služby Mapy Google</h3><p> Ak chcete zahrnúť vrstvu mapy GeoNode do mapy "
+"Google, vložte názov vrstvy do šablóny adresy URL.</p><p> <code>var "
+"tilelayer = new GTileLayer(null, null, null, {tileUrlTemplate: &#39;http://"
+"demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&amp;"
+"zoom={Z}&amp;x={X}&amp;y={Y}&#39;, isPng:true, opacity:0.5 } );</code></"
+"p><h3> Výstup Shapefile / GeoJSON / GML</h3><p> Na získanie údajov z "
+"webových služieb GeoNode použite protokol WFS. Napríklad na získanie úplných "
+"nikaragujských hraníc správcov použite:</p><p> <code>http://demo.geonode.org/"
+"geoserver/wfs?request=GetFeature&amp;typeName=risk:nicaragua_admin&amp;"
+"outputformat=SHAPE-ZIP</code></p><p> Ak zmeníte výstupný formát na "
+"<code>json</code> , <code>GML2</code> , <code>GML3</code> alebo <code>csv</"
+"code> dáta sa získajú v týchto formátoch. Protokol WFS tiež dokáže spracovať "
+"presnejšie dotazy, špecifikovať ohraničujúci rámček alebo rôzne priestorové "
+"a priestorové filtre na základe atribútov údajov.</p><h3> Príklad kódu "
+"GeoTools</h3><p> Vytvorte DataStore, extrahujte z neho FeatureType a potom "
+"spustite dopyt. Všetko je zdokumentované na wiki na <code>http://geotools."
+"org/</code> .</p>"
+
+#, fuzzy
+msgid "GeoNode's Web Services"
+msgstr "Webové služby GeoNode"
+
+#, fuzzy
+msgid "GeoNode's Web Services are available from the following URLs:"
+msgstr "Webové služby GeoNode sú dostupné z nasledujúcich adries URL:"
+
+#, fuzzy
+msgid "Dynamic tiles via WMS:"
+msgstr "Dynamické dlaždice cez WMS:"
+
+#, fuzzy
+msgid "Vector data via WFS:"
+msgstr "Vektorové dáta cez WFS:"
+
+#, fuzzy
+msgid "Raster data via WCS:"
+msgstr "Rastrové dáta cez WCS:"
+
+#, fuzzy
+msgid "Metadata search via CSW:"
+msgstr "Vyhľadávanie metadát pomocou CSW:"
+
+#, fuzzy
+msgid "Metadata search via OpenSearch:"
+msgstr "Vyhľadávanie metadát cez OpenSearch:"
+
+#, fuzzy
+msgid "Metadata search via OAI-PMH:"
+msgstr "Vyhľadávanie metadát pomocou OAI-PMH:"
+
+#, fuzzy
+msgid "Cached tiles via WMTS:"
+msgstr "Cachované dlaždice pomocou WMTS:"
+
+#, fuzzy
+msgid "User Guide"
+msgstr "Užívateľská príručka"
+
+#, fuzzy
+msgid "GeoNode Help"
+msgstr "Pomocník GeoNode"
+
+#, fuzzy
+msgid ""
+"This page provides helpful information about how to use the GeoNode. You can "
+"use the sidebar links to navigate to what you want to know."
+msgstr ""
+"Táto stránka poskytuje užitočné informácie o tom, ako používať GeoNode. "
+"Pomocou odkazov na bočnom paneli môžete prejsť na to, čo chcete vedieť."
+
+#, fuzzy
+msgid ""
+"\n"
+"    <p>The GeoNode provides access to data sets and a map editing "
+"application allows users to browse existing maps and contribute their own.</"
+"p>\n"
+"\n"
+"    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
+"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"uploaded to this GeoNode.</p>\n"
+"    <p>All data can be downloaded in a variety of formats, for use in other "
+"applications.</p>\n"
+"\n"
+"    <h4 id=\"developer-access\">Developer Access</h4>\n"
+"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"developers to get started building applications against the GeoNode. It "
+"includes instructions on using the web services, links to the source code of "
+"the GeoNode, and information about the open source projects used to create "
+"it.</p>\n"
+"\n"
+"    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
+"    <p>The GeoNode allows users to create and share maps with one another.</"
+"p>\n"
+"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"GeoNode.  From here you can <strong>search for a map</strong> or "
+"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"Composer</a>.</p>\n"
+"    <h5>Google Earth Mode</h5>\n"
+"    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
+"with the Google Earth plugin. To switch to 3D mode select the Google Earth "
+"globe logo, the rightmost button on top toolbar. If you do not have the "
+"Google Earth plugin installed you will be prompted to install it.</p>\n"
+"\n"
+"    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
+"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
+"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
+"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"a base layer loaded.</p>\n"
+"    <p>To add data layers from the GeoNode click on the green plus button "
+"located below the layers tab on the left hand side of the screen. This will "
+"open a dialog listing all the layers available on the GeoNode.</p>\n"
+"    <p>To add layers to your map select them and hit the <strong>Add Layers</"
+"strong> button. When finished you may hit <strong>Done</strong> to close the "
+"dialog and go back to the map.</p>\n"
+"\n"
+"    <h5>Reordering and Removing Layers</h5>\n"
+"    <p>Change the display order of the layers listed in the data tab by "
+"simply dragging and dropping their names. The order in the map will be "
+"updated to reflect that. To turn a layer's visibility off simply uncheck it, "
+"and to remove it entirely select it and hit the red minus button.</p>\n"
+"\n"
+"    <h5>Saving your map</h5>\n"
+"    <p>Once a suitable set of layers and zoom level has been found it's time "
+"to save it so others can see it.  Click the Save button--the left most icon "
+"on the top toolbar, an image of a map with a disk--on the top menu and fill "
+"out the title and abstract of the map.</p>\n"
+"\n"
+"    <h4 id=\"exporting-a-map\">Publishing a Map</h4>\n"
+"    <p>Any map from the GeoNode can be embedded for use in another site or "
+"blog. To publish a map:</p>\n"
+"    <ol>\n"
+"      <li>Select the from the list of maps on the community or map page and "
+"then hit the 'Publish map' button.</li>\n"
+"      <li>Choose your desired height and width for the widget in the wizard."
+"</li>\n"
+"      <li>Copy the HTML snippet provided in the wizard to any HTML page or "
+"iFrame-supporting blog post.</li>\n"
+"    </ol>\n"
+"    <p>This will put an interactive widget showing you map in your web page "
+"or blog post.</p>\n"
+"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"button to publish the map. Just be sure to save the map before publishing if "
+"there are changes that you want others to see. It publishes the last saved "
+"version, not the last viewed version.</p>\n"
+"\n"
+"    <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
+"    <p>Any map available can serve as a starting point for a new map.</p>\n"
+"    <ol>\n"
+"      <li>Open the map in the Map Composer.</li>\n"
+"      <li>Add and remove layers as you like.</li>\n"
+"      <li>Pan and zoom to highlight the area of interest.</li>\n"
+"      <li><strong>IMPORTANT:</strong> Update the title, abstract, contact "
+"info and tags to reflect the new map.</li>\n"
+"      <li>Save the map.</li>\n"
+"    </ol>\n"
+"    <p>You will be able to see your new map when you search for it from the "
+"<a href=\"/maps\">Maps</a> tab.</p>\n"
+"    "
+msgstr ""
+"<p>GeoNode poskytuje prístup k súborom údajov a aplikácia na úpravu máp "
+"umožňuje používateľom prehľadávať existujúce mapy a prispievať svojimi "
+"vlastnými.</p><h4 id=\"browsing-data\"> Prechádzanie vrstiev</h4><p> Karta "
+"<a href=\"/layers\">Vrstvy</a> umožňuje prechádzať údaje nahrané do tohto "
+"GeoNode.</p><p> Všetky údaje je možné stiahnuť v rôznych formátoch na "
+"použitie v iných aplikáciách.</p><h4 id=\"developer-access\"> Prístup pre "
+"vývojárov</h4><p> Stránka <a href=\"/developer\">pre vývojárov</a> je "
+"miestom, kde môžu vývojári začať so zostavovaním aplikácií proti GeoNode. "
+"Zahŕňa pokyny na používanie webových služieb, odkazy na zdrojový kód GeoNode "
+"a informácie o projektoch otvoreného zdroja použitých na ich vytvorenie.</"
+"p><h4 id=\"browsing-maps\"> Prehliadanie máp</h4><p> GeoNode umožňuje "
+"používateľom vytvárať a zdieľať mapy navzájom.</p><p> Karta <a href=\"/maps"
+"\">Mapy</a> je bránou k prieskumu máp na GeoNode. Odtiaľto môžete "
+"<strong>vyhľadať mapu</strong> alebo <strong>vytvoriť mapu</strong> , ktorá "
+"otvorí aplikáciu <a href=\"/maps/new\">Map Composer</a> .</p><h5> Režim "
+"Google Earth</h5><p> Akákoľvek mapa zobrazená v interaktívnom editore máp je "
+"viditeľná v 3D režime s doplnkom Google Earth. Ak chcete prepnúť do režimu "
+"3D, vyberte logo zemegule Google Earth, tlačidlo úplne vpravo na hornom "
+"paneli nástrojov. Ak nemáte nainštalovaný doplnok Google Earth, zobrazí sa "
+"výzva na jeho inštaláciu.</p><h4 id=\"creating-a-map\"> Vytvorenie mapy</"
+"h4><p> Ak chcete vytvoriť novú mapu, prejdite na <a href=\"/maps\">kartu "
+"Prispievané mapy</a> a kliknite na odkaz <a href=\"/maps/new\">na vytvorenie "
+"vlastnej mapy.</a></p><p> Dostanete sa do aplikácie <a href=\"/maps/new"
+"\">Map Composer</a> s načítanou základnou vrstvou.</p><p> Ak chcete pridať "
+"dátové vrstvy z GeoNode, kliknite na zelené tlačidlo plus umiestnené pod "
+"kartou vrstiev na ľavej strane obrazovky. Otvorí sa dialógové okno so "
+"zoznamom všetkých vrstiev dostupných v GeoNode.</p><p> Ak chcete na mapu "
+"pridať vrstvy, vyberte ich a stlačte tlačidlo <strong>Pridať vrstvy</"
+"strong> . Po dokončení môžete stlačiť <strong>Hotovo,</strong> aby ste "
+"zatvorili dialógové okno a vrátili sa späť na mapu.</p><h5> Zmena poradia a "
+"odstránenie vrstiev</h5><p> Poradie zobrazenia vrstiev uvedených na karte "
+"údajov môžete zmeniť jednoduchým presunutím ich názvov. Poradie na mape sa "
+"aktualizuje tak, aby to odrážalo. Ak chcete viditeľnosť vrstvy vypnúť, "
+"jednoducho ju zrušte začiarknutím. Ak ju chcete úplne odstrániť, vyberte ju "
+"a stlačte červené tlačidlo mínus.</p><h5> Ukladá sa vaša mapa</h5><p> Keď sa "
+"nájde vhodná sada vrstiev a úroveň priblíženia, je čas ju uložiť, aby ju "
+"ostatní videli. Kliknite na tlačidlo Uložiť - ikona úplne vľavo na hornom "
+"paneli nástrojov, obrázok mapy s diskom - v hornej ponuke a vyplňte názov a "
+"abstrakt mapy.</p><h4 id=\"exporting-a-map\"> Zverejnenie mapy</h4><p> "
+"Akákoľvek mapa z GeoNode môže byť vložená na použitie na inom webe alebo "
+"blogu. Publikovanie mapy:</p><ol><li> Vyberte zo zoznamu máp na komunitnej "
+"alebo mapovej stránke a potom stlačte tlačidlo „Zverejniť mapu“.</li><li> V "
+"sprievodcovi vyberte požadovanú výšku a šírku pre miniaplikáciu.</li><li> "
+"Skopírujte útržok HTML uvedený v sprievodcovi na ľubovoľnú stránku HTML "
+"alebo blogový príspevok podporujúci iFrame.</li></ol><p> Takto vložíte na "
+"svoju webovú stránku alebo do blogového príspevku interaktívny widget "
+"zobrazujúci mapu.</p><p> Upozorňujeme, že program <a href=\"/maps/new\">Map "
+"Composer</a> má tiež tlačidlo na zverejnenie mapy. Nezabudnite pred "
+"zverejnením mapu uložiť, ak existujú zmeny, ktoré chcete vidieť. Zverejňuje "
+"poslednú uloženú verziu, nie poslednú zobrazenú verziu.</p><h4 id=\"remixing-"
+"a-map\"> Remixovanie mapy</h4><p> Akákoľvek dostupná mapa môže slúžiť ako "
+"východiskový bod pre novú mapu.</p><ol><li> Otvorte mapu v aplikácii Map "
+"Composer.</li><li> Podľa potreby pridávajte a odstraňujte vrstvy.</li><li> "
+"Posunutím a zväčšením zvýraznite oblasť záujmu.</li><li> <strong>DÔLEŽITÉ:</"
+"strong> Aktualizujte názov, abstrakt, kontaktné informácie a značky tak, aby "
+"odrážali novú mapu.</li><li> Uložiť mapu.</li></ol><p> Keď budete hľadať "
+"svoju novú mapu na karte <a href=\"/maps\">Mapy, uvidíte ju.</a></p>"
+
+msgid "Sections"
+msgstr "Sekcie"
+
+#, fuzzy
+msgid "Browsing Layers"
+msgstr "Prechádzanie vrstiev"
+
+#, fuzzy
+msgid "Developer Access"
+msgstr "Prístup pre vývojárov"
+
+#, fuzzy
+msgid "Browsing Maps"
+msgstr "Prehliadanie máp"
+
+#, fuzzy
+msgid "Creating a Map"
+msgstr "Vytvorenie mapy"
+
+#, fuzzy
+msgid "Exporting a Map"
+msgstr "Exportovanie mapy"
+
+#, fuzzy
+msgid "Remixing a Map"
+msgstr "Remixovanie mapy"
+
+msgid "Welcome!"
+msgstr "Vitajte!"
+
+#, fuzzy
+msgid "Get Started &raquo;"
+msgstr "Začať \""
+
+#, fuzzy
+msgid "Search for Data."
+msgstr "Vyhľadajte údaje."
+
+msgid "Advanced Search"
+msgstr "Pokročilé vyhľadávanie"
+
+#, fuzzy
+msgid ""
+"Click to search for geospatial data published by other users, organizations "
+"and public sources. Download data in standard formats."
+msgstr ""
+"Kliknutím vyhľadáte geopriestorové údaje zverejnené inými používateľmi, "
+"organizáciami a verejnými zdrojmi. Stiahnite si údaje v štandardných "
+"formátoch."
+
+#, fuzzy
+msgid "Add layers"
+msgstr "Pridajte vrstvy"
+
+#, fuzzy
+msgid "Explore layers"
+msgstr "Preskúmajte vrstvy"
+
+#, fuzzy
+msgid ""
+"Data is available for browsing, aggregating and styling to generate maps "
+"which can be saved, downloaded, shared publicly or restricted to specify "
+"users only."
+msgstr ""
+"Údaje sú k dispozícii na prehliadanie, agregáciu a vytváranie štýlov na "
+"generovanie máp, ktoré je možné ukladať, sťahovať, zdieľať verejne alebo "
+"obmedziť iba na konkrétnych používateľov."
+
+#, fuzzy
+msgid "Create maps"
+msgstr "Vytváranie máp"
+
+#, fuzzy
+msgid "Explore maps"
+msgstr "Preskúmajte mapy"
+
+#, fuzzy
+msgid ""
+"As for the layers and maps GeoNode allows to publish tabular and text data, "
+"manage theirs metadata and associated documents."
+msgstr ""
+"Pokiaľ ide o vrstvy a mapy, GeoNode umožňuje publikovať tabuľkové a textové "
+"údaje, spravovať ich metadáta a súvisiace dokumenty."
+
+#, fuzzy
+msgid "Add documents"
+msgstr "Pridajte dokumenty"
+
+#, fuzzy
+msgid "Explore documents"
+msgstr "Preskúmajte dokumenty"
+
+#, fuzzy
+msgid ""
+"Geonode allows registered users to easily upload geospatial data and various "
+"documents in several formats."
+msgstr ""
+"Geonode umožňuje registrovaným používateľom ľahko nahrávať geopriestorové "
+"údaje a rôzne dokumenty v niekoľkých formátoch."
+
+#, fuzzy
+msgid "See users"
+msgstr "Zobraziť používateľov"
+
+#, fuzzy
+msgid "Featured Datasets"
+msgstr "Odporúčané súbory údajov"
+
+msgid "Accept"
+msgstr "Súhlasím"
+
+msgid "Reject"
+msgstr "Zamietnuť"
+
+msgid "Leave"
+msgstr "Opustiť"
+
+#, fuzzy
+msgid "Dear Sir/Madam,"
+msgstr "Vážený pán / pani,"
+
+#, fuzzy, python-format
+msgid "is inviting you to join (%(site_name)s)."
+msgstr "vás pozýva na pripojenie (% (site_name) s)."
+
+#, fuzzy, python-format
+msgid ""
+"To do so, please register at <a href=\"%(invite_url)s\">%(site_name)s "
+"Registration</a>."
+msgstr ""
+"Ak to chcete urobiť, zaregistrujte sa na stránke <a href=\"%(invite_url)s\">"
+"% (site_name) s Registration</a> ."
+
+#, fuzzy
+msgid ""
+"Once you receive the confirmation that your account is activated, you can "
+"notify"
+msgstr ""
+"Po prijatí potvrdenia, že je váš účet aktivovaný, môžete o tom informovať"
+
+#, fuzzy
+msgid "that you wish to join her/his group(s) through"
+msgstr "cez ktorú sa chcete pripojiť k jej / ich skupinám"
+
+#, fuzzy
+msgid "this link"
+msgstr "tento odkaz"
+
+#, fuzzy, python-format
+msgid ""
+"<strong>%(inviter_name)s</strong> is a member of the following group(s):"
+msgstr "<strong>% (inviter_name) s</strong> je členom nasledujúcich skupín:"
+
+#, fuzzy
+msgid "We look forward to seeing you on the platform,"
+msgstr "Tešíme sa na stretnutie s vami na platforme,"
+
+#, fuzzy
+msgid "The GeoNode team."
+msgstr "Tím GeoNode."
+
+#, fuzzy
+msgid "is inviting you to join"
+msgstr "vás pozýva na pripojenie"
+
+#, fuzzy
+msgid "To do so, please register at"
+msgstr "Zaregistrujte sa na adrese"
+
+#, fuzzy
+msgid "that you wish to join her/his group(s) through this link"
+msgstr ""
+"že sa chcete pripojiť k jej / ich skupinám prostredníctvom tohto odkazu"
+
+#, fuzzy
+msgid "is a member of the following group(s)"
+msgstr "je členom nasledujúcich skupín"
+
+#, fuzzy
+msgid "Updating Metadata..."
+msgstr "Aktualizujú sa metadáta ..."
+
+msgid "ERROR"
+msgstr "CHYBA"
+
+#, fuzzy
+msgid "Topic Category is mandatory and cannot be empty!"
+msgstr "Kategória témy je povinná a nemôže byť prázdna!"
+
+#, fuzzy
+msgid "Group is mandatory and cannot be empty!"
+msgstr "Skupina je povinná a nemôže byť prázdna!"
+
+#, fuzzy
+msgid "Return to Document"
+msgstr "Späť na dokument"
+
+#, fuzzy
+msgid "Return to Map"
+msgstr "Späť na mapu"
+
+#, fuzzy
+msgid "Identification"
+msgstr "Identifikácia"
+
+msgid "Yes"
+msgstr "Áno"
+
+msgid "Published"
+msgstr "Zverejnené"
+
+msgid "email"
+msgstr "e-mail"
+
+msgid "Information"
+msgstr "Informácie"
+
+#, fuzzy
+msgid "Identification Image"
+msgstr "Identifikačný obrázok"
+
+#, fuzzy
+msgid "Spatial Extent"
+msgstr "Priestorový rozsah"
+
+#, fuzzy
+msgid "Projection System"
+msgstr "Projekčný systém"
+
+#, fuzzy
+msgid "Extension x0"
+msgstr "Prípona x0"
+
+#, fuzzy
+msgid "Extension x1"
+msgstr "Predĺženie x1"
+
+#, fuzzy
+msgid "Extension y0"
+msgstr "Predĺženie y0"
+
+#, fuzzy
+msgid "Extension y1"
+msgstr "Predĺženie y1"
+
+msgid "Features"
+msgstr "Vlastnosti"
+
+#, fuzzy
+msgid "Contact Points"
+msgstr "Kontaktné miesta"
+
+msgid "References"
+msgstr "Odkazy"
+
+#, fuzzy
+msgid "Link Online"
+msgstr "Link online"
+
+#, fuzzy
+msgid "Metadata Page"
+msgstr "Stránka metadát"
+
+#, fuzzy
+msgid "Online Link"
+msgstr "Online odkaz"
+
+#, fuzzy
+msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr "* Pole vyjadrené ako povinné v schéme metadát"
+
+#, fuzzy
+msgid "Request perission"
+msgstr "Požiadajte o povolenie"
+
+#, fuzzy
+msgid "Request editing for resource: "
+msgstr "Požiadať o úpravu zdroja:"
+
+#, fuzzy
+msgid "Back to resource"
+msgstr "Späť na zdroj"
+
+#, fuzzy
+msgid "Send request"
+msgstr "Poslať žiadosť"
+
+#, fuzzy
+msgid "Your account has been approved and is now active."
+msgstr "Váš účet bol schválený a teraz je aktívny."
+
+#, fuzzy
+msgid "You can use the login form at"
+msgstr "Môžete použiť prihlasovací formulár na adrese"
+
+#, fuzzy
+msgid "Welcome at"
+msgstr "Vitajte na"
+
+#, fuzzy
+msgid "Your account is now active"
+msgstr "Váš účet je teraz aktívny"
+
+#, fuzzy
+msgid "has requested access to the site."
+msgstr "Používateľ požiadal o prístup na web."
+
+#, fuzzy
+msgid ""
+"You can enable access by setting the user as active on the admin section"
+msgstr ""
+"Prístup môžete povoliť nastavením používateľa na aktívneho v sekcii správcu"
+
+#, fuzzy
+msgid "A user has requested access to the site"
+msgstr "Používateľ požiadal o prístup na web"
+
+#, fuzzy
+msgid "The following document was approved"
+msgstr "Nasledujúci dokument bol schválený"
+
+#, fuzzy
+msgid "owned by"
+msgstr "vo vlastníctve"
+
+#, fuzzy
+msgid "You can visit the document's detail page here"
+msgstr "Tu môžete navštíviť stránku s podrobnosťami o dokumente"
+
+#, fuzzy
+msgid "A document has been approved"
+msgstr "Bol schválený dokument"
+
+#, fuzzy
+msgid "A comment has been posted for the document"
+msgstr "K dokumentu bol uverejnený komentár"
+
+#, fuzzy
+msgid "by the user"
+msgstr "používateľom"
+
+#, fuzzy
+msgid "A comment has been posted for a document"
+msgstr "K dokumentu bol uverejnený komentár"
+
+#, fuzzy
+msgid "The user"
+msgstr "Používateľ"
+
+#, fuzzy
+msgid "uploaded the following document"
+msgstr "nahral nasledujúci dokument"
+
+#, fuzzy
+msgid "A document has been uploaded"
+msgstr "Bol nahraný dokument"
+
+#, fuzzy
+msgid "The following document was deleted"
+msgstr "Nasledujúci dokument bol odstránený"
+
+#, fuzzy
+msgid "A document has been deleted"
+msgstr "Dokument bol odstránený"
+
+#, fuzzy
+msgid "The following document was published"
+msgstr "Bol zverejnený nasledujúci dokument"
+
+#, fuzzy
+msgid "A document has been published"
+msgstr "Bol zverejnený dokument"
+
+msgid "rated"
+msgstr "hodnotené"
+
+#, fuzzy
+msgid "the following document"
+msgstr "nasledujúci dokument"
+
+#, fuzzy
+msgid "You can visit the layer's detail page here"
+msgstr "Tu môžete navštíviť stránku s podrobnosťami o vrstve"
+
+#, fuzzy
+msgid "A document has been rated"
+msgstr "Dokument bol ohodnotený"
+
+#, fuzzy
+msgid "The following document was updated"
+msgstr "Nasledujúci dokument bol aktualizovaný"
+
+#, fuzzy
+msgid "A document has been updated"
+msgstr "Dokument bol aktualizovaný"
+
+#, fuzzy
+msgid "You have received the following notice from"
+msgstr "Nasledujúce oznámenie ste dostali od"
+
+#, fuzzy
+msgid "To change how you receive notifications, please go to "
+msgstr "Ak chcete zmeniť spôsob prijímania upozornení, prejdite na stránku"
+
+#, fuzzy, python-format
+msgid "[%(current_site)s] %(message)s"
+msgstr "[% (current_site) s]% (správa) s"
+
+#, fuzzy, python-format
+msgid "%(notice)s"
+msgstr "% (oznámenie) s"
+
+#, fuzzy
+msgid "The following layer was approved"
+msgstr "Nasledujúca vrstva bola schválená"
+
+#, fuzzy
+msgid "A layer has been approved"
+msgstr "Vrstva bola schválená"
+
+#, fuzzy
+msgid "A comment has been posted for the layer"
+msgstr "Pre vrstvu bol zverejnený komentár"
+
+#, fuzzy
+msgid "A comment has been posted for a layer"
+msgstr "Pre vrstvu bol zverejnený komentár"
+
+#, fuzzy
+msgid "uploaded the following layer"
+msgstr "nahral nasledujúcu vrstvu"
+
+#, fuzzy
+msgid "A new layer has been uploaded"
+msgstr "Bola nahraná nová vrstva"
+
+#, fuzzy
+msgid "The following layer was deleted"
+msgstr "Nasledujúca vrstva bola odstránená"
+
+#, fuzzy
+msgid "A layer has been deleted"
+msgstr "Vrstva bola odstránená"
+
+#, fuzzy
+msgid "The following layer was published"
+msgstr "Bola zverejnená nasledujúca vrstva"
+
+#, fuzzy
+msgid "A layer has been published"
+msgstr "Bola zverejnená vrstva"
+
+#, fuzzy
+msgid "the following layer"
+msgstr "nasledujúcu vrstvu"
+
+#, fuzzy
+msgid "A layer has been rated"
+msgstr "Vrstva bola ohodnotená"
+
+#, fuzzy
+msgid "The following layer was updated"
+msgstr "Nasledujúca vrstva bola aktualizovaná"
+
+#, fuzzy
+msgid "A layer has been updated"
+msgstr "Vrstva bola aktualizovaná"
+
+#, fuzzy
+msgid "The following map was approved"
+msgstr "Nasledujúca mapa bola schválená"
+
+#, fuzzy
+msgid "You can visit the map's detail page here"
+msgstr "Tu môžete navštíviť stránku s podrobnosťami mapy"
+
+#, fuzzy
+msgid "A map has been approved"
+msgstr "Mapa bola schválená"
+
+#, fuzzy
+msgid "A comment has been posted for the map"
+msgstr "K mape bol zverejnený komentár"
+
+#, fuzzy
+msgid "A comment has been posted for a map"
+msgstr "Bol zverejnený komentár k mape"
+
+#, fuzzy
+msgid "created the following map"
+msgstr "vytvoril nasledujúcu mapu"
+
+#, fuzzy
+msgid "A map has been created"
+msgstr "Bola vytvorená mapa"
+
+#, fuzzy
+msgid "The following map was deleted"
+msgstr "Nasledujúca mapa bola vymazaná"
+
+#, fuzzy
+msgid "A map has been deleted"
+msgstr "Mapa bola odstránená"
+
+#, fuzzy
+msgid "The following map was published"
+msgstr "Bola zverejnená nasledujúca mapa"
+
+#, fuzzy
+msgid "A map has been published"
+msgstr "Bola zverejnená mapa"
+
+#, fuzzy
+msgid "the following map"
+msgstr "nasledujúcu mapu"
+
+#, fuzzy
+msgid "A map has been rated"
+msgstr "Mapa bola ohodnotená"
+
+#, fuzzy
+msgid "The following map was updated"
+msgstr "Nasledujúca mapa bola aktualizovaná"
+
+#, fuzzy
+msgid "A map has been updated"
+msgstr "Mapa bola aktualizovaná"
+
+msgid "Notification Settings"
+msgstr "Nastavenie upozornení"
+
+#, fuzzy, python-format
+msgid ""
+"\n"
+"        <p class=\"alert alert-warning\">\n"
+"            <span class=\"warning\">Note</span>:\n"
+"            You do not have a verified email address to which notices can be "
+"sent. <a href=\"%(email_url)s\">Add one</a> now.\n"
+"        </p>\n"
+"        "
+msgstr ""
+"<p class=\"alert alert-warning\"><span class=\"warning\">Poznámka</span> : "
+"Nemáte overenú e-mailovú adresu, na ktorú je možné odosielať oznámenia. <a "
+"href=\"%(email_url)s\">Pridajte</a> teraz jednu.</p>"
+
+#, fuzzy
+msgid "Notification Type"
+msgstr "Typ oznámenia"
+
+#, fuzzy
+msgid "requested you to download this resource"
+msgstr "vás požiadal o stiahnutie tohto zdroja"
+
+#, fuzzy
+msgid ""
+"Please go to resource page and assign the download permissions if you wish"
+msgstr ""
+"Prejdite na stránku zdrojov a ak chcete, priraďte povolenia na stiahnutie"
+
+#, fuzzy
+msgid "A resource's download has been requested"
+msgstr "Bolo požadované stiahnutie zdroja"
+
+#, fuzzy
+msgid "Privacy &#038; Cookies Policy"
+msgstr "Zásady ochrany osobných údajov a súborov cookie"
+
+#, fuzzy
+msgid "Privacy &#038; Cookies Policy."
+msgstr "Zásady ochrany osobných údajov a súborov cookie."
+
+msgid "Following"
+msgstr "Sledovanie"
+
+#, fuzzy
+msgid "This user is not following anyone"
+msgstr "Tento používateľ nikoho nesleduje"
+
+msgid "Followers"
+msgstr "Sledovateľov"
+
+#, fuzzy
+msgid "No one is following this user"
+msgstr "Tohto používateľa nikto nesleduje"
+
+#, fuzzy
+msgid "Manage Connections"
+msgstr "Spravovať pripojenia"
+
+#, fuzzy
+msgid "Blocking"
+msgstr "Blokovanie"
+
+msgid "Unfollow"
+msgstr "Zrušiť sledovanie"
+
+msgid "Follow"
+msgstr "Sledujte"
+
+msgid "Unblock"
+msgstr "Odblokovať"
+
+msgid "Block"
+msgstr "Blok"
+
+#, fuzzy
+msgid "No longer"
+msgstr "Nie dlhšie"
+
+#, fuzzy, python-format
+msgid "You're not %(status_slug)s anyone!"
+msgstr "Nie ste% (status_slug) ktokoľvek!"
+
+msgid "Success"
+msgstr "Úspech"
+
+#, fuzzy
+msgid "You are "
+msgstr "Vy ste"
+
+#, fuzzy
+msgid "no longer"
+msgstr "nie dlhšie"
+
+#, fuzzy, python-format
+msgid "%(to_user_username)s's profile"
+msgstr "Profil používateľa% (to_user_username) s"
+
+#, fuzzy
+msgid "Responsibles"
+msgstr "Zodpovednosť"
+
+#, fuzzy
+msgid "Date begins after:"
+msgstr "Dátum sa začína po:"
+
+#, fuzzy
+msgid "yyyy-mm-dd"
+msgstr "rrrr-mm-dd"
+
+#, fuzzy
+msgid "Date ends before:"
+msgstr "Dátum končí skôr:"
+
+msgid "page"
+msgstr "strana"
+
+msgid "of"
+msgstr "z"
+
+#, fuzzy
+msgid "Search by region"
+msgstr "Hľadajte podľa regiónu"
+
+msgid "Selection"
+msgstr "Výber"
+
+#, fuzzy
+msgid "No list items selected. Use the selection fields to add."
+msgstr ""
+"Nie sú vybraté žiadne položky zoznamu. Pridajte pomocou výberových polí."
+
+msgid "Filters"
+msgstr "Filtre"
+
+#, fuzzy
+msgid "Layers found"
+msgstr "Boli nájdené vrstvy"
+
+#, fuzzy
+msgid "Maps found"
+msgstr "Mapy sa našli"
+
+#, fuzzy
+msgid "Documents found"
+msgstr "Dokumenty sa našli"
+
+msgid "found"
+msgstr "nájdený"
+
+msgid "search"
+msgstr "hľadať"
+
+msgid "Search by name"
+msgstr "Vyhľadať podľa názvu"
+
+msgid "Total"
+msgstr "Celkom"
+
+msgid "Most recent"
+msgstr "Najnovšie"
+
+#, fuzzy
+msgid "Less recent"
+msgstr "Menej nedávne"
+
+#, fuzzy
+msgid "A - Z"
+msgstr "A - Z"
+
+#, fuzzy
+msgid "Z - A"
+msgstr "Z - A"
+
+msgid "Most popular"
+msgstr "Najpopulárnejšie"
+
+#, fuzzy
+msgid "Thesaurus"
+msgstr "Tezaurus"
+
+msgid "Text"
+msgstr "Text"
+
+msgid "Share This"
+msgstr "分享"
+
+#, fuzzy
+msgid "Social Network Login Failure"
+msgstr "Zlyhanie prihlásenia na sociálnu sieť"
+
+#, fuzzy
+msgid ""
+"An error occurred while attempting to login via your social network account."
+msgstr ""
+"Pri pokuse o prihlásenie pomocou vášho účtu sociálnej siete sa vyskytla "
+"chyba."
+
+msgid "Code"
+msgstr "Kód"
+
+msgid "Exception"
+msgstr "Výnimka"
+
+#, fuzzy
+msgid "Account Connections"
+msgstr "Pripojenie k účtu"
+
+#, fuzzy
+msgid ""
+"You can sign in to your account using any of the following already connected "
+"third party accounts:"
+msgstr ""
+"Do svojho účtu sa môžete prihlásiť pomocou ktoréhokoľvek z týchto už "
+"pripojených účtov tretích strán:"
+
+#, fuzzy
+msgid ""
+"You currently have no social network accounts connected to this account."
+msgstr ""
+"K tomuto účtu momentálne nemáte pripojené žiadne účty sociálnych sietí."
+
+#, fuzzy
+msgid "Add a 3rd Party Account"
+msgstr "Pridajte účet tretej strany"
+
+#, fuzzy
+msgid "Login Cancelled"
+msgstr "Prihlásenie bolo zrušené"
+
+#, fuzzy, python-format
+msgid ""
+"You decided to cancel logging in to our site using one of your existing "
+"accounts. If this was a mistake, please proceed to <a href=\"%(login_url)s"
+"\">sign in</a>."
+msgstr ""
+"Rozhodli ste sa zrušiť prihlásenie na našu stránku pomocou jedného zo "
+"svojich existujúcich účtov. Ak išlo o chybu, pokračujte v <a href="
+"\"%(login_url)s\">prihlásení</a> ."
+
+msgid "Signup"
+msgstr "Prihlásenie"
+
+msgid "Sign Up"
+msgstr "Registrácia"
+
+#, fuzzy, python-format
+msgid ""
+"You are about to use your %(provider_name)s account to login to\n"
+"%(site_name)s. As a final step, please complete the following form:"
+msgstr ""
+"Chystáte sa použiť svoj účet% (provider_name) s na prihlásenie\n"
+"% (názov_stránky) s. Ako posledný krok vyplňte nasledujúci formulár:"
+
+#, fuzzy
+msgid "Sign in with"
+msgstr "Prihlásiť sa pomocou"
+
+#, fuzzy
+msgid "Connect with"
+msgstr "Spojit sa s, nadviazat spojenie"
+
+#, fuzzy
+msgid "Sign up with"
+msgstr "Zaregistrujte sa pomocou"
+
+#, fuzzy
+msgid "Message Inbox"
+msgstr "Doručená správa"
+
+msgid "Messages"
+msgstr "Správy"
+
+#, fuzzy
+msgid "Mark selected as read"
+msgstr "Označiť ako prečítané"
+
+#, fuzzy
+msgid "Mark selected as unread"
+msgstr "Označiť ako neprečítané"
+
+#, fuzzy
+msgid "Create Message"
+msgstr "Vytvoriť správu"
+
+#, fuzzy
+msgid "To users"
+msgstr "Používateľom"
+
+#, fuzzy
+msgid "To groups"
+msgstr "Do skupín"
+
+msgid "Subject"
+msgstr "Predmet"
+
+msgid "Content"
+msgstr "Obsah"
+
+msgid "Send message"
+msgstr "Odoslať správu"
+
+#, fuzzy
+msgid "Back to Inbox"
+msgstr "Späť do doručenej pošty"
+
+msgid "Sent to"
+msgstr "Odoslané na"
+
+msgid "by"
+msgstr "od"
+
+#, fuzzy
+msgid "You have no messages"
+msgstr "Nemáte žiadne správy"
+
+msgid "Send Reply"
+msgstr "Odoslať odpoveď"
+
+#, fuzzy
+msgid "GeoNode Themes Library"
+msgstr "Knižnica motívov GeoNode"
+
+#, fuzzy
+msgid "Fill in this section with markdown"
+msgstr "Vyplňte túto časť značením"
+
+#, fuzzy
+msgid "Check this if the jumbotron background image already contains text"
+msgstr "Toto začiarknite, ak obrázok pozadia jumbotronu už obsahuje text"
+
+#, fuzzy
+msgid "Disabling this slide will hide it from the slide show"
+msgstr "Zakázaním tejto snímky ju pred prezentáciou skryjete"
+
+#, fuzzy
+msgid "Choose between using jumbotron background and slide show"
+msgstr "Vyberte si medzi použitím jumbotronového pozadia a prezentácie"
+
+#, fuzzy
+msgid "Could not access to uploaded data."
+msgstr "Nepodarilo sa získať prístup k nahraným údajom."
+
+#, fuzzy
+msgid ""
+"One or more XML files was provided, but no matching files were found for "
+"them."
+msgstr ""
+"Bol poskytnutý jeden alebo viac súborov XML, ale nenašli sa pre ne žiadne "
+"zodpovedajúce súbory."
+
+#, fuzzy
+msgid ""
+"One or more SLD files was provided, but no matching files were found for "
+"them."
+msgstr ""
+"Bol poskytnutý jeden alebo viac súborov SLD, ale nenašli sa pre ne žiadne "
+"zodpovedajúce súbory."
+
+#, fuzzy
+msgid "Invalid zip file detected"
+msgstr "Bol zistený neplatný súbor zip"
+
+#, fuzzy
+msgid "Could not find any valid spatial file inside the uploaded zip"
+msgstr ""
+"Vo vnútri nahraného zip súboru sa nenašiel žiadny platný priestorový súbor"
+
+#, fuzzy
+msgid "Invalid kmz file detected"
+msgstr "Bol zistený neplatný súbor kmz"
+
+#, fuzzy
+msgid "Could not find any kml files inside the uploaded kmz"
+msgstr "Vo nahranom kmz sa nepodarilo nájsť žiadne súbory kml"
+
+#, fuzzy
+msgid "Only one shapefile per zip is allowed"
+msgstr "Na jeden zips je povolený iba jeden súbor tvaru"
+
+#, fuzzy
+msgid "kml files with more than one GroundOverlay are not supported"
+msgstr "Kml súbory s viac ako jedným GroundOverlay nie sú podporované"
+
+#, fuzzy
+msgid "Ground overlay image declared in kml file cannot be found"
+msgstr "Obrázok prekrytia terénu deklarovaný v súbore KML sa nedá nájsť"
+
+#, fuzzy
+msgid "Only one kml file per ZIP is allowed"
+msgstr "Na jeden ZIP je povolený iba jeden súbor kml"
+
+#, fuzzy
+msgid "Only one kml file per kmz is allowed"
+msgstr "Povolený je iba jeden súbor kml na kmz"
+
+#, fuzzy
+msgid ""
+"You are trying to upload multiple GeoTIFFs without a valid 'indexer."
+"properties' file."
+msgstr ""
+"Pokúšate sa nahrať viac súborov GeoTIFF bez platného súboru „indexer."
+"properties“."
+
+#, fuzzy
+msgid "Only one raster file per ZIP is allowed"
+msgstr "Na jeden ZIP je povolený iba jeden rastrový súbor"
+
+#, fuzzy
+msgid "No multiple rasters allowed"
+msgstr "Nie sú povolené viacnásobné rastre"
+
+#, fuzzy
+msgid ""
+"To support the time step, you must enable the OGC_SERVER DATASTORE option"
+msgstr "Na podporu časového kroku musíte povoliť možnosť OGC_SERVER DATASTORE"
+
+#, fuzzy, python-format
+msgid "Unsupported file type: %s"
+msgstr "Nepodporovaný typ súboru: %s"
+
+#, fuzzy, python-format
+msgid "File does not exist: %s"
+msgstr "Súbor neexistuje: %s"
+
+#, fuzzy, python-format
+msgid "unknown item state: %s"
+msgstr "neznámy stav položky: %s"
+
+#, fuzzy, python-format
+msgid "error during import: %s"
+msgstr "chyba počas importu: %s"
+
+#, fuzzy
+msgid "Could not find any valid Time Regex for the Mosaic files."
+msgstr "Nepodarilo sa nájsť žiadny platný Time Regex pre súbory Mosaic."
+
+#, fuzzy
+msgid "Unsupported DataBase for Mosaics!"
+msgstr "Nepodporovaná základňa dát pre mozaiky!"
+
+#, fuzzy
+msgid "Invalid permission level."
+msgstr "Neplatná úroveň povolenia."
+
+msgid "Permission Denied"
+msgstr "Povolenie bolo odmietnuté"
+
+#, fuzzy
+#~ msgid "App Created"
+#~ msgstr "Aplikácia bola vytvorená"
+
+#, fuzzy
+#~ msgid "A App was created"
+#~ msgstr "Bola vytvorená aplikácia"
+
+#, fuzzy
+#~ msgid "App Updated"
+#~ msgstr "Aktualizácia aplikácie"
+
+#, fuzzy
+#~ msgid "A App was updated"
+#~ msgstr "Aplikácia bola aktualizovaná"
+
+#, fuzzy
+#~ msgid "App Approved"
+#~ msgstr "Aplikácia schválená"
+
+#, fuzzy
+#~ msgid "A App was approved by a Manager"
+#~ msgstr "Správca schválil aplikáciu"
+
+#, fuzzy
+#~ msgid "App Published"
+#~ msgstr "Aplikácia zverejnená"
+
+#, fuzzy
+#~ msgid "A App was published"
+#~ msgstr "Bola zverejnená aplikácia"
+
+#, fuzzy
+#~ msgid "App Deleted"
+#~ msgstr "Aplikácia bola odstránená"
+
+#, fuzzy
+#~ msgid "A App was deleted"
+#~ msgstr "Aplikácia bola odstránená"
+
+#, fuzzy
+#~ msgid "Comment on App"
+#~ msgstr "Komentár k aplikácii"
+
+#, fuzzy
+#~ msgid "An App was commented on"
+#~ msgstr "Aplikácia bola komentovaná"
+
+#, fuzzy
+#~ msgid "Rating for App"
+#~ msgstr "Hodnotenie pre aplikáciu"
+
+#, fuzzy
+#~ msgid "A rating was given to an App"
+#~ msgstr "Aplikácii bolo udelené hodnotenie"
+
+#, fuzzy
+#~ msgid "%(resource.type)s"
+#~ msgstr "% (zdroj.typ) s"
+
+#, fuzzy
+#~ msgid "Rate this"
+#~ msgstr "Ohodnoťte to"
+
+#, fuzzy
+#~ msgid "Change Permissions of this"
+#~ msgstr "Zmeňte toto povolenie"
+
+#, fuzzy
+#~ msgid "%(GEONODE_APPS_NAME)s"
+#~ msgstr "% (GEONODE_APPS_NAME) s"
+
+#, fuzzy
+#~ msgid "apps explore"
+#~ msgstr "aplikácie preskúmať"
+
+#~ msgid "Create New"
+#~ msgstr "Vytvoriť"
+
+#, fuzzy
+#~ msgid "Explore"
+#~ msgstr "Preskúmajte"
+
+#, fuzzy
+#~ msgid ""
+#~ "Note: this geoapp's orginal metadata was populated by importing a "
+#~ "metadata XML file.\n"
+#~ "        GeoNode's metadata import supports a subset of ISO, FGDC, and "
+#~ "Dublin Core metadata elements.\n"
+#~ "        Some of your original metadata may have been lost."
+#~ msgstr ""
+#~ "Poznámka: Originálne metadáta tejto geoappy sa vyplnili importom súboru "
+#~ "XML metadát.\n"
+#~ "        Import metadát GeoNode podporuje podmnožinu prvkov metadát ISO, "
+#~ "FGDC a Dublin Core.\n"
+#~ "        Niektoré z vašich pôvodných metadát mohli byť stratené."
+
+#, fuzzy
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove <a href="
+#~ "\"%(resource.get_absolute_url)s\">%(resource_title)s</a>?\n"
+#~ "        "
+#~ msgstr ""
+#~ "Naozaj chcete odstrániť <a href=\"%(resource.get_absolute_url)s\">% "
+#~ "(resource_title) s</a> ?"
+
+#, fuzzy
+#~ msgid "You are not permitted to delete this app."
+#~ msgstr "Túto aplikáciu nemáte oprávnenie mazať."
+
+#, fuzzy
+#~ msgid "You do not have permissions for this app."
+#~ msgstr "Pre túto aplikáciu nemáte oprávnenie."
+
+#, fuzzy
+#~ msgid "You must be logged in to save this app"
+#~ msgstr "Ak chcete uložiť túto aplikáciu, musíte byť prihlásení"
+
+#, fuzzy
+#~ msgid "You are not permitted to save or edit this app."
+#~ msgstr "Túto aplikáciu nemôžete ukladať ani upravovať."
+
+#, fuzzy
+#~ msgid "You are not allowed to modify this app's metadata."
+#~ msgstr "Nemáte oprávnenie upravovať metadáta tejto aplikácie."
+
+#, fuzzy
+#~ msgid "You are not allowed to view this app."
+#~ msgstr "Nemáte povolenie na prezeranie tejto aplikácie."
+
+#, fuzzy
+#~ msgid "No title provided"
+#~ msgstr "Neboli poskytnuté"
+
+#, fuzzy
+#~ msgid "Invalid Projection. Layer is missing CRS!"
+#~ msgstr "Neplatná projekcia. Na vrstve chýba CRS!"
+
+#, fuzzy
+#~ msgid "Required Metadata"
+#~ msgstr "Metadáta zdrojov"
+
+#, fuzzy
+#~ msgid "Layer already exists"
+#~ msgstr "Vrstva už existuje"
+
+#, fuzzy
+#~ msgid "Name already in use and overwrite is False"
+#~ msgstr "Názov, ktorý sa už používa a je prepísaný, je False"
+
+#, fuzzy
+#~ msgid "Upload Session invalid or no more accessible!"
+#~ msgstr "Nahraná relácia je neplatná alebo už nie je prístupná!"
+
+#, fuzzy
+#~ msgid "Climate"
+#~ msgstr "Podnebie"
+
+#, fuzzy
+#~ msgid "Geoscience"
+#~ msgstr "Geoveda"
+
+#, fuzzy
+#~ msgid "Utilities"
+#~ msgstr "Verejné služby"
+
+#, fuzzy
+#~ msgid "Thumbnail saved"
+#~ msgstr "Miniatúra bola uložená"
