@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Indonesian (http://www.transifex.com/geonode/geonode/language/"
@@ -2304,27 +2304,6 @@ msgstr "layer telah diunggah"
 msgid "Return to Layer"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "Unggahan tidak sempurna"
-
-msgid "You have the following incomplete uploads"
-msgstr "Anda memiliki unggahan yang belum selesai"
-
-msgid "last updated on"
-msgstr "diperbaharui pada"
-
-msgid "Resume"
-msgstr "Ulang"
-
-msgid "Delete"
-msgstr "Hapus"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Anda yakin untuk menghapus unggahan ini?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Hapus, dan jangan tanya lagi."
-
 #, fuzzy
 #| msgid "Edit Service Metadata"
 msgid "Preserve Metadata XML"
@@ -2776,6 +2755,42 @@ msgstr "Atribut"
 
 msgid "Upload Layer"
 msgstr "Unggah Layer"
+
+msgid "Incomplete Uploads"
+msgstr "Unggahan tidak sempurna"
+
+msgid "You have the following incomplete uploads"
+msgstr "Anda memiliki unggahan yang belum selesai"
+
+msgid "Resume"
+msgstr "Ulang"
+
+msgid "Delete"
+msgstr "Hapus"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Membuat"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "dari"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Unggahan tidak sempurna"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Anda yakin untuk menghapus unggahan ini?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -6278,12 +6293,6 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "Tanggal berakhir sebelum:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "dari"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6490,6 +6499,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Semua konten"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Tidak dapat menemukan lapisan dalam proyeksi yang kompatibel."
@@ -6510,6 +6524,19 @@ msgid "Layer already exists"
 msgstr "Peta telah dibuat"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6589,6 +6616,12 @@ msgstr "Ijin level tidak benar"
 
 msgid "Permission Denied"
 msgstr "Tidak diizinkan"
+
+#~ msgid "last updated on"
+#~ msgstr "diperbaharui pada"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Hapus, dan jangan tanya lagi."
 
 #, fuzzy
 #~| msgid "Available styles"

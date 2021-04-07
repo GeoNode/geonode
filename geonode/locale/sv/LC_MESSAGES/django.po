@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swedish (http://www.transifex.com/geonode/geonode/language/"
@@ -2307,27 +2307,6 @@ msgstr "Ett skikt laddades upp"
 msgid "Return to Layer"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "Ofullständiga uppladdningar"
-
-msgid "You have the following incomplete uploads"
-msgstr "Du har följande ofullständiga uppladdningar"
-
-msgid "last updated on"
-msgstr "uppdaterades senast"
-
-msgid "Resume"
-msgstr "Resume"
-
-msgid "Delete"
-msgstr "Radera"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Är du säker på att du vill ta bort denna uppladdning?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Radera, och fråga mig inte igen."
-
 #, fuzzy
 #| msgid "Edit Service Metadata"
 msgid "Preserve Metadata XML"
@@ -2779,6 +2758,42 @@ msgstr "Attribut"
 
 msgid "Upload Layer"
 msgstr "Överför Layer"
+
+msgid "Incomplete Uploads"
+msgstr "Ofullständiga uppladdningar"
+
+msgid "You have the following incomplete uploads"
+msgstr "Du har följande ofullständiga uppladdningar"
+
+msgid "Resume"
+msgstr "Resume"
+
+msgid "Delete"
+msgstr "Radera"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Skapa"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "av"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Ofullständiga uppladdningar"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Är du säker på att du vill ta bort denna uppladdning?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -6273,12 +6288,6 @@ msgstr "åååå-mm-dd"
 msgid "Date ends before:"
 msgstr "Datum slutar före:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "av"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6485,6 +6494,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Allt innehåll"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Det gick inte att hitta några lager i en kompatibel projektion."
@@ -6505,6 +6519,19 @@ msgid "Layer already exists"
 msgstr "Karta Skapat"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6584,6 +6611,12 @@ msgstr "Ogiltig behörighetsnivå."
 
 msgid "Permission Denied"
 msgstr "Permission Denied"
+
+#~ msgid "last updated on"
+#~ msgstr "uppdaterades senast"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Radera, och fråga mig inte igen."
 
 #, fuzzy
 #~| msgid "Available styles"

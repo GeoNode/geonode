@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Hungarian (http://www.transifex.com/geonode/geonode/language/"
@@ -2315,27 +2315,6 @@ msgstr "A réteget feltöltve"
 msgid "Return to Layer"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "Hiányos feltöltések"
-
-msgid "You have the following incomplete uploads"
-msgstr "Az alábbi hiányos feltöltések"
-
-msgid "last updated on"
-msgstr "utolsó frissítése"
-
-msgid "Resume"
-msgstr "Folytatás"
-
-msgid "Delete"
-msgstr "Töröl"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Biztosan törölni szeretné ezt a feltöltést?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Törlés, és ne kérdezd meg újra."
-
 #, fuzzy
 #| msgid "Edit Service Metadata"
 msgid "Preserve Metadata XML"
@@ -2790,6 +2769,42 @@ msgstr "Attribútumok"
 
 msgid "Upload Layer"
 msgstr "Feltöltés réteg"
+
+msgid "Incomplete Uploads"
+msgstr "Hiányos feltöltések"
+
+msgid "You have the following incomplete uploads"
+msgstr "Az alábbi hiányos feltöltések"
+
+msgid "Resume"
+msgstr "Folytatás"
+
+msgid "Delete"
+msgstr "Töröl"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Teremt"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "Az"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Hiányos feltöltések"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Biztosan törölni szeretné ezt a feltöltést?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -6286,12 +6301,6 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "Dátum vége előtt:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "Az"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6498,6 +6507,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Minden tartalom"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Nem található rétegek kompatibilis vetítés."
@@ -6518,6 +6532,19 @@ msgid "Layer already exists"
 msgstr "Térkép Létrehozva"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6597,6 +6624,12 @@ msgstr "Érvénytelen jogosultsági szint."
 
 msgid "Permission Denied"
 msgstr "Engedély megtagadva"
+
+#~ msgid "last updated on"
+#~ msgstr "utolsó frissítése"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Törlés, és ne kérdezd meg újra."
 
 #, fuzzy
 #~| msgid "Available styles"

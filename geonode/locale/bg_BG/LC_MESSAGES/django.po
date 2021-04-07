@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bulgarian (Bulgaria) (http://www.transifex.com/geonode/"
@@ -2280,27 +2280,6 @@ msgstr "Слой беше зареден"
 msgid "Return to Layer"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "Незавършено зареждане"
-
-msgid "You have the following incomplete uploads"
-msgstr "Имате следните непълни качвания "
-
-msgid "last updated on"
-msgstr "последно обновяване на "
-
-msgid "Resume"
-msgstr "Започни отново"
-
-msgid "Delete"
-msgstr "Изтрий"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Сигурни ли сте, че искате да изтриете качения файл? "
-
-msgid "Delete, and don't ask me again."
-msgstr "Изтрий и не ме питай повече. "
-
 #, fuzzy
 #| msgid "Edit Service Metadata"
 msgid "Preserve Metadata XML"
@@ -2767,6 +2746,42 @@ msgstr "Атрибути "
 
 msgid "Upload Layer"
 msgstr "Зареждане на слой"
+
+msgid "Incomplete Uploads"
+msgstr "Незавършено зареждане"
+
+msgid "You have the following incomplete uploads"
+msgstr "Имате следните непълни качвания "
+
+msgid "Resume"
+msgstr "Започни отново"
+
+msgid "Delete"
+msgstr "Изтрий"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Създай"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "на"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Незавършено зареждане"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Сигурни ли сте, че искате да изтриете качения файл? "
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -6449,12 +6464,6 @@ msgstr "гггг-мм-дд"
 msgid "Date ends before:"
 msgstr "Денят приключва преди:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "на"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6661,6 +6670,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Цялото съдържание"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Не може да се намери слой в съвместима проекция. "
@@ -6681,6 +6695,19 @@ msgid "Layer already exists"
 msgstr "Създаден слой "
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6760,6 +6787,12 @@ msgstr "Невалидно ниво на достъп"
 
 msgid "Permission Denied"
 msgstr "Отказано разрешение"
+
+#~ msgid "last updated on"
+#~ msgstr "последно обновяване на "
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Изтрий и не ме питай повече. "
 
 #, fuzzy
 #~| msgid "Available styles"
