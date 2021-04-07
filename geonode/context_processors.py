@@ -31,7 +31,7 @@ from geonode.base.models import Configuration, Thesaurus
 def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
-    thesaurus = Thesaurus.objects.filter(facet=True).all()
+    thesaurus = Thesaurus.objects.filter(facet=True).all().order_by('order', 'id')
     if hasattr(settings, 'THESAURUS'):
         warnings.warn(
             'Thesaurus settings is going to be'

@@ -96,6 +96,20 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
         self.fields['links'].initial = self.generate_link_values(
             resources=get_related_resources(self.instance)
         )
+        for field in self.fields:
+            help_text = self.fields[field].help_text
+            self.fields[field].help_text = None
+            if help_text != '':
+                self.fields[field].widget.attrs.update(
+                    {
+                        'class': 'has-external-popover',
+                        'data-content': help_text,
+                        'placeholder': help_text,
+                        'data-placement': 'right',
+                        'data-container': 'body',
+                        'data-html': 'true'
+                    }
+                )
 
     class Meta(ResourceBaseForm.Meta):
         model = Document

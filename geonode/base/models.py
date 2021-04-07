@@ -482,6 +482,7 @@ class Thesaurus(models.Model):
     card_min = models.IntegerField(default=0)
     card_max = models.IntegerField(default=-1)
     facet = models.BooleanField(default=True)
+    order = models.IntegerField(null=False, default=0)
 
     def __str__(self):
         return str(self.identifier)
