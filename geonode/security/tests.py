@@ -381,11 +381,11 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 14)
+            self.assertEqual(geofence_rules_count, 12)
             set_geofence_all(test_perm_layer)
             geofence_rules_count = get_geofence_rules_count()
             _log(f"2. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 15)
+            self.assertEqual(geofence_rules_count, 13)
 
         self.client.logout()
 
@@ -401,7 +401,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"4. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 15)
+            self.assertEqual(geofence_rules_count, 13)
 
             # Validate maximum priority
             geofence_rules_highest_priority = get_highest_priority()
@@ -483,7 +483,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         content = resp.content
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
-        self.assertTrue(layer2.title in json.loads(content)['not_changed'])
+        self.assertIn(layer2.title, json.loads(content)['not_changed'])
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_user_can(self):
@@ -558,9 +558,9 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 10)
+        self.assertEqual(geofence_rules_count, 5)
 
-        rules_objs = get_geofence_rules(entries=10)
+        rules_objs = get_geofence_rules(entries=5)
         _deny_wfst_rule_exists = False
         for rule in rules_objs['rules']:
             if rule['service'] == "WFS" and \
@@ -1237,7 +1237,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
         current_perms = layer.get_all_level_info()
-        self.assertEqual(len(current_perms['users']), 2)
+        self.assertEqual(len(current_perms['users']), 1)
 
         # Test that the User permissions specified in the perm_spec were
         # applied properly
@@ -1353,7 +1353,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         bob = get_user_model().objects.get(username='bobby')
 
         # grab a layer
-        layer = Layer.objects.first()
+        layer = Layer.objects.filter(owner=bob)
         layer.set_default_permissions()
         # verify bobby has view/change permissions on it but not manage
         self.assertTrue(
@@ -1774,7 +1774,7 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(2, actual.count())
+        self.assertEqual(1, actual.count())
 
         # Test private groups
         private_groups = GroupProfile.objects.filter(

@@ -208,9 +208,9 @@ class UploadSerializer(DynamicModelSerializer):
         model = Upload
         name = 'upload'
         fields = (
-            'id', 'name', 'date', 'import_id', 'user',
-            'state', 'progress', 'complete', 'uploadfile_set',
-            'resume_url', 'delete_url', 'import_url', 'detail_url'
+            'id', 'name', 'date', 'create_date', 'user',
+            'state', 'progress', 'complete', 'import_id',
+            'uploadfile_set', 'resume_url', 'delete_url', 'import_url', 'detail_url'
         )
 
     progress = ProgressField(read_only=True)

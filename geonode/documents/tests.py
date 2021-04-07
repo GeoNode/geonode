@@ -307,7 +307,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the document owner) were removed
         current_perms = document.get_all_level_info()
-        self.assertEqual(len(current_perms['users']), 2)
+        self.assertEqual(len(current_perms['users']), 1)
 
         # Test that the User permissions specified in the perm_spec were
         # applied properly

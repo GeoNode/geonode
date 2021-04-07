@@ -352,7 +352,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(response.status_code, 200)
         upload_data = response.json()['upload']
         self.assertIsNotNone(upload_data)
-        self.assertAlmostEqual(upload_data['name'], 'relief_san_andres')
+        self.assertIn('relief_san_andres', upload_data['name'])
 
         self.assertEqual(upload_data['state'], Upload.STATE_PENDING)
         self.assertEqual(upload_data['progress'], 33.0)

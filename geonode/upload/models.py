@@ -77,6 +77,7 @@ class Upload(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     # hold importer state or internal state (STATE_)
     state = models.CharField(max_length=16)
+    create_date = models.DateTimeField('create_date', default=now)
     date = models.DateTimeField('date', default=now)
     layer = models.ForeignKey(Layer, null=True, on_delete=models.CASCADE)
     upload_dir = models.TextField(null=True)
