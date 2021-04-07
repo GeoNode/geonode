@@ -39,7 +39,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-02 14:49+0000\n"
-"PO-Revision-Date: 2021-01-21 22:30+0100\n"
+"PO-Revision-Date: 2021-04-07 13:45+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
 "it/)\n"
@@ -1569,7 +1569,7 @@ msgid "PNG"
 msgstr "PNG"
 
 msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
+msgstr "Proiezione non valida. Al livello manca il CRS!"
 
 msgid "You don't have permissions to change style for this layer"
 msgstr ""
@@ -3100,7 +3100,7 @@ msgstr ""
 
 msgid ""
 "The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
+msgstr "L'identificatore UUID dei metadati XML è già in uso in questo sistema."
 
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
@@ -6210,7 +6210,7 @@ msgid "Layer already exists"
 msgstr "Livello creato"
 
 msgid "Name already in use and overwrite is False"
-msgstr ""
+msgstr "Il nome è già in uso"
 
 msgid "Invalid zip file detected"
 msgstr "Rilevato file zip non valido"
@@ -6286,16 +6286,16 @@ msgid "Unsupported DataBase for Mosaics!"
 msgstr "DataBase non supportato per mosaici!"
 
 msgid "Upload Session invalid or no more accessible!"
-msgstr ""
+msgstr "Sessione di upload non valida o inaccessibile!"
 
 msgid "Invalid permission level."
 msgstr "Livello di permessi non valido."
 
-msgid "Permission Denied"
-msgstr "Permesso negato"
-
 msgid "If true, will be excluded from search"
 msgstr "Se Vero, l'elemento verrà escluso dalla ricerca"
+
+msgid "Permission Denied"
+msgstr "Permesso negato"
 
 msgid "Please, fill the following items before clicking on preview:"
 msgstr "Perfavore, completa i seguenti campi prima di andare su Anteprima:"

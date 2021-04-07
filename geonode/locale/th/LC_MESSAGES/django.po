@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Thai (http://www.transifex.com/geonode/geonode/language/th/)\n"
@@ -454,6 +454,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr "แหล่งข้อมูล"
 
+msgid "Metadata"
+msgstr "คำอธิบายข้อมูล"
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr "ตัวอย่าง เช่น \"kml\""
 
@@ -712,34 +718,6 @@ msgstr "คำอธิบาย"
 msgid "GeoNode Client Library"
 msgstr "วิธีใช้ GeoNode"
 
-msgid "Explore Maps"
-msgstr "สำรวจแผนที่"
-
-msgid "Edit Map"
-msgstr "แก้ไขแผนที่"
-
-msgid "Update"
-msgstr "แก้ไข"
-
-msgid "Create a New Map"
-msgstr "สร้างแผนที่ใหม่"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "สไตล์ที่สามารถใช้ได้"
-
-msgid "Save"
-msgstr "บันทึก"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "ลบแผนที่"
-
-msgid "Close"
-msgstr "ปิด"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -760,7 +738,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -806,8 +784,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "ข้อมูลเพิ่มเติม"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -823,10 +803,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -837,7 +820,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -858,7 +841,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -910,10 +893,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "กิจกรรมของผู้ใช้"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Document Updated"
@@ -1071,9 +1052,6 @@ msgstr "แก้ไขเอกสาร"
 msgid "Request change"
 msgstr "ร้องขอการดาวน์โหลด"
 
-msgid "Metadata"
-msgstr "คำอธิบายข้อมูล"
-
 msgid "Wizard"
 msgstr ""
 
@@ -1091,6 +1069,9 @@ msgstr "แทนที่"
 
 msgid "Remove"
 msgstr "ลบ"
+
+msgid "Close"
+msgstr "ปิด"
 
 msgid "Download Metadata"
 msgstr "ดาวน์โหลดคำอธิบายข้อมูล"
@@ -1168,6 +1149,9 @@ msgstr "ผู้ให้คำอธิบายข้อมูล"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "แก้ไข"
 
 #, fuzzy
 #| msgid "Next"
@@ -1672,6 +1656,11 @@ msgstr "สร้าง"
 
 #, fuzzy
 #| msgid "Not provided"
+msgid "No title provided"
+msgstr "ไม่มีการระบุ"
+
+#, fuzzy
+#| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "ไม่มีการระบุ"
 
@@ -1983,6 +1972,9 @@ msgstr "สร้างกลุ่ม"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "สร้างกลุ่ม"
+
+msgid "Save"
+msgstr "บันทึก"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2609,6 +2601,12 @@ msgstr "ลำดับการแสดงผล"
 msgid "Visible"
 msgstr "สามารถมองเห็นได้?"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2713,6 +2711,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "ดูตัวอย่าง"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "แก้ไขคำอธิบายข้อมูลของเซอร์วิส"
 
 #, fuzzy
 #| msgid "Attributes"
@@ -3226,8 +3229,8 @@ msgid ""
 "are trying to replace."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3265,18 +3268,15 @@ msgstr "คุณไม่มีสิทธิ์ดูชั้นข้อม
 msgid "Failed to upload the layer"
 msgstr "ไฟล์ที่ต้องการอัพโหลด"
 
-#, fuzzy
-#| msgid "Unable to delete layer"
-msgid "Unable to delete layer"
-msgstr "ไม่สามารถลบชั้นข้อมูลได้"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr "ชั้นข้อมูลนี้เป็นสมาชิกของกลุ่มชั้นข้อมูล คุณต้องนำชั้นข้อมูลออกจากกลุ่มก่อนที่จะทำการลบ"
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "สร้างแผนที่เสร็จแล้ว"
@@ -3415,6 +3415,9 @@ msgstr "คัดลอกแผนที่นี้"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "ทำสำเนาแผนที่นี้แล้วแก้ไขตามความต้องการของคุณ"
 
+msgid "Create a New Map"
+msgstr "สร้างแผนที่ใหม่"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3470,6 +3473,12 @@ msgstr "ดาวน์โหลดเสร็จสิ้น"
 msgid "Download Failed"
 msgstr "ดาวน์โหลดล้มเหลว"
 
+msgid "Edit Map"
+msgstr "แก้ไขแผนที่"
+
+msgid "Explore Maps"
+msgstr "สำรวจแผนที่"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3520,11 +3529,6 @@ msgstr "คุณไม่ได้รับอนุญาตให้ดูแ
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3542,7 +3546,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3617,7 +3621,8 @@ msgstr "วันที่อ้างอิงสำหรับแหล่ง
 msgid "Show data for specific label"
 msgstr "วันที่อ้างอิงสำหรับแหล่งที่มา"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3786,7 +3791,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4430,9 +4436,9 @@ msgstr "ได้รับการร้องขอการดาวน์โ
 msgid "Resource is already being processed"
 msgstr "ได้รับการร้องขอการดาวน์โหลดทรัพยากรแล้ว"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "A resource's download has been requested"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "ได้รับการร้องขอการดาวน์โหลดทรัพยากรแล้ว"
 
 #, fuzzy
@@ -4448,9 +4454,9 @@ msgstr "คุณไม่มีสิทธิ์ลบเซอร์วิส
 msgid "You are not permitted to remove this service."
 msgstr "คุณไม่มีสิทธิ์ลบเซอร์วิสนี้"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "สร้างเซอร์วิสเสร็จแล้ว:"
 
 msgid "created"
@@ -5891,9 +5897,6 @@ msgstr "กลุ่มดังต่อไปนี้:"
 msgid "Updating Metadata..."
 msgstr "ดาวน์โหลดคำอธิบายข้อมูล"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
@@ -6374,9 +6377,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "ความนิยมสูงสุด"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "ข้อความ"
 
@@ -6593,20 +6593,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6625,3 +6624,28 @@ msgstr "ระดับการอนุญาตไม่ถูกต้อง
 
 msgid "Permission Denied"
 msgstr "ไม่ได้รับอนุญาต"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "สไตล์ที่สามารถใช้ได้"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "ลบแผนที่"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "กิจกรรมของผู้ใช้"
+
+#, fuzzy
+#~| msgid "Unable to delete layer"
+#~ msgid "Unable to delete layer"
+#~ msgstr "ไม่สามารถลบชั้นข้อมูลได้"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"

@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -446,6 +446,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr "资源"
 
+msgid "Metadata"
+msgstr "元数据"
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr "比如“kml”"
 
@@ -704,34 +710,6 @@ msgstr "描述"
 msgid "GeoNode Client Library"
 msgstr "GeoNode帮助"
 
-msgid "Explore Maps"
-msgstr "浏览地图"
-
-msgid "Edit Map"
-msgstr "编辑地图"
-
-msgid "Update"
-msgstr "更新"
-
-msgid "Create a New Map"
-msgstr "生成新地图"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "可用的样式"
-
-msgid "Save"
-msgstr "保存"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "移除地图"
-
-msgid "Close"
-msgstr "关闭"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -752,7 +730,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -798,8 +776,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "补充信息"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -815,10 +795,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -829,7 +812,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -852,7 +835,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Warning"
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr "注意"
 
 msgid ""
@@ -904,10 +887,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "用户活动"
+msgid "Utilities Communication"
+msgstr ""
 
 msgid "Document Created"
 msgstr "创建文件"
@@ -1063,9 +1044,6 @@ msgstr "编辑文件"
 msgid "Request change"
 msgstr "请求下载"
 
-msgid "Metadata"
-msgstr "元数据"
-
 msgid "Wizard"
 msgstr "向导"
 
@@ -1083,6 +1061,9 @@ msgstr "代替"
 
 msgid "Remove"
 msgstr "删除"
+
+msgid "Close"
+msgstr "关闭"
 
 msgid "Download Metadata"
 msgstr "下载元数据"
@@ -1162,6 +1143,9 @@ msgstr "元数据提供者"
 
 msgid "<< Back"
 msgstr "<<返回"
+
+msgid "Update"
+msgstr "更新"
 
 #, fuzzy
 #| msgid "Next"
@@ -1638,6 +1622,11 @@ msgstr "属性"
 msgid "Create"
 msgstr "创建地图"
 
+#, fuzzy
+#| msgid "Not provided"
+msgid "No title provided"
+msgstr "未提供"
+
 msgid "No abstract provided"
 msgstr "没有摘要"
 
@@ -1926,6 +1915,9 @@ msgstr "创建一个群体类别"
 
 msgid "Edit Group Category"
 msgstr "编辑群体类别"
+
+msgid "Save"
+msgstr "保存"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2554,6 +2546,12 @@ msgstr "显示顺序"
 msgid "Visible"
 msgstr "可见？"
 
+msgid "ERROR"
+msgstr "错误"
+
+msgid "Following items are required:"
+msgstr ""
+
 msgid "Upload Layer Metadata"
 msgstr "上传图层元数据"
 
@@ -2656,6 +2654,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "预览"
+
+#, fuzzy
+#| msgid "Basic Metadata"
+msgid "Required Metadata"
+msgstr "基础元数据"
 
 msgid "Dataset Attributes"
 msgstr "数据集属性"
@@ -3165,8 +3168,8 @@ msgid ""
 "are trying to replace."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3205,18 +3208,15 @@ msgstr "您无权以查看此图层"
 msgid "Failed to upload the layer"
 msgstr "文件上传"
 
-#, fuzzy
-#| msgid "Unable to delete layer"
-msgid "Unable to delete layer"
-msgstr "不能删除图层"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr "该图层是一个图层组的成员，您必须在删除之前从群体中移除该图层。"
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "遥感缩略图"
 
 msgid "Map Created"
 msgstr "地图生成"
@@ -3357,6 +3357,9 @@ msgstr "复制该地图"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "复制该地图并且根据您自己的需要进行修改"
 
+msgid "Create a New Map"
+msgstr "生成新地图"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3412,6 +3415,12 @@ msgstr "下载完成"
 msgid "Download Failed"
 msgstr "下载失败"
 
+msgid "Edit Map"
+msgstr "编辑地图"
+
+msgid "Explore Maps"
+msgstr "浏览地图"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3461,9 +3470,6 @@ msgstr "您不得修改此地图元数据。"
 msgid "You are not allowed to view this map."
 msgstr "您无权查看此地图。"
 
-msgid "Thumbnail saved"
-msgstr "缩略图已保存"
-
 msgid "error saving thumbnail"
 msgstr "缩略图保存出错"
 
@@ -3481,7 +3487,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3556,7 +3562,8 @@ msgstr "资料引用日期"
 msgid "Show data for specific label"
 msgstr "资料引用日期"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3725,7 +3732,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4358,9 +4366,9 @@ msgstr "一个资源的下载请求已提交"
 msgid "Resource is already being processed"
 msgstr "一个资源的下载请求已提交"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "A resource's download has been requested"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "一个资源的下载请求已提交"
 
 #, fuzzy
@@ -4376,9 +4384,9 @@ msgstr "您不得删除此服务。"
 msgid "You are not permitted to remove this service."
 msgstr "您不得删除此服务。"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "服务已创建："
 
 msgid "created"
@@ -5917,9 +5925,6 @@ msgstr "以下群体："
 msgid "Updating Metadata..."
 msgstr "更新元数据中…"
 
-msgid "ERROR"
-msgstr "错误"
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr "主题类别是强制性的，不能是空的！"
 
@@ -6390,9 +6395,6 @@ msgstr "字符倒序"
 msgid "Most popular"
 msgstr "热门度"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "文本"
 
@@ -6607,20 +6609,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6639,3 +6640,26 @@ msgstr "权限等级不够。"
 
 msgid "Permission Denied"
 msgstr "权限级别"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "可用的样式"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "移除地图"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "用户活动"
+
+#, fuzzy
+#~| msgid "Unable to delete layer"
+#~ msgid "Unable to delete layer"
+#~ msgstr "不能删除图层"
+
+#~ msgid "Thumbnail saved"
+#~ msgstr "缩略图已保存"
