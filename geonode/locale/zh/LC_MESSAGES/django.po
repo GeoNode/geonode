@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-04-07 14:10+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -145,9 +145,6 @@ msgstr "数据每三个月更新一次"
 msgid "No information provided"
 msgstr "无信息提供"
 
-msgid "Category"
-msgstr "类别"
-
 msgid "Category is required."
 msgstr "类别是必需的。"
 
@@ -214,6 +211,9 @@ msgstr "地区"
 
 msgid "Group"
 msgstr "群体"
+
+msgid "Category"
+msgstr "类别"
 
 msgid "License"
 msgstr "许可"
@@ -445,6 +445,12 @@ msgstr ""
 #| msgid "Resources"
 msgid "Resource Type"
 msgstr "资源"
+
+msgid "Metadata"
+msgstr "元数据"
+
+msgid "If true, will be excluded from search"
+msgstr ""
 
 msgid "For example \"kml\""
 msgstr "比如“kml”"
@@ -752,7 +758,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -798,8 +804,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "补充信息"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -815,10 +823,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -829,7 +840,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -852,7 +863,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Warning"
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr "注意"
 
 msgid ""
@@ -904,10 +915,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "用户活动"
+msgid "Utilities Communication"
+msgstr ""
 
 msgid "Document Created"
 msgstr "创建文件"
@@ -1063,9 +1072,6 @@ msgstr "编辑文件"
 msgid "Request change"
 msgstr "请求下载"
 
-msgid "Metadata"
-msgstr "元数据"
-
 msgid "Wizard"
 msgstr "向导"
 
@@ -1179,6 +1185,9 @@ msgstr "修改元数据"
 msgid "Editing details for"
 msgstr "编辑细节于"
 
+msgid "Return to Document"
+msgstr "返回文档"
+
 msgid "Deleting"
 msgstr "删除"
 
@@ -1283,14 +1292,11 @@ msgstr "责任方"
 msgid "Responsible and Permissions"
 msgstr "所有者和权限"
 
-msgid "Message box"
-msgstr "消息框"
-
-msgid "OK"
-msgstr "好的"
-
 msgid "Publishing"
 msgstr "发布属性"
+
+msgid "You are not allowed to view this document."
+msgstr "您不"
 
 msgid "You are not permitted to delete this document"
 msgstr "您无权删除此文件"
@@ -1316,9 +1322,6 @@ msgstr "不允许撤销"
 #| msgid "Page Not Found"
 msgid "Not found"
 msgstr "找不到网页"
-
-msgid "You are not allowed to view this document."
-msgstr "您不"
 
 msgid "You must set a point of contact for this resource"
 msgstr "您必须为该资源设置一个联系点"
@@ -1638,6 +1641,11 @@ msgstr "属性"
 msgid "Create"
 msgstr "创建地图"
 
+#, fuzzy
+#| msgid "Not provided"
+msgid "No title provided"
+msgstr "未提供"
+
 msgid "No abstract provided"
 msgstr "没有摘要"
 
@@ -1927,16 +1935,16 @@ msgstr "创建一个群体类别"
 msgid "Edit Group Category"
 msgstr "编辑群体类别"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2194,6 +2202,48 @@ msgstr "最近修改"
 msgid "date when attribute statistics were last updated"
 msgstr "上一次统计更新的时间"
 
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Append to Layer"
+msgstr "返回图层"
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "一个图层已被上传"
+
+msgid "Return to Layer"
+msgstr "返回图层"
+
+msgid "Incomplete Uploads"
+msgstr "不完整的上传"
+
+msgid "You have the following incomplete uploads"
+msgstr "您有以下不完整的上传"
+
+msgid "last updated on"
+msgstr "最新更新"
+
+msgid "Resume"
+msgstr "简历"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "您要删除此上传吗？"
+
+msgid "Delete, and don't ask me again."
+msgstr "删除，不要再问我。"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Preserve Metadata XML"
+msgstr "编辑元数据服务"
+
+msgid "Select the charset or leave default"
+msgstr "选择的字符集或保留默认值"
+
 msgid "Home"
 msgstr "主页"
 
@@ -2363,6 +2413,9 @@ msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] "图层"
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr "编辑数据"
 
@@ -2526,9 +2579,6 @@ msgstr ""
 "导入支持ISO，FGDC和都柏林核心元数据元素的一个子集。         一些您原来的元数"
 "据可能已经丢失。"
 
-msgid "Return to Layer"
-msgstr "返回图层"
-
 #, python-format
 msgid ""
 "\n"
@@ -2554,6 +2604,12 @@ msgstr "显示顺序"
 msgid "Visible"
 msgstr "可见？"
 
+msgid "ERROR"
+msgstr "错误"
+
+msgid "Following items are required:"
+msgstr ""
+
 msgid "Upload Layer Metadata"
 msgstr "上传图层元数据"
 
@@ -2564,27 +2620,6 @@ msgstr "一个图层已被上传"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "不完整的上传"
-
-msgid "You have the following incomplete uploads"
-msgstr "您有以下不完整的上传"
-
-msgid "last updated on"
-msgstr "最新更新"
-
-msgid "Resume"
-msgstr "简历"
-
-msgid "Delete"
-msgstr "删除"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "您要删除此上传吗？"
-
-msgid "Delete, and don't ask me again."
-msgstr "删除，不要再问我。"
 
 msgid "Remove Layers"
 msgstr "移除图层"
@@ -2603,14 +2638,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "替换图层"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Preserve Metadata XML"
-msgstr "编辑元数据服务"
-
-msgid "Select the charset or leave default"
-msgstr "选择的字符集或保留默认值"
 
 msgid "Manage Styles"
 msgstr "管理样式"
@@ -2656,6 +2683,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "预览"
+
+#, fuzzy
+#| msgid "Basic Metadata"
+msgid "Required Metadata"
+msgstr "基础元数据"
 
 msgid "Dataset Attributes"
 msgstr "数据集属性"
@@ -3146,31 +3178,50 @@ msgstr "现在"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "您正在试图用栅格数据代替一个矢量图层。"
 
-msgid "You are attempting to replace a vector layer with a raster."
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector layer with a raster."
 msgstr "您正在试图用栅格数据代替一个矢量图层。"
 
-msgid "You are attempting to replace a raster layer with a vector."
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster layer with a vector."
 msgstr "您正在试图用一个矢量代替一个栅格图层。"
 
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr "您正在试图用栅格数据代替一个矢量图层。"
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3205,18 +3256,21 @@ msgstr "您无权以查看此图层"
 msgid "Failed to upload the layer"
 msgstr "文件上传"
 
-#, fuzzy
-#| msgid "Unable to delete layer"
-msgid "Unable to delete layer"
-msgstr "不能删除图层"
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "您正在试图用栅格数据代替一个矢量图层。"
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "您正在试图用一个矢量代替一个栅格图层。"
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr "该图层是一个图层组的成员，您必须在删除之前从群体中移除该图层。"
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "遥感缩略图"
 
 msgid "Map Created"
 msgstr "地图生成"
@@ -3428,6 +3482,11 @@ msgstr ""
 "导入支持ISO，FGDC和都柏林核心元数据元素的一个子集。        一些您原来的元数据"
 "可能已经丢失。"
 
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "返回到"
+
 msgid "Remove Map"
 msgstr "移除地图"
 
@@ -3461,9 +3520,6 @@ msgstr "您不得修改此地图元数据。"
 msgid "You are not allowed to view this map."
 msgstr "您无权查看此地图。"
 
-msgid "Thumbnail saved"
-msgstr "缩略图已保存"
-
 msgid "error saving thumbnail"
 msgstr "缩略图保存出错"
 
@@ -3481,7 +3537,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3556,7 +3612,8 @@ msgstr "资料引用日期"
 msgid "Show data for specific label"
 msgstr "资料引用日期"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3725,7 +3782,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4038,7 +4096,9 @@ msgstr "更新个人信息"
 msgid "Explore People"
 msgstr "浏览用户"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "您的用户名"
 
 msgid "Your username has been emailed to you."
@@ -4358,9 +4418,9 @@ msgstr "一个资源的下载请求已提交"
 msgid "Resource is already being processed"
 msgstr "一个资源的下载请求已提交"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "A resource's download has been requested"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "一个资源的下载请求已提交"
 
 #, fuzzy
@@ -4376,9 +4436,9 @@ msgstr "您不得删除此服务。"
 msgid "You are not permitted to remove this service."
 msgstr "您不得删除此服务。"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "服务已创建："
 
 msgid "created"
@@ -4644,6 +4704,12 @@ msgstr ""
 #| msgid "Delete from Favorites"
 msgid "Delete Geo Limits"
 msgstr "从喜爱中删除"
+
+msgid "Message box"
+msgstr "消息框"
+
+msgid "OK"
+msgstr "好的"
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5917,22 +5983,11 @@ msgstr "以下群体："
 msgid "Updating Metadata..."
 msgstr "更新元数据中…"
 
-msgid "ERROR"
-msgstr "错误"
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr "主题类别是强制性的，不能是空的！"
 
 msgid "Group is mandatory and cannot be empty!"
 msgstr "群体是强制性的，不能是空的！"
-
-msgid "Return to Document"
-msgstr "返回文档"
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "返回到"
 
 msgid "Identification"
 msgstr "身份认证"
@@ -5993,6 +6048,9 @@ msgid "Online Link"
 msgstr "在线链接"
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy
@@ -6390,9 +6448,6 @@ msgstr "字符倒序"
 msgid "Most popular"
 msgstr "热门度"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "文本"
 
@@ -6607,20 +6662,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6639,3 +6693,16 @@ msgstr "权限等级不够。"
 
 msgid "Permission Denied"
 msgstr "权限级别"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "用户活动"
+
+#, fuzzy
+#~| msgid "Unable to delete layer"
+#~ msgid "Unable to delete layer"
+#~ msgstr "不能删除图层"
+
+#~ msgid "Thumbnail saved"
+#~ msgstr "缩略图已保存"

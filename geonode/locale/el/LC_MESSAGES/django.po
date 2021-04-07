@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-04-07 14:10+0200\n"
 "PO-Revision-Date: 2019-07-19 12:46+0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/geonode/geonode/language/"
@@ -142,9 +142,6 @@ msgstr "τα δεδομένα ανανεώνονται κάθε τρείς μή�
 msgid "No information provided"
 msgstr "Δεν παρέχεται καμία πληροφορία"
 
-msgid "Category"
-msgstr "Κατηγορία"
-
 msgid "Category is required."
 msgstr "Απαιτείται Κατηγορία."
 
@@ -211,6 +208,9 @@ msgstr "Περιοχές"
 
 msgid "Group"
 msgstr "Ομάδα"
+
+msgid "Category"
+msgstr "Κατηγορία"
 
 msgid "License"
 msgstr "Άδεια"
@@ -462,6 +462,12 @@ msgstr "Οι κανόνες ασφαλείας δεν έχουν συγχρον�
 #| msgid "Resources"
 msgid "Resource Type"
 msgstr "Πόροι"
+
+msgid "Metadata"
+msgstr "Μεταδεδομένα"
+
+msgid "If true, will be excluded from search"
+msgstr ""
 
 msgid "For example \"kml\""
 msgstr "Για παράδειγμα \"kml\""
@@ -745,8 +751,8 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
-msgstr "Κλιμα"
+msgid "Climatology Meteorology Atmosphere"
+msgstr ""
 
 msgid ""
 "Economic activities, conditions and employment. Examples: production, "
@@ -789,8 +795,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr "Γεωεπιστημη"
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "Συμπληρωματικές Πληροφορίες"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -806,10 +814,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -820,7 +831,9 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+#, fuzzy
+#| msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr "Πληροφορια"
 
 msgid ""
@@ -841,7 +854,9 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+#, fuzzy
+#| msgid "Planning"
+msgid "Planning Cadastre"
 msgstr "Σχεδιασμος"
 
 msgid ""
@@ -889,8 +904,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-msgid "Utilities"
-msgstr "Υπηρεσιες"
+msgid "Utilities Communication"
+msgstr ""
 
 msgid "Document Created"
 msgstr "Έγγραφο Δημιουργήθηκε"
@@ -1032,9 +1047,6 @@ msgstr "Επεξεργασία Εγγράφου"
 msgid "Request change"
 msgstr "Αίτημα Λήψης"
 
-msgid "Metadata"
-msgstr "Μεταδεδομένα"
-
 msgid "Wizard"
 msgstr "Βοηθός"
 
@@ -1134,6 +1146,9 @@ msgstr "Επεξεργασία Μεταδεδομένων"
 msgid "Editing details for"
 msgstr "Επεξεργασία λεπτομερειών για"
 
+msgid "Return to Document"
+msgstr ""
+
 msgid "Deleting"
 msgstr "Διαγραφή"
 
@@ -1231,14 +1246,11 @@ msgstr "Υπεύθυνο Μέρος"
 msgid "Responsible and Permissions"
 msgstr "Ιδιοκτήτης και Δικαιώματα"
 
-msgid "Message box"
-msgstr "Εισερχόμενα Μηνύματα"
-
-msgid "OK"
-msgstr "OK"
-
 msgid "Publishing"
 msgstr "Δημοσιεύεται"
+
+msgid "You are not allowed to view this document."
+msgstr "Δεν έχετε δικαιώματα να δείτε αυτό το χάρτη."
 
 msgid "You are not permitted to delete this document"
 msgstr "Δεν επιτρέπεται να διαγράψετε αυτό το έγγραφο"
@@ -1264,9 +1276,6 @@ msgstr "Δεν παρέχεται"
 #| msgid "Maps found"
 msgid "Not found"
 msgstr "Χάρτες"
-
-msgid "You are not allowed to view this document."
-msgstr "Δεν έχετε δικαιώματα να δείτε αυτό το χάρτη."
 
 msgid "You must set a point of contact for this resource"
 msgstr "Πρέπει να ορίσετε υπεύθυνο επικοινωνίας για αυτό τον πόρο"
@@ -1576,6 +1585,11 @@ msgstr "Προσθήκη Ιδιότητας"
 msgid "Create"
 msgstr "Δημιουργία"
 
+#, fuzzy
+#| msgid "Not provided"
+msgid "No title provided"
+msgstr "Δεν παρέχεται"
+
 msgid "No abstract provided"
 msgstr "Δεν υπάρχει σύνοψη"
 
@@ -1867,17 +1881,20 @@ msgstr "Δημιουργία Ομάδας Κατηγοριών"
 msgid "Edit Group Category"
 msgstr "Επεξεργασία Ομάδας Κατηγοριών"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, fuzzy, python-brace-format
+#| msgid "The e-mail address '%(email)s' has already been invited."
+msgid "The e-mail address '{email}' has already been invited."
 msgstr "Ο χρήστης με την διεύθυνση '%(email)s' έχει ήδη προσκληθεί."
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, fuzzy, python-brace-format
+#| msgid "The e-mail address '%(email)s' has already accepted an invite."
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 "Ο χρήστης με την διεύθυνση '%(email)s' έχει ήδη αποδεχθεί την πρόσκληση."
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, fuzzy, python-brace-format
+#| msgid "An active user is already using the e-mail address '%(email)s'"
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr "Ένας ενεργός χρήστης ήδη χρησιμοποιεί την διεύθυνση '%(email)s'"
 
 msgid "E-mail"
@@ -2134,6 +2151,46 @@ msgstr ""
 "ημερομηνία κατά την οποία τα στατιστικά στοιχεία χαρακτηριστικό ήταν "
 "τελευταία ενημέρωση"
 
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Append to Layer"
+msgstr "Επιστροφή στο Επίπεδο"
+
+#, fuzzy
+#| msgid "layers upload"
+msgid "layers append"
+msgstr "μεταφόρτωση επιπέδων"
+
+msgid "Return to Layer"
+msgstr "Επιστροφή στο Επίπεδο"
+
+msgid "Incomplete Uploads"
+msgstr "Ελλιπής Μεταφόρτωση"
+
+msgid "You have the following incomplete uploads"
+msgstr "Έχετε τις παρακάτω ελλιπείς μεταφορτώσεις"
+
+msgid "last updated on"
+msgstr "τελευταία ενημέρωση"
+
+msgid "Resume"
+msgstr "Περίληψη"
+
+msgid "Delete"
+msgstr "Διαγραφή"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν τη μεταφόρτωση;"
+
+msgid "Delete, and don't ask me again."
+msgstr "Διαγραφή, και μην με ρωτήσετε ξανά."
+
+msgid "Preserve Metadata XML"
+msgstr "Διατήρηση Μεταδεδομένων XML"
+
+msgid "Select the charset or leave default"
+msgstr "Επιλέξτε το σύνολο χαρακτήρων ή αφήστε προεπιλογή"
+
 msgid "Home"
 msgstr "Αρχική Σελίδα"
 
@@ -2282,6 +2339,9 @@ msgid_plural "Layers"
 msgstr[0] "Επίπεδο"
 msgstr[1] "Επίπεδα"
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr "Επεξεργασία Δεδομένων"
 
@@ -2428,9 +2488,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr "Επιστροφή στο Επίπεδο"
-
 #, python-format
 msgid ""
 "\n"
@@ -2455,6 +2512,12 @@ msgstr "Σειρά Εμφάνισης"
 msgid "Visible"
 msgstr "Ορατό"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 msgid "Upload Layer Metadata"
 msgstr "Μεταφόρτωση Μεταδεδομένων Επιπέδου"
 
@@ -2463,27 +2526,6 @@ msgstr "μεταφόρτωση επιπέδων"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "Ελλιπής Μεταφόρτωση"
-
-msgid "You have the following incomplete uploads"
-msgstr "Έχετε τις παρακάτω ελλιπείς μεταφορτώσεις"
-
-msgid "last updated on"
-msgstr "τελευταία ενημέρωση"
-
-msgid "Resume"
-msgstr "Περίληψη"
-
-msgid "Delete"
-msgstr "Διαγραφή"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν τη μεταφόρτωση;"
-
-msgid "Delete, and don't ask me again."
-msgstr "Διαγραφή, και μην με ρωτήσετε ξανά."
 
 msgid "Remove Layers"
 msgstr "Αφαίρεση Επιπέδων"
@@ -2498,12 +2540,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "Αντικατάσταση Επιπέδου"
-
-msgid "Preserve Metadata XML"
-msgstr "Διατήρηση Μεταδεδομένων XML"
-
-msgid "Select the charset or leave default"
-msgstr "Επιλέξτε το σύνολο χαρακτήρων ή αφήστε προεπιλογή"
 
 msgid "Manage Styles"
 msgstr "Διαχείριση Στυλ"
@@ -2549,6 +2585,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Προεπισκόπηση"
+
+#, fuzzy
+#| msgid "Resource Metadata"
+msgid "Required Metadata"
+msgstr "Μεταδεδομένα Πόρου"
 
 msgid "Dataset Attributes"
 msgstr "Χαρακτηριστικά"
@@ -3020,32 +3061,51 @@ msgstr "τώρα"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "Προσπαθείτε να αντικαταστήσετε διανυσματικό αρχείο με εικόνα"
 
-msgid "You are attempting to replace a vector layer with a raster."
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector layer with a raster."
 msgstr "Προσπαθείτε να αντικαταστήσετε διανυσματικό αρχείο με εικόνα"
 
-msgid "You are attempting to replace a raster layer with a vector."
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster layer with a vector."
 msgstr ""
 "Προσπαθείτε να αντικαταστήσετε εικονιστικό επίπεδο με διανυσματικό αρχείο"
 
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr "Προσπαθείτε να αντικαταστήσετε διανυσματικό αρχείο με εικόνα"
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3079,16 +3139,22 @@ msgstr "Δεν σας επιτρέπεται να δείτε αυτή την ε�
 msgid "Failed to upload the layer"
 msgstr "Αποτυχία μεταφόρτωσης επιπέδων"
 
-msgid "Unable to delete layer"
-msgstr "Αδυναμία διαγραφής επιπέδου"
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "Προσπαθείτε να αντικαταστήσετε διανυσματικό αρχείο με εικόνα"
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
+"Προσπαθείτε να αντικαταστήσετε εικονιστικό επίπεδο με διανυσματικό αρχείο"
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "Χάρτης Δημιουργήθηκε"
@@ -3292,6 +3358,11 @@ msgstr ""
 "μεταδεδομένα. Μερικά από τα πρωτότυπα μεταδεδομένων σας μπορεί να έχουν "
 "χαθεί."
 
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "Επιστροφή στο"
+
 msgid "Remove Map"
 msgstr "Διαγραφή Χάρτη"
 
@@ -3321,9 +3392,6 @@ msgstr "Δεν επιτρέπεται να τροποποιήσετε τα με�
 msgid "You are not allowed to view this map."
 msgstr "Δεν σας επιτρέπεται να δείτε αυτό το χάρτη."
 
-msgid "Thumbnail saved"
-msgstr "Αποθήκευση Προεπισκόπησης"
-
 #, fuzzy
 #| msgid "Set Map Thumbnail"
 msgid "error saving thumbnail"
@@ -3345,7 +3413,9 @@ msgstr "Παρακολούθηση"
 msgid "Alert situation reported by monitoring"
 msgstr "Κατάσταση συναγερμού από σύστημα παρακολούθησης"
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+#, fuzzy
+#| msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr "Το Σύστημα Παρακολούθησης GeoNode στο {} αναφέρει σφάλματα: {}"
 
 #, fuzzy
@@ -3418,7 +3488,9 @@ msgstr "Εμφάνιση δεδομένων για συγκεκριμένο πό
 msgid "Show data for specific label"
 msgstr "Εμφάνιση δεδομένων για συγκεκριμένη ετικέτα"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, fuzzy, python-brace-format
+#| msgid "Write result to file, default GEOIP_PATH: {}"
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr "Αποθήκευση αποτελέσματος σε αρχείο, προεπιλογή GEOIP_PATH: {}"
 
 msgid ""
@@ -3581,7 +3653,8 @@ msgstr "Πόσο σοβαρό θα ήταν σφάλμα από αυτήν τη�
 msgid "Is it active"
 msgstr "Είναι ενεργό"
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -3911,7 +3984,9 @@ msgstr "Ενημέρωση προφίλ"
 msgid "Explore People"
 msgstr "Εξερεύνηση Χρηστών"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "Το όνομα χρήστη για"
 
 msgid "Your username has been emailed to you."
@@ -4213,9 +4288,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr "Πόροι"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "Πόροι"
 
 #, fuzzy
@@ -4231,9 +4306,9 @@ msgstr "Δεν επιτρέπεται να αφαιρέσετε αυτή την 
 msgid "You are not permitted to remove this service."
 msgstr "Δεν επιτρέπεται να αφαιρέσετε αυτή την υπηρεσία."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Υπηρεσία έχει δημιουργηθεί:"
 
 msgid "created"
@@ -4486,6 +4561,12 @@ msgstr ""
 #| msgid "Delete from Favorites"
 msgid "Delete Geo Limits"
 msgstr "Διαγραφή από τα αγαπημένα"
+
+msgid "Message box"
+msgstr "Εισερχόμενα Μηνύματα"
+
+msgid "OK"
+msgstr "OK"
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5459,22 +5540,11 @@ msgstr "είναι μέλος των ακολούθων ομάδων"
 msgid "Updating Metadata..."
 msgstr "Ενημέρωση Μεταδεδομένων..."
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
-
-msgid "Return to Document"
-msgstr ""
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "Επιστροφή στο"
 
 msgid "Identification"
 msgstr ""
@@ -5533,6 +5603,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy
@@ -5996,9 +6069,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "Πιο δημοφιλή"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "Κείμενο"
 
@@ -6205,20 +6275,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6237,3 +6306,18 @@ msgstr "Άκυρο επίπεδο δικαιωμάτων."
 
 msgid "Permission Denied"
 msgstr "Πρόσβαση Απορρίφθηκε"
+
+#~ msgid "Climate"
+#~ msgstr "Κλιμα"
+
+#~ msgid "Geoscience"
+#~ msgstr "Γεωεπιστημη"
+
+#~ msgid "Utilities"
+#~ msgstr "Υπηρεσιες"
+
+#~ msgid "Unable to delete layer"
+#~ msgstr "Αδυναμία διαγραφής επιπέδου"
+
+#~ msgid "Thumbnail saved"
+#~ msgstr "Αποθήκευση Προεπισκόπησης"

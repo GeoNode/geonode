@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-04-07 14:10+0200\n"
 "PO-Revision-Date: 2020-06-10 09:21+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Arabic (http://www.transifex.com/geonode/geonode/language/"
@@ -135,9 +135,6 @@ msgstr "يتم تحديث البيانات كل ثلاثة أشهر"
 msgid "No information provided"
 msgstr "لم يتم تقديم أية معلومات"
 
-msgid "Category"
-msgstr "فئة"
-
 msgid "Category is required."
 msgstr "الفئة مطلوبة."
 
@@ -204,6 +201,9 @@ msgstr "المناطق"
 
 msgid "Group"
 msgstr "مجموعة"
+
+msgid "Category"
+msgstr "فئة"
 
 msgid "License"
 msgstr "رخصة"
@@ -448,6 +448,12 @@ msgstr "لا تتم مزامنة قواعد الأمان مع GeoServer!"
 #| msgid "Resources"
 msgid "Resource Type"
 msgstr "موارد"
+
+msgid "Metadata"
+msgstr "البيانات الوصفية"
+
+msgid "If true, will be excluded from search"
+msgstr ""
 
 msgid "For example \"kml\""
 msgstr "على سبيل المثال “kml”"
@@ -736,8 +742,8 @@ msgstr ""
 "عمليات وظواهر الغلاف الجوي. أمثله: الغلاف السحابي ، الطقس ، المناخ ، الظروف "
 "الجوية ، تغير المناخ ، هطول الامطار."
 
-msgid "Climate"
-msgstr "مناخ"
+msgid "Climatology Meteorology Atmosphere"
+msgstr ""
 
 msgid ""
 "Economic activities, conditions and employment. Examples: production, "
@@ -795,8 +801,10 @@ msgstr ""
 "الأرض ، مخاطر الزلازل ، النشاط البركاني ، الانهيالات الارضيه ، ومعلومات "
 "الجاذبية ، التربة ، الأراضي المتجمدة ، الجيولوجيا المائية ، التعرية."
 
-msgid "Geoscience"
-msgstr "علوم الأرض"
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "معلومات إضافية"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -817,15 +825,18 @@ msgstr ""
 "الخرائط الأساسية. أمثلة: الغطاء الأرضي ، الخرائط الطبوغرافية ، الصور ، الصور "
 "غير المصنفة ، التعليقات التوضيحية."
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 #, fuzzy
 #| msgid ""
 #| "Inland water features, drainage systems and their characteristics. "
 #| "Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
 #| "currents, floods, water quality, hydrographic charts."
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 "ميزات المياه الداخلية ، شبكات الصرف الصحي وخصائصها. أمثلة: الأنهار والأنهار "
 "الجليدية ، البحيرات المالحة ، خطط استخدام المياه ، السدود ، التيارات ، "
@@ -841,7 +852,9 @@ msgstr ""
 "القواعد العسكرية، الهياكل، الأنشطة. أمثلة: الثكنات ، أماكن التدريب ، النقل "
 "العسكري ، جمع المعلومات."
 
-msgid "Intelligence"
+#, fuzzy
+#| msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr "المخابرات"
 
 msgid ""
@@ -869,7 +882,9 @@ msgstr ""
 "أمثلة: خرائط استخدام الأراضي ، خرائط تقسيم المناطق ، المسوحات المساحية ، "
 "ملكية الأرض."
 
-msgid "Planning"
+#, fuzzy
+#| msgid "Planning"
+msgid "Planning Cadastre"
 msgstr "مخطط"
 
 msgid ""
@@ -935,8 +950,8 @@ msgstr ""
 "الكهرباء والغاز ، واتصالات البيانات ، والاتصالات ، والراديو ، وشبكات "
 "الاتصالات."
 
-msgid "Utilities"
-msgstr "خدمات"
+msgid "Utilities Communication"
+msgstr ""
 
 msgid "Document Created"
 msgstr "تم إنشاء المستند"
@@ -1078,9 +1093,6 @@ msgstr "تحرير المستند"
 msgid "Request change"
 msgstr "طلب تحميل"
 
-msgid "Metadata"
-msgstr "البيانات الوصفية"
-
 msgid "Wizard"
 msgstr "معالج"
 
@@ -1181,6 +1193,9 @@ msgstr "تعديل البيانات الوصفية"
 msgid "Editing details for"
 msgstr "تعديل تفاصيل ل"
 
+msgid "Return to Document"
+msgstr "العودة إلى المستند"
+
 msgid "Deleting"
 msgstr "حذف"
 
@@ -1279,14 +1294,11 @@ msgstr "الأطراف المسؤولة"
 msgid "Responsible and Permissions"
 msgstr "المالك الصلاحيات"
 
-msgid "Message box"
-msgstr "صندوق الرسائل"
-
-msgid "OK"
-msgstr "حسنا"
-
 msgid "Publishing"
 msgstr "نشر"
+
+msgid "You are not allowed to view this document."
+msgstr "لا يسمح لك بعرض هذه الوثيقة."
 
 msgid "You are not permitted to delete this document"
 msgstr "لا يسمح لك بحذف هذه الوثيقة"
@@ -1312,9 +1324,6 @@ msgstr "غير مزود"
 #| msgid "Maps found"
 msgid "Not found"
 msgstr "خرائط وجدت"
-
-msgid "You are not allowed to view this document."
-msgstr "لا يسمح لك بعرض هذه الوثيقة."
 
 msgid "You must set a point of contact for this resource"
 msgstr "يجب تعيين نقطة اتصال لهذا المورد"
@@ -1627,6 +1636,11 @@ msgstr "إضافة سمة"
 msgid "Create"
 msgstr "إنشاء"
 
+#, fuzzy
+#| msgid "Not provided"
+msgid "No title provided"
+msgstr "غير مزود"
+
 msgid "No abstract provided"
 msgstr "تجريد غير مقدم"
 
@@ -1910,16 +1924,19 @@ msgstr "إنشاء فئة المجموعة"
 msgid "Edit Group Category"
 msgstr "تعديل فئة المجموعة"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, fuzzy, python-brace-format
+#| msgid "The e-mail address '%(email)s' has already been invited."
+msgid "The e-mail address '{email}' has already been invited."
 msgstr "تم بالفعل دعوة عنوان البريد الإلكتروني '%(email)s'."
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, fuzzy, python-brace-format
+#| msgid "The e-mail address '%(email)s' has already accepted an invite."
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr "قبل عنوان البريد الإلكتروني '%(email)s' دعوة."
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, fuzzy, python-brace-format
+#| msgid "An active user is already using the e-mail address '%(email)s'"
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr "مستخدم نشط يستخدم بالفعل عنوان البريد الإلكتروني '%(email)s'"
 
 msgid "E-mail"
@@ -2163,6 +2180,46 @@ msgstr "آخر تعديل"
 msgid "date when attribute statistics were last updated"
 msgstr "التاريخ الذي تم فيه تحديث آخر إحصاءات السمات"
 
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Append to Layer"
+msgstr "العودة إلى الطبقة"
+
+#, fuzzy
+#| msgid "layers upload"
+msgid "layers append"
+msgstr "تحميل طبقات"
+
+msgid "Return to Layer"
+msgstr "العودة إلى الطبقة"
+
+msgid "Incomplete Uploads"
+msgstr "عمليات التحميل غير مكتملة"
+
+msgid "You have the following incomplete uploads"
+msgstr "لديك التحميلات غير المكتملة التالية"
+
+msgid "last updated on"
+msgstr "آخر تحديث لل"
+
+msgid "Resume"
+msgstr "استئنف"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "هل أنت متأكد أنك تريد حذف هذا التحميل؟"
+
+msgid "Delete, and don't ask me again."
+msgstr "حذف، ولا تسألني مرة أخرى."
+
+msgid "Preserve Metadata XML"
+msgstr "الحفاظ على البيانات الوصفية لXML"
+
+msgid "Select the charset or leave default"
+msgstr "حدد محارف أو اترك الإفتراضي"
+
 msgid "Home"
 msgstr "الرئيسية"
 
@@ -2318,6 +2375,9 @@ msgstr[3] "طبقة"
 msgstr[4] "طبقة"
 msgstr[5] "طبقة"
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr "تعديل البيانات"
 
@@ -2470,9 +2530,6 @@ msgstr ""
 "‬\n"
 "‫           ربما فقدت بعض البيانات الوصفية الأصلية."
 
-msgid "Return to Layer"
-msgstr "العودة إلى الطبقة"
-
 #, python-format
 msgid ""
 "\n"
@@ -2497,6 +2554,12 @@ msgstr "ترتيب العرض"
 msgid "Visible"
 msgstr "مرئية"
 
+msgid "ERROR"
+msgstr "خطأ"
+
+msgid "Following items are required:"
+msgstr ""
+
 msgid "Upload Layer Metadata"
 msgstr "تحميل البيانات الوصفية للطبقة"
 
@@ -2505,27 +2568,6 @@ msgstr "تحميل طبقات"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
-
-msgid "Incomplete Uploads"
-msgstr "عمليات التحميل غير مكتملة"
-
-msgid "You have the following incomplete uploads"
-msgstr "لديك التحميلات غير المكتملة التالية"
-
-msgid "last updated on"
-msgstr "آخر تحديث لل"
-
-msgid "Resume"
-msgstr "استئنف"
-
-msgid "Delete"
-msgstr "حذف"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "هل أنت متأكد أنك تريد حذف هذا التحميل؟"
-
-msgid "Delete, and don't ask me again."
-msgstr "حذف، ولا تسألني مرة أخرى."
 
 msgid "Remove Layers"
 msgstr "إزالة الطبقات"
@@ -2543,12 +2585,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "استبدال طبقة"
-
-msgid "Preserve Metadata XML"
-msgstr "الحفاظ على البيانات الوصفية لXML"
-
-msgid "Select the charset or leave default"
-msgstr "حدد محارف أو اترك الإفتراضي"
 
 msgid "Manage Styles"
 msgstr "إدارة أنماط"
@@ -2595,6 +2631,11 @@ msgstr "سيؤدي هذا على الأرجح إلى الكتابة فوق ال�
 
 msgid "Preview"
 msgstr "معاينة"
+
+#, fuzzy
+#| msgid "Resource Metadata"
+msgid "Required Metadata"
+msgstr "بيانات تعريف المورد"
 
 msgid "Dataset Attributes"
 msgstr "سمات مجموعة البيانات"
@@ -3129,34 +3170,62 @@ msgstr "الآن"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "أنت تحاول استبدال طبقة متجه بنقطية."
 
-msgid "You are attempting to replace a vector layer with a raster."
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector layer with a raster."
 msgstr "أنت تحاول استبدال طبقة متجه بنقطية."
 
-msgid "You are attempting to replace a raster layer with a vector."
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster layer with a vector."
 msgstr "أنت تحاول استبدال طبقة النقطية بناقلات."
 
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr "أنت تحاول استبدال طبقة متجه بنقطية."
+
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Please ensure the name is consistent with the file you are trying to "
+#| "replace."
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr "الرجاء التأكد من أن الاسم متوافق مع الملف الذي تحاول استبداله."
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr "طبقة GeoNode المحلية ليس لها نوع الهندسة."
 
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Please ensure there is at least one geometry "
+#| "type                                 that is consistent with the file you "
+#| "are trying to replace."
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 "الرجاء التأكد من وجود نوع هندسة واحد على الأقل يتسق مع الملف الذي تحاول "
 "استبداله."
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
-msgstr "حدث بعض الأخطاء أثناء محاولة الوصول إلى المخطط الذي تم تحميله: %s"
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+msgid "The selected Layer does not exists in the catalog."
 msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
+msgstr ""
+
+#, fuzzy
+#| msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
+msgstr "حدث بعض الأخطاء أثناء محاولة الوصول إلى المخطط الذي تم تحميله: %s"
 
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
@@ -3190,8 +3259,11 @@ msgstr "لا يسمح لك بمشاهدة هذه الطبقة"
 msgid "Failed to upload the layer"
 msgstr "فشل تحميل الطبقة"
 
-msgid "Unable to delete layer"
-msgstr "تعذر حذف الطبقة"
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "أنت تحاول استبدال طبقة متجه بنقطية."
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "أنت تحاول استبدال طبقة النقطية بناقلات."
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
@@ -3199,9 +3271,9 @@ msgid ""
 msgstr ""
 "هذه الطبقة عضو في مجموعة الطبقات، يجب إزالة الطبقة من المجموعة قبل الحذف."
 
-#, fuzzy
+#, fuzzy, python-format
 #| msgid "couldn't generate thumbnail"
-msgid "couldn't generate thumbnail"
+msgid "couldn't generate thumbnail: %s"
 msgstr "لا يمكن توليد الصورة المصغرة"
 
 msgid "Map Created"
@@ -3405,6 +3477,9 @@ msgstr ""
 "‬\n"
 "‫          ربما فقدت بعض البيانات الوصفية الأصلية."
 
+msgid "Return to Map"
+msgstr "العودة إلى الخريطة"
+
 msgid "Remove Map"
 msgstr "إزالة الخريطة"
 
@@ -3437,9 +3512,6 @@ msgstr "لا يسمح لك بتعديل البيانات الوصفية هذه �
 msgid "You are not allowed to view this map."
 msgstr "لا يسمح لك بعرض هذه الخريطة."
 
-msgid "Thumbnail saved"
-msgstr "تم حفظ الصورة المصغرة"
-
 msgid "error saving thumbnail"
 msgstr "خطأ في حفظ الصورة المصغرة"
 
@@ -3459,7 +3531,9 @@ msgstr "مراقبة"
 msgid "Alert situation reported by monitoring"
 msgstr "حالة التأهب المبلغ عنها بواسطة المراقبة"
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+#, fuzzy
+#| msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr "رصد GeoNode {} تقارير الأخطاء: {}"
 
 msgid "Enter valid email addresses."
@@ -3528,7 +3602,9 @@ msgstr "عرض البيانات لمورد معين"
 msgid "Show data for specific label"
 msgstr "عرض البيانات لتسمية محددة"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, fuzzy, python-brace-format
+#| msgid "Write result to file, default GEOIP_PATH: {}"
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr "اكتب نتيجة الملف ، الافتراضي GEOIP_PATH: {}"
 
 msgid ""
@@ -3685,8 +3761,9 @@ msgstr "ما مدى خطورة الخطأ من هذا الإشعار"
 msgid "Is it active"
 msgstr "هل هو نشط"
 
-msgid "{}: {}"
-msgstr "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
+msgstr ""
 
 msgid "Value must be above"
 msgstr "يجب أن تكون القيمة أعلاه"
@@ -3995,7 +4072,9 @@ msgstr "تحديث الملف الشخصي"
 msgid "Explore People"
 msgstr "تصفح الأشخاص"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "اسم المستخدم الخاص بك ل "
 
 msgid "Your username has been emailed to you."
@@ -4260,7 +4339,9 @@ msgstr "تم استيراد الموارد المحددة"
 msgid "Resource is already being processed"
 msgstr "المورد قيد المعالجة بالفعل"
 
-msgid "Resource {} is being processed"
+#, fuzzy, python-brace-format
+#| msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "المورد {} قيد المعالجة"
 
 msgid "Service rescanned successfully"
@@ -4272,7 +4353,9 @@ msgstr "غير مسموح لك بتغيير هذه الخدمة."
 msgid "You are not permitted to remove this service."
 msgstr "لا يسمح لك بإزالة هذه الخدمة."
 
-msgid "Service {} has been deleted"
+#, fuzzy, python-brace-format
+#| msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "تم حذف الخدمة {}"
 
 msgid "created"
@@ -4518,6 +4601,12 @@ msgstr "حفظ الحدود الجغرافية"
 #| msgid "Delete from Favorites"
 msgid "Delete Geo Limits"
 msgstr "حذف من المفضلات"
+
+msgid "Message box"
+msgstr "صندوق الرسائل"
+
+msgid "OK"
+msgstr "حسنا"
 
 msgid "Mandatory files : SHP , DBF"
 msgstr "الملفات الإلزامية : SHP ، DBF"
@@ -6242,20 +6331,11 @@ msgstr "عضو في المجموعة (المجموعات) التالية"
 msgid "Updating Metadata..."
 msgstr "جارٍ تحديث بيانات التعريف ..."
 
-msgid "ERROR"
-msgstr "خطأ"
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr "موضوع الفئة إلزامي ولا يمكن أن يكون فارغًا!"
 
 msgid "Group is mandatory and cannot be empty!"
 msgstr "المجموعة إلزامية ولا يمكن أن تكون فارغة!"
-
-msgid "Return to Document"
-msgstr "العودة إلى المستند"
-
-msgid "Return to Map"
-msgstr "العودة إلى الخريطة"
 
 msgid "Identification"
 msgstr "هوية"
@@ -6312,6 +6392,9 @@ msgid "Online Link"
 msgstr "رابط عبر الإنترنت"
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy
@@ -6676,9 +6759,6 @@ msgstr "ي - أ"
 msgid "Most popular"
 msgstr "الأكثر شعبية"
 
-msgid "Thesaurus"
-msgstr "قاموس المرادفات"
-
 msgid "Text"
 msgstr "نص"
 
@@ -6881,20 +6961,24 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr "لدعم الخطوة الزمنية ، يجب تمكين خيار OGC_SERVER DATASTORE"
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, fuzzy, python-brace-format
+#| msgid "Unsupported file type: %s"
+msgid "Unsupported file type: {e.message}"
 msgstr "نوع الملف غير مدعوم: %s"
 
-#, python-format
-msgid "File does not exist: %s"
+#, fuzzy, python-brace-format
+#| msgid "File does not exist: %s"
+msgid "File does not exist: {absolute_base_file}"
 msgstr "الملف غير موجود: %s"
 
-#, python-format
-msgid "unknown item state: %s"
+#, fuzzy, python-brace-format
+#| msgid "unknown item state: %s"
+msgid "unknown item state: {task.state}"
 msgstr "حالة عنصر غير معروفة: %s"
 
-#, python-format
-msgid "error during import: %s"
+#, fuzzy
+#| msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr "خطأ أثناء الاستيراد: %s"
 
 msgid "Could not find any valid Time Regex for the Mosaic files."
@@ -6911,3 +6995,24 @@ msgstr "مستوى صلاحية غير صالح."
 
 msgid "Permission Denied"
 msgstr "طلب الاذن مرفوض"
+
+#~ msgid "Climate"
+#~ msgstr "مناخ"
+
+#~ msgid "Geoscience"
+#~ msgstr "علوم الأرض"
+
+#~ msgid "Utilities"
+#~ msgstr "خدمات"
+
+#~ msgid "Unable to delete layer"
+#~ msgstr "تعذر حذف الطبقة"
+
+#~ msgid "Thumbnail saved"
+#~ msgstr "تم حفظ الصورة المصغرة"
+
+#~ msgid "{}: {}"
+#~ msgstr "{}: {}"
+
+#~ msgid "Thesaurus"
+#~ msgstr "قاموس المرادفات"

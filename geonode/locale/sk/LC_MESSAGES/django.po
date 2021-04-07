@@ -6,17 +6,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-04-07 14:10+0200\n"
 "PO-Revision-Date: 2021-03-11 16:40+0100\n"
+"Last-Translator: \n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
 "en/)\n"
+"Language: sk_SK\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
 "X-Generator: Poedit 2.4.2\n"
-"Last-Translator: \n"
-"Language: sk_SK\n"
 
 #, fuzzy
 msgid "Request to download a resource"
@@ -150,9 +150,6 @@ msgstr "údaje sa aktualizujú každé tri mesiace"
 msgid "No information provided"
 msgstr "Informácie neboli poskytnuté"
 
-msgid "Category"
-msgstr "Kategória"
-
 #, fuzzy
 msgid "Category is required."
 msgstr "Kategória je povinná."
@@ -227,6 +224,9 @@ msgstr "Oblasti"
 
 msgid "Group"
 msgstr "Skupina"
+
+msgid "Category"
+msgstr "Kategória"
 
 msgid "License"
 msgstr "Licencia"
@@ -508,6 +508,12 @@ msgstr "Bezpečnostné pravidlá sa nesynchronizujú s GeoServerom!"
 
 msgid "Resource Type"
 msgstr "Typ zdroja"
+
+msgid "Metadata"
+msgstr "Metaúdaje"
+
+msgid "If true, will be excluded from search"
+msgstr ""
 
 #, fuzzy
 msgid "For example \"kml\""
@@ -822,9 +828,8 @@ msgstr ""
 "Procesy a javy atmosféry. Príklady: oblačnosť, počasie, podnebie, "
 "atmosférické podmienky, zmena podnebia, zrážky."
 
-#, fuzzy
-msgid "Climate"
-msgstr "Podnebie"
+msgid "Climatology Meteorology Atmosphere"
+msgstr ""
 
 #, fuzzy
 msgid ""
@@ -892,8 +897,8 @@ msgstr ""
 "gravitačné informácie, pôdy, permafrost, hydrogeológia, erózia."
 
 #, fuzzy
-msgid "Geoscience"
-msgstr "Geoveda"
+msgid "Geoscientific Information"
+msgstr "Doplňujúce informácie"
 
 #, fuzzy
 msgid ""
@@ -916,11 +921,14 @@ msgstr ""
 "Základné mapy. Príklady: krajinná pokrývka, topografické mapy, snímky, "
 "nezaradené obrázky, anotácie."
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 #, fuzzy
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 "Základné mapyVlastnosti vnútrozemskej vody, drenážne systémy a ich "
 "charakteristiky. Príklady: rieky a ľadovce, soľné jazerá, plány využívania "
@@ -939,7 +947,7 @@ msgstr ""
 "vojenská doprava, zber informácií."
 
 #, fuzzy
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr "Inteligencia"
 
 #, fuzzy
@@ -971,7 +979,9 @@ msgstr ""
 "Príklady: mapy využívania pôdy, územné mapy, katastrálne prieskumy, "
 "vlastníctvo pôdy."
 
-msgid "Planning"
+#, fuzzy
+#| msgid "Planning"
+msgid "Planning Cadastre"
 msgstr "Plánovanie"
 
 #, fuzzy
@@ -1044,9 +1054,8 @@ msgstr ""
 "elektriny a plynu, dátová komunikácia, telekomunikácie, rádio, komunikačné "
 "siete."
 
-#, fuzzy
-msgid "Utilities"
-msgstr "Verejné služby"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 msgid "Document Created"
@@ -1215,9 +1224,6 @@ msgstr "Upraviť dokument"
 msgid "Request change"
 msgstr "Vyžiadajte si zmenu"
 
-msgid "Metadata"
-msgstr "Metaúdaje"
-
 msgid "Wizard"
 msgstr "Sprievodca"
 
@@ -1336,6 +1342,10 @@ msgstr "Upravte metadáta"
 msgid "Editing details for"
 msgstr "Úpravy podrobností pre"
 
+#, fuzzy
+msgid "Return to Document"
+msgstr "Späť na dokument"
+
 msgid "Deleting"
 msgstr "Mazanie"
 
@@ -1448,15 +1458,12 @@ msgstr "Zodpovedné strany"
 msgid "Responsible and Permissions"
 msgstr "Zodpovedný a povolenia"
 
-#, fuzzy
-msgid "Message box"
-msgstr "Schránka správ"
-
-msgid "OK"
-msgstr "OK"
-
 msgid "Publishing"
 msgstr "Publikovanie"
+
+#, fuzzy
+msgid "You are not allowed to view this document."
+msgstr "Nemáte povolenie na prezeranie tohto dokumentu."
 
 #, fuzzy
 msgid "You are not permitted to delete this document"
@@ -1484,10 +1491,6 @@ msgstr "Nepovolené"
 
 msgid "Not found"
 msgstr "Nenájdené"
-
-#, fuzzy
-msgid "You are not allowed to view this document."
-msgstr "Nemáte povolenie na prezeranie tohto dokumentu."
 
 #, fuzzy
 msgid "You must set a point of contact for this resource"
@@ -1784,6 +1787,10 @@ msgstr "Pridať vlastnosť"
 
 msgid "Create"
 msgstr "Vytvoriť"
+
+#, fuzzy
+msgid "No title provided"
+msgstr "Neboli poskytnuté"
 
 #, fuzzy
 msgid "No abstract provided"
@@ -2124,16 +2131,16 @@ msgstr "Vytvorte kategóriu skupiny"
 msgid "Edit Group Category"
 msgstr "Upraviť kategóriu skupiny"
 
-#, fuzzy, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, fuzzy, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr "E-mailová adresa '% (email) s' už bola pozvaná."
 
-#, fuzzy, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, fuzzy, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr "E-mailová adresa '% (email) s' už prijala pozvanie."
 
-#, fuzzy, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, fuzzy, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr "Aktívny používateľ už používa e-mailovú adresu '% (email) s'"
 
 msgid "E-mail"
@@ -2437,6 +2444,53 @@ msgstr "naposledy zmenené"
 msgid "date when attribute statistics were last updated"
 msgstr "dátum poslednej aktualizácie štatistík atribútov"
 
+#, fuzzy
+msgid "Append to Layer"
+msgstr "Vráťte sa do vrstvy"
+
+#, fuzzy
+msgid "layers append"
+msgstr "upload vrstiev"
+
+#, fuzzy
+msgid "Return to Layer"
+msgstr "Vráťte sa do vrstvy"
+
+#, fuzzy
+msgid "Incomplete Uploads"
+msgstr "Neúplné nahrávanie"
+
+#, fuzzy
+msgid "You have the following incomplete uploads"
+msgstr "Máte nasledujúce neúplné nahratia"
+
+#, fuzzy
+msgid "last updated on"
+msgstr "naposledy aktualizované dňa"
+
+msgid "Resume"
+msgstr "Životopis"
+
+#, fuzzy
+msgid "Delete"
+msgstr "Zmazať"
+
+#, fuzzy
+msgid "Are you sure you want to delete this upload?"
+msgstr "Naozaj chcete odstrániť toto nahrávanie?"
+
+#, fuzzy
+msgid "Delete, and don't ask me again."
+msgstr "Odstrániť a viac sa ma nepýtať."
+
+#, fuzzy
+msgid "Preserve Metadata XML"
+msgstr "Zachovať XML metaúdajov"
+
+#, fuzzy
+msgid "Select the charset or leave default"
+msgstr "Vyberte znakovú sadu alebo nechajte predvolenú"
+
 msgid "Home"
 msgstr "Domov"
 
@@ -2613,6 +2667,9 @@ msgid_plural "Layers"
 msgstr[0] "Layer"
 msgstr[1] "Layers"
 msgstr[2] ""
+
+msgid "Append Data"
+msgstr ""
 
 #, fuzzy
 msgid "Edit data"
@@ -2801,10 +2858,6 @@ msgstr ""
 "FGDC a Dublin Core.\n"
 "          Niektoré z vašich pôvodných metadát mohli byť stratené."
 
-#, fuzzy
-msgid "Return to Layer"
-msgstr "Vráťte sa do vrstvy"
-
 #, fuzzy, python-format
 msgid ""
 "\n"
@@ -2828,6 +2881,12 @@ msgstr "Typ zobrazenia"
 msgid "Visible"
 msgstr "Viditeľné"
 
+msgid "ERROR"
+msgstr "CHYBA"
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 msgid "Upload Layer Metadata"
 msgstr "Nahrajte metadáta vrstvy"
@@ -2839,33 +2898,6 @@ msgstr "upload vrstiev"
 #, fuzzy
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
-
-#, fuzzy
-msgid "Incomplete Uploads"
-msgstr "Neúplné nahrávanie"
-
-#, fuzzy
-msgid "You have the following incomplete uploads"
-msgstr "Máte nasledujúce neúplné nahratia"
-
-#, fuzzy
-msgid "last updated on"
-msgstr "naposledy aktualizované dňa"
-
-msgid "Resume"
-msgstr "Životopis"
-
-#, fuzzy
-msgid "Delete"
-msgstr "Zmazať"
-
-#, fuzzy
-msgid "Are you sure you want to delete this upload?"
-msgstr "Naozaj chcete odstrániť toto nahrávanie?"
-
-#, fuzzy
-msgid "Delete, and don't ask me again."
-msgstr "Odstrániť a viac sa ma nepýtať."
 
 #, fuzzy
 msgid "Remove Layers"
@@ -2884,14 +2916,6 @@ msgstr ""
 #, fuzzy
 msgid "Replace Layer"
 msgstr "Vymeňte vrstvu"
-
-#, fuzzy
-msgid "Preserve Metadata XML"
-msgstr "Zachovať XML metaúdajov"
-
-#, fuzzy
-msgid "Select the charset or leave default"
-msgstr "Vyberte znakovú sadu alebo nechajte predvolenú"
 
 #, fuzzy
 msgid "Manage Styles"
@@ -2944,6 +2968,10 @@ msgstr "Týmto sa pravdepodobne prepíše aktuálny predvolený štýl!"
 
 msgid "Preview"
 msgstr "Náhľad"
+
+#, fuzzy
+msgid "Required Metadata"
+msgstr "Metadáta zdrojov"
 
 #, fuzzy
 msgid "Dataset Attributes"
@@ -3577,16 +3605,27 @@ msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "Pokúšate sa nahradiť vektorovú vrstvu neznámym formátom."
 
 #, fuzzy
-msgid "You are attempting to replace a vector layer with a raster."
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr "Identifikátor UUID z metaúdajov XML sa v tomto systéme už používa."
+
+#, fuzzy, python-brace-format
+msgid "You are attempting to {action_type} a vector layer with a raster."
 msgstr "Pokúšate sa nahradiť vektorovú vrstvu rastrom."
 
-#, fuzzy
-msgid "You are attempting to replace a raster layer with a vector."
+#, fuzzy, python-brace-format
+msgid "You are attempting to {action_type} a raster layer with a vector."
 msgstr "Pokúšate sa nahradiť rastrovú vrstvu vektorom."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr "Pokúšate sa nahradiť vektorovú vrstvu neznámym formátom."
+
+#, fuzzy, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 "Skontrolujte, či je názov v súlade so súborom, ktorý sa pokúšate nahradiť."
 
@@ -3594,23 +3633,25 @@ msgstr ""
 msgid "Local GeoNode layer has no geometry type."
 msgstr "Lokálna vrstva GeoNode nemá žiadny typ geometrie."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 "Uistite sa, že existuje aspoň jeden typ geometrie, ktorý je v súlade so "
 "súborom, ktorý sa pokúšate nahradiť."
 
-#, fuzzy, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
-msgstr "Pri pokuse o prístup k nahranej schéme sa vyskytla chyba: %s"
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
+msgstr ""
 
 #, fuzzy
 msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
-msgstr "Identifikátor UUID z metaúdajov XML sa v tomto systéme už používa."
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
+msgstr "Pri pokuse o prístup k nahranej schéme sa vyskytla chyba: %s"
 
 #, fuzzy
 msgid ""
@@ -3653,8 +3694,12 @@ msgid "Failed to upload the layer"
 msgstr "Nepodarilo sa nahrať vrstvu"
 
 #, fuzzy
-msgid "Unable to delete layer"
-msgstr "Vrstvu nie je možné odstrániť"
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "Pokúšate sa nahradiť vektorovú vrstvu rastrom."
+
+#, fuzzy
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "Pokúšate sa nahradiť rastrovú vrstvu vektorom."
 
 #, fuzzy
 msgid ""
@@ -3664,8 +3709,8 @@ msgstr ""
 "Táto vrstva je členom skupiny vrstiev. Pred odstránením musíte vrstvu zo "
 "skupiny odstrániť."
 
-#, fuzzy
-msgid "couldn't generate thumbnail"
+#, fuzzy, python-format
+msgid "couldn't generate thumbnail: %s"
 msgstr "sa nepodarilo vygenerovať miniatúru"
 
 #, fuzzy
@@ -3909,6 +3954,10 @@ msgstr ""
 "        Niektoré z vašich pôvodných metadát mohli byť stratené."
 
 #, fuzzy
+msgid "Return to Map"
+msgstr "Späť na mapu"
+
+#, fuzzy
 msgid "Remove Map"
 msgstr "Odstrániť mapu"
 
@@ -3947,10 +3996,6 @@ msgid "You are not allowed to view this map."
 msgstr "Na túto mapu nemáte povolenie."
 
 #, fuzzy
-msgid "Thumbnail saved"
-msgstr "Miniatúra bola uložená"
-
-#, fuzzy
 msgid "error saving thumbnail"
 msgstr "chyba pri ukladaní miniatúry"
 
@@ -3971,7 +4016,7 @@ msgid "Alert situation reported by monitoring"
 msgstr "Výstražná situácia hlásená monitorovaním"
 
 #, fuzzy
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr "Monitorovanie GeoNode v službe {} hlási chyby: {}"
 
 #, fuzzy
@@ -4059,8 +4104,8 @@ msgstr "Zobraziť údaje pre konkrétny zdroj"
 msgid "Show data for specific label"
 msgstr "Zobraziť údaje pre konkrétny štítok"
 
-#, fuzzy
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, fuzzy, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr "Výsledok zapísať do súboru, predvolené GEOIP_PATH: {}"
 
 #, fuzzy
@@ -4235,9 +4280,9 @@ msgstr "Aké závažné by boli chyby z tohto oznámenia"
 msgid "Is it active"
 msgstr "Je to aktívne?"
 
-#, fuzzy
-msgid "{}: {}"
-msgstr "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
+msgstr ""
 
 #, fuzzy
 msgid "Value must be above"
@@ -4622,8 +4667,8 @@ msgstr "Upraviť profil"
 msgid "Explore People"
 msgstr "Preskúmajte ľudí"
 
-#, fuzzy
-msgid "Your username for "
+#, fuzzy, python-brace-format
+msgid "Your username for {site.name}"
 msgstr "Vaše používateľské meno pre"
 
 #, fuzzy
@@ -4935,8 +4980,8 @@ msgstr "Vybraté zdroje sa importovali"
 msgid "Resource is already being processed"
 msgstr "Zdroj sa už spracováva"
 
-#, fuzzy
-msgid "Resource {} is being processed"
+#, fuzzy, python-brace-format
+msgid "Resource {resource_id} is being processed"
 msgstr "Zdroj {} sa spracováva"
 
 #, fuzzy
@@ -4951,8 +4996,8 @@ msgstr "Nemáte oprávnenie meniť túto službu."
 msgid "You are not permitted to remove this service."
 msgstr "Nemáte oprávnenie túto službu odstraňovať."
 
-#, fuzzy
-msgid "Service {} has been deleted"
+#, fuzzy, python-brace-format
+msgid "Service {service.name} has been deleted"
 msgstr "Služba {} bola odstránená"
 
 msgid "created"
@@ -5224,6 +5269,13 @@ msgstr "Ušetrite geografické limity"
 #, fuzzy
 msgid "Delete Geo Limits"
 msgstr "Odstrániť geografické limity"
+
+#, fuzzy
+msgid "Message box"
+msgstr "Schránka správ"
+
+msgid "OK"
+msgstr "OK"
 
 #, fuzzy
 msgid "Mandatory files : SHP , DBF"
@@ -6472,9 +6524,6 @@ msgstr "je členom nasledujúcich skupín"
 msgid "Updating Metadata..."
 msgstr "Aktualizujú sa metadáta ..."
 
-msgid "ERROR"
-msgstr "CHYBA"
-
 #, fuzzy
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr "Kategória témy je povinná a nemôže byť prázdna!"
@@ -6482,14 +6531,6 @@ msgstr "Kategória témy je povinná a nemôže byť prázdna!"
 #, fuzzy
 msgid "Group is mandatory and cannot be empty!"
 msgstr "Skupina je povinná a nemôže byť prázdna!"
-
-#, fuzzy
-msgid "Return to Document"
-msgstr "Späť na dokument"
-
-#, fuzzy
-msgid "Return to Map"
-msgstr "Späť na mapu"
 
 #, fuzzy
 msgid "Identification"
@@ -6560,6 +6601,9 @@ msgstr "Online odkaz"
 #, fuzzy
 msgid "* Field declared Mandatory by the Metadata Schema"
 msgstr "* Pole vyjadrené ako povinné v schéme metadát"
+
+msgid "Please, fill the following items before clicking on preview:"
+msgstr ""
 
 #, fuzzy
 msgid "Request perission"
@@ -6997,10 +7041,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "Najpopulárnejšie"
 
-#, fuzzy
-msgid "Thesaurus"
-msgstr "Tezaurus"
-
 msgid "Text"
 msgstr "Text"
 
@@ -7245,20 +7285,20 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr "Na podporu časového kroku musíte povoliť možnosť OGC_SERVER DATASTORE"
 
-#, fuzzy, python-format
-msgid "Unsupported file type: %s"
+#, fuzzy, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr "Nepodporovaný typ súboru: %s"
 
-#, fuzzy, python-format
-msgid "File does not exist: %s"
+#, fuzzy, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr "Súbor neexistuje: %s"
 
-#, fuzzy, python-format
-msgid "unknown item state: %s"
+#, fuzzy, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr "neznámy stav položky: %s"
 
-#, fuzzy, python-format
-msgid "error during import: %s"
+#, fuzzy
+msgid "error during import: {progress.get('message')}"
 msgstr "chyba počas importu: %s"
 
 #, fuzzy
@@ -7279,3 +7319,31 @@ msgstr "Neplatná úroveň povolenia."
 
 msgid "Permission Denied"
 msgstr "Povolenie bolo odmietnuté"
+
+#, fuzzy
+#~ msgid "Climate"
+#~ msgstr "Podnebie"
+
+#, fuzzy
+#~ msgid "Geoscience"
+#~ msgstr "Geoveda"
+
+#, fuzzy
+#~ msgid "Utilities"
+#~ msgstr "Verejné služby"
+
+#, fuzzy
+#~ msgid "Unable to delete layer"
+#~ msgstr "Vrstvu nie je možné odstrániť"
+
+#, fuzzy
+#~ msgid "Thumbnail saved"
+#~ msgstr "Miniatúra bola uložená"
+
+#, fuzzy
+#~ msgid "{}: {}"
+#~ msgstr "{}: {}"
+
+#, fuzzy
+#~ msgid "Thesaurus"
+#~ msgstr "Tezaurus"
