@@ -269,7 +269,7 @@ define(['underscore',
         const removeModalButton = removeModal && removeModal.querySelector('.remove-incomplete-upload-modal-button');
         const removeModalName = removeModal && removeModal.querySelector('.remove-incomplete-upload-modal-name');
 
-        const intervalTime = 5000;
+        const intervalTime = 3000;
 
         var page = 1;
         var maxPage = 1;
@@ -378,8 +378,8 @@ define(['underscore',
             row.appendChild(name);
 
             const date = document.createElement('td');
-            date.innerHTML = properties.date
-                ? new Date(properties.date).toLocaleString()
+            date.innerHTML = properties.create_date
+                ? new Date(properties.create_date).toLocaleString()
                 : 'none';
             row.appendChild(date);
 
@@ -395,7 +395,7 @@ define(['underscore',
 
             switch(properties.state) {
                 case 'PENDING':
-                    row.setAttribute('class', 'active');
+                    row.setAttribute('class', 'warning');
                     break;
                 case 'PROCESSED':
                     row.setAttribute('class', 'success');
@@ -451,6 +451,14 @@ define(['underscore',
                 var start = (page - 1) * pageSize;
                 var end = start + pageSize;
                 var items = [].concat(uploads).concat(processed);
+
+                items.sort(function(a, b) {
+                    return (a.create_date < b.create_date)
+                        ? 1
+                        : ((a.create_date > b.create_date)
+                            ? -1
+                            : 0)
+                });
 
                 maxPage = Math.ceil(items.length / pageSize);
 
