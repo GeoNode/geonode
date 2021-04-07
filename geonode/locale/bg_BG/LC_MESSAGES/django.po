@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-22 10:31+0000\n"
+"POT-Creation-Date: 2021-04-07 14:50+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bulgarian (Bulgaria) (http://www.transifex.com/geonode/"
@@ -142,9 +142,6 @@ msgstr "данните се обновяват на всеки три месец
 msgid "No information provided"
 msgstr "Няма предоставена информация"
 
-msgid "Category"
-msgstr "Категория"
-
 msgid "Category is required."
 msgstr "Изисква се категория"
 
@@ -215,6 +212,9 @@ msgstr "Региони"
 #| msgid "Groups"
 msgid "Group"
 msgstr "Групи "
+
+msgid "Category"
+msgstr "Категория"
 
 msgid "License"
 msgstr "Лиценз"
@@ -1184,6 +1184,9 @@ msgstr "Редакция на метаданни"
 msgid "Editing details for"
 msgstr "Редакционни детайли за"
 
+msgid "Return to Document"
+msgstr ""
+
 msgid "Deleting"
 msgstr "Изтриване"
 
@@ -1302,17 +1305,12 @@ msgid "Responsible and Permissions"
 msgstr "Промяна в настройките за достъп до слой. "
 
 #, fuzzy
-#| msgid "Message Inbox"
-msgid "Message box"
-msgstr "Съобщения"
-
-msgid "OK"
-msgstr ""
-
-#, fuzzy
 #| msgid "Is Published"
 msgid "Publishing"
 msgstr "Е публикуван"
+
+msgid "You are not allowed to view this document."
+msgstr "Вие нямате право да видите този документ."
 
 msgid "You are not permitted to delete this document"
 msgstr "Вие нямате разрешение да изтриете този документ"
@@ -1338,9 +1336,6 @@ msgstr "Не е предоставен "
 #| msgid "Page Not Found"
 msgid "Not found"
 msgstr "Страницата не е открита  "
-
-msgid "You are not allowed to view this document."
-msgstr "Вие нямате право да видите този документ."
 
 msgid "You must set a point of contact for this resource"
 msgstr "Трябва да зададете точка за контакт към този ресурс"
@@ -1999,16 +1994,16 @@ msgstr "Създай група"
 msgid "Save"
 msgstr "Запеметяване"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2272,6 +2267,48 @@ msgstr "последно редактиран"
 msgid "date when attribute statistics were last updated"
 msgstr "дата, на която статистиките на атрибута последно са актуализирани"
 
+#, fuzzy
+#| msgid "Edit Layer"
+msgid "Append to Layer"
+msgstr "Редактиране на слой "
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "Слой беше зареден"
+
+msgid "Return to Layer"
+msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr "Незавършено зареждане"
+
+msgid "You have the following incomplete uploads"
+msgstr "Имате следните непълни качвания "
+
+msgid "last updated on"
+msgstr "последно обновяване на "
+
+msgid "Resume"
+msgstr "Започни отново"
+
+msgid "Delete"
+msgstr "Изтрий"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "Сигурни ли сте, че искате да изтриете качения файл? "
+
+msgid "Delete, and don't ask me again."
+msgstr "Изтрий и не ме питай повече. "
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Preserve Metadata XML"
+msgstr "Редактирай метаданни за услуга "
+
+msgid "Select the charset or leave default"
+msgstr "Изберете набора от знаци или оставете по подразбиране "
+
 msgid "Home"
 msgstr "Начало"
 
@@ -2440,6 +2477,9 @@ msgid_plural "Layers"
 msgstr[0] "Слоеве "
 msgstr[1] "Слоеве"
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr "Редактиране на данни "
 
@@ -2607,9 +2647,6 @@ msgstr ""
 "и Dublin Core.\n"
 "Някои от оригиналните ви метаданни може да са изгубени. "
 
-msgid "Return to Layer"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -2654,27 +2691,6 @@ msgstr "Слой беше зареден"
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "Незавършено зареждане"
-
-msgid "You have the following incomplete uploads"
-msgstr "Имате следните непълни качвания "
-
-msgid "last updated on"
-msgstr "последно обновяване на "
-
-msgid "Resume"
-msgstr "Започни отново"
-
-msgid "Delete"
-msgstr "Изтрий"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Сигурни ли сте, че искате да изтриете качения файл? "
-
-msgid "Delete, and don't ask me again."
-msgstr "Изтрий и не ме питай повече. "
-
 msgid "Remove Layers"
 msgstr "Премахване на слоеве "
 
@@ -2691,14 +2707,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "Заместване на слой "
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Preserve Metadata XML"
-msgstr "Редактирай метаданни за услуга "
-
-msgid "Select the charset or leave default"
-msgstr "Изберете набора от знаци или оставете по подразбиране "
 
 msgid "Manage Styles"
 msgstr "Управляване на стилове"
@@ -3259,31 +3267,50 @@ msgstr "сега"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "Вие се опитвате да замените векторен слой с растерен."
 
-msgid "You are attempting to replace a vector layer with a raster."
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector layer with a raster."
 msgstr "Вие се опитвате да замените векторен слой с растерен."
 
-msgid "You are attempting to replace a raster layer with a vector."
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster layer with a vector."
 msgstr "Вие се опитвате да замените растерен слой с векторен."
 
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr "Вие се опитвате да замените векторен слой с растерен."
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
+msgstr ""
+
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
 "Some error occurred while trying to access the uploaded schema: {str(e)}"
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
 msgstr ""
 
 msgid ""
@@ -3317,6 +3344,12 @@ msgstr "Нямате рзрешение да разглеждате този с�
 #| msgid "Files to be uploaded"
 msgid "Failed to upload the layer"
 msgstr "Слоеве за зареждане"
+
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "Вие се опитвате да замените векторен слой с растерен."
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "Вие се опитвате да замените растерен слой с векторен."
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
@@ -3550,6 +3583,11 @@ msgstr ""
 "Въвеждането на метаданни в GeoNode поддържа подсет елементи от ISO, FGDC, и "
 "Dublin Core метаданни.\n"
 "Някои от вашите оригинални метаданни може да са загубени."
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "Върни се към"
 
 msgid "Remove Map"
 msgstr "Премахване на карта "
@@ -4184,7 +4222,9 @@ msgstr "Обновяване на профил "
 msgid "Explore People"
 msgstr "Преглед на потребители "
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "Вашето потребителско име за "
 
 msgid "Your username has been emailed to you."
@@ -4792,6 +4832,14 @@ msgstr ""
 #| msgid "Delete from Favorites"
 msgid "Delete Geo Limits"
 msgstr "Изтрий от Любими"
+
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "Message box"
+msgstr "Съобщения"
+
+msgid "OK"
+msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5993,14 +6041,6 @@ msgstr ""
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
 
-msgid "Return to Document"
-msgstr ""
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "Върни се към"
-
 msgid "Identification"
 msgstr ""
 
@@ -6062,6 +6102,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy

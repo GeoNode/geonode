@@ -33,7 +33,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-22 10:31+0000\n"
+"POT-Creation-Date: 2021-04-07 14:50+0200\n"
 "PO-Revision-Date: 2020-05-25 23:49+0100\n"
 "Last-Translator: João Gaspar <joao.f.r.gaspar@gmail.com>\n"
 "Language-Team: Portuguese (http://www.transifex.com/geonode/geonode/language/"
@@ -144,9 +144,6 @@ msgstr "informação atualizada a cada três meses"
 msgid "No information provided"
 msgstr "Nenhuma informação fornecida"
 
-msgid "Category"
-msgstr "Categoria"
-
 msgid "Category is required."
 msgstr "Categoria é necessária."
 
@@ -211,6 +208,9 @@ msgstr "Regiões"
 
 msgid "Group"
 msgstr "Grupo"
+
+msgid "Category"
+msgstr "Categoria"
 
 msgid "License"
 msgstr "Licença"
@@ -1176,6 +1176,9 @@ msgstr "Editar Metadados"
 msgid "Editing details for"
 msgstr "Editar detalhes para"
 
+msgid "Return to Document"
+msgstr "Voltar ao Documento"
+
 msgid "Deleting"
 msgstr "Apagar"
 
@@ -1272,14 +1275,11 @@ msgstr "Partes Resposáveis"
 msgid "Responsible and Permissions"
 msgstr "Responsabilidade e Permissões"
 
-msgid "Message box"
-msgstr "Caixa de entrada"
-
-msgid "OK"
-msgstr "OK"
-
 msgid "Publishing"
 msgstr "Tipo de Publicação"
+
+msgid "You are not allowed to view this document."
+msgstr "Você não tem permissão para ver este documento."
 
 msgid "You are not permitted to delete this document"
 msgstr "Você não tem permissão para apagar este documento"
@@ -1305,9 +1305,6 @@ msgstr "Não fornecido"
 #| msgid "Maps found"
 msgid "Not found"
 msgstr "Mapas encontrados"
-
-msgid "You are not allowed to view this document."
-msgstr "Você não tem permissão para ver este documento."
 
 msgid "You must set a point of contact for this resource"
 msgstr "Tem de definir um ponto de contato para este recurso"
@@ -1919,16 +1916,19 @@ msgstr "Editar Categoria de Grupo"
 msgid "Save"
 msgstr "Guardar"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, fuzzy, python-brace-format
+#| msgid "The e-mail address '%(email)s' has already been invited."
+msgid "The e-mail address '{email}' has already been invited."
 msgstr "O endereço de email '%(email)s' já foi convidado."
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, fuzzy, python-brace-format
+#| msgid "The e-mail address '%(email)s' has already accepted an invite."
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr "O endereço de email '%(email)s' já aceitou um convite."
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, fuzzy, python-brace-format
+#| msgid "An active user is already using the e-mail address '%(email)s'"
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr "Um utilizador ativo já está a usar o endereço de email '%(email)s'"
 
 msgid "E-mail"
@@ -2178,6 +2178,46 @@ msgstr "última modificação"
 msgid "date when attribute statistics were last updated"
 msgstr "data de quando as estatísticas dos atributos foram atualizadas"
 
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Append to Layer"
+msgstr "Voltar à Camada"
+
+#, fuzzy
+#| msgid "layers upload"
+msgid "layers append"
+msgstr "carregamento de camadas"
+
+msgid "Return to Layer"
+msgstr "Voltar à Camada"
+
+msgid "Incomplete Uploads"
+msgstr "Uploads incompletos"
+
+msgid "You have the following incomplete uploads"
+msgstr "Você tem estes carregamentos incompletos"
+
+msgid "last updated on"
+msgstr "última atualização em"
+
+msgid "Resume"
+msgstr "Resumo"
+
+msgid "Delete"
+msgstr "Apagar"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "Tem certeza que deseja remover este arquivo?"
+
+msgid "Delete, and don't ask me again."
+msgstr "Apague e não me pergunte mais."
+
+msgid "Preserve Metadata XML"
+msgstr "Preservar XML dos Metadados"
+
+msgid "Select the charset or leave default"
+msgstr "Selecione o charset ou deixe o padrão"
+
 msgid "Home"
 msgstr "Início"
 
@@ -2327,6 +2367,9 @@ msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] "Camada"
 msgstr[1] "Camadas"
+
+msgid "Append Data"
+msgstr ""
 
 msgid "Edit data"
 msgstr "Editar dados"
@@ -2482,9 +2525,6 @@ msgstr ""
 "elementos de metadados ISO, FGDC e Dublin Core.\n"
 "           Alguns dos seus metadados originais podem ter sido perdidos."
 
-msgid "Return to Layer"
-msgstr "Voltar à Camada"
-
 #, python-format
 msgid ""
 "\n"
@@ -2526,27 +2566,6 @@ msgstr "carregamento de camadas"
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 
-msgid "Incomplete Uploads"
-msgstr "Uploads incompletos"
-
-msgid "You have the following incomplete uploads"
-msgstr "Você tem estes carregamentos incompletos"
-
-msgid "last updated on"
-msgstr "última atualização em"
-
-msgid "Resume"
-msgstr "Resumo"
-
-msgid "Delete"
-msgstr "Apagar"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Tem certeza que deseja remover este arquivo?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Apague e não me pergunte mais."
-
 msgid "Remove Layers"
 msgstr "Remover Camadas"
 
@@ -2564,12 +2583,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "Substituir Camada"
-
-msgid "Preserve Metadata XML"
-msgstr "Preservar XML dos Metadados"
-
-msgid "Select the charset or leave default"
-msgstr "Selecione o charset ou deixe o padrão"
 
 msgid "Manage Styles"
 msgstr "Gerenciar Estilos"
@@ -3197,14 +3210,35 @@ msgstr ""
 "Você está a tentar substituir uma camada vetorial com um formato "
 "desconhecido."
 
-msgid "You are attempting to replace a vector layer with a raster."
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector layer with a raster."
 msgstr "Você está a tentar substituir uma camada vetorial por um raster."
 
-msgid "You are attempting to replace a raster layer with a vector."
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster layer with a vector."
 msgstr "Você está a tentar substituir uma camada raster por um vetorial."
 
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with an unknown format."
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr ""
+"Você está a tentar substituir uma camada vetorial com um formato "
+"desconhecido."
+
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Please ensure the name is consistent with the file you are trying to "
+#| "replace."
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 "Certifique-se de que o nome é consistente com o ficheiro que você está a "
 "tentar substituir."
@@ -3212,14 +3246,25 @@ msgstr ""
 msgid "Local GeoNode layer has no geometry type."
 msgstr "A camada local do GeoNode não tem qualquer tipo de geometria."
 
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Please ensure there is at least one geometry "
+#| "type                                 that is consistent with the file you "
+#| "are trying to replace."
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 "Por favor, certifique-se de que há pelo menos um tipo de "
 "geometria                                  que é consistente com o ficheiro "
 "que está a tentar substituir."
+
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
+msgstr ""
 
 #, fuzzy
 #| msgid "Some error occurred while trying to access the uploaded schema: %s"
@@ -3227,10 +3272,6 @@ msgid ""
 "Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 "Ocorreu algum tipo de erro enquanto tentava aceder ao esquema carregado: %s"
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
 
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
@@ -3264,6 +3305,12 @@ msgstr "Você não tem permissão para ver esta camada"
 
 msgid "Failed to upload the layer"
 msgstr "Falha no carregamento da camada"
+
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "Você está a tentar substituir uma camada vetorial por um raster."
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "Você está a tentar substituir uma camada raster por um vetorial."
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
@@ -3483,6 +3530,9 @@ msgstr ""
 "de metadados. Importação de metadados de GeoNode suporta um subconjunto de "
 "elementos de metadados ISO, FGDC, e Dublin Core. Alguns de seus metadados "
 "original pode ter sido perdida."
+
+msgid "Return to Map"
+msgstr "Voltar ao Mapa"
 
 msgid "Remove Map"
 msgstr "Remover Mapa"
@@ -4063,7 +4113,9 @@ msgstr "Atualizar Perfil"
 msgid "Explore People"
 msgstr "Conhecer Usuários"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "O seu utilizador para "
 
 msgid "Your username has been emailed to you."
@@ -4581,6 +4633,12 @@ msgstr "Guardar Limites Geográficos"
 
 msgid "Delete Geo Limits"
 msgstr "Eliminar Limites Geográficos"
+
+msgid "Message box"
+msgstr "Caixa de entrada"
+
+msgid "OK"
+msgstr "OK"
 
 msgid "Mandatory files : SHP , DBF"
 msgstr "Ficheiros obrigatórios : SHP , DBF"
@@ -5784,12 +5842,6 @@ msgstr "Categoria do Tópico é obrigatório e tem de ser preenchido!"
 msgid "Group is mandatory and cannot be empty!"
 msgstr "O Grupo é obrigatório e tem de ser preenchido!"
 
-msgid "Return to Document"
-msgstr "Voltar ao Documento"
-
-msgid "Return to Map"
-msgstr "Voltar ao Mapa"
-
 msgid "Identification"
 msgstr "Identificação"
 
@@ -5845,6 +5897,9 @@ msgid "Online Link"
 msgstr "Link Online"
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 msgid "Request perission"

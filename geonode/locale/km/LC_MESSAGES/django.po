@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-22 10:31+0000\n"
+"POT-Creation-Date: 2021-04-07 14:50+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/geonode/geonode/language/"
@@ -148,9 +148,6 @@ msgstr "ទិន្នន័យ​ត្រូវ​បាន​ធ្វើ​
 msgid "No information provided"
 msgstr "គ្មាន​ព័ត៌មាន​ដែល​បាន​ផ្តល់"
 
-msgid "Category"
-msgstr "ប្រភេទ"
-
 msgid "Category is required."
 msgstr "ប្រភេទ​ត្រូវ​បាន​ទាមទារ​។"
 
@@ -221,6 +218,9 @@ msgstr "តំបន់"
 #| msgid "Groups"
 msgid "Group"
 msgstr "ក្រុម"
+
+msgid "Category"
+msgstr "ប្រភេទ"
 
 msgid "License"
 msgstr "អាជ្ញាប័ណ្ណ"
@@ -1191,6 +1191,9 @@ msgstr "កែសម្រួល​ទិន្នន័យ​មេតា"
 msgid "Editing details for"
 msgstr ""
 
+msgid "Return to Document"
+msgstr ""
+
 msgid "Deleting"
 msgstr "ការ​លុប"
 
@@ -1306,17 +1309,12 @@ msgid "Responsible and Permissions"
 msgstr "សិទ្ធិ​ផ្លាស់​ប្តូ​រ​ស្រទាប់"
 
 #, fuzzy
-#| msgid "Message Inbox"
-msgid "Message box"
-msgstr "ប្រអប់​ទទួល​សារ"
-
-msgid "OK"
-msgstr ""
-
-#, fuzzy
 #| msgid "Public"
 msgid "Publishing"
 msgstr "សាធារណៈ"
+
+msgid "You are not allowed to view this document."
+msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​មើល​ឯកសារ​នេះ​។"
 
 msgid "You are not permitted to delete this document"
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​លុប​ឯកសារ​នេះ"
@@ -1342,9 +1340,6 @@ msgstr "មិន​បាន​ផ្ដល់"
 #| msgid "Page Not Found"
 msgid "Not found"
 msgstr "រក​មិន​ឃើញ​ទំព័រ"
-
-msgid "You are not allowed to view this document."
-msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​មើល​ឯកសារ​នេះ​។"
 
 #, fuzzy
 #| msgid "Set permissions for this resource"
@@ -2001,16 +1996,16 @@ msgstr "បង្កើត​ក្រុម"
 msgid "Save"
 msgstr "រក្សា​ទុក"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2286,6 +2281,48 @@ msgstr "បាន​កែប្រែ​ចុង​ក្រោយ"
 msgid "date when attribute statistics were last updated"
 msgstr "កាលបរិច្ឆេទ​នៅពេល​ដែល​ស្ថិតិ​គុណលក្ខណៈ​ត្រូវ​បាន​ធ្វើ​ឱ្យ​ទាន់​សម័យ​ចុង​ក្រោយ"
 
+#, fuzzy
+#| msgid "Edit Layer"
+msgid "Append to Layer"
+msgstr "កែសម្រួល​ស្រទាប់"
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+
+msgid "Return to Layer"
+msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr "ផ្ទុក​ឡើង​មិន​ពេញលេញ"
+
+msgid "You have the following incomplete uploads"
+msgstr "អ្នក​មាន​ឯកសារ​ផ្ទុក​ឡើង​មិន​ពេញលេញ​ដូច​ខាង​ក្រោម"
+
+msgid "last updated on"
+msgstr "ធ្វើ​ឱ្យ​ទាន់​សម័យ​ចុង​ក្រោយ​នៅ​លើ"
+
+msgid "Resume"
+msgstr "បន្ត"
+
+msgid "Delete"
+msgstr "លុប"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "តើ​អ្នក​ប្រាកដ​ជា​ចង់​លុប​ការ​ផ្ទុក​ឡើង​នេះ​?"
+
+msgid "Delete, and don't ask me again."
+msgstr "លុប​និង​មិន​សួរ​ខ្ញុំ​ម្តង​ទៀត​។"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Preserve Metadata XML"
+msgstr "កែសម្រួល​សេវា​ទិន្នន័យ​មេតា"
+
+msgid "Select the charset or leave default"
+msgstr "ជ្រើស​សំណុំ​តួអក្សរ​ឬ​ទុក​ឱ្យ​លំនាំដើម"
+
 msgid "Home"
 msgstr "ទំព័រ​ដើម"
 
@@ -2451,6 +2488,9 @@ msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] ""
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr ""
 
@@ -2607,9 +2647,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -2654,27 +2691,6 @@ msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "ផ្ទុក​ឡើង​មិន​ពេញលេញ"
-
-msgid "You have the following incomplete uploads"
-msgstr "អ្នក​មាន​ឯកសារ​ផ្ទុក​ឡើង​មិន​ពេញលេញ​ដូច​ខាង​ក្រោម"
-
-msgid "last updated on"
-msgstr "ធ្វើ​ឱ្យ​ទាន់​សម័យ​ចុង​ក្រោយ​នៅ​លើ"
-
-msgid "Resume"
-msgstr "បន្ត"
-
-msgid "Delete"
-msgstr "លុប"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "តើ​អ្នក​ប្រាកដ​ជា​ចង់​លុប​ការ​ផ្ទុក​ឡើង​នេះ​?"
-
-msgid "Delete, and don't ask me again."
-msgstr "លុប​និង​មិន​សួរ​ខ្ញុំ​ម្តង​ទៀត​។"
-
 msgid "Remove Layers"
 msgstr ""
 
@@ -2688,14 +2704,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "ជំនួស​ស្រទាប់"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Preserve Metadata XML"
-msgstr "កែសម្រួល​សេវា​ទិន្នន័យ​មេតា"
-
-msgid "Select the charset or leave default"
-msgstr "ជ្រើស​សំណុំ​តួអក្សរ​ឬ​ទុក​ឱ្យ​លំនាំដើម"
 
 msgid "Manage Styles"
 msgstr "គ្រប់គ្រង​រចនាប័ទ្ម"
@@ -3239,31 +3247,47 @@ msgstr "ឥឡូវ​នេះ"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector layer with a raster."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a raster layer with a vector."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
+msgstr ""
+
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
 "Some error occurred while trying to access the uploaded schema: {str(e)}"
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
 msgstr ""
 
 msgid ""
@@ -3297,6 +3321,12 @@ msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្
 #| msgid "Files to be uploaded"
 msgid "Failed to upload the layer"
 msgstr "ឯកសារ​នឹង​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
@@ -3527,6 +3557,11 @@ msgstr ""
 "ចំណាំ & ‧​;​: ទិន្នន័យ​មេតា orginal ផែនទី​នេះ​ត្រូវ​បាន​ប្រជាជន​ដោយ​ការ​នាំ​ចូល​ឯកសារ​ទិន្នន័យ​មេតា​របស់ "
 "XML ។ ការ​នាំ​ចូល​ទិន្នន័យ​មេតា GeoNode គាំទ្រ​របស់​សំណុំ​រង​របស់​អាយ​អេ​ស​អូ​, FGDC​, និង​ទីក្រុង Dublin ស្នូល​"
 "ធាតុ​ទិន្នន័យ​មេតា​មួយ​។ មួយ​ចំនួន​នៃ​ទិន្នន័យ​មេតា​ដើម​របស់​អ្នក​អាច​ត្រូវ​បាន​បាត់​បង់​។"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "ត្រឡប់​ទៅ"
 
 msgid "Remove Map"
 msgstr ""
@@ -4151,7 +4186,9 @@ msgstr "ទម្រង់​ធ្វើ​ឱ្យ​ទាន់​សម័
 msgid "Explore People"
 msgstr "រុករក​ប្រជាជន"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "ឈ្មោះ​អ្នក​ប្រើ​របស់​អ្នក​សម្រាប់"
 
 msgid "Your username has been emailed to you."
@@ -4731,6 +4768,14 @@ msgstr ""
 #| msgid "Delete These"
 msgid "Delete Geo Limits"
 msgstr "លុប​ទាំង​នេះ"
+
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "Message box"
+msgstr "ប្រអប់​ទទួល​សារ"
+
+msgid "OK"
+msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5729,14 +5774,6 @@ msgstr ""
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
 
-msgid "Return to Document"
-msgstr ""
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "ត្រឡប់​ទៅ"
-
 msgid "Identification"
 msgstr ""
 
@@ -5798,6 +5835,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy

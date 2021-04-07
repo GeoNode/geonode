@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-22 10:31+0000\n"
+"POT-Creation-Date: 2021-04-07 14:50+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (http://www.transifex.com/geonode/geonode/language/"
@@ -150,9 +150,6 @@ msgstr "داده است که هر سه ماه"
 msgid "No information provided"
 msgstr "بدون اطلاعات ارائه شده"
 
-msgid "Category"
-msgstr "رده"
-
 msgid "Category is required."
 msgstr "رده مورد نیاز است."
 
@@ -223,6 +220,9 @@ msgstr "مناطق"
 #| msgid "Groups"
 msgid "Group"
 msgstr "گروه"
+
+msgid "Category"
+msgstr "رده"
 
 msgid "License"
 msgstr "پروانه"
@@ -1197,6 +1197,9 @@ msgstr "ویرایش فراداده"
 msgid "Editing details for"
 msgstr ""
 
+msgid "Return to Document"
+msgstr ""
+
 msgid "Deleting"
 msgstr "حذف"
 
@@ -1312,17 +1315,12 @@ msgid "Responsible and Permissions"
 msgstr "مجوز تغییر لایه"
 
 #, fuzzy
-#| msgid "Message Inbox"
-msgid "Message box"
-msgstr "پیام صندوق"
-
-msgid "OK"
-msgstr ""
-
-#, fuzzy
 #| msgid "Public"
 msgid "Publishing"
 msgstr "عمومی"
+
+msgid "You are not allowed to view this document."
+msgstr "برای مشاهده این سند برای شما امکان پذیر نیست."
 
 msgid "You are not permitted to delete this document"
 msgstr "شما مجاز به حذف این سند"
@@ -1348,9 +1346,6 @@ msgstr "ارائه نشده است"
 #| msgid "Page Not Found"
 msgid "Not found"
 msgstr "صفحه پیدا نشد"
-
-msgid "You are not allowed to view this document."
-msgstr "برای مشاهده این سند برای شما امکان پذیر نیست."
 
 #, fuzzy
 #| msgid "Set permissions for this resource"
@@ -2008,16 +2003,16 @@ msgstr "ایجاد گروه"
 msgid "Save"
 msgstr "ذخيره"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2293,6 +2288,48 @@ msgstr "آخرین ویرایش"
 msgid "date when attribute statistics were last updated"
 msgstr "تاریخ و زمان آخرین آمار صفت بودند به روز شده"
 
+#, fuzzy
+#| msgid "Edit Layer"
+msgid "Append to Layer"
+msgstr "ویرایش لایه"
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "لایه آپلود شد"
+
+msgid "Return to Layer"
+msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr "ارسال ناقص"
+
+msgid "You have the following incomplete uploads"
+msgstr "شما از این ارسال زیر ناقص"
+
+msgid "last updated on"
+msgstr "آخرین بروز رسانی در"
+
+msgid "Resume"
+msgstr "خلاصه"
+
+msgid "Delete"
+msgstr "حذف کردن"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "آیا مطمئن هستید که می خواهید این آپلود را حذف کنید؟"
+
+msgid "Delete, and don't ask me again."
+msgstr "حذف و دوباره از من بپرسید."
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Preserve Metadata XML"
+msgstr "ویرایش خدمات فراداده"
+
+msgid "Select the charset or leave default"
+msgstr "کاراکتر را انتخاب کنید و یا به طور پیش فرض ترک"
+
 msgid "Home"
 msgstr "خانه"
 
@@ -2458,6 +2495,9 @@ msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] ""
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr ""
 
@@ -2614,9 +2654,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -2661,27 +2698,6 @@ msgstr "لایه آپلود شد"
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "ارسال ناقص"
-
-msgid "You have the following incomplete uploads"
-msgstr "شما از این ارسال زیر ناقص"
-
-msgid "last updated on"
-msgstr "آخرین بروز رسانی در"
-
-msgid "Resume"
-msgstr "خلاصه"
-
-msgid "Delete"
-msgstr "حذف کردن"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "آیا مطمئن هستید که می خواهید این آپلود را حذف کنید؟"
-
-msgid "Delete, and don't ask me again."
-msgstr "حذف و دوباره از من بپرسید."
-
 msgid "Remove Layers"
 msgstr ""
 
@@ -2695,14 +2711,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "جایگزین لایه"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Preserve Metadata XML"
-msgstr "ویرایش خدمات فراداده"
-
-msgid "Select the charset or leave default"
-msgstr "کاراکتر را انتخاب کنید و یا به طور پیش فرض ترک"
 
 msgid "Manage Styles"
 msgstr "سبک مدیریت"
@@ -3246,31 +3254,47 @@ msgstr "اکنون"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector layer with a raster."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a raster layer with a vector."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
+msgstr ""
+
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
 "Some error occurred while trying to access the uploaded schema: {str(e)}"
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
 msgstr ""
 
 msgid ""
@@ -3304,6 +3328,12 @@ msgstr "برای مشاهده این لایه شما مجاز"
 #| msgid "Files to be uploaded"
 msgid "Failed to upload the layer"
 msgstr "فایل های آپلود می شود"
+
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
@@ -3536,6 +3566,11 @@ msgstr ""
 "توجه: فراداده های ارجینال این نقشه را با وارد کردن یک فایل ابرداده XML جمعیت "
 "بود. واردات ابرداده GeoNode پشتیبانی زیر مجموعه ای از عناصر ابرداده ISO، "
 "FGDC و هسته دوبلین. برخی از ابرداده اصلی خود را ممکن است از دست داده است."
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "بازگشت به"
 
 msgid "Remove Map"
 msgstr ""
@@ -4160,7 +4195,9 @@ msgstr "بروزرسانی"
 msgid "Explore People"
 msgstr "کاوش مردم"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "نام کاربری خود را برای"
 
 msgid "Your username has been emailed to you."
@@ -4740,6 +4777,14 @@ msgstr ""
 #| msgid "Delete These"
 msgid "Delete Geo Limits"
 msgstr "حذف این"
+
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "Message box"
+msgstr "پیام صندوق"
+
+msgid "OK"
+msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5743,14 +5788,6 @@ msgstr ""
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
 
-msgid "Return to Document"
-msgstr ""
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "بازگشت به"
-
 msgid "Identification"
 msgstr ""
 
@@ -5812,6 +5849,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy

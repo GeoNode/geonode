@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-22 10:31+0000\n"
+"POT-Creation-Date: 2021-04-07 14:50+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Finnish (http://www.transifex.com/geonode/geonode/language/"
@@ -143,9 +143,6 @@ msgstr "tiedot päivitetään kolmen kuukauden välein"
 msgid "No information provided"
 msgstr "Tietoa ei ole annettu"
 
-msgid "Category"
-msgstr "Luokka"
-
 msgid "Category is required."
 msgstr "Luokka on pakollinen."
 
@@ -216,6 +213,9 @@ msgstr "Alueet"
 #| msgid "Groups"
 msgid "Group"
 msgstr "Ryhmät"
+
+msgid "Category"
+msgstr "Luokka"
 
 msgid "License"
 msgstr "Lisenssi"
@@ -1195,6 +1195,9 @@ msgstr "Edit Metadata"
 msgid "Editing details for"
 msgstr ""
 
+msgid "Return to Document"
+msgstr ""
+
 msgid "Deleting"
 msgstr "Poistaminen"
 
@@ -1310,17 +1313,12 @@ msgid "Responsible and Permissions"
 msgstr "Muuta Layer Oikeudet"
 
 #, fuzzy
-#| msgid "Message Inbox"
-msgid "Message box"
-msgstr "Viesti Saapuneet"
-
-msgid "OK"
-msgstr ""
-
-#, fuzzy
 #| msgid "Is Published"
 msgid "Publishing"
 msgstr "On julkaistu"
+
+msgid "You are not allowed to view this document."
+msgstr "Et voi tarkastella tätä asiakirjaa."
 
 msgid "You are not permitted to delete this document"
 msgstr "Sinulla ei ole oikeutta poistaa tätä asiakirjaa"
@@ -1346,9 +1344,6 @@ msgstr "Ei toimiteta"
 #| msgid "Page Not Found"
 msgid "Not found"
 msgstr "Sivua ei löydy"
-
-msgid "You are not allowed to view this document."
-msgstr "Et voi tarkastella tätä asiakirjaa."
 
 #, fuzzy
 #| msgid "Set permissions for this resource"
@@ -2008,16 +2003,16 @@ msgstr "Luo ryhmä"
 msgid "Save"
 msgstr "Tallenna"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2293,6 +2288,48 @@ msgstr "viimeksi muutettu"
 msgid "date when attribute statistics were last updated"
 msgstr "jolloin määrite tilastoja on viimeksi päivitetty"
 
+#, fuzzy
+#| msgid "Edit Layer"
+msgid "Append to Layer"
+msgstr "Edit Layer"
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "Kerros ladattu"
+
+msgid "Return to Layer"
+msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr "Epätäydellinen lataukset"
+
+msgid "You have the following incomplete uploads"
+msgstr "Sinulla on seuraavat epätäydellinen kuvat"
+
+msgid "last updated on"
+msgstr "viimeksi päivitetty"
+
+msgid "Resume"
+msgstr "Jatkaa"
+
+msgid "Delete"
+msgstr "Poistaa"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "Oletko varma, että haluat poistaa tämän latauksen?"
+
+msgid "Delete, and don't ask me again."
+msgstr "Poistaa, ja älä kysy uudelleen."
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Preserve Metadata XML"
+msgstr "Edit Service Metadata"
+
+msgid "Select the charset or leave default"
+msgstr "Valitse charset tai jätä oletusarvo"
+
 msgid "Home"
 msgstr "Koti"
 
@@ -2459,6 +2496,9 @@ msgid_plural "Layers"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr ""
 
@@ -2616,9 +2656,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -2663,27 +2700,6 @@ msgstr "Kerros ladattu"
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "Epätäydellinen lataukset"
-
-msgid "You have the following incomplete uploads"
-msgstr "Sinulla on seuraavat epätäydellinen kuvat"
-
-msgid "last updated on"
-msgstr "viimeksi päivitetty"
-
-msgid "Resume"
-msgstr "Jatkaa"
-
-msgid "Delete"
-msgstr "Poistaa"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Oletko varma, että haluat poistaa tämän latauksen?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Poistaa, ja älä kysy uudelleen."
-
 msgid "Remove Layers"
 msgstr ""
 
@@ -2697,14 +2713,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "Vaihda Layer"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Preserve Metadata XML"
-msgstr "Edit Service Metadata"
-
-msgid "Select the charset or leave default"
-msgstr "Valitse charset tai jätä oletusarvo"
 
 msgid "Manage Styles"
 msgstr "Tyylien hallinta"
@@ -3252,31 +3260,47 @@ msgstr "nyt"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector layer with a raster."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a raster layer with a vector."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
+msgstr ""
+
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
 "Some error occurred while trying to access the uploaded schema: {str(e)}"
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
 msgstr ""
 
 msgid ""
@@ -3310,6 +3334,12 @@ msgstr "Sinulla ei ole oikeuksia nähdäksesi tämän kerroksen"
 #| msgid "Files to be uploaded"
 msgid "Failed to upload the layer"
 msgstr "Tiedostot ladattavaksi"
+
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
@@ -3543,6 +3573,11 @@ msgstr ""
 "Huom: Tämä kartta n alkuperäiset metatiedot asui tuomalla metatietojen XML-"
 "tiedosto. GeoNode metatietojen tuonti tukee osaa ISO, FGDC, ja Dublin Core "
 "Metatietoelementtien. Osa alkuperäisen metatiedot on ehkä menetetty."
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "Paluu"
 
 msgid "Remove Map"
 msgstr ""
@@ -4174,7 +4209,9 @@ msgstr "Päivitysprofiilille"
 msgid "Explore People"
 msgstr "Tutustu Ihmiset"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "Käyttäjätunnuksesi"
 
 msgid "Your username has been emailed to you."
@@ -4755,6 +4792,14 @@ msgstr ""
 #| msgid "Delete from Favorites"
 msgid "Delete Geo Limits"
 msgstr "Poista suosituksista"
+
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "Message box"
+msgstr "Viesti Saapuneet"
+
+msgid "OK"
+msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5757,14 +5802,6 @@ msgstr ""
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
 
-msgid "Return to Document"
-msgstr ""
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "Paluu"
-
 msgid "Identification"
 msgstr ""
 
@@ -5826,6 +5863,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy
