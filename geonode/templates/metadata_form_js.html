@@ -400,8 +400,11 @@
 
         {{REQ_THESAURI}}.forEach(element => document.querySelector('select[name="'+ element + '"]').onchange=onInputChange);
 
-        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
-
+        var selection = document.querySelector('select[name="resource-keywords"]');
+        if (selection  !== null) {
+            selection.onchange=onInputChange
+        }
+        
         $('#id_resource-regions').change(onInputChange).change();
         $('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})
         $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(onInputChange).change();})

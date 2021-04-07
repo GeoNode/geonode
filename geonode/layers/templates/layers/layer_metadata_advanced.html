@@ -96,7 +96,7 @@
         <div class="col-md-6 form-controls">
           {% block layer_fields %}
           {% for field in layer_form %}
-            {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' %}
+            {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' and field.name not in ADVANCED_EDIT_EXCLUDE_FIELD %}
             <div style="margin-bottom: 25px">
               <span><label for="{{ field.id }}">{{ field.label }}</label></span>
               {{ field }}
