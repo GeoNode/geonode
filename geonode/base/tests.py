@@ -946,6 +946,26 @@ class TestThesaurusAvailableForm(TestCase):
         obj_class = required.widget.attrs.get('class')
         self.assertTrue(obj_class == '')
 
+    def test_will_return_thesaurus_with_the_expected_defined_order(self):
+        actual = self.sut(data={"1": 1})
+        fields = list(actual.fields.items())
+        #  will check if the first element of the tuple is the thesaurus_id = 2
+        self.assertEqual(fields[0][0], '2')
+        #  will check if the second element of the tuple is the thesaurus_id = 1
+        self.assertEqual(fields[1][0], '1')
+
+    def test_will_return_thesaurus_with_the_defaul_order_as_0(self):
+        # Update thesaurus order to 0 in order to check if the default order by id is observed
+        t = Thesaurus.objects.get(identifier='inspire-theme')
+        t.order = 0
+        t.save()
+        actual = ThesaurusAvailableForm(data={"1": 1})
+        fields = list(actual.fields.items())
+        #  will check if the first element of the tuple is the thesaurus_id = 2
+        self.assertEqual(fields[0][0], '1')
+        #  will check if the second element of the tuple is the thesaurus_id = 1
+        self.assertEqual(fields[1][0], '2')
+
 
 class TestFacets(TestCase):
     def setUp(self):

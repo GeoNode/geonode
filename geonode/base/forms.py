@@ -316,7 +316,7 @@ class ThesaurusAvailableForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ThesaurusAvailableForm, self).__init__(*args, **kwargs)
         lang = get_language()
-        for item in Thesaurus.objects.all():
+        for item in Thesaurus.objects.all().order_by('order', 'id'):
             tname = self._get_thesauro_title_label(item, lang)
             if item.card_max == 0:
                 continue
