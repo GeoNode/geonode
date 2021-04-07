@@ -405,8 +405,11 @@
         $('#id_resource-date').change(onInputChange).change();
         $('#id_resource-links').change(onInputChange).change();
 
-        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange;
-
+        var selection = document.querySelector('select[name="resource-keywords"]');
+        if (selection  !== null) {
+            selection.onchange=onInputChange
+        }
+        
         {{REQ_THESAURI}}.forEach(element => document.querySelector('select[name="'+ element + '"]').onchange=onInputChange);
         
         // workaround to trigger the change in advanced metadata editing

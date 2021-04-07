@@ -199,5 +199,6 @@ def resource_urls(request):
             for x in Thesaurus.objects.all()
             if (x.card_max == -1 and x.card_min == 1) or (x.card_max == 1 and x.card_min == 1)
         ],
+        ADVANCED_EDIT_EXCLUDE_FIELD=getattr(settings, "ADVANCED_EDIT_EXCLUDE_FIELD", []),
     )
     return defaults
