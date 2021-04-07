@@ -85,8 +85,7 @@ def check_geoserver_is_up():
     """
     url = f"{ogc_server_settings.LOCATION}"
     req, content = http_client.get(url, user=_user)
-    msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-           'have started it.' % url)
+    msg = f'Cannot connect to the GeoServer at {url}\nPlease make sure you have started it.'
     logger.debug(req)
     assert req.status_code == 200, msg
 
@@ -179,7 +178,7 @@ _style_templates = dict(
 
 
 def _style_name(resource):
-    return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
+    return _punc.sub("_", f"{resource.store.workspace.name}:{resource.name}")
 
 
 def extract_name_from_sld(gs_catalog, sld, sld_file=None):
@@ -371,22 +370,30 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
                     saved_layer.name, sld,
                     overwrite=True, raw=True,
                     workspace=saved_layer.workspace)
+            elif sld:
+                style.update_body(sld)
         except Exception as e:
             logger.exception(e)
 
-    if layer and style and \
-    style.name != layer.default_style.name and \
-    style.workspace != layer.default_style.workspace:
-        _default_style = gs_catalog.get_style(
+    if layer and style:
+        _old_styles = []
+        _old_styles.append(gs_catalog.get_style(
+            name=saved_layer.name))
+        _old_styles.append(gs_catalog.get_style(
+            name=f"{saved_layer.workspace}_{saved_layer.name}"))
+        _old_styles.append(gs_catalog.get_style(
+            name=layer.default_style.name))
+        _old_styles.append(gs_catalog.get_style(
             name=layer.default_style.name,
-            workspace=layer.default_style.workspace)
+            workspace=layer.default_style.workspace))
         layer.default_style = style
         gs_catalog.save(layer)
+        for _s in _old_styles:
+            try:
+                gs_catalog.delete(_s)
+            except Exception as e:
+                logger.debug(e)
         set_styles(saved_layer, gs_catalog)
-        try:
-            gs_catalog.delete(_default_style)
-        except Exception as e:
-            logger.debug(e)
 
 
 def cascading_delete(layer_name=None, catalog=None):
@@ -481,7 +488,7 @@ def cascading_delete(layer_name=None, catalog=None):
         else:
             if store.resource_type == 'coverageStore':
                 try:
-                    logger.debug(" - Going to purge the " + store.resource_type + " : " + store.href)
+                    logger.debug(f" - Going to purge the {store.resource_type} : {store.href}")
                     cat.reset()  # this resets the coverage readers and unlocks the files
                     cat.delete(store, purge='all', recurse=True)
                     # cat.reload()  # this preservers the integrity of geoserver
@@ -959,7 +966,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                                                            "version": "1.0.0",
                                                            "request": "DescribeFeatureType",
                                                            "typename": typename,
-                                                          })
+                                                           })
         try:
             # The code below will fail if http_client cannot be imported or WFS not supported
             req, body = http_client.get(dft_url, user=_user)
@@ -1059,45 +1066,14 @@ def set_styles(layer, gs_catalog):
             logger.exception("No GeoServer Layer found!")
 
     if gs_layer:
-        default_style = gs_layer.default_style
-        if not default_style:
-            try:
-                default_style = gs_catalog.get_style(layer.name, workspace=layer.workspace) \
-                    or gs_catalog.get_style(layer.name)
-                gs_layer.default_style = default_style
-                gs_catalog.save(gs_layer)
-            except Exception:
-                tb = traceback.format_exc()
-                logger.error(tb)
-                logger.exception("GeoServer Layer Default Style issues!")
-
+        default_style = gs_catalog.get_style(
+            name=gs_layer.default_style.name,
+            workspace=gs_layer.default_style.workspace)
         if default_style:
             # make sure we are not using a default SLD (which won't be editable)
-            style = None
-            if not default_style.workspace:
-                sld_name = default_style.sld_name
-                sld_body = default_style.sld_body
-                try:
-                    style = gs_catalog.get_style(sld_name, workspace=layer.workspace)
-                    if not style:
-                        style = gs_catalog.create_style(sld_name, sld_body, raw=True, workspace=layer.workspace)
-                except Exception:
-                    tb = traceback.format_exc()
-                    logger.error(tb)
-                    logger.exception("GeoServer Layer Default Style issues!")
-            else:
-                style = default_style
+            layer.default_style = save_style(default_style, layer)
+            style_set.append(layer.default_style)
 
-            if style and style != gs_layer.default_style:
-                _default_style = gs_layer.default_style
-                gs_layer.default_style = style
-                gs_catalog.save(gs_layer)
-                layer.default_style = save_style(style, layer)
-                style_set.append(layer.default_style)
-                try:
-                    gs_catalog.delete(_default_style)
-                except Exception as e:
-                    logger.debug(e)
         try:
             if gs_layer.styles:
                 alt_styles = gs_layer.styles
@@ -1106,10 +1082,8 @@ def set_styles(layer, gs_catalog):
                         _s = save_style(alt_style, layer)
                         if _s != layer.default_style:
                             style_set.append(_s)
-        except Exception:
-            tb = traceback.format_exc()
-            logger.error(tb)
-            logger.exception("GeoServer Layer Default Style issues!")
+        except Exception as e:
+            logger.exception(e)
 
     if style_set:
         # Remove duplicates
@@ -1165,35 +1139,19 @@ def set_styles(layer, gs_catalog):
 def save_style(gs_style, layer):
     style_name = os.path.basename(
         urlparse(gs_style.body_href).path).split('.')[0]
-    sld_name = gs_style.sld_name
+    sld_name = gs_style.name
     sld_body = gs_style.sld_body
     if not gs_style.workspace:
-        try:
-            gs_style = gs_catalog.get_style(style_name, workspace=layer.workspace)
-            if not gs_style:
-                gs_style = gs_catalog.create_style(style_name, sld_body, raw=True, workspace=layer.workspace)
-        except Exception as e:
-            tb = traceback.format_exc()
-            logger.debug(tb)
-            raise e
-
-    try:
-        _default_style = gs_catalog.get_style(style_name) or \
-            gs_catalog.get_style(f"{layer.workspace}_{style_name}")
-        if _default_style:
-            # Let's remove any '{saved_layer.workspace}_{saved_layer.name}' temp SLD around
-            gs_catalog.delete(_default_style)
-    except Exception as e:
-        logger.exception(e)
+        gs_style = gs_catalog.create_style(
+            style_name, sld_body,
+            raw=True, overwrite=True,
+            workspace=layer.workspace)
 
     style = None
     try:
         style, created = Style.objects.get_or_create(name=style_name)
-        if not style.workspace and gs_style.workspace:
-            style.workspace = layer.workspace
-
-        title = gs_style.sld_title if gs_style.style_format != 'css' else sld_name
-        style.sld_title = title
+        style.workspace = gs_style.workspace
+        style.sld_title = gs_style.sld_title if gs_style.style_format != 'css' else sld_name
         style.sld_body = gs_style.sld_body
         style.sld_url = gs_style.body_href
         style.save()
@@ -1241,19 +1199,17 @@ def get_attribute_statistics(layer_name, field):
 
 
 def get_wcs_record(instance, retry=True):
-    wcs = WebCoverageService(ogc_server_settings.LOCATION + 'wcs', '1.0.0')
-    key = instance.workspace + ':' + instance.name
+    wcs = WebCoverageService(f"{ogc_server_settings.LOCATION}wcs", '1.0.0')
+    key = f"{instance.workspace}:{instance.name}"
     logger.debug(wcs.contents)
     if key in wcs.contents:
         return wcs.contents[key]
     else:
-        msg = ("Layer '%s' was not found in WCS service at %s." %
-               (key, ogc_server_settings.public_url)
+        msg = (f"Layer '{key}' was not found in WCS service at {ogc_server_settings.public_url}."
                )
         if retry:
             logger.debug(
-                msg +
-                ' Waiting a couple of seconds before trying again.')
+                f"{msg} Waiting a couple of seconds before trying again.")
             time.sleep(2)
             return get_wcs_record(instance, retry=False)
         else:
@@ -1289,8 +1245,7 @@ def cleanup(name, uuid):
     except Layer.DoesNotExist:
         pass
     else:
-        msg = ('Not doing any cleanup because the layer %s exists in the '
-               'Django db.' % name)
+        msg = f'Not doing any cleanup because the layer {name} exists in the Django db.'
         raise GeoNodeException(msg)
 
     cat = gs_catalog
@@ -1658,7 +1613,7 @@ def fetch_gs_resource(instance, values, tries):
             values = {}
         values.update(dict(store=gs_resource.store.name,
                            storeType=gs_resource.store.resource_type,
-                           alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+                           alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
                            title=gs_resource.title or gs_resource.store.name,
                            abstract=gs_resource.abstract or '',
                            owner=instance.owner))
@@ -1674,8 +1629,7 @@ def fetch_gs_resource(instance, values, tries):
 
 
 def get_wms():
-    wms_url = ogc_server_settings.internal_ows + \
-        "?service=WMS&request=GetCapabilities&version=1.1.0"
+    wms_url = f"{ogc_server_settings.internal_ows}?service=WMS&request=GetCapabilities&version=1.1.0"
     req, body = http_client.get(wms_url, user=_user)
     _wms = WebMapService(wms_url, xml=body)
     return _wms
@@ -2035,8 +1989,8 @@ def _dump_image_spec(request_body, image_spec):
 def _fixup_ows_url(thumb_spec):
     # @HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
     # so rendering of thumbnails fails - replace those uri's with full geoserver URL
-    gspath = '"' + ogc_server_settings.public_url  # this should be in img src attributes
-    repl = '"' + ogc_server_settings.LOCATION
+    gspath = f"\"{ogc_server_settings.public_url}"  # this should be in img src attributes
+    repl = f"\"{ogc_server_settings.LOCATION}"
     return re.sub(gspath, repl, thumb_spec)
 
 
@@ -2047,7 +2001,7 @@ def mosaic_delete_first_granule(cat, layer):
     store = cat.get_store(layer)
     coverages = cat.mosaic_coverages(store)
 
-    granule_id = layer + ".1"
+    granule_id = f"{layer}.1"
 
     cat.mosaic_delete_granule(coverages['coverages']['coverage'][0]['name'], store, granule_id)
 

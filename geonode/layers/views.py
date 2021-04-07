@@ -80,10 +80,10 @@ from geonode.layers.models import (
     Attribute,
     UploadSession)
 from geonode.layers.utils import (
-    file_upload,
+    file_upload, get_files, gs_append_data_to_layer,
     is_raster,
     is_vector,
-    surrogate_escape_string)
+    surrogate_escape_string, validate_input_source)
 
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -94,7 +94,7 @@ from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.documents.models import get_related_documents
 from geonode import geoserver
-from geonode.security.utils import get_visible_resources
+from geonode.security.utils import get_visible_resources, set_geowebcache_invalidate_cache
 
 from geonode.utils import (
     resolve_object,
@@ -443,9 +443,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             "legend": {
                 "height": "40",
                 "width": "22",
-                "href": layer.ows_url +
-                "?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=" +
-                quote(layer.service_typename, safe=''),
+                "href": f"{layer.ows_url}?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer={quote(layer.service_typename, safe='')}",
                 "format": "image/png"
             },
             "name": style.name
@@ -1053,9 +1051,8 @@ def layer_metadata(
                             if len(tkl) > 0:
                                 tkl_ids = ",".join(
                                     map(str, tkl.values_list('id', flat=True)))
-                                tkeywords_list += "," + \
-                                    tkl_ids if len(
-                                        tkeywords_list) > 0 else tkl_ids
+                                tkeywords_list += f",{tkl_ids}" if len(
+                                    tkeywords_list) > 0 else tkl_ids
                     except Exception:
                         tb = traceback.format_exc()
                         logger.error(tb)
@@ -1111,7 +1108,7 @@ def layer_metadata(
 
         new_category = None
         if category_form and 'category_choice_field' in category_form.cleaned_data and\
-        category_form.cleaned_data['category_choice_field']:
+                category_form.cleaned_data['category_choice_field']:
             new_category = TopicCategory.objects.get(
                 id=int(category_form.cleaned_data['category_choice_field']))
 
@@ -1249,6 +1246,7 @@ def layer_metadata(
         "metadata_author_groups": metadata_author_groups,
         "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
+        "UI_MANDATORY_FIELDS": ['title', 'abstract', 'doi', 'attribution', 'data_quality_statement', 'restriction_code_type']
     })
 
 
@@ -1368,6 +1366,86 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             register_event(request, 'change', layer)
         else:
             status_code = 400
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=status_code)
+
+
+@login_required
+def layer_append(request, layername, template='layers/layer_append.html'):
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_MODIFY)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
+    if request.method == 'GET':
+        ctx = {
+            'charsets': CHARSETS,
+            'resource': layer,
+            'is_featuretype': layer.is_vector(),
+            'is_layer': True,
+        }
+        return render(request, template, context=ctx)
+    elif request.method == 'POST':
+        form = LayerUploadForm(request.POST, request.FILES)
+        out = {}
+        if form.is_valid():
+            try:
+                tempdir, base_file = form.write_files()
+                files = get_files(base_file)
+                #  validate input source
+                resource_is_valid = validate_input_source(
+                    layer=layer, filename=base_file, files=files, action_type="append"
+                )
+                out = {}
+                if (
+                    os.getenv("DEFAULT_BACKEND_DATASTORE", None) == "datastore"
+                    and os.getenv("DEFAULT_BACKEND_UPLOADER", None) == "geonode.importer"
+                    and resource_is_valid
+                ):
+                    upload_session = gs_append_data_to_layer(layer, list(files.values()), request.user)
+                    upload_session.processed = True
+                    upload_session.save()
+                    out['success'] = True
+                    out['url'] = reverse(
+                        'layer_detail', args=[
+                            layer.service_typename])
+                    #  invalidating resource chache
+                    set_geowebcache_invalidate_cache(layer.typename)
+                    #  updating layer
+                    layer.save()
+                else:
+                    out['success'] = False
+                    out['errors'] = str("Please select a valid Geoserver backend")
+            except Exception as e:
+                logger.exception(e)
+                out['success'] = False
+                out['errors'] = str(e)
+            finally:
+                if tempdir is not None:
+                    shutil.rmtree(tempdir)
+        else:
+            errormsgs = []
+            for e in form.errors.values():
+                errormsgs.append([escape(v) for v in e])
+            out['errors'] = form.errors
+            out['errormsgs'] = errormsgs
+
+        if out['success']:
+            status_code = 200
+            register_event(request, 'change', layer)
+        else:
+            status_code = 400
+
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
@@ -1676,12 +1754,12 @@ def batch_permissions(request, model):
             users_usernames = [_data['user'].username, ] if _data['user'] else None
             groups_names = [_data['group'].name, ] if _data['group'] else None
             if users_usernames and 'AnonymousUser' in users_usernames and \
-            (not groups_names or 'anonymous' not in groups_names):
+                    (not groups_names or 'anonymous' not in groups_names):
                 if not groups_names:
                     groups_names = []
                 groups_names.append('anonymous')
             if groups_names and 'anonymous' in groups_names and \
-            (not users_usernames or 'AnonymousUser' not in users_usernames):
+                    (not users_usernames or 'AnonymousUser' not in users_usernames):
                 if not users_usernames:
                     users_usernames = []
                 users_usernames.append('AnonymousUser')

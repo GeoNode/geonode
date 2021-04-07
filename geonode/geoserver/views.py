@@ -355,30 +355,14 @@ def feature_edit_check(request, layername, permission='change_layer_data'):
         return HttpResponse(
             json.dumps({'authorized': False}), content_type="application/json")
     datastore = ogc_server_settings.DATASTORE
-    feature_edit = datastore
-    is_admin = False
-    is_staff = False
-    is_owner = False
-    is_manager = False
-    if request.user:
-        is_admin = request.user.is_superuser if request.user else False
-        is_staff = request.user.is_staff if request.user else False
-        is_owner = (str(request.user) == str(layer.owner))
-        try:
-            is_manager = request.user.groupmember_set.all().filter(
-                role='manager').exists()
-        except Exception:
-            is_manager = False
-    if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
-            permission,
-            obj=layer) and \
-            ((permission == 'change_layer_data' and layer.storeType == 'dataStore' and feature_edit) or
-             True):
-        return HttpResponse(
-            json.dumps({'authorized': True}), content_type="application/json")
-    else:
-        return HttpResponse(
-            json.dumps({'authorized': False}), content_type="application/json")
+    authorized = False
+    if layer.user_can(request.user, permission):
+        authorized = True
+        if permission == 'change_layer_data':
+            if not (layer.storeType == 'dataStore' and datastore):
+                authorized = False
+    return HttpResponse(
+        json.dumps({'authorized': authorized}), content_type="application/json")
 
 
 def style_edit_check(request, layername):
@@ -549,7 +533,7 @@ def geoserver_proxy(request,
                 else:
                     _style_name, _style_ext = os.path.splitext(_style_name)
                 if _style_name != 'style-check' and _style_ext == '.json' and \
-                not re.match(temp_style_name_regex, _style_name):
+                        not re.match(temp_style_name_regex, _style_name):
                     affected_layers = style_update(request, raw_url)
             elif downstream_path == 'rest/layers':
                 logger.debug(
@@ -593,7 +577,7 @@ def _response_callback(**kwargs):
                 _content = content.decode('UTF-8')
             else:
                 _content = content
-            if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
+            if re.findall(f"(?=(\\b{'|'.join(content_type_list)}\\b))", content_type):
                 _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
                 content = _content\
                     .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
@@ -762,14 +746,14 @@ def format_online_resource(workspace, layer, element, namespaces):
     if layerName is None:
         return
 
-    layerName.text = workspace + ":" + layer if workspace else layer
+    layerName.text = f"{workspace}:{layer}" if workspace else layer
     layerresources = element.findall('.//wms:OnlineResource', namespaces)
     if layerresources is None:
         return
 
     for resource in layerresources:
         wtf = resource.attrib['{http://www.w3.org/1999/xlink}href']
-        replace_string = "/" + workspace + "/" + layer if workspace else "/" + layer
+        replace_string = f"/{workspace}/{layer}" if workspace else f"/{layer}"
         resource.attrib['{http://www.w3.org/1999/xlink}href'] = wtf.replace(
             replace_string, "")
 
@@ -832,8 +816,7 @@ def get_capabilities(request, layerid=None, user=None,
                         import traceback
                         traceback.print_exc()
                         logger.error(
-                            "Error occurred creating GetCapabilities for %s: %s" %
-                            (layer.typename, str(e)))
+                            f"Error occurred creating GetCapabilities for {layer.typename}: {str(e)}")
                         rootdoc = None
                 if layercap is None or not len(layercap) or rootdoc is None or not len(rootdoc):
                     # Get the required info from layer model
@@ -852,8 +835,7 @@ def get_capabilities(request, layerid=None, user=None,
                 import traceback
                 traceback.print_exc()
                 logger.error(
-                    "Error occurred creating GetCapabilities for %s:%s" %
-                    (layer.typename, str(e)))
+                    f"Error occurred creating GetCapabilities for {layer.typename}:{str(e)}")
                 rootdoc = None
     if rootdoc is not None:
         capabilities = etree.tostring(

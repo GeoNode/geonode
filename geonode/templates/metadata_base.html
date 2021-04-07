@@ -48,6 +48,9 @@
             left: 0;
             right: 0;
         }
+        input[placeholder] {
+          text-overflow: ellipsis;
+        }
         .fancy-checkbox input[type="radio"],
         .fancy-checkbox input[type="checkbox"],
         .fancy-checkbox .checked {
@@ -109,6 +112,9 @@
         }
         .form-actions {
           text-align: right;
+        }
+        .form_item_spacing {
+          margin-bottom: 25px
         }
     </style>
 {{ block.super }}
@@ -195,7 +201,6 @@
         <h4 class="modal-title">{% trans "ERROR" %}</h4>
       </div>
       <div class="modal-body general_errors">
-        {% trans "Following items are required:" %}
         <p id="general_errors"></p>
       </div>
       <div class="modal-footer">

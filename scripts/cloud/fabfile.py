@@ -67,9 +67,9 @@ KEY_BASE = os.environ['EC2_KEY_BASE']
 KEY_PATH = '~/.ssh/'  # trailing slash please
 
 # Derived variables
-GEONODEDIR = INSTALLDIR + '/geonode'
-PYLIBS = GEONODEDIR + '/lib/python2.7/site-packages'
-ACT = 'source ' + GEONODEDIR + '/bin/activate'
+GEONODEDIR = f"{INSTALLDIR}/geonode"
+PYLIBS = f"{GEONODEDIR}/lib/python2.7/site-packages"
+ACT = f"source {GEONODEDIR}/bin/activate"
 
 
 # Install GeoNode dependencies
@@ -118,7 +118,7 @@ def deploy_geonode():
         sudo('cp setup/package/support/geonode.apache /etc/apache2/sites-available/geonode')
         sudo('rm -rf setup')
     sed('/etc/apache2/sites-available/geonode', 'REPLACE_WITH_SITEDIR', PYLIBS, use_sudo=True)
-    sed('/etc/apache2/sites-available/geonode', '/var/www/geonode/wsgi/geonode.wsgi', PYLIBS+'/geonode/wsgi.py',
+    sed('/etc/apache2/sites-available/geonode', '/var/www/geonode/wsgi/geonode.wsgi', f"{PYLIBS}/geonode/wsgi.py",
         use_sudo=True)
     # Fix geoserver auth config file
     sed('/usr/share/geoserver/data/security/auth/geonodeAuthProvider/config.xml', 'localhost:8000',
@@ -157,7 +157,7 @@ def enable_site(project):
 def restore_data(project):
     # Restore geoserver data
     gsdir = '/var/lib/tomcat6/webapps/geoserver'
-    put('data/geoserver-data.tar', gsdir+'/geoserver-data.tar', use_sudo=True)
+    put('data/geoserver-data.tar', f"{gsdir}/geoserver-data.tar", use_sudo=True)
     with cd(gsdir):
         sudo('rm -rf data')
         sudo('tar xvf geoserver-data.tar')

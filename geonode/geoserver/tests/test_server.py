@@ -37,7 +37,7 @@ from django.test.utils import override_settings
 from guardian.shortcuts import assign_perm, remove_perm
 
 from geonode import geoserver
-from geonode import GeoNodeException
+from geonode.base.models import Configuration
 from geonode.decorators import on_ogc_backend
 
 from geonode.layers.models import Layer, Style
@@ -552,6 +552,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.user = 'admin'
         self.passwd = 'admin'
         create_layer_data()
+        self.config = Configuration.load()
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_manager(self):
@@ -698,7 +699,11 @@ class LayerTests(GeoNodeBaseTestSupport):
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         response_json = json.loads(content)
-        self.assertEqual(response_json['authorized'], True)
+        # This will only be true for storeType dataStore
+        if layer.storeType == 'dataStore':
+            self.assertEqual(response_json['authorized'], True)
+        else:
+            self.assertEqual(response_json['authorized'], False)
 
         # Let's change layer permissions and try again with non-owner
         norman = get_user_model().objects.get(username='norman')
@@ -747,7 +752,11 @@ class LayerTests(GeoNodeBaseTestSupport):
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         response_json = json.loads(content)
-        self.assertEqual(response_json['authorized'], True)
+        # This will only be true for storeType dataStore
+        if layer.storeType == 'dataStore':
+            self.assertEqual(response_json['authorized'], True)
+        else:
+            self.assertEqual(response_json['authorized'], False)
 
         layer = Layer.objects.all()[0]
         layer.storeType = "dataStore"
@@ -760,13 +769,40 @@ class LayerTests(GeoNodeBaseTestSupport):
                 reverse(
                     'feature_edit_check',
                     args=(
-                        valid_layer_typename,
+                        layer.alternate,
                     )))
             content = response.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             response_json = json.loads(content)
             self.assertEqual(response_json['authorized'], True)
+
+        # Test when the system is in readonly mode
+        self.config.read_only = True
+        self.config.save()
+        response = self.client.post(
+            reverse(
+                'feature_edit_check',
+                args=(
+                    valid_layer_typename,
+                )))
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        response_json = json.loads(content)
+        self.assertEqual(response_json['authorized'], False)
+
+        response = self.client.post(
+            reverse(
+                'style_edit_check',
+                args=(
+                    valid_layer_typename,
+                )))
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        response_json = json.loads(content)
+        self.assertEqual(response_json['authorized'], False)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_acls(self):
@@ -778,13 +814,11 @@ class LayerTests(GeoNodeBaseTestSupport):
         invalid_uname_pw = b"n0t:v@l1d"
 
         valid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(valid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(valid_uname_pw).decode()}",
         }
 
         invalid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(invalid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(invalid_uname_pw).decode()}",
         }
 
         bob = get_user_model().objects.get(username='bobby')
@@ -846,13 +880,11 @@ class LayerTests(GeoNodeBaseTestSupport):
         invalid_uname_pw = b"n0t:v@l1d"
 
         valid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(valid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(valid_uname_pw).decode()}",
         }
 
         invalid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(invalid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(invalid_uname_pw).decode()}",
         }
 
         response = self.client.get(
@@ -968,8 +1000,8 @@ class UtilsTests(GeoNodeBaseTestSupport):
         defaults = self.OGC_DEFAULT_SETTINGS.get('default')
         ogc_settings = OGC_Servers_Handler(OGC_SERVER)['default']
         self.assertEqual(ogc_settings.server, defaults)
-        self.assertEqual(ogc_settings.rest, defaults['LOCATION'] + 'rest')
-        self.assertEqual(ogc_settings.ows, defaults['LOCATION'] + 'ows')
+        self.assertEqual(ogc_settings.rest, f"{defaults['LOCATION']}rest")
+        self.assertEqual(ogc_settings.ows, f"{defaults['LOCATION']}ows")
 
         # Make sure we get None vs a KeyError when the key does not exist
         self.assertIsNone(ogc_settings.SFDSDFDSF)
@@ -1053,11 +1085,10 @@ class UtilsTests(GeoNodeBaseTestSupport):
         width = 512
 
         # Default Style (expect exception since we are offline)
-        style = None
-        with self.assertRaises(GeoNodeException):
+        try:
             style = get_sld_for(gs_catalog, instance)
-        self.assertIsNone(style)
-        style = gs_catalog.get_style("line")
+        except Exception:
+            style = gs_catalog.get_style("line")
         self.assertIsNotNone(style)
         instance.default_style, _ = Style.objects.get_or_create(
             name=style.name,
@@ -1070,7 +1101,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(instance.default_style.name)
 
         # WMS Links
-        wms_links = wms_links(ogc_settings.public_url + 'wms?',
+        wms_links = wms_links(f"{ogc_settings.public_url}wms?",
                               instance.alternate,
                               bbox,
                               srid,
@@ -1087,7 +1118,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(identifier in _link[3])
 
         # WFS Links
-        wfs_links = wfs_links(ogc_settings.public_url + 'wfs?',
+        wfs_links = wfs_links(f"{ogc_settings.public_url}wfs?",
                               instance.alternate,
                               bbox,
                               srid)
@@ -1102,7 +1133,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(identifier in _link[3])
 
         # WCS Links
-        wcs_links = wcs_links(ogc_settings.public_url + 'wcs?',
+        wcs_links = wcs_links(f"{ogc_settings.public_url}wcs?",
                               instance.alternate,
                               bbox,
                               srid)

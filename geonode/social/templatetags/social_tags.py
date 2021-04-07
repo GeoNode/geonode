@@ -19,9 +19,11 @@
 #########################################################################
 
 import json
+import logging
 from django import template
 from django.utils.translation import ugettext_lazy as _
 register = template.Library()
+logger = logging.getLogger(__name__)
 
 
 def get_data(action, key, default=None):
@@ -32,10 +34,16 @@ def get_data(action, key, default=None):
     if hasattr(action, 'data') and action.data:
         if hasattr(action.data, 'get'):
             return action.data.get(key, default)
-        else:
-            return json.loads(action.data).get(key, default)
-    else:
-        return default
+        elif action and action.data:
+            _action_data = json.loads(action.data)
+            if isinstance(_action_data, str):
+                return _action_data
+            else:
+                try:
+                    return _action_data.get(key, default)
+                except Exception as e:
+                    logger.exceprion(e)
+    return default
 
 
 @register.inclusion_tag('social/_activity_item.html')
@@ -82,7 +90,7 @@ def activity_item(action, **kwargs):
         activity_class = 'delete'
 
     if raw_action == 'created' and \
-    object_type in ('layer', 'document'):
+            object_type in ('layer', 'document'):
         activity_class = 'upload'
 
     ctx = dict(

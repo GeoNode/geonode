@@ -1,11 +1,16 @@
 {% extends "upload/layer_upload_base.html" %}
 {% load i18n %}
-{% load base_tags %}
 {% load staticfiles %}
+{% load dialogos_tags %}
+{% load pinax_ratings_tags %}
+{% load bootstrap_tags %}
+{% load pagination_tags %}
+{% load base_tags %}
+{% load guardian_tags %}
 
-{% block title %} {% trans "Upload Layer"  %} - {{ block.super }}  {% endblock %}
+{% block title %} {% trans "Append to Layer"  %} - {{ block.super }}  {% endblock %}
 
-{% block body_class %}{% trans "layers upload" %}{% endblock %}
+{% block body_class %}{% trans "layers append" %}{% endblock %}
 
 
 {% block head %}
@@ -15,24 +20,9 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
-  <h2 class="page-title">{% trans "Upload Layers" %}</h2>
-
-  <script language="javascript">
-    var json_mosaics = [
-          {% for mosaic in mosaics %}
-            {
-                "name" : "{{mosaic.name}}",
-                "workspace" : "{{mosaic.workspace}}",
-                "is_mosaic" : "{{mosaic.is_mosaic}}",
-                "has_time" : "{{mosaic.has_time}}",
-                "has_elevation" : "{{mosaic.has_elevation}}",
-                "time_regex" : "{{mosaic.time_regex}}",
-                "elevation_regex" : "{{mosaic.elevation_regex}}"
-            },
-          {% endfor %}
-    ]
-  </script>
+  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Explore Layers" %}</a>
+  <a href="{% url 'layer_detail' layername=resource.service_typename %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Return to Layer" %}</a>
+  <h2 class="page-title">{% trans "Append to Layer" %} <small><a href="{{ resource.get_absolute_url }}">{{ resource.title }}</a><small></h2>
 </div>
 <div class="row">
   <div class="col-md-8">
@@ -105,19 +95,13 @@
     </section>
 
     <section>
-      <a href="{% url "layer_upload" %}" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
-      <a href="#" id="upload-button" class="btn btn-danger">{% trans "Upload files" %}</a>
+      <a href="#" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
+      <a href="#" id="upload-button" class="btn btn-danger">{% trans "Append to Layer" %}</a>
     </section>
   </div>
 
-  {% display_change_perms_button resource request.user perms_list as display_perms_button %}
-  {% if display_perms_button %}
-  <div class="col-md-4">
-    <h3>{% trans "Permissions"  %}</h3>
-    <form id="permission_form">
-      {% include "_permissions.html" %}
-    </form>
-  </div>
+  {% if GEOSERVER_BASE_URL %}
+    {% get_obj_perms request.user for resource.layer as "layer_perms" %}
   {% endif %}
 
 </div>
@@ -133,7 +117,7 @@
 {% autoescape off %}
 
   csrf_token =  "{{ csrf_token }}",
-  form_target = "{{ UPLOADER_URL }}",
+  form_target = "{% url "layer_append" resource.service_typename %}",
   time_enabled = {{ TIME_ENABLED|lower  }},
   mosaic_enabled = {{ MOSAIC_ENABLED|lower  }},
   userLookup = "{% url "account_ajax_lookup" %}"

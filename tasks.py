@@ -45,7 +45,7 @@ def waitfordbs(ctx):
 @task
 def waitforgeoserver(ctx):
     print("****************************geoserver********************************")
-    while not _rest_api_availability(os.environ['GEOSERVER_LOCATION'] + 'rest'):
+    while not _rest_api_availability(f"{os.environ['GEOSERVER_LOCATION']}rest"):
         print("Wait for GeoServer API availability...")
     print("GeoServer is available for HTTP calls!")
 
@@ -252,7 +252,7 @@ def collectstatic(ctx):
 @task
 def geoserverfixture(ctx):
     print("********************geoserver fixture********************************")
-    _geoserver_info_provision(os.environ['GEOSERVER_LOCATION'] + "rest/")
+    _geoserver_info_provision(f"{os.environ['GEOSERVER_LOCATION']}rest/")
 
 
 @task
@@ -264,7 +264,7 @@ def monitoringfixture(ctx):
         ctx.run(f"django-admin.py loaddata /tmp/default_monitoring_apps_docker.json \
 --settings={_localsettings()}", pty=True)
     except Exception as e:
-        logger.error("ERROR installing monitoring fixture: " + str(e))
+        logger.error(f"ERROR installing monitoring fixture: {str(e)}")
 
 
 @task
@@ -416,7 +416,7 @@ def _geoserver_info_provision(url):
     <newPassword>{(os.getenv('GEOSERVER_ADMIN_PASSWORD', 'geoserver'))}</newPassword>
 </userPassword>"""
 
-    response = cat.http_request(cat.service_url + '/security/self/password', method="PUT", data=data, headers=headers)
+    response = cat.http_request(f"{cat.service_url}/security/self/password", method="PUT", data=data, headers=headers)
     print(f"Response Code: {response.status_code}")
     if response.status_code == 200:
         print("GeoServer admin password updated SUCCESSFULLY!")
@@ -481,17 +481,14 @@ def _prepare_monitoring_fixture():
     print(f"Public Hostname or IP is {pub_ip}")
     pub_port = _geonode_public_port()
     print(f"Public PORT is {pub_port}")
-    geonode_ip = pub_ip
     try:
         geonode_ip = socket.gethostbyname('geonode')
     except Exception:
-        pass
-    geoserver_ip = pub_ip
+        geonode_ip = pub_ip
     try:
         geoserver_ip = socket.gethostbyname('geoserver')
     except Exception:
-        pass
-    # d = str(datetime.datetime.now())
+        geoserver_ip = pub_ip
     d = '1970-01-01 00:00:00'
     default_fixture = [
         {
@@ -576,7 +573,7 @@ def _prepare_monitoring_fixture():
 def _prepare_admin_fixture(admin_password, admin_email):
     from django.contrib.auth.hashers import make_password
     d = datetime.datetime.now()
-    mdext_date = d.isoformat()[:23] + "Z"
+    mdext_date = f"{d.isoformat()[:23]}Z"
     default_fixture = [
         {
             "fields": {

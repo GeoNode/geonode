@@ -162,7 +162,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         exclude = []
         for resource in resources:
             if not request.user.is_superuser and \
-            not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
+                    not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
                 exclude.append(resource.id)
         resources = resources.exclude(id__in=exclude)
         result_page = paginator.paginate_queryset(resources, request)

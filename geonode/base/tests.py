@@ -31,6 +31,7 @@ from io import BytesIO
 from PIL import Image
 
 from geonode.base.utils import OwnerRightsRequestViewUtils, ManageResourceOwnerPermissions
+from geonode.base.templatetags.base_tags import display_change_perms_button
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -770,6 +771,20 @@ class TestOwnerRightsRequestUtils(TestCase):
         users_count = 0
         self.assertEqual(users_count, OwnerRightsRequestViewUtils.get_message_recipients(self.user).count())
 
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    def test_display_change_perms_button_tag_moderated(self):
+        admin_perms = display_change_perms_button(self.la, self.admin, {})
+        user_perms = display_change_perms_button(self.la, self.user, {})
+        self.assertTrue(admin_perms)
+        self.assertFalse(user_perms)
+
+    @override_settings(ADMIN_MODERATE_UPLOADS=False)
+    def test_display_change_perms_button_tag_standard(self):
+        admin_perms = display_change_perms_button(self.la, self.admin, {})
+        user_perms = display_change_perms_button(self.la, self.user, {})
+        self.assertTrue(admin_perms)
+        self.assertTrue(user_perms)
+
 
 class TestGetVisibleResource(TestCase):
     def setUp(self):
@@ -892,7 +907,7 @@ class TestTagThesaurus(TestCase):
 
     @staticmethod
     def __get_last_thesaurus():
-        return Thesaurus.objects.all().order_by("-id")[0]
+        return Thesaurus.objects.all().order_by("id")[0]
 
 
 @override_settings(THESAURUS_DEFAULT_LANG="en")
@@ -905,9 +920,11 @@ class TestThesaurusAvailableForm(TestCase):
     def setUp(self):
         self.sut = ThesaurusAvailableForm
 
-    def test_form_is_invalid_if_required_fields_are_missing(self):
+    def test_form_is_valid_if_all_fields_are_missing(self):
+        #  is now always true since the required is moved to the UI
+        #  (like the other fields)
         actual = self.sut(data={})
-        self.assertFalse(actual.is_valid())
+        self.assertTrue(actual.is_valid())
 
     def test_form_is_invalid_if_fileds_send_unexpected_values(self):
         actual = self.sut(data={"1": [1, 2]})
@@ -916,6 +933,38 @@ class TestThesaurusAvailableForm(TestCase):
     def test_form_is_valid_if_fileds_send_expected_values(self):
         actual = self.sut(data={"1": 1})
         self.assertTrue(actual.is_valid())
+
+    def test_field_class_treq_is_correctly_set_when_field_is_required(self):
+        actual = self.sut(data={"1": 1})
+        required = actual.fields.get('1')
+        obj_class = required.widget.attrs.get('class')
+        self.assertTrue(obj_class == 'treq')
+
+    def test_field_class_treq_is_not_set_when_field_is_optional(self):
+        actual = self.sut(data={"1": 1})
+        required = actual.fields.get('2')
+        obj_class = required.widget.attrs.get('class')
+        self.assertTrue(obj_class == '')
+
+    def test_will_return_thesaurus_with_the_expected_defined_order(self):
+        actual = self.sut(data={"1": 1})
+        fields = list(actual.fields.items())
+        #  will check if the first element of the tuple is the thesaurus_id = 2
+        self.assertEqual(fields[0][0], '2')
+        #  will check if the second element of the tuple is the thesaurus_id = 1
+        self.assertEqual(fields[1][0], '1')
+
+    def test_will_return_thesaurus_with_the_defaul_order_as_0(self):
+        # Update thesaurus order to 0 in order to check if the default order by id is observed
+        t = Thesaurus.objects.get(identifier='inspire-theme')
+        t.order = 0
+        t.save()
+        actual = ThesaurusAvailableForm(data={"1": 1})
+        fields = list(actual.fields.items())
+        #  will check if the first element of the tuple is the thesaurus_id = 2
+        self.assertEqual(fields[0][0], '1')
+        #  will check if the second element of the tuple is the thesaurus_id = 1
+        self.assertEqual(fields[1][0], '2')
 
 
 class TestFacets(TestCase):

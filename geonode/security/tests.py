@@ -33,6 +33,7 @@ from tastypie.test import ResourceTestCaseMixin
 from django.conf import settings
 from django.http import HttpRequest
 from django.urls import reverse
+from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 
@@ -43,6 +44,7 @@ from guardian.shortcuts import (
 )
 from geonode import geoserver
 from geonode.base.models import (
+    Configuration,
     UserGeoLimit,
     GroupGeoLimit
 )
@@ -59,12 +61,13 @@ from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
 from .utils import (
-    get_visible_resources, purge_geofence_all,
+    get_visible_resources,
     get_users_with_perms,
     get_geofence_rules,
     get_geofence_rules_count,
     get_highest_priority,
     set_geofence_all,
+    purge_geofence_all,
     sync_geofence_with_guardian,
     sync_resources_with_guardian
 )
@@ -213,7 +216,7 @@ class SecurityTest(GeoNodeBaseTestSupport):
         Tests the Geonode login required authentication middleware with Basic authenticated queries
         """
 
-        site_url_settings = [settings.SITEURL + "login/custom", "/login/custom", "login/custom"]
+        site_url_settings = [f"{settings.SITEURL}login/custom", "/login/custom", "login/custom"]
         black_listed_url = reverse("maps_browse")
 
         for setting in site_url_settings:
@@ -411,7 +414,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             import requests
             from requests.auth import HTTPBasicAuth
-            r = requests.get(url + f'gwc/rest/seed/{test_perm_layer.alternate}.json',
+            r = requests.get(f"{url}gwc/rest/seed/{test_perm_layer.alternate}.json",
                              auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 400)
 
@@ -451,6 +454,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.passwd = 'admin'
         create_layer_data()
         self.anonymous_user = get_anonymous_user()
+        self.config = Configuration.load()
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -480,6 +484,30 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         self.assertTrue(layer2.title in json.loads(content)['not_changed'])
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_user_can(self):
+        bobby = get_user_model().objects.get(username='bobby')
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                    'change_layer_style'
+                ]
+            },
+            'groups': []
+        }
+        layer = Layer.objects.filter(storeType='dataStore').first()
+        layer.set_permissions(perm_spec)
+        # Test user has permission with read_only=False
+        self.assertTrue(layer.user_can(bobby, 'change_layer_style'))
+        # Test with edit permission and read_only=True
+        self.config.read_only = True
+        self.config.save()
+        self.assertFalse(layer.user_can(bobby, 'change_layer_style'))
+        # Test with view permission and read_only=True
+        self.assertTrue(layer.user_can(bobby, 'view_resourcebase'))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @dump_func_name
@@ -536,8 +564,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _deny_wfst_rule_exists = False
         for rule in rules_objs['rules']:
             if rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            rule['request'] == "TRANSACTION":
+                    rule['userName'] == 'bobby' and \
+                    rule['request'] == "TRANSACTION":
                 _deny_wfst_rule_exists = rule['access'] == 'DENY'
                 break
         self.assertFalse(_deny_wfst_rule_exists)
@@ -563,13 +591,13 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _allow_wfs_rule_position = -1
         for cnt, rule in enumerate(rules_objs['rules']):
             if rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            rule['request'] == "TRANSACTION":
+                    rule['userName'] == 'bobby' and \
+                    rule['request'] == "TRANSACTION":
                 _deny_wfst_rule_exists = rule['access'] == 'DENY'
                 _deny_wfst_rule_position = cnt
             elif rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            (rule['request'] is None or rule['request'] == '*'):
+                    rule['userName'] == 'bobby' and \
+                    (rule['request'] is None or rule['request'] == '*'):
                 _allow_wfs_rule_position = cnt
         self.assertTrue(_deny_wfst_rule_exists)
         self.assertTrue(_allow_wfs_rule_position > _deny_wfst_rule_position)
@@ -591,8 +619,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _deny_wfst_rule_exists = False
         for rule in rules_objs['rules']:
             if rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            rule['request'] == "TRANSACTION":
+                    rule['userName'] == 'bobby' and \
+                    rule['request'] == "TRANSACTION":
                 _deny_wfst_rule_exists = rule['access'] == 'DENY'
                 break
         self.assertFalse(_deny_wfst_rule_exists)
@@ -818,8 +846,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
-        rest_path = 'rest/workspaces/geonode/datastores/{lyr_title}/featuretypes/{lyr_name}.xml'.\
-            format(lyr_title=saved_layer.store, lyr_name=name)
+        rest_path = f'rest/workspaces/geonode/datastores/{saved_layer.store}/featuretypes/{name}.xml'
         import requests
         from requests.auth import HTTPBasicAuth
         r = requests.get(url + rest_path,
@@ -853,7 +880,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         r = requests.put(url + rest_path,
                          data=payload,
                          headers={
-                            'Content-type': 'application/xml'
+                             'Content-type': 'application/xml'
                          },
                          auth=HTTPBasicAuth(user, passwd))
         self.assertEqual(r.status_code, 200)
@@ -1669,6 +1696,7 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
 
 class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+
     def setUp(self):
         super(TestGetVisibleResources, self).setUp()
         self.user = get_user_model().objects.get(username="admin")
@@ -1686,3 +1714,96 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layers = Layer.objects.all()
         actual = get_visible_resources(queryset=layers, user=self.user)
         self.assertEqual(9, len(actual))
+
+    @override_settings(
+        ADMIN_MODERATE_UPLOADS=True,
+        RESOURCE_PUBLISHING=True,
+        GROUP_PRIVATE_RESOURCES=True)
+    def test_get_visible_resources_advanced_workflow(self):
+        admin_user = get_user_model().objects.get(username="admin")
+        standard_user = get_user_model().objects.get(username="bobby")
+
+        self.assertIsNotNone(admin_user)
+        self.assertIsNotNone(standard_user)
+        admin_user.is_superuser = True
+        admin_user.save()
+        layers = Layer.objects.all()
+
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=admin_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(layers.count() - 1, actual.count())
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=standard_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(layers.count() - 1, actual.count())
+
+        # Test 'is_approved=False' 'is_published=False'
+        Layer.objects.filter(
+            ~Q(owner=standard_user)).update(
+                is_approved=False, is_published=False)
+
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=admin_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(layers.count() - 1, actual.count())
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=standard_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(layers.count() - 1, actual.count())
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=None,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(2, actual.count())
+
+        # Test private groups
+        private_groups = GroupProfile.objects.filter(
+            access="private")
+        private_groups.first().leave(standard_user)
+        Layer.objects.filter(
+            ~Q(owner=standard_user)).update(
+                group=private_groups.first().group)
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=admin_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(layers.count() - 1, actual.count())
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=standard_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(2, actual.count())
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=None,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(2, actual.count())

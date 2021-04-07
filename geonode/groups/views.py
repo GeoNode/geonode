@@ -147,7 +147,7 @@ class GroupDetailView(ListView):
         self.group = get_object_or_404(
             models.GroupProfile, slug=kwargs.get('slug'))
         if self.group.access == 'private' and \
-        not self.group.user_is_member(request.user):
+                not self.group.user_is_member(request.user):
             raise Http404
         return super(GroupDetailView, self).get(request, *args, **kwargs)
 

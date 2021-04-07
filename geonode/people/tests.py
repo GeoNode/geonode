@@ -179,8 +179,7 @@ class PeopleTest(GeoNodeBaseTestSupport):
         # Verify that the subject of the first message is correct.
         self.assertEqual(
             mail.outbox[0].subject,
-            "Your username for " +
-            site.name)
+            f"Your username for {site.name}")
 
 
 class FacebookExtractorTestCase(GeoNodeBaseTestSupport):

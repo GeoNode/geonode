@@ -926,7 +926,7 @@ class GroupProfileTest(GeoNodeBaseTestSupport):
                 slug="test",
                 description="test",
                 access="public",
-            logo=SimpleUploadedFile("dummy-file.jpg", "dummy contents".encode("UTF-8"))
+                logo=SimpleUploadedFile("dummy-file.jpg", "dummy contents".encode("UTF-8"))
             )
             test_profile.save()
             response = self.client.get(

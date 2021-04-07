@@ -302,7 +302,7 @@ class License(models.Model):
         if self.abbreviation is None or len(self.abbreviation) == 0:
             return self.name
         else:
-            return self.name + " (" + self.abbreviation + ")"
+            return f"{self.name} ({self.abbreviation})"
 
     @property
     def description_bullets(self):
@@ -312,7 +312,7 @@ class License(models.Model):
             bullets = []
             lines = self.description.split("\n")
             for line in lines:
-                bullets.append("+ " + line)
+                bullets.append(f"+ {line}")
             return bullets
 
     class Meta:
@@ -482,6 +482,7 @@ class Thesaurus(models.Model):
     card_min = models.IntegerField(default=0)
     card_max = models.IntegerField(default=-1)
     facet = models.BooleanField(default=True)
+    order = models.IntegerField(null=False, default=0)
 
     def __str__(self):
         return str(self.identifier)
@@ -959,7 +960,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Send a notification when a resource is created or updated
         """
         if not self.resource_type and self.polymorphic_ctype and \
-        self.polymorphic_ctype.model:
+                self.polymorphic_ctype.model:
             self.resource_type = self.polymorphic_ctype.model.lower()
 
         if hasattr(self, 'class_name') and (self.pk is None or notify):
@@ -1157,7 +1158,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.license.name is not None and (len(self.license.name) > 0):
             a.append(self.license.name)
         if self.license.url is not None and (len(self.license.url) > 0):
-            a.append("(" + self.license.url + ")")
+            a.append(f"({self.license.url})")
         return " ".join(a)
 
     @property
@@ -1165,12 +1166,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         a = []
         if self.license.name_long is not None and (
                 len(self.license.name_long) > 0):
-            a.append(self.license.name_long + ":")
+            a.append(f"{self.license.name_long}:")
         if self.license.description is not None and (
                 len(self.license.description) > 0):
             a.append(self.license.description)
         if self.license.url is not None and (len(self.license.url) > 0):
-            a.append("(" + self.license.url + ")")
+            a.append(f"({self.license.url})")
         return " ".join(a)
 
     @property
@@ -1380,8 +1381,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 links.append((self.title, link.name, link.link_type, link.url))
             else:
                 _link_type = 'WWW:DOWNLOAD-1.0-http--download'
-                if self.storeType == 'remoteStore' and link.extension in ('html'):
-                    _link_type = f'WWW:DOWNLOAD-{self.remote_service.type}'
+                try:
+                    _store_type = getattr(self.get_real_instance(), 'storeType', None)
+                    if _store_type and _store_type == 'remoteStore' and link.extension in ('html'):
+                        _remote_service = getattr(self.get_real_instance(), '_remote_service', None)
+                        if _remote_service:
+                            _link_type = f'WWW:DOWNLOAD-{_remote_service.type}'
+                except Exception as e:
+                    logger.exception(e)
                 description = f'{self.title} ({link.name} Format)'
                 links.append(
                     (self.title,

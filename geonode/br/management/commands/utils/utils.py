@@ -21,6 +21,7 @@
 import os
 import re
 import sys
+import shutil
 import hashlib
 import psycopg2
 import traceback
@@ -189,6 +190,7 @@ def patch_db(db_name, db_user, db_port, db_host, db_passwd, truncate_monitoring=
         curs.execute("ALTER TABLE base_link ALTER COLUMN resource_id DROP NOT NULL;")
         if truncate_monitoring:
             curs.execute("TRUNCATE monitoring_notificationreceiver CASCADE;")
+        conn.commit()
     except Exception:
         try:
             conn.rollback()
@@ -196,8 +198,9 @@ def patch_db(db_name, db_user, db_port, db_host, db_passwd, truncate_monitoring=
             pass
 
         traceback.print_exc()
-
-    conn.commit()
+    finally:
+        curs.close()
+        conn.close()
 
 
 def cleanup_db(db_name, db_user, db_port, db_host, db_passwd):
@@ -208,6 +211,7 @@ def cleanup_db(db_name, db_user, db_port, db_host, db_passwd):
     try:
         curs.execute("DELETE FROM base_contactrole WHERE resource_id is NULL;")
         curs.execute("DELETE FROM base_link WHERE resource_id is NULL;")
+        conn.commit()
     except Exception:
         try:
             conn.rollback()
@@ -215,8 +219,9 @@ def cleanup_db(db_name, db_user, db_port, db_host, db_passwd):
             pass
 
         traceback.print_exc()
-
-    conn.commit()
+    finally:
+        curs.close()
+        conn.close()
 
 
 def flush_db(db_name, db_user, db_port, db_host, db_passwd):
@@ -233,18 +238,18 @@ def flush_db(db_name, db_user, db_port, db_host, db_passwd):
         for table in pg_tables:
             if table[0] == 'br_restoredbackup':
                 continue
-            logger.info("Flushing Data : " + table[0])
-            curs.execute("TRUNCATE " + table[0] + " CASCADE;")
-
+            print(f"Flushing Data : {table[0]}")
+            curs.execute(f"TRUNCATE {table[0]} CASCADE;")
+        conn.commit()
     except Exception:
         try:
             conn.rollback()
         except Exception:
             pass
-
         traceback.print_exc()
-
-    conn.commit()
+    finally:
+        curs.close()
+        conn.close()
 
 
 def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder):
@@ -271,22 +276,22 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
         else:
             pg_tables = pg_all_tables
 
+        print(f"Dumping existing GeoServer Vectorial Data: {pg_tables}")
+        empty_folder(target_folder)
         for table in pg_tables:
-            logger.info(f"Dumping GeoServer Vectorial Data : {db_name}:{table}")
-            os.system('PGPASSWORD="' + db_passwd + '" ' + config.pg_dump_cmd + ' -h ' + db_host +
-                      ' -p ' + str(db_port) + ' -U ' + db_user + ' -F c -b' +
-                      ' -t \'"' + str(table) + '"\' -f ' +
-                      os.path.join(target_folder, table + '.dump ' + db_name))
-
+            print(f"Dump Table: {db_name}:{table}")
+            os.system(f"PGPASSWORD=\"{db_passwd}\" {config.pg_dump_cmd} -h {db_host} -p {str(db_port)} -U {db_user} "
+                      f"-F c -b -t '\"{str(table)}\"' -f {os.path.join(target_folder, f'{table}.dump {db_name}')}")
+        conn.commit()
     except Exception:
         try:
             conn.rollback()
         except Exception:
             pass
-
         traceback.print_exc()
-
-    conn.commit()
+    finally:
+        curs.close()
+        conn.close()
 
 
 def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_folder, preserve_tables):
@@ -301,23 +306,20 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
         file_names = [fn for fn in os.listdir(source_folder)
                       if any(fn.endswith(ext) for ext in included_extenstions)]
         for table in file_names:
-            logger.info(f"Restoring GeoServer Vectorial Data : {db_name}:{os.path.splitext(table)[0]} ")
-            pg_rstcmd = 'PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -h ' + db_host + \
-                        ' -p ' + str(db_port) + ' -U ' + db_user + ' --role=' + db_user + \
-                        ' -F c -t "' + os.path.splitext(table)[0] + '" ' +\
-                        os.path.join(source_folder, table) + ' -d ' + db_name
-            pg_rstcmd += " -c" if preserve_tables else ""
+            print(f"Restoring GeoServer Vectorial Data : {db_name}:{os.path.splitext(table)[0]} ")
+            pg_rstcmd = (f"PGPASSWORD=\"{db_passwd}\" {config.pg_restore_cmd} -h {db_host} -p {str(db_port)} -U {db_user} "
+                         f"--role={db_user} -F c -t \"{os.path.splitext(table)[0]}\" {os.path.join(source_folder, table)} -d {db_name}"
+                         " -c" if preserve_tables else "")
             os.system(pg_rstcmd)
-
+        conn.commit()
     except Exception:
         try:
             conn.rollback()
         except Exception:
             pass
-
         traceback.print_exc()
-
-    conn.commit()
+    finally:
+        conn.close()
 
 
 def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
@@ -328,20 +330,24 @@ def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
     try:
         curs.execute(table_list)
         pg_all_tables = [table[0] for table in curs.fetchall()]
+        print(f"Dropping existing GeoServer Vectorial Data: {table_list}")
         for pg_table in pg_all_tables:
-            logger.info(f"Dropping existing GeoServer Vectorial Data : {db_name}:{pg_table} ")
-            curs.execute(f"DROP TABLE {pg_table} CASCADE")
-
+            print(f"Drop Table: {db_name}:{pg_table} ")
+            try:
+                curs.execute(f"DROP TABLE \"{pg_table}\" CASCADE")
+            except Exception as e:
+                print(f"Error Droping Table: {e}")
         conn.commit()
-    except Exception:
+    except Exception as e:
+        print(f"Error Removing GeoServer Vectorial Data Tables: {e}")
         try:
             conn.rollback()
         except Exception:
             pass
-
         traceback.print_exc()
-    curs.close()
-    conn.close()
+    finally:
+        curs.close()
+        conn.close()
 
 
 def confirm(prompt=None, resp=False):
@@ -425,35 +431,47 @@ def glob2re(pat):
     res = ''
     while i < n:
         c = pat[i]
-        i = i+1
+        i = i + 1
         if c == '*':
             # res = res + '.*'
-            res = res + '[^/]*'
+            res = f"{res}[^/]*"
         elif c == '?':
             # res = res + '.'
-            res = res + '[^/]'
+            res = f"{res}[^/]"
         elif c == '[':
             j = i
             if j < n and pat[j] == '!':
-                j = j+1
+                j = j + 1
             if j < n and pat[j] == ']':
-                j = j+1
+                j = j + 1
             while j < n and pat[j] != ']':
-                j = j+1
+                j = j + 1
             if j >= n:
-                res = res + '\\['
+                res = f"{res}\\["
             else:
                 stuff = pat[i:j].replace('\\', '\\\\')
-                i = j+1
+                i = j + 1
                 if stuff[0] == '!':
-                    stuff = '^' + stuff[1:]
+                    stuff = f"^{stuff[1:]}"
                 elif stuff[0] == '^':
-                    stuff = '\\' + stuff
+                    stuff = f"\\{stuff}"
                 res = f'{res}[{stuff}]'
         else:
             res = res + re.escape(c)
-    return res + r'\Z(?ms)'
+    return f"{res}\\Z(?ms)"
 
 
 def glob_filter(names, pat):
     return (name for name in names if re.match(glob2re(pat), name))
+
+
+def empty_folder(folder):
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f'Failed to delete {file_path}. Reason: {e}')

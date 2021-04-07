@@ -11,7 +11,23 @@
             "about": "http://inspire.ec.europa.eu/theme",
             "card_min": 1,
             "card_max": 1,
-            "facet": true
+            "facet": true,
+            "order": 1
+        }
+      },{
+        "model": "base.thesaurus",
+        "pk": 2,
+        "fields": {
+            "identifier": "optional-theme",
+            "title": "Optional thesaurus Fields",
+            "date": "2021-05-23T10:25:56",
+            "description": "Optional thesaurus Fields",
+            "slug": "",
+            "about": "http://optional/theme2",
+            "card_min": 0,
+            "card_max": -1,
+            "facet": true,
+            "order": 0
         }
       },
       {

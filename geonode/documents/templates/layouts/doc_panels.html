@@ -252,6 +252,7 @@ span.grippy::after {
           <a>{% trans "Optional Metadata" %}</a>
       </li>
   </ul>
+  {% block mandatory %}
     <div id="mandatory" class="tab-pane fade in active">
         <!--<br />-->
         <div class="panel-group">
@@ -268,6 +269,7 @@ span.grippy::after {
                     <div class="row">
                         <div class="col">
                             <div id="basicDescriptiveInfo" class="container-fluid">
+                            {% block doc_thumbnail %}
                                 <div class="col-lg-3">
                                     <img id="image" style="max-height: 100%; max-width: 100%; min-height: 100%; min-width: 100%">
                                     <script>
@@ -285,33 +287,46 @@ span.grippy::after {
                                         c_widget.init();
                                     </script>
                                 </div>
+                                {% endblock doc_thumbnail %}
                                 <div class="col-lg-4">
+                                {% block doc_title %}
                                     <div id="req_item">
                                       <span><label for="{{ document_form.title|id }}">{{ document_form.title.label }}</label></span>
                                       <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
                                       {{ document_form.title }}
                                     </div>
+                                {% endblock doc_title %}
+                                {% block doc_links %}
                                     <div id="req_item">                                  
                                       <span><label for="{{ document_form.title|id }}">{{ document_form.links.label }}</label></span>
                                       {{ document_form.links }}
                                     </div>
+                                {% endblock doc_links %}
+                                {% block doc_abstract %}
                                     <div id="req_item">
                                         <span><label for="{{ document_form.abstract|id }}">{{ document_form.abstract.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
                                         {{ document_form.abstract }}
                                     </div>
+                                {% endblock doc_abstract %}
                                 </div>
                                 <div class="col-lg-5">
+                                    {% block doc_date_type %}
                                     <div class="col-lg-6 col-xs-12">
                                         <span><label for="{{ document_form.date_type|id }}">{{ document_form.date_type.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
                                         {{ document_form.date_type }}
                                     </div>
+                                    {% endblock doc_date_type %}
+
+                                    {% block doc_date %}
                                     <div class="col-lg-6 col-xs-12" id="req_date">
                                         <span><label for="{{ document_form.date|id }}">{{ document_form.date.label }}</label></span>
                                         <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
                                         {{ document_form.date }}
                                     </div>
+                                    {% endblock doc_date %}
+                                    {% block doc_category %}
                                     <div id="basicCategoryInfo" class="col-lg-12">
                                         <span><label for="{{ category_form.category_choice_field|id }}" class="control-label required-field">{% trans "Category" %}</label></span>
                                         <select
@@ -331,6 +346,8 @@ span.grippy::after {
                                           {% endfor %}
                                         </select>
                                     </div>
+                                    {% endblock doc_category %}
+                                    {% block doc_group %}
                                     <div id="basicGroupInfo" class="col-lg-12">
                                         <span><label for="id_resource-group" class="control-label required-field">{% trans "Group" %}</label></span>
                                         <select
@@ -352,13 +369,16 @@ span.grippy::after {
                                             {% endfor %}
                                         </select>
                                     </div>
+                                    {% endblock doc_group %}
+                                    {% block doc_keywords %}
                                     <div class="col-lg-12">
                                         <span><label for="{{ document_form.date_type|id }}">{{ document_form.keywords.label }}</label></span>
                                         {{ document_form.keywords }}
                                     </div>
+                                    {% endblock doc_keywords %}
                                     {% if THESAURI_FILTERS %}
                                     <div class="col-lg-12 thesauri_keywords">
-                                        {{ tkeywords_form }}
+                                        {{ tkeywords_form.as_p }}
                                     </div>
                                     {% endif %}
                                 </div>
@@ -370,6 +390,8 @@ span.grippy::after {
         </div>
     </div>
 
+  {% endblock mandatory %}
+  {% block advanced %}
     <div id="advanced" class="tab-pane fade">
         <div class="panel-group">
                 <div class="panel panel-default">
@@ -378,51 +400,66 @@ span.grippy::after {
                         <div class="" id="mdinfo">
                             <div class="">
                                 <div class="col-lg-4">
+                                    {% block doc_language %}
                                     <div>
                                         <span><label for="{{ document_form.language|id }}">{{ document_form.language.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Language used within the dataset)</p>-->
                                         {{ document_form.language }}
                                     </div>
+                                    {% endblock doc_language %}
+                                    {% block doc_license %}
                                     <div>
                                         <span><label for="{{ document_form.license|id }}">{{ document_form.license.label }}</label></span>
                                         <!--<p class="xxs-font-size">(License of the dataset)</p>-->
                                         {{ document_form.license }}
                                     </div>
+                                    {% endblock doc_license %}
+                                    {% block doc_doi %}
                                     <div>
                                         <span><label for="{{ document_form.doi|id }}">{{ document_form.doi.label }}</label></span>
                                         {{ document_form.doi }}
                                     </div>
+                                    {% endblock doc_doi %}
+                                    {% block doc_attribution %}
                                     <div>
                                         <span><label for="{{ document_form.attribution|id }}">{{ document_form.attribution.label }}</label></span>
                                         {{ document_form.attribution }}
                                     </div>
+                                    {% endblock doc_attribution %}
                                 </div>
                                 <div class="col-lg-4">
+                                    {% block doc_regions %}
                                       <div id="regions_multiselect_container">
                                           <span><label for="{{ document_form.regions|id }}">{{ document_form.regions.label }}</label></span>
                                           {{ document_form.regions }}
                                       </div>
+                                    {% endblock doc_regions %}
+                                    {% block doc_data_quality_statement %}
                                       <div>
                                           <span><label for="{{ document_form.data_quality_statement|id }}">{{ document_form.data_quality_statement.label }}</label></span>
                                           <!--<p class="xxs-font-size">(General explanation of the data producer's knowledge about the lineage)</p>-->
                                           {{ document_form.data_quality_statement }}
                                       </div>
+                                    {% endblock doc_data_quality_statement %}
                                 </div>
                                 <div class="col-lg-4">
+                                    {% block doc_restriction_code_type %}
                                     <div>
                                         <span><label for="{{ document_form.restriction_code_type|id }}">{{ document_form.restriction_code_type.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Limitation/s placed upon the access or use of data)</p>-->
                                         {{ document_form.restriction_code_type }}
                                     </div>
+                                    {% endblock doc_restriction_code_type %}
+                                    {% block doc_constraints_other %}
                                     <div>
                                         <span><label for="{{ document_form.constraints_other|id }}">{{ document_form.constraints_other.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Other restrictions and legal prerequisites for accessing or use data and metadata)</p>-->
                                         {{ document_form.constraints_other }}
-                                    </div>
+                                    </div> 
+                                    {% endblock doc_constraints_other %}
                                 </div>
                             </div>
                             <div class="row">
-
                             </div>
                         </div>
                     </div>
@@ -430,53 +467,69 @@ span.grippy::after {
         </div>
     </div>
 
+  {% endblock advanced %}
+  {% block ownership %}
     <div id="ownership" class="tab-pane fade">
         <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
         <div>
             <div class="col-xs-12 col-lg-4">
               <p>{% trans "Other, Optional, Metadata" %}</p>
+               {% block doc_edition %}
                 <div>
                     <span><label for="{{ document_form.edition|id }}">{{ document_form.edition.label }}</label></span>
                     <!--<p class="xxs-font-size">(Version of the cited resource)</p>-->
                     {{ document_form.edition }}
                 </div>
+                {% endblock doc_edition %}
+                {% block doc_purpose %}
                 <div>
                     <span><label for="{{ document_form.purpose|id }}">{{ document_form.purpose.label }}</label></span>
                     <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
                     {{ document_form.purpose }}
                 </div>
+                {% endblock doc_purpose %}
+                {% block doc_supplemental_information %}
                 <div>
                     <span><label for="{{ document_form.supplemental_information|id }}">{{ document_form.supplemental_information.label }}</label></span>
                     <!--<p class="xxs-font-size">(Any other descriptive information about the dataset)</p>-->
                     {{ document_form.supplemental_information }}
                 </div>
+                {% endblock doc_supplemental_information %}
             </div>
             <div class="col-xs-12 col-lg-5">
                     <div class="col-xs-12 col-lg-6">
+                      {% block doc_temporal_extent_start %}
                       <div class="input-group date">
                         <span><label for="{{ document_form.temporal_extent_start|id }}">{{ document_form.temporal_extent_start.label }}</label></span>
                         <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
                         {{ document_form.temporal_extent_start }}
                         </div>
+                        {% endblock doc_temporal_extent_start %}
                     </div>
                     <div class="col-xs-12 col-lg-6">
+                      {% block doc_temporal_extent_end %}
                         <div class="input-group date">
                         <span><label for="{{ document_form.temporal_extent_end|id }}">{{ document_form.temporal_extent_end.label }}</label></span>
                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
                         {{ document_form.temporal_extent_end }}
                         </div>
+                      {% endblock doc_temporal_extent_end %}
                     </div>
                 <div class="col-xs-12">
+                      {% block doc_maintenance_frequency %}
                     <div style="margin-top: 5px">
                         <span><label for="{{ document_form.maintenance_frequency|id }}">{{ document_form.maintenance_frequency.label }}</label></span>
                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
                         {{ document_form.maintenance_frequency }}
                     </div>
+                      {% endblock doc_maintenance_frequency %}
+                      {% block doc_spatial_representation_type %}
                     <div style="margin-top: 5px">
                         <span><label for="{{ document_form.spatial_representation_type|id }}">{{ document_form.spatial_representation_type.label }}</label></span>
                         <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
                         {{ document_form.spatial_representation_type }}
                     </div>
+                      {% endblock doc_spatial_representation_type %}
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">
@@ -500,28 +553,6 @@ span.grippy::after {
                         <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
                         {{ document_form.metadata_author }}
                     </div>
-                    {% if GEONODE_SECURITY_ENABLED %}
-                    <!--<hr />
-                    <div class="modal-body" id="_permissions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                         include "_permissions.html"
-                    </div>
-                    <div class="modal fade" id="_permissions_feedbacks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                      <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="exampleModalLabel">{% trans "Message box" %}</h4>
-                          </div>
-                          <div class="modal-body">
-                            ...
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "OK" %}</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>-->
-                    {% endif %}
                 </div>
             </div>
           </div>
@@ -529,6 +560,8 @@ span.grippy::after {
       </div></div></div>
     </div>
   </div>
+  {% endblock ownership %}
+
   <div id="settings" class="tab-pane fade" style="overflow: hidden;">
   <!--<br />-->
     <div class="col-xs-12 col-lg-4">

@@ -275,9 +275,8 @@ def map_metadata(
                             if len(tkl) > 0:
                                 tkl_ids = ",".join(
                                     map(str, tkl.values_list('id', flat=True)))
-                                tkeywords_list += "," + \
-                                    tkl_ids if len(
-                                        tkeywords_list) > 0 else tkl_ids
+                                tkeywords_list += f",{tkl_ids}" if len(
+                                    tkeywords_list) > 0 else tkl_ids
                     except Exception:
                         tb = traceback.format_exc()
                         logger.error(tb)
@@ -440,6 +439,7 @@ def map_metadata(
         "metadata_author_groups": metadata_author_groups,
         "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
+        "UI_MANDATORY_FIELDS": ['title', 'abstract', 'doi', 'attribution', 'data_quality_statement', 'restriction_code_type']
     })
 
 
@@ -472,21 +472,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
             "map": map_obj
         })
     elif request.method == 'POST':
-        if getattr(settings, 'SLACK_ENABLED', False):
-            slack_message = None
-            try:
-                from geonode.contrib.slack.utils import build_slack_message_map
-                slack_message = build_slack_message_map("map_delete", map_obj)
-            except Exception:
-                logger.error("Could not build slack message for delete map.")
-            delete_map.apply_async((map_obj.id, ))
-            try:
-                from geonode.contrib.slack.utils import send_slack_messages
-                send_slack_messages(slack_message)
-            except Exception:
-                logger.error("Could not send slack message for delete map.")
-        else:
-            delete_map.apply_async((map_obj.id, ))
+        delete_map.apply_async((map_obj.id, ))
 
         register_event(request, EventType.EVENT_REMOVE, map_obj)
 
@@ -641,7 +627,7 @@ def map_json_handle_put(request, mapid):
                 map_obj.viewer_json(request)))
     except ValueError as e:
         return HttpResponse(
-            "The server could not understand the request." + str(e),
+            f"The server could not understand the request.{str(e)}",
             content_type="text/plain",
             status=400
         )
@@ -872,9 +858,7 @@ def add_layers_to_map_config(
                 "legend": {
                     "height": "40",
                     "width": "22",
-                    "href": layer.ows_url +
-                    "?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=" +
-                    quote(layer.service_typename, safe=''),
+                    "href": f"{layer.ows_url}?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer={quote(layer.service_typename, safe='')}",
                     "format": "image/png"
                 },
                 "name": style.name
@@ -1139,8 +1123,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             request.session["map_status"] = map_status
         else:
             raise Exception(
-                'Could not start the download of %s. Error was: %s' %
-                (map_obj.title, content))
+                f'Could not start the download of {map_obj.title}. Error was: {content}')
 
     locked_layers = []
     remote_layers = []

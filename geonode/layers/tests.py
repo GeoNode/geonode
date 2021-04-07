@@ -17,6 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from collections import namedtuple
+
 from geonode.tests.base import GeoNodeBaseTestSupport
 from django.test import TestCase
 import io
@@ -55,9 +57,9 @@ from geonode.layers.utils import (
     get_files,
     get_valid_name,
     get_valid_layer_name,
-    surrogate_escape_string)
+    surrogate_escape_string, validate_input_source)
 from geonode.people.utils import get_valid_user
-from geonode.base.populate_test_data import all_public
+from geonode.base.populate_test_data import all_public, create_single_layer
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.layers.forms import JSONField, LayerUploadForm
 from geonode.utils import check_ogc_backend, set_resource_default_links
@@ -565,7 +567,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             expected_files = None
             try:
                 d = tempfile.mkdtemp()
-                fnames = ["foo." + ext for ext in extensions]
+                fnames = [f"foo.{ext}" for ext in extensions]
                 expected_files = {ext.lower(): fname for ext, fname in zip(extensions, fnames)}
                 for f in fnames:
                     path = os.path.join(d, f)
@@ -1363,11 +1365,11 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
         for fnsuffix in filename_suffix_list:
             files = dict(
                 base_file=SimpleUploadedFile(
-                    thelayer_basename + '_' + fnsuffix + '.kml',
-                    open(thelayer_path + thelayer_basename + '_' + fnsuffix + '.kml', mode='rb').read()),
+                    f"{thelayer_basename}_{fnsuffix}.kml",
+                    open(f"{thelayer_path + thelayer_basename}_{fnsuffix}.kml", mode='rb').read()),
                 xml_file=SimpleUploadedFile(
-                    thelayer_basename + '_' + fnsuffix + '.xml',
-                    open(thelayer_path + thelayer_basename + '_' + fnsuffix + '.xml', mode='rb').read())
+                    f"{thelayer_basename}_{fnsuffix}.xml",
+                    open(f"{thelayer_path + thelayer_basename}_{fnsuffix}.xml", mode='rb').read())
             )
             files['permissions'] = '{}'
             files['charset'] = 'utf-8'
@@ -1701,3 +1703,109 @@ class TestCustomUUidHandler(TestCase):
         expected = "abc:abc-1234-abc"
         actual = Layer.objects.get(id=self.sut.id)
         self.assertEqual(expected, actual.uuid)
+
+
+class TestalidateInputSource(TestCase):
+
+    def setUp(self):
+        self.maxDiff = None
+        self.layer = create_single_layer('single_point')
+        self.r = namedtuple('GSCatalogRes', ['resource'])
+
+    def tearDown(self):
+        self.layer.delete()
+
+    def test_will_raise_exception_for_replace_vector_layer_with_raster(self):
+        layer = Layer.objects.filter(name="single_point")[0]
+        filename = "/tpm/filename.tif"
+        files = ["/opt/file1.shp", "/opt/file2.ccc"]
+        with self.assertRaises(Exception) as e:
+            validate_input_source(layer, filename, files, action_type="append")
+        expected = "You are attempting to append a vector layer with a raster."
+        self.assertEqual(expected, e.exception.args[0])
+
+    def test_will_raise_exception_for_replace_layer_with_unknown_format(self):
+        layer = Layer.objects.filter(name="single_point")[0]
+        filename = "/tpm/filename.ccc"
+        files = ["/opt/file1.shp", "/opt/file2.ccc"]
+        with self.assertRaises(Exception) as e:
+            validate_input_source(layer, filename, files, action_type="append")
+        expected = "You are attempting to append a vector layer with an unknown format."
+        self.assertEqual(expected, e.exception.args[0])
+
+    def test_will_raise_exception_for_replace_layer_with_different_file_name(self):
+        layer = Layer.objects.get(name="single_point")
+        file_path = gisdata.VECTOR_DATA
+        filename = os.path.join(file_path, "san_andres_y_providencia_highway.shp")
+        files = {
+            "shp": filename,
+            "dbf": f"{file_path}/san_andres_y_providencia_highway.sbf",
+            "prj": f"{file_path}/san_andres_y_providencia_highway.prj",
+            "shx": f"{file_path}/san_andres_y_providencia_highway.shx",
+        }
+        with self.assertRaises(Exception) as e:
+            validate_input_source(layer, filename, files, action_type="append")
+        expected = (
+            "Some error occurred while trying to access the uploaded schema: "
+            "Please ensure the name is consistent with the file you are trying to append."
+        )
+        self.assertEqual(expected, e.exception.args[0])
+
+    def test_will_raise_exception_for_not_existing_layer_in_the_catalog(self):
+        layer = Layer.objects.filter(name="single_point")[0]
+        file_path = gisdata.VECTOR_DATA
+        filename = os.path.join(file_path, "single_point.shp")
+        files = {
+            "shp": filename,
+            "dbf": f"{file_path}/single_point.sbf",
+            "prj": f"{file_path}/single_point.prj",
+            "shx": f"{file_path}/single_point.shx",
+        }
+        with self.assertRaises(Exception) as e:
+            validate_input_source(layer, filename, files, action_type="append")
+        expected = (
+            "Some error occurred while trying to access the uploaded schema: "
+            "The selected Layer does not exists in the catalog."
+        )
+        self.assertEqual(expected, e.exception.args[0])
+
+    @patch("geonode.layers.utils.gs_catalog")
+    def test_will_raise_exception_if_schema_is_not_equal_between_catalog_and_file(self, catalog):
+        attr = namedtuple('GSCatalogAttr', ['attributes'])
+        attr.attributes = []
+        self.r.resource = attr
+        catalog.get_layer.return_value = self.r
+        layer = Layer.objects.filter(name="single_point")[0]
+        file_path = gisdata.VECTOR_DATA
+        filename = os.path.join(file_path, "single_point.shp")
+        files = {
+            "shp": filename,
+            "dbf": f"{file_path}/single_point.sbf",
+            "prj": f"{file_path}/single_point.prj",
+            "shx": f"{file_path}/single_point.shx",
+        }
+        with self.assertRaises(Exception) as e:
+            validate_input_source(layer, filename, files, action_type="append")
+        expected = (
+            "Some error occurred while trying to access the uploaded schema: "
+            "Please ensure that the layer structure is consistent with the file you are trying to append."
+        )
+        self.assertEqual(expected, e.exception.args[0])
+
+    @patch("geonode.layers.utils.gs_catalog")
+    def test_validation_will_pass_for_valid_append(self, catalog):
+        attr = namedtuple('GSCatalogAttr', ['attributes'])
+        attr.attributes = ['label']
+        self.r.resource = attr
+        catalog.get_layer.return_value = self.r
+        layer = Layer.objects.filter(name="single_point")[0]
+        file_path = gisdata.VECTOR_DATA
+        filename = os.path.join(file_path, "single_point.shp")
+        files = {
+            "shp": filename,
+            "dbf": f"{file_path}/single_point.sbf",
+            "prj": f"{file_path}/single_point.prj",
+            "shx": f"{file_path}/single_point.shx",
+        }
+        actual = validate_input_source(layer, filename, files, action_type="append")
+        self.assertTrue(actual)

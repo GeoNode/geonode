@@ -19,8 +19,6 @@
 #########################################################################
 import os
 import logging
-import xml.etree.ElementTree as ET
-from defusedxml import lxml as dlxml
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -39,7 +37,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 @csrf_exempt
-def csw_global_dispatch(request, layer_filter=None):
+def csw_global_dispatch(request, layer_filter=None, config_updater=None):
     """pycsw wrapper"""
 
     # this view should only operate if pycsw_local is the backend
@@ -48,6 +46,7 @@ def csw_global_dispatch(request, layer_filter=None):
         return HttpResponseRedirect(settings.CATALOGUE['default']['URL'])
 
     mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
+    mdict = config_updater(mdict) if config_updater else mdict
 
     access_token = None
     if request and request.user:
@@ -95,15 +94,14 @@ def csw_global_dispatch(request, layer_filter=None):
                 authorized_ids = [d.id for d in layers]
 
         if len(authorized_ids) > 0:
-            authorized_layers = "(" + (", ".join(str(e)
-                                                 for e in authorized_ids)) + ")"
-            authorized_layers_filter = "id IN " + authorized_layers
-            mdict['repository']['filter'] += " AND " + authorized_layers_filter
+            authorized_layers = f"({', '.join(str(e) for e in authorized_ids)})"
+            authorized_layers_filter = f"id IN {authorized_layers}"
+            mdict['repository']['filter'] += f" AND {authorized_layers_filter}"
             if request.user and request.user.is_authenticated:
                 mdict['repository']['filter'] = f"({mdict['repository']['filter']}) OR ({authorized_layers_filter})"
         else:
             authorized_layers_filter = "id = -9999"
-            mdict['repository']['filter'] += " AND " + authorized_layers_filter
+            mdict['repository']['filter'] += f" AND {authorized_layers_filter}"
 
         # Filter out Documents and Maps
         if 'ALTERNATES_ONLY' in settings.CATALOGUE['default'] and settings.CATALOGUE['default']['ALTERNATES_ONLY']:
@@ -141,57 +139,25 @@ def csw_global_dispatch(request, layer_filter=None):
                     groups_ids.append(group.id)
 
             if len(groups_ids) > 0:
-                groups = "(" + (", ".join(str(e) for e in groups_ids)) + ")"
-                groups_filter = "(group_id IS NULL OR group_id IN " + groups + ")"
-                mdict['repository']['filter'] += " AND " + groups_filter
+                groups = f"({', '.join(str(e) for e in groups_ids)})"
+                groups_filter = f"(group_id IS NULL OR group_id IN {groups})"
+                mdict['repository']['filter'] += f" AND {groups_filter}"
             else:
                 groups_filter = "group_id IS NULL"
-                mdict['repository']['filter'] += " AND " + groups_filter
+                mdict['repository']['filter'] += f" AND {groups_filter}"
 
         csw = server.Csw(mdict, env, version='2.0.2')
 
         content = csw.dispatch_wsgi()
 
         # pycsw 2.0 has an API break:
-        # pycsw < 2.0: content = xml_response
-        # pycsw >= 2.0: content = [http_status_code, content]
+        # - pycsw < 2.0: content = xml_response
+        # - pycsw >= 2.0: content = [http_status_code, content]
         # deal with the API break
 
         if isinstance(content, list):  # pycsw 2.0+
             content = content[1]
 
-        spaces = {'csw': 'http://www.opengis.net/cat/csw/2.0.2',
-                  'dc': 'http://purl.org/dc/elements/1.1/',
-                  'dct': 'http://purl.org/dc/terms/',
-                  'gmd': 'http://www.isotc211.org/2005/gmd',
-                  'gml': 'http://www.opengis.net/gml',
-                  'ows': 'http://www.opengis.net/ows',
-                  'xs': 'http://www.w3.org/2001/XMLSchema',
-                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-                  'ogc': 'http://www.opengis.net/ogc',
-                  'gco': 'http://www.isotc211.org/2005/gco',
-                  'gmi': 'http://www.isotc211.org/2005/gmi'}
-
-        for prefix, uri in spaces.items():
-            ET.register_namespace(prefix, uri)
-
-        if access_token and not access_token.is_expired():
-            tree = dlxml.fromstring(content)
-            for online_resource in tree.findall(
-                    '*//gmd:CI_OnlineResource', spaces):
-                try:
-                    linkage = online_resource.find('gmd:linkage', spaces)
-                    for url in linkage.findall('gmd:URL', spaces):
-                        if url.text:
-                            if '?' not in url.text:
-                                url.text += "?"
-                            else:
-                                url.text += "&"
-                            url.text += f"access_token={access_token.token}"
-                            url.set('updated', 'yes')
-                except Exception:
-                    pass
-            content = ET.tostring(tree, encoding='utf8', method='xml')
     finally:
         # Restore original filter before doing anything
         mdict['repository']['filter'] = mdict_filter
@@ -254,7 +220,7 @@ def get_keywords(resource):
         "SELECT a.*,b.* FROM taggit_taggeditem as a,taggit_tag"
         " as b WHERE a.object_id = %s AND a.tag_id=b.id", [resource.id])
     for x in dictfetchall(cursor):
-        content += fst(x['name']) + ', '
+        content += f"{fst(x['name'])}, "
     return content[:-2]
 
 
@@ -268,63 +234,55 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
     s = chrs['separator']
     c = chrs['carriage_return']
     sc = s + c
-    content = 'Resource metadata' + sc
-    content += 'uuid' + s + fst(resource.uuid) + sc
-    content += 'title' + s + fst(resource.title) + sc
-    content += 'resource owner' + s + fst(resource.owner) + sc
-    content += 'date' + s + fst(resource.date) + sc
-    content += 'date type' + s + fst(resource.date_type) + sc
-    content += 'abstract' + s + fst(resource.abstract) + sc
-    content += 'edition' + s + fst(resource.edition) + sc
-    content += 'purpose' + s + fst(resource.purpose) + sc
-    content += 'maintenance frequency' + s + fst(
-        resource.maintenance_frequency) + sc
+    content = f"Resource metadata{sc}"
+    content += f"uuid{s}{fst(resource.uuid)}{sc}"
+    content += f"title{s}{fst(resource.title)}{sc}"
+    content += f"resource owner{s}{fst(resource.owner)}{sc}"
+    content += f"date{s}{fst(resource.date)}{sc}"
+    content += f"date type{s}{fst(resource.date_type)}{sc}"
+    content += f"abstract{s}{fst(resource.abstract)}{sc}"
+    content += f"edition{s}{fst(resource.edition)}{sc}"
+    content += f"purpose{s}{fst(resource.purpose)}{sc}"
+    content += f"maintenance frequency{s}{fst(resource.maintenance_frequency)}{sc}"
 
     try:
         sprt = SpatialRepresentationType.objects.get(
             id=resource.spatial_representation_type_id)
-        content += 'identifier' + s + fst(sprt.identifier) + sc
+        content += f"identifier{s}{fst(sprt.identifier)}{sc}"
     except ObjectDoesNotExist:
-        content += 'ObjectDoesNotExist' + sc
+        content += f"ObjectDoesNotExist{sc}"
 
-    content += 'restriction code type' + s + fst(
-        resource.restriction_code_type) + sc
-    content += 'constraints other ' + s + fst(
-        resource.constraints_other) + sc
-    content += 'license' + s + fst(resource.license) + sc
-    content += 'language' + s + fst(resource.language) + sc
-    content += 'temporal extent' + sc
-    content += 'temporal extent start' + s + fst(
-        resource.temporal_extent_start) + sc
-    content += 'temporal extent end' + s + fst(
-        resource.temporal_extent_end) + sc
-    content += 'supplemental information' + s + fst(
-        resource.supplemental_information) + sc
+    content += f"restriction code type{s}{fst(resource.restriction_code_type)}{sc}"
+    content += f"constraints other {s}{fst(resource.constraints_other)}{sc}"
+    content += f"license{s}{fst(resource.license)}{sc}"
+    content += f"language{s}{fst(resource.language)}{sc}"
+    content += f"temporal extent{sc}"
+    content += f"temporal extent start{s}{fst(resource.temporal_extent_start)}{sc}"
+    content += f"temporal extent end{s}{fst(resource.temporal_extent_end)}{sc}"
+    content += f"supplemental information{s}{fst(resource.supplemental_information)}{sc}"
     """content += 'URL de distribution ' + s + fst(
                 resource.distribution_url) + sc"""
     """content += 'description de la distribution' + s + fst(
                 resource.distribution_description) + sc"""
-    content += 'data quality statement' + s + fst(
-        resource.data_quality_statement) + sc
+    content += f"data quality statement{s}{fst(resource.data_quality_statement)}{sc}"
 
     ext = resource.bbox_polygon.extent
-    content += 'extent ' + s + fst(ext[0]) + ',' + fst(ext[2]) + \
-        ',' + fst(ext[1]) + ',' + fst(ext[3]) + sc
-    content += 'SRID  ' + s + fst(resource.srid) + sc
-    content += 'Thumbnail url' + s + fst(resource.thumbnail_url) + sc
+    content += f"extent {s}{fst(ext[0])},{fst(ext[2])},{fst(ext[1])},{fst(ext[3])}{sc}"
+    content += f"SRID  {s}{fst(resource.srid)}{sc}"
+    content += f"Thumbnail url{s}{fst(resource.thumbnail_url)}{sc}"
 
-    content += 'keywords;' + get_keywords(resource) + s
-    content += 'category' + s + fst(resource.category) + sc
+    content += f"keywords;{get_keywords(resource)}{s}"
+    content += f"category{s}{fst(resource.category)}{sc}"
 
-    content += 'regions' + s
+    content += f"regions{s}"
     for reg in resource.regions.all():
-        content += fst(reg.name_en) + ','
+        content += f"{fst(reg.name_en)},"
     content = content[:-1]
     content += sc
 
     if resource.detail_url.find('/layers/') > -1:
         layer = Layer.objects.get(resourcebase_ptr_id=resource.id)
-        content += 'attribute data' + sc
+        content += f"attribute data{sc}"
         content += 'attribute name;label;description\n'
         for attr in layer.attribute_set.all():
             content += fst(attr.attribute) + s
@@ -334,9 +292,9 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
     pocr = ContactRole.objects.get(
         resource_id=resource.id, role='pointOfContact')
     pocp = get_user_model().objects.get(id=pocr.contact_id)
-    content += "Point of Contact" + sc
-    content += "name" + s + fst(pocp.last_name) + sc
-    content += "e-mail" + s + fst(pocp.email) + sc
+    content += f"Point of Contact{sc}"
+    content += f"name{s}{fst(pocp.last_name)}{sc}"
+    content += f"e-mail{s}{fst(pocp.email)}{sc}"
 
     logger = logging.getLogger(__name__)
     logger.error(content)

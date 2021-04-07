@@ -336,7 +336,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             prefix="resource")
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
-                                                        request.POST["category_choice_field"] else None)
+            request.POST["category_choice_field"] else None)
         tkeywords_form = TKeywordForm(request.POST)
     else:
         geoapp_form = GeoAppForm(instance=geoapp_obj, prefix="resource")
@@ -361,8 +361,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
                         if len(tkl) > 0:
                             tkl_ids = ",".join(
                                 map(str, tkl.values_list('id', flat=True)))
-                            tkeywords_list += "," + \
-                            tkl_ids if len(
+                            tkeywords_list += f",{tkl_ids}" if len(
                                 tkeywords_list) > 0 else tkl_ids
                 except Exception:
                     tb = traceback.format_exc()
