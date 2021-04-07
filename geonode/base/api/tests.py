@@ -292,9 +292,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(f"{url}?filter{{owner.username}}=bobby", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 6)
+        self.assertEqual(response.data['total'], 3)
         # Pagination
-        self.assertEqual(len(response.data['resources']), 6)
+        self.assertEqual(len(response.data['resources']), 3)
 
         # Filter by resource_type == document
         response = self.client.get(f"{url}?filter{{resource_type}}=document", format='json')

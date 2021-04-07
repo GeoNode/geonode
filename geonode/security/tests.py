@@ -1237,7 +1237,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
         current_perms = layer.get_all_level_info()
-        self.assertEqual(len(current_perms['users']), 1)
+        self.assertGreaterEqual(len(current_perms['users']), 1)
 
         # Test that the User permissions specified in the perm_spec were
         # applied properly
@@ -1353,7 +1353,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         bob = get_user_model().objects.get(username='bobby')
 
         # grab a layer
-        layer = Layer.objects.filter(owner=bob)
+        layer = Layer.objects.filter(owner=bob).first()
         layer.set_default_permissions()
         # verify bobby has view/change permissions on it but not manage
         self.assertTrue(
