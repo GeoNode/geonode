@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Hungarian (http://www.transifex.com/geonode/geonode/language/"
@@ -477,6 +477,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr "Erőforrás"
 
+msgid "Metadata"
+msgstr ""
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr "Például a \"kml\""
 
@@ -731,34 +737,6 @@ msgstr "Leírás"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Segítség"
 
-msgid "Explore Maps"
-msgstr "Fedezze Maps"
-
-msgid "Edit Map"
-msgstr "Térkép szerkesztése"
-
-msgid "Update"
-msgstr "Frissítés"
-
-msgid "Create a New Map"
-msgstr "Új térkép létrehozása"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Elérhető stílusok"
-
-msgid "Save"
-msgstr "Mentés"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Hozzon létre egy Map"
-
-msgid "Close"
-msgstr "Közel"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -779,7 +757,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -825,8 +803,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "Kiegészítő információ"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -842,10 +822,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -856,7 +839,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -877,7 +860,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -929,10 +912,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "Felhasználói tevékenységek"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Documents related to this map"
@@ -1106,9 +1087,6 @@ msgstr "Dokumentum szerkesztése"
 msgid "Request change"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Wizard"
 msgstr ""
 
@@ -1125,6 +1103,9 @@ msgstr ""
 
 msgid "Remove"
 msgstr "Eltávolít"
+
+msgid "Close"
+msgstr "Közel"
 
 msgid "Download Metadata"
 msgstr "Download Metadata"
@@ -1205,6 +1186,9 @@ msgstr "Metaadatok Szolgáltató"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "Frissítés"
 
 #, fuzzy
 #| msgid "Next"
@@ -1709,6 +1693,11 @@ msgstr "Teremt"
 
 #, fuzzy
 #| msgid "Not provided"
+msgid "No title provided"
+msgstr "Nem biztosított"
+
+#, fuzzy
+#| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "Nem biztosított"
 
@@ -2027,6 +2016,9 @@ msgstr "Csoport létrehozása"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "Csoport létrehozása"
+
+msgid "Save"
+msgstr "Mentés"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2669,6 +2661,12 @@ msgstr "Display Order"
 msgid "Visible"
 msgstr "látható?"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2771,6 +2769,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Preview"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Szerkesztés Service Metadata"
 
 #, fuzzy
 #| msgid "Attributes"
@@ -3288,8 +3291,8 @@ msgid ""
 "are trying to replace."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3329,18 +3332,15 @@ msgstr "Ön nem jogosult megtekinteni ezt a réteget"
 msgid "Failed to upload the layer"
 msgstr "Fájlok feltöltését"
 
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Unable to delete layer"
-msgstr "Fájlok feltöltését"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "Térkép Létrehozva"
@@ -3484,6 +3484,9 @@ msgstr "Másolja ezt a térképet"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Másolat ezt a térképet, és módosítsa a saját céljaira"
 
+msgid "Create a New Map"
+msgstr "Új térkép létrehozása"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3540,6 +3543,12 @@ msgstr "Letöltés Complete"
 msgid "Download Failed"
 msgstr "Download sikerült"
 
+msgid "Edit Map"
+msgstr "Térkép szerkesztése"
+
+msgid "Explore Maps"
+msgstr "Fedezze Maps"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3587,11 +3596,6 @@ msgstr "Nem engedélyezett, hogy megtekinthesse ezt a térképet."
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3607,7 +3611,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3682,7 +3686,8 @@ msgstr "viszonyítási időpont az idézett forrás"
 msgid "Show data for specific label"
 msgstr "viszonyítási időpont az idézett forrás"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3851,7 +3856,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4492,9 +4498,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "Erőforrás"
 
 #, fuzzy
@@ -4510,9 +4516,9 @@ msgstr "Nem megengedett, hogy távolítsa el ezt a szolgáltatást."
 msgid "You are not permitted to remove this service."
 msgstr "Nem megengedett, hogy távolítsa el ezt a szolgáltatást."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Szolgáltatás jött létre:"
 
 msgid "created"
@@ -5764,9 +5770,6 @@ msgstr "A következő csoportok:"
 msgid "Updating Metadata..."
 msgstr "Download Metadata"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
@@ -6307,9 +6310,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "Legnépszerűbb"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "Szöveg"
 
@@ -6526,20 +6526,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6558,3 +6557,28 @@ msgstr "Érvénytelen jogosultsági szint."
 
 msgid "Permission Denied"
 msgstr "Engedély megtagadva"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Elérhető stílusok"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Hozzon létre egy Map"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "Felhasználói tevékenységek"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Unable to delete layer"
+#~ msgstr "Fájlok feltöltését"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"

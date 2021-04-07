@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Japanese (http://www.transifex.com/geonode/geonode/language/"
@@ -475,6 +475,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr "リソース"
 
+msgid "Metadata"
+msgstr ""
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr "例 \"kml\""
 
@@ -729,34 +735,6 @@ msgstr "説明"
 msgid "GeoNode Client Library"
 msgstr "GeoNodeヘルプ"
 
-msgid "Explore Maps"
-msgstr "地図検索"
-
-msgid "Edit Map"
-msgstr "地図を編集"
-
-msgid "Update"
-msgstr "更新"
-
-msgid "Create a New Map"
-msgstr "新しい地図を生成"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "利用可能なスタイル"
-
-msgid "Save"
-msgstr "保存"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "地図を作成"
-
-msgid "Close"
-msgstr "クローズ"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -777,7 +755,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -823,8 +801,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "追加情報"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -840,10 +820,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -854,7 +837,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -875,7 +858,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -927,10 +910,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "ユーザー·アクティビティ"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Documents related to this map"
@@ -1104,9 +1085,6 @@ msgstr "ドキュメント編集"
 msgid "Request change"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Wizard"
 msgstr ""
 
@@ -1122,6 +1100,9 @@ msgstr ""
 
 msgid "Remove"
 msgstr "削除する"
+
+msgid "Close"
+msgstr "クローズ"
 
 msgid "Download Metadata"
 msgstr "メタデータのダウンロード"
@@ -1200,6 +1181,9 @@ msgstr "メタデータの提供者"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "更新"
 
 #, fuzzy
 #| msgid "Next"
@@ -1704,6 +1688,11 @@ msgstr "作る"
 
 #, fuzzy
 #| msgid "Not provided"
+msgid "No title provided"
+msgstr "提供されていない"
+
+#, fuzzy
+#| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "提供されていない"
 
@@ -2021,6 +2010,9 @@ msgstr "グループを作成"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "グループを作成"
+
+msgid "Save"
+msgstr "保存"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2657,6 +2649,12 @@ msgstr "表示順"
 msgid "Visible"
 msgstr "表示？"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2760,6 +2758,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "プレビュー"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "編集サービスメタデータ"
 
 #, fuzzy
 #| msgid "Attributes"
@@ -3276,8 +3279,8 @@ msgid ""
 "are trying to replace."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3316,18 +3319,15 @@ msgstr "このレイヤーを閲覧する権限がありません"
 msgid "Failed to upload the layer"
 msgstr "アップロード対象ファイル"
 
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Unable to delete layer"
-msgstr "アップロード対象ファイル"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "地図が作成されました"
@@ -3470,6 +3470,9 @@ msgstr "この地図をコピー"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "地図を複製して改変"
 
+msgid "Create a New Map"
+msgstr "新しい地図を生成"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3530,6 +3533,12 @@ msgstr "ダウンロード完了"
 msgid "Download Failed"
 msgstr "ダウンロード失敗"
 
+msgid "Edit Map"
+msgstr "地図を編集"
+
+msgid "Explore Maps"
+msgstr "地図検索"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3578,11 +3587,6 @@ msgstr "この地図を閲覧することが許可されていません。"
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3598,7 +3602,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3673,7 +3677,8 @@ msgstr "引用されたリソースを参照した日付"
 msgid "Show data for specific label"
 msgstr "引用されたリソースを参照した日付"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3842,7 +3847,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4481,9 +4487,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "リソース"
 
 #, fuzzy
@@ -4499,9 +4505,9 @@ msgstr "あなたはこのサービスを削除することはできません。
 msgid "You are not permitted to remove this service."
 msgstr "あなたはこのサービスを削除することはできません。"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "サービスが作成されています："
 
 msgid "created"
@@ -5754,9 +5760,6 @@ msgstr "以下のグループ："
 msgid "Updating Metadata..."
 msgstr "メタデータのダウンロード"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
@@ -6295,9 +6298,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "人気順"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "テキスト"
 
@@ -6514,20 +6514,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6546,3 +6545,28 @@ msgstr "無効な権限レベル"
 
 msgid "Permission Denied"
 msgstr "アクセス拒否"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "利用可能なスタイル"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "地図を作成"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "ユーザー·アクティビティ"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Unable to delete layer"
+#~ msgstr "アップロード対象ファイル"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"

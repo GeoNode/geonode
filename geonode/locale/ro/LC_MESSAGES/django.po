@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Romanian (http://www.transifex.com/geonode/geonode/language/"
@@ -478,6 +478,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr "Resurse"
 
+msgid "Metadata"
+msgstr ""
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr "De exemplu \"kml\""
 
@@ -732,34 +738,6 @@ msgstr "Descriere"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Ajutor"
 
-msgid "Explore Maps"
-msgstr "Exploreaza hărți"
-
-msgid "Edit Map"
-msgstr "Edit Map"
-
-msgid "Update"
-msgstr "Actualizare"
-
-msgid "Create a New Map"
-msgstr "Creați o nouă hartă"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Stiluri disponibile"
-
-msgid "Save"
-msgstr "Salvați"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Creați un Hartă"
-
-msgid "Close"
-msgstr "Închidere"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -780,7 +758,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -826,8 +804,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "Informații suplimentare"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -843,10 +823,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -857,7 +840,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -878,7 +861,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -930,10 +913,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "Activități de utilizare"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Documents related to this map"
@@ -1107,9 +1088,6 @@ msgstr "Edita documente"
 msgid "Request change"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Wizard"
 msgstr ""
 
@@ -1127,6 +1105,9 @@ msgstr ""
 
 msgid "Remove"
 msgstr "Scoate"
+
+msgid "Close"
+msgstr "Închidere"
 
 msgid "Download Metadata"
 msgstr "Descărcare metadate"
@@ -1208,6 +1189,9 @@ msgstr "Furnizor de metadate"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "Actualizare"
 
 #, fuzzy
 #| msgid "Next"
@@ -1712,6 +1696,11 @@ msgstr "Crea"
 
 #, fuzzy
 #| msgid "Not provided"
+msgid "No title provided"
+msgstr "Care nu sunt prevăzute"
+
+#, fuzzy
+#| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "Care nu sunt prevăzute"
 
@@ -2030,6 +2019,9 @@ msgstr "Creați un grup"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "Creare grup"
+
+msgid "Save"
+msgstr "Salvați"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2678,6 +2670,12 @@ msgstr "Display Order"
 msgid "Visible"
 msgstr "vizibil?"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2780,6 +2778,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Avanpremieră"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Editează metadatele serviciului de"
 
 #, fuzzy
 #| msgid "Attributes"
@@ -3303,8 +3306,8 @@ msgid ""
 "are trying to replace."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3343,18 +3346,15 @@ msgstr "Tu nu sunt permise pentru a vizualiza acest strat"
 msgid "Failed to upload the layer"
 msgstr "Fișiere pentru a fi încărcate"
 
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Unable to delete layer"
-msgstr "Fișiere pentru a fi încărcate"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "Harta Creat"
@@ -3499,6 +3499,9 @@ msgstr "Copiați această hartă"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplicat această hartă și modificați-l în scopuri proprii"
 
+msgid "Create a New Map"
+msgstr "Creați o nouă hartă"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3555,6 +3558,12 @@ msgstr "Descărcați complet"
 msgid "Download Failed"
 msgstr "Descărcare eșuată"
 
+msgid "Edit Map"
+msgstr "Edit Map"
+
+msgid "Explore Maps"
+msgstr "Exploreaza hărți"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3603,11 +3612,6 @@ msgstr "Nu este permis pentru a vizualiza această hartă."
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3623,7 +3627,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3698,7 +3702,8 @@ msgstr "Data de referință pentru resursa citat"
 msgid "Show data for specific label"
 msgstr "Data de referință pentru resursa citat"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3867,7 +3872,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4518,9 +4524,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "Resurse"
 
 #, fuzzy
@@ -4536,9 +4542,9 @@ msgstr "Tu nu sunt permise pentru a elimina acest serviciu."
 msgid "You are not permitted to remove this service."
 msgstr "Tu nu sunt permise pentru a elimina acest serviciu."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Serviciu a fost creat:"
 
 msgid "created"
@@ -5790,9 +5796,6 @@ msgstr "Următoarele grupuri:"
 msgid "Updating Metadata..."
 msgstr "Descărcare metadate"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
@@ -6331,9 +6334,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "Cele mai populare"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "Text"
 
@@ -6550,20 +6550,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6582,3 +6581,28 @@ msgstr "Nivel de permisiune invalid."
 
 msgid "Permission Denied"
 msgstr "Permission denied"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Stiluri disponibile"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Creați un Hartă"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "Activități de utilizare"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Unable to delete layer"
+#~ msgstr "Fișiere pentru a fi încărcate"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"
