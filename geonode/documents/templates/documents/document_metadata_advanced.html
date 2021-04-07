@@ -66,7 +66,19 @@
            Unfortunately this needs to appear at the top (or the bottom) of the form since tkeywords_form is a complete other django form. 
            There might be a better way to solve this.-->
         <div class="col-md-12 form-controls">
-          {{ document_form|as_bootstrap }}
+          {% block document_fields %}
+          {% for field in document_form %}
+            {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' and field.name not in ADVANCED_EDIT_EXCLUDE_FIELD %}
+            <div class="form_item_spacing">
+              <div>
+              <span><label for="{{ field.id }}">{{ field.label }}</label></span>
+                {{ field }}
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+          {% endblock document_fields %}
+
           {% if THESAURI_FILTERS %}
             {{ tkeywords_form }}
           {% endif %}
