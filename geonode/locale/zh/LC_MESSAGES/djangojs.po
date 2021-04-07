@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-23 15:40+0000\n"
+"POT-Creation-Date: 2021-04-07 14:11+0200\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -38,226 +38,179 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: geonode/monitoring/static/monitoring/bundle.js:170
 msgid "STORE_UPDATED"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "缺少 %s 文件，这是必需的"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
 msgstr "ESRI shape文件"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:13
 msgid "ASCII Text File"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:18
-#: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
 msgstr "标点分隔值"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
 msgstr "谷歌地球KML"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:39
 #, fuzzy
 #| msgid "Google Earth KML"
 msgid "Google Earth KML with a GroundOverlay"
 msgstr "谷歌地球KML"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:45
 #, fuzzy
 #| msgid "Google Earth KML"
 msgid "Google Earth KMZ"
 msgstr "谷歌地球KML"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
 msgstr "压缩文档"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
 msgstr "ERDAS影像"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:66
-#: geonode/static/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
 msgstr "国家影像传输格式"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:84
 msgid "Controlled Image Base-5 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:91
 msgid "Controlled Image Base-10 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:98
 msgid "CADRG-Global Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:105
 msgid "CADRG-Jet Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:112
 msgid "CADRG-Operational Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:119
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:126
 msgid "CADRG-Joint Operations Graphic"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:133
 msgid "CADRG-Topographic Line Map 100K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:140
 msgid "CADRG-Topographic Line Map 50K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:147
 msgid "JPEG2000"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:152
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:157
 #, fuzzy
 #| msgid "Metadata Links:"
 msgid "XML Metadata File"
 msgstr "元数据链接："
 
-#: geonode/static/geonode/js/upload/FileTypes.js:163
 msgid "Style Layer Descriptor"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:169
 msgid "JPEG"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:174
 msgid "PNG"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:179
 #, fuzzy
 #| msgid "GeoTIFF"
 msgid "GIF"
 msgstr "GeoTIFF"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:296
 #, fuzzy
 #| msgid "Unexpected Error"
 msgid "Unexpected error!"
 msgstr "意外错误"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:299
 msgid ""
 " - 400 Bad Request. Server cannot or will not process the request due to "
 "something that is perceived to be a client error (e.g., malformed request "
 "syntax, invalid request message framing, or deceptive request routing)."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:302
 msgid ""
 " - 401 Unauthorized. Request was not sent with the proper authentication "
 "credentials."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:305
 msgid ""
 " - 403 Forbidden. This is generally related to permission rules on your "
 "server. Contact the system administrator for more information regarding this "
 "error message."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:308
 msgid ""
 " - 404 Not Found. Origin server was unable or unwilling to find the resource "
 "requested."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:311
 msgid ""
 " - 405 Method Not Allowed. Origin server is aware of the requested resource, "
 "but the request method used is not supported."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:314
 msgid ""
 " - 406 Not Acceptable. Resource is not available at the origin that adheres "
 "to negotiation headers that were  set prior (e.g. via 'Accept-Charset' and "
 "'Accept-Language' headers)."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:317
 msgid ""
 " - 407 Authentication Required. The client did not send the required "
 "authentication with the request."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:320
 msgid ""
 " - 408 Request Timeout. The origin server did not receive the complete "
 "request in what it considers a reasonable time."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:323
 msgid ""
 " - 409 Conflict. The request did not complete because of a conflict with the "
 "current state of the resource. Typically happens on a PUT request where "
 "multiple clients are attempting to edit the same resource."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:326
 msgid ""
 " - 410 Gone. The resource requested is permanently missing at the origin."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:329
 msgid ""
 " - 411 Length Required. Client did not define the 'Content-Length' of the "
 "request body in the headers and this is required to obtain the resource."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:332
 msgid ""
 " - 412 Precondition Failed. Server denies the request because the resource "
 "failed to meet the conditions specified by the client."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:335
 msgid ""
 " - 413 Payload Too Large. Refusal from the server to process the request "
 "because the payload sent from the client is larger than the server wished to "
 "accept. Server has the optional to close the connection."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:338
 msgid ""
 " - 414 URI Too Long. Refusal from the server that the URI was too long to be "
 "processed. For example, if a client is attempting a GET request with an "
@@ -265,7 +218,6 @@ msgid ""
 "414 gets generated."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:341
 msgid ""
 " - 415 Unsupported Media Type. Refusal from the server to process the format "
 "of the current payload. One way to identify and fix this issue would be to "
@@ -273,26 +225,22 @@ msgid ""
 "client’s request."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:344
 msgid ""
 " - 417 Expectation Failed. Failure of server to meet the requirements "
 "specified in the 'Expect' header of the client’s request."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:347
 msgid ""
 " - 429 Too Many Requests. Client has sent too many requests in the specified "
 "amount of time according to the server."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:350
 msgid ""
 " - 499 Client Close Request. Nginx specific response code to indicate when "
 "the connection has been closed by the client while the server is still "
 "processing its request, making server unable to send a status code back."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:353
 msgid ""
 " - 500 Internal Server Error. This error indicates that the server has "
 "encountered an unexpected condition. This often occurs when an application "
@@ -300,7 +248,6 @@ msgid ""
 "incorrectly on the server."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:356
 msgid ""
 " - 501 Not Implemented. This error indicates that the HTTP method sent by "
 "the client is not supported by the server. This is most often caused by the "
@@ -308,14 +255,12 @@ msgid ""
 "that the web server be updated."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:359
 msgid ""
 " - 502 Bad Gateway. This error is usually due to improperly configured proxy "
 "servers. The first step in resolving the issue is to clear the client's "
 "cache."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:362
 msgid ""
 " - 503 Service Unavailable. This error occurs when the server is unable to "
 "handle requests due to a temporary overload or due to the server being "
@@ -323,14 +268,12 @@ msgid ""
 "only temporarily be down."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:365
 msgid ""
 " - 504 Gateway Timeout. GeoNode lost the connection with GeoServer or DB due "
 "to a connection timeout. Consider using the management commands to import "
 "data!"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:368
 msgid ""
 " - 505 HTTP Version Not Supported. This error occurs when the server refuses "
 "to support the HTTP protocol that has been specified by the client computer. "
@@ -339,13 +282,11 @@ msgid ""
 "specified."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:371
 msgid ""
 " - 506 Variant Also Negotiates. This error indicates that the server is not "
 "properly configured. Contact the system administrator to resolve this issue."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:374
 msgid ""
 " - 507 Insufficient Storage. This error indicates that the server is out of "
 "free memory. This is most likely to occur when an application that is being "
@@ -356,7 +297,6 @@ msgid ""
 "administrator for more information regarding this error message."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:377
 msgid ""
 " - 509 Bandwidth Limit Exceeded. This error occurs when the bandwidth limit "
 "imposed by the system administrator has been reached. The only fix for this "
@@ -364,116 +304,87 @@ msgid ""
 "the system administrator for information about acquiring more bandwidth."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:380
 msgid ""
 " - 510 Not Extended. This error occurs when an extension attached to the "
 "HTTP request is not supported by the web server. To resolve the issue, you "
 "may need to update the server."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:383
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:406
 msgid "Finalizing"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:421
-#: geonode/static/geonode/js/upload/LayerInfo.js:592
 msgid "Unexpected Error"
 msgstr "意外错误"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:459
 #, fuzzy
 #| msgid "Layer Info"
 msgid " Info"
 msgstr "图层信息"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:460
 msgid "Edit Metadata"
 msgstr "修改元数据"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:461
 msgid "Upload Metadata"
 msgstr "上传元数据"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:462
 msgid "Upload SLD"
 msgstr "上传SLD"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:463
 msgid "Manage Styles"
 msgstr "管理样式"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:476
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "属性列 %1 重命名为 %2 <br/>"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:482
 msgid "Your "
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:511
 msgid "Performing Final GeoServer Config Step"
 msgstr "执行最后的GeoServer配置步骤"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:528
-#: geonode/static/geonode/js/upload/LayerInfo.js:572
 msgid "You need to specify more information in order to complete your upload"
 msgstr "您需要在为了完成您指定上传的更多信息"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:552
 msgid "Files are ready to be ingested!"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:555
 msgid "A temporal dimension may be added to this Layer."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:610
 msgid "Performing GeoServer Config Step"
 msgstr "展示GeoServer的配置步骤"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:696
 msgid ""
 "<br>Please check your network connection. In case of Layer Upload make sure "
 "GeoServer is running and accepting connections."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:700
-#: geonode/static/geonode/js/upload/LayerInfo.js:703
-#: geonode/static/geonode/js/upload/LayerInfo.js:710
-#: geonode/static/geonode/js/upload/LayerInfo.js:713
 msgid "<br>"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:705
 msgid "<br>Bad request or URL not found."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:715
 #, fuzzy
 #| msgid "Unknown Map"
 msgid "<br>Unknown."
 msgstr "未知地图"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:723
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "图层文件上传，配置在GeoServer的"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:874
 msgid "Remove"
 msgstr "删除"
 
-#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "文件 %s 是不支持的文件类型，请选择其他文件。"
 
-#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -483,6 +394,213 @@ msgstr ""
 "你正在试图上传一个不完整的文件集或者不是全部强制的选项都已经有效。\n"
 "\n"
 "请检查表格中的错误。"
+
+#, javascript-format
+msgid "Available %s"
+msgstr "可用的%s"
+
+#, javascript-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+"这是可用的%s列表。你可以通过在下方的框中选中它们，然后在两个框中点击\"Choose"
+"\"箭头来选择。"
+
+#, javascript-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr "在这个框中填入条件滤出可用的的%s列表。"
+
+msgid "Filter"
+msgstr "过滤器"
+
+msgid "Choose all"
+msgstr "全选"
+
+#, javascript-format
+msgid "Click to choose all %s at once."
+msgstr "立刻选中所有%s。"
+
+msgid "Choose"
+msgstr "选择"
+
+#, javascript-format
+msgid "Chosen %s"
+msgstr "被选中的%s"
+
+#, javascript-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+"这是一列被选中的%s。你可以通过在下方框中选中它们，然后在两个框中点击移除"
+"\"Remove\"箭头来移除一些。"
+
+msgid "Remove all"
+msgstr "移除全部"
+
+#, javascript-format
+msgid "Click to remove all chosen %s at once."
+msgstr "立刻移除所有选中的%s。"
+
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] "94d7ef36d54e81afde607d8fd121772b_pl_0"
+
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+"你没有在个人可编辑区域保存改动。如果你运行操作，你未保存的改动将会丢失。"
+
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+"你已经选中一个操作，但是你还没有保存你的改动到个人区域。请点击OK进行保存。你"
+"将需要重新启动操作。"
+
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+"你已经选中了一个操作，但是你还没有在个人区域里做任何改动。你可能正在寻找Go按"
+"钮而不是保存按钮。"
+
+msgid "'"
+msgstr ""
+
+msgid "trailingComments"
+msgstr ""
+
+msgid "leadingComments"
+msgstr ""
+
+#, fuzzy
+#| msgid "Enter comments here."
+msgid "innerComments"
+msgstr "在这里输入评论。"
+
+msgid "Multiselect"
+msgstr ""
+
+#, fuzzy
+#| msgid "Select"
+msgid "SelectList"
+msgstr "选择"
+
+msgid "error"
+msgstr ""
+
+msgid "show:"
+msgstr ""
+
+msgid "uirevision"
+msgstr ""
+
+msgid "bgcolor"
+msgstr ""
+
+msgid "bordercolor"
+msgstr ""
+
+msgid "borderwidth"
+msgstr ""
+
+msgid "orientation"
+msgstr ""
+
+msgid "traceorder"
+msgstr ""
+
+msgid "tracegroupgap"
+msgstr ""
+
+msgid "itemsizing"
+msgstr ""
+
+msgid "itemclick"
+msgstr ""
+
+msgid "itemdoubleclick"
+msgstr ""
+
+msgid "x"
+msgstr ""
+
+msgid "xanchor"
+msgstr ""
+
+msgid "y"
+msgstr ""
+
+msgid "yanchor"
+msgstr ""
+
+msgid "valign"
+msgstr ""
+
+msgid "title.text"
+msgstr ""
+
+msgid "title.side"
+msgstr ""
+
+msgid "visible"
+msgstr ""
+
+msgid "thickness"
+msgstr ""
+
+msgid "autorange"
+msgstr ""
+
+msgid "range"
+msgstr ""
+
+msgid "bingroup"
+msgstr ""
+
+msgid "layerProperties.visibilityLimits.rangeError"
+msgstr ""
+
+msgid "layerProperties.visibilityLimits.serverValuesError"
+msgstr ""
+
+msgid "typed_constructor"
+msgstr ""
+
+msgid "def_constructor"
+msgstr ""
+
+msgid "POP"
+msgstr ""
+
+msgid "PUSH"
+msgstr ""
+
+msgid "layerdownload.exportResultsMessages.newExport"
+msgstr ""
+
+msgid "layerdownload.exportResultsMessages.exportSuccess"
+msgstr ""
+
+msgid "layerdownload.exportResultsMessages.exportFailure"
+msgstr ""
+
+msgid "data-grid"
+msgstr ""
+
+msgid "Abort"
+msgstr ""
+
+msgid "As Sibling"
+msgstr ""
+
+msgid "As child"
+msgstr ""
 
 #, fuzzy
 #~| msgid "Now"
@@ -893,9 +1011,6 @@ msgstr ""
 #~ msgid "Include legend?"
 #~ msgstr "包含图例吗？"
 
-#~ msgid "Enter comments here."
-#~ msgstr "在这里输入评论。"
-
 #~ msgid "Creating PDF..."
 #~ msgstr "生成PDF..."
 
@@ -953,9 +1068,6 @@ msgstr ""
 #~ msgid "permalink"
 #~ msgstr "永久"
 
-#~ msgid "Select"
-#~ msgstr "选择"
-
 #~ msgid "Select:"
 #~ msgstr "选择："
 
@@ -1009,75 +1121,6 @@ msgstr ""
 
 #~ msgid "Please wait"
 #~ msgstr "请稍候"
-
-#~ msgid "Available %s"
-#~ msgstr "可用的%s"
-
-#~ msgid ""
-#~ "This is the list of available %s. You may choose some by selecting them "
-#~ "in the box below and then clicking the \"Choose\" arrow between the two "
-#~ "boxes."
-#~ msgstr ""
-#~ "这是可用的%s列表。你可以通过在下方的框中选中它们，然后在两个框中点击"
-#~ "\"Choose\"箭头来选择。"
-
-#~ msgid "Type into this box to filter down the list of available %s."
-#~ msgstr "在这个框中填入条件滤出可用的的%s列表。"
-
-#~ msgid "Filter"
-#~ msgstr "过滤器"
-
-#~ msgid "Choose all"
-#~ msgstr "全选"
-
-#~ msgid "Click to choose all %s at once."
-#~ msgstr "立刻选中所有%s。"
-
-#~ msgid "Choose"
-#~ msgstr "选择"
-
-#~ msgid "Chosen %s"
-#~ msgstr "被选中的%s"
-
-#~ msgid ""
-#~ "This is the list of chosen %s. You may remove some by selecting them in "
-#~ "the box below and then clicking the \"Remove\" arrow between the two "
-#~ "boxes."
-#~ msgstr ""
-#~ "这是一列被选中的%s。你可以通过在下方框中选中它们，然后在两个框中点击移除"
-#~ "\"Remove\"箭头来移除一些。"
-
-#~ msgid "Remove all"
-#~ msgstr "移除全部"
-
-#~ msgid "Click to remove all chosen %s at once."
-#~ msgstr "立刻移除所有选中的%s。"
-
-#~ msgid "%(sel)s of %(cnt)s selected"
-#~ msgid_plural "%(sel)s of %(cnt)s selected"
-#~ msgstr[0] "94d7ef36d54e81afde607d8fd121772b_pl_0"
-
-#~ msgid ""
-#~ "You have unsaved changes on individual editable fields. If you run an "
-#~ "action, your unsaved changes will be lost."
-#~ msgstr ""
-#~ "你没有在个人可编辑区域保存改动。如果你运行操作，你未保存的改动将会丢失。"
-
-#~ msgid ""
-#~ "You have selected an action, but you haven't saved your changes to "
-#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
-#~ "action."
-#~ msgstr ""
-#~ "你已经选中一个操作，但是你还没有保存你的改动到个人区域。请点击OK进行保存。"
-#~ "你将需要重新启动操作。"
-
-#~ msgid ""
-#~ "You have selected an action, and you haven't made any changes on "
-#~ "individual fields. You're probably looking for the Go button rather than "
-#~ "the Save button."
-#~ msgstr ""
-#~ "你已经选中了一个操作，但是你还没有在个人区域里做任何改动。你可能正在寻找Go"
-#~ "按钮而不是保存按钮。"
 
 #~ msgid ""
 #~ "January February March April May June July August September October "

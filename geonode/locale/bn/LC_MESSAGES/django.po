@@ -31,7 +31,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-22 10:31+0000\n"
+"POT-Creation-Date: 2021-04-07 14:10+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bengali (http://www.transifex.com/geonode/geonode/language/"
@@ -149,9 +149,6 @@ msgstr "তথ্য প্রতি তিন মাস আপডেট হয�
 msgid "No information provided"
 msgstr "প্রদত্ত কোন তথ্য"
 
-msgid "Category"
-msgstr "শ্রেণী"
-
 msgid "Category is required."
 msgstr "শ্রেণী প্রয়োজন"
 
@@ -222,6 +219,9 @@ msgstr "অঞ্চল"
 #| msgid "Groups"
 msgid "Group"
 msgstr "গ্রুপ"
+
+msgid "Category"
+msgstr "শ্রেণী"
 
 msgid "License"
 msgstr "লাইসেন্স"
@@ -735,6 +735,34 @@ msgstr "বিবরণ"
 msgid "GeoNode Client Library"
 msgstr "GeoNode সহায়তা"
 
+msgid "Explore Maps"
+msgstr "মানচিত্র টেলিভিশন"
+
+msgid "Edit Map"
+msgstr "সম্পাদনা ম্যাপ"
+
+msgid "Update"
+msgstr "আপডেট"
+
+msgid "Create a New Map"
+msgstr "একটি নতুন মানচিত্র তৈরি করুন"
+
+#, fuzzy
+#| msgid "Available styles"
+msgid "Available layers"
+msgstr "উপলভ্য শৈলী"
+
+msgid "Save"
+msgstr "সংরক্ষণ করুন"
+
+#, fuzzy
+#| msgid "Create a Map"
+msgid "Save Map"
+msgstr "একটি মানচিত্র তৈরি করুন"
+
+msgid "Close"
+msgstr "ঘনিষ্ঠ"
+
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1088,9 +1116,6 @@ msgstr "প্রতিস্থাপন"
 msgid "Remove"
 msgstr "অপসারণ"
 
-msgid "Close"
-msgstr "ঘনিষ্ঠ"
-
 msgid "Download Metadata"
 msgstr "ডাউনলোড মেটাডাটা"
 
@@ -1168,9 +1193,6 @@ msgstr "মেটাডাটা সরবরাহকারী"
 msgid "<< Back"
 msgstr ""
 
-msgid "Update"
-msgstr "আপডেট"
-
 #, fuzzy
 #| msgid "Next"
 msgid "Next >>"
@@ -1186,6 +1208,9 @@ msgstr "সম্পাদনা মেটাডেটা"
 
 msgid "Editing details for"
 msgstr "সম্পাদনার জন্য বিবরণ"
+
+msgid "Return to Document"
+msgstr ""
 
 msgid "Deleting"
 msgstr "মোছা"
@@ -1302,17 +1327,12 @@ msgid "Responsible and Permissions"
 msgstr "পরিবর্তন লেয়ার অনুমতি"
 
 #, fuzzy
-#| msgid "Message Inbox"
-msgid "Message box"
-msgstr "বার্তা ইনবক্স"
-
-msgid "OK"
-msgstr ""
-
-#, fuzzy
 #| msgid "Is Published"
 msgid "Publishing"
 msgstr "প্রকাশিত"
+
+msgid "You are not allowed to view this document."
+msgstr "আপনি এই নথি দেখতে অনুমতি দেওয়া হয়নি."
 
 msgid "You are not permitted to delete this document"
 msgstr "আপনি এই নথি মুছে করার অনুমতি নেই"
@@ -1338,9 +1358,6 @@ msgstr "উপলব্ধ নেই"
 #| msgid "Page Not Found"
 msgid "Not found"
 msgstr "পাতা পাওয়া যায়নি"
-
-msgid "You are not allowed to view this document."
-msgstr "আপনি এই নথি দেখতে অনুমতি দেওয়া হয়নি."
 
 #, fuzzy
 #| msgid "You must set an author for this resource"
@@ -1990,19 +2007,16 @@ msgstr "একটি গ্রুপ তৈরি করুন"
 msgid "Edit Group Category"
 msgstr "গ্রুপ তৈরি করুন"
 
-msgid "Save"
-msgstr "সংরক্ষণ করুন"
-
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2266,6 +2280,48 @@ msgstr "সর্বশেষ সম্পাদিত"
 msgid "date when attribute statistics were last updated"
 msgstr "অ্যাট্রিবিউট পরিসংখ্যান গত ছিল যখন তারিখের আপডেট"
 
+#, fuzzy
+#| msgid "Edit Layer"
+msgid "Append to Layer"
+msgstr "সম্পাদনা লেয়ার"
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "একটি স্তর আপলোড করা হয় নি"
+
+msgid "Return to Layer"
+msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr "অসম্পূর্ণ আপলোড"
+
+msgid "You have the following incomplete uploads"
+msgstr "আপনি নিম্নলিখিত অসম্পূর্ণ আপলোডসমূহ আছে"
+
+msgid "last updated on"
+msgstr "গত আপডেট"
+
+msgid "Resume"
+msgstr "সারসংকলন"
+
+msgid "Delete"
+msgstr "মুছে দিন"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "যদি আপনি এই আপলোড মুছে ফেলার ব্যাপারে নিশ্চিত?"
+
+msgid "Delete, and don't ask me again."
+msgstr "মুছে দিন, এবং আবার আমাকে জিজ্ঞাসা করবেন না."
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Preserve Metadata XML"
+msgstr "সম্পাদনা পরিষেবা মেটাডাটা"
+
+msgid "Select the charset or leave default"
+msgstr "অক্ষরসেট নির্বাচন করুন অথবা ডিফল্ট ছেড়ে"
+
 msgid "Home"
 msgstr "বাড়ি"
 
@@ -2434,6 +2490,9 @@ msgid_plural "Layers"
 msgstr[0] "স্তর"
 msgstr[1] "স্তর সমূহ"
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr "তথ্য পরিবর্তন"
 
@@ -2590,9 +2649,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -2637,27 +2693,6 @@ msgstr "একটি স্তর আপলোড করা হয় নি"
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "অসম্পূর্ণ আপলোড"
-
-msgid "You have the following incomplete uploads"
-msgstr "আপনি নিম্নলিখিত অসম্পূর্ণ আপলোডসমূহ আছে"
-
-msgid "last updated on"
-msgstr "গত আপডেট"
-
-msgid "Resume"
-msgstr "সারসংকলন"
-
-msgid "Delete"
-msgstr "মুছে দিন"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "যদি আপনি এই আপলোড মুছে ফেলার ব্যাপারে নিশ্চিত?"
-
-msgid "Delete, and don't ask me again."
-msgstr "মুছে দিন, এবং আবার আমাকে জিজ্ঞাসা করবেন না."
-
 msgid "Remove Layers"
 msgstr "স্তর অপসারণ"
 
@@ -2671,14 +2706,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "লেয়ার প্রতিস্থাপন"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Preserve Metadata XML"
-msgstr "সম্পাদনা পরিষেবা মেটাডাটা"
-
-msgid "Select the charset or leave default"
-msgstr "অক্ষরসেট নির্বাচন করুন অথবা ডিফল্ট ছেড়ে"
 
 msgid "Manage Styles"
 msgstr "শৈলী পরিচালনা"
@@ -3226,31 +3253,50 @@ msgstr "এখন"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "আপনি একটি রাস্টার স্থর দ্বারা জ্যামিতিক স্থর পরিবর্তন করতে যাচ্ছেন"
 
-msgid "You are attempting to replace a vector layer with a raster."
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector layer with a raster."
 msgstr "আপনি একটি রাস্টার স্থর দ্বারা জ্যামিতিক স্থর পরিবর্তন করতে যাচ্ছেন"
 
-msgid "You are attempting to replace a raster layer with a vector."
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster layer with a vector."
 msgstr "আপনি একটি জ্যামিতিক স্থর দ্বারা রাস্টার স্থর পরিবর্তন করতে যাচ্ছেন"
 
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr "আপনি একটি রাস্টার স্থর দ্বারা জ্যামিতিক স্থর পরিবর্তন করতে যাচ্ছেন"
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
+msgstr ""
+
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
 "Some error occurred while trying to access the uploaded schema: {str(e)}"
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
 msgstr ""
 
 msgid ""
@@ -3284,6 +3330,12 @@ msgstr "আপনি এই স্তর দেখতে অনুমতি ন�
 #| msgid "Files to be uploaded"
 msgid "Failed to upload the layer"
 msgstr "ফাইল আপলোড করা"
+
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "আপনি একটি রাস্টার স্থর দ্বারা জ্যামিতিক স্থর পরিবর্তন করতে যাচ্ছেন"
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "আপনি একটি জ্যামিতিক স্থর দ্বারা রাস্টার স্থর পরিবর্তন করতে যাচ্ছেন"
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
@@ -3433,9 +3485,6 @@ msgstr "এই ম্যাপ কপি করুন"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "এই ম্যাপ সদৃশ এবং আপনার নিজের কাজের জন্য এটি পরিবর্তন"
 
-msgid "Create a New Map"
-msgstr "একটি নতুন মানচিত্র তৈরি করুন"
-
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3491,12 +3540,6 @@ msgstr "সমাপ্তি ডাউনলোড"
 msgid "Download Failed"
 msgstr "ডাউনলোড ব্যর্থ"
 
-msgid "Edit Map"
-msgstr "সম্পাদনা ম্যাপ"
-
-msgid "Explore Maps"
-msgstr "মানচিত্র টেলিভিশন"
-
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3512,6 +3555,11 @@ msgstr ""
 "উল্লেখ্য: এই ম্যাপ এর মূল মিটাডাটা একটি মেটাডাটা XML ফাইল ইম্পোর্ট দ্বারা পূর্ণ ছিল. "
 "GeoNode এর মেটাডেটা আমদানি আইএসও, FGDC, এবং ডাবলিন কোর মেটাডাটা উপাদানের "
 "একটি উপসেট সমর্থন করে. আপনার মূল মেটাডাটা কিছু হারিয়ে হয়ে থাকতে পারে."
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "ফিরুন"
 
 msgid "Remove Map"
 msgstr ""
@@ -4134,7 +4182,9 @@ msgstr "আপডেট প্রফাইল"
 msgid "Explore People"
 msgstr "মানুষ টেলিভিশন"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "আপনার ব্যবহারকারী নাম"
 
 msgid "Your username has been emailed to you."
@@ -4715,6 +4765,14 @@ msgstr ""
 #| msgid "Delete from Favorites"
 msgid "Delete Geo Limits"
 msgstr "পছন্দ সমূহ হতে মুছুন"
+
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "Message box"
+msgstr "বার্তা ইনবক্স"
+
+msgid "OK"
+msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5723,14 +5781,6 @@ msgstr ""
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
 
-msgid "Return to Document"
-msgstr ""
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "ফিরুন"
-
 msgid "Identification"
 msgstr ""
 
@@ -5792,6 +5842,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy
@@ -6510,16 +6563,6 @@ msgstr "অবৈধ অনুমতি স্তর."
 
 msgid "Permission Denied"
 msgstr "অনুমতি অস্বীকার"
-
-#, fuzzy
-#~| msgid "Available styles"
-#~ msgid "Available layers"
-#~ msgstr "উপলভ্য শৈলী"
-
-#, fuzzy
-#~| msgid "Create a Map"
-#~ msgid "Save Map"
-#~ msgstr "একটি মানচিত্র তৈরি করুন"
 
 #, fuzzy
 #~| msgid "User Activities"

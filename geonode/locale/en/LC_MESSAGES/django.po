@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-22 10:31+0000\n"
+"POT-Creation-Date: 2021-04-07 14:10+0200\n"
 "PO-Revision-Date: 2020-12-23 16:21+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -117,9 +117,6 @@ msgstr "data is updated every three months"
 msgid "No information provided"
 msgstr "No information provided"
 
-msgid "Category"
-msgstr "Category"
-
 msgid "Category is required."
 msgstr "Category is required."
 
@@ -180,6 +177,9 @@ msgstr "Regions"
 
 msgid "Group"
 msgstr "Group"
+
+msgid "Category"
+msgstr "Category"
 
 msgid "License"
 msgstr "License"
@@ -625,6 +625,30 @@ msgstr "Description"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Client Library"
 
+msgid "Explore Maps"
+msgstr "Explore Maps"
+
+msgid "Edit Map"
+msgstr "Edit Map"
+
+msgid "Update"
+msgstr "Update"
+
+msgid "Create a New Map"
+msgstr "Create a New Map"
+
+msgid "Available layers"
+msgstr "Available layers"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Save Map"
+msgstr "Save Map"
+
+msgid "Close"
+msgstr "Close"
+
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1017,9 +1041,6 @@ msgstr "Replace"
 msgid "Remove"
 msgstr "Remove"
 
-msgid "Close"
-msgstr "Close"
-
 msgid "Download Metadata"
 msgstr "Download Metadata"
 
@@ -1087,9 +1108,6 @@ msgstr "Metadata Provider"
 msgid "<< Back"
 msgstr "<< Back"
 
-msgid "Update"
-msgstr "Update"
-
 msgid "Next >>"
 msgstr "Next >>"
 
@@ -1101,6 +1119,9 @@ msgstr "Edit Metadata"
 
 msgid "Editing details for"
 msgstr "Editing details for"
+
+msgid "Return to Document"
+msgstr "Return to Document"
 
 msgid "Deleting"
 msgstr "Deleting"
@@ -1198,14 +1219,11 @@ msgstr "Responsible Parties"
 msgid "Responsible and Permissions"
 msgstr "Responsible and Permissions"
 
-msgid "Message box"
-msgstr "Message box"
-
-msgid "OK"
-msgstr "OK"
-
 msgid "Publishing"
 msgstr "Publishing"
+
+msgid "You are not allowed to view this document."
+msgstr "You are not allowed to view this document."
 
 msgid "You are not permitted to delete this document"
 msgstr "You are not permitted to delete this document"
@@ -1227,9 +1245,6 @@ msgstr "Not allowed"
 
 msgid "Not found"
 msgstr "Not found"
-
-msgid "You are not allowed to view this document."
-msgstr "You are not allowed to view this document."
 
 msgid "You must set a point of contact for this resource"
 msgstr "You must set a point of contact for this resource"
@@ -1767,19 +1782,19 @@ msgstr "Create a Group Category"
 msgid "Edit Group Category"
 msgstr "Edit Group Category"
 
-msgid "Save"
-msgstr "Save"
-
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+#, fuzzy, python-brace-format
+#| msgid "The e-mail address '%(email)s' has already been invited."
+msgid "The e-mail address '{email}' has already been invited."
 msgstr "The e-mail address '%(email)s' has already been invited."
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, fuzzy, python-brace-format
+#| msgid "The e-mail address '%(email)s' has already accepted an invite."
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr "The e-mail address '%(email)s' has already accepted an invite."
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, fuzzy, python-brace-format
+#| msgid "An active user is already using the e-mail address '%(email)s'"
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr "An active user is already using the e-mail address '%(email)s'"
 
 msgid "E-mail"
@@ -2021,6 +2036,46 @@ msgstr "last modified"
 msgid "date when attribute statistics were last updated"
 msgstr "date when attribute statistics were last updated"
 
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Append to Layer"
+msgstr "Return to Layer"
+
+#, fuzzy
+#| msgid "layers upload"
+msgid "layers append"
+msgstr "layers upload"
+
+msgid "Return to Layer"
+msgstr "Return to Layer"
+
+msgid "Incomplete Uploads"
+msgstr "Incomplete Uploads"
+
+msgid "You have the following incomplete uploads"
+msgstr "You have the following incomplete uploads"
+
+msgid "last updated on"
+msgstr "last updated on"
+
+msgid "Resume"
+msgstr "Resume"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "Are you sure you want to delete this upload?"
+
+msgid "Delete, and don't ask me again."
+msgstr "Delete, and don't ask me again."
+
+msgid "Preserve Metadata XML"
+msgstr "Preserve Metadata XML"
+
+msgid "Select the charset or leave default"
+msgstr "Select the charset or leave default"
+
 msgid "Home"
 msgstr "Home"
 
@@ -2170,6 +2225,9 @@ msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] "Layer"
 msgstr[1] "Layers"
+
+msgid "Append Data"
+msgstr ""
 
 msgid "Edit data"
 msgstr "Edit data"
@@ -2324,9 +2382,6 @@ msgstr ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 
-msgid "Return to Layer"
-msgstr "Return to Layer"
-
 #, python-format
 msgid ""
 "\n"
@@ -2364,27 +2419,6 @@ msgstr "layers upload"
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 
-msgid "Incomplete Uploads"
-msgstr "Incomplete Uploads"
-
-msgid "You have the following incomplete uploads"
-msgstr "You have the following incomplete uploads"
-
-msgid "last updated on"
-msgstr "last updated on"
-
-msgid "Resume"
-msgstr "Resume"
-
-msgid "Delete"
-msgstr "Delete"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Are you sure you want to delete this upload?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Delete, and don't ask me again."
-
 msgid "Remove Layers"
 msgstr "Remove Layers"
 
@@ -2402,12 +2436,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "Replace Layer"
-
-msgid "Preserve Metadata XML"
-msgstr "Preserve Metadata XML"
-
-msgid "Select the charset or leave default"
-msgstr "Select the charset or leave default"
 
 msgid "Manage Styles"
 msgstr "Manage Styles"
@@ -3018,38 +3046,64 @@ msgstr "now"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "You are attempting to replace a vector layer with an unknown format."
 
-msgid "You are attempting to replace a vector layer with a raster."
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector layer with a raster."
 msgstr "You are attempting to replace a vector layer with a raster."
 
-msgid "You are attempting to replace a raster layer with a vector."
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster layer with a vector."
 msgstr "You are attempting to replace a raster layer with a vector."
 
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with an unknown format."
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr "You are attempting to replace a vector layer with an unknown format."
+
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Please ensure the name is consistent with the file you are trying to "
+#| "replace."
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 "Please ensure the name is consistent with the file you are trying to replace."
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr "Local GeoNode layer has no geometry type."
 
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Please ensure there is at least one geometry "
+#| "type                                 that is consistent with the file you "
+#| "are trying to replace."
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 "Please ensure there is at least one geometry "
 "type                                 that is consistent with the file you "
 "are trying to replace."
+
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
+msgstr ""
 
 #, fuzzy
 #| msgid "Some error occurred while trying to access the uploaded schema: %s"
 msgid ""
 "Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr "Some error occurred while trying to access the uploaded schema: %s"
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
 
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
@@ -3082,6 +3136,12 @@ msgstr "You are not permitted to view this layer"
 
 msgid "Failed to upload the layer"
 msgstr "Failed to upload the layer"
+
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "You are attempting to replace a vector layer with a raster."
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "You are attempting to replace a raster layer with a vector."
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
@@ -3217,9 +3277,6 @@ msgstr "Copy this map"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplicate this map and modify it for your own purposes"
 
-msgid "Create a New Map"
-msgstr "Create a New Map"
-
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3281,12 +3338,6 @@ msgstr "Download Complete"
 msgid "Download Failed"
 msgstr "Download Failed"
 
-msgid "Edit Map"
-msgstr "Edit Map"
-
-msgid "Explore Maps"
-msgstr "Explore Maps"
-
 msgid "maps explore"
 msgstr "maps explore"
 
@@ -3302,6 +3353,9 @@ msgstr ""
 "        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
+
+msgid "Return to Map"
+msgstr "Return to Map"
 
 msgid "Remove Map"
 msgstr "Remove Map"
@@ -3886,7 +3940,9 @@ msgstr "Update profile"
 msgid "Explore People"
 msgstr "Explore People"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "Your username for "
 
 msgid "Your username has been emailed to you."
@@ -4390,6 +4446,12 @@ msgstr "Save Geo Limits"
 
 msgid "Delete Geo Limits"
 msgstr "Delete Geo Limits"
+
+msgid "Message box"
+msgstr "Message box"
+
+msgid "OK"
+msgstr "OK"
 
 msgid "Mandatory files : SHP , DBF"
 msgstr "Mandatory files : SHP , DBF"
@@ -5572,12 +5634,6 @@ msgstr "Topic Category is mandatory and cannot be empty!"
 msgid "Group is mandatory and cannot be empty!"
 msgstr "Group is mandatory and cannot be empty!"
 
-msgid "Return to Document"
-msgstr "Return to Document"
-
-msgid "Return to Map"
-msgstr "Return to Map"
-
 msgid "Identification"
 msgstr "Identification"
 
@@ -5634,6 +5690,9 @@ msgstr "Online Link"
 
 msgid "* Field declared Mandatory by the Metadata Schema"
 msgstr "* Field declared Mandatory by the Metadata Schema"
+
+msgid "Please, fill the following items before clicking on preview:"
+msgstr ""
 
 msgid "Request perission"
 msgstr "Request perission"
@@ -6226,12 +6285,6 @@ msgstr "Invalid permission level."
 
 msgid "Permission Denied"
 msgstr "Permission Denied"
-
-#~ msgid "Available layers"
-#~ msgstr "Available layers"
-
-#~ msgid "Save Map"
-#~ msgstr "Save Map"
 
 #~ msgid "Climate"
 #~ msgstr "Climate"
