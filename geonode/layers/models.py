@@ -689,7 +689,7 @@ def pre_delete_layer(instance, sender, **kwargs):
                 style.delete()
 
     if 'geonode.upload' in settings.INSTALLED_APPS and \
-    settings.UPLOADER['BACKEND'] == 'geonode.importer':
+            settings.UPLOADER['BACKEND'] == 'geonode.importer':
         from geonode.upload.models import Upload
         # Need to call delete one by one in ordee to invoke the
         #  'delete' overridden method

@@ -209,7 +209,7 @@ def layer_upload_handle_get(request, template):
         'is_layer': True,
     }
     if 'geonode.upload' in settings.INSTALLED_APPS and \
-    settings.UPLOADER['BACKEND'] == 'geonode.importer':
+            settings.UPLOADER['BACKEND'] == 'geonode.importer':
         from geonode.upload import utils as upload_utils, models
         ctx['async_upload'] = upload_utils._ASYNC_UPLOAD
         ctx['incomplete'] = models.Upload.objects.get_incomplete_uploads(

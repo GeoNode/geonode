@@ -194,7 +194,7 @@ class UploadSerializer(DynamicModelSerializer):
         super(UploadSerializer, self).__init__(*args, **kwargs)
 
         if 'request' in self.context and \
-        self.context['request'].query_params.get('full'):
+                self.context['request'].query_params.get('full'):
             self.fields['layer'] = DynamicRelationField(
                 LayerSerializer,
                 embed=True,

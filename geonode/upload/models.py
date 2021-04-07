@@ -170,7 +170,7 @@ class Upload(models.Model):
     @property
     def progress(self):
         if self.state in \
-        (Upload.STATE_READY, Upload.STATE_INVALID, Upload.STATE_INCOMPLETE):
+                (Upload.STATE_READY, Upload.STATE_INVALID, Upload.STATE_INCOMPLETE):
             return 0.0
         elif self.state == Upload.STATE_PENDING:
             return 33.0

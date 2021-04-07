@@ -387,11 +387,11 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             response = self.selenium.request('GET', url, headers=headers)
             self.assertEqual(response.status_code, 200)
             upload_data = response.json()['upload']
-            if upload_data['state'] == Upload.STATE_PROCESSED:
+            if upload_data['state'] == Upload.STATE_PROCESSED and upload_data['detail_url']:
                 break
 
         self.assertEqual(upload_data['state'], Upload.STATE_PROCESSED)
-        self.assertEqual(upload_data['progress'], 100.0)
+        self.assertGreaterEqual(upload_data['progress'], 80.0)
 
         self.assertIsNotNone(upload_data['detail_url'])
         self.assertIsNone(upload_data['resume_url'])

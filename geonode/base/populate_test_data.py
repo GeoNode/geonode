@@ -120,35 +120,30 @@ def create_fixtures():
 
     next_date = get_test_date()
 
-    layer_data = [('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, next_date(), ('populartag', 'here'), elevation),
-                  ('layer2', 'abstract2', 'layer2', 'geonode:layer2',
-                   world_extent, next_date(), ('populartag',), elevation),
-                  ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer',
-                   world_extent, next_date(), ('populartag',), elevation),
-                  ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent,
-                   next_date(), ('populartag', 'layertagunique'), location),
-                  ('common double it', 'whatever', 'whatever', 'geonode:whatever', [
-                      0, 1, 0, 1], next_date(), ('populartag',), location),
-                  ('common double time', 'else', 'fooey', 'geonode:fooey', [
-                      0, 5, 0, 5], next_date(), ('populartag',), location),
-                  ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [
-                      0, 10, 0, 10], next_date(), ('populartag',), biota),
-                  ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [
-                      0, 50, 0, 50], next_date(), ('populartag',), biota),
-                  ('layer metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [
-                      0, 22, 0, 22], next_date(), ('populartag',), farming)
-                  ]
+    layer_data = [
+        ('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, next_date(), ('populartag', 'here'), elevation),
+        ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, next_date(), ('populartag',), elevation),
+        ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', world_extent, next_date(), ('populartag',), elevation),
+        ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent, next_date(), ('populartag', 'layertagunique'), location),
+        ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], next_date(), ('populartag',), location),
+        ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], next_date(), ('populartag',), location),
+        ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], next_date(), ('populartag',), biota),
+        ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], next_date(), ('populartag',), biota),
+        ('layer metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [0, 22, 0, 22], next_date(), ('populartag',), farming)
+    ]
 
-    document_data = [('lorem ipsum', 'common lorem ipsum', ('populartag',), world_extent, biota),
-                     ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), world_extent, biota),
-                     ('lorem1 ipsum1', 'common abstract1', ('populartag',), world_extent, biota),
-                     ('ipsum foo', 'common bar lorem', ('populartag',), world_extent, location),
-                     ('doc one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
-                     ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
-                     ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
-                     ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
-                     ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
-                     ('doc metadata true', 'doc metadata true', ('populartag',), [0, 22, 0, 22], farming)]
+    document_data = [
+        ('lorem ipsum', 'common lorem ipsum', ('populartag',), world_extent, biota),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), world_extent, biota),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',), world_extent, biota),
+        ('ipsum foo', 'common bar lorem', ('populartag',), world_extent, location),
+        ('doc one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
+        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
+        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
+        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
+        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
+        ('doc metadata true', 'doc metadata true', ('populartag',), [0, 22, 0, 22], farming)
+    ]
 
     return map_data, user_data, people_data, layer_data, document_data
 
