@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Indonesian (http://www.transifex.com/geonode/geonode/language/"
@@ -471,6 +471,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr "Sumber"
 
+msgid "Metadata"
+msgstr ""
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr "Sebagai contoh \"kml\""
 
@@ -725,34 +731,6 @@ msgstr "Deskripsi"
 msgid "GeoNode Client Library"
 msgstr "Bantuan GeoNode"
 
-msgid "Explore Maps"
-msgstr "Telusuri Peta"
-
-msgid "Edit Map"
-msgstr "Edit Peta"
-
-msgid "Update"
-msgstr "Ubah"
-
-msgid "Create a New Map"
-msgstr "Buat peta baru"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Style yang tersedia"
-
-msgid "Save"
-msgstr "Simpan"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Buat Peta"
-
-msgid "Close"
-msgstr "Dekat"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -773,7 +751,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -819,8 +797,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "Informasi tambahan"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -836,10 +816,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -850,7 +833,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -871,7 +854,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -923,10 +906,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "Pengguna Aktivitas"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Documents related to this map"
@@ -1100,9 +1081,6 @@ msgstr "Edit Dokumen"
 msgid "Request change"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Wizard"
 msgstr ""
 
@@ -1118,6 +1096,9 @@ msgstr ""
 
 msgid "Remove"
 msgstr "Hapus"
+
+msgid "Close"
+msgstr "Dekat"
 
 msgid "Download Metadata"
 msgstr "Mengunduh Metadata"
@@ -1195,6 +1176,9 @@ msgstr "Provider Metadata"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "Ubah"
 
 #, fuzzy
 #| msgid "Next"
@@ -1698,6 +1682,11 @@ msgstr "Membuat"
 
 #, fuzzy
 #| msgid "Not provided"
+msgid "No title provided"
+msgstr "Tidak tersedia"
+
+#, fuzzy
+#| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "Tidak tersedia"
 
@@ -2018,6 +2007,9 @@ msgstr "Buat Grup a"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "Buat Grup"
+
+msgid "Save"
+msgstr "Simpan"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2654,6 +2646,12 @@ msgstr "Urutan tampilan"
 msgid "Visible"
 msgstr "terlihat?"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2757,6 +2755,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Tampilan Cetak"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Sunting Layanan Metadata"
 
 #, fuzzy
 #| msgid "Attributes"
@@ -3278,8 +3281,8 @@ msgid ""
 "are trying to replace."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3318,18 +3321,15 @@ msgstr "Anda tidak diijinkan untuk melihat layer peta ini"
 msgid "Failed to upload the layer"
 msgstr "File yang akan diunggah"
 
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Unable to delete layer"
-msgstr "File yang akan diunggah"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "Peta telah dibuat"
@@ -3472,6 +3472,9 @@ msgstr "Salin peta ini"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplikasi peta ini dan modifikasi sesuai kebutuhan anda"
 
+msgid "Create a New Map"
+msgstr "Buat peta baru"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3532,6 +3535,12 @@ msgstr "Unduh Selesai"
 msgid "Download Failed"
 msgstr "Unduh Gagal"
 
+msgid "Edit Map"
+msgstr "Edit Peta"
+
+msgid "Explore Maps"
+msgstr "Telusuri Peta"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3579,11 +3588,6 @@ msgstr "Anda tidak diijinkan untuk melihat peta ini"
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3599,7 +3603,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3674,7 +3678,8 @@ msgstr "tanggal referensi sumber"
 msgid "Show data for specific label"
 msgstr "tanggal referensi sumber"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3843,7 +3848,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4483,9 +4489,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "Sumber"
 
 #, fuzzy
@@ -4501,9 +4507,9 @@ msgstr "Anda tidak diizinkan untuk menghapus layanan ini."
 msgid "You are not permitted to remove this service."
 msgstr "Anda tidak diizinkan untuk menghapus layanan ini."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Layanan telah dibuat:"
 
 msgid "created"
@@ -5756,9 +5762,6 @@ msgstr "Kelompok berikut:"
 msgid "Updating Metadata..."
 msgstr "Mengunduh Metadata"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
@@ -6299,9 +6302,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "Yang terpopuler"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "Teks"
 
@@ -6518,20 +6518,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6550,3 +6549,28 @@ msgstr "Ijin level tidak benar"
 
 msgid "Permission Denied"
 msgstr "Tidak diizinkan"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Style yang tersedia"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Buat Peta"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "Pengguna Aktivitas"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Unable to delete layer"
+#~ msgstr "File yang akan diunggah"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"

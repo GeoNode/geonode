@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -392,6 +392,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr ""
 
+msgid "Metadata"
+msgstr ""
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr ""
 
@@ -598,30 +604,6 @@ msgstr ""
 msgid "GeoNode Client Library"
 msgstr ""
 
-msgid "Explore Maps"
-msgstr ""
-
-msgid "Edit Map"
-msgstr ""
-
-msgid "Update"
-msgstr ""
-
-msgid "Create a New Map"
-msgstr ""
-
-msgid "Available layers"
-msgstr ""
-
-msgid "Save"
-msgstr ""
-
-msgid "Save Map"
-msgstr ""
-
-msgid "Close"
-msgstr ""
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -642,7 +624,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -686,7 +668,7 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
+msgid "Geoscientific Information"
 msgstr ""
 
 msgid ""
@@ -703,10 +685,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -717,7 +702,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -738,7 +723,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -786,7 +771,7 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-msgid "Utilities"
+msgid "Utilities Communication"
 msgstr ""
 
 msgid "Document Created"
@@ -927,9 +912,6 @@ msgstr ""
 msgid "Request change"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Wizard"
 msgstr ""
 
@@ -945,6 +927,9 @@ msgid "Replace"
 msgstr ""
 
 msgid "Remove"
+msgstr ""
+
+msgid "Close"
 msgstr ""
 
 msgid "Download Metadata"
@@ -1012,6 +997,9 @@ msgid "Metadata Provider"
 msgstr ""
 
 msgid "<< Back"
+msgstr ""
+
+msgid "Update"
 msgstr ""
 
 msgid "Next >>"
@@ -1383,6 +1371,9 @@ msgstr ""
 msgid "Create"
 msgstr ""
 
+msgid "No title provided"
+msgstr ""
+
 msgid "No abstract provided"
 msgstr ""
 
@@ -1651,6 +1642,9 @@ msgid "Create a Group Category"
 msgstr ""
 
 msgid "Edit Group Category"
+msgstr ""
+
+msgid "Save"
 msgstr ""
 
 #, python-format
@@ -2204,6 +2198,12 @@ msgstr ""
 msgid "Visible"
 msgstr ""
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 msgid "Upload Layer Metadata"
 msgstr ""
 
@@ -2292,6 +2292,9 @@ msgid "This will most probably overwrite the current default style!"
 msgstr ""
 
 msgid "Preview"
+msgstr ""
+
+msgid "Required Metadata"
 msgstr ""
 
 msgid "Dataset Attributes"
@@ -2730,8 +2733,8 @@ msgid ""
 "are trying to replace."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -2766,15 +2769,13 @@ msgstr ""
 msgid "Failed to upload the layer"
 msgstr ""
 
-msgid "Unable to delete layer"
-msgstr ""
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
+#, python-format
+msgid "couldn't generate thumbnail: %s"
 msgstr ""
 
 msgid "Map Created"
@@ -2899,6 +2900,9 @@ msgstr ""
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr ""
 
+msgid "Create a New Map"
+msgstr ""
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -2943,6 +2947,12 @@ msgstr ""
 msgid "Download Failed"
 msgstr ""
 
+msgid "Edit Map"
+msgstr ""
+
+msgid "Explore Maps"
+msgstr ""
+
 msgid "maps explore"
 msgstr ""
 
@@ -2983,9 +2993,6 @@ msgstr ""
 msgid "You are not allowed to view this map."
 msgstr ""
 
-msgid "Thumbnail saved"
-msgstr ""
-
 msgid "error saving thumbnail"
 msgstr ""
 
@@ -3001,7 +3008,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 msgid "Enter valid email addresses."
@@ -3064,7 +3071,8 @@ msgstr ""
 msgid "Show data for specific label"
 msgstr ""
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3207,7 +3215,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -3755,7 +3764,8 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-msgid "Resource {} is being processed"
+#, python-brace-format
+msgid "Resource {resource_id} is being processed"
 msgstr ""
 
 msgid "Service rescanned successfully"
@@ -3767,7 +3777,8 @@ msgstr ""
 msgid "You are not permitted to remove this service."
 msgstr ""
 
-msgid "Service {} has been deleted"
+#, python-brace-format
+msgid "Service {service.name} has been deleted"
 msgstr ""
 
 msgid "created"
@@ -4873,9 +4884,6 @@ msgstr ""
 msgid "Updating Metadata..."
 msgstr ""
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
@@ -5289,9 +5297,6 @@ msgstr ""
 msgid "Most popular"
 msgstr ""
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr ""
 
@@ -5478,20 +5483,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 msgid "Could not find any valid Time Regex for the Mosaic files."

@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Finnish (http://www.transifex.com/geonode/geonode/language/"
@@ -467,6 +467,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr "Resurssit"
 
+msgid "Metadata"
+msgstr ""
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr "Esimerkiksi \"kml\""
 
@@ -723,34 +729,6 @@ msgstr "Kuvaus"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Ohje"
 
-msgid "Explore Maps"
-msgstr "Tutustu kartat"
-
-msgid "Edit Map"
-msgstr "Edit Kartta"
-
-msgid "Update"
-msgstr "Päivitys"
-
-msgid "Create a New Map"
-msgstr "Luo uusi kartta"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Käytettävissä tyylit"
-
-msgid "Save"
-msgstr "Tallenna"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Luo Kartta"
-
-msgid "Close"
-msgstr "Lähellä"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -771,7 +749,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -817,8 +795,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "Täydentävät tiedot"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -834,10 +814,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -848,7 +831,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -869,7 +852,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -921,10 +904,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "Käyttäjän toimet"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Documents related to this map"
@@ -1098,9 +1079,6 @@ msgstr "Muokkaa dokumenttia"
 msgid "Request change"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Wizard"
 msgstr ""
 
@@ -1117,6 +1095,9 @@ msgstr ""
 
 msgid "Remove"
 msgstr "Poistaa"
+
+msgid "Close"
+msgstr "Lähellä"
 
 msgid "Download Metadata"
 msgstr "Lataa Metadata"
@@ -1194,6 +1175,9 @@ msgstr "Metadata Provider"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "Päivitys"
 
 #, fuzzy
 #| msgid "Next"
@@ -1697,6 +1681,11 @@ msgstr "Luoda"
 
 #, fuzzy
 #| msgid "Not provided"
+msgid "No title provided"
+msgstr "Ei toimiteta"
+
+#, fuzzy
+#| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "Ei toimiteta"
 
@@ -2015,6 +2004,9 @@ msgstr "Luo ryhmä"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "Luo ryhmä"
+
+msgid "Save"
+msgstr "Tallenna"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2652,6 +2644,12 @@ msgstr "Näytön järjestys"
 msgid "Visible"
 msgstr "näkyvissä?"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2754,6 +2752,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Esikatselu"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Edit Service Metadata"
 
 #, fuzzy
 #| msgid "Attributes"
@@ -3268,8 +3271,8 @@ msgid ""
 "are trying to replace."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3308,18 +3311,15 @@ msgstr "Sinulla ei ole oikeuksia nähdäksesi tämän kerroksen"
 msgid "Failed to upload the layer"
 msgstr "Tiedostot ladattavaksi"
 
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Unable to delete layer"
-msgstr "Tiedostot ladattavaksi"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "Kartta Luotu"
@@ -3463,6 +3463,9 @@ msgstr "Kopioi tämä kartta"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Monista tämä kartta ja muokata sitä omaan käyttöösi"
 
+msgid "Create a New Map"
+msgstr "Luo uusi kartta"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3519,6 +3522,12 @@ msgstr "Lataa Complete"
 msgid "Download Failed"
 msgstr "Lataus epäonnistui"
 
+msgid "Edit Map"
+msgstr "Edit Kartta"
+
+msgid "Explore Maps"
+msgstr "Tutustu kartat"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3566,11 +3575,6 @@ msgstr "Sinulla ei ole lupaa katsella tätä karttaa."
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3586,7 +3590,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3661,7 +3665,8 @@ msgstr "viitatun resurssin viitepäivä"
 msgid "Show data for specific label"
 msgstr "viitatun resurssin viitepäivä"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3830,7 +3835,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4476,9 +4482,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "Resurssit"
 
 #, fuzzy
@@ -4494,9 +4500,9 @@ msgstr "Sinulla ei ole oikeutta poistaa tätä palvelua."
 msgid "You are not permitted to remove this service."
 msgstr "Sinulla ei ole oikeutta poistaa tätä palvelua."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Palvelu on luotu:"
 
 msgid "created"
@@ -5745,9 +5751,6 @@ msgstr "Seuraavat ryhmät:"
 msgid "Updating Metadata..."
 msgstr "Lataa Metadata"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
@@ -6288,9 +6291,6 @@ msgstr "Z -"
 msgid "Most popular"
 msgstr "Suosituin"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "Teksti"
 
@@ -6507,20 +6507,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6539,3 +6538,28 @@ msgstr "Virheellinen lupataso."
 
 msgid "Permission Denied"
 msgstr "Lupa kielletty"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Käytettävissä tyylit"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Luo Kartta"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "Käyttäjän toimet"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Unable to delete layer"
+#~ msgstr "Tiedostot ladattavaksi"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"
