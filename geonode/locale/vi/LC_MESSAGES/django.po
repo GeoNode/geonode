@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-04-07 14:50+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/geonode/geonode/language/"
@@ -152,9 +152,6 @@ msgstr "dữ liệu được cập nhật mỗi ba tháng"
 msgid "No information provided"
 msgstr "Không có thông tin cung cấp"
 
-msgid "Category"
-msgstr "Danh mục"
-
 msgid "Category is required."
 msgstr "Danh mục được yêu cầu."
 
@@ -225,6 +222,9 @@ msgstr "Khu vực"
 #| msgid "Groups"
 msgid "Group"
 msgstr "Nhóm"
+
+msgid "Category"
+msgstr "Danh mục"
 
 msgid "License"
 msgstr "Giấy phép"
@@ -477,6 +477,12 @@ msgstr ""
 #| msgid "Resources"
 msgid "Resource Type"
 msgstr "Tài nguyên"
+
+msgid "Metadata"
+msgstr ""
+
+msgid "If true, will be excluded from search"
+msgstr ""
 
 msgid "For example \"kml\""
 msgstr "Ví dụ \"kml\""
@@ -732,34 +738,6 @@ msgstr "Miêu tả"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Trợ giúp"
 
-msgid "Explore Maps"
-msgstr "Khám phá Maps"
-
-msgid "Edit Map"
-msgstr "Chỉnh sửa Bản đồ"
-
-msgid "Update"
-msgstr "Cập nhật"
-
-msgid "Create a New Map"
-msgstr "Tạo một bản đồ mới"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Phong cách có sẵn"
-
-msgid "Save"
-msgstr "Lưu"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Tạo một bản đồ"
-
-msgid "Close"
-msgstr "Gần"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -780,7 +758,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -826,8 +804,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "Thông tin bổ sung"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -843,10 +823,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -857,7 +840,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -878,7 +861,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -930,10 +913,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "Hoạt động tài"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Documents related to this map"
@@ -1107,9 +1088,6 @@ msgstr "Chỉnh sửa tài liệu"
 msgid "Request change"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Wizard"
 msgstr ""
 
@@ -1125,6 +1103,9 @@ msgstr ""
 
 msgid "Remove"
 msgstr "Tẩy"
+
+msgid "Close"
+msgstr "Gần"
 
 msgid "Download Metadata"
 msgstr "Tải về Metadata"
@@ -1203,6 +1184,9 @@ msgstr "Nhà cung cấp siêu dữ liệu"
 msgid "<< Back"
 msgstr ""
 
+msgid "Update"
+msgstr "Cập nhật"
+
 #, fuzzy
 #| msgid "Next"
 msgid "Next >>"
@@ -1217,6 +1201,9 @@ msgid "Edit Metadata"
 msgstr "Chỉnh sửa Metadata"
 
 msgid "Editing details for"
+msgstr ""
+
+msgid "Return to Document"
 msgstr ""
 
 msgid "Deleting"
@@ -1334,17 +1321,12 @@ msgid "Responsible and Permissions"
 msgstr "Thay đổi lớp Quyền"
 
 #, fuzzy
-#| msgid "Message Inbox"
-msgid "Message box"
-msgstr "Hộp thư tin nhắn"
-
-msgid "OK"
-msgstr ""
-
-#, fuzzy
 #| msgid "Public"
 msgid "Publishing"
 msgstr "Công cộng"
+
+msgid "You are not allowed to view this document."
+msgstr "Bạn không được phép xem tài liệu này."
 
 msgid "You are not permitted to delete this document"
 msgstr "Bạn không được phép để xóa tài liệu này"
@@ -1370,9 +1352,6 @@ msgstr "Không được cung cấp"
 #| msgid "Page Not Found"
 msgid "Not found"
 msgstr "Không tìm thấy trang"
-
-msgid "You are not allowed to view this document."
-msgstr "Bạn không được phép xem tài liệu này."
 
 #, fuzzy
 #| msgid "Set permissions for this resource"
@@ -1706,6 +1685,11 @@ msgstr "Sáng tạo"
 
 #, fuzzy
 #| msgid "Not provided"
+msgid "No title provided"
+msgstr "Không được cung cấp"
+
+#, fuzzy
+#| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "Không được cung cấp"
 
@@ -2025,16 +2009,19 @@ msgstr "Tạo một Nhóm"
 msgid "Edit Group Category"
 msgstr "Tạo Nhóm"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+msgid "Save"
+msgstr "Lưu"
+
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2315,6 +2302,48 @@ msgstr "biến đổi cuối cùng"
 msgid "date when attribute statistics were last updated"
 msgstr "ngày khi thống kê thuộc tính được cập nhật lần cuối"
 
+#, fuzzy
+#| msgid "Edit Layer"
+msgid "Append to Layer"
+msgstr "Chỉnh sửa lớp"
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "Một lớp đã được tải lên"
+
+msgid "Return to Layer"
+msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr "Ơn Incomplete"
+
+msgid "You have the following incomplete uploads"
+msgstr "Bạn có cập nhật không đầy đủ sau"
+
+msgid "last updated on"
+msgstr "cập nhật lần cuối vào"
+
+msgid "Resume"
+msgstr "Sơ yếu lý lịch"
+
+msgid "Delete"
+msgstr "Xóa bỏ"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "Bạn có chắc chắn muốn xóa upload này?"
+
+msgid "Delete, and don't ask me again."
+msgstr "Xóa, và đừng hỏi tôi một lần nữa."
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Preserve Metadata XML"
+msgstr "Edit Service Metadata"
+
+msgid "Select the charset or leave default"
+msgstr "Chọn bộ ký tự hoặc để mặc định"
+
 msgid "Home"
 msgstr "Nhà"
 
@@ -2480,6 +2509,9 @@ msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] ""
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr ""
 
@@ -2636,9 +2668,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -2664,6 +2693,12 @@ msgstr "Hiển thị thứ tự"
 msgid "Visible"
 msgstr "có thể nhìn thấy?"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2676,27 +2711,6 @@ msgstr "Một lớp đã được tải lên"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "Ơn Incomplete"
-
-msgid "You have the following incomplete uploads"
-msgstr "Bạn có cập nhật không đầy đủ sau"
-
-msgid "last updated on"
-msgstr "cập nhật lần cuối vào"
-
-msgid "Resume"
-msgstr "Sơ yếu lý lịch"
-
-msgid "Delete"
-msgstr "Xóa bỏ"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Bạn có chắc chắn muốn xóa upload này?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Xóa, và đừng hỏi tôi một lần nữa."
 
 msgid "Remove Layers"
 msgstr ""
@@ -2711,14 +2725,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "Thay thế lớp"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Preserve Metadata XML"
-msgstr "Edit Service Metadata"
-
-msgid "Select the charset or leave default"
-msgstr "Chọn bộ ký tự hoặc để mặc định"
 
 msgid "Manage Styles"
 msgstr "Quản lý Styles"
@@ -2766,6 +2772,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Xem trước"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Edit Service Metadata"
 
 #, fuzzy
 #| msgid "Attributes"
@@ -3263,31 +3274,47 @@ msgstr "hiện nay"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector layer with a raster."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a raster layer with a vector."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3322,18 +3349,21 @@ msgstr "Bạn không được phép để xem lớp này"
 msgid "Failed to upload the layer"
 msgstr "Các tập tin được tải lên"
 
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Unable to delete layer"
-msgstr "Các tập tin được tải lên"
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "Bản đồ tạo"
@@ -3476,6 +3506,9 @@ msgstr "Sao chép bản đồ này"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplicate bản đồ này và sửa đổi nó cho mục đích riêng của bạn"
 
+msgid "Create a New Map"
+msgstr "Tạo một bản đồ mới"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3531,6 +3564,12 @@ msgstr "Tải xuống hoàn tất"
 msgid "Download Failed"
 msgstr "Tải về Không"
 
+msgid "Edit Map"
+msgstr "Chỉnh sửa Bản đồ"
+
+msgid "Explore Maps"
+msgstr "Khám phá Maps"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3547,6 +3586,11 @@ msgstr ""
 "tập tin siêu dữ liệu XML. Siêu dữ liệu nhập khẩu GeoNode hỗ trợ một tập hợp "
 "con của các nguyên tố siêu dữ liệu ISO, FGDC, và Dublin Core. Một số "
 "metadata ban đầu bạn có thể đã bị mất."
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "Quay trở lại"
 
 msgid "Remove Map"
 msgstr ""
@@ -3579,11 +3623,6 @@ msgstr "Bạn không được phép xem bản đồ này."
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3599,7 +3638,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3674,7 +3713,8 @@ msgstr "ngày tham chiếu cho các tài nguyên trích dẫn"
 msgid "Show data for specific label"
 msgstr "ngày tham chiếu cho các tài nguyên trích dẫn"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3843,7 +3883,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4180,7 +4221,9 @@ msgstr "Cập nhật hồ sơ cá nhân"
 msgid "Explore People"
 msgstr "Khám phá"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "Tên người dùng của bạn cho"
 
 msgid "Your username has been emailed to you."
@@ -4488,9 +4531,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "Tài nguyên"
 
 #, fuzzy
@@ -4506,9 +4549,9 @@ msgstr "Bạn không được phép để loại bỏ dịch vụ này."
 msgid "You are not permitted to remove this service."
 msgstr "Bạn không được phép để loại bỏ dịch vụ này."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Dịch vụ đã được tạo ra:"
 
 msgid "created"
@@ -4762,6 +4805,14 @@ msgstr ""
 #| msgid "Delete These"
 msgid "Delete Geo Limits"
 msgstr "Xóa Những"
+
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "Message box"
+msgstr "Hộp thư tin nhắn"
+
+msgid "OK"
+msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5760,22 +5811,11 @@ msgstr "Các nhóm sau:"
 msgid "Updating Metadata..."
 msgstr "Tải về Metadata"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
-
-msgid "Return to Document"
-msgstr ""
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "Quay trở lại"
 
 msgid "Identification"
 msgstr ""
@@ -5838,6 +5878,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy
@@ -6301,9 +6344,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "Phổ biến nhất"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "Bản văn"
 
@@ -6520,20 +6560,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6552,3 +6591,28 @@ msgstr "Mức cho phép không hợp lệ."
 
 msgid "Permission Denied"
 msgstr "Permission Denied"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Phong cách có sẵn"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Tạo một bản đồ"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "Hoạt động tài"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Unable to delete layer"
+#~ msgstr "Các tập tin được tải lên"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"

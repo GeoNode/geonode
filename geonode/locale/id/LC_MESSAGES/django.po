@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-04-07 14:50+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Indonesian (http://www.transifex.com/geonode/geonode/language/"
@@ -150,9 +150,6 @@ msgstr "data diperbaharui setiap tiga bulan sekali"
 msgid "No information provided"
 msgstr "Tidak tersedia informasi"
 
-msgid "Category"
-msgstr "Kategori"
-
 msgid "Category is required."
 msgstr "Kategori diperlukan."
 
@@ -223,6 +220,9 @@ msgstr "Wilayah"
 #| msgid "Groups"
 msgid "Group"
 msgstr "Grup"
+
+msgid "Category"
+msgstr "Kategori"
 
 msgid "License"
 msgstr "Lisensi"
@@ -470,6 +470,12 @@ msgstr ""
 #| msgid "Resources"
 msgid "Resource Type"
 msgstr "Sumber"
+
+msgid "Metadata"
+msgstr ""
+
+msgid "If true, will be excluded from search"
+msgstr ""
 
 msgid "For example \"kml\""
 msgstr "Sebagai contoh \"kml\""
@@ -725,34 +731,6 @@ msgstr "Deskripsi"
 msgid "GeoNode Client Library"
 msgstr "Bantuan GeoNode"
 
-msgid "Explore Maps"
-msgstr "Telusuri Peta"
-
-msgid "Edit Map"
-msgstr "Edit Peta"
-
-msgid "Update"
-msgstr "Ubah"
-
-msgid "Create a New Map"
-msgstr "Buat peta baru"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Style yang tersedia"
-
-msgid "Save"
-msgstr "Simpan"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Buat Peta"
-
-msgid "Close"
-msgstr "Dekat"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -773,7 +751,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -819,8 +797,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "Informasi tambahan"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -836,10 +816,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -850,7 +833,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -871,7 +854,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -923,10 +906,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "Pengguna Aktivitas"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Documents related to this map"
@@ -1100,9 +1081,6 @@ msgstr "Edit Dokumen"
 msgid "Request change"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Wizard"
 msgstr ""
 
@@ -1118,6 +1096,9 @@ msgstr ""
 
 msgid "Remove"
 msgstr "Hapus"
+
+msgid "Close"
+msgstr "Dekat"
 
 msgid "Download Metadata"
 msgstr "Mengunduh Metadata"
@@ -1196,6 +1177,9 @@ msgstr "Provider Metadata"
 msgid "<< Back"
 msgstr ""
 
+msgid "Update"
+msgstr "Ubah"
+
 #, fuzzy
 #| msgid "Next"
 msgid "Next >>"
@@ -1210,6 +1194,9 @@ msgid "Edit Metadata"
 msgstr "Ubah metadata"
 
 msgid "Editing details for"
+msgstr ""
+
+msgid "Return to Document"
 msgstr ""
 
 msgid "Deleting"
@@ -1327,17 +1314,12 @@ msgid "Responsible and Permissions"
 msgstr "Ubah kepemilikan layer"
 
 #, fuzzy
-#| msgid "Message Inbox"
-msgid "Message box"
-msgstr "Pesan masuk"
-
-msgid "OK"
-msgstr ""
-
-#, fuzzy
 #| msgid "Public"
 msgid "Publishing"
 msgstr "Publik"
+
+msgid "You are not allowed to view this document."
+msgstr "Anda tidak diijinkan untuk melihat dokumen ini"
 
 msgid "You are not permitted to delete this document"
 msgstr "Anda tidak diizinkan untuk menghapus dokumen ini"
@@ -1363,9 +1345,6 @@ msgstr "Tidak tersedia"
 #| msgid "Page Not Found"
 msgid "Not found"
 msgstr "Halaman tidak ditemukan"
-
-msgid "You are not allowed to view this document."
-msgstr "Anda tidak diijinkan untuk melihat dokumen ini"
 
 #, fuzzy
 #| msgid "Set permissions for this resource"
@@ -1698,6 +1677,11 @@ msgstr "Membuat"
 
 #, fuzzy
 #| msgid "Not provided"
+msgid "No title provided"
+msgstr "Tidak tersedia"
+
+#, fuzzy
+#| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "Tidak tersedia"
 
@@ -2019,16 +2003,19 @@ msgstr "Buat Grup a"
 msgid "Edit Group Category"
 msgstr "Buat Grup"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+msgid "Save"
+msgstr "Simpan"
+
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2304,6 +2291,48 @@ msgstr "modifikasi terakhir"
 msgid "date when attribute statistics were last updated"
 msgstr "tanggal ketika statistik atribut diperbaharui"
 
+#, fuzzy
+#| msgid "Edit Layer"
+msgid "Append to Layer"
+msgstr "Ubah Layer"
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "layer telah diunggah"
+
+msgid "Return to Layer"
+msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr "Unggahan tidak sempurna"
+
+msgid "You have the following incomplete uploads"
+msgstr "Anda memiliki unggahan yang belum selesai"
+
+msgid "last updated on"
+msgstr "diperbaharui pada"
+
+msgid "Resume"
+msgstr "Ulang"
+
+msgid "Delete"
+msgstr "Hapus"
+
+msgid "Are you sure you want to delete this upload?"
+msgstr "Anda yakin untuk menghapus unggahan ini?"
+
+msgid "Delete, and don't ask me again."
+msgstr "Hapus, dan jangan tanya lagi."
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Preserve Metadata XML"
+msgstr "Sunting Layanan Metadata"
+
+msgid "Select the charset or leave default"
+msgstr "Pilih charset atau biarkan "
+
 msgid "Home"
 msgstr "Beranda"
 
@@ -2469,6 +2498,9 @@ msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] ""
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr ""
 
@@ -2625,9 +2657,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -2654,6 +2683,12 @@ msgstr "Urutan tampilan"
 msgid "Visible"
 msgstr "terlihat?"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2666,27 +2701,6 @@ msgstr "layer telah diunggah"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "Unggahan tidak sempurna"
-
-msgid "You have the following incomplete uploads"
-msgstr "Anda memiliki unggahan yang belum selesai"
-
-msgid "last updated on"
-msgstr "diperbaharui pada"
-
-msgid "Resume"
-msgstr "Ulang"
-
-msgid "Delete"
-msgstr "Hapus"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Anda yakin untuk menghapus unggahan ini?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Hapus, dan jangan tanya lagi."
 
 msgid "Remove Layers"
 msgstr ""
@@ -2701,14 +2715,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "Ubah Layer"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Preserve Metadata XML"
-msgstr "Sunting Layanan Metadata"
-
-msgid "Select the charset or leave default"
-msgstr "Pilih charset atau biarkan "
 
 msgid "Manage Styles"
 msgstr "Kelola Styles"
@@ -2757,6 +2763,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Tampilan Cetak"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Sunting Layanan Metadata"
 
 #, fuzzy
 #| msgid "Attributes"
@@ -3259,31 +3270,47 @@ msgstr "sekarang"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector layer with a raster."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a raster layer with a vector."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3318,18 +3345,21 @@ msgstr "Anda tidak diijinkan untuk melihat layer peta ini"
 msgid "Failed to upload the layer"
 msgstr "File yang akan diunggah"
 
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Unable to delete layer"
-msgstr "File yang akan diunggah"
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "Peta telah dibuat"
@@ -3472,6 +3502,9 @@ msgstr "Salin peta ini"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplikasi peta ini dan modifikasi sesuai kebutuhan anda"
 
+msgid "Create a New Map"
+msgstr "Buat peta baru"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3532,6 +3565,12 @@ msgstr "Unduh Selesai"
 msgid "Download Failed"
 msgstr "Unduh Gagal"
 
+msgid "Edit Map"
+msgstr "Edit Peta"
+
+msgid "Explore Maps"
+msgstr "Telusuri Peta"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3547,6 +3586,11 @@ msgstr ""
 "Catatan: ini peta ini metadata asli dihuni oleh mengimpor file metadata XML. "
 "GeoNode ini metadata impor mendukung subset dari elemen metadata ISO, FGDC, "
 "dan Dublin Core. Beberapa metadata asli Anda mungkin telah hilang."
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "Kembali ke"
 
 msgid "Remove Map"
 msgstr ""
@@ -3579,11 +3623,6 @@ msgstr "Anda tidak diijinkan untuk melihat peta ini"
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3599,7 +3638,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3674,7 +3713,8 @@ msgstr "tanggal referensi sumber"
 msgid "Show data for specific label"
 msgstr "tanggal referensi sumber"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3843,7 +3883,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4175,7 +4216,9 @@ msgstr "Ubah Profil"
 msgid "Explore People"
 msgstr "Telusuri Pengguna"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "Usernama Anda untuk"
 
 msgid "Your username has been emailed to you."
@@ -4483,9 +4526,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "Sumber"
 
 #, fuzzy
@@ -4501,9 +4544,9 @@ msgstr "Anda tidak diizinkan untuk menghapus layanan ini."
 msgid "You are not permitted to remove this service."
 msgstr "Anda tidak diizinkan untuk menghapus layanan ini."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Layanan telah dibuat:"
 
 msgid "created"
@@ -4759,6 +4802,14 @@ msgstr ""
 #| msgid "Delete These"
 msgid "Delete Geo Limits"
 msgstr "Hapus ini"
+
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "Message box"
+msgstr "Pesan masuk"
+
+msgid "OK"
+msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5756,22 +5807,11 @@ msgstr "Kelompok berikut:"
 msgid "Updating Metadata..."
 msgstr "Mengunduh Metadata"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
-
-msgid "Return to Document"
-msgstr ""
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "Kembali ke"
 
 msgid "Identification"
 msgstr ""
@@ -5834,6 +5874,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy
@@ -6299,9 +6342,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "Yang terpopuler"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "Teks"
 
@@ -6518,20 +6558,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6550,3 +6589,28 @@ msgstr "Ijin level tidak benar"
 
 msgid "Permission Denied"
 msgstr "Tidak diizinkan"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Style yang tersedia"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Buat Peta"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "Pengguna Aktivitas"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Unable to delete layer"
+#~ msgstr "File yang akan diunggah"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"

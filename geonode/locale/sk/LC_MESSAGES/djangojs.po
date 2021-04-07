@@ -1,83 +1,63 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Translators:
-# Stefan Blumentrath <stefan.blumentrath@gmx.de>, 2016
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GeoNode\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-07 14:51+0200\n"
-"PO-Revision-Date: 2016-08-23 11:58+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
-"Language-Team: Norwegian (http://www.transifex.com/geonode/geonode/language/"
-"no/)\n"
-"Language: no\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n "
+">= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 msgid "STORE_UPDATED"
 msgstr ""
 
 #, javascript-format
 msgid "Missing a %s file, which is required"
-msgstr "Mangler påkrevd %s fil"
+msgstr ""
 
 msgid "ESRI Shapefile"
-msgstr "ESRI Shapefile"
+msgstr ""
 
 msgid "ASCII Text File"
 msgstr ""
 
 msgid "GeoTIFF"
-msgstr "GeoTIFF"
+msgstr ""
 
 msgid "Comma Separated Value"
-msgstr "kommaseparert verdi"
+msgstr ""
 
 msgid "Google Earth KML"
-msgstr "Google Earth KML"
+msgstr ""
 
-#, fuzzy
-#| msgid "Google Earth KML"
 msgid "Google Earth KML with a GroundOverlay"
-msgstr "Google Earth KML"
+msgstr ""
 
-#, fuzzy
-#| msgid "Google Earth KML"
 msgid "Google Earth KMZ"
-msgstr "Google Earth KML"
+msgstr ""
 
 msgid "GeoJSON"
-msgstr "GeoJSON"
+msgstr ""
 
 msgid "Zip Archive"
-msgstr "Zip arkiv"
+msgstr ""
 
 msgid "ERDAS Imagine"
-msgstr "ERDAS Imagine"
+msgstr ""
 
 msgid "National Imagery Transmission Format"
-msgstr "National Imagery Transmission Format"
+msgstr ""
 
 msgid "Controlled Image Base-1 Meter"
 msgstr ""
@@ -89,57 +69,49 @@ msgid "Controlled Image Base-10 Meter"
 msgstr ""
 
 msgid "CADRG-Global Navigation Chart"
-msgstr "CADRG-Global Navigation Chart"
+msgstr ""
 
 msgid "CADRG-Jet Navigation Chart"
-msgstr "CADRG-Jet Navigation Chart"
+msgstr ""
 
 msgid "CADRG-Operational Navigation Chart"
-msgstr "CADRG-Operational Navigation Chart"
+msgstr ""
 
 msgid "CADRG-Tactical Pilotage Chart"
-msgstr "CADRG-Tactical Pilotage Chart"
+msgstr ""
 
 msgid "CADRG-Joint Operations Graphic"
-msgstr "CADRG-Joint Operations Graphic"
+msgstr ""
 
 msgid "CADRG-Topographic Line Map 100K"
-msgstr "CADRG-Topogrfiske Linjer Kart 100K"
+msgstr ""
 
 msgid "CADRG-Topographic Line Map 50K"
-msgstr "CADRG-Topogrfiske Linjer Kart 50K"
+msgstr ""
 
 msgid "JPEG2000"
-msgstr "JPEG2000"
+msgstr ""
 
 msgid "MrSID-Multi-resolution Seamless Image Database"
-msgstr "MrSID-Multi-resolution Seamless Image Database"
+msgstr ""
 
-#, fuzzy
-#| msgid "Metadata Links:"
 msgid "XML Metadata File"
-msgstr "Metadata lenker:"
+msgstr ""
 
 msgid "Style Layer Descriptor"
 msgstr ""
 
-#, fuzzy
-#| msgid "JPEG2000"
 msgid "JPEG"
-msgstr "JPEG2000"
+msgstr ""
 
 msgid "PNG"
 msgstr ""
 
-#, fuzzy
-#| msgid "GeoTIFF"
 msgid "GIF"
-msgstr "GeoTIFF"
+msgstr ""
 
-#, fuzzy
-#| msgid "Unexpected Error"
 msgid "Unexpected error!"
-msgstr "Uventet feil"
+msgstr ""
 
 msgid ""
 " - 400 Bad Request. Server cannot or will not process the request due to "
@@ -318,35 +290,31 @@ msgid "Finalizing"
 msgstr ""
 
 msgid "Unexpected Error"
-msgstr "Uventet feil"
+msgstr ""
 
-#, fuzzy
-#| msgid "Layer Info"
 msgid " Info"
-msgstr "Kartlag informasjon"
+msgstr ""
 
 msgid "Edit Metadata"
-msgstr "Endre Metadata"
+msgstr ""
 
-#, fuzzy
-#| msgid "Edit Metadata"
 msgid "Upload Metadata"
-msgstr "Endre Metadata"
+msgstr ""
 
 msgid "Upload SLD"
 msgstr ""
 
 msgid "Manage Styles"
-msgstr "Forvalte stilene"
+msgstr ""
 
 msgid "The column %1 was renamed to %2 <br/>"
-msgstr "Navn til kolonne %1 ble endret til %2 <br/>"
+msgstr ""
 
 msgid "Your "
 msgstr ""
 
 msgid "Performing Final GeoServer Config Step"
-msgstr "Utfører siste steg i GeoServer konfigurasjon"
+msgstr ""
 
 msgid "You need to specify more information in order to complete your upload"
 msgstr ""
@@ -358,7 +326,7 @@ msgid "A temporal dimension may be added to this Layer."
 msgstr ""
 
 msgid "Performing GeoServer Config Step"
-msgstr "Utfører steg i GeoServer konfigurasjon"
+msgstr ""
 
 msgid ""
 "<br>Please check your network connection. In case of Layer Upload make sure "
@@ -371,20 +339,18 @@ msgstr ""
 msgid "<br>Bad request or URL not found."
 msgstr ""
 
-#, fuzzy
-#| msgid "Unknown Map"
 msgid "<br>Unknown."
-msgstr "Ukjennt kart"
+msgstr ""
 
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr "Kartlag filer har blitt lastet opp, konfigurer GeoServer"
+msgstr ""
 
 msgid "Remove"
-msgstr "Fjern"
+msgstr ""
 
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr "Formatet til fil %s støttes ikke, vennligst velg en annen fil."
+msgstr ""
 
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
@@ -395,81 +361,69 @@ msgstr ""
 
 #, javascript-format
 msgid "Available %s"
-msgstr "Available %s"
+msgstr ""
 
 #, javascript-format
 msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
-"This is the list of available %s. You may choose some by selecting them in "
-"the box below and then clicking the \"Choose\" arrow between the two boxes."
 
 #, javascript-format
 msgid "Type into this box to filter down the list of available %s."
-msgstr "Type into this box to filter down the list of available %s."
+msgstr ""
 
 msgid "Filter"
-msgstr "Filter"
+msgstr ""
 
 msgid "Choose all"
-msgstr "Choose all"
+msgstr ""
 
 #, javascript-format
 msgid "Click to choose all %s at once."
-msgstr "Click to choose all %s at once."
+msgstr ""
 
 msgid "Choose"
-msgstr "Choose"
+msgstr ""
 
 #, javascript-format
 msgid "Chosen %s"
-msgstr "Chosen %s"
+msgstr ""
 
 #, javascript-format
 msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
-"This is the list of chosen %s. You may remove some by selecting them in the "
-"box below and then clicking the \"Remove\" arrow between the two boxes."
 
 msgid "Remove all"
-msgstr "Remove all"
+msgstr ""
 
 #, javascript-format
 msgid "Click to remove all chosen %s at once."
-msgstr "Click to remove all chosen %s at once."
+msgstr ""
 
 msgid "%(sel)s of %(cnt)s selected"
 msgid_plural "%(sel)s of %(cnt)s selected"
-msgstr[0] "94d7ef36d54e81afde607d8fd121772b_pl_0"
-msgstr[1] "94d7ef36d54e81afde607d8fd121772b_pl_1"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
 msgstr ""
-"You have unsaved changes on individual editable fields. If you run an "
-"action, your unsaved changes will be lost."
 
 msgid ""
 "You have selected an action, but you haven't saved your changes to "
 "individual fields yet. Please click OK to save. You'll need to re-run the "
 "action."
 msgstr ""
-"You have selected an action, but you haven't saved your changes to "
-"individual fields yet. Please click OK to save. You'll need to re-run the "
-"action."
 
 msgid ""
 "You have selected an action, and you haven't made any changes on individual "
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
-"You have selected an action, and you haven't made any changes on individual "
-"fields. You're probably looking for the Go button rather than the Save "
-"button."
 
 msgid "'"
 msgstr ""
@@ -480,18 +434,14 @@ msgstr ""
 msgid "leadingComments"
 msgstr ""
 
-#, fuzzy
-#| msgid "Enter comments here."
 msgid "innerComments"
-msgstr "Legg til kommentarer her."
+msgstr ""
 
 msgid "Multiselect"
 msgstr ""
 
-#, fuzzy
-#| msgid "Select"
 msgid "SelectList"
-msgstr "Velg"
+msgstr ""
 
 msgid "error"
 msgstr ""
@@ -603,416 +553,3 @@ msgstr ""
 
 msgid "As child"
 msgstr ""
-
-#, fuzzy
-#~| msgid "Now"
-#~ msgid "No"
-#~ msgstr "Now"
-
-#~ msgid "Enter your text here ..."
-#~ msgstr "Tast inn tekst her ... "
-
-#~ msgid "Enter your region here ..."
-#~ msgstr "Tast inn området ditt her ..."
-
-#~ msgid "Your layer was successfully uploaded"
-#~ msgstr "Opplasting av kartlaget vellllykket"
-
-#~ msgid "You can continue configuring your layer."
-#~ msgstr "Du kan fortsette med å konfigurere kartlaget."
-
-#~ msgid "Cancel"
-#~ msgstr "Avbryt"
-
-#~ msgid "Save as Copy"
-#~ msgstr "Lagre som kopi"
-
-#~ msgid "About this Map"
-#~ msgstr "Om kartet"
-
-#~ msgid "Abstract"
-#~ msgstr "Sammendrag"
-
-#~ msgid "Save"
-#~ msgstr "Lagre"
-
-#~ msgid "Title"
-#~ msgstr "Tittel"
-
-#~ msgid "Connection Error"
-#~ msgstr "Forbindelses feil"
-
-#~ msgid "The server returned an error"
-#~ msgstr "Feil på serveren"
-
-#~ msgid "Details..."
-#~ msgstr "Detaljer..."
-
-#~ msgid "Add Layers"
-#~ msgstr "Legg til kartlag"
-
-#~ msgid "Area"
-#~ msgstr "Areal"
-
-#~ msgid "Background"
-#~ msgstr "Bakgrunn"
-
-#~ msgid "Done"
-#~ msgstr "Ferdig"
-
-#~ msgid "Available Layers"
-#~ msgstr "Tilgjengelige kartlag"
-
-#~ msgid "Height"
-#~ msgstr "Høyde"
-
-#~ msgid "Large"
-#~ msgstr "Stor"
-
-#~ msgid "or add a new server."
-#~ msgstr "eller legg til ny server."
-
-#~ msgid "Map Layers"
-#~ msgstr "Kartlag"
-
-#~ msgid "View available data from:"
-#~ msgstr "Vis tilgjengelige data fra:"
-
-#~ msgid "Data"
-#~ msgstr "Data"
-
-#~ msgid "Layers"
-#~ msgstr "Kartlag"
-
-#~ msgid "Legend"
-#~ msgstr "Tegnforklaring"
-
-#~ msgid "Length"
-#~ msgstr "Lengde"
-
-#~ msgid "Loading Map..."
-#~ msgstr "Laster kart..."
-
-#~ msgid "Map Size"
-#~ msgstr "Kartstørrelse"
-
-#~ msgid "Measure"
-#~ msgstr "Mål"
-
-#~ msgid "Contact"
-#~ msgstr "Kontakt"
-
-#~ msgid "Permalink"
-#~ msgstr "Permalenke"
-
-#~ msgid "Mini"
-#~ msgstr "Mini"
-
-#~ msgid "Pan Map"
-#~ msgstr "Flytt kartutsnitt"
-
-#~ msgid "Zoom to Next Extent"
-#~ msgstr "Zoom til neste utstrekning"
-
-#~ msgid "Zoom to Previous Extent"
-#~ msgstr "Zoom til forrige utstrekning"
-
-#~ msgid "This map has not yet been saved."
-#~ msgstr "Kartet har ikke blitt lagret."
-
-#~ msgid "Premium"
-#~ msgstr "Premium"
-
-#~ msgid "Print Map"
-#~ msgstr "Skriv ut kart"
-
-#~ msgid "Print Preview"
-#~ msgstr "Skriv ut forhåndsvisning"
-
-#~ msgid "Properties"
-#~ msgstr "Egenskaper"
-
-#~ msgid "Publish Map"
-#~ msgstr "Publiser kart"
-
-#~ msgid "Remove Layer"
-#~ msgstr "Fjern kartlag"
-
-#~ msgid "Sorry, your map could not be saved."
-#~ msgstr "Beklager, kunne ikke lagre kartet ditt. "
-
-#~ msgid "Error While Saving"
-#~ msgstr "Lagringsfeil"
-
-#~ msgid "Save Map"
-#~ msgstr "Lagre kart"
-
-#~ msgid "You must be logged in to save this map."
-#~ msgstr "Du må være innlogget for å kunne lagre kartet."
-
-#~ msgid "Small"
-#~ msgstr "Liten"
-
-#~ msgid "Layer Properties"
-#~ msgstr "Kartlag egenskaper"
-
-#~ msgid "Change layer format and style"
-#~ msgstr "Endre format og stil til kartlaget"
-
-#~ msgid "Edit Styles"
-#~ msgstr "Endre stil"
-
-#~ msgid "Edit layer styles"
-#~ msgstr "Endre kartlagets stil"
-
-#~ msgid "Switch to Google Earth 3D Viewer"
-#~ msgstr "Bytt til Google Earth 3D Viewer"
-
-#~ msgid ""
-#~ "The map that you are trying to load does not exist.  Creating a new map "
-#~ "instead."
-#~ msgstr "Kartet du prøver å laste inn finnes ikke. Lag et nytt kart istedet."
-
-#~ msgid "Width"
-#~ msgstr "Bredde"
-
-#~ msgid "Zoom In"
-#~ msgstr "Zoom inn"
-
-#~ msgid "Zoom Out"
-#~ msgstr "Zoom ut"
-
-#~ msgid "Zoom level"
-#~ msgstr "Zoom-nivå"
-
-#~ msgid "Zoom Level"
-#~ msgstr "Zoom-nivå"
-
-#~ msgid "Zoom to Layer Extent"
-#~ msgstr "Zoom til kartlagets utstrekning"
-
-#~ msgid "Zoom to Visible Extent"
-#~ msgstr "Zoom til synlig utstrekning"
-
-#~ msgid "Zoom Level {zoom}"
-#~ msgstr "Zoom-nivå {zoom}"
-
-#~ msgid "Create Map"
-#~ msgstr "Lag et kart"
-
-#~ msgid "Export Map"
-#~ msgstr "Eksporter kart"
-
-#~ msgid "Map"
-#~ msgstr "Kart"
-
-#~ msgid "View this Map"
-#~ msgstr "Vis dette kartet"
-
-#~ msgid "Open Map"
-#~ msgstr "Åpne kart"
-
-#~ msgid "Name"
-#~ msgstr "Navn"
-
-#~ msgid "Queryable"
-#~ msgstr "Søkbar"
-
-#~ msgid "No background"
-#~ msgstr "Ingen bakgrunn"
-
-#~ msgid "Abstract:"
-#~ msgstr "Sammendrag:"
-
-#~ msgid "No attribution information is provided for this layer."
-#~ msgstr "Kartlaget mangler attributt-informasjon."
-
-#~ msgid "Download:"
-#~ msgstr "Nedlasting:"
-
-#~ msgid "No keywords are listed for this layer."
-#~ msgstr "Kartlaget mangler nøkkelord."
-
-#~ msgid "Keywords:"
-#~ msgstr "Nøkkelord:"
-
-#~ msgid "No metadata URLs are defined for this layer."
-#~ msgstr "Kartlaget mangler metadata URLs."
-
-#~ msgid "Paper size:"
-#~ msgstr "Papir størrelse:"
-
-#~ msgid "Resolution:"
-#~ msgstr "Oppløsning:"
-
-#~ msgid "Print"
-#~ msgstr "Skriv ut"
-
-#~ msgid "Enter map title here."
-#~ msgstr "Tast inn kart-tittel her."
-
-#~ msgid "Include legend?"
-#~ msgstr "Inkluder legende?"
-
-#~ msgid "Creating PDF..."
-#~ msgstr "Lagrer PDF..."
-
-#~ msgid "Last Modified"
-#~ msgstr "Sist endret"
-
-#~ msgid "Prev"
-#~ msgstr "Forhåndsvisning"
-
-#~ msgid "Next"
-#~ msgstr "Neste"
-
-#~ msgid "of"
-#~ msgstr "av"
-
-#~ msgid "Your search did not match any items."
-#~ msgstr "Ingen treff."
-
-#~ msgid "Search Maps"
-#~ msgstr "Søk etter kart"
-
-#~ msgid "Search"
-#~ msgstr "Søk"
-
-#~ msgid "Showing"
-#~ msgstr "Fremviser"
-
-#~ msgid "Loading"
-#~ msgstr "Laster"
-
-#~ msgid "permalink"
-#~ msgstr "permalenke"
-
-#~ msgid "Select:"
-#~ msgstr "Velg:"
-
-#~ msgid "All"
-#~ msgstr "Alle"
-
-#~ msgid "None"
-#~ msgstr "Ingen"
-
-#~ msgid "Loading..."
-#~ msgstr "Laster..."
-
-#~ msgid "You do not have permission to view this data"
-#~ msgstr "Du har ikke retigheter for å se på disse dataene"
-
-#~ msgid "This data is stored on a remote server"
-#~ msgstr "Disse data er lagret på en ekstern server"
-
-#~ msgid "No abstract is provided for this layer."
-#~ msgstr "Kartlaget mangler sammendrag."
-
-#~ msgid "No download URLs are definied for this layer."
-#~ msgstr "Kartlaget mangler URL for nedlasting."
-
-#~ msgid "Selected Layers"
-#~ msgstr "Valgte kartlag"
-
-#~ msgid "No Layers Selected"
-#~ msgstr "Ingen kartlag valgt"
-
-#~ msgid "Clear Selected"
-#~ msgstr "Tøm utvalgte"
-
-#~ msgid "Clear All"
-#~ msgstr "Tøm alle"
-
-#~ msgid "Operation Failed"
-#~ msgstr "Operasjon mislykket"
-
-#~ msgid "No layers are currently selected."
-#~ msgstr "Ingen kartlag valgt for tiden."
-
-#~ msgid "Downloading..."
-#~ msgstr "Laster ned..."
-
-#~ msgid "Please wait"
-#~ msgstr "Vennligst vent"
-
-#~ msgid ""
-#~ "January February March April May June July August September October "
-#~ "November December"
-#~ msgstr ""
-#~ "January February March April May June July August September October "
-#~ "November December"
-
-#~ msgid "S M T W T F S"
-#~ msgstr "S M T W T F S"
-
-#~ msgid "Show"
-#~ msgstr "Show"
-
-#~ msgid "Hide"
-#~ msgstr "Hide"
-
-#~ msgid "Clock"
-#~ msgstr "Clock"
-
-#~ msgid "Choose a time"
-#~ msgstr "Choose a time"
-
-#~ msgid "Midnight"
-#~ msgstr "Midnight"
-
-#~ msgid "6 a.m."
-#~ msgstr "6 a.m."
-
-#~ msgid "Noon"
-#~ msgstr "Noon"
-
-#~ msgid "Today"
-#~ msgstr "Today"
-
-#~ msgid "Calendar"
-#~ msgstr "Calendar"
-
-#~ msgid "Yesterday"
-#~ msgstr "Yesterday"
-
-#~ msgid "Tomorrow"
-#~ msgstr "Tomorrow"
-
-#~ msgid "Add user..."
-#~ msgstr "Add user..."
-
-#~ msgid "Who can view and download this data?"
-#~ msgstr "Who can view and download this data?"
-
-#~ msgid "Anyone"
-#~ msgstr "Anyone"
-
-#~ msgid "Any registered user"
-#~ msgstr "Any registered user"
-
-#~ msgid "Only users who can edit"
-#~ msgstr "Only users who can edit"
-
-#~ msgid "Who can edit this data?"
-#~ msgstr "Who can edit this data?"
-
-#~ msgid "Only the following users or groups:"
-#~ msgstr "Only the following users or groups:"
-
-#~ msgid "Who can manage and edit this data?"
-#~ msgstr "Who can manage and edit this data?"
-
-#~ msgid "GeoTiff File"
-#~ msgstr "GeoTiff File"
-
-#~ msgid "Comma Separated File"
-#~ msgstr "Comma Separated File"
-
-#~ msgid "Zip Archives"
-#~ msgstr "Zip Archives"
-
-#~ msgid "You are uploading an incomplete set of files."
-#~ msgstr "You are uploading an incomplete set of files."
-
-#~ msgid "No error message supplied"
-#~ msgstr "No error message supplied"

@@ -1258,6 +1258,7 @@ def layer_metadata(
         "metadata_author_groups": metadata_author_groups,
         "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
+        "UI_MANDATORY_FIELDS": ['title', 'abstract', 'doi', 'attribution', 'data_quality_statement', 'restriction_code_type']
     })
 
 

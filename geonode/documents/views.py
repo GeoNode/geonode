@@ -268,15 +268,6 @@ class DocumentUploadView(CreateView):
             bbox = BBOXHelper.from_xy(bbox)
             self.object.bbox_polygon = bbox.as_polygon()
 
-        if getattr(settings, 'SLACK_ENABLED', False):
-            try:
-                from geonode.contrib.slack.utils import build_slack_message_document, send_slack_message
-                send_slack_message(
-                    build_slack_message_document(
-                        "document_new", self.object))
-            except Exception:
-                logger.error("Could not send slack message for new document.")
-
         self.object.save(notify=True)
         register_event(self.request, EventType.EVENT_UPLOAD, self.object)
 
@@ -560,6 +551,7 @@ def document_metadata(
         "metadata_author_groups": metadata_author_groups,
         "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
+        "UI_MANDATORY_FIELDS": ['title', 'abstract', 'doi', 'attribution', 'data_quality_statement', 'restriction_code_type']
     })
 
 
