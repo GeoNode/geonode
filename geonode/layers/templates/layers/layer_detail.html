@@ -602,7 +602,8 @@
       {% if resource.default_style %}
       {% get_all_resource_styles resource as resource_styles_all%}
       {% for style in resource_styles_all %}
-          {% if resource.default_style == style or resource.default_style.name == style.name or resource.default_style.sld_title == style.sld_title %}
+        {% if style.name or style.sld_title %}
+          {% if resource.default_style == style or resource.default_style.name == style.name or style.sld_title and resource.default_style.sld_title == style.sld_title %}
               {% for legend in resource.get_legend %}
                   {% get_sld_name_from_url style.sld_url as sld_name %}
                   {% with "STYLE="|add:sld_name as style_name %}
@@ -619,6 +620,7 @@
                   {% endwith %}
               {% endfor %}
           {% endif %}
+        {% endif %}
       {% endfor %}
       {% else %}
         {% for legend in resource.get_legend %}
