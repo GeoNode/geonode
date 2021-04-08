@@ -183,6 +183,7 @@ class CommonModelApi(ModelResource):
         types = applicable_filters.pop('type', None)
         extent = applicable_filters.pop('extent', None)
         keywords = applicable_filters.pop('keywords__slug__in', None)
+        metadata_only = applicable_filters.pop('metadata_only', False)
         filtering_method = applicable_filters.pop('f_method', 'and')
         if filtering_method == 'or':
             filters = Q()
@@ -235,7 +236,7 @@ class CommonModelApi(ModelResource):
         return get_visible_resources(
             filtered,
             request.user if request else None,
-            metadata_only=applicable_filters.get('metadata_only', False),
+            metadata_only=metadata_only,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
