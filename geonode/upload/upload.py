@@ -48,9 +48,10 @@ from django.db import IntegrityError, transaction
 from django.utils.translation import ugettext_lazy as _
 
 import geoserver
+import gsimporter
+
 from geoserver.resource import Coverage
 from geoserver.resource import FeatureType
-from gsimporter import BadRequest
 
 from geonode import GeoNodeException
 from geonode.upload import UploadException, LayerNotReady
@@ -59,11 +60,7 @@ from ..people.utils import get_default_user
 from ..layers.metadata import set_metadata
 from ..layers.utils import get_valid_layer_name
 from ..layers.models import Layer, UploadSession
-from ..geoserver.tasks import (
-    # geoserver_set_style,
-    # geoserver_create_style,
-    geoserver_finalize_upload
-)
+from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
     set_time_info,
     gs_catalog,
@@ -212,12 +209,13 @@ def upload(
         mosaic_time_regex=mosaic_time_regex,
         mosaic_time_value=mosaic_time_value
     )
-    time_step(upload_session,
-              time_attribute, time_transform_type,
-              presentation_strategy, precision_value, precision_step,
-              end_time_attribute=end_time_attribute,
-              end_time_transform_type=end_time_transform_type,
-              time_format=None)
+    time_step(
+        upload_session,
+        time_attribute, time_transform_type,
+        presentation_strategy, precision_value, precision_step,
+        end_time_attribute=end_time_attribute,
+        end_time_transform_type=end_time_transform_type,
+        time_format=None)
     utils.run_import(upload_session, async_upload=False)
     final_step(upload_session, user, charset=charset)
 
@@ -287,19 +285,20 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
         # we only support more than one file if they're rasters for mosaicing
         if not all(
                 [f.file_type.layer_type == 'coverage' for f in spatial_files]):
-            raise UploadException(
-                "Please upload only one type of file at a time")
+            msg = "Please upload only one type of file at a time"
+            raise UploadException(msg)
     name = get_valid_layer_name(layer, overwrite)
     logger.debug(f'Name for layer: {name}')
     if not any(spatial_files.all_files()):
-        raise UploadException("Unable to recognize the uploaded file(s)")
+        msg = "Unable to recognize the uploaded file(s)"
+        raise UploadException(msg)
     the_layer_type = _get_layer_type(spatial_files)
     _check_geoserver_store(name, the_layer_type, overwrite)
     if the_layer_type not in (
             FeatureType.resource_type,
             Coverage.resource_type):
-        raise RuntimeError("Expected layer type to FeatureType or "
-                           f"Coverage, not {the_layer_type}")
+        msg = f"Expected layer type to FeatureType or Coverage, not {the_layer_type}"
+        raise RuntimeError(msg)
     files_to_upload = preprocess_files(spatial_files)
     logger.debug(f"files_to_upload: {files_to_upload}")
     logger.debug(f'Uploading {the_layer_type}')
@@ -313,7 +312,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
         upload, _ = Upload.objects.get_or_create(
             user=user,
             name=name,
-            state=Upload.STATE_INVALID,
+            state=Upload.STATE_READY,
             upload_dir=spatial_files.dirname
         )
 
@@ -415,7 +414,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
     else:
         _log("Finished upload of [%s] to GeoServer without errors.", name)
 
-    return import_session
+    return import_session, upload
 
 
 def time_step(upload_session, time_attribute, time_transform_type,
@@ -512,8 +511,9 @@ def time_step(upload_session, time_attribute, time_transform_type,
         try:
             upload_session.time_transforms = transforms
             upload_session.time = True
-        except BadRequest as br:
-            raise UploadException.from_exc('Error configuring time:', br)
+        except gsimporter.BadRequest as br:
+            Upload.objects.invalidate_from_session(upload_session)
+            raise UploadException.from_exc(_('Error configuring time:'), br)
         upload_session.import_session.tasks[0].save_transforms()
     else:
         upload_session.time = False
@@ -530,8 +530,14 @@ def csv_step(upload_session, lat_field, lng_field):
     task.remove_transforms([transform], by_field='type', save=False)
     task.add_transforms([transform], save=False)
     task.save_transforms()
-    import_session = import_session.reload()
+    try:
+        import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        Upload.objects.invalidate_from_session(upload_session)
+        raise UploadException.from_exc(
+            _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
+    Upload.objects.update_from_session(upload_session)
 
 
 def srs_step(upload_session, source, target):
@@ -548,16 +554,28 @@ def srs_step(upload_session, source, target):
     task.remove_transforms([transform], by_field='type', save=False)
     task.add_transforms([transform], save=False)
     task.save_transforms()
-    import_session = import_session.reload()
+    try:
+        import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        Upload.objects.invalidate_from_session(upload_session)
+        raise UploadException.from_exc(
+            _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
+    Upload.objects.update_from_session(upload_session)
 
 
 def final_step(upload_session, user, charset="UTF-8"):
     import_session = upload_session.import_session
     _log('Reloading session %s to check validity', import_session.id)
-    import_session = import_session.reload()
+    try:
+        import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        Upload.objects.invalidate_from_session(upload_session)
+        raise UploadException.from_exc(
+            _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
-    #HERE_TO_WORK
+    Upload.objects.update_from_session(upload_session)
+
     # the importer chooses an available featuretype name late in the game need
     # to verify the resource.name otherwise things will fail.  This happens
     # when the same data is uploaded a second time and the default name is
@@ -577,6 +595,7 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     if import_session.state == 'INCOMPLETE':
         if task.state != 'ERROR':
+            Upload.objects.invalidate_from_session(upload_session)
             raise Exception(f'unknown item state: {task.state}')
     elif import_session.state == 'READY':
         import_session.commit()
@@ -585,9 +604,19 @@ def final_step(upload_session, user, charset="UTF-8"):
             # if not task.data.format or task.data.format != 'Shapefile':
             import_session.commit()
 
+    try:
+        import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        Upload.objects.invalidate_from_session(upload_session)
+        raise UploadException.from_exc(
+            _("The GeoServer Import Session is no more available"), e)
+    upload_session.import_session = import_session
+    Upload.objects.update_from_session(upload_session)
+
     if not publishing:
+        Upload.objects.invalidate_from_session(upload_session)
         raise LayerNotReady(
-            f"Expected to find layer named '{name}' in geoserver")
+            _(f"Expected to find layer named '{name}' in geoserver"))
 
     _log('Creating Django record for [%s]', name)
     target = task.target
@@ -625,6 +654,7 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     # Make sure the layer does not exists already
     if Layer.objects.filter(uuid=layer_uuid).count():
+        Upload.objects.invalidate_from_session(upload_session)
         logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
         raise GeoNodeException(
             _("The UUID identifier from the XML Metadata is already in use in this system."))
@@ -670,8 +700,9 @@ def final_step(upload_session, user, charset="UTF-8"):
                             has_elevation=False,
                             time_regex=upload_session.mosaic_time_regex)
                     )
-            except IntegrityError:
-                raise
+            except IntegrityError as e:
+                Upload.objects.invalidate_from_session(upload_session)
+                raise UploadException.from_exc(_('Error configuring Layer'), e)
             assert saved_layer
         else:
             # saved_layer = Layer.objects.filter(name=upload_session.append_to_mosaic_name)
@@ -714,8 +745,9 @@ def final_step(upload_session, user, charset="UTF-8"):
                         owner=user,
                         has_time=_has_time)
                 )
-        except IntegrityError:
-            raise
+        except IntegrityError as e:
+            Upload.objects.invalidate_from_session(upload_session)
+            raise UploadException.from_exc(_('Error configuring Layer'), e)
         assert saved_layer
 
     # Create a new upload session
@@ -726,8 +758,11 @@ def final_step(upload_session, user, charset="UTF-8"):
             )
             geonode_upload_session.processed = False
             geonode_upload_session.save()
-    except IntegrityError:
-        raise
+            Upload.objects.update_from_session(
+                upload_session, layer=saved_layer)
+    except IntegrityError as e:
+        Upload.objects.invalidate_from_session(upload_session)
+        raise UploadException.from_exc(_('Error configuring Layer'), e)
 
     # Add them to the upload session (new file fields are created).
     assigned_name = None

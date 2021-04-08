@@ -526,13 +526,13 @@ def geoserver_proxy(request,
                 logger.debug(
                     f"[geoserver_proxy] Updating Style ---> url {url.geturl()}")
                 _style_name, _style_ext = os.path.splitext(os.path.basename(urlsplit(url.geturl()).path))
+                _parsed_get_args = dict(parse_qsl(urlsplit(url.geturl()).query))
                 if _style_name == 'styles.json' and request.method == "PUT":
-                    _parsed_get_args = dict(parse_qsl(urlsplit(url.geturl()).query))
-                    if 'name' in _parsed_get_args:
-                        _style_name, _style_ext = os.path.splitext(_parsed_get_args['name'])
+                    if _parsed_get_args.get('name'):
+                        _style_name, _style_ext = os.path.splitext(_parsed_get_args.get('name'))
                 else:
                     _style_name, _style_ext = os.path.splitext(_style_name)
-                if _style_name != 'style-check' and _style_ext == '.json' and \
+                if _style_name != 'style-check' and (_style_ext == '.json' or _parsed_get_args.get('raw')) and \
                         not re.match(temp_style_name_regex, _style_name):
                     affected_layers = style_update(request, raw_url)
             elif downstream_path == 'rest/layers':
@@ -540,7 +540,7 @@ def geoserver_proxy(request,
                     f"[geoserver_proxy] Updating Layer ---> url {url.geturl()}")
                 try:
                     _layer_name = os.path.splitext(os.path.basename(request.path))[0]
-                    _layer = Layer.objects.get(name__icontains=_layer_name)
+                    _layer = Layer.objects.get(name=_layer_name)
                     affected_layers = [_layer]
                 except Exception:
                     logger.warn(f"Could not find any Layer {os.path.basename(request.path)} on DB")

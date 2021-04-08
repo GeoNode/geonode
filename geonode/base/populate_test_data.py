@@ -39,7 +39,7 @@ from geonode import geoserver  # noqa
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
-from geonode.base.models import TopicCategory
+from geonode.base.models import ResourceBase, TopicCategory
 from geonode.documents.models import Document
 
 # This is used to populate the database with the search fixture data. This is
@@ -56,13 +56,17 @@ f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
 
 
 def all_public():
-    '''ensure all layers, maps and documents are publicly viewable'''
+    '''ensure all layers, maps and documents are publicly available'''
     for lyr in Layer.objects.all():
         lyr.set_default_permissions()
+        lyr.clear_dirty_state()
     for mp in Map.objects.all():
         mp.set_default_permissions()
+        mp.clear_dirty_state()
     for doc in Document.objects.all():
         doc.set_default_permissions()
+        doc.clear_dirty_state()
+    ResourceBase.objects.all().update(dirty_state=False)
 
 
 def create_fixtures():
@@ -116,155 +120,143 @@ def create_fixtures():
 
     next_date = get_test_date()
 
-    layer_data = [('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, next_date(), ('populartag', 'here'), elevation),
-                  ('layer2', 'abstract2', 'layer2', 'geonode:layer2',
-                   world_extent, next_date(), ('populartag',), elevation),
-                  ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer',
-                   world_extent, next_date(), ('populartag',), elevation),
-                  ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent,
-                   next_date(), ('populartag', 'layertagunique'), location),
-                  ('common double it', 'whatever', 'whatever', 'geonode:whatever', [
-                      0, 1, 0, 1], next_date(), ('populartag',), location),
-                  ('common double time', 'else', 'fooey', 'geonode:fooey', [
-                      0, 5, 0, 5], next_date(), ('populartag',), location),
-                  ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [
-                      0, 10, 0, 10], next_date(), ('populartag',), biota),
-                  ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [
-                      0, 50, 0, 50], next_date(), ('populartag',), biota),
-                  ('layer metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [
-                      0, 22, 0, 22], next_date(), ('populartag',), farming)
-                  ]
+    layer_data = [
+        ('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, next_date(), ('populartag', 'here'), elevation),
+        ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, next_date(), ('populartag',), elevation),
+        ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', world_extent, next_date(), ('populartag',), elevation),
+        ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent, next_date(), ('populartag', 'layertagunique'), location),
+        ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], next_date(), ('populartag',), location),
+        ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], next_date(), ('populartag',), location),
+        ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], next_date(), ('populartag',), biota),
+        ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], next_date(), ('populartag',), biota),
+        ('layer metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [0, 22, 0, 22], next_date(), ('populartag',), farming)
+    ]
 
-    document_data = [('lorem ipsum', 'common lorem ipsum', ('populartag',), world_extent, biota),
-                     ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), world_extent, biota),
-                     ('lorem1 ipsum1', 'common abstract1', ('populartag',), world_extent, biota),
-                     ('ipsum foo', 'common bar lorem', ('populartag',), world_extent, location),
-                     ('doc one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
-                     ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
-                     ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
-                     ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
-                     ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
-                     ('doc metadata true', 'doc metadata true', ('populartag',), [0, 22, 0, 22], farming)]
+    document_data = [
+        ('lorem ipsum', 'common lorem ipsum', ('populartag',), world_extent, biota),
+        ('ipsum lorem', 'common ipsum lorem', ('populartag', 'doctagunique'), world_extent, biota),
+        ('lorem1 ipsum1', 'common abstract1', ('populartag',), world_extent, biota),
+        ('ipsum foo', 'common bar lorem', ('populartag',), world_extent, location),
+        ('doc one', 'common this is a unique thing', ('populartag',), [0, 1, 0, 1], location),
+        ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
+        ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
+        ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
+        ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
+        ('doc metadata true', 'doc metadata true', ('populartag',), [0, 22, 0, 22], farming)
+    ]
 
     return map_data, user_data, people_data, layer_data, document_data
 
 
 def create_models(type=None, integration=False):
-    map_data, user_data, people_data, layer_data, document_data = create_fixtures()
-    anonymous_group, created = Group.objects.get_or_create(name='anonymous')
-    with transaction.atomic():
-        logger.info("[SetUp] Get or create user admin")
-        u = get_user_model().objects.filter(username='admin').first()
-        if not u:
-            try:
-                u = get_user_model().objects.create(
-                    username='admin',
-                    is_superuser=True,
-                    first_name='admin')
-            except Exception:
-                raise
-        if u:
-            u.set_password('admin')
-            u.save()
-
     users = []
-    for ud, pd in zip(user_data, cycle(people_data)):
-        user_name, password, first_name, last_name = ud
-        with transaction.atomic():
-            try:
-                logger.info(f"[SetUp] Get or create user {user_name}")
-                u, created = get_user_model().objects.get_or_create(username=user_name)
-                if created:
-                    u.set_password(password)
-                    u.first_name = first_name
-                    u.last_name = last_name
-                    u.save()
-                u.groups.add(anonymous_group)
-                users.append(u)
-            except Exception:
-                raise
-
-    logger.info(f"[SetUp] Add group {anonymous_group}")
-    get_user_model().objects.get(username='AnonymousUser').groups.add(anonymous_group)
-
     obj_ids = []
-    from geonode.utils import DisableDjangoSignals
-    with DisableDjangoSignals(skip=integration):
-        if not type or ensure_string(type) == 'map':
-            for md, user in zip(map_data, cycle(users)):
-                title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = md
-                logger.info(f"[SetUp] Add map {title}")
-                m = Map(
-                    title=title,
-                    abstract=abstract,
-                    zoom=4,
-                    projection='EPSG:4326',
-                    center_x=42,
-                    center_y=-73,
-                    owner=user,
-                    bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                    ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                    srid='EPSG:4326',
-                    category=category,
-                    metadata_only=title == 'map metadata true'
-                )
-                m.save()
-                m.set_default_permissions()
-                obj_ids.append(m.id)
-                for kw in kws:
-                    m.keywords.add(kw)
-                    m.save()
+    with transaction.atomic():
+        map_data, user_data, people_data, layer_data, document_data = create_fixtures()
+        anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+        logger.debug("[SetUp] Get or create user admin")
+        u, created = get_user_model().objects.get_or_create(username='admin')
+        u.set_password('admin')
+        u.is_superuser = True
+        u.first_name = 'admin'
+        u.save()
+        u.groups.add(anonymous_group)
+        users.append(u)
 
-        if not type or ensure_string(type) == 'document':
-            for dd, user in zip(document_data, cycle(users)):
-                title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = dd
-                logger.info(f"[SetUp] Add document {title}")
-                m = Document(
-                    title=title,
-                    abstract=abstract,
-                    owner=user,
-                    bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                    ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                    srid='EPSG:4326',
-                    category=category,
-                    doc_file=f,
-                    metadata_only=title == 'doc metadata true'
-                )
-                m.save()
-                m.set_default_permissions()
-                obj_ids.append(m.id)
-                for kw in kws:
-                    m.keywords.add(kw)
-                    m.save()
+        for ud, pd in zip(user_data, cycle(people_data)):
+            user_name, password, first_name, last_name = ud
+            logger.debug(f"[SetUp] Get or create user {user_name}")
+            u, created = get_user_model().objects.get_or_create(username=user_name)
+            u.set_password(password)
+            u.first_name = first_name
+            u.last_name = last_name
+            u.save()
+            u.groups.add(anonymous_group)
+            users.append(u)
 
-        if not type or ensure_string(type) == 'layer':
-            for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
-                title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
-                end = start + timedelta(days=365)
-                logger.info(f"[SetUp] Add layer {title}")
-                layer = Layer(
-                    title=title,
-                    abstract=abstract,
-                    name=name,
-                    alternate=alternate,
-                    bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                    ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                    srid='EPSG:4326',
-                    uuid=str(uuid4()),
-                    owner=owner,
-                    temporal_extent_start=start,
-                    temporal_extent_end=end,
-                    date=start,
-                    storeType=storeType,
-                    category=category,
-                    metadata_only=title == 'layer metadata true'
-                )
-                layer.save()
-                layer.set_default_permissions()
-                obj_ids.append(layer.id)
-                for kw in kws:
-                    layer.keywords.add(kw)
+        logger.debug(f"[SetUp] Add group {anonymous_group}")
+        get_user_model().objects.get(username='AnonymousUser').groups.add(anonymous_group)
+
+        from geonode.utils import DisableDjangoSignals
+        with DisableDjangoSignals(skip=integration):
+            if not type or ensure_string(type) == 'map':
+                for md, user in zip(map_data, cycle(users)):
+                    title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = md
+                    logger.debug(f"[SetUp] Add map {title}")
+                    m = Map(
+                        title=title,
+                        abstract=abstract,
+                        zoom=4,
+                        projection='EPSG:4326',
+                        center_x=42,
+                        center_y=-73,
+                        owner=user,
+                        bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                        ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                        srid='EPSG:4326',
+                        category=category,
+                        metadata_only=title == 'map metadata true'
+                    )
+                    m.save()
+                    m.set_default_permissions()
+                    m.clear_dirty_state()
+                    obj_ids.append(m.id)
+                    for kw in kws:
+                        m.keywords.add(kw)
+                        m.save()
+
+            if not type or ensure_string(type) == 'document':
+                for dd, user in zip(document_data, cycle(users)):
+                    title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = dd
+                    logger.debug(f"[SetUp] Add document {title}")
+                    m = Document(
+                        title=title,
+                        abstract=abstract,
+                        owner=user,
+                        bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                        ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                        srid='EPSG:4326',
+                        category=category,
+                        doc_file=f,
+                        metadata_only=title == 'doc metadata true'
+                    )
+                    m.save()
+                    m.set_default_permissions()
+                    m.clear_dirty_state()
+                    obj_ids.append(m.id)
+                    for kw in kws:
+                        m.keywords.add(kw)
+                        m.save()
+
+            if not type or ensure_string(type) == 'layer':
+                for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
+                    title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
+                    end = start + timedelta(days=365)
+                    logger.debug(f"[SetUp] Add layer {title}")
+                    layer = Layer(
+                        title=title,
+                        abstract=abstract,
+                        name=name,
+                        alternate=alternate,
+                        bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                        ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                        srid='EPSG:4326',
+                        uuid=str(uuid4()),
+                        owner=owner,
+                        temporal_extent_start=start,
+                        temporal_extent_end=end,
+                        date=start,
+                        storeType=storeType,
+                        category=category,
+                        metadata_only=title == 'layer metadata true'
+                    )
                     layer.save()
+                    layer.set_default_permissions()
+                    layer.clear_dirty_state()
+                    obj_ids.append(layer.id)
+                    for kw in kws:
+                        layer.keywords.add(kw)
+                        layer.save()
     return obj_ids
 
 
@@ -318,10 +310,12 @@ def dump_models(path=None):
 
 
 def create_single_layer(name):
-    get_user_model().objects.create(
-        username='admin',
-        is_superuser=True,
-        first_name='admin')
+    admin, created = get_user_model().objects.get_or_create(username='admin')
+    if created:
+        admin.is_superuser = True
+        admin.first_name = 'admin'
+        admin.set_password('admin')
+        admin.save()
     test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
     user = get_user_model().objects.get(username='AnonymousUser')
     ll = (name, 'lorem ipsum', name, f'geonode:{name}', [
@@ -344,6 +338,7 @@ def create_single_layer(name):
     )
     layer.save()
     layer.set_default_permissions()
+    layer.clear_dirty_state()
     return layer
 
 

@@ -20,56 +20,56 @@
 import re
 import os
 import sys
-import logging
-import shutil
-import traceback
-from types import TracebackType
-import warnings
-import decimal
+import json
 import pickle
-from django.db.models import Q
-from urllib.parse import quote
+import shutil
+import decimal
+import logging
+import warnings
+import traceback
 
-from django.http import Http404
-from django.core.exceptions import PermissionDenied
-from django.template.response import TemplateResponse
-from django.views.decorators.clickjacking import xframe_options_exempt
-from requests import Request
 from itertools import chain
+from dal import autocomplete
+from requests import Request
+from urllib.parse import quote
+from types import TracebackType
 from owslib.wfs import WebFeatureService
 
-from guardian.shortcuts import get_perms, get_objects_for_user
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
 from django.conf import settings
-from django.utils.translation import ugettext as _
-from django.views.decorators.http import require_http_methods
 
-from geonode.thumbs.thumbnails import create_thumbnail
-
-from dal import autocomplete
-
-import json
-from django.utils.html import escape
-from django.template.defaultfilters import slugify
-from django.forms.models import inlineformset_factory
-from django.db import IntegrityError, transaction
+from django.db.models import Q
 from django.db.models import F
+from django.http import Http404
+from django.urls import reverse
+from django.contrib import messages
+from django.shortcuts import render
+from django.utils.html import escape
 from django.forms.utils import ErrorList
+from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext as _
+from django.db import IntegrityError, transaction
+from django.template.defaultfilters import slugify
+from django.core.exceptions import PermissionDenied
+from django.forms.models import inlineformset_factory
+from django.template.response import TemplateResponse
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.clickjacking import xframe_options_exempt
 
+from guardian.shortcuts import get_perms, get_objects_for_user
+
+from geonode import geoserver
+from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
 from geonode.base.models import (
+    Configuration,
     Thesaurus,
     TopicCategory)
 from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
-
 from geonode.layers.forms import (
     LayerForm,
     LayerUploadForm,
@@ -84,7 +84,6 @@ from geonode.layers.utils import (
     is_raster,
     is_vector,
     surrogate_escape_string, validate_input_source)
-
 from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.monitoring import register_event
@@ -93,9 +92,7 @@ from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.documents.models import get_related_documents
-from geonode import geoserver
 from geonode.security.utils import get_visible_resources, set_geowebcache_invalidate_cache
-
 from geonode.utils import (
     resolve_object,
     default_map_config,
@@ -105,9 +102,9 @@ from geonode.utils import (
     build_social_links,
     GXPLayer,
     GXPMap)
-
-from geonode.geoserver.helpers import (ogc_server_settings,
-                                       set_layer_style)
+from geonode.geoserver.helpers import (
+    ogc_server_settings,
+    set_layer_style)
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
 
@@ -211,6 +208,12 @@ def layer_upload_handle_get(request, template):
         'charsets': CHARSETS,
         'is_layer': True,
     }
+    if 'geonode.upload' in settings.INSTALLED_APPS and \
+            settings.UPLOADER['BACKEND'] == 'geonode.importer':
+        from geonode.upload import utils as upload_utils, models
+        ctx['async_upload'] = upload_utils._ASYNC_UPLOAD
+        ctx['incomplete'] = models.Upload.objects.get_incomplete_uploads(
+            request.user)
     return render(request, template, context=ctx)
 
 
@@ -222,6 +225,15 @@ def layer_upload_handle_post(request, template):
     errormsgs = []
     input_charset = None
     out = {'success': False}
+
+    config = Configuration.load()
+    if config.read_only or config.maintenance:
+        out['errormsgs'] = _('Failed to upload the layer')
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=405)
+
     if form.is_valid():
         title = form.cleaned_data["layer_title"]
 
@@ -485,6 +497,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "store": layer.store,
         "name": layer.alternate,
         "title": layer.title,
+        "style": layer.default_style.name if layer.default_style else '',
         "queryable": True,
         "storeType": layer.storeType,
         "bbox": {

@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:51+0200\n"
+"POT-Creation-Date: 2021-04-07 15:01+0200\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/geonode/geonode/language/"
@@ -321,6 +321,9 @@ msgstr ""
 msgid "Unexpected Error"
 msgstr "எதிர்பாராத பிழை"
 
+msgid "Your "
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Info"
 msgid " Info"
@@ -340,11 +343,11 @@ msgstr ""
 msgid "Manage Styles"
 msgstr "பாங்குகள் நிர்வகிக்கவும்"
 
+msgid "Please wait until GeoNode finished configuring it!"
+msgstr ""
+
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "%1 நிரல் %2 ஆக பெயர் மாற்றப்பட்டுள்ளது<br/>"
-
-msgid "Your "
-msgstr ""
 
 msgid "Performing Final GeoServer Config Step"
 msgstr "இறுதி ஜியோ கட்டமைப்பு படி அரங்கேற்றக்"

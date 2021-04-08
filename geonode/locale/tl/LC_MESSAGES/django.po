@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tagalog (http://www.transifex.com/geonode/geonode/language/"
@@ -2064,27 +2064,6 @@ msgstr "Edit Map Metadata"
 msgid "Return to Layer"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr ""
-
-msgid "You have the following incomplete uploads"
-msgstr ""
-
-msgid "last updated on"
-msgstr ""
-
-msgid "Resume"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
-msgid "Are you sure you want to delete this upload?"
-msgstr ""
-
-msgid "Delete, and don't ask me again."
-msgstr ""
-
 msgid "Preserve Metadata XML"
 msgstr ""
 
@@ -2483,6 +2462,38 @@ msgid "Dataset Attributes"
 msgstr ""
 
 msgid "Upload Layer"
+msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr ""
+
+msgid "You have the following incomplete uploads"
+msgstr ""
+
+msgid "Resume"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+#, fuzzy
+#| msgid "Edit Map Metadata"
+msgid "Created"
+msgstr "Edit Map Metadata"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr ""
+
+msgid "Delete incomplete upload"
+msgstr ""
+
+msgid "Are you sure you want to remove this incomplete upload?"
 msgstr ""
 
 #, fuzzy
@@ -5549,12 +5560,6 @@ msgstr ""
 msgid "Date ends before:"
 msgstr ""
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr ""
-
 msgid "Search by region"
 msgstr ""
 
@@ -5730,6 +5735,9 @@ msgstr ""
 msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
+msgid "Empty content"
+msgstr ""
+
 msgid "Could not access to uploaded data."
 msgstr ""
 
@@ -5749,6 +5757,19 @@ msgid "Layer already exists"
 msgstr "Edit Map Metadata"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"

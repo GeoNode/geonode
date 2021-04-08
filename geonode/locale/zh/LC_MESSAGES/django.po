@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -2196,27 +2196,6 @@ msgstr "一个图层已被上传"
 msgid "Return to Layer"
 msgstr "返回图层"
 
-msgid "Incomplete Uploads"
-msgstr "不完整的上传"
-
-msgid "You have the following incomplete uploads"
-msgstr "您有以下不完整的上传"
-
-msgid "last updated on"
-msgstr "最新更新"
-
-msgid "Resume"
-msgstr "简历"
-
-msgid "Delete"
-msgstr "删除"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "您要删除此上传吗？"
-
-msgid "Delete, and don't ask me again."
-msgstr "删除，不要再问我。"
-
 #, fuzzy
 #| msgid "Edit Service Metadata"
 msgid "Preserve Metadata XML"
@@ -2675,6 +2654,42 @@ msgstr "数据集属性"
 
 msgid "Upload Layer"
 msgstr "上传图层"
+
+msgid "Incomplete Uploads"
+msgstr "不完整的上传"
+
+msgid "You have the following incomplete uploads"
+msgstr "您有以下不完整的上传"
+
+msgid "Resume"
+msgstr "简历"
+
+msgid "Delete"
+msgstr "删除"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "创建地图"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "页码"
+
+msgid "of"
+msgstr "/"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "不完整的上传"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "您要删除此上传吗？"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -6376,12 +6391,6 @@ msgstr "YYYY-MM-DD"
 msgid "Date ends before:"
 msgstr "日前结束："
 
-msgid "page"
-msgstr "页码"
-
-msgid "of"
-msgstr "/"
-
 msgid "Search by region"
 msgstr "通过地区搜索"
 
@@ -6584,6 +6593,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "所有内容"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "无法找到兼容的投影任何图层。"
@@ -6604,6 +6618,19 @@ msgid "Layer already exists"
 msgstr "图层被创建"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6683,6 +6710,12 @@ msgstr "权限等级不够。"
 
 msgid "Permission Denied"
 msgstr "权限级别"
+
+#~ msgid "last updated on"
+#~ msgstr "最新更新"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "删除，不要再问我。"
 
 #, fuzzy
 #~| msgid "Available styles"

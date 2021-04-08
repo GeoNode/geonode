@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (http://www.transifex.com/geonode/geonode/language/"
@@ -2301,27 +2301,6 @@ msgstr "لایه آپلود شد"
 msgid "Return to Layer"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "ارسال ناقص"
-
-msgid "You have the following incomplete uploads"
-msgstr "شما از این ارسال زیر ناقص"
-
-msgid "last updated on"
-msgstr "آخرین بروز رسانی در"
-
-msgid "Resume"
-msgstr "خلاصه"
-
-msgid "Delete"
-msgstr "حذف کردن"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "آیا مطمئن هستید که می خواهید این آپلود را حذف کنید؟"
-
-msgid "Delete, and don't ask me again."
-msgstr "حذف و دوباره از من بپرسید."
-
 #, fuzzy
 #| msgid "Edit Service Metadata"
 msgid "Preserve Metadata XML"
@@ -2771,6 +2750,42 @@ msgstr "خواص"
 
 msgid "Upload Layer"
 msgstr "بارگذاری لایه"
+
+msgid "Incomplete Uploads"
+msgstr "ارسال ناقص"
+
+msgid "You have the following incomplete uploads"
+msgstr "شما از این ارسال زیر ناقص"
+
+msgid "Resume"
+msgstr "خلاصه"
+
+msgid "Delete"
+msgstr "حذف کردن"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "ساختن"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "از"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "ارسال ناقص"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "آیا مطمئن هستید که می خواهید این آپلود را حذف کنید؟"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -6253,12 +6268,6 @@ msgstr "YYYY-MM-DD"
 msgid "Date ends before:"
 msgstr "تاریخ به پایان می رسد قبل از:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "از"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6465,6 +6474,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "همه مطالب"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "می تواند هر لایه در یک طرح سازگار پیدا کند."
@@ -6485,6 +6499,19 @@ msgid "Layer already exists"
 msgstr "نقشه"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6564,6 +6591,12 @@ msgstr "سطح مجوز نامعتبر است."
 
 msgid "Permission Denied"
 msgstr "اجازه ممنوع"
+
+#~ msgid "last updated on"
+#~ msgstr "آخرین بروز رسانی در"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "حذف و دوباره از من بپرسید."
 
 #, fuzzy
 #~| msgid "Available styles"

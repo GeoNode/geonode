@@ -123,7 +123,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             self.api_client.client.login(username='bobby', password='bob')
             resp = self.api_client.get(self.list_url)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
             self.api_client.client.login(username=self.user, password=self.passwd)
             resp = self.api_client.get(self.list_url)
@@ -233,16 +233,16 @@ class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # all public
             resp = self.api_client.get(self.list_url)
             self.assertValidJSONResponse(resp)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
             layer = Layer.objects.all()[0]
             layer.set_permissions(perm_spec)
             resp = self.api_client.get(self.list_url)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 7)
+            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             resp = self.api_client.get(self.list_url, authentication=self.auth_header)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 7)
+            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             layer.is_published = False
             layer.save()
@@ -429,6 +429,14 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 4)
+
+    def test_extended_text_filter(self):
+        """Test that the extended text filter works as expected"""
+        filter_url = f"{self.list_url}?title__icontains=layer2&abstract__icontains=layer2&purpose__icontains=layer2&f_method=or"
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
 
 # noinspection DuplicatedCode
