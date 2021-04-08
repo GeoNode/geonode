@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Georgian (http://www.transifex.com/geonode/geonode/language/"
@@ -2273,27 +2273,6 @@ msgstr "ფენა იყო ატვირთული"
 msgid "Return to Layer"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "არასრული ატვირთვა"
-
-msgid "You have the following incomplete uploads"
-msgstr "თქვენ გაქვთ შემდეგი არასრული ატვირთვები"
-
-msgid "last updated on"
-msgstr "ბოლო განახლება"
-
-msgid "Resume"
-msgstr "გაგრძელება"
-
-msgid "Delete"
-msgstr "წაშლა"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "დარწმუნებული ხართ, რომ გსურთ წაშალოთ ეს ატვირთვა?"
-
-msgid "Delete, and don't ask me again."
-msgstr "წაშალე და თავიდან არ მკითხო"
-
 #, fuzzy
 #| msgid "Edit Service Metadata"
 msgid "Preserve Metadata XML"
@@ -2754,6 +2733,42 @@ msgstr "ატრიბუტები"
 
 msgid "Upload Layer"
 msgstr "ფენის ატვირთვა"
+
+msgid "Incomplete Uploads"
+msgstr "არასრული ატვირთვა"
+
+msgid "You have the following incomplete uploads"
+msgstr "თქვენ გაქვთ შემდეგი არასრული ატვირთვები"
+
+msgid "Resume"
+msgstr "გაგრძელება"
+
+msgid "Delete"
+msgstr "წაშლა"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "შექმნა"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "გვერდი"
+
+msgid "of"
+msgstr ""
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "არასრული ატვირთვა"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "დარწმუნებული ხართ, რომ გსურთ წაშალოთ ეს ატვირთვა?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -6139,12 +6154,6 @@ msgstr "წელი-თვე-რიცხვი"
 msgid "Date ends before:"
 msgstr "თარიღი მთავრდება:"
 
-msgid "page"
-msgstr "გვერდი"
-
-msgid "of"
-msgstr ""
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6351,6 +6360,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "ყველა შიგთავსი"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "ვერცერთი ფენა ვერ მოიძებნა თავსებად ფენაში."
@@ -6371,6 +6385,19 @@ msgid "Layer already exists"
 msgstr "ფენა შეიქმნა"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6450,6 +6477,12 @@ msgstr "არასწორი დაშვების დონეზე."
 
 msgid "Permission Denied"
 msgstr "წვდომა აკრძალულია"
+
+#~ msgid "last updated on"
+#~ msgstr "ბოლო განახლება"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "წაშალე და თავიდან არ მკითხო"
 
 #, fuzzy
 #~| msgid "Available styles"

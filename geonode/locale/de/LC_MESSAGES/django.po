@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2021-03-22 10:42+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
@@ -2058,27 +2058,6 @@ msgstr "Ebenen hochladen"
 msgid "Return to Layer"
 msgstr "Zurück zur Ebene"
 
-msgid "Incomplete Uploads"
-msgstr "Unvollständige Uploads"
-
-msgid "You have the following incomplete uploads"
-msgstr "Sie haben folgende unvollständige Uploads"
-
-msgid "last updated on"
-msgstr "zuletzt geändert am"
-
-msgid "Resume"
-msgstr "Fortsetzen"
-
-msgid "Delete"
-msgstr "Löschen"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Sind Sie sich sicher, dass sie diesen Upload löschen wollen?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Löschen und nicht mehr nachfragen."
-
 msgid "Preserve Metadata XML"
 msgstr "Metadaten XML beibehalten"
 
@@ -2505,6 +2484,42 @@ msgstr "Datensatz Attribute"
 
 msgid "Upload Layer"
 msgstr "Ebene hochladen"
+
+msgid "Incomplete Uploads"
+msgstr "Unvollständige Uploads"
+
+msgid "You have the following incomplete uploads"
+msgstr "Sie haben folgende unvollständige Uploads"
+
+msgid "Resume"
+msgstr "Fortsetzen"
+
+msgid "Delete"
+msgstr "Löschen"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Erzeugen"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "Seite"
+
+msgid "of"
+msgstr "von"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Unvollständige Uploads"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Sind Sie sich sicher, dass sie diesen Upload löschen wollen?"
 
 msgid "Upload Layer Step: Set SRS"
 msgstr "Ebene hochladen Schritt: Setze SRS"
@@ -6040,12 +6055,6 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "Datum endet vor:"
 
-msgid "page"
-msgstr "Seite"
-
-msgid "of"
-msgstr "von"
-
 msgid "Search by region"
 msgstr "Suche nach Region"
 
@@ -6231,6 +6240,11 @@ msgstr "Durch Ausblenden dieser Folie  wird sie in der Slide-Show versteckt"
 msgid "Choose between using jumbotron background and slide show"
 msgstr "Wähle zwischen Jumbotron Hintergrund, oder Slide-Show aus"
 
+#, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Alle Inhalte"
+
 msgid "Could not access to uploaded data."
 msgstr "Zugriff auf hochgeladene Daten nicht möglich."
 
@@ -6253,6 +6267,19 @@ msgstr "Ebene existiert bereits"
 
 msgid "Name already in use and overwrite is False"
 msgstr "Name in Verwendung und Überschreiben nicht gestattet"
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
+msgstr ""
 
 msgid "Invalid zip file detected"
 msgstr "Ungültige ZIP-Datei gefunden"
@@ -6332,6 +6359,12 @@ msgstr "Ungültige Berechtigungsstufe."
 
 msgid "Permission Denied"
 msgstr "Zugriff verweigert"
+
+#~ msgid "last updated on"
+#~ msgstr "zuletzt geändert am"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Löschen und nicht mehr nachfragen."
 
 #~ msgid "Available layers"
 #~ msgstr "Verfügbare Ebenen"

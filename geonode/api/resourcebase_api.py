@@ -226,46 +226,20 @@ class CommonModelApi(ModelResource):
         else:
             filtered = semi_filtered
 
-        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
-            filtered = self.filter_published(filtered, request)
-
-        if settings.GROUP_PRIVATE_RESOURCES:
-            filtered = self.filter_group(filtered, request)
-
         if extent:
             filtered = filter_bbox(filtered, extent)
 
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
 
-        # Hide Dirty State Resources
-        user = request.user if request else None
-        if not user or not user.is_superuser:
-            if user:
-                filtered = filtered.exclude(Q(dirty_state=True) & ~(
-                    Q(owner__username__iexact=str(user))))
-            else:
-                filtered = filtered.exclude(Q(dirty_state=True))
-        return filtered.filter(metadata_only=metadata_only)
-
-    def filter_published(self, queryset, request):
-        filter_set = get_visible_resources(
-            queryset,
+        # return filtered
+        return get_visible_resources(
+            filtered,
             request.user if request else None,
-            request=request,
+            metadata_only=metadata_only,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING)
-
-        return filter_set
-
-    def filter_group(self, queryset, request):
-        filter_set = get_visible_resources(
-            queryset,
-            request.user if request else None,
-            request=request,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
-
-        return filter_set
 
     def filter_h_keywords(self, queryset, keywords):
         treeqs = HierarchicalKeyword.objects.none()
@@ -392,7 +366,7 @@ class CommonModelApi(ModelResource):
         # filter by category
         if category:
             sqs = (SearchQuerySet() if sqs is None else sqs).narrow(
-                'category:%s' % ','.join(map(str, category)))
+                f"category:{','.join(map(str, category))}")
 
         # filter by keyword: use filter_or with keywords_exact
         # not using exact leads to fuzzy matching and too many results

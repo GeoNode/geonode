@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2020-06-10 09:21+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Arabic (http://www.transifex.com/geonode/geonode/language/"
@@ -2178,27 +2178,6 @@ msgstr "تحميل طبقات"
 msgid "Return to Layer"
 msgstr "العودة إلى الطبقة"
 
-msgid "Incomplete Uploads"
-msgstr "عمليات التحميل غير مكتملة"
-
-msgid "You have the following incomplete uploads"
-msgstr "لديك التحميلات غير المكتملة التالية"
-
-msgid "last updated on"
-msgstr "آخر تحديث لل"
-
-msgid "Resume"
-msgstr "استئنف"
-
-msgid "Delete"
-msgstr "حذف"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "هل أنت متأكد أنك تريد حذف هذا التحميل؟"
-
-msgid "Delete, and don't ask me again."
-msgstr "حذف، ولا تسألني مرة أخرى."
-
 msgid "Preserve Metadata XML"
 msgstr "الحفاظ على البيانات الوصفية لXML"
 
@@ -2627,6 +2606,42 @@ msgstr "سمات مجموعة البيانات"
 
 msgid "Upload Layer"
 msgstr "رفع طبقة"
+
+msgid "Incomplete Uploads"
+msgstr "عمليات التحميل غير مكتملة"
+
+msgid "You have the following incomplete uploads"
+msgstr "لديك التحميلات غير المكتملة التالية"
+
+msgid "Resume"
+msgstr "استئنف"
+
+msgid "Delete"
+msgstr "حذف"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "إنشاء"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "صفحة"
+
+msgid "of"
+msgstr "من"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "عمليات التحميل غير مكتملة"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "هل أنت متأكد أنك تريد حذف هذا التحميل؟"
 
 msgid "Upload Layer Step: Set SRS"
 msgstr "خطوة تحميل طبقة: تعيين نظام المرجع المكاني"
@@ -6693,12 +6708,6 @@ msgstr "‫yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "التاريخ ينتهي قبل:"
 
-msgid "page"
-msgstr "صفحة"
-
-msgid "of"
-msgstr "من"
-
 msgid "Search by region"
 msgstr "البحث حسب المنطقة"
 
@@ -6890,6 +6899,11 @@ msgstr ""
 msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
+#, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "جميع المحتويات"
+
 msgid "Could not access to uploaded data."
 msgstr "لا يمكن الوصول إلى البيانات التي تم تحميلها."
 
@@ -6911,6 +6925,19 @@ msgid "Layer already exists"
 msgstr "تم إنشاء طبقة"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6989,6 +7016,12 @@ msgstr "مستوى صلاحية غير صالح."
 
 msgid "Permission Denied"
 msgstr "طلب الاذن مرفوض"
+
+#~ msgid "last updated on"
+#~ msgstr "آخر تحديث لل"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "حذف، ولا تسألني مرة أخرى."
 
 #~ msgid "Available layers"
 #~ msgstr "الطبقات المتاحة"
