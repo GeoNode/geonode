@@ -62,7 +62,7 @@ def get_tree_data():
             children_list_of_tuples.append(
                 tuple((path + parent.name, tuple((child.id, child.name))))
             )
-            childrens = rectree(child, parent.name + '/')
+            childrens = rectree(child, f"{parent.name}/")
             if childrens:
                 children_list_of_tuples.extend(childrens)
 
@@ -105,10 +105,10 @@ class CategoryChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         return '<i class="fa ' + obj.fa_class + ' fa-2x unchecked"></i>' \
-                         '<i class="fa ' + obj.fa_class + ' fa-2x checked"></i>' \
-                         '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
-                         'data-content="' + obj.description + '" trigger="hover">' \
-                                                              '<br/><strong>' + obj.gn_description + '</strong></span>'
+            '<i class="fa ' + obj.fa_class + ' fa-2x checked"></i>' \
+            '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
+            'data-content="' + obj.description + '" trigger="hover">' \
+            '<br/><strong>' + obj.gn_description + '</strong></span>'
 
 
 # NOTE: This is commented as it needs updating to work with select2 and autocomlete light.
@@ -276,7 +276,7 @@ class RegionsSelect(forms.Select):
 class CategoryForm(forms.Form):
     category_choice_field = CategoryChoiceField(
         required=False,
-        label='*' + _('Category'),
+        label=f"*{_('Category')}",
         empty_label=None,
         queryset=TopicCategory.objects.filter(
             is_choice=True).extra(
@@ -318,7 +318,7 @@ class ThesaurusAvailableForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ThesaurusAvailableForm, self).__init__(*args, **kwargs)
         lang = get_language()
-        for item in Thesaurus.objects.all():
+        for item in Thesaurus.objects.all().order_by('order', 'id'):
             tname = self._get_thesauro_title_label(item, lang)
             if item.card_max == 0:
                 continue

@@ -203,7 +203,7 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
                 archive.writestr('something.txt', 'Some Content Here')
 
             # create a md5 hash file for the backup temporary file
-            tmp_hash_file = tmp_file.name + '.md5'
+            tmp_hash_file = f"{tmp_file.name}.md5"
             with open(tmp_hash_file, 'w') as hash_file:
                 hash_file.write('91162629d258a876ee994e9233b2ad87')
 
@@ -230,7 +230,7 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
                 archive.writestr('something.txt', 'Some Content Here')
 
             # create a md5 hash file for the backup temporary file
-            tmp_hash_file = tmp_file.name + '.md5'
+            tmp_hash_file = f"{tmp_file.name}.md5"
             with open(tmp_hash_file, 'w') as hash_file:
                 hash_file.write(md5_file_hash(tmp_file.name))
 

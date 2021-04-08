@@ -119,8 +119,8 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
             if created is False:
                 # object was saved.
                 if not isinstance(instance, Layer) and \
-                not isinstance(instance, Document) and \
-                not isinstance(instance, Map):
+                        not isinstance(instance, Document) and \
+                        not isinstance(instance, Map):
                     verb = action.get('updated_verb')
                     raw_action = 'updated'
 

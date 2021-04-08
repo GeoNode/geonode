@@ -607,7 +607,7 @@ def final_step(upload_session, user, charset="UTF-8"):
             zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
             zf.extract(xml_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
-            xml_file = os.path.dirname(archive) + '/' + xml_file[0]
+            xml_file = f"{os.path.dirname(archive)}/{xml_file[0]}"
 
         # Sanity checks
         if isinstance(xml_file, list):
@@ -695,8 +695,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                             temporal_extent_start=end)
             except Exception as e:
                 _log(
-                    'There was an error updating the mosaic temporal extent: ' +
-                    str(e))
+                    f"There was an error updating the mosaic temporal extent: {str(e)}")
     else:
         _has_time = (True if upload_session.time and upload_session.time_info and
                      upload_session.time_transforms else False)
@@ -714,7 +713,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                         abstract=abstract or '',
                         owner=user,
                         has_time=_has_time)
-                    )
+                )
         except IntegrityError:
             raise
         assert saved_layer
@@ -803,7 +802,7 @@ def final_step(upload_session, user, charset="UTF-8"):
             zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
             zf.extract(sld_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
-            sld_file[0] = os.path.dirname(archive) + '/' + sld_file[0]
+            sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
         sld_file = sld_file[0]
         sld_uploaded = True
         # geoserver_set_style.apply_async((saved_layer.id, sld_file))

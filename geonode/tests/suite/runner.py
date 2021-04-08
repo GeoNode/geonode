@@ -386,8 +386,7 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
                 all_deps.update(dependencies.get(alias, []))
             if not all_deps.isdisjoint(aliases):
                 raise ImproperlyConfigured(
-                    "Circular dependency: databases %r depend on each other, "
-                    "but are aliases." % aliases
+                    f"Circular dependency: databases {aliases!r} depend on each other, but are aliases."
                 )
             dependencies_map[sig] = all_deps
 

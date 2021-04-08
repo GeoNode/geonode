@@ -268,15 +268,6 @@ class DocumentUploadView(CreateView):
             bbox = BBOXHelper.from_xy(bbox)
             self.object.bbox_polygon = bbox.as_polygon()
 
-        if getattr(settings, 'SLACK_ENABLED', False):
-            try:
-                from geonode.contrib.slack.utils import build_slack_message_document, send_slack_message
-                send_slack_message(
-                    build_slack_message_document(
-                        "document_new", self.object))
-            except Exception:
-                logger.error("Could not send slack message for new document.")
-
         self.object.save(notify=True)
         register_event(self.request, EventType.EVENT_UPLOAD, self.object)
 
@@ -365,7 +356,7 @@ def document_metadata(
             prefix="resource")
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
-                                                        request.POST["category_choice_field"] else None)
+            request.POST["category_choice_field"] else None)
 
         if hasattr(settings, 'THESAURUS'):
             tkeywords_form = TKeywordForm(request.POST)
@@ -398,8 +389,7 @@ def document_metadata(
                             if len(tkl) > 0:
                                 tkl_ids = ",".join(
                                     map(str, tkl.values_list('id', flat=True)))
-                                tkeywords_list += "," + \
-                                tkl_ids if len(
+                                tkeywords_list += f",{tkl_ids}" if len(
                                     tkeywords_list) > 0 else tkl_ids
                     except Exception:
                         tb = traceback.format_exc()
@@ -561,6 +551,7 @@ def document_metadata(
         "metadata_author_groups": metadata_author_groups,
         "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
+        "UI_MANDATORY_FIELDS": ['title', 'abstract', 'doi', 'attribution', 'data_quality_statement', 'restriction_code_type']
     })
 
 

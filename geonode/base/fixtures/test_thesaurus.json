@@ -11,7 +11,8 @@
             "about": "http://inspire.ec.europa.eu/theme",
             "card_min": 1,
             "card_max": 1,
-            "facet": true
+            "facet": true,
+            "order": 1
         }
       },{
         "model": "base.thesaurus",
@@ -25,7 +26,8 @@
             "about": "http://optional/theme2",
             "card_min": 0,
             "card_max": -1,
-            "facet": true
+            "facet": true,
+            "order": 0
         }
       },
       {

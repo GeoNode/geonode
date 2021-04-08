@@ -161,7 +161,7 @@ def get_geofence_rules(page=0, entries=1, count=False):
             curl -X GET -u admin:geoserver \
                 http://<host>:<port>/geoserver/rest/geofence/rules/count.json
             """
-            _url = url + 'rest/geofence/rules/count.json'
+            _url = f"{url}rest/geofence/rules/count.json"
         elif page or entries:
             """
             curl -X GET -u admin:geoserver \
@@ -222,7 +222,7 @@ def purge_geofence_all():
                   http://<host>:<port>/geoserver/rest/geofence/rules.json
             """
             headers = {'Content-type': 'application/json'}
-            r = requests.get(url + 'rest/geofence/rules.json',
+            r = requests.get(f"{url}rest/geofence/rules.json",
                              headers=headers,
                              auth=HTTPBasicAuth(user, passwd),
                              timeout=10,
@@ -238,7 +238,7 @@ def purge_geofence_all():
                         # Delete GeoFence Rules associated to the Layer
                         # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
                         for rule in rules:
-                            r = requests.delete(url + 'rest/geofence/rules/id/' + str(rule['id']),
+                            r = requests.delete(f"{url}rest/geofence/rules/id/{str(rule['id'])}",
                                                 headers=headers,
                                                 auth=HTTPBasicAuth(user, passwd))
                             if (r.status_code < 200 or r.status_code > 201):
@@ -288,7 +288,7 @@ def purge_geofence_layer_rules(resource):
             # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
             for r_id in r_ids:
                 r = requests.delete(
-                    url + 'rest/geofence/rules/id/' + str(r_id),
+                    f"{url}rest/geofence/rules/id/{str(r_id)}",
                     headers=headers,
                     auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
@@ -313,7 +313,7 @@ def set_geofence_invalidate_cache():
             curl -X GET -u admin:geoserver \
                   http://<host>:<port>/geoserver/rest/ruleCache/invalidate
             """
-            r = requests.put(url + 'rest/ruleCache/invalidate',
+            r = requests.put(f"{url}rest/ruleCache/invalidate",
                              auth=HTTPBasicAuth(user, passwd))
 
             if (r.status_code < 200 or r.status_code > 201):
@@ -460,7 +460,7 @@ def set_geowebcache_invalidate_cache(layer_alternate, cat=None):
                 headers = {'Content-type': 'text/xml'}
                 payload = f"<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>"
                 r = requests.post(
-                    url + 'gwc/rest/masstruncate',
+                    f"{url}gwc/rest/masstruncate",
                     headers=headers,
                     data=payload,
                     auth=HTTPBasicAuth(user, passwd))
@@ -509,7 +509,7 @@ def set_geofence_all(instance):
             access="ALLOW"
         )
         response = requests.post(
-            url + 'rest/geofence/rules',
+            f"{url}rest/geofence/rules",
             headers=headers,
             data=payload,
             auth=HTTPBasicAuth(user, passwd)

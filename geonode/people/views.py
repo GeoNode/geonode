@@ -117,7 +117,7 @@ def forgot_username(request):
 
     site = Site.objects.get_current()
 
-    email_subject = _("Your username for " + site.name)
+    email_subject = _(f"Your username for {site.name}")
 
     if request.method == 'POST':
         username_form = ForgotUsernameForm(request.POST)
@@ -128,7 +128,7 @@ def forgot_username(request):
 
             if users:
                 username = users[0].username
-                email_message = email_subject + " : " + username
+                email_message = f"{email_subject} : {username}"
                 send_email(email_subject, email_message, settings.DEFAULT_FROM_EMAIL,
                            [username_form.cleaned_data['email']], fail_silently=False)
                 message = _("Your username has been emailed to you.")
