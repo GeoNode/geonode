@@ -1,15 +1,16 @@
-FROM python:3.8.7-buster
+FROM python:3.8.9-buster
 LABEL GeoNode development team
 
 RUN mkdir -p /usr/src/geonode
 
 # Enable postgresql-client-13
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list
+RUN echo "deb http://deb.debian.org/debian/ stable main contrib non-free" | tee /etc/apt/sources.list.d/debian.list
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
 # This section is borrowed from the official Django image but adds GDAL and others
 RUN apt-get update && apt-get install -y \
-    libpq-dev python-dev libxml2-dev \
+    libgdal-dev libpq-dev libxml2-dev \
     libxml2 libxslt1-dev zlib1g-dev libjpeg-dev \
     libmemcached-dev libldap2-dev libsasl2-dev libffi-dev
 
@@ -17,10 +18,10 @@ RUN apt-get update && apt-get install -y \
     gcc zip gettext geoip-bin cron \
     postgresql-client-13 \
     sqlite3 spatialite-bin libsqlite3-mod-spatialite \
-    python3-gdal python3-psycopg2 python3-ldap \
+    python3-dev python3-gdal python3-psycopg2 python3-ldap \
     python3-pip python3-pil python3-lxml python3-pylibmc \
-    python3-dev libgdal-dev \
     uwsgi uwsgi-plugin-python3 \
+    firefox-esr \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # add bower and grunt command

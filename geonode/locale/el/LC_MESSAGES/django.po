@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2019-07-19 12:46+0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/geonode/geonode/language/"
@@ -2149,27 +2149,6 @@ msgstr "μεταφόρτωση επιπέδων"
 msgid "Return to Layer"
 msgstr "Επιστροφή στο Επίπεδο"
 
-msgid "Incomplete Uploads"
-msgstr "Ελλιπής Μεταφόρτωση"
-
-msgid "You have the following incomplete uploads"
-msgstr "Έχετε τις παρακάτω ελλιπείς μεταφορτώσεις"
-
-msgid "last updated on"
-msgstr "τελευταία ενημέρωση"
-
-msgid "Resume"
-msgstr "Περίληψη"
-
-msgid "Delete"
-msgstr "Διαγραφή"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν τη μεταφόρτωση;"
-
-msgid "Delete, and don't ask me again."
-msgstr "Διαγραφή, και μην με ρωτήσετε ξανά."
-
 msgid "Preserve Metadata XML"
 msgstr "Διατήρηση Μεταδεδομένων XML"
 
@@ -2581,6 +2560,42 @@ msgstr "Χαρακτηριστικά"
 
 msgid "Upload Layer"
 msgstr "Μεταφόρτωση Επιπέδου"
+
+msgid "Incomplete Uploads"
+msgstr "Ελλιπής Μεταφόρτωση"
+
+msgid "You have the following incomplete uploads"
+msgstr "Έχετε τις παρακάτω ελλιπείς μεταφορτώσεις"
+
+msgid "Resume"
+msgstr "Περίληψη"
+
+msgid "Delete"
+msgstr "Διαγραφή"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Δημιουργία"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "σελίδα"
+
+msgid "of"
+msgstr "από"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Ελλιπής Μεταφόρτωση"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν τη μεταφόρτωση;"
 
 msgid "Upload Layer Step: Set SRS"
 msgstr "Βήμα Μεταφόρτωσης Επιπέδου: Ορισμός SRS"
@@ -6003,12 +6018,6 @@ msgstr "εεεε-μμ-ηη"
 msgid "Date ends before:"
 msgstr "Ημερομηνία τελειώνει πριν από:"
 
-msgid "page"
-msgstr "σελίδα"
-
-msgid "of"
-msgstr "από"
-
 msgid "Search by region"
 msgstr "Αναζήτηση"
 
@@ -6203,6 +6212,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Όλα τα περιεχόμενα"
+
+#, fuzzy
 #| msgid "Could not find any kml files inside the uploaded kmz"
 msgid "Could not access to uploaded data."
 msgstr "Δεν ήταν δυνατή η εύρεση αρχείων kml στο ανεβασμένο αρχείο kmz"
@@ -6223,6 +6237,19 @@ msgid "Layer already exists"
 msgstr "Επίπεδο Δημιουργήθηκε"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6300,6 +6327,12 @@ msgstr "Άκυρο επίπεδο δικαιωμάτων."
 
 msgid "Permission Denied"
 msgstr "Πρόσβαση Απορρίφθηκε"
+
+#~ msgid "last updated on"
+#~ msgstr "τελευταία ενημέρωση"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Διαγραφή, και μην με ρωτήσετε ξανά."
 
 #~ msgid "Available layers"
 #~ msgstr "Διαθέσιμα Επίπεδα"

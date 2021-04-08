@@ -216,9 +216,13 @@ class Layer(ResourceBase):
     def processed(self):
         self.upload_session = UploadSession.objects.filter(resource=self).first()
         if self.upload_session:
-            return self.upload_session.processed
+            if self.upload_session.processed:
+                self.clear_dirty_state()
+            else:
+                self.set_dirty_state()
         else:
-            return True
+            self.clear_dirty_state()
+        return not self.dirty_state
 
     @property
     def display_type(self):
@@ -401,13 +405,13 @@ class LayerFile(models.Model):
     """Helper class to store original files.
     """
     upload_session = models.ForeignKey(UploadSession, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=4096)
     base = models.BooleanField(default=False)
     file = models.FileField(
         upload_to='layers/%Y/%m/%d',
         storage=FileSystemStorage(
             base_url=settings.LOCAL_MEDIA_URL),
-        max_length=255)
+        max_length=4096)
 
 
 class AttributeManager(models.Manager):
@@ -683,6 +687,14 @@ def pre_delete_layer(instance, sender, **kwargs):
         if style.layer_styles.all().count() == 1:
             if style != default_style:
                 style.delete()
+
+    if 'geonode.upload' in settings.INSTALLED_APPS and \
+            settings.UPLOADER['BACKEND'] == 'geonode.importer':
+        from geonode.upload.models import Upload
+        # Need to call delete one by one in ordee to invoke the
+        #  'delete' overridden method
+        for upload in Upload.objects.filter(layer_id=instance.id):
+            upload.delete()
 
     # Delete object permissions
     remove_object_permissions(instance)

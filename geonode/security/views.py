@@ -415,7 +415,15 @@ def set_bulk_permissions(request):
                     'base.change_resourcebase_permissions')
                 resource.set_permissions(permission_spec)
             except PermissionDenied:
-                not_permitted.append(ResourceBase.objects.get(id=resource_id).title)
+                try:
+                    resolve_object(
+                        request, ResourceBase, {
+                            'id': resource_id
+                        },
+                        'base.change_resourcebase')
+                    resource.set_permissions(permission_spec)
+                except PermissionDenied:
+                    not_permitted.append(ResourceBase.objects.get(id=resource_id).title)
 
         return HttpResponse(
             json.dumps({'success': 'ok', 'not_changed': not_permitted}),

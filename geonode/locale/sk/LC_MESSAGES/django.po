@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2021-03-11 16:40+0100\n"
 "Last-Translator: \n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -2437,33 +2437,6 @@ msgid "Return to Layer"
 msgstr "Vráťte sa do vrstvy"
 
 #, fuzzy
-msgid "Incomplete Uploads"
-msgstr "Neúplné nahrávanie"
-
-#, fuzzy
-msgid "You have the following incomplete uploads"
-msgstr "Máte nasledujúce neúplné nahratia"
-
-#, fuzzy
-msgid "last updated on"
-msgstr "naposledy aktualizované dňa"
-
-msgid "Resume"
-msgstr "Životopis"
-
-#, fuzzy
-msgid "Delete"
-msgstr "Zmazať"
-
-#, fuzzy
-msgid "Are you sure you want to delete this upload?"
-msgstr "Naozaj chcete odstrániť toto nahrávanie?"
-
-#, fuzzy
-msgid "Delete, and don't ask me again."
-msgstr "Odstrániť a viac sa ma nepýtať."
-
-#, fuzzy
 msgid "Preserve Metadata XML"
 msgstr "Zachovať XML metaúdajov"
 
@@ -2960,6 +2933,43 @@ msgstr "Atribúty množiny údajov"
 #, fuzzy
 msgid "Upload Layer"
 msgstr "Odovzdať vrstvu"
+
+#, fuzzy
+msgid "Incomplete Uploads"
+msgstr "Neúplné nahrávanie"
+
+#, fuzzy
+msgid "You have the following incomplete uploads"
+msgstr "Máte nasledujúce neúplné nahratia"
+
+msgid "Resume"
+msgstr "Životopis"
+
+#, fuzzy
+msgid "Delete"
+msgstr "Zmazať"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Vytvoriť"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "strana"
+
+msgid "of"
+msgstr "z"
+
+#, fuzzy
+msgid "Delete incomplete upload"
+msgstr "Neúplné nahrávanie"
+
+#, fuzzy
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Naozaj chcete odstrániť toto nahrávanie?"
 
 #, fuzzy
 msgid "Upload Layer Step: Set SRS"
@@ -6970,12 +6980,6 @@ msgstr "rrrr-mm-dd"
 msgid "Date ends before:"
 msgstr "Dátum končí skôr:"
 
-msgid "page"
-msgstr "strana"
-
-msgid "of"
-msgstr "z"
-
 #, fuzzy
 msgid "Search by region"
 msgstr "Hľadajte podľa regiónu"
@@ -7192,6 +7196,10 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr "Vyberte si medzi použitím jumbotronového pozadia a prezentácie"
 
 #, fuzzy
+msgid "Empty content"
+msgstr "Celý obsah"
+
+#, fuzzy
 msgid "Could not access to uploaded data."
 msgstr "Nepodarilo sa získať prístup k nahraným údajom."
 
@@ -7218,6 +7226,19 @@ msgstr "Vrstva už existuje"
 #, fuzzy
 msgid "Name already in use and overwrite is False"
 msgstr "Názov, ktorý sa už používa a je prepísaný, je False"
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid zip file detected"
@@ -7311,6 +7332,14 @@ msgstr "Neplatná úroveň povolenia."
 
 msgid "Permission Denied"
 msgstr "Povolenie bolo odmietnuté"
+
+#, fuzzy
+#~ msgid "last updated on"
+#~ msgstr "naposledy aktualizované dňa"
+
+#, fuzzy
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Odstrániť a viac sa ma nepýtať."
 
 #, fuzzy
 #~ msgid "Available layers"

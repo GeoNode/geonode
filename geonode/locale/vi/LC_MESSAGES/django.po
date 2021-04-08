@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/geonode/geonode/language/"
@@ -2315,27 +2315,6 @@ msgstr "Một lớp đã được tải lên"
 msgid "Return to Layer"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr "Ơn Incomplete"
-
-msgid "You have the following incomplete uploads"
-msgstr "Bạn có cập nhật không đầy đủ sau"
-
-msgid "last updated on"
-msgstr "cập nhật lần cuối vào"
-
-msgid "Resume"
-msgstr "Sơ yếu lý lịch"
-
-msgid "Delete"
-msgstr "Xóa bỏ"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Bạn có chắc chắn muốn xóa upload này?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Xóa, và đừng hỏi tôi một lần nữa."
-
 #, fuzzy
 #| msgid "Edit Service Metadata"
 msgid "Preserve Metadata XML"
@@ -2785,6 +2764,42 @@ msgstr "Thuộc tính"
 
 msgid "Upload Layer"
 msgstr "Tải lên lớp"
+
+msgid "Incomplete Uploads"
+msgstr "Ơn Incomplete"
+
+msgid "You have the following incomplete uploads"
+msgstr "Bạn có cập nhật không đầy đủ sau"
+
+msgid "Resume"
+msgstr "Sơ yếu lý lịch"
+
+msgid "Delete"
+msgstr "Xóa bỏ"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Sáng tạo"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "của"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Ơn Incomplete"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Bạn có chắc chắn muốn xóa upload này?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -6280,12 +6295,6 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "Ngày kết thúc trước:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "của"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6492,6 +6501,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Tất cả nội dung"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Không thể tìm thấy bất kỳ lớp trong một chiếu tương thích."
@@ -6512,6 +6526,19 @@ msgid "Layer already exists"
 msgstr "Bản đồ tạo"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6591,6 +6618,12 @@ msgstr "Mức cho phép không hợp lệ."
 
 msgid "Permission Denied"
 msgstr "Permission Denied"
+
+#~ msgid "last updated on"
+#~ msgstr "cập nhật lần cuối vào"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Xóa, và đừng hỏi tôi một lần nữa."
 
 #, fuzzy
 #~| msgid "Available styles"

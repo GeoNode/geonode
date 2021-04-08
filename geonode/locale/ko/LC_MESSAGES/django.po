@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-24 07:02+0000\n"
 "Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/geonode/geonode/language/"
@@ -2273,27 +2273,6 @@ msgstr "업로드된 레이어"
 msgid "Return to Layer"
 msgstr "레이어로 돌아가기"
 
-msgid "Incomplete Uploads"
-msgstr "불완전 업로드"
-
-msgid "You have the following incomplete uploads"
-msgstr "다음과 같은 불완전한 업로드가 있습니다"
-
-msgid "last updated on"
-msgstr "마지막 수정 "
-
-msgid "Resume"
-msgstr "재시작"
-
-msgid "Delete"
-msgstr "삭제"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "이 업로드를 정말로 삭제하시겠습니까?"
-
-msgid "Delete, and don't ask me again."
-msgstr "삭제하고 다시 묻지 않습니다."
-
 #, fuzzy
 #| msgid "Edit Service Metadata"
 msgid "Preserve Metadata XML"
@@ -2759,6 +2738,42 @@ msgstr "속성"
 
 msgid "Upload Layer"
 msgstr "레이어 업로드"
+
+msgid "Incomplete Uploads"
+msgstr "불완전 업로드"
+
+msgid "You have the following incomplete uploads"
+msgstr "다음과 같은 불완전한 업로드가 있습니다"
+
+msgid "Resume"
+msgstr "재시작"
+
+msgid "Delete"
+msgstr "삭제"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "생성"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "페이지"
+
+msgid "of"
+msgstr "의"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "불완전 업로드"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "이 업로드를 정말로 삭제하시겠습니까?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -6578,12 +6593,6 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "종료 날짜:"
 
-msgid "page"
-msgstr "페이지"
-
-msgid "of"
-msgstr "의"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6790,6 +6799,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "모든 컨텐츠"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "호환되는 좌표체계에서 어떤 레이어도 찾을 수 없습니다."
@@ -6810,6 +6824,19 @@ msgid "Layer already exists"
 msgstr "레이어 생성"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6889,6 +6916,12 @@ msgstr "유효하지 않은 권한 수준."
 
 msgid "Permission Denied"
 msgstr "사용 권한이 거부되었습니다"
+
+#~ msgid "last updated on"
+#~ msgstr "마지막 수정 "
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "삭제하고 다시 묻지 않습니다."
 
 #, fuzzy
 #~| msgid "Available styles"

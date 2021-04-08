@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:50+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2020-07-31 13:58+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Polish (http://www.transifex.com/geonode/geonode/language/"
@@ -2172,27 +2172,6 @@ msgstr "przesłać warstwy"
 msgid "Return to Layer"
 msgstr "Wróć do warstwy"
 
-msgid "Incomplete Uploads"
-msgstr "Niekompletnie przesłane pliki"
-
-msgid "You have the following incomplete uploads"
-msgstr "Masz następujące niekompletnie przesłane pliki"
-
-msgid "last updated on"
-msgstr "ostatnio zaktualizowano"
-
-msgid "Resume"
-msgstr "Wznów"
-
-msgid "Delete"
-msgstr "Usuń"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Czy na pewno chcesz usunąć ten plik?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Usuń, i nie pytaj mnie ponownie."
-
 msgid "Preserve Metadata XML"
 msgstr "Zachowaj metadane XML"
 
@@ -2623,6 +2602,42 @@ msgstr "Atrybuty zbioru danych"
 
 msgid "Upload Layer"
 msgstr "Prześlij warstwę"
+
+msgid "Incomplete Uploads"
+msgstr "Niekompletnie przesłane pliki"
+
+msgid "You have the following incomplete uploads"
+msgstr "Masz następujące niekompletnie przesłane pliki"
+
+msgid "Resume"
+msgstr "Wznów"
+
+msgid "Delete"
+msgstr "Usuń"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Stwórz"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "strona"
+
+msgid "of"
+msgstr "z"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Niekompletnie przesłane pliki"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Czy na pewno chcesz usunąć ten plik?"
 
 msgid "Upload Layer Step: Set SRS"
 msgstr "Przesyłanie warstwy: określ układ współrzędnych"
@@ -5889,12 +5904,6 @@ msgstr "rrrr-mm-dd"
 msgid "Date ends before:"
 msgstr "Data kończy się przed:"
 
-msgid "page"
-msgstr "strona"
-
-msgid "of"
-msgstr "z"
-
 msgid "Search by region"
 msgstr "Szukaj według regionu"
 
@@ -6087,6 +6096,11 @@ msgstr ""
 msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
+#, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Cała zawartość"
+
 msgid "Could not access to uploaded data."
 msgstr "Brak dostępu do przesłanych danych."
 
@@ -6110,6 +6124,19 @@ msgid "Layer already exists"
 msgstr "Warstwa stworzona"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6195,6 +6222,12 @@ msgstr "Nieprawidłowy poziom uprawnień."
 
 msgid "Permission Denied"
 msgstr "Odmowa dostępu"
+
+#~ msgid "last updated on"
+#~ msgstr "ostatnio zaktualizowano"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Usuń, i nie pytaj mnie ponownie."
 
 #~ msgid "Available layers"
 #~ msgstr "Dostępne warstwy"

@@ -999,6 +999,7 @@ class TestFacets(TestCase):
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
 
     def test_facets_filter_layers_returns_correctly(self):
+        ResourceBase.objects.all().update(dirty_state=False)
         self.request_mock.GET.get.side_effect = lambda key, self: {
             'title__icontains': 'boxes',
             'abstract__icontains': 'boxes',
