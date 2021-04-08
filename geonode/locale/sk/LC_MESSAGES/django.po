@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2021-03-11 16:40+0100\n"
 "Last-Translator: \n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -771,35 +771,6 @@ msgid "GeoNode Client Library"
 msgstr "Knižnica klienta GeoNode"
 
 #, fuzzy
-msgid "Explore Maps"
-msgstr "Preskúmajte Mapy"
-
-#, fuzzy
-msgid "Edit Map"
-msgstr "Upraviť mapu"
-
-msgid "Update"
-msgstr "Aktualizovať"
-
-#, fuzzy
-msgid "Create a New Map"
-msgstr "Vytvorte novú mapu"
-
-#, fuzzy
-msgid "Available layers"
-msgstr "Dostupné vrstvy"
-
-msgid "Save"
-msgstr "Uložiť"
-
-#, fuzzy
-msgid "Save Map"
-msgstr "Uložiť mapu"
-
-msgid "Close"
-msgstr "Zatvoriť"
-
-#, fuzzy
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1242,6 +1213,9 @@ msgstr "Vymeniť"
 msgid "Remove"
 msgstr "Odstrániť"
 
+msgid "Close"
+msgstr "Zatvoriť"
+
 #, fuzzy
 msgid "Download Metadata"
 msgstr "Stiahnite si metadáta"
@@ -1326,6 +1300,9 @@ msgstr "Poskytovateľ metadát"
 
 msgid "<< Back"
 msgstr "<< Späť"
+
+msgid "Update"
+msgstr "Aktualizovať"
 
 #, fuzzy
 msgid "Next >>"
@@ -2131,6 +2108,9 @@ msgstr "Vytvorte kategóriu skupiny"
 msgid "Edit Group Category"
 msgstr "Upraviť kategóriu skupiny"
 
+msgid "Save"
+msgstr "Uložiť"
+
 #, fuzzy, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr "E-mailová adresa '% (email) s' už bola pozvaná."
@@ -2455,33 +2435,6 @@ msgstr "upload vrstiev"
 #, fuzzy
 msgid "Return to Layer"
 msgstr "Vráťte sa do vrstvy"
-
-#, fuzzy
-msgid "Incomplete Uploads"
-msgstr "Neúplné nahrávanie"
-
-#, fuzzy
-msgid "You have the following incomplete uploads"
-msgstr "Máte nasledujúce neúplné nahratia"
-
-#, fuzzy
-msgid "last updated on"
-msgstr "naposledy aktualizované dňa"
-
-msgid "Resume"
-msgstr "Životopis"
-
-#, fuzzy
-msgid "Delete"
-msgstr "Zmazať"
-
-#, fuzzy
-msgid "Are you sure you want to delete this upload?"
-msgstr "Naozaj chcete odstrániť toto nahrávanie?"
-
-#, fuzzy
-msgid "Delete, and don't ask me again."
-msgstr "Odstrániť a viac sa ma nepýtať."
 
 #, fuzzy
 msgid "Preserve Metadata XML"
@@ -2980,6 +2933,43 @@ msgstr "Atribúty množiny údajov"
 #, fuzzy
 msgid "Upload Layer"
 msgstr "Odovzdať vrstvu"
+
+#, fuzzy
+msgid "Incomplete Uploads"
+msgstr "Neúplné nahrávanie"
+
+#, fuzzy
+msgid "You have the following incomplete uploads"
+msgstr "Máte nasledujúce neúplné nahratia"
+
+msgid "Resume"
+msgstr "Životopis"
+
+#, fuzzy
+msgid "Delete"
+msgstr "Zmazať"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Vytvoriť"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "strana"
+
+msgid "of"
+msgstr "z"
+
+#, fuzzy
+msgid "Delete incomplete upload"
+msgstr "Neúplné nahrávanie"
+
+#, fuzzy
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Naozaj chcete odstrániť toto nahrávanie?"
 
 #, fuzzy
 msgid "Upload Layer Step: Set SRS"
@@ -3871,6 +3861,10 @@ msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplikujte túto mapu a upravte ju pre svoje vlastné účely"
 
 #, fuzzy
+msgid "Create a New Map"
+msgstr "Vytvorte novú mapu"
+
+#, fuzzy
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3934,6 +3928,14 @@ msgstr "Sťahovanie dokončené"
 #, fuzzy
 msgid "Download Failed"
 msgstr "Sťahovanie zlyhalo"
+
+#, fuzzy
+msgid "Edit Map"
+msgstr "Upraviť mapu"
+
+#, fuzzy
+msgid "Explore Maps"
+msgstr "Preskúmajte Mapy"
 
 #, fuzzy
 msgid "maps explore"
@@ -6978,12 +6980,6 @@ msgstr "rrrr-mm-dd"
 msgid "Date ends before:"
 msgstr "Dátum končí skôr:"
 
-msgid "page"
-msgstr "strana"
-
-msgid "of"
-msgstr "z"
-
 #, fuzzy
 msgid "Search by region"
 msgstr "Hľadajte podľa regiónu"
@@ -7200,6 +7196,10 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr "Vyberte si medzi použitím jumbotronového pozadia a prezentácie"
 
 #, fuzzy
+msgid "Empty content"
+msgstr "Celý obsah"
+
+#, fuzzy
 msgid "Could not access to uploaded data."
 msgstr "Nepodarilo sa získať prístup k nahraným údajom."
 
@@ -7226,6 +7226,19 @@ msgstr "Vrstva už existuje"
 #, fuzzy
 msgid "Name already in use and overwrite is False"
 msgstr "Názov, ktorý sa už používa a je prepísaný, je False"
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid zip file detected"
@@ -7319,6 +7332,22 @@ msgstr "Neplatná úroveň povolenia."
 
 msgid "Permission Denied"
 msgstr "Povolenie bolo odmietnuté"
+
+#, fuzzy
+#~ msgid "last updated on"
+#~ msgstr "naposledy aktualizované dňa"
+
+#, fuzzy
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Odstrániť a viac sa ma nepýtať."
+
+#, fuzzy
+#~ msgid "Available layers"
+#~ msgstr "Dostupné vrstvy"
+
+#, fuzzy
+#~ msgid "Save Map"
+#~ msgstr "Uložiť mapu"
 
 #, fuzzy
 #~ msgid "Climate"

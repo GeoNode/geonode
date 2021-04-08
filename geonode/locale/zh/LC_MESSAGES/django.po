@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -710,34 +710,6 @@ msgstr "描述"
 msgid "GeoNode Client Library"
 msgstr "GeoNode帮助"
 
-msgid "Explore Maps"
-msgstr "浏览地图"
-
-msgid "Edit Map"
-msgstr "编辑地图"
-
-msgid "Update"
-msgstr "更新"
-
-msgid "Create a New Map"
-msgstr "生成新地图"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "可用的样式"
-
-msgid "Save"
-msgstr "保存"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "移除地图"
-
-msgid "Close"
-msgstr "关闭"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1090,6 +1062,9 @@ msgstr "代替"
 msgid "Remove"
 msgstr "删除"
 
+msgid "Close"
+msgstr "关闭"
+
 msgid "Download Metadata"
 msgstr "下载元数据"
 
@@ -1168,6 +1143,9 @@ msgstr "元数据提供者"
 
 msgid "<< Back"
 msgstr "<<返回"
+
+msgid "Update"
+msgstr "更新"
 
 #, fuzzy
 #| msgid "Next"
@@ -1935,6 +1913,9 @@ msgstr "创建一个群体类别"
 msgid "Edit Group Category"
 msgstr "编辑群体类别"
 
+msgid "Save"
+msgstr "保存"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2214,27 +2195,6 @@ msgstr "一个图层已被上传"
 
 msgid "Return to Layer"
 msgstr "返回图层"
-
-msgid "Incomplete Uploads"
-msgstr "不完整的上传"
-
-msgid "You have the following incomplete uploads"
-msgstr "您有以下不完整的上传"
-
-msgid "last updated on"
-msgstr "最新更新"
-
-msgid "Resume"
-msgstr "简历"
-
-msgid "Delete"
-msgstr "删除"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "您要删除此上传吗？"
-
-msgid "Delete, and don't ask me again."
-msgstr "删除，不要再问我。"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2694,6 +2654,42 @@ msgstr "数据集属性"
 
 msgid "Upload Layer"
 msgstr "上传图层"
+
+msgid "Incomplete Uploads"
+msgstr "不完整的上传"
+
+msgid "You have the following incomplete uploads"
+msgstr "您有以下不完整的上传"
+
+msgid "Resume"
+msgstr "简历"
+
+msgid "Delete"
+msgstr "删除"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "创建地图"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "页码"
+
+msgid "of"
+msgstr "/"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "不完整的上传"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "您要删除此上传吗？"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3411,6 +3407,9 @@ msgstr "复制该地图"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "复制该地图并且根据您自己的需要进行修改"
 
+msgid "Create a New Map"
+msgstr "生成新地图"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3465,6 +3464,12 @@ msgstr "下载完成"
 
 msgid "Download Failed"
 msgstr "下载失败"
+
+msgid "Edit Map"
+msgstr "编辑地图"
+
+msgid "Explore Maps"
+msgstr "浏览地图"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6386,12 +6391,6 @@ msgstr "YYYY-MM-DD"
 msgid "Date ends before:"
 msgstr "日前结束："
 
-msgid "page"
-msgstr "页码"
-
-msgid "of"
-msgstr "/"
-
 msgid "Search by region"
 msgstr "通过地区搜索"
 
@@ -6594,6 +6593,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "所有内容"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "无法找到兼容的投影任何图层。"
@@ -6614,6 +6618,19 @@ msgid "Layer already exists"
 msgstr "图层被创建"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6693,6 +6710,22 @@ msgstr "权限等级不够。"
 
 msgid "Permission Denied"
 msgstr "权限级别"
+
+#~ msgid "last updated on"
+#~ msgstr "最新更新"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "删除，不要再问我。"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "可用的样式"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "移除地图"
 
 #, fuzzy
 #~| msgid "User Activities"

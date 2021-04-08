@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Thai (http://www.transifex.com/geonode/geonode/language/th/)\n"
@@ -718,34 +718,6 @@ msgstr "คำอธิบาย"
 msgid "GeoNode Client Library"
 msgstr "วิธีใช้ GeoNode"
 
-msgid "Explore Maps"
-msgstr "สำรวจแผนที่"
-
-msgid "Edit Map"
-msgstr "แก้ไขแผนที่"
-
-msgid "Update"
-msgstr "แก้ไข"
-
-msgid "Create a New Map"
-msgstr "สร้างแผนที่ใหม่"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "สไตล์ที่สามารถใช้ได้"
-
-msgid "Save"
-msgstr "บันทึก"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "ลบแผนที่"
-
-msgid "Close"
-msgstr "ปิด"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1098,6 +1070,9 @@ msgstr "แทนที่"
 msgid "Remove"
 msgstr "ลบ"
 
+msgid "Close"
+msgstr "ปิด"
+
 msgid "Download Metadata"
 msgstr "ดาวน์โหลดคำอธิบายข้อมูล"
 
@@ -1174,6 +1149,9 @@ msgstr "ผู้ให้คำอธิบายข้อมูล"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "แก้ไข"
 
 #, fuzzy
 #| msgid "Next"
@@ -1990,6 +1968,9 @@ msgstr "สร้างกลุ่ม"
 msgid "Edit Group Category"
 msgstr "สร้างกลุ่ม"
 
+msgid "Save"
+msgstr "บันทึก"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2275,27 +2256,6 @@ msgstr "อัพโหลดชั้นข้อมูลเสร็จแล
 
 msgid "Return to Layer"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "อัพโหลดไม่สมบูรณ์"
-
-msgid "You have the following incomplete uploads"
-msgstr "คุณมีไฟล์ที่อัพโหลดไม่เสร็จดังต่อไปนี้"
-
-msgid "last updated on"
-msgstr "แก้ไขครั้งสุดท้ายเมื่อ"
-
-msgid "Resume"
-msgstr "ประวัติย่อ"
-
-msgid "Delete"
-msgstr "ลบ"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "คุณแน่ใจแล้วหรือว่าต้องการลบไฟล์ที่จะอัพโหลดนี้?"
-
-msgid "Delete, and don't ask me again."
-msgstr "ลบ และไม่ต้องถามฉันอีก"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2751,6 +2711,42 @@ msgstr "แอตทริบิวต์"
 
 msgid "Upload Layer"
 msgstr "อัพโหลดชั้นข้อมูล"
+
+msgid "Incomplete Uploads"
+msgstr "อัพโหลดไม่สมบูรณ์"
+
+msgid "You have the following incomplete uploads"
+msgstr "คุณมีไฟล์ที่อัพโหลดไม่เสร็จดังต่อไปนี้"
+
+msgid "Resume"
+msgstr "ประวัติย่อ"
+
+msgid "Delete"
+msgstr "ลบ"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "สร้าง"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "จาก"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "อัพโหลดไม่สมบูรณ์"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "คุณแน่ใจแล้วหรือว่าต้องการลบไฟล์ที่จะอัพโหลดนี้?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3467,6 +3463,9 @@ msgstr "คัดลอกแผนที่นี้"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "ทำสำเนาแผนที่นี้แล้วแก้ไขตามความต้องการของคุณ"
 
+msgid "Create a New Map"
+msgstr "สร้างแผนที่ใหม่"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3521,6 +3520,12 @@ msgstr "ดาวน์โหลดเสร็จสิ้น"
 
 msgid "Download Failed"
 msgstr "ดาวน์โหลดล้มเหลว"
+
+msgid "Edit Map"
+msgstr "แก้ไขแผนที่"
+
+msgid "Explore Maps"
+msgstr "สำรวจแผนที่"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6366,12 +6371,6 @@ msgstr "ปปปป-ดด-วว"
 msgid "Date ends before:"
 msgstr "ก่อนวันที่"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "จาก"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6578,6 +6577,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "เนื้อหาทั้งหมด"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "ไม่พบชั้นใด ๆ ในการฉายที่เข้ากันได้"
@@ -6598,6 +6602,19 @@ msgid "Layer already exists"
 msgstr "สร้างชั้นข้อมูลเสร็จแล้ว"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6677,6 +6694,22 @@ msgstr "ระดับการอนุญาตไม่ถูกต้อง
 
 msgid "Permission Denied"
 msgstr "ไม่ได้รับอนุญาต"
+
+#~ msgid "last updated on"
+#~ msgstr "แก้ไขครั้งสุดท้ายเมื่อ"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "ลบ และไม่ต้องถามฉันอีก"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "สไตล์ที่สามารถใช้ได้"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "ลบแผนที่"
 
 #, fuzzy
 #~| msgid "User Activities"

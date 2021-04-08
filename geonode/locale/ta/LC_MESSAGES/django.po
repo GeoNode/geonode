@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/geonode/geonode/language/"
@@ -731,34 +731,6 @@ msgstr "விளக்கம்"
 msgid "GeoNode Client Library"
 msgstr "ஜியோநோட் உதவி "
 
-msgid "Explore Maps"
-msgstr "வரைபடங்களை உலாவருதல் "
-
-msgid "Edit Map"
-msgstr "திருத்தவும்"
-
-msgid "Update"
-msgstr "இயல்நிலைப்படுத்தல் "
-
-msgid "Create a New Map"
-msgstr " புதிய வரைபடத்தை உருவாக்குதல் "
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "காணப்படும் வடிவம்"
-
-msgid "Save"
-msgstr "சேமி"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "வரைபடத்தை நீக்குக"
-
-msgid "Close"
-msgstr "மூடு"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1112,6 +1084,9 @@ msgstr "பதிலீடு "
 msgid "Remove"
 msgstr "அகற்று"
 
+msgid "Close"
+msgstr "மூடு"
+
 msgid "Download Metadata"
 msgstr "நுண் தரவகளை பதிவிரக்கம் செய்க "
 
@@ -1188,6 +1163,9 @@ msgstr "நுண் தரவ வழங்கல் "
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "இயல்நிலைப்படுத்தல் "
 
 #, fuzzy
 #| msgid "Next"
@@ -2003,6 +1981,9 @@ msgstr "ஒரு குழு உருவாக்க"
 msgid "Edit Group Category"
 msgstr "குழு உருவாக்கவும்"
 
+msgid "Save"
+msgstr "சேமி"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2290,27 +2271,6 @@ msgstr "ஒரு படுகை பதிவேற்றப்பட்டு�
 
 msgid "Return to Layer"
 msgstr "படுகைக்கு மீள்திரும்பல்"
-
-msgid "Incomplete Uploads"
-msgstr "முழுமையற்ற பதிவேற்றம் "
-
-msgid "You have the following incomplete uploads"
-msgstr "உங்களிடம் பின்வரும் முழுமையற்ற பதிவேற்றங்கள் காணப்படுகின்றன "
-
-msgid "last updated on"
-msgstr "இறுதியாக இயல்நிலைப்படுத்தப்பட்டது"
-
-msgid "Resume"
-msgstr "மீள வழங்குக "
-
-msgid "Delete"
-msgstr "அழி"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "உண்மையில் இந்த பதிவேற்றத்தை அழிக்க வேண்டுமா?"
-
-msgid "Delete, and don't ask me again."
-msgstr "அழிக்கு மீண்டும் இதனை வினவ வேண்டாம்"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2779,6 +2739,42 @@ msgstr "பண்பியல்பு"
 
 msgid "Upload Layer"
 msgstr "படுகையை பதிவேற்றுக "
+
+msgid "Incomplete Uploads"
+msgstr "முழுமையற்ற பதிவேற்றம் "
+
+msgid "You have the following incomplete uploads"
+msgstr "உங்களிடம் பின்வரும் முழுமையற்ற பதிவேற்றங்கள் காணப்படுகின்றன "
+
+msgid "Resume"
+msgstr "மீள வழங்குக "
+
+msgid "Delete"
+msgstr "அழி"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "உருவாக்கவும்"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "பக்கம் "
+
+msgid "of"
+msgstr "என்ற"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "முழுமையற்ற பதிவேற்றம் "
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "உண்மையில் இந்த பதிவேற்றத்தை அழிக்க வேண்டுமா?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3513,6 +3509,9 @@ msgstr "இந்த வரைபடத்தை பிரதி செய்க
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "இந்த வரைபடத்தை பிரதிசெய்து உங்களின் சொந்த தேவைக்காக மாற்றம் செய்தல்"
 
+msgid "Create a New Map"
+msgstr " புதிய வரைபடத்தை உருவாக்குதல் "
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3568,6 +3567,12 @@ msgstr "முழுமையான பதிவிறக்க"
 
 msgid "Download Failed"
 msgstr "பதிவிறக்க முடியவில்லை"
+
+msgid "Edit Map"
+msgstr "திருத்தவும்"
+
+msgid "Explore Maps"
+msgstr "வரைபடங்களை உலாவருதல் "
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6268,12 +6273,6 @@ msgstr "இந்த yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "முந்தைய தேதி முடிவடைகிறது:"
 
-msgid "page"
-msgstr "பக்கம் "
-
-msgid "of"
-msgstr "என்ற"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6480,6 +6479,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "அனைத்து உள்ளடக்கங்களை"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "ஒரு இணக்கமான திட்ட எந்த அடுக்குகள் கண்டுபிடிக்க முடியவில்லை."
@@ -6500,6 +6504,19 @@ msgid "Layer already exists"
 msgstr "படுகை உருவாக்கப்பட்டது"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6579,6 +6596,22 @@ msgstr "பெறுமதியற்ற அனுமதி மட்டம்"
 
 msgid "Permission Denied"
 msgstr "அனுமதி மறுக்கப்பட்டுள்ளது "
+
+#~ msgid "last updated on"
+#~ msgstr "இறுதியாக இயல்நிலைப்படுத்தப்பட்டது"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "அழிக்கு மீண்டும் இதனை வினவ வேண்டாம்"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "காணப்படும் வடிவம்"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "வரைபடத்தை நீக்குக"
 
 #, fuzzy
 #~| msgid "User Activities"

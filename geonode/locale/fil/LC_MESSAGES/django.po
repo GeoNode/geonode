@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Filipino (http://www.transifex.com/geonode/geonode/language/"
@@ -657,32 +657,6 @@ msgstr ""
 msgid "GeoNode Client Library"
 msgstr ""
 
-msgid "Explore Maps"
-msgstr ""
-
-msgid "Edit Map"
-msgstr ""
-
-msgid "Update"
-msgstr ""
-
-msgid "Create a New Map"
-msgstr ""
-
-msgid "Available layers"
-msgstr ""
-
-msgid "Save"
-msgstr ""
-
-#, fuzzy
-#| msgid "Create a map"
-msgid "Save Map"
-msgstr "Create a map"
-
-msgid "Close"
-msgstr ""
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1010,6 +984,9 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
+msgid "Close"
+msgstr ""
+
 msgid "Download Metadata"
 msgstr ""
 
@@ -1079,6 +1056,9 @@ msgid "Metadata Provider"
 msgstr ""
 
 msgid "<< Back"
+msgstr ""
+
+msgid "Update"
 msgstr ""
 
 msgid "Next >>"
@@ -1805,6 +1785,9 @@ msgstr ""
 msgid "Edit Group Category"
 msgstr "Group details"
 
+msgid "Save"
+msgstr ""
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2079,27 +2062,6 @@ msgid "layers append"
 msgstr "Edit Map Metadata"
 
 msgid "Return to Layer"
-msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr ""
-
-msgid "You have the following incomplete uploads"
-msgstr ""
-
-msgid "last updated on"
-msgstr ""
-
-msgid "Resume"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
-msgid "Are you sure you want to delete this upload?"
-msgstr ""
-
-msgid "Delete, and don't ask me again."
 msgstr ""
 
 msgid "Preserve Metadata XML"
@@ -2500,6 +2462,38 @@ msgid "Dataset Attributes"
 msgstr ""
 
 msgid "Upload Layer"
+msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr ""
+
+msgid "You have the following incomplete uploads"
+msgstr ""
+
+msgid "Resume"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+#, fuzzy
+#| msgid "Edit Map Metadata"
+msgid "Created"
+msgstr "Edit Map Metadata"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr ""
+
+msgid "Delete incomplete upload"
+msgstr ""
+
+msgid "Are you sure you want to remove this incomplete upload?"
 msgstr ""
 
 #, fuzzy
@@ -3148,6 +3142,9 @@ msgstr ""
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr ""
 
+msgid "Create a New Map"
+msgstr ""
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3190,6 +3187,12 @@ msgid "Download Complete"
 msgstr ""
 
 msgid "Download Failed"
+msgstr ""
+
+msgid "Edit Map"
+msgstr ""
+
+msgid "Explore Maps"
 msgstr ""
 
 msgid "maps explore"
@@ -5557,12 +5560,6 @@ msgstr ""
 msgid "Date ends before:"
 msgstr ""
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr ""
-
 msgid "Search by region"
 msgstr ""
 
@@ -5738,6 +5735,9 @@ msgstr ""
 msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
+msgid "Empty content"
+msgstr ""
+
 msgid "Could not access to uploaded data."
 msgstr ""
 
@@ -5757,6 +5757,19 @@ msgid "Layer already exists"
 msgstr "Edit Map Metadata"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -5830,6 +5843,11 @@ msgstr ""
 
 msgid "Permission Denied"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Create a map"
+#~ msgid "Save Map"
+#~ msgstr "Create a map"
 
 #, fuzzy
 #~| msgid "Thumbnail"

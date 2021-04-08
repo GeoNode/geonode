@@ -23,8 +23,7 @@ define(['underscore',
         doUpload,
         doUploads,
         doSrs,
-        doDelete,
-        doResume,
+        initUploadProgressTable,
         doSuccessfulUpload,
         attach_events,
         checkFiles,
@@ -189,59 +188,6 @@ define(['underscore',
         return matched;
     }
 
-    doDelete = function(event) {
-        var target = event.target || event.srcElement;
-        var id = target.id.split("-")[1];
-        var target = siteUrl + "upload/delete/" + id;
-        $.ajax({
-            url: target,
-            async: false,
-            mode: "queue",
-            contentType: false,
-        }).done(function (resp) {
-            var div = "#incomplete-" + id;
-            $(div).remove();
-
-            if ($('#incomplete-download-list > div[id^=incomplete]').length == 0){
-                $('#incomplete-download-list').hide();
-            }
-
-        }).fail(function (resp) {
-            //
-        });
-    };
-
-    doResume = function(event) {
-        var target = event.target || event.srcElement;
-        var id = target.id.split("-")[1];
-        var target = siteUrl + "upload/?id=" + id;
-        $.ajax({
-            url: target,
-            async: false,
-            mode: "queue",
-            contentType: false,
-        }).done(function (data) {
-          if('redirect_to' in data) {
-                common.make_request({
-                    url: data.redirect_to,
-                    async: false,
-                    failure: function (resp, status) {
-                        common.logError(resp, status);
-                    },
-                    success: function (resp, status) {
-                        window.location = resp.url;
-                    }
-                });
-            } else if ('url' in data) {
-                window.location = data.url;
-            } else {
-                common.logError("unexpected response");
-            }
-        }).fail(function (resp) {
-            common.logError(resp);
-        });
-    };
-
     doSrs = function (event) {
         var form = $("#srsForm")
         $.ajax({
@@ -308,6 +254,328 @@ define(['underscore',
         return false;
     };
 
+    initUploadProgressTable = function() {
+        const section = document.querySelector('#incomplete-download-list');
+        const removeModal = section.querySelector('#remove-incomplete-upload-modal');
+        const table = section.querySelector('.upload-progress-table');
+        const tbody = table.querySelector('tbody');
+        const prevPage = section.querySelector('.upload-progress-prev-page');
+        const nextPage = section.querySelector('.upload-progress-next-page');
+        const progressPage = section.querySelector('.upload-progress-page');
+        const currentPage = progressPage.querySelector('.upload-progress-page-count');
+        const totalPages = progressPage.querySelector('.upload-progress-page-total');
+        const resumeTooltip = table.getAttribute('data-resume-tool-tooltip');
+        const removeTooltip = table.getAttribute('data-remove-tool-tooltip');
+        const removeModalButton = removeModal && removeModal.querySelector('.remove-incomplete-upload-modal-button');
+        const removeModalName = removeModal && removeModal.querySelector('.remove-incomplete-upload-modal-name');
+
+        const intervalTime = 3000;
+
+        var page = 1;
+        var maxPage = 1;
+        var pageSize = 10;
+        var render;
+        var selected = null;
+        var processed = [];
+        var lastUploadsIds = [];
+        var uploads = [];
+        var loading = false;
+
+        function getUploadItems(options) {
+            $.ajax({
+                url: options.url || siteUrl + 'api/v2/uploads?filter{-state}=PROCESSED&page=1&page_size=99999',
+                async: false,
+                mode: 'queue',
+                contentType: false,
+            })
+                .done(function (response) {
+                    if (options.resolve) {
+                        options.resolve(response);
+                    }
+                })
+                .fail(function (error) {
+                    if (options.reject) {
+                        options.reject(error);
+                    }
+                });
+        }
+
+        function handleDelete(options) {
+            $.ajax({
+                url: options.url,
+                async: false,
+                mode: 'queue',
+                contentType: false,
+            })
+                .done(function () {
+                    if (render) {
+                        render(true);
+                    }
+                })
+                .fail(function () {});
+        }
+
+        function handleResume(options) {
+            $.ajax({
+                url: options.url,
+                async: false,
+                mode: "queue",
+                contentType: false,
+            })
+                .done(function (data) {
+                    if('redirect_to' in data) {
+                        common.make_request({
+                            url: data.redirect_to,
+                            async: false,
+                            failure: function (resp, status) {
+                                common.logError(resp, status);
+                            },
+                            success: function (resp, status) {
+                                window.location = resp.url;
+                            }
+                        });
+                    } else if ('url' in data) {
+                        window.location = data.url;
+                    } else {
+                        common.logError("unexpected response");
+                    }
+                })
+                .fail(function (resp) {
+                    common.logError(resp);
+                });
+        }
+
+        function progressBar(properties) {
+            properties.parent.style.position = 'relative';
+            // add a small progress bar in the progressNode
+            const progressBarBg = document.createElement('div');
+            progressBarBg.style.position = 'absolute';
+            progressBarBg.style.left = 0;
+            progressBarBg.style.bottom = 0;
+            progressBarBg.style.width = '100%';
+            progressBarBg.style.height = '4px';
+            progressBarBg.style.backgroundColor = '#f2f2f2';
+            properties.parent.appendChild(progressBarBg);
+
+            const progressBar = document.createElement('div');
+            progressBar.style.position = 'absolute';
+            progressBar.style.left = 0;
+            progressBar.style.bottom = 0;
+            progressBar.style.width = properties.width;
+            progressBar.style.height = '4px';
+            progressBar.style.transition = '0.3s width';
+            progressBar.style.backgroundColor = '#27ca3b';
+            properties.parent.appendChild(progressBar);
+        }
+
+        function tableRow(properties) {
+            const row = document.createElement('tr');
+            row.setAttribute('data-upload-id', properties.id);
+            tbody.appendChild(row);
+
+            const name = document.createElement('th');
+            name.innerHTML = properties.name;
+            row.appendChild(name);
+
+            const date = document.createElement('td');
+            date.innerHTML = properties.create_date
+                ? new Date(properties.create_date).toLocaleString()
+                : 'none';
+            row.appendChild(date);
+
+            const progressPercentage = Math.round(properties.progress) + '%';
+            const progress = document.createElement('td');
+            progress.innerHTML = progressPercentage;
+            row.appendChild(progress);
+            progressBar({ parent: progress, width: progressPercentage });
+
+            const tools = document.createElement('td');
+            tools.setAttribute('class', 'text-center');
+            row.appendChild(tools);
+
+            switch(properties.state) {
+                case 'PENDING':
+                    row.setAttribute('class', 'warning');
+                    break;
+                case 'PROCESSED':
+                    row.setAttribute('class', 'success');
+                    break;
+                case 'INVALID':
+                    row.setAttribute('class', 'danger');
+                    break;
+                default:
+                    break;
+            }
+            if (properties.resume_url) {
+                const resumeTool = document.createElement('button');
+                resumeTool.setAttribute('class', 'btn btn-default btn-sm incomplete-resume');
+                resumeTool.setAttribute('title', resumeTooltip);
+                resumeTool.setAttribute('data-toggle', 'tooltip');
+                resumeTool.setAttribute('data-placement', 'top');
+                resumeTool.innerHTML = '<i class="fa fa-play"></i>';
+                resumeTool.onclick = function() { handleResume({ id: properties.id, url: properties.resume_url }); };
+                tools.appendChild(resumeTool);
+                $(resumeTool).tooltip();
+            }
+            if (properties.state === 'PROCESSED' && properties.detail_url) {
+                const linkTool = document.createElement('a');
+                linkTool.setAttribute('class', 'btn btn-default btn-sm incomplete-link');
+                linkTool.setAttribute('href', properties.detail_url);
+                linkTool.innerHTML = '<i class="fa fa-link"></i>';
+                tools.appendChild(linkTool);
+            }
+            if (removeModal && properties.delete_url) {
+                const removeTool = document.createElement('button');
+                removeTool.innerHTML = '<i class="fa fa-remove"></i>';
+                removeTool.setAttribute('class', 'btn btn-danger btn-sm incomplete-remove');
+                removeTool.setAttribute('title', removeTooltip);
+                removeTool.setAttribute('data-toggle', 'tooltip');
+                removeTool.setAttribute('data-placement', 'top');
+                removeTool.onclick = function() {
+                    removeModalName.innerHTML = properties.name;
+                    $(removeModal).modal();
+                    selected = { id: properties.id, url: properties.delete_url };
+                };
+                tools.appendChild(removeTool);
+                $(removeTool).tooltip();
+            }
+        }
+
+        render = function(request) {
+
+            loading = true;
+
+            function updateRenderedNodes() {
+
+                tbody.innerHTML = '';
+                var start = (page - 1) * pageSize;
+                var end = start + pageSize;
+                var items = [].concat(uploads).concat(processed);
+
+                items.sort(function(a, b) {
+                    return (a.create_date < b.create_date)
+                        ? 1
+                        : ((a.create_date > b.create_date)
+                            ? -1
+                            : 0)
+                });
+
+                maxPage = Math.ceil(items.length / pageSize);
+
+                for (var i = start; i < end; i++) {
+                    if (items[i]) {
+                        tableRow(items[i]);
+                    }
+                }
+                const prevLink = page > 1;
+                const nextLink = page < maxPage;
+
+                prevPage.setAttribute('class', !prevLink ? 'disabled' : '');
+                nextPage.setAttribute('class', !nextLink ? 'disabled' : '');
+                prevPage.style.cursor = !prevLink ? 'not-allowed' : 'pointer';
+                nextPage.style.cursor = !nextLink ? 'not-allowed' : 'pointer';
+
+                progressPage.style.display = 'inline';
+                currentPage.innerHTML = page;
+                totalPages.innerHTML = maxPage;
+
+                section.style.display = items.length === 0 ? 'none' : 'block';
+                loading = false;
+            }
+
+            if (request) {
+                getUploadItems({
+                    resolve: function(response) {
+
+                        uploads = response.uploads || [];
+
+                        var currentUploadIds = [];
+                        for (var i = 0; i < uploads.length; i++) {
+                            currentUploadIds.push(uploads[i].id);
+                        }
+    
+                        var diffUploadIds = [];
+                        for (var i = 0; i < lastUploadsIds.length; i++) {
+                            if (currentUploadIds.indexOf(lastUploadsIds[i]) === -1) {
+                                diffUploadIds.push(lastUploadsIds[i]);
+                            }
+                        }
+
+                        lastUploadsIds = currentUploadIds;
+
+                        if (diffUploadIds.length > 0) {
+                            getUploadItems({
+                                url: siteUrl + 'api/v2/uploads?filter{state}=PROCESSED&page=1&page_size=99999',
+                                resolve: function(res) {
+                                    const processedUploads = res.uploads || [];
+                                    for (var i = 0; i < processedUploads.length; i++) {
+                                        if (diffUploadIds.indexOf(processedUploads[i].id) !== -1) {
+                                            processed.push(processedUploads[i]);
+                                        }
+                                    } 
+                                    updateRenderedNodes();
+                                },
+                                reject: function() {
+                                    updateRenderedNodes();
+                                }
+                            });
+                        } else {
+                            updateRenderedNodes();
+                        }
+                    },
+                    reject: function(error) {
+                        // if does not find the page
+                        // reset to page 1
+                        // this could happen while deleting the last item in a page
+                        if (error.status === 404) {
+                            page = 1;
+                            if (render) {
+                                render(true);
+                            }
+                        }
+                        loading = false;
+                    }
+                });
+            } else {
+                updateRenderedNodes();
+            }
+        }
+
+        if (removeModal) {
+            $(removeModal).on('hide.bs.modal', function (e) {
+                selected = null;
+            });
+            removeModalButton.onclick = function () {
+                handleDelete(selected);
+                selected = null;
+                $(removeModal).modal('hide');
+            };
+        }
+        prevPage.addEventListener('click', function() {
+            const prev = page - 1;
+            if (prev >= 1) {
+                page = prev;
+                render();
+            }
+        });
+        nextPage.addEventListener('click', function() {
+            const next = page + 1;
+            if (next <= maxPage) {
+                page = next;
+                render();
+            }
+        });
+
+        render(true);
+        // continuously request update for the current page to the api
+        // and re-render the table
+        setInterval(function() {
+            if (!loading) {
+                render(true);
+            }
+        }, intervalTime);
+    }
+
     /** Initialization function. Called from main.js
      *
      *  @params
@@ -360,16 +628,14 @@ define(['underscore',
         });
         $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
-        $("[id^=delete]").on('click', doDelete);
-        $("[id^=resume]").on('click', doResume);
+
+        initUploadProgressTable();
     };
 
     // public api
     return {
         initialize: initialize,
-        doSrs: doSrs,
-        doDelete: doDelete,
-        doResume: doResume
+        doSrs: doSrs
     };
 
 });

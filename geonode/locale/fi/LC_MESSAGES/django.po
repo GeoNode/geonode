@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Finnish (http://www.transifex.com/geonode/geonode/language/"
@@ -729,34 +729,6 @@ msgstr "Kuvaus"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Ohje"
 
-msgid "Explore Maps"
-msgstr "Tutustu kartat"
-
-msgid "Edit Map"
-msgstr "Edit Kartta"
-
-msgid "Update"
-msgstr "Päivitys"
-
-msgid "Create a New Map"
-msgstr "Luo uusi kartta"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Käytettävissä tyylit"
-
-msgid "Save"
-msgstr "Tallenna"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Luo Kartta"
-
-msgid "Close"
-msgstr "Lähellä"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1124,6 +1096,9 @@ msgstr ""
 msgid "Remove"
 msgstr "Poistaa"
 
+msgid "Close"
+msgstr "Lähellä"
+
 msgid "Download Metadata"
 msgstr "Lataa Metadata"
 
@@ -1200,6 +1175,9 @@ msgstr "Metadata Provider"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "Päivitys"
 
 #, fuzzy
 #| msgid "Next"
@@ -2022,6 +2000,9 @@ msgstr "Luo ryhmä"
 msgid "Edit Group Category"
 msgstr "Luo ryhmä"
 
+msgid "Save"
+msgstr "Tallenna"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2319,27 +2300,6 @@ msgstr "Kerros ladattu"
 
 msgid "Return to Layer"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "Epätäydellinen lataukset"
-
-msgid "You have the following incomplete uploads"
-msgstr "Sinulla on seuraavat epätäydellinen kuvat"
-
-msgid "last updated on"
-msgstr "viimeksi päivitetty"
-
-msgid "Resume"
-msgstr "Jatkaa"
-
-msgid "Delete"
-msgstr "Poistaa"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Oletko varma, että haluat poistaa tämän latauksen?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Poistaa, ja älä kysy uudelleen."
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2792,6 +2752,42 @@ msgstr "Attribuutteja"
 
 msgid "Upload Layer"
 msgstr "Tallennettu Layer"
+
+msgid "Incomplete Uploads"
+msgstr "Epätäydellinen lataukset"
+
+msgid "You have the following incomplete uploads"
+msgstr "Sinulla on seuraavat epätäydellinen kuvat"
+
+msgid "Resume"
+msgstr "Jatkaa"
+
+msgid "Delete"
+msgstr "Poistaa"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Luoda"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "sekä"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Epätäydellinen lataukset"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Oletko varma, että haluat poistaa tämän latauksen?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3512,6 +3508,9 @@ msgstr "Kopioi tämä kartta"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Monista tämä kartta ja muokata sitä omaan käyttöösi"
 
+msgid "Create a New Map"
+msgstr "Luo uusi kartta"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3567,6 +3566,12 @@ msgstr "Lataa Complete"
 
 msgid "Download Failed"
 msgstr "Lataus epäonnistui"
+
+msgid "Edit Map"
+msgstr "Edit Kartta"
+
+msgid "Explore Maps"
+msgstr "Tutustu kartat"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6277,12 +6282,6 @@ msgstr "vvvv-kk-pp"
 msgid "Date ends before:"
 msgstr "Päivämäärä päättyy ennen:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "sekä"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6489,6 +6488,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Kaikki sisältö"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Löytäneet kerroksiin yhteensopiva projektio."
@@ -6509,6 +6513,19 @@ msgid "Layer already exists"
 msgstr "Kartta Luotu"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6588,6 +6605,22 @@ msgstr "Virheellinen lupataso."
 
 msgid "Permission Denied"
 msgstr "Lupa kielletty"
+
+#~ msgid "last updated on"
+#~ msgstr "viimeksi päivitetty"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Poistaa, ja älä kysy uudelleen."
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Käytettävissä tyylit"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Luo Kartta"
 
 #, fuzzy
 #~| msgid "User Activities"

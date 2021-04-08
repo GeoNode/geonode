@@ -31,7 +31,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bengali (http://www.transifex.com/geonode/geonode/language/"
@@ -735,34 +735,6 @@ msgstr "বিবরণ"
 msgid "GeoNode Client Library"
 msgstr "GeoNode সহায়তা"
 
-msgid "Explore Maps"
-msgstr "মানচিত্র টেলিভিশন"
-
-msgid "Edit Map"
-msgstr "সম্পাদনা ম্যাপ"
-
-msgid "Update"
-msgstr "আপডেট"
-
-msgid "Create a New Map"
-msgstr "একটি নতুন মানচিত্র তৈরি করুন"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "উপলভ্য শৈলী"
-
-msgid "Save"
-msgstr "সংরক্ষণ করুন"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "একটি মানচিত্র তৈরি করুন"
-
-msgid "Close"
-msgstr "ঘনিষ্ঠ"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1116,6 +1088,9 @@ msgstr "প্রতিস্থাপন"
 msgid "Remove"
 msgstr "অপসারণ"
 
+msgid "Close"
+msgstr "ঘনিষ্ঠ"
+
 msgid "Download Metadata"
 msgstr "ডাউনলোড মেটাডাটা"
 
@@ -1192,6 +1167,9 @@ msgstr "মেটাডাটা সরবরাহকারী"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "আপডেট"
 
 #, fuzzy
 #| msgid "Next"
@@ -2007,6 +1985,9 @@ msgstr "একটি গ্রুপ তৈরি করুন"
 msgid "Edit Group Category"
 msgstr "গ্রুপ তৈরি করুন"
 
+msgid "Save"
+msgstr "সংরক্ষণ করুন"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2292,27 +2273,6 @@ msgstr "একটি স্তর আপলোড করা হয় নি"
 
 msgid "Return to Layer"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "অসম্পূর্ণ আপলোড"
-
-msgid "You have the following incomplete uploads"
-msgstr "আপনি নিম্নলিখিত অসম্পূর্ণ আপলোডসমূহ আছে"
-
-msgid "last updated on"
-msgstr "গত আপডেট"
-
-msgid "Resume"
-msgstr "সারসংকলন"
-
-msgid "Delete"
-msgstr "মুছে দিন"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "যদি আপনি এই আপলোড মুছে ফেলার ব্যাপারে নিশ্চিত?"
-
-msgid "Delete, and don't ask me again."
-msgstr "মুছে দিন, এবং আবার আমাকে জিজ্ঞাসা করবেন না."
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2766,6 +2726,42 @@ msgstr "আরোপ করা"
 
 msgid "Upload Layer"
 msgstr "আপলোড লেয়ার"
+
+msgid "Incomplete Uploads"
+msgstr "অসম্পূর্ণ আপলোড"
+
+msgid "You have the following incomplete uploads"
+msgstr "আপনি নিম্নলিখিত অসম্পূর্ণ আপলোডসমূহ আছে"
+
+msgid "Resume"
+msgstr "সারসংকলন"
+
+msgid "Delete"
+msgstr "মুছে দিন"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "তৈরি করুন"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "এর"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "অসম্পূর্ণ আপলোড"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "যদি আপনি এই আপলোড মুছে ফেলার ব্যাপারে নিশ্চিত?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3485,6 +3481,9 @@ msgstr "এই ম্যাপ কপি করুন"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "এই ম্যাপ সদৃশ এবং আপনার নিজের কাজের জন্য এটি পরিবর্তন"
 
+msgid "Create a New Map"
+msgstr "একটি নতুন মানচিত্র তৈরি করুন"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3539,6 +3538,12 @@ msgstr "সমাপ্তি ডাউনলোড"
 
 msgid "Download Failed"
 msgstr "ডাউনলোড ব্যর্থ"
+
+msgid "Edit Map"
+msgstr "সম্পাদনা ম্যাপ"
+
+msgid "Explore Maps"
+msgstr "মানচিত্র টেলিভিশন"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6252,12 +6257,6 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "জন্ম আগে শেষ:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "এর"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6464,6 +6463,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "সমস্ত বিষয়বস্তু"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "একটি সামঞ্জস্যপূর্ণ অভিক্ষেপ যে কোন স্তর খুঁজে পাওয়া যায়নি."
@@ -6484,6 +6488,19 @@ msgid "Layer already exists"
 msgstr "স্থর তৈরী করা হয়েছে"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6563,6 +6580,22 @@ msgstr "অবৈধ অনুমতি স্তর."
 
 msgid "Permission Denied"
 msgstr "অনুমতি অস্বীকার"
+
+#~ msgid "last updated on"
+#~ msgstr "গত আপডেট"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "মুছে দিন, এবং আবার আমাকে জিজ্ঞাসা করবেন না."
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "উপলভ্য শৈলী"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "একটি মানচিত্র তৈরি করুন"
 
 #, fuzzy
 #~| msgid "User Activities"

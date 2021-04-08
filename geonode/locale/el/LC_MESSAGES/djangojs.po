@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:11+0200\n"
+"POT-Creation-Date: 2021-04-07 15:01+0200\n"
 "PO-Revision-Date: 2019-07-19 12:32+0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/geonode/geonode/language/"
@@ -314,6 +314,9 @@ msgstr ""
 msgid "Unexpected Error"
 msgstr "Απρόσμενο Σφάλμα"
 
+msgid "Your "
+msgstr "To "
+
 msgid " Info"
 msgstr " Πληροφορίες"
 
@@ -329,11 +332,11 @@ msgstr "Μεταφόρτωση SLD"
 msgid "Manage Styles"
 msgstr "Διαχειριστείτε Στυλ"
 
+msgid "Please wait until GeoNode finished configuring it!"
+msgstr ""
+
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "Η στήλη %1 μετονομάστηκε σε %2 <br/>"
-
-msgid "Your "
-msgstr "To "
 
 msgid "Performing Final GeoServer Config Step"
 msgstr "Εκτέλεση των τελικών ρυθμίσεων GeoServer"

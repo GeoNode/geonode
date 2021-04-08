@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/geonode/geonode/language/"
@@ -728,34 +728,6 @@ msgstr "ការ​ពិពណ៌នា​សង្ខេប"
 msgid "GeoNode Client Library"
 msgstr "GeoNode ជំនួយ"
 
-msgid "Explore Maps"
-msgstr "ស្វែងរក​ផែនទី"
-
-msgid "Edit Map"
-msgstr "កែសម្រួល​ផែនទី"
-
-msgid "Update"
-msgstr "ធ្វើ​ឱ្យ​ទាន់សម័យ"
-
-msgid "Create a New Map"
-msgstr "បង្កើត​ផែនទី​ថ្មី"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "រចនាប័ទ្ម​ដែល​អាច​រក​បាន"
-
-msgid "Save"
-msgstr "រក្សា​ទុក"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "បង្កើត​ផែនទី​មួយ"
-
-msgid "Close"
-msgstr "បិទ"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1120,6 +1092,9 @@ msgstr ""
 msgid "Remove"
 msgstr "យក"
 
+msgid "Close"
+msgstr "បិទ"
+
 msgid "Download Metadata"
 msgstr "ទិន្នន័យ​មេតា​ទាញ​យក"
 
@@ -1196,6 +1171,9 @@ msgstr "ក្រុមហ៊ុន​ផ្ដល់​ទិន្នន័យ
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "ធ្វើ​ឱ្យ​ទាន់សម័យ"
 
 #, fuzzy
 #| msgid "Next"
@@ -2015,6 +1993,9 @@ msgstr "បង្កើត​ក្រុម​មួយ"
 msgid "Edit Group Category"
 msgstr "បង្កើត​ក្រុម"
 
+msgid "Save"
+msgstr "រក្សា​ទុក"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2312,27 +2293,6 @@ msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្
 
 msgid "Return to Layer"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "ផ្ទុក​ឡើង​មិន​ពេញលេញ"
-
-msgid "You have the following incomplete uploads"
-msgstr "អ្នក​មាន​ឯកសារ​ផ្ទុក​ឡើង​មិន​ពេញលេញ​ដូច​ខាង​ក្រោម"
-
-msgid "last updated on"
-msgstr "ធ្វើ​ឱ្យ​ទាន់​សម័យ​ចុង​ក្រោយ​នៅ​លើ"
-
-msgid "Resume"
-msgstr "បន្ត"
-
-msgid "Delete"
-msgstr "លុប"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "តើ​អ្នក​ប្រាកដ​ជា​ចង់​លុប​ការ​ផ្ទុក​ឡើង​នេះ​?"
-
-msgid "Delete, and don't ask me again."
-msgstr "លុប​និង​មិន​សួរ​ខ្ញុំ​ម្តង​ទៀត​។"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2783,6 +2743,42 @@ msgstr "គុណលក្ខណៈ"
 
 msgid "Upload Layer"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
+
+msgid "Incomplete Uploads"
+msgstr "ផ្ទុក​ឡើង​មិន​ពេញលេញ"
+
+msgid "You have the following incomplete uploads"
+msgstr "អ្នក​មាន​ឯកសារ​ផ្ទុក​ឡើង​មិន​ពេញលេញ​ដូច​ខាង​ក្រោម"
+
+msgid "Resume"
+msgstr "បន្ត"
+
+msgid "Delete"
+msgstr "លុប"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "បង្កើត"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "នៃ"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "ផ្ទុក​ឡើង​មិន​ពេញលេញ"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "តើ​អ្នក​ប្រាកដ​ជា​ចង់​លុប​ការ​ផ្ទុក​ឡើង​នេះ​?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3498,6 +3494,9 @@ msgstr "ចម្លង​ផែនទី​នេះ"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "ស្ទួន​ផែនទី​នេះ​និង​កែប្រែ​វា​សម្រាប់​គោល​បំណង​ផ្ទាល់​ខ្លួន​របស់​អ្នក"
 
+msgid "Create a New Map"
+msgstr "បង្កើត​ផែនទី​ថ្មី"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3551,6 +3550,12 @@ msgstr "ទាញ​យក​ពេញលេញ"
 
 msgid "Download Failed"
 msgstr "បាន​បរាជ័យ​ក្នុង​ការ​ទាញ​យក"
+
+msgid "Edit Map"
+msgstr "កែសម្រួល​ផែនទី"
+
+msgid "Explore Maps"
+msgstr "ស្វែងរក​ផែនទី"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6247,12 +6252,6 @@ msgstr "YYYY​-MM​-DD"
 msgid "Date ends before:"
 msgstr "កាលបរិច្ឆេទ​បញ្ចប់​មុន​ពេល​:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "នៃ"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6459,6 +6458,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "មាតិកា​ទាំងអស់"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "មិន​អាច​រក​ឃើញ​ស្រទាប់​ណា​មួយ​នៅ​ក្នុង​ការ​ព្យាករ​ឆ​ប​គ្នា​។"
@@ -6479,6 +6483,19 @@ msgid "Layer already exists"
 msgstr "បង្កើត​ផែនទី"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6558,6 +6575,22 @@ msgstr "កម្រិត​នៃ​ការ​អនុ​ញ្ញា​ត
 
 msgid "Permission Denied"
 msgstr "សិទ្ធិ​ត្រូវ​បាន​បដិសេធ"
+
+#~ msgid "last updated on"
+#~ msgstr "ធ្វើ​ឱ្យ​ទាន់​សម័យ​ចុង​ក្រោយ​នៅ​លើ"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "លុប​និង​មិន​សួរ​ខ្ញុំ​ម្តង​ទៀត​។"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "រចនាប័ទ្ម​ដែល​អាច​រក​បាន"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "បង្កើត​ផែនទី​មួយ"
 
 #, fuzzy
 #~| msgid "User Activities"

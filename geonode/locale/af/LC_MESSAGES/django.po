@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Afrikaans (http://www.transifex.com/geonode/geonode/language/"
@@ -736,34 +736,6 @@ msgstr "Beskrywing"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Hulp"
 
-msgid "Explore Maps"
-msgstr "Verken Maps"
-
-msgid "Edit Map"
-msgstr "Wysig Map"
-
-msgid "Update"
-msgstr "Werk"
-
-msgid "Create a New Map"
-msgstr "Skep 'n nuwe gids"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Beskikbaar style"
-
-msgid "Save"
-msgstr "Save"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Skep 'n kaart"
-
-msgid "Close"
-msgstr "Close"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1131,6 +1103,9 @@ msgstr ""
 msgid "Remove"
 msgstr "Verwyder"
 
+msgid "Close"
+msgstr "Close"
+
 msgid "Download Metadata"
 msgstr "Aflaai Metadata"
 
@@ -1207,6 +1182,9 @@ msgstr "Metadata Verskaffer"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "Werk"
 
 #, fuzzy
 #| msgid "Next"
@@ -2032,6 +2010,9 @@ msgstr "Skep 'n groep"
 msgid "Edit Group Category"
 msgstr "Skep Groep"
 
+msgid "Save"
+msgstr "Save"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2333,27 +2314,6 @@ msgstr "'N laag is opgelaai"
 
 msgid "Return to Layer"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "Onvolledige Uploads"
-
-msgid "You have the following incomplete uploads"
-msgstr "Jy het die volgende onvolledige oplaai"
-
-msgid "last updated on"
-msgstr "laas op"
-
-msgid "Resume"
-msgstr "CV"
-
-msgid "Delete"
-msgstr "Verwyder"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Is jy seker jy wil hierdie oplaai te verwyder?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Verwyder, en my nie weer vra nie."
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2807,6 +2767,42 @@ msgstr "Eienskappe"
 
 msgid "Upload Layer"
 msgstr "Oplaai Layer"
+
+msgid "Incomplete Uploads"
+msgstr "Onvolledige Uploads"
+
+msgid "You have the following incomplete uploads"
+msgstr "Jy het die volgende onvolledige oplaai"
+
+msgid "Resume"
+msgstr "CV"
+
+msgid "Delete"
+msgstr "Verwyder"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Skep"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "van"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Onvolledige Uploads"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Is jy seker jy wil hierdie oplaai te verwyder?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3534,6 +3530,9 @@ msgstr "Kopieer die kaart"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Dupliseer die kaart en verander dit vir jou eie doeleindes"
 
+msgid "Create a New Map"
+msgstr "Skep 'n nuwe gids"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3589,6 +3588,12 @@ msgstr "Aflaai Complete"
 
 msgid "Download Failed"
 msgstr "Aflaai misluk"
+
+msgid "Edit Map"
+msgstr "Wysig Map"
+
+msgid "Explore Maps"
+msgstr "Verken Maps"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6305,12 +6310,6 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "Datum eindig voor:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "van"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6517,6 +6516,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Alle inhoud"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Kon nie enige lae in 'n aanpasbare projeksie vind."
@@ -6537,6 +6541,19 @@ msgid "Layer already exists"
 msgstr "Kaart geskep"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6616,6 +6633,22 @@ msgstr "Ongeldig toestemming vlak."
 
 msgid "Permission Denied"
 msgstr "Toestemming geweier"
+
+#~ msgid "last updated on"
+#~ msgstr "laas op"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Verwyder, en my nie weer vra nie."
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Beskikbaar style"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Skep 'n kaart"
 
 #, fuzzy
 #~| msgid "User Activities"

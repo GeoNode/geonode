@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Romanian (http://www.transifex.com/geonode/geonode/language/"
@@ -738,34 +738,6 @@ msgstr "Descriere"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Ajutor"
 
-msgid "Explore Maps"
-msgstr "Exploreaza hărți"
-
-msgid "Edit Map"
-msgstr "Edit Map"
-
-msgid "Update"
-msgstr "Actualizare"
-
-msgid "Create a New Map"
-msgstr "Creați o nouă hartă"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Stiluri disponibile"
-
-msgid "Save"
-msgstr "Salvați"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Creați un Hartă"
-
-msgid "Close"
-msgstr "Închidere"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1134,6 +1106,9 @@ msgstr ""
 msgid "Remove"
 msgstr "Scoate"
 
+msgid "Close"
+msgstr "Închidere"
+
 msgid "Download Metadata"
 msgstr "Descărcare metadate"
 
@@ -1214,6 +1189,9 @@ msgstr "Furnizor de metadate"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "Actualizare"
 
 #, fuzzy
 #| msgid "Next"
@@ -2037,6 +2015,9 @@ msgstr "Creați un grup"
 msgid "Edit Group Category"
 msgstr "Creare grup"
 
+msgid "Save"
+msgstr "Salvați"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2340,27 +2321,6 @@ msgstr "Un strat a fost încărcat"
 
 msgid "Return to Layer"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "Încărcări incomplete"
-
-msgid "You have the following incomplete uploads"
-msgstr "Aveți următoarele imagini încărcate incomplete"
-
-msgid "last updated on"
-msgstr "Ultima actualizare pe"
-
-msgid "Resume"
-msgstr "Relua"
-
-msgid "Delete"
-msgstr "Șterge"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Sunteți sigur că doriți să ștergeți această încărcare?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Șterge, și nu mă mai întreb din nou."
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2818,6 +2778,42 @@ msgstr "Atribute"
 
 msgid "Upload Layer"
 msgstr "Încărcați Layer"
+
+msgid "Incomplete Uploads"
+msgstr "Încărcări incomplete"
+
+msgid "You have the following incomplete uploads"
+msgstr "Aveți următoarele imagini încărcate incomplete"
+
+msgid "Resume"
+msgstr "Relua"
+
+msgid "Delete"
+msgstr "Șterge"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Crea"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "de"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Încărcări incomplete"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Sunteți sigur că doriți să ștergeți această încărcare?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3548,6 +3544,9 @@ msgstr "Copiați această hartă"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplicat această hartă și modificați-l în scopuri proprii"
 
+msgid "Create a New Map"
+msgstr "Creați o nouă hartă"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3603,6 +3602,12 @@ msgstr "Descărcați complet"
 
 msgid "Download Failed"
 msgstr "Descărcare eșuată"
+
+msgid "Edit Map"
+msgstr "Edit Map"
+
+msgid "Explore Maps"
+msgstr "Exploreaza hărți"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6320,12 +6325,6 @@ msgstr "aaaa-ll-zz"
 msgid "Date ends before:"
 msgstr "Data se încheie înainte de:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "de"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6532,6 +6531,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Toate conținut"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Nu am găsit nici o straturi într-o proiecție compatibil."
@@ -6552,6 +6556,19 @@ msgid "Layer already exists"
 msgstr "Harta Creat"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6631,6 +6648,22 @@ msgstr "Nivel de permisiune invalid."
 
 msgid "Permission Denied"
 msgstr "Permission denied"
+
+#~ msgid "last updated on"
+#~ msgstr "Ultima actualizare pe"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Șterge, și nu mă mai întreb din nou."
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Stiluri disponibile"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Creați un Hartă"
 
 #, fuzzy
 #~| msgid "User Activities"

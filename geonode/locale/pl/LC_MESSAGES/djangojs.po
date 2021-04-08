@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:11+0200\n"
+"POT-Creation-Date: 2021-04-07 15:01+0200\n"
 "PO-Revision-Date: 2020-08-20 14:38+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Polish (http://www.transifex.com/geonode/geonode/language/"
@@ -312,6 +312,9 @@ msgstr ""
 msgid "Unexpected Error"
 msgstr "Nieoczekiwany błąd"
 
+msgid "Your "
+msgstr "Twój "
+
 msgid " Info"
 msgstr " Info"
 
@@ -327,11 +330,11 @@ msgstr "Prześlij plik SLD"
 msgid "Manage Styles"
 msgstr "Zarządzanie stylami"
 
+msgid "Please wait until GeoNode finished configuring it!"
+msgstr ""
+
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "Nazwa kolumny %1 została zmieniona na %2 <br/>"
-
-msgid "Your "
-msgstr "Twój "
 
 msgid "Performing Final GeoServer Config Step"
 msgstr "Wykonywanie końcowego kroku konfiguracji GeoServera"
