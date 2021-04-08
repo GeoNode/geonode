@@ -32,7 +32,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapLayer
 from geonode.settings import on_travis
 from geonode.maps import MapsAppConfig
 from geonode.layers.models import Layer
@@ -960,6 +960,15 @@ community."
         for resource in resources:
             for word in resource.keywords.all():
                 self.assertTrue(word.name in keywords.split(','))
+
+    def test_get_legend(self):
+        layer = Layer.objects.all().first()
+        map_layer = MapLayer.objects.filter(name=layer.alternate).exclude(layer_params=u'').first()
+        if map_layer and layer.default_style:
+            self.assertIsNone(map_layer.get_legend)
+        elif map_layer:
+            # when there is no style in layer_params
+            self.assertIsNone(map_layer.get_legend)
 
 
 class MapModerationTestCase(GeoNodeBaseTestSupport):
