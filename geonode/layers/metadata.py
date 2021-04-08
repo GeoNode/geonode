@@ -86,13 +86,6 @@ def iso2dict(exml):
         vals['title'] = mdata.identification.title
         vals['purpose'] = mdata.identification.purpose
 
-        #vals['license'] = mdata.identification.abstract
-        #vals['doi'] = mdata.identification.abstract
-        #vals['attribution'] = mdata.identification.abstract
-        #vals['edition'] = mdata.identification.abstract
-        #vals['maintenance'] = mdata.identification.abstract
-        #vals['spatial'] = mdata.identification.abstract
-
         if mdata.identification.supplementalinformation is not None:
             vals['supplemental_information'] = \
                 mdata.identification.supplementalinformation
