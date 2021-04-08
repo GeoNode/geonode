@@ -238,9 +238,7 @@ def fetch_wms(url: str, max_retries: int = 3, retry_delay: int = 1):
     for retry in range(max_retries):
         try:
             # fetch data
-            resp, image = http_client.request(
-                url, headers=headers, timeout=settings.OGC_SERVER["default"].get("TIMEOUT", 60)
-            )
+            resp, image = http_client.request(url, headers=headers)
 
             # validate response
             if not resp or resp.status_code < 200 or resp.status_code > 299 or "ServiceException" in str(image):

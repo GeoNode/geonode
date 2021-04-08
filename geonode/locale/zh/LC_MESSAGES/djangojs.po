@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:11+0200\n"
+"POT-Creation-Date: 2021-04-07 15:01+0200\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -321,6 +321,9 @@ msgstr ""
 msgid "Unexpected Error"
 msgstr "意外错误"
 
+msgid "Your "
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Info"
 msgid " Info"
@@ -338,11 +341,11 @@ msgstr "上传SLD"
 msgid "Manage Styles"
 msgstr "管理样式"
 
+msgid "Please wait until GeoNode finished configuring it!"
+msgstr ""
+
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "属性列 %1 重命名为 %2 <br/>"
-
-msgid "Your "
-msgstr ""
 
 msgid "Performing Final GeoServer Config Step"
 msgstr "执行最后的GeoServer配置步骤"

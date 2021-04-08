@@ -38,11 +38,12 @@ import re
 import json
 import logging
 import zipfile
+import tempfile
 import traceback
 import gsimporter
-import tempfile
 
 from http.client import BadStatusLine
+
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
@@ -53,7 +54,10 @@ from django.utils.html import escape
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views.generic import CreateView, DeleteView
+
+from geonode.upload import UploadException
 from geonode.utils import fixup_shp_columnnames
+from geonode.base.models import Configuration
 from geonode.base.enumerations import CHARSETS
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
@@ -101,7 +105,7 @@ def _get_upload_session(req):
         upload_id = str(req.GET['id'])
         upload_obj = get_object_or_404(
             Upload, import_id=upload_id, user=req.user)
-        upload_session = upload_obj.get_session()
+        upload_session = upload_obj.get_session
     return upload_session
 
 
@@ -183,7 +187,7 @@ def save_step_view(req, session):
             charset=form.cleaned_data["charset"]
         )
         logger.debug(f"spatial_files: {spatial_files}")
-        import_session = save_step(
+        import_session, upload = save_step(
             req.user,
             name,
             spatial_files,
@@ -216,7 +220,7 @@ def save_step_view(req, session):
         upload_session = UploaderSession(
             tempdir=tempdir,
             base_file=spatial_files,
-            name=name,
+            name=upload.name,
             charset=form.cleaned_data["charset"],
             import_session=import_session,
             layer_abstract=form.cleaned_data["abstract"],
@@ -230,7 +234,7 @@ def save_step_view(req, session):
             append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
             mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
             mosaic_time_value=form.cleaned_data['mosaic_time_value'],
-            user=req.user
+            user=upload.user
         )
         Upload.objects.update_from_session(upload_session)
         return next_step_response(req, upload_session, force_ajax=True)
@@ -523,7 +527,12 @@ def time_step_view(request, upload_session):
                 )
                 upload_session.import_session.tasks[0].save_transforms()
 
-    upload_session.import_session = import_session.reload()
+    try:
+        upload_session.import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        Upload.objects.invalidate_from_session(upload_session)
+        raise UploadException.from_exc(
+            _("The GeoServer Import Session is no more available"), e)
 
     if start_attribute_and_type:
         def tx(type_name):
@@ -642,6 +651,11 @@ def view(req, step):
     from django.contrib import auth
     if not auth.get_user(req).is_authenticated:
         return error_response(req, errors=["Not Authorized"])
+
+    config = Configuration.load()
+    if config.read_only or config.maintenance:
+        return error_response(req, errors=["Not Authorized"])
+
     upload_session = None
     upload_id = req.GET.get('id', None)
 
@@ -652,7 +666,7 @@ def view(req, step):
                 Upload,
                 import_id=upload_id,
                 user=req.user)
-            session = upload_obj.get_session()
+            session = upload_obj.get_session
             if session:
                 return next_step_response(req, session)
         step = 'save'
@@ -670,7 +684,7 @@ def view(req, step):
 
         upload_obj = get_object_or_404(
             Upload, import_id=upload_id, user=req.user)
-        session = upload_obj.get_session()
+        session = upload_obj.get_session
         try:
             if session:
                 upload_session = session

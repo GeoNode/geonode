@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Sinhala (http://www.transifex.com/geonode/geonode/language/"
@@ -734,34 +734,6 @@ msgstr "විස්තරය"
 msgid "GeoNode Client Library"
 msgstr "GeoNode සහය"
 
-msgid "Explore Maps"
-msgstr "සිතියම් සොයන්න"
-
-msgid "Edit Map"
-msgstr "සිතියම සංස්කරණය කරන්න"
-
-msgid "Update"
-msgstr "යාවත්කාලීන කිරිම"
-
-msgid "Create a New Map"
-msgstr "නව සිතියමක් නිර්මාණය කරන්න"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "දැනට පවතින ශෛලියන්"
-
-msgid "Save"
-msgstr "සුරකින්න"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "සිතියම ඉවත් කරන්න"
-
-msgid "Close"
-msgstr "වසන්න"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1115,6 +1087,9 @@ msgstr "ආදේශ කරන්න"
 msgid "Remove"
 msgstr "ඉවත් කරන්න"
 
+msgid "Close"
+msgstr "වසන්න"
+
 msgid "Download Metadata"
 msgstr "මෙටාදත්ත බාගත කරන්න"
 
@@ -1191,6 +1166,9 @@ msgstr "මෙටාදත්ත සැපයුම්කරු"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "යාවත්කාලීන කිරිම"
 
 #, fuzzy
 #| msgid "Next"
@@ -2005,6 +1983,9 @@ msgstr "පිරිසක් බිහි"
 msgid "Edit Group Category"
 msgstr "සමූහ නිර්මාණය"
 
+msgid "Save"
+msgstr "සුරකින්න"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2290,27 +2271,6 @@ msgstr "එක් ස්ථරයක් උඩුගත කලා."
 
 msgid "Return to Layer"
 msgstr "ස්ථරය වෙත ආපසු යන්න"
-
-msgid "Incomplete Uploads"
-msgstr "අසම්පූර්ණ උඩුගත කිරීම්"
-
-msgid "You have the following incomplete uploads"
-msgstr "පහත අසම්පූර්ණ උඩුගත කිරීම් ඔබට තිබේ"
-
-msgid "last updated on"
-msgstr "අවසන් වරට යාවත්කාලීන කරන ලද්දේ"
-
-msgid "Resume"
-msgstr "නැවත ආරම්භ කරන්න"
-
-msgid "Delete"
-msgstr "මකා දමන්න"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "මෙම උඩුගත කිරීම මකා දැමිය යුතු යයි ඔබට විශ්වාසද?"
-
-msgid "Delete, and don't ask me again."
-msgstr "මකා දමන්න, නැවත මෙය මගෙන් නොවිමසන්න"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2774,6 +2734,42 @@ msgstr "ගුණාංග"
 
 msgid "Upload Layer"
 msgstr "ස්ථරය උඩුගත කරන්න"
+
+msgid "Incomplete Uploads"
+msgstr "අසම්පූර්ණ උඩුගත කිරීම්"
+
+msgid "You have the following incomplete uploads"
+msgstr "පහත අසම්පූර්ණ උඩුගත කිරීම් ඔබට තිබේ"
+
+msgid "Resume"
+msgstr "නැවත ආරම්භ කරන්න"
+
+msgid "Delete"
+msgstr "මකා දමන්න"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "නිර්මාණය කරන්න"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "පිටුව"
+
+msgid "of"
+msgstr "පිළිබඳ"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "අසම්පූර්ණ උඩුගත කිරීම්"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "මෙම උඩුගත කිරීම මකා දැමිය යුතු යයි ඔබට විශ්වාසද?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3503,6 +3499,9 @@ msgstr "මෙම සිතියම පිටපත් කරන්න"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "මෙම සිතියමේ අනුපිටපතක් ගෙන එය ඔබේ අරමුණු අනුව වෙනස් කරන්න"
 
+msgid "Create a New Map"
+msgstr "නව සිතියමක් නිර්මාණය කරන්න"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3558,6 +3557,12 @@ msgstr "භාගත වීම සම්පූර්ණයි"
 
 msgid "Download Failed"
 msgstr "භාගත වීම අසාර්ථකයි"
+
+msgid "Edit Map"
+msgstr "සිතියම සංස්කරණය කරන්න"
+
+msgid "Explore Maps"
+msgstr "සිතියම් සොයන්න"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6250,12 +6255,6 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "දිනට පෙර අවසන් :"
 
-msgid "page"
-msgstr "පිටුව"
-
-msgid "of"
-msgstr "පිළිබඳ"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6462,6 +6461,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "සියළුම අන්තර්ගතයන්"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "  compatible projection. තුල ඕනෑම ස්ථර මම සොයා ගැනීමට නොහැක "
@@ -6482,6 +6486,19 @@ msgid "Layer already exists"
 msgstr "තට්ටුවක් නිර්මානය"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6561,6 +6578,22 @@ msgstr "වලංගු නොවන අවසර මට්ටම"
 
 msgid "Permission Denied"
 msgstr "අවසර ලබා දෙනු නොලැබේ"
+
+#~ msgid "last updated on"
+#~ msgstr "අවසන් වරට යාවත්කාලීන කරන ලද්දේ"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "මකා දමන්න, නැවත මෙය මගෙන් නොවිමසන්න"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "දැනට පවතින ශෛලියන්"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "සිතියම ඉවත් කරන්න"
 
 #, fuzzy
 #~| msgid "User Activities"

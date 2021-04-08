@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2019-07-19 12:46+0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/geonode/geonode/language/"
@@ -707,30 +707,6 @@ msgstr "Περιγραφή"
 msgid "GeoNode Client Library"
 msgstr "Βιβλιοθήκη Εφαρμογής GeoNode"
 
-msgid "Explore Maps"
-msgstr "Εξερεύνηση Χαρτών"
-
-msgid "Edit Map"
-msgstr "Επεξεργασία Χάρτη"
-
-msgid "Update"
-msgstr "Ενημέρωση"
-
-msgid "Create a New Map"
-msgstr "Δημιουργία Νέου Χάρτη"
-
-msgid "Available layers"
-msgstr "Διαθέσιμα Επίπεδα"
-
-msgid "Save"
-msgstr "Αποθήκευση"
-
-msgid "Save Map"
-msgstr "Αποθήκευση Χάρτη"
-
-msgid "Close"
-msgstr "Κλείσιμο"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1064,6 +1040,9 @@ msgstr "Αντικατάσταση"
 msgid "Remove"
 msgstr "Κατάργηση"
 
+msgid "Close"
+msgstr "Κλείσιμο"
+
 msgid "Download Metadata"
 msgstr "Μεταφόρτωση Μεταδεδομένων"
 
@@ -1133,6 +1112,9 @@ msgstr "Πάροχος Μεταδεδομένων"
 
 msgid "<< Back"
 msgstr "<< Προηγούμενο"
+
+msgid "Update"
+msgstr "Ενημέρωση"
 
 msgid "Next >>"
 msgstr "Επόμενο >>"
@@ -1881,6 +1863,9 @@ msgstr "Δημιουργία Ομάδας Κατηγοριών"
 msgid "Edit Group Category"
 msgstr "Επεξεργασία Ομάδας Κατηγοριών"
 
+msgid "Save"
+msgstr "Αποθήκευση"
+
 #, fuzzy, python-brace-format
 #| msgid "The e-mail address '%(email)s' has already been invited."
 msgid "The e-mail address '{email}' has already been invited."
@@ -2163,27 +2148,6 @@ msgstr "μεταφόρτωση επιπέδων"
 
 msgid "Return to Layer"
 msgstr "Επιστροφή στο Επίπεδο"
-
-msgid "Incomplete Uploads"
-msgstr "Ελλιπής Μεταφόρτωση"
-
-msgid "You have the following incomplete uploads"
-msgstr "Έχετε τις παρακάτω ελλιπείς μεταφορτώσεις"
-
-msgid "last updated on"
-msgstr "τελευταία ενημέρωση"
-
-msgid "Resume"
-msgstr "Περίληψη"
-
-msgid "Delete"
-msgstr "Διαγραφή"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν τη μεταφόρτωση;"
-
-msgid "Delete, and don't ask me again."
-msgstr "Διαγραφή, και μην με ρωτήσετε ξανά."
 
 msgid "Preserve Metadata XML"
 msgstr "Διατήρηση Μεταδεδομένων XML"
@@ -2596,6 +2560,42 @@ msgstr "Χαρακτηριστικά"
 
 msgid "Upload Layer"
 msgstr "Μεταφόρτωση Επιπέδου"
+
+msgid "Incomplete Uploads"
+msgstr "Ελλιπής Μεταφόρτωση"
+
+msgid "You have the following incomplete uploads"
+msgstr "Έχετε τις παρακάτω ελλιπείς μεταφορτώσεις"
+
+msgid "Resume"
+msgstr "Περίληψη"
+
+msgid "Delete"
+msgstr "Διαγραφή"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Δημιουργία"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "σελίδα"
+
+msgid "of"
+msgstr "από"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Ελλιπής Μεταφόρτωση"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν τη μεταφόρτωση;"
 
 msgid "Upload Layer Step: Set SRS"
 msgstr "Βήμα Μεταφόρτωσης Επιπέδου: Ορισμός SRS"
@@ -3280,6 +3280,9 @@ msgstr "Αντιγραφή χάρτη"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Αντιγράψτε τον χάρτη και τροποποιήστε τον για δικούς σας σκοπούς"
 
+msgid "Create a New Map"
+msgstr "Δημιουργία Νέου Χάρτη"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3339,6 +3342,12 @@ msgstr "Λήψη Ολοκληρώθηκε"
 
 msgid "Download Failed"
 msgstr "Αποτυχία Λήψης"
+
+msgid "Edit Map"
+msgstr "Επεξεργασία Χάρτη"
+
+msgid "Explore Maps"
+msgstr "Εξερεύνηση Χαρτών"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6009,12 +6018,6 @@ msgstr "εεεε-μμ-ηη"
 msgid "Date ends before:"
 msgstr "Ημερομηνία τελειώνει πριν από:"
 
-msgid "page"
-msgstr "σελίδα"
-
-msgid "of"
-msgstr "από"
-
 msgid "Search by region"
 msgstr "Αναζήτηση"
 
@@ -6209,6 +6212,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Όλα τα περιεχόμενα"
+
+#, fuzzy
 #| msgid "Could not find any kml files inside the uploaded kmz"
 msgid "Could not access to uploaded data."
 msgstr "Δεν ήταν δυνατή η εύρεση αρχείων kml στο ανεβασμένο αρχείο kmz"
@@ -6229,6 +6237,19 @@ msgid "Layer already exists"
 msgstr "Επίπεδο Δημιουργήθηκε"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6306,6 +6327,18 @@ msgstr "Άκυρο επίπεδο δικαιωμάτων."
 
 msgid "Permission Denied"
 msgstr "Πρόσβαση Απορρίφθηκε"
+
+#~ msgid "last updated on"
+#~ msgstr "τελευταία ενημέρωση"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Διαγραφή, και μην με ρωτήσετε ξανά."
+
+#~ msgid "Available layers"
+#~ msgstr "Διαθέσιμα Επίπεδα"
+
+#~ msgid "Save Map"
+#~ msgstr "Αποθήκευση Χάρτη"
 
 #~ msgid "Climate"
 #~ msgstr "Κλιμα"

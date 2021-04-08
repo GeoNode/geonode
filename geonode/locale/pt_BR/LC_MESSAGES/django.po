@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/geonode/geonode/"
@@ -739,34 +739,6 @@ msgstr "Descrição"
 msgid "GeoNode Client Library"
 msgstr "Ajuda do GeoNode"
 
-msgid "Explore Maps"
-msgstr "Explorar mapas"
-
-msgid "Edit Map"
-msgstr "Editar mapa"
-
-msgid "Update"
-msgstr "Atualizar"
-
-msgid "Create a New Map"
-msgstr "Criar um novo mapa"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Estilos disponíveis"
-
-msgid "Save"
-msgstr "Salvar"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "Remover mapa"
-
-msgid "Close"
-msgstr "Fechar"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1120,6 +1092,9 @@ msgstr "Substituir"
 msgid "Remove"
 msgstr "Remover"
 
+msgid "Close"
+msgstr "Fechar"
+
 msgid "Download Metadata"
 msgstr "Baixar metadados"
 
@@ -1196,6 +1171,9 @@ msgstr "Provedor de metadados"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "Atualizar"
 
 #, fuzzy
 #| msgid "Next"
@@ -2018,6 +1996,9 @@ msgstr "Criar um grupo"
 msgid "Edit Group Category"
 msgstr "Criar grupo"
 
+msgid "Save"
+msgstr "Salvar"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2307,27 +2288,6 @@ msgstr "Foi feito o upload de uma camada"
 
 msgid "Return to Layer"
 msgstr "Retornar à Camada"
-
-msgid "Incomplete Uploads"
-msgstr "Uploads incompletos"
-
-msgid "You have the following incomplete uploads"
-msgstr "Você tem os seguintes uploads incompletos"
-
-msgid "last updated on"
-msgstr "última atualização em"
-
-msgid "Resume"
-msgstr "Retomar"
-
-msgid "Delete"
-msgstr "Excluir"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Tem certeza de que deseja excluir este upload?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Excluir e não perguntar novamente."
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2795,6 +2755,42 @@ msgstr "Atributos"
 
 msgid "Upload Layer"
 msgstr "Fazer upload da camada"
+
+msgid "Incomplete Uploads"
+msgstr "Uploads incompletos"
+
+msgid "You have the following incomplete uploads"
+msgstr "Você tem os seguintes uploads incompletos"
+
+msgid "Resume"
+msgstr "Retomar"
+
+msgid "Delete"
+msgstr "Excluir"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Criar"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "página"
+
+msgid "of"
+msgstr "de"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Uploads incompletos"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Tem certeza de que deseja excluir este upload?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3531,6 +3527,9 @@ msgstr "Copiar este mapa"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplicar este mapa e modificá-lo de acordo com os seus objetivos"
 
+msgid "Create a New Map"
+msgstr "Criar um novo mapa"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3590,6 +3589,12 @@ msgstr "Download concluído"
 
 msgid "Download Failed"
 msgstr "Falha no download"
+
+msgid "Edit Map"
+msgstr "Editar mapa"
+
+msgid "Explore Maps"
+msgstr "Explorar mapas"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6491,12 +6496,6 @@ msgstr "aaaa-mm-dd"
 msgid "Date ends before:"
 msgstr "Data termina antes de:"
 
-msgid "page"
-msgstr "página"
-
-msgid "of"
-msgstr "de"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6703,6 +6702,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Todos os conteúdos"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Não foram encontradas camadas em uma projeção compatível."
@@ -6723,6 +6727,19 @@ msgid "Layer already exists"
 msgstr "Camada criada"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6802,6 +6819,22 @@ msgstr "Nível de permissão inválido."
 
 msgid "Permission Denied"
 msgstr "Permissão negada"
+
+#~ msgid "last updated on"
+#~ msgstr "última atualização em"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Excluir e não perguntar novamente."
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Estilos disponíveis"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "Remover mapa"
 
 #, fuzzy
 #~| msgid "User Activities"

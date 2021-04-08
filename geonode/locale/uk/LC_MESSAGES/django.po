@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 14:10+0200\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/geonode/geonode/language/"
@@ -736,34 +736,6 @@ msgstr "Опис"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Допомога"
 
-msgid "Explore Maps"
-msgstr "Досліджуйте Maps"
-
-msgid "Edit Map"
-msgstr "Редагувати Карта"
-
-msgid "Update"
-msgstr "Оновлення"
-
-msgid "Create a New Map"
-msgstr "Створіть нову карту"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Доступні стилі"
-
-msgid "Save"
-msgstr "Зберегти"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Створення карти"
-
-msgid "Close"
-msgstr "Близько"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -1132,6 +1104,9 @@ msgstr ""
 msgid "Remove"
 msgstr "Видаляти"
 
+msgid "Close"
+msgstr "Близько"
+
 msgid "Download Metadata"
 msgstr "Завантажити метаданих"
 
@@ -1208,6 +1183,9 @@ msgstr "Провайдер метаданих"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "Оновлення"
 
 #, fuzzy
 #| msgid "Next"
@@ -2032,6 +2010,9 @@ msgstr "Створення групи"
 msgid "Edit Group Category"
 msgstr "Створити групу"
 
+msgid "Save"
+msgstr "Зберегти"
+
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
@@ -2333,27 +2314,6 @@ msgstr "Шар завантажене"
 
 msgid "Return to Layer"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "Неповні Загружено"
-
-msgid "You have the following incomplete uploads"
-msgstr "У вас є такі неповні додавання"
-
-msgid "last updated on"
-msgstr "Останнє оновлення на"
-
-msgid "Resume"
-msgstr "Продовжити"
-
-msgid "Delete"
-msgstr "Видаляти"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Ви впевнені, що хочете видалити цей завантаження?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Видалити, і не питайте мене знову."
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2807,6 +2767,42 @@ msgstr "Атрибути"
 
 msgid "Upload Layer"
 msgstr "Завантажити Layer"
+
+msgid "Incomplete Uploads"
+msgstr "Неповні Загружено"
+
+msgid "You have the following incomplete uploads"
+msgstr "У вас є такі неповні додавання"
+
+msgid "Resume"
+msgstr "Продовжити"
+
+msgid "Delete"
+msgstr "Видаляти"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Створити"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "з"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Неповні Загружено"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Ви впевнені, що хочете видалити цей завантаження?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3530,6 +3526,9 @@ msgstr "Скопіюйте цю карту"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Дублювати цю карту і змінити його в своїх цілях"
 
+msgid "Create a New Map"
+msgstr "Створіть нову карту"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3584,6 +3583,12 @@ msgstr "Скачати повний"
 
 msgid "Download Failed"
 msgstr "Не вдалося завантажити"
+
+msgid "Edit Map"
+msgstr "Редагувати Карта"
+
+msgid "Explore Maps"
+msgstr "Досліджуйте Maps"
 
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -6296,12 +6301,6 @@ msgstr "гггг-мм-дд"
 msgid "Date ends before:"
 msgstr "Дата закінчується раніше:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "з"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6508,6 +6507,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Весь зміст"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Не вдалося знайти будь-яких верстви в сумісному проекції."
@@ -6528,6 +6532,19 @@ msgid "Layer already exists"
 msgstr "Карта Створено"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6607,6 +6624,22 @@ msgstr "Невірний рівень дозволів."
 
 msgid "Permission Denied"
 msgstr "Доступ заборонений"
+
+#~ msgid "last updated on"
+#~ msgstr "Останнє оновлення на"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Видалити, і не питайте мене знову."
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Доступні стилі"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Створення карти"
 
 #, fuzzy
 #~| msgid "User Activities"
