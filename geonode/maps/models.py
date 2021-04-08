@@ -577,6 +577,29 @@ class MapLayer(models.Model, GXPLayerBase):
             link = "<span>%s</span> " % self.name
         return link
 
+    @property
+    def get_legend(self):
+        try:
+            layer_params = json.loads(self.layer_params)
+
+            capability = layer_params.get('capability', {})
+            style_name = capability.get('style')
+            if style_name:
+                if ':' in style_name:
+                    style_name = style_name.split(':')[1]
+                href = Layer.objects.filter(title=self.layer_title).first().get_legend_url(style_name=style_name)
+                return {style_name: href}
+            else:
+                # use the default style on layer
+                layer_obj = Layer.objects.filter(alternate=self.name).first()
+                if layer_obj:
+                    default_style_name = layer_obj.default_style.name
+                    legend_url = layer_obj.get_legend_url(style_name=default_style_name)
+                    return {default_style_name: legend_url}
+        except Exception as e:
+            logger.exception(e)
+            return None
+
     class Meta:
         ordering = ["stack_order"]
 

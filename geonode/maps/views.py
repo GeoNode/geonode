@@ -890,6 +890,7 @@ def add_layers_to_map_config(
             "store": layer.store,
             "name": layer.alternate,
             "title": layer.title,
+            "style": layer.default_style.name if layer.default_style else '',
             "queryable": True,
             "storeType": layer.storeType,
             "bbox": {
