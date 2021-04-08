@@ -160,6 +160,8 @@ urlpatterns += [
                 namespace='oauth2_provider')),
 
     # Api Views
+    url('api/', include('django_http_commands.urls')),
+
     url(r'^api/o/v4/tokeninfo',
         verify_token, name='tokeninfo'),
     url(r'^api/o/v4/userinfo',

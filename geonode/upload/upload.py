@@ -557,7 +557,7 @@ def final_step(upload_session, user, charset="UTF-8"):
     _log('Reloading session %s to check validity', import_session.id)
     import_session = import_session.reload()
     upload_session.import_session = import_session
-
+    #HERE_TO_WORK
     # the importer chooses an available featuretype name late in the game need
     # to verify the resource.name otherwise things will fail.  This happens
     # when the same data is uploaded a second time and the default name is
