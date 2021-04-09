@@ -18,6 +18,7 @@
 #
 #########################################################################
 import os
+import json
 import base64
 import pickle
 import shutil
@@ -35,6 +36,8 @@ from django.core.files.storage import FileSystemStorage
 
 from geonode.layers.models import Layer
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
+
+from .utils import next_step_response, get_next_step
 
 logger = logging.getLogger(__name__)
 
@@ -186,16 +189,32 @@ class Upload(models.Model):
 
     def get_resume_url(self):
         if self.state != Upload.STATE_PROCESSED:
+            session = None
             try:
                 if not self.import_id:
                     raise NotFound
-                gs_uploader.get_session(self.import_id)
+                session = gs_uploader.get_session(self.import_id)
             except (NotFound, Exception):
                 if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
                     self.state = Upload.STATE_INVALID
                     Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
-            if self.import_id and self.state == Upload.STATE_PENDING:
-                return f"{reverse('data_upload')}?id={self.import_id}"
+            if session:
+                try:
+                    content = next_step_response(None, self.get_session).content
+                    if isinstance(content, bytes):
+                        content = content.decode('UTF-8')
+                    response_json = json.loads(content)
+                    if response_json['success'] and 'redirect_to' in response_json:
+                        if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
+                            return f"{reverse('data_upload')}?id={self.import_id}"
+                        else:
+                            next = get_next_step(self.get_session)
+                            self.get_session.completed_step = next
+                except (NotFound, Exception) as e:
+                    logger.exception(e)
+                    if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
+                        self.state = Upload.STATE_INVALID
+                        Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
         return None
 
     def get_delete_url(self):
