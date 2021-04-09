@@ -41,14 +41,17 @@
       <p>{% trans "You have the following incomplete uploads" %}:</p>
       <table
         class="table table-bordered upload-progress-table"
-        data-resume-tool-tooltip="{% trans 'Resume' %}"
+        data-resume-tool-tooltip="{% trans 'This file needs additional configuration to complete the upload process. Please click on the button to fill the required configuration' %}"
         data-remove-tool-tooltip="{% trans 'Delete' %}"
+        data-success-tool-tooltip="{% trans 'Upload process completed' %}"
+        data-invalid-tool-tooltip="{% trans 'The upload process cannot be completed because the original file is no more available' %}"
       >
         <thead>
           <tr>
-            <th scope="row">{% trans "Name" %}</th>
+            <td scope="row">{% trans "Name" %}</td>
             <td>{% trans "Created" %}</td>
             <td>{% trans "Progress" %}</td>
+            <td></td>
             <td></td>
           </tr>
         </thead>
