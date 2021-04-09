@@ -213,7 +213,7 @@ class Upload(models.Model):
                         else:
                             next = get_next_step(self.get_session)
                             if next == 'final' and session.state == Upload.STATE_COMPLETE and self.state == Upload.STATE_PENDING:
-                                if self.layer:
+                                if not self.layer or not self.layer.processed:
                                     from .views import final_step_view
                                     final_step_view(None, self.get_session)
                                 self.state = Upload.STATE_RUNNING
