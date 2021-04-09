@@ -879,7 +879,7 @@ class KeywordHandler:
         self.raw_keyword = raw_keyword
 
     def set_keywords(self):
-        keywords, tkeyword = self.handle_metadata_keywords(self.extracted_keyword, self.raw_keyword)
+        keywords, tkeyword = self.handle_metadata_keywords()
         if len(keywords) > 0:
             if not self.instance.keywords:
                 self.instance.keywords = keywords

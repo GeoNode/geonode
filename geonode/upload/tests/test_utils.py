@@ -20,8 +20,11 @@
 
 """unit tests for geonode.upload.utils module"""
 
-from django.test.testcases import SimpleTestCase
+
+from geonode.base.populate_test_data import create_single_layer
+from unittest.case import TestCase
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.layers.models import Layer
 from lxml import etree
 
 from geonode.upload import utils
@@ -63,7 +66,7 @@ class UtilsTestCase(GeoNodeBaseTestSupport):
         self.assertIn("kml", ns.keys())
 
 
-class TestHandleMetadataKeyword(SimpleTestCase):
+class TestHandleMetadataKeyword(TestCase):
     def setUp(self):
         self.raw_keyword = {
             "raw_keyword": [
@@ -93,9 +96,10 @@ class TestHandleMetadataKeyword(SimpleTestCase):
                 {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
             ]
         }
+        self.layer = create_single_layer('keyword-handler')
         self.extracted_keyword = ["features", "test_layer"]
         self.sut = utils.KeywordHandler(
-            instance='', 
+            instance=self.layer, 
             extracted_keyword=self.extracted_keyword,
             raw_keyword=self.raw_keyword
         )
@@ -110,3 +114,8 @@ class TestHandleMetadataKeyword(SimpleTestCase):
         keyword, thesaurus_keyword = self.sut.handle_metadata_keywords()
         self.assertListEqual(["features", "test_layer"], keyword)
         self.assertListEqual(["no conditions to access and use", "ad", "af"], thesaurus_keyword)
+
+    def test_should_assign_correclty_the_keyword_to_the_layer_object(self):
+        instance = self.sut.set_keywords()
+        current_keywords = [keyword.name for keyword in instance.keywords.all()]
+        self.assertListEqual(["features", "test_layer"], current_keywords)
