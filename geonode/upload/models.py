@@ -199,8 +199,8 @@ class Upload(models.Model):
         return None
 
     def get_delete_url(self):
-        if self.import_id and self.state != Upload.STATE_PROCESSED:
-            return reverse('data_upload_delete', args=[self.import_id])
+        if self.state != Upload.STATE_PROCESSED:
+            return reverse('data_upload_delete', args=[self.id])
         return None
 
     def get_import_url(self):

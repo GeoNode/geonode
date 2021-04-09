@@ -745,7 +745,7 @@ def view(req, step):
 
 @login_required
 def delete(req, id):
-    upload = get_object_or_404(Upload, import_id=id)
+    upload = get_object_or_404(Upload, id=id)
     if req.user != upload.user:
         raise PermissionDenied()
     upload.delete()
