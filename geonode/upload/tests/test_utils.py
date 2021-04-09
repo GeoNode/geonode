@@ -94,18 +94,19 @@ class TestHandleMetadataKeyword(SimpleTestCase):
             ]
         }
         self.extracted_keyword = ["features", "test_layer"]
-        self.sut = utils.KeywordHandler()
+        self.sut = utils.KeywordHandler(
+            instance='', 
+            extracted_keyword=self.extracted_keyword,
+            raw_keyword=self.raw_keyword
+        )
 
     def test_return_extracted_keyword_if_custom_is_an_empty_dict(self):
-        keyword, thesaurus_keyword = self.sut.handle_metadata_keywords(
-            self.extracted_keyword, raw_keyword={}
-        )
+        setattr(self.sut, 'raw_keyword', {})
+        keyword, thesaurus_keyword = self.sut.handle_metadata_keywords()
         self.assertListEqual(self.extracted_keyword, keyword)
         self.assertListEqual([], thesaurus_keyword)
 
     def test_should_return_the_expected_keyword_extracted_from_raw_and_the_thesaurus_keyword(self):
-        keyword, thesaurus_keyword = self.sut.handle_metadata_keywords(
-            self.extracted_keyword, raw_keyword=self.raw_keyword
-        )
+        keyword, thesaurus_keyword = self.sut.handle_metadata_keywords()
         self.assertListEqual(["features", "test_layer"], keyword)
         self.assertListEqual(["no conditions to access and use", "ad", "af"], thesaurus_keyword)

@@ -873,11 +873,25 @@ max\ connections={db_conn_max}"""
 
 
 class KeywordHandler:
-    def handle_metadata_keywords(self, extracted_keyword, raw_keyword):
+    def __init__(self, instance, extracted_keyword, raw_keyword):
+        self.instance = instance
+        self.extracted_keyword = extracted_keyword
+        self.raw_keyword = raw_keyword
+
+    def set_keywords(self):
+        keywords, tkeyword = self.handle_metadata_keywords(self.extracted_keyword, self.raw_keyword)
+        if len(keywords) > 0:
+            if not self.instance.keywords:
+                self.instance.keywords = keywords
+            else:
+                self.instance.keywords.add(*keywords)
+        return self.final_step()
+
+    def handle_metadata_keywords(self):
         fkeyword = []
         tkeyword = []
-        if len(raw_keyword) > 0 and 'raw_keyword' in raw_keyword:
-            for dkey in raw_keyword['raw_keyword']:
+        if len(self.raw_keyword) > 0 and 'raw_keyword' in self.raw_keyword:
+            for dkey in self.raw_keyword['raw_keyword']:
                 if dkey['type'] == 'place':
                     continue
                 thesaurus = dkey['thesaurus']
@@ -886,11 +900,11 @@ class KeywordHandler:
                 else:
                     fkeyword += dkey['keywords']
             return fkeyword, tkeyword
-        return self.final_step(extracted_keyword, [])
+        return self.extracted_keyword, []
 
-    def final_step(self, keyword, tkeyword):
+    def final_step(self):
         '''
         Final step, to let it be hookable
         '''
-        return keyword, tkeyword
+        return self.instance
 
