@@ -221,7 +221,7 @@ class Upload(models.Model):
         super(Upload, self).delete(*args, **kwargs)
         try:
             session = gs_uploader.get_session(self.import_id)
-        except NotFound:
+        except (NotFound, Exception):
             session = None
         if session:
             for task in session.tasks:

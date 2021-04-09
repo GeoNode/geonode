@@ -746,7 +746,8 @@ def view(req, step):
 @login_required
 def delete(req, id):
     upload = get_object_or_404(Upload, id=id)
-    if req.user != upload.user:
+    if (not req.user.is_superuser and req.user != upload.user) or\
+            not req.user.is_authenticated:
         raise PermissionDenied()
     upload.delete()
     return json_response(dict(
