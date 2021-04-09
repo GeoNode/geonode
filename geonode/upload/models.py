@@ -231,8 +231,19 @@ class Upload(models.Model):
         return None
 
     def get_import_url(self):
-        if self.import_id and self.state != Upload.STATE_INVALID:
-            return f"{ogc_server_settings.LOCATION}rest/imports/{self.import_id}"
+        session = None
+        try:
+            if not self.import_id:
+                raise NotFound
+            session = self.get_session.import_session
+            if not session or session.state != Upload.STATE_COMPLETE:
+                session = gs_uploader.get_session(self.import_id)
+        except (NotFound, Exception):
+            if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
+                self.state = Upload.STATE_INVALID
+                Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
+        if session and self.state != Upload.STATE_INVALID:
+            return f"{ogc_server_settings.LOCATION}rest/imports/{session.id}"
         else:
             return None
 
