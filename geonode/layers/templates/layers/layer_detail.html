@@ -45,11 +45,6 @@
     </style>
 
     <h2 class="page-title">{{ resource.title|default:resource.alternate }}</h2>
-    {% if not processed %}
-    <em>
-      <i class="fa fa-cog fa-spin fa-fw"></i>{% trans "Layer not ready yet. Still finalizing layer ingestion..." %}
-    </em>
-    {% endif %}
     {% if storeType == 'remoteStore' %}
     <em>
       <i class="fa fa-power-off {% if online %}text-success{% else %}text-danger{% endif %}"></i> {% trans "Service is" %} {% if online %}{% trans "online" %}{% else %}{% trans "offline" %}{% endif %} 
