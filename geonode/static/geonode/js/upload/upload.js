@@ -266,6 +266,8 @@ define(['underscore',
         const totalPages = progressPage.querySelector('.upload-progress-page-total');
         const resumeTooltip = table.getAttribute('data-resume-tool-tooltip');
         const removeTooltip = table.getAttribute('data-remove-tool-tooltip');
+        const successTooltip = table.getAttribute('data-success-tool-tooltip');
+        const invalidTooltip = table.getAttribute('data-invalid-tool-tooltip');
         const removeModalButton = removeModal && removeModal.querySelector('.remove-incomplete-upload-modal-button');
         const removeModalName = removeModal && removeModal.querySelector('.remove-incomplete-upload-modal-name');
 
@@ -373,8 +375,10 @@ define(['underscore',
             row.setAttribute('data-upload-id', properties.id);
             tbody.appendChild(row);
 
-            const name = document.createElement('th');
-            name.innerHTML = properties.name;
+            const name = document.createElement('td');
+            name.innerHTML = properties.state === 'PROCESSED' && properties.detail_url
+                ? '<a href="' + properties.detail_url + '" target="_blank" rel="noopener noreferrer">' + properties.name + '</a>'
+                : properties.name;
             row.appendChild(name);
 
             const date = document.createElement('td');
@@ -389,23 +393,27 @@ define(['underscore',
             row.appendChild(progress);
             progressBar({ parent: progress, width: progressPercentage });
 
-            const tools = document.createElement('td');
-            tools.setAttribute('class', 'text-center');
-            row.appendChild(tools);
-
             switch(properties.state) {
                 case 'PENDING':
-                    row.setAttribute('class', 'warning');
+                    progress.setAttribute('class', 'warning');
                     break;
                 case 'PROCESSED':
-                    row.setAttribute('class', 'success');
+                    progress.setAttribute('class', 'success');
                     break;
                 case 'INVALID':
-                    row.setAttribute('class', 'danger');
+                    progress.setAttribute('class', 'danger');
                     break;
                 default:
                     break;
             }
+
+            const infoTools = document.createElement('td');
+            infoTools.setAttribute('class', 'text-center');
+            infoTools.style.verticalAlign = 'middle';
+            infoTools.style.minWidth = '60px';
+            infoTools.style.height = '50px';
+            row.appendChild(infoTools);
+
             if (properties.resume_url) {
                 const resumeTool = document.createElement('button');
                 resumeTool.setAttribute('class', 'btn btn-default btn-sm incomplete-resume');
@@ -414,31 +422,55 @@ define(['underscore',
                 resumeTool.setAttribute('data-placement', 'top');
                 resumeTool.innerHTML = '<i class="fa fa-play"></i>';
                 resumeTool.onclick = function() { handleResume({ id: properties.id, url: properties.resume_url }); };
-                tools.appendChild(resumeTool);
+                infoTools.appendChild(resumeTool);
                 $(resumeTool).tooltip();
+            } else {
+                const infoIcon = document.createElement('i');
+                if (properties.state === 'COMPLETE') {
+                    infoIcon.setAttribute('class', 'fa fa-spinner fa-spin');
+                }
+                if (properties.state === 'PROCESSED') {
+                    infoIcon.setAttribute('data-toggle', 'tooltip');
+                    infoIcon.setAttribute('data-placement', 'top');
+                    infoIcon.setAttribute('title', successTooltip);
+                    infoIcon.setAttribute('class', 'fa fa-check-circle text-success');
+                }
+                if (properties.state === 'INVALID') {
+                    infoIcon.setAttribute('data-toggle', 'tooltip');
+                    infoIcon.setAttribute('data-placement', 'top');
+                    infoIcon.setAttribute('title', invalidTooltip);
+                    infoIcon.setAttribute('class', 'fa fa-exclamation-circle text-danger');
+                }
+                infoTools.appendChild(infoIcon);
+                $(infoIcon).tooltip();
             }
-            if (properties.state === 'PROCESSED' && properties.detail_url) {
-                const linkTool = document.createElement('a');
-                linkTool.setAttribute('class', 'btn btn-default btn-sm incomplete-link');
-                linkTool.setAttribute('href', properties.detail_url);
-                linkTool.innerHTML = '<i class="fa fa-link"></i>';
-                tools.appendChild(linkTool);
-            }
+
+            const removeTools = document.createElement('td');
+            removeTools.setAttribute('class', 'text-center');
+            removeTools.style.minWidth = '60px';
+            removeTools.style.height = '50px';
+            removeTools.style.verticalAlign = 'center';
+            row.appendChild(removeTools);
+
+            const removeTool = document.createElement('button');
+            removeTool.innerHTML = '<i class="fa fa-remove"></i>';
+            removeTool.setAttribute('class', 'btn btn-danger btn-sm incomplete-remove');
+            removeTool.setAttribute('title', removeTooltip);
+            removeTool.setAttribute('data-toggle', 'tooltip');
+            removeTool.setAttribute('data-placement', 'top');
             if (removeModal && properties.delete_url) {
-                const removeTool = document.createElement('button');
-                removeTool.innerHTML = '<i class="fa fa-remove"></i>';
-                removeTool.setAttribute('class', 'btn btn-danger btn-sm incomplete-remove');
-                removeTool.setAttribute('title', removeTooltip);
-                removeTool.setAttribute('data-toggle', 'tooltip');
-                removeTool.setAttribute('data-placement', 'top');
                 removeTool.onclick = function() {
                     removeModalName.innerHTML = properties.name;
                     $(removeModal).modal();
                     selected = { id: properties.id, url: properties.delete_url };
                 };
-                tools.appendChild(removeTool);
-                $(removeTool).tooltip();
+            } else {
+                removeTool.setAttribute('disabled', true);
+                removeTool.setAttribute('class', 'btn btn-default btn-sm incomplete-remove');
             }
+            removeTools.appendChild(removeTool);
+            $(removeTool).tooltip();
+
         }
 
         render = function(request) {
@@ -504,8 +536,14 @@ define(['underscore',
                         lastUploadsIds = currentUploadIds;
 
                         if (diffUploadIds.length > 0) {
+                            // to avoid to request all the processed uploads
+                            // we need to filter only on the ones detected by the difference
+                            var idFilters = '';
+                            for (var i = 0; i < diffUploadIds.length; i++) {
+                                idFilters += '&filter{id.in}=' + diffUploadIds[i];
+                            }
                             getUploadItems({
-                                url: siteUrl + 'api/v2/uploads?filter{state}=PROCESSED&page=1&page_size=99999',
+                                url: siteUrl + 'api/v2/uploads?filter{state}=PROCESSED&page=1&page_size=99999' + idFilters,
                                 resolve: function(res) {
                                     const processedUploads = res.uploads || [];
                                     for (var i = 0; i < processedUploads.length; i++) {
