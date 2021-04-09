@@ -571,7 +571,7 @@ def final_step_view(req, upload_session):
             _json_response = json_response(
                 {'url': url,
                     'status': 'error',
-                    'id': req.GET['id'],
+                    'id': import_session.id,
                     'error_msg': error_msg or 'Import Session is Invalid!',
                     'success': True
                  }
@@ -579,14 +579,14 @@ def final_step_view(req, upload_session):
             return _json_response
         else:
             try:
-                saved_layer = final_step(upload_session, req.user)
+                saved_layer = final_step(upload_session, upload_session.user)
 
                 # this response is different then all of the other views in the
                 # upload as it does not return a response as a json object
                 _json_response = json_response(
                     {
                         'status': 'finished',
-                        'id': req.GET['id'],
+                        'id': import_session.id,
                         'url': saved_layer.get_absolute_url(),
                         'bbox': saved_layer.bbox_string,
                         'crs': {
@@ -599,13 +599,13 @@ def final_step_view(req, upload_session):
                 register_event(req, EventType.EVENT_UPLOAD, saved_layer)
                 return _json_response
             except LayerNotReady:
-                force_ajax = '&force_ajax=true' if 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
+                force_ajax = '&force_ajax=true' if req and 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
                 return json_response(
                     {
                         'status': 'pending',
                         'success': True,
-                        'id': req.GET['id'],
-                        'redirect_to': f"/upload/final?id={req.GET['id']}{force_ajax}"
+                        'id': import_session.id,
+                        'redirect_to': f"/upload/final?id={import_session.id}{force_ajax}"
                     }
                 )
             except Exception as e:
