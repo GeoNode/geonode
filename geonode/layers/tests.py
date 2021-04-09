@@ -18,6 +18,7 @@
 #
 #########################################################################
 from collections import namedtuple
+from geonode.layers.metadata import set_metadata
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 from django.test import TestCase
@@ -1809,3 +1810,13 @@ class TestalidateInputSource(TestCase):
         }
         actual = validate_input_source(layer, filename, files, action_type="append")
         self.assertTrue(actual)
+
+
+class TestSetMetadata(TestCase):
+    def setUp(self):
+        self.invalid_xml = "xml"
+        self.exml = "xml"
+    
+    def test_set_metadata_will_rase_an_exception_if_is_not_valid_xml(self):
+        with self.assertRaises(GeoNodeException):
+            set_metadata(self.invalid_xml)
