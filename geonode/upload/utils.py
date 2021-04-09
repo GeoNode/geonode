@@ -870,3 +870,27 @@ max\ connections={db_conn_max}"""
         cat.reset()
         # cat.reload()
         return append_to_mosaic_name, files_to_upload
+
+
+class KeywordHandler:
+    def handle_metadata_keywords(self, extracted_keyword, raw_keyword):
+        fkeyword = []
+        tkeyword = []
+        if len(raw_keyword) > 0 and 'raw_keyword' in raw_keyword:
+            for dkey in raw_keyword['raw_keyword']:
+                if dkey['type'] == 'place':
+                    continue
+                thesaurus = dkey['thesaurus']
+                if thesaurus['date'] or thesaurus['datetype'] or thesaurus['title']:
+                    tkeyword += dkey['keywords']
+                else:
+                    fkeyword += dkey['keywords']
+            return fkeyword, tkeyword
+        return self.final_step(extracted_keyword, [])
+
+    def final_step(self, keyword, tkeyword):
+        '''
+        Final step, to let it be hookable
+        '''
+        return keyword, tkeyword
+

@@ -39,7 +39,7 @@ from geonode.upload import signals
 from geonode.layers.models import (
     Layer, UploadSession)
 from geonode.layers.utils import resolve_regions
-from geonode.layers.metadata import parse_metadata, set_metadata
+from geonode.layers.metadata import parse_metadata
 from geonode.base.models import (
     ResourceBase,
     TopicCategory,
@@ -253,7 +253,7 @@ def geoserver_finalize_upload(
 
             if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
                 instance.metadata_uploaded = True
-                identifier, vals, regions, keywords, _ = parse_metadata(
+                identifier, vals, regions, keywords, custom = parse_metadata(
                     open(xml_file).read())
 
                 try:
@@ -310,7 +310,7 @@ def geoserver_finalize_upload(
                             instance.regions.add(*regions_resolved)
 
                 # Assign the keywords (needs to be done after saving)
-                keywords = list(set(keywords)) # replace with method that get keyword & thesauri
+                keywords = list(set(keywords))  # replace with method that get keyword & thesauri
                 if keywords:
                     if len(keywords) > 0:
                         if not instance.keywords:

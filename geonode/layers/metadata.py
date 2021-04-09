@@ -57,7 +57,7 @@ def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}
         tagname = get_tagname(exml)
 
     if tagname == 'MD_Metadata':  # ISO
-        identifier, vals, regions, keywords = iso2dict(exml)
+        identifier, vals, regions, keywords, custom = iso2dict(exml)
     elif tagname == 'metadata':  # FGDC
         identifier, vals, regions, keywords = fgdc2dict(exml)
     elif tagname == 'Record':  # Dublin Core
@@ -76,6 +76,7 @@ def iso2dict(exml):
     vals = {}
     regions = []
     keywords = []
+    custom = {}
 
     mdata = MD_Metadata(exml)
     identifier = mdata.identifier
@@ -107,6 +108,9 @@ def iso2dict(exml):
                     regions.extend(kw['keywords'])
                 else:
                     keywords.extend(kw['keywords'])
+
+            custom['raw_keyword'] = mdata.identification.keywords
+
         if len(mdata.identification.otherconstraints) > 0:
             vals['constraints_other'] = \
                 mdata.identification.otherconstraints[0]
@@ -116,7 +120,7 @@ def iso2dict(exml):
     if mdata.dataquality is not None:
         vals['data_quality_statement'] = mdata.dataquality.lineage
 
-    return [identifier, vals, regions, keywords]
+    return [identifier, vals, regions, keywords, custom]
 
 
 def fgdc2dict(exml):
@@ -166,6 +170,7 @@ def fgdc2dict(exml):
                 if 'placekey' in place:
                     regions.extend(place['placekey'])
 
+        vals['raw_keyword'] = mdata.idinfo.keywords
     if hasattr(mdata.idinfo.timeperd, 'timeinfo'):
         if hasattr(mdata.idinfo.timeperd.timeinfo, 'rngdates'):
             vals['temporal_extent_start'] = \

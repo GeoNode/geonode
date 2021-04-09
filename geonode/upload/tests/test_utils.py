@@ -20,15 +20,14 @@
 
 """unit tests for geonode.upload.utils module"""
 
+from django.test.testcases import SimpleTestCase
 from geonode.tests.base import GeoNodeBaseTestSupport
-
 from lxml import etree
 
 from geonode.upload import utils
 
 
 class UtilsTestCase(GeoNodeBaseTestSupport):
-
     def test_pages(self):
         self.assertIn("kml-overlay", utils._pages)
 
@@ -62,3 +61,51 @@ class UtilsTestCase(GeoNodeBaseTestSupport):
         kml_doc, ns = utils.get_kml_doc(kml_bytes)
         self.assertTrue(etree.QName(kml_doc.tag).localname, "kml")
         self.assertIn("kml", ns.keys())
+
+
+class TestHandleMetadataKeyword(SimpleTestCase):
+    def setUp(self):
+        self.raw_keyword = {
+            "raw_keyword": [
+                {
+                    "keywords": ["features", "test_layer"],
+                    "thesaurus": {"date": None, "datetype": None, "title": None},
+                    "type": "theme",
+                },
+                {
+                    "keywords": ["no conditions to access and use"],
+                    "thesaurus": {
+                        "date": "2020-10-30T16:58:34",
+                        "datetype": "publication",
+                        "title": "Test for ordering",
+                    },
+                    "type": None,
+                },
+                {
+                    "keywords": ["ad", "af"],
+                    "thesaurus": {
+                        "date": "2008-06-01",
+                        "datetype": "publication",
+                        "title": "GEMET - INSPIRE themes, version 1.0",
+                    },
+                    "type": None,
+                },
+                {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
+            ]
+        }
+        self.extracted_keyword = ["features", "test_layer"]
+        self.sut = utils.KeywordHandler()
+
+    def test_return_extracted_keyword_if_custom_is_an_empty_dict(self):
+        keyword, thesaurus_keyword = self.sut.handle_metadata_keywords(
+            self.extracted_keyword, raw_keyword={}
+        )
+        self.assertListEqual(self.extracted_keyword, keyword)
+        self.assertListEqual([], thesaurus_keyword)
+
+    def test_should_return_the_expected_keyword_extracted_from_raw_and_the_thesaurus_keyword(self):
+        keyword, thesaurus_keyword = self.sut.handle_metadata_keywords(
+            self.extracted_keyword, raw_keyword=self.raw_keyword
+        )
+        self.assertListEqual(["features", "test_layer"], keyword)
+        self.assertListEqual(["no conditions to access and use", "ad", "af"], thesaurus_keyword)

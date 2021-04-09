@@ -1816,7 +1816,35 @@ class TestSetMetadata(TestCase):
     def setUp(self):
         self.maxDiff = None
         self.invalid_xml = "xml"
-        self.exml_path =  f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.custom = {
+            "raw_keyword": [
+                {
+                    "keywords": ["features", "test_layer"],
+                    "thesaurus": {"date": None, "datetype": None, "title": None},
+                    "type": "theme",
+                },
+                {
+                    "keywords": ["no conditions to access and use"],
+                    "thesaurus": {
+                        "date": "2020-10-30T16:58:34",
+                        "datetype": "publication",
+                        "title": "Test for ordering",
+                    },
+                    "type": None,
+                },
+                {
+                    "keywords": ["ad", "af"],
+                    "thesaurus": {
+                        "date": "2008-06-01",
+                        "datetype": "publication",
+                        "title": "GEMET - INSPIRE themes, version 1.0",
+                    },
+                    "type": None,
+                },
+                {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
+            ]
+        }
 
     def test_set_metadata_will_rase_an_exception_if_is_not_valid_xml(self):
         with self.assertRaises(GeoNodeException):
@@ -1840,9 +1868,9 @@ class TestSetMetadata(TestCase):
             }
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
         self.assertListEqual(['Global'], regions)
-        self.assertListEqual(['features', 'test_layer'], keywords)
+        self.assertListEqual(['features', 'test_layer', 'no conditions to access and use', 'ad', 'af'], keywords)
         self.assertDictEqual(expected_vals, vals)
-        self.assertDictEqual({}, custom)
+        self.assertListEqual(self.custom, custom)
 
 
 '''
@@ -1855,16 +1883,18 @@ Is required to define a fuction that takes 1 parameters (the metadata xml) and r
                     Tuple (tuple):
                         - (identifier, vals, regions, keywords, custom)
 
-                    identifier(str): default empy, 
-                    vals(dict): default empty, 
+                    identifier(str): default empy,
+                    vals(dict): default empty,
                     regions(list): default empty,
-                    keywords(list): default empty, 
+                    keywords(list): default empty,
                     custom(dict): default empty
 '''
+
+
 class TestCustomMetadataParser(TestCase):
-    def setUp(self):    
+    def setUp(self):
         import datetime
-        self.exml_path =  f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
         self.expected_vals = {
             "abstract": "real abstract",
             "constraints_other": "Not Specified: The original author did not specify a license.",
@@ -1878,23 +1908,57 @@ class TestCustomMetadataParser(TestCase):
             "temporal_extent_start": None,
             "title": "test_layer"
         }
+        self.custom = {
+            "raw_keyword": [
+                {
+                    "keywords": ["features", "test_layer"],
+                    "thesaurus": {"date": None, "datetype": None, "title": None},
+                    "type": "theme",
+                },
+                {
+                    "keywords": ["no conditions to access and use"],
+                    "thesaurus": {
+                        "date": "2020-10-30T16:58:34",
+                        "datetype": "publication",
+                        "title": "Test for ordering",
+                    },
+                    "type": None,
+                },
+                {
+                    "keywords": ["ad", "af"],
+                    "thesaurus": {
+                        "date": "2008-06-01",
+                        "datetype": "publication",
+                        "title": "GEMET - INSPIRE themes, version 1.0",
+                    },
+                    "type": None,
+                },
+                {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
+            ]
+        }
 
     def test_will_use_only_the_default_metadata_parser(self):
         identifier, vals, regions, keywords, custom = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
         self.assertListEqual(['Global'], regions)
-        self.assertListEqual(['features', 'test_layer'], keywords)
+        self.assertListEqual(['features', 'test_layer', 'no conditions to access and use', 'ad', 'af'], keywords)
         self.assertDictEqual(self.expected_vals, vals)
-        self.assertDictEqual({}, custom)
+        self.assertDictEqual(self.custom, custom)
 
     @override_settings(METADATA_PARSERS=['__DEFAULT__', 'geonode.layers.tests.dummy_metadata_parser'])
     def test_will_use_both_parsers_defined(self):
         identifier, vals, regions, keywords, custom = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
         self.assertListEqual(['Global', 'Europe'], regions)
-        self.assertListEqual(['features', 'test_layer'], keywords)
+        self.assertListEqual(['features', 'test_layer', 'no conditions to access and use', 'ad', 'af'], keywords)
         self.assertDictEqual(self.expected_vals, vals)
         self.assertEqual("Passed through new parser", custom)
+
+
+'''
+Just a dummy function required for the smoke test above
+'''
+
 
 def dummy_metadata_parser(exml, uuid, vals, regions, keywords, custom):
     custom = "Passed through new parser"

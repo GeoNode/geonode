@@ -299,6 +299,76 @@
        
        
        
+        <gmd:descriptiveKeywords>
+          <gmd:MD_Keywords>
+              
+              
+              
+              
+              
+              
+              <gmd:keyword>
+                <gco:CharacterString>no conditions to access and use</gco:CharacterString>
+              </gmd:keyword>
+              
+              
+              <gmd:thesaurusName>
+                <gmd:CI_Citation>
+                    <gmd:title>
+                      <gco:CharacterString>Test for ordering</gco:CharacterString>
+                    </gmd:title>
+                    <gmd:date>
+                      <gmd:CI_Date>
+                          <gmd:date>
+                            <gco:Date>2020-10-30T16:58:34</gco:Date>
+                          </gmd:date>
+                          <gmd:dateType>
+                            <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">pubblicazione</gmd:CI_DateTypeCode>
+                          </gmd:dateType>
+                      </gmd:CI_Date>
+                    </gmd:date>
+                </gmd:CI_Citation>
+              </gmd:thesaurusName>
+          </gmd:MD_Keywords>
+        </gmd:descriptiveKeywords>
+        
+        <gmd:descriptiveKeywords>
+          <gmd:MD_Keywords>
+              
+              
+              <gmd:keyword>
+                <gco:CharacterString>ad</gco:CharacterString>
+              </gmd:keyword>
+              
+              
+              
+              <gmd:keyword>
+                <gco:CharacterString>af</gco:CharacterString>
+              </gmd:keyword>
+              
+              
+              
+              
+              <gmd:thesaurusName>
+                <gmd:CI_Citation>
+                    <gmd:title>
+                      <gco:CharacterString>GEMET - INSPIRE themes, version 1.0</gco:CharacterString>
+                    </gmd:title>
+                    <gmd:date>
+                      <gmd:CI_Date>
+                          <gmd:date>
+                            <gco:Date>2008-06-01</gco:Date>
+                          </gmd:date>
+                          <gmd:dateType>
+                            <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">pubblicazione</gmd:CI_DateTypeCode>
+                          </gmd:dateType>
+                      </gmd:CI_Date>
+                    </gmd:date>
+                </gmd:CI_Citation>
+              </gmd:thesaurusName>
+          </gmd:MD_Keywords>
+        </gmd:descriptiveKeywords>
+        
        
        
        <gmd:descriptiveKeywords>
@@ -401,7 +471,7 @@
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
-           
+          
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
@@ -605,8 +675,8 @@
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
-           
-           
+
+
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
