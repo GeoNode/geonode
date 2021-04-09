@@ -649,7 +649,7 @@ def final_step(upload_session, user, charset="UTF-8"):
 
         if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
             metadata_uploaded = True
-            layer_uuid, vals, regions, keywords = set_metadata(
+            layer_uuid, vals, regions, keywords, _ = set_metadata(
                 open(xml_file).read())
 
     # Make sure the layer does not exists already

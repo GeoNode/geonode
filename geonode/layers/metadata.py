@@ -25,6 +25,7 @@
 import logging
 import datetime
 from defusedxml import lxml as dlxml
+from django.conf import settings
 
 # Geonode functionality
 from geonode import GeoNodeException
@@ -37,7 +38,7 @@ from django.utils import timezone
 LOGGER = logging.getLogger(__name__)
 
 
-def set_metadata(xml):
+def set_metadata(xml, identifier=None, vals=None, regions=None, keywords=None, custom=None):
     """Generate dict of model properties based on XML metadata"""
 
     # check if document is XML
@@ -66,7 +67,7 @@ def set_metadata(xml):
     if not vals.get("date"):
         vals["date"] = datetime.datetime.now(timezone.get_current_timezone()).strftime("%Y-%m-%dT%H:%M:%S")
 
-    return [identifier, vals, regions, keywords]
+    return [identifier, vals, regions, keywords, None]
 
 
 def iso2dict(exml):
@@ -233,3 +234,16 @@ def get_tagname(element):
     except IndexError:
         tagname = element.tag
     return tagname
+
+
+def parse_metadata(exml,uuid=None, vals=None, regions=None, keywords=None, custom=None):
+    from django.utils.module_loading import import_string
+    available_parsers = (
+        [settings.METADATA_PARSERS["__DEFAULT__"]] + settings.METADATA_PARSERS["parsers"]
+        if hasattr(settings, "METADATA_PARSERS")
+        else []
+    )
+    for parser_path in available_parsers:
+        parser = import_string(parser_path) 
+        uuid, vals, regions, keywords, custom = parser(exml, uuid, vals, regions, keywords, custom)
+    return uuid, vals, regions, keywords, custom
