@@ -1842,9 +1842,25 @@ class TestSetMetadata(TestCase):
         self.assertListEqual(['Global'], regions)
         self.assertListEqual(['features', 'test_layer'], keywords)
         self.assertDictEqual(expected_vals, vals)
-        self.assertIsNone(custom)
+        self.assertDictEqual({}, custom)
 
 
+'''
+Smoke test to explain how the new function for multiple parsers will work
+Is required to define a fuction that takes 1 parameters (the metadata xml) and return 5 parameters.
+            Parameters:
+                    xml (str): TextIOWrapper read example: open(self.exml_path).read()
+
+            Returns:
+                    Tuple (tuple):
+                        - (identifier, vals, regions, keywords, custom)
+
+                    identifier(str): default empy, 
+                    vals(dict): default empty, 
+                    regions(list): default empty,
+                    keywords(list): default empty, 
+                    custom(dict): default empty
+'''
 class TestCustomMetadataParser(TestCase):
     def setUp(self):    
         import datetime
@@ -1869,13 +1885,9 @@ class TestCustomMetadataParser(TestCase):
         self.assertListEqual(['Global'], regions)
         self.assertListEqual(['features', 'test_layer'], keywords)
         self.assertDictEqual(self.expected_vals, vals)
-        self.assertDictEqual(self.expected_vals, vals)
-        self.assertIsNone(custom)
+        self.assertDictEqual({}, custom)
 
-    @override_settings(METADATA_PARSERS={
-        "__DEFAULT__": "geonode.layers.metadata.set_metadata",
-        "parsers": ['geonode.layers.tests.dummy_metadata_parser']
-    })
+    @override_settings(METADATA_PARSERS=['__DEFAULT__', 'geonode.layers.tests.dummy_metadata_parser'])
     def test_will_use_both_parsers_defined(self):
         identifier, vals, regions, keywords, custom = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)

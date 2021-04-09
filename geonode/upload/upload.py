@@ -57,7 +57,7 @@ from geonode import GeoNodeException
 from geonode.upload import UploadException, LayerNotReady
 
 from ..people.utils import get_default_user
-from ..layers.metadata import set_metadata
+from ..layers.metadata import parse_metadata, set_metadata
 from ..layers.utils import get_valid_layer_name
 from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import geoserver_finalize_upload
@@ -649,7 +649,7 @@ def final_step(upload_session, user, charset="UTF-8"):
 
         if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
             metadata_uploaded = True
-            layer_uuid, vals, regions, keywords, _ = set_metadata(
+            layer_uuid, vals, regions, keywords, _ = parse_metadata(
                 open(xml_file).read())
 
     # Make sure the layer does not exists already

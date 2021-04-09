@@ -38,7 +38,7 @@ from django.utils import timezone
 LOGGER = logging.getLogger(__name__)
 
 
-def set_metadata(xml, identifier=None, vals=None, regions=None, keywords=None, custom=None):
+def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}):
     """Generate dict of model properties based on XML metadata"""
 
     # check if document is XML
@@ -67,7 +67,7 @@ def set_metadata(xml, identifier=None, vals=None, regions=None, keywords=None, c
     if not vals.get("date"):
         vals["date"] = datetime.datetime.now(timezone.get_current_timezone()).strftime("%Y-%m-%dT%H:%M:%S")
 
-    return [identifier, vals, regions, keywords, None]
+    return [identifier, vals, regions, keywords, custom]
 
 
 def iso2dict(exml):
@@ -236,14 +236,16 @@ def get_tagname(element):
     return tagname
 
 
-def parse_metadata(exml,uuid=None, vals=None, regions=None, keywords=None, custom=None):
+def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[], custom={}):
     from django.utils.module_loading import import_string
     available_parsers = (
-        [settings.METADATA_PARSERS["__DEFAULT__"]] + settings.METADATA_PARSERS["parsers"]
+        settings.METADATA_PARSERS
         if hasattr(settings, "METADATA_PARSERS")
-        else []
+        else ['geonode.layers.metadata.set_metadata']
     )
     for parser_path in available_parsers:
-        parser = import_string(parser_path) 
+        if parser_path == '__DEFAULT__':
+            parser_path = "geonode.layers.metadata.set_metadata"
+        parser = import_string(parser_path)
         uuid, vals, regions, keywords, custom = parser(exml, uuid, vals, regions, keywords, custom)
     return uuid, vals, regions, keywords, custom
