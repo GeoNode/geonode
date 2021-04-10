@@ -358,7 +358,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(upload_data['progress'], 33.0)
 
         self.assertIsNone(upload_data['detail_url'])
-        self.assertIsNotNone(upload_data['resume_url'])
+        self.assertIsNone(upload_data['resume_url'])
         self.assertIsNotNone(upload_data['delete_url'])
 
         delete_url = urljoin(
@@ -368,7 +368,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         url = urljoin(
             settings.SITEURL,
-            f"{upload_data['resume_url']}"
+            f"{reverse('data_upload')}?id={upload_data['import_id']}"
         )
         response = self.selenium.request('GET', url, headers=headers)
         self.assertEqual(response.status_code, 200)
@@ -451,11 +451,11 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         upload_data = response.data['upload']
         self.assertIsNotNone(upload_data)
         self.assertEqual(upload_data['name'], 'relief_san_andres')
-        logger.error(f" ---------- UPLOAD STATE: {upload_data['state']}")
+
         if upload_data['state'] != Upload.STATE_PROCESSED:
             self.assertLess(upload_data['progress'], 100.0)
             self.assertIsNone(upload_data['detail_url'])
-            self.assertIsNotNone(upload_data['resume_url'])
+            self.assertIsNone(upload_data['resume_url'])
             self.assertIsNotNone(upload_data['delete_url'])
 
             self.assertIn('uploadfile_set', upload_data)
