@@ -472,6 +472,7 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             kwargs={
                 'api_name': 'api',
                 'resource_name': 'regions'})
+        self.bobby = get_user_model().objects.get(username='bobby')
 
     def test_api_lockdown_false(self):
         # test if results are returned for anonymous users if API_LOCKDOWN is set to False in settings
@@ -480,7 +481,7 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         with self.settings(API_LOCKDOWN=False):
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 9)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 10)
 
     def test_profiles_lockdown(self):
         filter_url = self.profiles_list_url
@@ -492,7 +493,14 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 10)
+        # Returns limitted info about other users
+        profiles = self.deserialize(resp)['objects']
+        for profile in profiles:
+            if profile['username'] == 'bobby':
+                self.assertEquals(profile.get('email'), self.bobby.email)
+            else:
+                self.assertIsNone(profile.get('email'))
 
     def test_owners_lockdown(self):
         filter_url = self.owners_list_url
@@ -505,7 +513,15 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 10)
+        # Returns limitted info about other users
+        owners = self.deserialize(resp)['objects']
+        for owner in owners:
+            if owner['username'] == 'bobby':
+                self.assertEquals(owner.get('email'), self.bobby.email)
+            else:
+                self.assertIsNone(owner.get('email'))
+                self.assertIsNone(owner.get('first_name'))
 
     def test_groups_lockdown(self):
         filter_url = self.groups_list_url

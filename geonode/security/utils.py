@@ -76,6 +76,10 @@ def get_visible_resources(queryset,
     filter_set = queryset.filter(
         Q(dirty_state=False) & Q(metadata_only=metadata_only))
 
+    if user:
+        _allowed_resources = get_objects_for_user(user, 'base.view_resourcebase')
+        filter_set.filter(id__in=_allowed_resources.values('id'))
+
     if not is_admin:
         if admin_approval_required:
             if not user or not user.is_authenticated or user.is_anonymous:
@@ -100,11 +104,6 @@ def get_visible_resources(queryset,
                 )
             else:
                 filter_set = filter_set.exclude(group__in=private_groups)
-
-        if admin_approval_required or unpublished_not_visible or private_groups_not_visibile:
-            if user:
-                _allowed_resources = get_objects_for_user(user, 'base.view_resourcebase')
-                return filter_set.filter(id__in=_allowed_resources.values('id'))
 
     return filter_set
 

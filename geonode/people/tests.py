@@ -181,6 +181,59 @@ class PeopleTest(GeoNodeBaseTestSupport):
             mail.outbox[0].subject,
             f"Your username for {site.name}")
 
+    def test_get_profile(self):
+        admin = get_user_model().objects.get(username='admin')
+        admin.set_password('test')
+        admin.save()
+        norman = get_user_model().objects.get(username='norman')
+        norman.set_password('test')
+        norman.save()
+        bobby = get_user_model().objects.get(username='bobby')
+        bobby.set_password('test')
+        bobby.save()
+        bobby.voice = '+245-897-7889'
+        bobby.save()
+        url = reverse('profile_detail', args=['bobby'])
+
+        # Get user's profile as anonymous
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # Returns limitted info about a user
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertFalse(bobby.voice in content)
+
+        # Get user's profile by another authenticated user
+        self.client.login(username=norman.username, password='test')
+        response = self.client.get(url, user=norman)
+        self.assertEqual(response.status_code, 200)
+        # Returns limitted info about a user
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertFalse(bobby.voice in content)
+
+        # Get user's profile as owner
+        self.client.login(username=bobby.username, password='test')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # Returns all profile info
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertTrue(bobby.voice in content)
+
+        # Get user's profile as admin
+        self.client.login(username=admin.username, password='test')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # Returns all profile info
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertTrue(bobby.voice in content)
+
 
 class FacebookExtractorTestCase(GeoNodeBaseTestSupport):
 
