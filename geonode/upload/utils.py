@@ -283,10 +283,10 @@ def _advance_step(req, upload_session):
 
 
 def next_step_response(req, upload_session, force_ajax=True):
-    _force_ajax = '&force_ajax=true' if force_ajax and 'force_ajax' not in req.GET else ''
+    _force_ajax = '&force_ajax=true' if req and force_ajax and 'force_ajax' not in req.GET else ''
     import_session = upload_session.import_session
     # if the current step is the view POST for this step, advance one
-    if req.method == 'POST':
+    if req and req.method == 'POST':
         if upload_session.completed_step:
             _advance_step(req, upload_session)
         else:
@@ -382,7 +382,7 @@ def next_step_response(req, upload_session, force_ajax=True):
     # has no corresponding view served by the 'view' function.
     if next == 'run':
         upload_session.completed_step = next
-        if _ASYNC_UPLOAD and req.is_ajax():
+        if _ASYNC_UPLOAD and not req or req.is_ajax():
             return run_response(req, upload_session)
         else:
             # on sync we want to run the import and advance to the next step
@@ -390,13 +390,13 @@ def next_step_response(req, upload_session, force_ajax=True):
             return next_step_response(req, upload_session,
                                       force_ajax=force_ajax)
     session_id = None
-    if 'id' in req.GET:
+    if req and 'id' in req.GET:
         session_id = f"?id={req.GET['id']}"
     elif import_session and import_session.id:
         session_id = f"?id={import_session.id}"
 
-    if req.is_ajax() or force_ajax:
-        content_type = 'text/html' if not req.is_ajax() else None
+    if req and req.is_ajax() or force_ajax:
+        content_type = 'text/html' if req and not req.is_ajax() else None
         if session_id:
             return json_response(
                 redirect_to=reverse(
