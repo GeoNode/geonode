@@ -1849,7 +1849,7 @@ class TestSetMetadata(TestCase):
 
     def test_set_metadata_return_expected_values_from_xml(self):
         import datetime
-        identifier, vals, regions, keywords, custom = set_metadata(open(self.exml_path).read())
+        identifier, vals, regions, keywords = set_metadata(open(self.exml_path).read())
         expected_vals = {
                 "abstract": "real abstract",
                 "constraints_other": "Not Specified: The original author did not specify a license.",
