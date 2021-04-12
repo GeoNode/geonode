@@ -38,7 +38,7 @@ from django.utils import timezone
 LOGGER = logging.getLogger(__name__)
 
 
-def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}):
+def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[]):
     """Generate dict of model properties based on XML metadata"""
 
     # check if document is XML
@@ -57,7 +57,7 @@ def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}
         tagname = get_tagname(exml)
 
     if tagname == 'MD_Metadata':  # ISO
-        identifier, vals, regions, keywords, custom = iso2dict(exml)
+        identifier, vals, regions, keywords = iso2dict(exml)
     elif tagname == 'metadata':  # FGDC
         identifier, vals, regions, keywords = fgdc2dict(exml)
     elif tagname == 'Record':  # Dublin Core
@@ -67,7 +67,7 @@ def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}
     if not vals.get("date"):
         vals["date"] = datetime.datetime.now(timezone.get_current_timezone()).strftime("%Y-%m-%dT%H:%M:%S")
 
-    return [identifier, vals, regions, keywords, custom]
+    return [identifier, vals, regions, keywords]
 
 
 def iso2dict(exml):
@@ -76,7 +76,6 @@ def iso2dict(exml):
     vals = {}
     regions = []
     keywords = []
-    custom = {}
 
     mdata = MD_Metadata(exml)
     identifier = mdata.identifier
@@ -109,7 +108,6 @@ def iso2dict(exml):
                 else:
                     keywords.extend(kw['keywords'])
 
-            custom['raw_keyword'] = mdata.identification.keywords
 
         if len(mdata.identification.otherconstraints) > 0:
             vals['constraints_other'] = \
@@ -120,7 +118,7 @@ def iso2dict(exml):
     if mdata.dataquality is not None:
         vals['data_quality_statement'] = mdata.dataquality.lineage
 
-    return [identifier, vals, regions, keywords, custom]
+    return [identifier, vals, regions, keywords]
 
 
 def fgdc2dict(exml):

@@ -1812,66 +1812,6 @@ class TestalidateInputSource(TestCase):
         self.assertTrue(actual)
 
 
-class TestSetMetadata(TestCase):
-    def setUp(self):
-        self.maxDiff = None
-        self.invalid_xml = "xml"
-        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
-        self.custom = {
-            "raw_keyword": [
-                {
-                    "keywords": ["features", "test_layer"],
-                    "thesaurus": {"date": None, "datetype": None, "title": None},
-                    "type": "theme",
-                },
-                {
-                    "keywords": ["no conditions to access and use"],
-                    "thesaurus": {
-                        "date": "2020-10-30T16:58:34",
-                        "datetype": "publication",
-                        "title": "Test for ordering",
-                    },
-                    "type": None,
-                },
-                {
-                    "keywords": ["ad", "af"],
-                    "thesaurus": {
-                        "date": "2008-06-01",
-                        "datetype": "publication",
-                        "title": "GEMET - INSPIRE themes, version 1.0",
-                    },
-                    "type": None,
-                },
-                {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
-            ]
-        }
-
-    def test_set_metadata_will_rase_an_exception_if_is_not_valid_xml(self):
-        with self.assertRaises(GeoNodeException):
-            set_metadata(self.invalid_xml)
-
-    def test_set_metadata_return_expected_values_from_xml(self):
-        import datetime
-        identifier, vals, regions, keywords, custom = set_metadata(open(self.exml_path).read())
-        expected_vals = {
-                "abstract": "real abstract",
-                "constraints_other": "Not Specified: The original author did not specify a license.",
-                "data_quality_statement": "Created with GeoNode",
-                'date': datetime.datetime(2021, 4, 9, 9, 0, 46),
-                "language": "eng",
-                "purpose": None,
-                "spatial_representation_type": "dataset",
-                "supplemental_information": "No information provided",
-                "temporal_extent_end": None,
-                "temporal_extent_start": None,
-                "title": "test_layer"
-            }
-        self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
-        self.assertListEqual(['Global'], regions)
-        self.assertListEqual(['features', 'test_layer', 'no conditions to access and use', 'ad', 'af'], keywords)
-        self.assertDictEqual(expected_vals, vals)
-        self.assertListEqual(self.custom, custom)
-
 
 '''
 Smoke test to explain how the new function for multiple parsers will work
@@ -1908,8 +1848,7 @@ class TestCustomMetadataParser(TestCase):
             "temporal_extent_start": None,
             "title": "test_layer"
         }
-        self.custom = {
-            "raw_keyword": [
+        self.custom = [
                 {
                     "keywords": ["features", "test_layer"],
                     "thesaurus": {"date": None, "datetype": None, "title": None},
@@ -1935,24 +1874,21 @@ class TestCustomMetadataParser(TestCase):
                 },
                 {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
             ]
-        }
 
     def test_will_use_only_the_default_metadata_parser(self):
-        identifier, vals, regions, keywords, custom = parse_metadata(open(self.exml_path).read())
+        identifier, vals, regions, keywords = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
         self.assertListEqual(['Global'], regions)
-        self.assertListEqual(['features', 'test_layer', 'no conditions to access and use', 'ad', 'af'], keywords)
+        self.assertListEqual(self.custom, keywords)
         self.assertDictEqual(self.expected_vals, vals)
-        self.assertDictEqual(self.custom, custom)
 
     @override_settings(METADATA_PARSERS=['__DEFAULT__', 'geonode.layers.tests.dummy_metadata_parser'])
     def test_will_use_both_parsers_defined(self):
-        identifier, vals, regions, keywords, custom = parse_metadata(open(self.exml_path).read())
+        identifier, vals, regions, keywords = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
         self.assertListEqual(['Global', 'Europe'], regions)
-        self.assertListEqual(['features', 'test_layer', 'no conditions to access and use', 'ad', 'af'], keywords)
+        self.assertListEqual("Passed through new parser", keywords)
         self.assertDictEqual(self.expected_vals, vals)
-        self.assertEqual("Passed through new parser", custom)
 
 
 '''
