@@ -877,10 +877,7 @@ class KeywordHandler:
     Object needed to handle the keywords coming from the XML
     The expected input are:
      - instance (Layer/Document/Map): instance of any object inherited from ResourceBase.
-     - keywords (list): The list of keyword already extracted from parse_metadata function
-     - custom: (dict): The custom dict returned from parse_metadata. Is required to analyze the keywords
-                       to find if some thesaurus is available. Expect that the raw keywords are available
-                       'raw_keyword' key (set autonomously by the defaul parser)
+     - keywords (list(dict)): Is required to analyze the keywords to find if some thesaurus is available. 
     '''
     def __init__(self, instance, keywords):
         self.instance = instance
@@ -921,7 +918,8 @@ class KeywordHandler:
             return fkeyword, tkeyword
         return self.keywords, []
 
-    def is_thesaurus_available(self, thesaurus, keyword):
+    @staticmethod
+    def is_thesaurus_available(thesaurus, keyword):
         is_available = ThesaurusKeyword.objects.filter(alt_label=keyword).filter(thesaurus__title=thesaurus['title'])
         return is_available
 
