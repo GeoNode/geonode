@@ -1812,42 +1812,6 @@ class TestalidateInputSource(TestCase):
         self.assertTrue(actual)
 
 
-
-'''
-Smoke test to explain how the new function for multiple parsers will work
-Is required to define a fuction that takes 1 parameters (the metadata xml) and return 5 parameters.
-            Parameters:
-                    xml (str): TextIOWrapper read example: open(self.exml_path).read()
-
-            Returns:
-                    Tuple (tuple):
-                        - (identifier, vals, regions, keywords, custom)
-
-                    identifier(str): default empy,
-                    vals(dict): default empty,
-                    regions(list): default empty,
-                    keywords(list): default empty,
-                    custom(dict): default empty
-'''
-
-
-class TestCustomMetadataParser(TestCase):
-    def setUp(self):
-        import datetime
-        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
-        self.expected_vals = {
-            "abstract": "real abstract",
-            "constraints_other": "Not Specified: The original author did not specify a license.",
-            "data_quality_statement": "Created with GeoNode",
-            'date': datetime.datetime(2021, 4, 9, 9, 0, 46),
-            "language": "eng",
-            "purpose": None,
-            "spatial_representation_type": "dataset",
-            "supplemental_information": "No information provided",
-            "temporal_extent_end": None,
-            "temporal_extent_start": None,
-            "title": "test_layer"
-        }
 class TestSetMetadata(TestCase):
     def setUp(self):
         self.maxDiff = None
@@ -1919,7 +1883,68 @@ class TestSetMetadata(TestCase):
         self.assertListEqual(expected, actual)
 
 
-class TestParseMetadata(TestCase):        
+'''
+Smoke test to explain how the new function for multiple parsers will work
+Is required to define a fuction that takes 1 parameters (the metadata xml) and return 4 parameters.
+            Parameters:
+                    xml (str): TextIOWrapper read example: open(self.exml_path).read())
+
+            Returns:
+                    Tuple (tuple):
+                        - (identifier, vals, regions, keywords)
+
+                    identifier(str): default empy,
+                    vals(dict): default empty,
+                    regions(list): default empty,
+                    keywords(list(dict)): default empty
+'''
+
+
+class TestCustomMetadataParser(TestCase):
+    def setUp(self):
+        import datetime
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.expected_vals = {
+            "abstract": "real abstract",
+            "constraints_other": "Not Specified: The original author did not specify a license.",
+            "data_quality_statement": "Created with GeoNode",
+            'date': datetime.datetime(2021, 4, 9, 9, 0, 46),
+            "language": "eng",
+            "purpose": None,
+            "spatial_representation_type": "dataset",
+            "supplemental_information": "No information provided",
+            "temporal_extent_end": None,
+            "temporal_extent_start": None,
+            "title": "test_layer"
+        }
+        self.custom = [
+                {
+                    "keywords": ["features", "test_layer"],
+                    "thesaurus": {"date": None, "datetype": None, "title": None},
+                    "type": "theme",
+                },
+                {
+                    "keywords": ["no conditions to access and use"],
+                    "thesaurus": {
+                        "date": "2020-10-30T16:58:34",
+                        "datetype": "publication",
+                        "title": "Test for ordering",
+                    },
+                    "type": None,
+                },
+                {
+                    "keywords": ["ad", "af"],
+                    "thesaurus": {
+                        "date": "2008-06-01",
+                        "datetype": "publication",
+                        "title": "GEMET - INSPIRE themes, version 1.0",
+                    },
+                    "type": None,
+                },
+                {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
+            ]
+
+
     def test_will_use_only_the_default_metadata_parser(self):
         identifier, vals, regions, keywords = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
@@ -1932,7 +1957,7 @@ class TestParseMetadata(TestCase):
         identifier, vals, regions, keywords = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
         self.assertListEqual(['Global', 'Europe'], regions)
-        self.assertListEqual("Passed through new parser", keywords)
+        self.assertEqual("Passed through new parser", keywords)
         self.assertDictEqual(self.expected_vals, vals)
 
 
@@ -1941,7 +1966,7 @@ Just a dummy function required for the smoke test above
 '''
 
 
-def dummy_metadata_parser(exml, uuid, vals, regions, keywords, custom):
-    custom = "Passed through new parser"
+def dummy_metadata_parser(exml, uuid, vals, regions, keywords):
+    keywords = "Passed through new parser"
     regions.append("Europe")
-    return uuid, vals, regions, keywords, custom
+    return uuid, vals, regions, keywords

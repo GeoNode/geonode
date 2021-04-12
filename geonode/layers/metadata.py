@@ -244,7 +244,7 @@ def get_tagname(element):
     return tagname
 
 
-def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[], custom={}):
+def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[]):
     from django.utils.module_loading import import_string
     available_parsers = (
         settings.METADATA_PARSERS
@@ -255,8 +255,8 @@ def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[], custom={}):
         if parser_path == '__DEFAULT__':
             parser_path = "geonode.layers.metadata.set_metadata"
         parser = import_string(parser_path)
-        uuid, vals, regions, keywords, custom = parser(exml, uuid, vals, regions, keywords, custom)
-    return uuid, vals, regions, keywords, custom
+        uuid, vals, regions, keywords = parser(exml, uuid, vals, regions, keywords)
+    return uuid, vals, regions, keywords
 
 def convert_keyword(keyword, iso2dict=False):
     if not iso2dict and keyword:

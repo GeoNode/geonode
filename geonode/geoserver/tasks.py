@@ -296,27 +296,6 @@ def geoserver_finalize_upload(
                     abstract=gs_resource.abstract or ''))
 
                 instance.metadata_xml = xml_file
-                regions_resolved, regions_unresolved = resolve_regions(regions)
-                keywords.extend(regions_unresolved)
-
-                # Assign the regions (needs to be done after saving)
-                regions_resolved = list(set(regions_resolved))
-                if regions_resolved:
-                    if len(regions_resolved) > 0:
-                        if not instance.regions:
-                            instance.regions = regions_resolved
-                        else:
-                            instance.regions.clear()
-                            instance.regions.add(*regions_resolved)
-
-                # Assign the keywords (needs to be done after saving)
-                keywords = list(set(keywords))  # replace with method that get keyword & thesauri
-                if keywords:
-                    if len(keywords) > 0:
-                        if not instance.keywords:
-                            instance.keywords = keywords
-                        else:
-                            instance.keywords.add(*keywords)
 
                 # set model properties
                 defaults = {}
