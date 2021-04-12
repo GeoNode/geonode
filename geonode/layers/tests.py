@@ -1811,6 +1811,7 @@ class TestalidateInputSource(TestCase):
         actual = validate_input_source(layer, filename, files, action_type="append")
         self.assertTrue(actual)
 
+
 class TestSetMetadata(TestCase):
     def setUp(self):
         self.maxDiff = None
