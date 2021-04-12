@@ -46,7 +46,7 @@ from geonode.geoserver.helpers import (gs_catalog,
                                        get_store,
                                        set_time_dimension,
                                        create_geoserver_db_featurestore)  # mosaic_delete_first_granule
-
+from geonode.base.models import ThesaurusKeyword
 ogr.UseExceptions()
 
 logger = logging.getLogger(__name__)
@@ -283,10 +283,10 @@ def _advance_step(req, upload_session):
 
 
 def next_step_response(req, upload_session, force_ajax=True):
-    _force_ajax = '&force_ajax=true' if force_ajax and 'force_ajax' not in req.GET else ''
+    _force_ajax = '&force_ajax=true' if req and force_ajax and 'force_ajax' not in req.GET else ''
     import_session = upload_session.import_session
     # if the current step is the view POST for this step, advance one
-    if req.method == 'POST':
+    if req and req.method == 'POST':
         if upload_session.completed_step:
             _advance_step(req, upload_session)
         else:
@@ -382,7 +382,7 @@ def next_step_response(req, upload_session, force_ajax=True):
     # has no corresponding view served by the 'view' function.
     if next == 'run':
         upload_session.completed_step = next
-        if _ASYNC_UPLOAD and req.is_ajax():
+        if _ASYNC_UPLOAD and not req or req.is_ajax():
             return run_response(req, upload_session)
         else:
             # on sync we want to run the import and advance to the next step
@@ -390,13 +390,13 @@ def next_step_response(req, upload_session, force_ajax=True):
             return next_step_response(req, upload_session,
                                       force_ajax=force_ajax)
     session_id = None
-    if 'id' in req.GET:
+    if req and 'id' in req.GET:
         session_id = f"?id={req.GET['id']}"
     elif import_session and import_session.id:
         session_id = f"?id={import_session.id}"
 
-    if req.is_ajax() or force_ajax:
-        content_type = 'text/html' if not req.is_ajax() else None
+    if req and req.is_ajax() or force_ajax:
+        content_type = 'text/html' if req and not req.is_ajax() else None
         if session_id:
             return json_response(
                 redirect_to=reverse(
@@ -870,3 +870,71 @@ max\ connections={db_conn_max}"""
         cat.reset()
         # cat.reload()
         return append_to_mosaic_name, files_to_upload
+
+
+class KeywordHandler:
+    '''
+    Object needed to handle the keywords coming from the XML
+    The expected input are:
+     - instance (Layer/Document/Map): instance of any object inherited from ResourceBase.
+     - keywords (list(dict)): Is required to analyze the keywords to find if some thesaurus is available. 
+    '''
+    def __init__(self, instance, keywords):
+        self.instance = instance
+        self.keywords = keywords
+
+    def set_keywords(self):
+        '''
+        Method with the responsible to set the keywords (free and thesaurus) to the object.
+        At return there is always a call to final_step to let it hookable.
+        '''
+        keywords, tkeyword = self.handle_metadata_keywords()
+        self._set_free_keyword(keywords)
+        self._set_tkeyword(tkeyword)
+        return self.instance
+
+    def handle_metadata_keywords(self):
+        '''
+        Method the extract the keyword from the dict.
+        If the raw_keyword are passed, try to extract them from the dict
+        by splitting free-keyword from the thesaurus
+        '''
+        fkeyword = []
+        tkeyword = []
+        if len(self.keywords) > 0:
+            for dkey in self.keywords:
+                if dkey['type'] == 'place':
+                    continue
+                thesaurus = dkey['thesaurus']
+                if thesaurus['date'] or thesaurus['datetype'] or thesaurus['title']:
+                    for k in dkey['keywords']:
+                        tavailable = self.is_thesaurus_available(thesaurus, k)
+                        if tavailable.exists():
+                            tkeyword += [tavailable.first()]
+                        else:
+                            fkeyword += [k]
+                else:
+                    fkeyword += dkey['keywords']
+            return fkeyword, tkeyword
+        return self.keywords, []
+
+    @staticmethod
+    def is_thesaurus_available(thesaurus, keyword):
+        is_available = ThesaurusKeyword.objects.filter(alt_label=keyword).filter(thesaurus__title=thesaurus['title'])
+        return is_available
+
+    def _set_free_keyword(self, keywords):
+        if len(keywords) > 0:
+            if not self.instance.keywords:
+                self.instance.keywords = keywords
+            else:
+                self.instance.keywords.add(*keywords)
+        return keywords
+
+    def _set_tkeyword(self, tkeyword):
+        if len(tkeyword) > 0:
+            if not self.instance.tkeywords:
+                self.instance.tkeywords = tkeyword
+            else:
+                self.instance.tkeywords.add(*tkeyword)
+        return [t.alt_label for t in tkeyword]

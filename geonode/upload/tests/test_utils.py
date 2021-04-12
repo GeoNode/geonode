@@ -63,3 +63,72 @@ class UtilsTestCase(GeoNodeBaseTestSupport):
         kml_doc, ns = utils.get_kml_doc(kml_bytes)
         self.assertTrue(etree.QName(kml_doc.tag).localname, "kml")
         self.assertIn("kml", ns.keys())
+
+
+class TestHandleMetadataKeyword(TestCase):
+    fixtures = [
+        "test_thesaurus.json"
+    ]
+
+    def setUp(self):
+        self.keyword = [
+                {
+                    "keywords": ["features", "test_layer"],
+                    "thesaurus": {"date": None, "datetype": None, "title": None},
+                    "type": "theme",
+                },
+                {
+                    "keywords": ["no conditions to access and use"],
+                    "thesaurus": {
+                        "date": "2020-10-30T16:58:34",
+                        "datetype": "publication",
+                        "title": "Test for ordering",
+                    },
+                    "type": None,
+                },
+                {
+                    "keywords": ["ad", "af"],
+                    "thesaurus": {
+                        "date": "2008-06-01",
+                        "datetype": "publication",
+                        "title": "GEMET - INSPIRE themes, version 1.0",
+                    },
+                    "type": None,
+                },
+                {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
+            ]
+        self.layer = create_single_layer('keyword-handler')
+        self.sut = utils.KeywordHandler(
+            instance=self.layer,
+            keywords=self.keyword
+        )
+
+    def test_return_empty_if_keywords_is_an_empty_list(self):
+        setattr(self.sut, 'keywords', [])
+        keyword, thesaurus_keyword = self.sut.handle_metadata_keywords()
+        self.assertListEqual([], keyword)
+        self.assertListEqual([], thesaurus_keyword)
+
+    def test_should_return_the_expected_keyword_extracted_from_raw_and_the_thesaurus_keyword(self):
+        keyword, thesaurus_keyword = self.sut.handle_metadata_keywords()
+        self.assertSetEqual({"features", "test_layer", "no conditions to access and use"}, set(keyword))
+        self.assertListEqual(["ad", "af"], [x.alt_label for x in thesaurus_keyword])
+
+    def test_should_assign_correclty_the_keyword_to_the_layer_object(self):
+        self.sut.set_keywords()
+        current_keywords = [keyword.name for keyword in self.layer.keywords.all()]
+        current_tkeyword = [t.alt_label for t in self.layer.tkeywords.all()]
+        self.assertSetEqual({"features", "test_layer", "no conditions to access and use"}, set(current_keywords))
+        self.assertSetEqual({"ad", "af"}, set(current_tkeyword))
+
+    def test_is_thesaurus_available_should_return_queryset_with_existing_thesaurus(self):
+        keyword = "ad"
+        thesaurus = {"title": "GEMET - INSPIRE themes, version 1.0"}
+        actual = self.sut.is_thesaurus_available(thesaurus, keyword)
+        self.assertEqual(1, len(actual))
+
+    def test_is_thesaurus_available_should_return_empty_queryset_for_non_existing_thesaurus(self):
+        keyword = "ad"
+        thesaurus = {"title": "Random Thesaurus Title"}
+        actual = self.sut.is_thesaurus_available(thesaurus, keyword)
+        self.assertEqual(0, len(actual))

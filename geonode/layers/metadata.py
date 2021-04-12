@@ -108,6 +108,7 @@ def iso2dict(exml):
                 else:
                     keywords.extend(kw['keywords'])
 
+            keywords = convert_keyword(mdata.identification.keywords, iso2dict=True)
 
         if len(mdata.identification.otherconstraints) > 0:
             vals['constraints_other'] = \
@@ -181,6 +182,8 @@ def fgdc2dict(exml):
     if raw_date is not None:
         vals['date'] = sniff_date(raw_date)
 
+    keywords = convert_keyword(keywords)
+
     return [identifier, vals, regions, keywords]
 
 
@@ -203,6 +206,8 @@ def dc2dict(exml):
     vals['date'] = sniff_date(mdata.modified)
     vals['title'] = mdata.title
     vals['abstract'] = mdata.abstract
+
+    keywords = convert_keyword(keywords)
 
     return [identifier, vals, regions, keywords]
 
@@ -252,3 +257,12 @@ def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[], custom={}):
         parser = import_string(parser_path)
         uuid, vals, regions, keywords, custom = parser(exml, uuid, vals, regions, keywords, custom)
     return uuid, vals, regions, keywords, custom
+
+def convert_keyword(keyword, iso2dict=False):
+    if not iso2dict and keyword:
+        return [{
+            "keywords": keyword,
+            "thesaurus": {"date": None, "datetype": None, "title": None},
+            "type": "theme",
+        }]
+    return keyword

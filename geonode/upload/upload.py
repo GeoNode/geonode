@@ -57,8 +57,8 @@ from geonode import GeoNodeException
 from geonode.upload import UploadException, LayerNotReady
 
 from ..people.utils import get_default_user
-from ..layers.metadata import parse_metadata
-from ..layers.utils import get_valid_layer_name
+from ..layers.metadata import convert_keyword, parse_metadata
+from ..layers.utils import get_valid_layer_name, resolve_regions
 from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
@@ -854,7 +854,21 @@ def final_step(upload_session, user, charset="UTF-8"):
     if upload_session.time_info:
         set_time_info(saved_layer, **upload_session.time_info)
 
-    #saved_layer = utils.handle_metadata_keywords(saved_layer, custom)
+    # saved keywords and thesaurus for the uploaded layer
+    regions_resolved, regions_unresolved = resolve_regions(regions)
+    if keywords and regions_unresolved:
+        keywords.extend(convert_keyword(regions_unresolved))
+
+    saved_layer = utils.KeywordHandler(saved_layer, keywords).set_keywords()
+
+    regions_resolved = list(set(regions_resolved))
+    if regions_resolved:
+        if len(regions_resolved) > 0:
+            if not saved_layer.regions:
+                saved_layer.regions = regions_resolved
+            else:
+                saved_layer.regions.clear()
+                saved_layer.regions.add(*regions_resolved)
 
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions

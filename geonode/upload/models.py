@@ -18,6 +18,7 @@
 #
 #########################################################################
 import os
+import json
 import base64
 import pickle
 import shutil
@@ -35,6 +36,8 @@ from django.core.files.storage import FileSystemStorage
 
 from geonode.layers.models import Layer
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
+
+from .utils import next_step_response, get_next_step
 
 logger = logging.getLogger(__name__)
 
@@ -174,28 +177,52 @@ class Upload(models.Model):
             return 0.0
         elif self.state == Upload.STATE_PENDING:
             return 33.0
-        elif self.state == Upload.STATE_RUNNING:
-            return 66.0
         elif self.state == Upload.STATE_PROCESSED:
             return 100.0
-        elif self.complete or self.state == Upload.STATE_COMPLETE:
+        elif self.complete or self.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
             if self.layer and self.layer.processed:
                 self.state = Upload.STATE_PROCESSED
                 Upload.objects.filter(id=self.id).update(state=Upload.STATE_PROCESSED)
+                return 100.0
+            elif self.state == Upload.STATE_RUNNING:
+                return 66.0
             return 80.0
 
     def get_resume_url(self):
         if self.state != Upload.STATE_PROCESSED:
+            session = None
             try:
                 if not self.import_id:
                     raise NotFound
-                gs_uploader.get_session(self.import_id)
+                session = self.get_session.import_session
+                if not session or session.state != Upload.STATE_COMPLETE:
+                    session = gs_uploader.get_session(self.import_id)
             except (NotFound, Exception):
                 if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
                     self.state = Upload.STATE_INVALID
                     Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
-            if self.import_id and self.state == Upload.STATE_PENDING:
-                return f"{reverse('data_upload')}?id={self.import_id}"
+            if session:
+                try:
+                    content = next_step_response(None, self.get_session).content
+                    if isinstance(content, bytes):
+                        content = content.decode('UTF-8')
+                    response_json = json.loads(content)
+                    if response_json['success'] and 'redirect_to' in response_json:
+                        if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
+                            return f"{reverse('data_upload')}?id={self.import_id}"
+                        else:
+                            next = get_next_step(self.get_session)
+                            if next == 'final' and session.state == Upload.STATE_COMPLETE and self.state == Upload.STATE_PENDING:
+                                if not self.layer or not self.layer.processed:
+                                    from .views import final_step_view
+                                    final_step_view(None, self.get_session)
+                                self.state = Upload.STATE_RUNNING
+                                Upload.objects.filter(id=self.id).update(state=Upload.STATE_RUNNING)
+                except (NotFound, Exception) as e:
+                    logger.exception(e)
+                    if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
+                        self.state = Upload.STATE_INVALID
+                        Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
         return None
 
     def get_delete_url(self):
@@ -204,8 +231,19 @@ class Upload(models.Model):
         return None
 
     def get_import_url(self):
-        if self.import_id and self.state != Upload.STATE_INVALID:
-            return f"{ogc_server_settings.LOCATION}rest/imports/{self.import_id}"
+        session = None
+        try:
+            if not self.import_id:
+                raise NotFound
+            session = self.get_session.import_session
+            if not session or session.state != Upload.STATE_COMPLETE:
+                session = gs_uploader.get_session(self.import_id)
+        except (NotFound, Exception):
+            if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
+                self.state = Upload.STATE_INVALID
+                Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
+        if session and self.state != Upload.STATE_INVALID:
+            return f"{ogc_server_settings.LOCATION}rest/imports/{session.id}"
         else:
             return None
 
@@ -221,7 +259,7 @@ class Upload(models.Model):
         super(Upload, self).delete(*args, **kwargs)
         try:
             session = gs_uploader.get_session(self.import_id)
-        except NotFound:
+        except (NotFound, Exception):
             session = None
         if session:
             for task in session.tasks:

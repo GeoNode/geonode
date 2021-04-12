@@ -18,7 +18,7 @@
 #
 #########################################################################
 from collections import namedtuple
-from geonode.layers.metadata import parse_metadata, set_metadata
+from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 from django.test import TestCase
@@ -1848,6 +1848,11 @@ class TestCustomMetadataParser(TestCase):
             "temporal_extent_start": None,
             "title": "test_layer"
         }
+class TestSetMetadata(TestCase):
+    def setUp(self):
+        self.maxDiff = None
+        self.invalid_xml = "xml"
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
         self.custom = [
                 {
                     "keywords": ["features", "test_layer"],
@@ -1875,6 +1880,46 @@ class TestCustomMetadataParser(TestCase):
                 {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
             ]
 
+    def test_set_metadata_will_rase_an_exception_if_is_not_valid_xml(self):
+        with self.assertRaises(GeoNodeException):
+            set_metadata(self.invalid_xml)
+
+    def test_set_metadata_return_expected_values_from_xml(self):
+        import datetime
+        identifier, vals, regions, keywords = set_metadata(open(self.exml_path).read())
+        expected_vals = {
+                "abstract": "real abstract",
+                "constraints_other": "Not Specified: The original author did not specify a license.",
+                "data_quality_statement": "Created with GeoNode",
+                'date': datetime.datetime(2021, 4, 9, 9, 0, 46),
+                "language": "eng",
+                "purpose": None,
+                "spatial_representation_type": "dataset",
+                "supplemental_information": "No information provided",
+                "temporal_extent_end": None,
+                "temporal_extent_start": None,
+                "title": "test_layer"
+            }
+        self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
+        self.assertListEqual(['Global'], regions)
+        self.assertDictEqual(expected_vals, vals)
+        self.assertListEqual(self.custom, keywords)
+
+    def test_convert_keyword_should_empty_list_for_empty_keyword(self):
+        actual = convert_keyword([])
+        self.assertListEqual([], actual)
+
+    def test_convert_keyword_should_empty_list_for_empty_keyword(self):
+        expected = [{
+            "keywords": ['abc'],
+            "thesaurus": {"date": None, "datetype": None, "title": None},
+            "type": "theme",
+        }]
+        actual = convert_keyword(['abc'])
+        self.assertListEqual(expected, actual)
+
+
+class TestParseMetadata(TestCase):        
     def test_will_use_only_the_default_metadata_parser(self):
         identifier, vals, regions, keywords = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
