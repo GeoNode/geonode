@@ -18,7 +18,7 @@
 #
 #########################################################################
 from collections import namedtuple
-from geonode.layers.metadata import set_metadata
+from geonode.layers.metadata import convert_keyword, set_metadata
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 from django.test import TestCase
@@ -1868,3 +1868,16 @@ class TestSetMetadata(TestCase):
         self.assertListEqual(['Global'], regions)
         self.assertDictEqual(expected_vals, vals)
         self.assertListEqual(self.custom, keywords)
+
+    def test_convert_keyword_should_empty_list_for_empty_keyword(self):
+        actual = convert_keyword([])
+        self.assertListEqual([], actual)
+
+    def test_convert_keyword_should_empty_list_for_empty_keyword(self):
+        expected = [{
+            "keywords": ['abc'],
+            "thesaurus": {"date": None, "datetype": None, "title": None},
+            "type": "theme",
+        }]
+        actual = convert_keyword(['abc'])
+        self.assertListEqual(expected, actual)
