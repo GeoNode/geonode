@@ -38,7 +38,6 @@ from geonode import GeoNodeException
 from geonode.upload import signals
 from geonode.layers.models import (
     Layer, UploadSession)
-from geonode.layers.utils import resolve_regions
 from geonode.layers.metadata import set_metadata
 from geonode.base.models import (
     ResourceBase,
