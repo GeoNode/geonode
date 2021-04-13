@@ -22,7 +22,7 @@ import re
 import shutil
 
 from django.conf import settings
-from django.db import IntegrityError, transaction
+from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
@@ -38,12 +38,9 @@ from geonode import GeoNodeException
 from geonode.upload import signals
 from geonode.layers.models import (
     Layer, UploadSession)
-from geonode.layers.utils import resolve_regions
 from geonode.layers.metadata import parse_metadata
 from geonode.base.models import (
-    ResourceBase,
-    TopicCategory,
-    SpatialRepresentationType)
+    ResourceBase)
 from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
@@ -285,59 +282,11 @@ def geoserver_finalize_upload(
                 else:
                     vals = {}
 
-                vals.update(dict(
-                    uuid=instance.uuid,
-                    name=instance.name,
-                    owner=instance.owner,
-                    store=gs_resource.store.name,
-                    storeType=gs_resource.store.resource_type,
-                    alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
-                    title=gs_resource.title or gs_resource.store.name,
-                    abstract=gs_resource.abstract or ''))
-
-                instance.metadata_xml = xml_file
-
-                # set model properties
-                defaults = {}
-                for key, value in vals.items():
-                    if key == 'spatial_representation_type':
-                        value = SpatialRepresentationType(identifier=value)
-                    elif key == 'topic_category':
-                        value, created = TopicCategory.objects.get_or_create(
-                            identifier=value,
-                            defaults={'description': '', 'gn_description': value})
-                        key = 'category'
-                        defaults[key] = value
-                    else:
-                        defaults[key] = value
-
-                # Save all the modified information in the instance without triggering signals.
-                try:
-                    if not defaults.get('title', title):
-                        defaults['title'] = instance.title or instance.name
-                    if not defaults.get('abstract', abstract):
-                        defaults['abstract'] = instance.abstract or ''
-
-                    to_update = {}
-                    to_update['charset'] = defaults.pop('charset', instance.charset)
-                    to_update['storeType'] = defaults.pop('storeType', instance.storeType)
-                    for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
-                        if _key in defaults:
-                            to_update[_key] = defaults.pop(_key)
-                        else:
-                            to_update[_key] = getattr(instance, _key)
-                    to_update.update(defaults)
-
-                    with transaction.atomic():
-                        ResourceBase.objects.filter(
-                            id=instance.resourcebase_ptr.id).update(
-                            **defaults)
-                        Layer.objects.filter(id=instance.id).update(**to_update)
-
-                        # Refresh from DB
-                        instance.refresh_from_db()
-                except IntegrityError:
-                    raise
+                instance.store = gs_resource.store.name
+                instance.storeType = gs_resource.store.resource_type
+                instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
+                instance.title = gs_resource.title or gs_resource.store.name
+                instance.abstract = gs_resource.abstract or ''
 
             if sld_uploaded:
                 geoserver_set_style(instance.id, sld_file)
@@ -510,9 +459,7 @@ def geoserver_post_save_layers(
 
                 # store the resource to avoid another geoserver call in the post_save
                 """Get information from geoserver.
-
                 The attributes retrieved include:
-
                 * Bounding Box
                 * SRID
                 """
