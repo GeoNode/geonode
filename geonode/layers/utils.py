@@ -549,7 +549,7 @@ def file_upload(filename,
         defaults['metadata_uploaded_preserve'] = metadata_uploaded_preserve
 
         # get model properties from XML
-        identifier, vals, regions, keywords = parse_metadata(xml_file)
+        identifier, vals, regions, keywords, custom = parse_metadata(xml_file)
 
         if defaults['metadata_uploaded_preserve']:
             defaults['metadata_xml'] = xml_file

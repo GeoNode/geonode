@@ -250,7 +250,7 @@ def geoserver_finalize_upload(
 
             if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
                 instance.metadata_uploaded = True
-                identifier, vals, regions, keywords = parse_metadata(
+                _, vals, _, _, _ = parse_metadata(
                     open(xml_file).read())
 
                 try:

@@ -1873,7 +1873,7 @@ class TestSetMetadata(TestCase):
         actual = convert_keyword([])
         self.assertListEqual([], actual)
 
-    def test_convert_keyword_should_empty_list_for_empty_keyword(self):
+    def test_convert_keyword_should_empty_list_for_non_empty_keyword(self):
         expected = [{
             "keywords": ['abc'],
             "thesaurus": {"date": None, "datetype": None, "title": None},
@@ -1944,9 +1944,8 @@ class TestCustomMetadataParser(TestCase):
                 {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
             ]
 
-
     def test_will_use_only_the_default_metadata_parser(self):
-        identifier, vals, regions, keywords = parse_metadata(open(self.exml_path).read())
+        identifier, vals, regions, keywords, _ = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
         self.assertListEqual(['Global'], regions)
         self.assertListEqual(self.custom, keywords)
@@ -1954,7 +1953,7 @@ class TestCustomMetadataParser(TestCase):
 
     @override_settings(METADATA_PARSERS=['__DEFAULT__', 'geonode.layers.tests.dummy_metadata_parser'])
     def test_will_use_both_parsers_defined(self):
-        identifier, vals, regions, keywords = parse_metadata(open(self.exml_path).read())
+        identifier, vals, regions, keywords, _ = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
         self.assertListEqual(['Global', 'Europe'], regions)
         self.assertEqual("Passed through new parser", keywords)

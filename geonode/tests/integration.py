@@ -438,7 +438,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     gisdata.PROJECT_ROOT,
                     'both/good/sangis.org/Airport/Air_Runways.shp.xml')
 
-                identifier, vals, regions, keywords = parse_metadata(
+                identifier, vals, regions, keywords, _ = parse_metadata(
                     open(thelayer_metadata).read())
                 self.assertIsNotNone(regions)
                 uploaded.metadata_xml = thelayer_metadata
@@ -529,7 +529,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                         gisdata.PROJECT_ROOT,
                         'both/good/sangis.org/Airport/Air_Runways.shp.xml')
 
-                    identifier, vals, regions, keywords = parse_metadata(
+                    identifier, vals, regions, keywords, _ = parse_metadata(
                         open(thelayer_metadata).read())
                     self.assertIsNotNone(regions)
                     uploaded.metadata_xml = thelayer_metadata

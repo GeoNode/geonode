@@ -38,7 +38,7 @@ from django.utils import timezone
 LOGGER = logging.getLogger(__name__)
 
 
-def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[]):
+def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}):
     """Generate dict of model properties based on XML metadata"""
 
     # check if document is XML
@@ -67,7 +67,7 @@ def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[]):
     if not vals.get("date"):
         vals["date"] = datetime.datetime.now(timezone.get_current_timezone()).strftime("%Y-%m-%dT%H:%M:%S")
 
-    return [identifier, vals, regions, keywords]
+    return [identifier, vals, regions, keywords, custom]
 
 
 def iso2dict(exml):
@@ -128,6 +128,7 @@ def fgdc2dict(exml):
     vals = {}
     regions = []
     keywords = []
+    custom = {}
 
     mdata = Metadata(exml)
     identifier = mdata.idinfo.datasetid
@@ -184,7 +185,7 @@ def fgdc2dict(exml):
 
     keywords = convert_keyword(keywords)
 
-    return [identifier, vals, regions, keywords]
+    return [identifier, vals, regions, keywords, custom]
 
 
 def dc2dict(exml):
@@ -193,6 +194,7 @@ def dc2dict(exml):
     vals = {}
     regions = []
     keywords = []
+    custom = {}
 
     mdata = CswRecord(exml)
     identifier = mdata.identifier
@@ -209,7 +211,7 @@ def dc2dict(exml):
 
     keywords = convert_keyword(keywords)
 
-    return [identifier, vals, regions, keywords]
+    return [identifier, vals, regions, keywords, custom]
 
 
 def sniff_date(datestr):
@@ -244,7 +246,7 @@ def get_tagname(element):
     return tagname
 
 
-def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[]):
+def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[], custom={}):
     from django.utils.module_loading import import_string
     available_parsers = (
         settings.METADATA_PARSERS
@@ -255,8 +257,9 @@ def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[]):
         if parser_path == '__DEFAULT__':
             parser_path = "geonode.layers.metadata.set_metadata"
         parser = import_string(parser_path)
-        uuid, vals, regions, keywords = parser(exml, uuid, vals, regions, keywords)
-    return uuid, vals, regions, keywords
+        uuid, vals, regions, keywords, custom = parser(exml, uuid, vals, regions, keywords, custom)
+    return uuid, vals, regions, keywords, custom
+
 
 def convert_keyword(keyword, iso2dict=False):
     if not iso2dict and keyword:
