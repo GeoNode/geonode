@@ -147,7 +147,7 @@ Is required to define a fuction that takes 2 parametersand return 2 parameters.
 '''
 
 
-class TestMetadataStores(TestCase):
+class TestMetadataStorers(TestCase):
     def setUp(self):
         self.layer = create_single_layer('metadata-storer')
         self.uuid = self.layer.uuid
@@ -157,16 +157,11 @@ class TestMetadataStores(TestCase):
             "second-stage": {"title": "Updated Title", "abstract": "another update"},
         }
 
-    def test_will_use_the_default_metadata_storer(self):
-        layer = utils.metadata_stores(self.layer, self.custom)
-        self.assertEqual(self.uuid, layer.uuid)
-        self.assertEqual(self.abstract, layer.abstract)
-
     @override_settings(METADATA_STORERS=['geonode.upload.tests.test_utils.dummy_metadata_storer'])
     def test_will_use_single_storers_defined(self):
-        layer = utils.metadata_stores(self.layer, self.custom)
-        self.assertEqual('abc123cfde', layer.uuid)
-        self.assertEqual("updated abstract", layer.abstract)
+        utils.metadata_storers(self.layer, self.custom)
+        self.assertEqual('abc123cfde', self.layer.uuid)
+        self.assertEqual("updated abstract", self.layer.abstract)
 
     @override_settings(
         METADATA_STORERS=[
@@ -175,7 +170,7 @@ class TestMetadataStores(TestCase):
         ]
     )
     def test_will_use_multiple_storers_defined(self):
-        layer = utils.metadata_stores(self.layer, self.custom)
+        layer = utils.metadata_storers(self.layer, self.custom)
         self.assertEqual('abc123cfde', layer.uuid)
         self.assertEqual("another update", layer.abstract)
         self.assertEqual("Updated Title", layer.title)
@@ -190,11 +185,9 @@ def dummy_metadata_storer(layer, custom):
     if custom.get('processes', None):
         for key, value in custom['processes'].items():
             setattr(layer, key, value)
-    return layer, custom
 
 
 def dummy_metadata_storer2(layer, custom):
     if custom.get('second-stage', None):
         for key, value in custom['second-stage'].items():
             setattr(layer, key, value)
-    return layer, custom

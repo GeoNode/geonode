@@ -940,14 +940,14 @@ class KeywordHandler:
         return [t.alt_label for t in tkeyword]
 
 
-def metadata_stores(layer, custom={}):
+def metadata_storers(layer, custom={}):
     from django.utils.module_loading import import_string
-    available_stores = (
+    available_storers = (
         settings.METADATA_STORERS
         if hasattr(settings, "METADATA_STORERS")
         else []
     )
-    for store_path in available_stores:
-        store = import_string(store_path)
-        layer, custom = store(layer, custom)
+    for storer_path in available_storers:
+        storer = import_string(storer_path)
+        storer(layer, custom)
     return layer
