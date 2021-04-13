@@ -250,8 +250,6 @@ def geoserver_finalize_upload(
 
             if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
                 instance.metadata_uploaded = True
-                _, vals, _, _, _ = parse_metadata(
-                    open(xml_file).read())
 
                 try:
                     gs_resource = gs_catalog.get_resource(
@@ -271,16 +269,10 @@ def geoserver_finalize_upload(
                         except Exception:
                             gs_resource = None
 
-                if vals:
-                    title = vals.get('title', '')
-                    abstract = vals.get('abstract', '')
-
-                    # Updating GeoServer resource
-                    gs_resource.title = title
-                    gs_resource.abstract = abstract
-                    gs_catalog.save(gs_resource)
-                else:
-                    vals = {}
+                # Updating GeoServer resource
+                gs_resource.title = instance.title
+                gs_resource.abstract = instance.abstract
+                gs_catalog.save(gs_resource)
 
                 instance.store = gs_resource.store.name
                 instance.storeType = gs_resource.store.resource_type
