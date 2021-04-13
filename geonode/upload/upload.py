@@ -866,6 +866,8 @@ def final_step(upload_session, user, charset="UTF-8"):
     geoserver_finalize_upload.apply_async(
         (import_session.id, saved_layer.id, permissions, created,
          xml_file, sld_file, sld_uploaded, upload_session.tempdir))
+    
+    saved_layer = utils.metadata_stores(saved_layer, custom)
 
     return saved_layer
 
