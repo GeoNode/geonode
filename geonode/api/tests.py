@@ -137,7 +137,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer = Layer.objects.all()[0]
         layer.set_permissions(self.perm_spec)
         layer.clear_dirty_state()
-        self.assertHttpUnauthorized(self.api_client.get(
+        self.assertHttpNotFound(self.api_client.get(
             f"{self.list_url + str(layer.id)}/"))
 
         self.api_client.client.login(username=self.user, password=self.passwd)
@@ -481,7 +481,7 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         with self.settings(API_LOCKDOWN=False):
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 10)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 9)
 
     def test_profiles_lockdown(self):
         filter_url = self.profiles_list_url
@@ -493,7 +493,7 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 10)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
         # Returns limitted info about other users
         profiles = self.deserialize(resp)['objects']
         for profile in profiles:
@@ -513,7 +513,7 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 10)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
         # Returns limitted info about other users
         owners = self.deserialize(resp)['objects']
         for owner in owners:
