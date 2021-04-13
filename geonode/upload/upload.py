@@ -870,7 +870,7 @@ def final_step(upload_session, user, charset="UTF-8"):
     return saved_layer
 
 
-def _update_layer_with_xml_info(saved_layer,xml_file, regions, keywords, vals):
+def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
     # Updating layer with information coming from the XML file
     if xml_file:
         saved_layer.metadata_xml = open(xml_file).read()
@@ -895,8 +895,7 @@ def _update_layer_with_xml_info(saved_layer,xml_file, regions, keywords, vals):
                     saved_layer.keywords = keywords
                 else:
                     saved_layer.keywords.add(*keywords)
-        
- 
+
         # set model properties
         defaults = {}
         for key, value in vals.items():

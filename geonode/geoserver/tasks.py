@@ -22,7 +22,7 @@ import re
 import shutil
 
 from django.conf import settings
-from django.db import IntegrityError, transaction
+from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
@@ -38,12 +38,9 @@ from geonode import GeoNodeException
 from geonode.upload import signals
 from geonode.layers.models import (
     Layer, UploadSession)
-from geonode.layers.utils import resolve_regions
 from geonode.layers.metadata import set_metadata
 from geonode.base.models import (
-    ResourceBase,
-    TopicCategory,
-    SpatialRepresentationType)
+    ResourceBase)
 from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
@@ -284,12 +281,12 @@ def geoserver_finalize_upload(
                     gs_catalog.save(gs_resource)
                 else:
                     vals = {}
-                
-                instance.store=gs_resource.store.name
-                instance.storeType=gs_resource.store.resource_type
-                instance.alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}"
-                instance.title=gs_resource.title or gs_resource.store.name
-                instance.abstract=gs_resource.abstract or ''
+
+                instance.store = gs_resource.store.name
+                instance.storeType = gs_resource.store.resource_type
+                instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
+                instance.title = gs_resource.title or gs_resource.store.name
+                instance.abstract = gs_resource.abstract or ''
 
             if sld_uploaded:
                 geoserver_set_style(instance.id, sld_file)
