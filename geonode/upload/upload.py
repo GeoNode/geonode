@@ -34,6 +34,7 @@ State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
 
+from geonode.base.models import ResourceBase, SpatialRepresentationType, TopicCategory
 import uuid
 import logging
 import os.path
@@ -58,7 +59,7 @@ from geonode.upload import UploadException, LayerNotReady
 
 from ..people.utils import get_default_user
 from ..layers.metadata import set_metadata
-from ..layers.utils import get_valid_layer_name
+from ..layers.utils import get_valid_layer_name, resolve_regions
 from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
@@ -624,7 +625,9 @@ def final_step(upload_session, user, charset="UTF-8"):
     layer_uuid = str(uuid.uuid1())
     title = upload_session.layer_title
     abstract = upload_session.layer_abstract
-
+    regions = []
+    keywords = []
+    vals = {}
     # look for xml and finalize Layer metadata
     metadata_uploaded = False
     xml_file = upload_session.base_file[0].xml_files
@@ -745,6 +748,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                         owner=user,
                         has_time=_has_time)
                 )
+
         except IntegrityError as e:
             Upload.objects.invalidate_from_session(upload_session)
             raise UploadException.from_exc(_('Error configuring Layer'), e)
@@ -766,6 +770,9 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     # Add them to the upload session (new file fields are created).
     assigned_name = None
+
+    # Update Layer with information coming from XML File if available
+    saved_layer = _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals)
 
     def _store_file(saved_layer,
                     geonode_upload_session,
@@ -860,4 +867,75 @@ def final_step(upload_session, user, charset="UTF-8"):
         (import_session.id, saved_layer.id, permissions, created,
          xml_file, sld_file, sld_uploaded, upload_session.tempdir))
 
+    return saved_layer
+
+
+def _update_layer_with_xml_info(saved_layer,xml_file, regions, keywords, vals):
+    # Updating layer with information coming from the XML file
+    if xml_file:
+        saved_layer.metadata_xml = open(xml_file).read()
+        regions_resolved, regions_unresolved = resolve_regions(regions)
+        keywords.extend(regions_unresolved)
+
+        # Assign the regions (needs to be done after saving)
+        regions_resolved = list(set(regions_resolved))
+        if regions_resolved:
+            if len(regions_resolved) > 0:
+                if not saved_layer.regions:
+                    saved_layer.regions = regions_resolved
+                else:
+                    saved_layer.regions.clear()
+                    saved_layer.regions.add(*regions_resolved)
+
+        # Assign the keywords (needs to be done after saving)
+        keywords = list(set(keywords))
+        if keywords:
+            if len(keywords) > 0:
+                if not saved_layer.keywords:
+                    saved_layer.keywords = keywords
+                else:
+                    saved_layer.keywords.add(*keywords)
+        
+ 
+        # set model properties
+        defaults = {}
+        for key, value in vals.items():
+            if key == 'spatial_representation_type':
+                value = SpatialRepresentationType(identifier=value)
+            elif key == 'topic_category':
+                value, created = TopicCategory.objects.get_or_create(
+                    identifier=value,
+                    defaults={'description': '', 'gn_description': value})
+                key = 'category'
+                defaults[key] = value
+            else:
+                defaults[key] = value
+
+        # Save all the modified information in the instance without triggering signals.
+        try:
+            if not defaults.get('title', saved_layer.title):
+                defaults['title'] = saved_layer.title or saved_layer.name
+            if not defaults.get('abstract', saved_layer.abstract):
+                defaults['abstract'] = saved_layer.abstract or ''
+
+            to_update = {}
+            to_update['charset'] = defaults.pop('charset', saved_layer.charset)
+            to_update['storeType'] = defaults.pop('storeType', saved_layer.storeType)
+            for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
+                if _key in defaults:
+                    to_update[_key] = defaults.pop(_key)
+                else:
+                    to_update[_key] = getattr(saved_layer, _key)
+            to_update.update(defaults)
+
+            with transaction.atomic():
+                ResourceBase.objects.filter(
+                    id=saved_layer.resourcebase_ptr.id).update(
+                    **defaults)
+                Layer.objects.filter(id=saved_layer.id).update(**to_update)
+
+                # Refresh from DB
+                saved_layer.refresh_from_db()
+        except IntegrityError:
+            raise
     return saved_layer

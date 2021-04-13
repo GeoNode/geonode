@@ -284,81 +284,12 @@ def geoserver_finalize_upload(
                     gs_catalog.save(gs_resource)
                 else:
                     vals = {}
-
-                vals.update(dict(
-                    uuid=instance.uuid,
-                    name=instance.name,
-                    owner=instance.owner,
-                    store=gs_resource.store.name,
-                    storeType=gs_resource.store.resource_type,
-                    alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
-                    title=gs_resource.title or gs_resource.store.name,
-                    abstract=gs_resource.abstract or ''))
-
-                instance.metadata_xml = xml_file
-                regions_resolved, regions_unresolved = resolve_regions(regions)
-                keywords.extend(regions_unresolved)
-
-                # Assign the regions (needs to be done after saving)
-                regions_resolved = list(set(regions_resolved))
-                if regions_resolved:
-                    if len(regions_resolved) > 0:
-                        if not instance.regions:
-                            instance.regions = regions_resolved
-                        else:
-                            instance.regions.clear()
-                            instance.regions.add(*regions_resolved)
-
-                # Assign the keywords (needs to be done after saving)
-                keywords = list(set(keywords))
-                if keywords:
-                    if len(keywords) > 0:
-                        if not instance.keywords:
-                            instance.keywords = keywords
-                        else:
-                            instance.keywords.add(*keywords)
-
-                # set model properties
-                defaults = {}
-                for key, value in vals.items():
-                    if key == 'spatial_representation_type':
-                        value = SpatialRepresentationType(identifier=value)
-                    elif key == 'topic_category':
-                        value, created = TopicCategory.objects.get_or_create(
-                            identifier=value,
-                            defaults={'description': '', 'gn_description': value})
-                        key = 'category'
-                        defaults[key] = value
-                    else:
-                        defaults[key] = value
-
-                # Save all the modified information in the instance without triggering signals.
-                try:
-                    if not defaults.get('title', title):
-                        defaults['title'] = instance.title or instance.name
-                    if not defaults.get('abstract', abstract):
-                        defaults['abstract'] = instance.abstract or ''
-
-                    to_update = {}
-                    to_update['charset'] = defaults.pop('charset', instance.charset)
-                    to_update['storeType'] = defaults.pop('storeType', instance.storeType)
-                    for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
-                        if _key in defaults:
-                            to_update[_key] = defaults.pop(_key)
-                        else:
-                            to_update[_key] = getattr(instance, _key)
-                    to_update.update(defaults)
-
-                    with transaction.atomic():
-                        ResourceBase.objects.filter(
-                            id=instance.resourcebase_ptr.id).update(
-                            **defaults)
-                        Layer.objects.filter(id=instance.id).update(**to_update)
-
-                        # Refresh from DB
-                        instance.refresh_from_db()
-                except IntegrityError:
-                    raise
+                
+                instance.store=gs_resource.store.name
+                instance.storeType=gs_resource.store.resource_type
+                instance.alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}"
+                instance.title=gs_resource.title or gs_resource.store.name
+                instance.abstract=gs_resource.abstract or ''
 
             if sld_uploaded:
                 geoserver_set_style(instance.id, sld_file)
@@ -531,9 +462,7 @@ def geoserver_post_save_layers(
 
                 # store the resource to avoid another geoserver call in the post_save
                 """Get information from geoserver.
-
                 The attributes retrieved include:
-
                 * Bounding Box
                 * SRID
                 """
