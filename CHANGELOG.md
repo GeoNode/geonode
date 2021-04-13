@@ -3,7 +3,7 @@
 ## [3.2.0](https://github.com/GeoNode/geonode/tree/3.2.0) (2021-04)
 ### Breaking Changes
 
- - Bump to postgresql-13
+ - Bump to postgresql-13; *do not upgrade the docker image or be prepared to do a dump/restore of the DB*
  - Based on MapStore client [2.1.3](https://github.com/GeoNode/geonode-mapstore-client/releases/tag/2.1.3)
  - MapStore client is no more compatible with 3.0.x train
  - ResourceBase Model `BBOX` now is a geometry; that is no more compatible with the 3.1.x one
@@ -24,6 +24,7 @@
    * Advanced Style Editor with graphical UI
    * Improved Map Save Widget, specific for GeoNode
    * New MapStore client configuration subsytem
+   * Group Layer as namend groups
  - Upgraded `Dokerfile` and `docker-compose` to version 3.4
  - Migration of CI from Travis to CircleCI
  - General Code Quality and Performance Improvements
@@ -32,17 +33,22 @@
    * [GNIP-76: Add RTL Support](https://github.com/GeoNode/geonode/issues/6156)
    * [GNIP-77: GetFeatureInfo Templating For GeoNode](https://github.com/GeoNode/geonode/issues/6182)
    * [GNIP-78: GeoNode generic "Apps" model to include pluggable entities into the framework](https://github.com/GeoNode/geonode/issues/6684)
+     - Added MapStore GeoStories as part of the GeoNode MapStore client
    * [GNIP-79: GeoNode REST APIs (v2)](https://github.com/GeoNode/geonode/issues/6685)
    * [GNIP-82: Thesauri improvements](https://github.com/GeoNode/geonode/issues/6925)
    * [GNIP-83: ResourceBase for metadata-only resources](https://github.com/GeoNode/geonode/issues/7057)
    * [GNIP-84: Upload Page Enhancements](https://github.com/GeoNode/geonode/issues/7154)
+     - Improved Async Upload of Layers
+     - GeoServer Importer Uploads are now stateful and can be resumed or canceled
    * [GNIP-85: Map legend](https://github.com/GeoNode/geonode/issues/7254)
    * [GNIP 86: metadata parsing and storing](https://github.com/GeoNode/geonode/issues/7263)
    * Append data to an existing layer feature
    * Improved Metadata Editors, now able to handle HTML tags
    * Improved Catalog and Thesauri
+   * Improved Thumbnails creation logic which is now relies on GetMap instead of outdated GeoServer Print Plugin
    * Possibility to Upload RDF thesaurus via web
    * Pluggable CSW prefiltering from external apps
+   * New Contrib moudle: [GeoNode Keycloak Support](https://github.com/GeoNode/geonode-contribs/tree/master/django-geonode-keycloak)
    * Delete existing table on restore command feature (general improvements to Backup/Restore machinery)
    * Advanced Upload Workflow Improvements:
      - Non admin user cannot change permission
