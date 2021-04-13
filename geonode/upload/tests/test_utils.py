@@ -145,6 +145,8 @@ Is required to define a fuction that takes 2 parametersand return 2 parameters.
             Returns:
                     layer: (Layer): Layer instance updated
 '''
+
+
 class TestMetadataStores(TestCase):
     def setUp(self):
         self.layer = create_single_layer('metadata-storer')
@@ -166,7 +168,6 @@ class TestMetadataStores(TestCase):
         self.assertEqual('abc123cfde', layer.uuid)
         self.assertEqual("updated abstract", layer.abstract)
 
-
     @override_settings(
         METADATA_STORERS=[
             "geonode.upload.tests.test_utils.dummy_metadata_storer",
@@ -179,15 +180,18 @@ class TestMetadataStores(TestCase):
         self.assertEqual("another update", layer.abstract)
         self.assertEqual("Updated Title", layer.title)
 
+
 '''
 Just a dummy function required for the smoke test above
 '''
+
 
 def dummy_metadata_storer(layer, custom):
     if custom.get('processes', None):
         for key, value in custom['processes'].items():
             setattr(layer, key, value)
     return layer, custom
+
 
 def dummy_metadata_storer2(layer, custom):
     if custom.get('second-stage', None):
