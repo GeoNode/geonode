@@ -22,7 +22,7 @@ import time
 import base64
 import logging
 
-from pyproj import Transformer
+from pyproj import Transformer, CRS
 from typing import List, Tuple, Callable, Union
 
 from django.conf import settings
@@ -261,3 +261,63 @@ def fetch_wms(url: str, max_retries: int = 3, retry_delay: int = 1):
             break
 
     return image
+
+
+def epsg_3857_area_of_use():
+    """
+    Shortcut function, returning area of use of EPSG:3857 (in EPSG:4326) in a layer compliant BBOX
+    """
+    epsg3857 = CRS.from_user_input('EPSG:3857')
+    return [
+        getattr(epsg3857.area_of_use, 'west'),
+        getattr(epsg3857.area_of_use, 'east'),
+        getattr(epsg3857.area_of_use, 'south'),
+        getattr(epsg3857.area_of_use, 'north'),
+        'EPSG:4326'
+    ]
+
+
+def crop_to_3857_area_of_use(bbox: List) -> List:
+
+    # perform the comparison in EPSG:4326 (the pivot for EPSG:3857)
+    bbox4326 = transform_bbox(bbox, target_crs='EPSG:4326')
+
+    # get area of use of EPSG:3857 in EPSG:4326
+    epsg3857_bounds_bbox = epsg_3857_area_of_use()
+
+    bbox = []
+    for coord, bound_coord in zip(bbox4326[:-1], epsg3857_bounds_bbox[:-1]):
+        if abs(coord) > abs(bound_coord):
+            logger.debug(
+                "Thumbnail generation: cropping BBOX's coord to EPSG:3857 area of use."
+            )
+            bbox.append(bound_coord)
+        else:
+            bbox.append(coord)
+
+    bbox.append('EPSG:4236')
+
+    return bbox
+
+
+def exceeds_epsg3857_area_of_use(bbox: List) -> bool:
+    """
+    Function checking if a provided BBOX extends the are of use of EPSG:3857. Comparison is performed after casting
+    the BBOX to EPSG:4326 (pivot for EPSG:3857).
+
+    :param bbox: a layer compliant BBOX in a certain CRS, in (xmin, xmax, ymin, ymax, 'EPSG:xxxx') order
+    :returns: List of indicators whether BBOX's coord exceeds the area of use of EPSG:3857
+    """
+
+    # perform the comparison in EPSG:4326 (the pivot for EPSG:3857)
+    bbox4326 = transform_bbox(bbox, target_crs='EPSG:4326')
+
+    # get area of use of EPSG:3857 in EPSG:4326
+    epsg3857_bounds_bbox = epsg_3857_area_of_use()
+
+    exceeds = False
+    for coord, bound_coord in zip(bbox4326[:-1], epsg3857_bounds_bbox[:-1]):
+        if abs(coord) > abs(bound_coord):
+            exceeds = True
+
+    return exceeds
