@@ -216,7 +216,7 @@ class SecurityTest(GeoNodeBaseTestSupport):
         Tests the Geonode login required authentication middleware with Basic authenticated queries
         """
 
-        site_url_settings = [settings.SITEURL + "login/custom", "/login/custom", "login/custom"]
+        site_url_settings = [f"{settings.SITEURL}login/custom", "/login/custom", "login/custom"]
         black_listed_url = reverse("maps_browse")
 
         for setting in site_url_settings:
@@ -355,7 +355,6 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def test_set_bulk_permissions(self):
         """Test that after restrict view permissions on two layers
         bobby is unable to see them"""
-
         geofence_rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             purge_geofence_all()
@@ -381,11 +380,11 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 14)
+            self.assertEqual(geofence_rules_count, 12)
             set_geofence_all(test_perm_layer)
             geofence_rules_count = get_geofence_rules_count()
             _log(f"2. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 15)
+            self.assertEqual(geofence_rules_count, 13)
 
         self.client.logout()
 
@@ -401,7 +400,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"4. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 15)
+            self.assertEqual(geofence_rules_count, 13)
 
             # Validate maximum priority
             geofence_rules_highest_priority = get_highest_priority()
@@ -414,7 +413,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             import requests
             from requests.auth import HTTPBasicAuth
-            r = requests.get(url + f'gwc/rest/seed/{test_perm_layer.alternate}.json',
+            r = requests.get(f"{url}gwc/rest/seed/{test_perm_layer.alternate}.json",
                              auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 400)
 
@@ -467,14 +466,14 @@ class PermissionsTest(GeoNodeBaseTestSupport):
     def test_bobby_cannot_set_all(self):
         """Test that Bobby can set the permissions only only on the ones
         for which he has the right"""
-
-        layer = Layer.objects.all()[0]
+        bobby = get_user_model().objects.get(username='bobby')
+        layer = Layer.objects.all().exclude(owner=bobby)[0]
         self.client.login(username='admin', password='admin')
         # give bobby the right to change the layer permissions
-        assign_perm('change_resourcebase', get_user_model().objects.get(username='bobby'), layer.get_self_resource())
+        assign_perm('change_resourcebase_permissions', bobby, layer.get_self_resource())
         self.client.logout()
         self.client.login(username='bobby', password='bob')
-        layer2 = Layer.objects.all()[1]
+        layer2 = Layer.objects.all().exclude(owner=bobby)[1]
         data = {
             'permissions': json.dumps({"users": {"bobby": ["view_resourcebase"]}, "groups": []}),
             'resources': [layer.id, layer2.id]
@@ -483,21 +482,22 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         content = resp.content
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
-        self.assertTrue(layer2.title in json.loads(content)['not_changed'])
+        self.assertNotIn(layer.title, json.loads(content)['not_changed'])
+        self.assertIn(layer2.title, json.loads(content)['not_changed'])
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_user_can(self):
         bobby = get_user_model().objects.get(username='bobby')
         perm_spec = {
-              'users': {
-                  'bobby': [
-                      'view_resourcebase',
-                      'download_resourcebase',
-                      'change_layer_style'
-                      ]
-              },
-              'groups': []
-          }
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                    'change_layer_style'
+                ]
+            },
+            'groups': []
+        }
         layer = Layer.objects.filter(storeType='dataStore').first()
         layer.set_permissions(perm_spec)
         # Test user has permission with read_only=False
@@ -518,7 +518,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             3. Set permissions to a group of users
             4. Try to sync a layer from GeoServer
         """
-        layer = Layer.objects.filter(storeType='dataStore').first()
+        bobby = get_user_model().objects.get(username='bobby')
+        layer = Layer.objects.filter(storeType='dataStore').exclude(owner=bobby).first()
         self.client.login(username='admin', password='admin')
 
         # Reset GeoFence Rules
@@ -552,7 +553,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                     'view_resourcebase',
                     'download_resourcebase',
                     'change_layer_style',
-                    'change_layer_data']
+                    'change_layer_data'
+                ]
             },
             'groups': []
         }
@@ -564,14 +566,14 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _deny_wfst_rule_exists = False
         for rule in rules_objs['rules']:
             if rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            rule['request'] == "TRANSACTION":
+                    rule['userName'] == 'bobby' and \
+                    rule['request'] == "TRANSACTION":
                 _deny_wfst_rule_exists = rule['access'] == 'DENY'
                 break
         self.assertFalse(_deny_wfst_rule_exists)
 
         # NO WFS-T
-        # - order it important
+        # - order is important
         perm_spec = {
             'users': {
                 'bobby': [
@@ -591,13 +593,13 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _allow_wfs_rule_position = -1
         for cnt, rule in enumerate(rules_objs['rules']):
             if rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            rule['request'] == "TRANSACTION":
+                    rule['userName'] == 'bobby' and \
+                    rule['request'] == "TRANSACTION":
                 _deny_wfst_rule_exists = rule['access'] == 'DENY'
                 _deny_wfst_rule_position = cnt
             elif rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            (rule['request'] is None or rule['request'] == '*'):
+                    rule['userName'] == 'bobby' and \
+                    (rule['request'] is None or rule['request'] == '*'):
                 _allow_wfs_rule_position = cnt
         self.assertTrue(_deny_wfst_rule_exists)
         self.assertTrue(_allow_wfs_rule_position > _deny_wfst_rule_position)
@@ -619,8 +621,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _deny_wfst_rule_exists = False
         for rule in rules_objs['rules']:
             if rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            rule['request'] == "TRANSACTION":
+                    rule['userName'] == 'bobby' and \
+                    rule['request'] == "TRANSACTION":
                 _deny_wfst_rule_exists = rule['access'] == 'DENY'
                 break
         self.assertFalse(_deny_wfst_rule_exists)
@@ -661,14 +663,14 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             "users": {"bobby": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 5)
+        self.assertEqual(geofence_rules_count, 8)
 
-        rules_objs = get_geofence_rules(entries=5)
-        self.assertEqual(len(rules_objs['rules']), 5)
+        rules_objs = get_geofence_rules(entries=8)
+        self.assertEqual(len(rules_objs['rules']), 8)
         # Order is important
         _limit_rule_position = -1
         for cnt, rule in enumerate(rules_objs['rules']):
-            if rule['service'] is None:
+            if rule['service'] is None and rule['userName'] == 'bobby':
                 self.assertEqual(rule['userName'], 'bobby')
                 self.assertEqual(rule['workspace'], 'CA')
                 self.assertEqual(rule['layer'], 'CA')
@@ -846,8 +848,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
-        rest_path = 'rest/workspaces/geonode/datastores/{lyr_title}/featuretypes/{lyr_name}.xml'.\
-            format(lyr_title=saved_layer.store, lyr_name=name)
+        rest_path = f'rest/workspaces/geonode/datastores/{saved_layer.store}/featuretypes/{name}.xml'
         import requests
         from requests.auth import HTTPBasicAuth
         r = requests.get(url + rest_path,
@@ -881,7 +882,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         r = requests.put(url + rest_path,
                          data=payload,
                          headers={
-                            'Content-type': 'application/xml'
+                             'Content-type': 'application/xml'
                          },
                          auth=HTTPBasicAuth(user, passwd))
         self.assertEqual(r.status_code, 200)
@@ -1238,7 +1239,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
         current_perms = layer.get_all_level_info()
-        self.assertEqual(len(current_perms['users']), 2)
+        self.assertGreaterEqual(len(current_perms['users']), 1)
 
         # Test that the User permissions specified in the perm_spec were
         # applied properly
@@ -1354,7 +1355,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         bob = get_user_model().objects.get(username='bobby')
 
         # grab a layer
-        layer = Layer.objects.first()
+        layer = Layer.objects.filter(owner=bob).first()
         layer.set_default_permissions()
         # verify bobby has view/change permissions on it but not manage
         self.assertTrue(
@@ -1366,7 +1367,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 14)
+            self.assertEqual(geofence_rules_count, 17)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 
@@ -1441,7 +1442,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"3. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 14)
+            self.assertGreaterEqual(geofence_rules_count, 14)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
@@ -1479,7 +1480,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
     @dump_func_name
     def test_anonymus_permissions(self):
-
         # grab a layer
         layer = Layer.objects.all()[0]
         layer.set_default_permissions()
@@ -1714,7 +1714,7 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         x.save()
         layers = Layer.objects.all()
         actual = get_visible_resources(queryset=layers, user=self.user)
-        self.assertEqual(9, len(actual))
+        self.assertEqual(layers.filter(dirty_state=False).count(), len(actual))
 
     @override_settings(
         ADMIN_MODERATE_UPLOADS=True,
@@ -1775,7 +1775,7 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(2, actual.count())
+        self.assertEqual(1, actual.count())
 
         # Test private groups
         private_groups = GroupProfile.objects.filter(
@@ -1799,7 +1799,7 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(2, actual.count())
+        self.assertEqual(1, actual.count())
         actual = get_visible_resources(
             queryset=Layer.objects.all(),
             user=None,
@@ -1807,4 +1807,26 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(2, actual.count())
+        self.assertEqual(1, actual.count())
+
+    def test_get_visible_resources(self):
+        standard_user = get_user_model().objects.get(username="bobby")
+        layers = Layer.objects.all()
+        # update user's perm on a layer,
+        # this should not return the layer since it will not be in user's allowed resources
+        x = Layer.objects.get(title='common bar')
+        remove_perm('view_resourcebase', standard_user, x.get_self_resource())
+        anonymous_group = Group.objects.get(name='anonymous')
+        remove_perm('view_resourcebase', anonymous_group, x.get_self_resource())
+        actual = get_visible_resources(
+            queryset=layers,
+            user=standard_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        self.assertNotIn(x.title, list(actual.values_list('title', flat=True)))
+        # get layers as admin, this should return all layers with metadata_only = True
+        actual = get_visible_resources(
+            queryset=layers,
+            user=self.user)
+        self.assertIn(x.title, list(actual.values_list('title', flat=True)))

@@ -109,8 +109,6 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
 
 class PeopleTest(GeoNodeBaseTestSupport):
 
-    fixtures = ['initial_data.json', 'people_data.json']
-
     def test_forgot_username(self):
         url = reverse('forgot_username')
 
@@ -124,9 +122,11 @@ class PeopleTest(GeoNodeBaseTestSupport):
         })
         self.assertContains(response, "No user could be found with that email address.")
 
-        default_contact = get_user_model().objects.get(username='default_contact')
+        norman = get_user_model().objects.get(username='norman')
+        norman.email = "contact@admin.admin"
+        norman.save()
         response = self.client.post(url, data={
-            'email': default_contact.email
+            'email': norman.email
         })
         # and sends a mail for a good one
         self.assertEqual(len(mail.outbox), 1)
@@ -138,6 +138,60 @@ class PeopleTest(GeoNodeBaseTestSupport):
             mail.outbox[0].subject,
             "Your username for " +
             site.name)
+
+    def test_get_profile(self):
+        admin = get_user_model().objects.get(username='admin')
+        norman = get_user_model().objects.get(username='norman')
+        bobby = get_user_model().objects.get(username='bobby')
+        bobby.voice = '+245-897-7889'
+        bobby.save()
+        url = reverse('profile_detail', args=['bobby'])
+
+        # Get user's profile as anonymous
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # Returns limitted info about a user
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertIn('Profile of bobby', content)
+        self.assertNotIn(bobby.voice, content)
+
+        # Get user's profile by another authenticated user
+        self.assertTrue(self.client.login(username='norman', password='norman'))
+        self.assertTrue(norman.is_authenticated)
+        response = self.client.get(url, user=norman)
+        self.assertEqual(response.status_code, 200)
+        # Returns limitted info about a user
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertIn('Profile of bobby', content)
+        self.assertNotIn(bobby.voice, content)
+
+        # Get user's profile as owner
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        self.assertTrue(bobby.is_authenticated)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # Returns all profile info
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertIn('Profile of bobby', content)
+        self.assertIn(bobby.voice, content)
+
+        # Get user's profile as admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        self.assertTrue(admin.is_authenticated)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # Returns all profile info
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertIn('Profile of bobby', content)
+        self.assertIn(bobby.voice, content)
 
 
 class FacebookExtractorTestCase(GeoNodeBaseTestSupport):
