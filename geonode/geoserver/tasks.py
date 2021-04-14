@@ -266,15 +266,16 @@ def geoserver_finalize_upload(
                         except Exception:
                             gs_resource = None
 
-                # Updating GeoServer resource
-                gs_resource.title = instance.title
-                gs_resource.abstract = instance.abstract
-                gs_catalog.save(gs_resource)
-                instance.store = gs_resource.store.name
-                instance.storeType = gs_resource.store.resource_type
-                instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
-                instance.title = gs_resource.title or gs_resource.store.name
-                instance.abstract = gs_resource.abstract or ''
+                if gs_resource:
+                    # Updating GeoServer resource
+                    gs_resource.title = instance.title
+                    gs_resource.abstract = instance.abstract
+                    gs_catalog.save(gs_resource)
+                    instance.store = gs_resource.store.name
+                    instance.storeType = gs_resource.store.resource_type
+                    instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
+                    instance.title = gs_resource.title or gs_resource.store.name
+                    instance.abstract = gs_resource.abstract or ''
 
             if sld_uploaded:
                 geoserver_set_style(instance.id, sld_file)
