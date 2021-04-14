@@ -2494,8 +2494,8 @@ msgstr "Attributi del dataset"
 msgid "Upload Layer"
 msgstr "Carica livello"
 
-msgid "Incomplete Uploads"
-msgstr "Upload incompleti"
+msgid "Upload Status"
+msgstr "Stato caricamento"
 
 msgid "You have the following incomplete uploads"
 msgstr "Sono disponibili i seguenti caricamenti incompleti"
