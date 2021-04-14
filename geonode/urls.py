@@ -160,6 +160,7 @@ urlpatterns += [
                 namespace='oauth2_provider')),
 
     # Api Views
+
     url(r'^api/o/v4/tokeninfo',
         verify_token, name='tokeninfo'),
     url(r'^api/o/v4/userinfo',

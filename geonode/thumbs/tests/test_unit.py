@@ -193,7 +193,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
 
     def test_layers_locations_composition_map_default_bbox(self):
-        expected_bbox = [-18415954.05583559, 1414810.0631394347, -24064384.914356533, 16333507.057976719, "EPSG:3857"]
+        expected_bbox = [-18411664.521739896, 1414810.0631394347, -20040289.599925745, 16329038.485056704, 'EPSG:3857']
         expected_locations = [
             [
                 settings.GEOSERVER_LOCATION,
