@@ -270,7 +270,6 @@ def geoserver_finalize_upload(
                 gs_resource.title = instance.title
                 gs_resource.abstract = instance.abstract
                 gs_catalog.save(gs_resource)
-
                 instance.store = gs_resource.store.name
                 instance.storeType = gs_resource.store.resource_type
                 instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
@@ -500,15 +499,27 @@ def geoserver_post_save_layers(
                         instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
                         Layer.objects.filter(id=instance.id).update(
                             bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
-                        match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-                        instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
-                        Layer.objects.filter(id=instance.id).update(
-                            ll_bbox_polygon=instance.bbox_polygon, srid=srid)
 
                         # Refresh from DB
                         instance.refresh_from_db()
                 except Exception as e:
                     logger.exception(e)
+
+                try:
+                    with transaction.atomic():
+                        match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+                        instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
+                        Layer.objects.filter(id=instance.id).update(
+                            ll_bbox_polygon=instance.bbox_polygon, srid=srid)
+                except Exception as e:
+                    logger.warning(e)
+                    try:
+                        with transaction.atomic():
+                            instance.bbox_polygon.srid = 4326
+                            Layer.objects.filter(id=instance.id).update(
+                                ll_bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
+                    except Exception as e:
+                        logger.warning(e)
 
                 # Refreshing CSW records
                 logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")
