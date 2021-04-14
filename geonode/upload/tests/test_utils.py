@@ -72,31 +72,31 @@ class TestHandleMetadataKeyword(TestCase):
 
     def setUp(self):
         self.keyword = [
-                {
-                    "keywords": ["features", "test_layer"],
-                    "thesaurus": {"date": None, "datetype": None, "title": None},
-                    "type": "theme",
+            {
+                "keywords": ["features", "test_layer"],
+                "thesaurus": {"date": None, "datetype": None, "title": None},
+                "type": "theme",
+            },
+            {
+                "keywords": ["no conditions to access and use"],
+                "thesaurus": {
+                    "date": "2020-10-30T16:58:34",
+                    "datetype": "publication",
+                    "title": "Test for ordering",
                 },
-                {
-                    "keywords": ["no conditions to access and use"],
-                    "thesaurus": {
-                        "date": "2020-10-30T16:58:34",
-                        "datetype": "publication",
-                        "title": "Test for ordering",
-                    },
-                    "type": None,
+                "type": None,
+            },
+            {
+                "keywords": ["ad", "af"],
+                "thesaurus": {
+                    "date": "2008-06-01",
+                    "datetype": "publication",
+                    "title": "GEMET - INSPIRE themes, version 1.0",
                 },
-                {
-                    "keywords": ["ad", "af"],
-                    "thesaurus": {
-                        "date": "2008-06-01",
-                        "datetype": "publication",
-                        "title": "GEMET - INSPIRE themes, version 1.0",
-                    },
-                    "type": None,
-                },
-                {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
-            ]
+                "type": None,
+            },
+            {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
+        ]
         self.layer = create_single_layer('keyword-handler')
         self.sut = utils.KeywordHandler(
             instance=self.layer,
