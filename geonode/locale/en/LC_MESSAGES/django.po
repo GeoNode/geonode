@@ -2458,8 +2458,8 @@ msgstr "Dataset Attributes"
 msgid "Upload Layer"
 msgstr "Upload Layer"
 
-msgid "Incomplete Uploads"
-msgstr "Incomplete Uploads"
+msgid "Upload Status"
+msgstr "Upload Status"
 
 msgid "You have the following incomplete uploads"
 msgstr "You have the following incomplete uploads"
