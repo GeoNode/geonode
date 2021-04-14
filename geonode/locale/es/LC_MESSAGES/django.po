@@ -2634,8 +2634,8 @@ msgstr "Atributos del Conjunto de Datos"
 msgid "Upload Layer"
 msgstr "Subir Capa"
 
-msgid "Incomplete Uploads"
-msgstr "Cargas incompletas"
+msgid "Upload Status"
+msgstr "Estado de carga"
 
 msgid "You have the following incomplete uploads"
 msgstr "Usted tiene los siguientes cargas incompletos"
