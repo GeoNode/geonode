@@ -628,6 +628,7 @@ def final_step(upload_session, user, charset="UTF-8"):
     regions = []
     keywords = []
     vals = {}
+    custom = {}
     # look for xml and finalize Layer metadata
     metadata_uploaded = False
     xml_file = upload_session.base_file[0].xml_files

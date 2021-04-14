@@ -251,8 +251,9 @@ def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[], custom={}):
     available_parsers = (
         settings.METADATA_PARSERS
         if hasattr(settings, "METADATA_PARSERS")
-        else ['geonode.layers.metadata.set_metadata']
+        else []
     )
+    available_parsers = ['__DEFAULT__'] if len(available_parsers) == 0 else available_parsers
     for parser_path in available_parsers:
         if parser_path == '__DEFAULT__':
             parser_path = "geonode.layers.metadata.set_metadata"
@@ -261,11 +262,11 @@ def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[], custom={}):
     return uuid, vals, regions, keywords, custom
 
 
-def convert_keyword(keyword, iso2dict=False):
+def convert_keyword(keyword, iso2dict=False, theme='theme'):
     if not iso2dict and keyword:
         return [{
             "keywords": keyword,
             "thesaurus": {"date": None, "datetype": None, "title": None},
-            "type": "theme",
+            "type": theme,
         }]
     return keyword

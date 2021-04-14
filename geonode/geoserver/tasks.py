@@ -38,7 +38,6 @@ from geonode import GeoNodeException
 from geonode.upload import signals
 from geonode.layers.models import (
     Layer, UploadSession)
-from geonode.layers.metadata import parse_metadata
 from geonode.base.models import (
     ResourceBase)
 from geonode.utils import (
@@ -229,8 +228,6 @@ def geoserver_finalize_upload(
         logger.debug(f"Layer id {instance_id} does not exist yet!")
         raise
 
-    title = None
-    abstract = None
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
