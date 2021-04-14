@@ -904,13 +904,21 @@ def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
                     saved_layer.regions.add(*regions_resolved)
 
         # Assign the keywords (needs to be done after saving)
-        keywords = list(set(keywords))
-        if keywords:
-            if len(keywords) > 0:
+        if len(keywords) > 0 and isinstance(keywords[0], dict):
+            if 'keywords' in keywords[0]:
+                _keywords = keywords[0]['keywords']
+        try:
+            _keywords = list(set(_keywords))
+        except Exception as e:
+            logger.exception(e)
+            _keywords = None
+
+        if _keywords:
+            if len(_keywords) > 0:
                 if not saved_layer.keywords:
-                    saved_layer.keywords = keywords
+                    saved_layer.keywords = _keywords
                 else:
-                    saved_layer.keywords.add(*keywords)
+                    saved_layer.keywords.add(*_keywords)
 
         # set model properties
         defaults = {}
