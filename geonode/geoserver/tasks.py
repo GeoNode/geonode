@@ -271,11 +271,9 @@ def geoserver_finalize_upload(
                     gs_resource.title = instance.title
                     gs_resource.abstract = instance.abstract
                     gs_catalog.save(gs_resource)
-                    instance.store = gs_resource.store.name
-                    instance.storeType = gs_resource.store.resource_type
-                    instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
-                    instance.title = gs_resource.title or gs_resource.store.name
-                    instance.abstract = gs_resource.abstract or ''
+                    if gs_resource.store:
+                        instance.storeType = gs_resource.store.resource_type
+                        instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
 
             if sld_uploaded:
                 geoserver_set_style(instance.id, sld_file)
