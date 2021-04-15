@@ -58,7 +58,7 @@ from geonode import GeoNodeException
 from geonode.upload import UploadException, LayerNotReady
 
 from ..people.utils import get_default_user
-from ..layers.metadata import parse_metadata
+from ..layers.metadata import convert_keyword, parse_metadata
 from ..layers.utils import get_valid_layer_name, resolve_regions
 from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import geoserver_finalize_upload
@@ -878,7 +878,7 @@ def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
     if xml_file:
         saved_layer.metadata_xml = open(xml_file).read()
         regions_resolved, regions_unresolved = resolve_regions(regions)
-        keywords.extend(regions_unresolved)
+        keywords.extend(convert_keyword(regions_unresolved))
 
         # Assign the regions (needs to be done after saving)
         regions_resolved = list(set(regions_resolved))
