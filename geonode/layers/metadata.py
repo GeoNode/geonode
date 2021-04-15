@@ -171,7 +171,6 @@ def fgdc2dict(exml):
                 if 'placekey' in place:
                     regions.extend(place['placekey'])
 
-        vals['raw_keyword'] = mdata.idinfo.keywords
     if hasattr(mdata.idinfo.timeperd, 'timeinfo'):
         if hasattr(mdata.idinfo.timeperd.timeinfo, 'rngdates'):
             vals['temporal_extent_start'] = \

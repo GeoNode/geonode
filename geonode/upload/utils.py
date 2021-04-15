@@ -897,7 +897,7 @@ class KeywordHandler:
     def handle_metadata_keywords(self):
         '''
         Method the extract the keyword from the dict.
-        If the raw_keyword are passed, try to extract them from the dict
+        If the keyword are passed, try to extract them from the dict
         by splitting free-keyword from the thesaurus
         '''
         fkeyword = []
