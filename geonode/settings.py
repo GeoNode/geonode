@@ -420,6 +420,7 @@ GEONODE_CORE_APPS = (
     'geonode.security',
     'geonode.catalogue',
     'geonode.catalogue.metadataxsl',
+    'geonode.harvesting.apps.HarvestingAppConfig',
 )
 
 # GeoNode Apps
@@ -491,6 +492,7 @@ INSTALLED_APPS = (
     'floppyforms',
     'tinymce',
     'widget_tweaks',
+    'django_celery_beat',
     'markdownify',
 
     # REST APIs
@@ -655,21 +657,21 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
         'mail_admins': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
     "loggers": {
         "django": {
-            "handlers": ["console"], "level": "INFO", },
+            "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "INFO", },
+            "handlers": ["console"], "level": "ERROR", },
         "geoserver-restconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
         "owslib": {
@@ -677,7 +679,7 @@ LOGGING = {
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
         "celery": {
-            'handlers': ["console"], 'level': 'INFO', },
+            'handlers': ["console"], 'level': 'ERROR', },
     },
 }
 
@@ -1719,6 +1721,7 @@ if USE_GEOSERVER:
 #          'task': 'my_app.tasks.send_notification',
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_SCHEDULE = {}
 
 if 'geonode.services' in INSTALLED_APPS:
