@@ -236,6 +236,14 @@ def geoserver_finalize_upload(
             upload.layer = instance
             upload.save()
 
+            try:
+                # Update the upload sessions
+                geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
+                geonode_upload_sessions.update(processed=False)
+                instance.upload_session = geonode_upload_sessions.first()
+            except Exception as e:
+                logger.exception(e)
+
             # Sanity checks
             if isinstance(xml_file, list):
                 if len(xml_file) > 0:
@@ -248,34 +256,33 @@ def geoserver_finalize_upload(
             if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
                 instance.metadata_uploaded = True
 
+            try:
+                gs_resource = gs_catalog.get_resource(
+                    name=instance.name,
+                    store=instance.store,
+                    workspace=instance.workspace)
+            except Exception:
                 try:
                     gs_resource = gs_catalog.get_resource(
-                        name=instance.name,
+                        name=instance.alternate,
                         store=instance.store,
                         workspace=instance.workspace)
                 except Exception:
                     try:
                         gs_resource = gs_catalog.get_resource(
-                            name=instance.alternate,
-                            store=instance.store,
-                            workspace=instance.workspace)
+                            name=instance.alternate or instance.typename)
                     except Exception:
-                        try:
-                            gs_resource = gs_catalog.get_resource(
-                                name=instance.alternate or instance.typename)
-                        except Exception:
-                            gs_resource = None
+                        gs_resource = None
 
+            if gs_resource:
                 # Updating GeoServer resource
                 gs_resource.title = instance.title
                 gs_resource.abstract = instance.abstract
                 gs_catalog.save(gs_resource)
-
-                instance.store = gs_resource.store.name
-                instance.storeType = gs_resource.store.resource_type
-                instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
-                instance.title = gs_resource.title or gs_resource.store.name
-                instance.abstract = gs_resource.abstract or ''
+                if gs_resource.store:
+                    instance.storeType = gs_resource.store.resource_type
+                    if not instance.alternate:
+                        instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
 
             if sld_uploaded:
                 geoserver_set_style(instance.id, sld_file)
@@ -289,20 +296,14 @@ def geoserver_finalize_upload(
                 logger.debug(f'Setting permissions {permissions} for {instance.name}')
                 instance.set_permissions(permissions, created=created)
 
-            try:
-                # Update the upload sessions
-                geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
-                geonode_upload_sessions.update(processed=False)
-                instance.upload_session = geonode_upload_sessions.first()
-            except Exception as e:
-                logger.exception(e)
-
             instance.save(notify=not created)
 
             try:
                 logger.debug(f"... Cleaning up the temporary folders {tempdir}")
                 if tempdir and os.path.exists(tempdir):
                     shutil.rmtree(tempdir)
+            except Exception as e:
+                logger.warning(e)
             finally:
                 upload.complete = True
                 upload.save()
