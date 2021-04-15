@@ -1818,31 +1818,31 @@ class TestSetMetadata(TestCase):
         self.invalid_xml = "xml"
         self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
         self.custom = [
-                {
-                    "keywords": ["features", "test_layer"],
-                    "thesaurus": {"date": None, "datetype": None, "title": None},
-                    "type": "theme",
+            {
+                "keywords": ["features", "test_layer"],
+                "thesaurus": {"date": None, "datetype": None, "title": None},
+                "type": "theme",
+            },
+            {
+                "keywords": ["no conditions to access and use"],
+                "thesaurus": {
+                    "date": "2020-10-30T16:58:34",
+                    "datetype": "publication",
+                    "title": "Test for ordering",
                 },
-                {
-                    "keywords": ["no conditions to access and use"],
-                    "thesaurus": {
-                        "date": "2020-10-30T16:58:34",
-                        "datetype": "publication",
-                        "title": "Test for ordering",
-                    },
-                    "type": None,
+                "type": None,
+            },
+            {
+                "keywords": ["ad", "af"],
+                "thesaurus": {
+                    "date": "2008-06-01",
+                    "datetype": "publication",
+                    "title": "GEMET - INSPIRE themes, version 1.0",
                 },
-                {
-                    "keywords": ["ad", "af"],
-                    "thesaurus": {
-                        "date": "2008-06-01",
-                        "datetype": "publication",
-                        "title": "GEMET - INSPIRE themes, version 1.0",
-                    },
-                    "type": None,
-                },
-                {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
-            ]
+                "type": None,
+            },
+            {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
+        ]
 
     def test_set_metadata_will_rase_an_exception_if_is_not_valid_xml(self):
         with self.assertRaises(GeoNodeException):
@@ -1917,6 +1917,7 @@ class TestCustomMetadataParser(TestCase):
             "temporal_extent_start": None,
             "title": "test_layer"
         }
+
         self.custom = [
                 {
                     "keywords": ["features", "test_layer"],
@@ -1958,6 +1959,25 @@ class TestCustomMetadataParser(TestCase):
         self.assertListEqual(['Global', 'Europe'], regions)
         self.assertEqual("Passed through new parser", keywords)
         self.assertDictEqual(self.expected_vals, vals)
+
+        self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
+        self.assertListEqual(['Global'], regions)
+        self.assertDictEqual(self.expected_vals, vals)
+        self.assertListEqual(self.custom, keywords)
+
+    def test_convert_keyword_should_empty_list_for_empty_keyword(self):
+        actual = convert_keyword([])
+        self.assertListEqual([], actual)
+
+    def test_convert_keyword_should_non_empty_list_for_empty_keyword(self):
+        expected = [{
+            "keywords": ['abc'],
+            "thesaurus": {"date": None, "datetype": None, "title": None},
+            "type": "theme",
+        }]
+        actual = convert_keyword(['abc'])
+        self.assertListEqual(expected, actual)
+
 
 
 '''

@@ -107,16 +107,23 @@ def create_thumbnail(
         return
 
     # --- determine target CRS and bbox ---
-    target_crs = forced_crs if forced_crs is not None else "EPSG:3857"
+    target_crs = forced_crs.upper() if forced_crs is not None else "EPSG:3857"
 
     compute_bbox_from_layers = False
     if bbox:
+        # make sure BBOX is provided with the CRS in a correct format
         source_crs = bbox[-1]
 
         srid_regex = re.match(r"EPSG:\d+", source_crs)
         if not srid_regex:
             logger.error(f"Thumbnail bbox is in a wrong format: {bbox}")
             raise ThumbnailError("Wrong BBOX format")
+
+        # for the EPSG:3857 (default thumb's CRS) - make sure received BBOX can be transformed to the target CRS;
+        # if it can't be (original coords are outside of the area of use of EPSG:3857), thumbnail generation with
+        # the provided bbox is impossible.
+        if target_crs == 'EPSG:3857' and bbox[-1].upper() != 'EPSG:3857':
+            bbox = utils.crop_to_3857_area_of_use(bbox)
 
         bbox = utils.transform_bbox(bbox, target_crs=target_crs)
     else:
@@ -132,7 +139,12 @@ def create_thumbnail(
             bbox = layers_bbox
 
     # --- expand the BBOX to match the set thumbnail's ratio (prevent thumbnail's distortions) ---
-    bbox = utils.expand_bbox_to_ratio(bbox)
+    # implemented BBOX expansion requires it's conversion to EPSG:3857, which may cause issues if provided BBOX
+    # is in a different CRS, with coords exceeding EPSG:3857's area of use.
+    if bbox[-1] != 'EPSG:3857' and utils.exceeds_epsg3857_area_of_use(bbox):
+        logger.info("Thumbnail generation: provided BBOX exceeds EPSG:3857's area of use. Skipping ratio preservation.")
+    else:
+        bbox = utils.expand_bbox_to_ratio(bbox)
 
     # --- add default style ---
     if not styles and hasattr(instance, "default_style"):
@@ -267,7 +279,15 @@ def _layers_locations(
             locations.append([instance.remote_service.service_url, [instance.alternate]])
 
         if compute_bbox:
-            bbox = utils.transform_bbox(instance.bbox, target_crs.lower())
+            # handle exceeding the area of use of the default thumb's CRS
+            if (
+                    instance.bbox[-1].upper() != 'EPSG:3857'
+                    and target_crs.upper() == 'EPSG:3857'
+                    and utils.exceeds_epsg3857_area_of_use(instance.bbox)
+            ):
+                bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(instance.bbox), target_crs.lower())
+            else:
+                bbox = utils.transform_bbox(instance.bbox, target_crs.lower())
 
     elif isinstance(instance, Map):
 
@@ -321,10 +341,19 @@ def _layers_locations(
                     locations.append([settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]])
 
             if compute_bbox:
-                if not bbox:
-                    bbox = utils.transform_bbox(layer.bbox, target_crs.lower())
+                # handle exceeding the area of use of the default thumb's CRS
+                if (
+                        layer.bbox[-1].upper() != 'EPSG:3857'
+                        and target_crs.upper() == 'EPSG:3857'
+                        and utils.exceeds_epsg3857_area_of_use(layer.bbox)
+                ):
+                    layer_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(layer.bbox), target_crs.lower())
                 else:
                     layer_bbox = utils.transform_bbox(layer.bbox, target_crs.lower())
+
+                if not bbox:
+                    bbox = layer_bbox
+                else:
                     # layer's BBOX: (left, right, bottom, top)
                     bbox = [
                         min(bbox[0], layer_bbox[0]),

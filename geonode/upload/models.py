@@ -269,23 +269,23 @@ class Upload(models.Model):
             try:
                 session.delete()
             except Exception:
-                logging.exception('error deleting upload session')
+                logging.warning('error deleting upload session')
         for _file in upload_files:
             try:
                 if os.path.isfile(_file.path):
                     os.remove(_file.path)
             except Exception as e:
-                logger.exception(e)
+                logger.warning(e)
         for _location in importer_locations:
             try:
                 shutil.rmtree(_location)
             except Exception as e:
-                logger.exception(e)
+                logger.warning(e)
         if self.upload_dir and os.path.exists(self.upload_dir):
             try:
                 shutil.rmtree(self.upload_dir)
             except Exception as e:
-                logger.exception(e)
+                logger.warning(e)
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'
