@@ -222,6 +222,7 @@ def get_map(
                 size=(width, height),
                 format=mime_type,
                 transparent=True,
+                timeout=getattr(ogc_server_settings, "TIMEOUT", None),
                 **additional_kwargs,
             )
 

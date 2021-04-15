@@ -168,7 +168,7 @@ def create_thumbnail(
         raise ThumbnailError("Thumbnail generation failed - no image retrieved from WMS services.")
 
     # --- merge retrieved WMS images ---
-    merged_partial_thumbs = Image.new("RGBA", (width, height), (0, 0, 0))
+    merged_partial_thumbs = Image.new("RGBA", (width, height), (255, 255, 255, 0))
 
     for image in partial_thumbs:
         if image:
@@ -177,7 +177,7 @@ def create_thumbnail(
                 img = Image.open(content)
                 img.verify()  # verify that it is, in fact an image
                 img = Image.open(BytesIO(image))  # "re-open" the file (required after running verify method)
-                merged_partial_thumbs.paste(img)
+                merged_partial_thumbs.paste(img, mask=img)
             except UnidentifiedImageError as e:
                 logger.error(f"Thumbnail generation. Error occurred while fetching layer image: {image}")
                 logger.exception(e)
