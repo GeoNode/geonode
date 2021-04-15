@@ -942,3 +942,81 @@ def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
         except IntegrityError:
             raise
     return saved_layer
+
+
+def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
+    # Updating layer with information coming from the XML file
+    if xml_file:
+        saved_layer.metadata_xml = open(xml_file).read()
+        regions_resolved, regions_unresolved = resolve_regions(regions)
+        keywords.extend(regions_unresolved)
+
+        # Assign the regions (needs to be done after saving)
+        regions_resolved = list(set(regions_resolved))
+        if regions_resolved:
+            if len(regions_resolved) > 0:
+                if not saved_layer.regions:
+                    saved_layer.regions = regions_resolved
+                else:
+                    saved_layer.regions.clear()
+                    saved_layer.regions.add(*regions_resolved)
+
+        # Assign the keywords (needs to be done after saving)
+        if len(keywords) > 0 and isinstance(keywords[0], dict):
+            if 'keywords' in keywords[0]:
+                _keywords = keywords[0]['keywords']
+        try:
+            _keywords = list(set(_keywords))
+        except Exception as e:
+            logger.exception(e)
+            _keywords = None
+
+        if _keywords:
+            if len(_keywords) > 0:
+                if not saved_layer.keywords:
+                    saved_layer.keywords = _keywords
+                else:
+                    saved_layer.keywords.add(*_keywords)
+
+        # set model properties
+        defaults = {}
+        for key, value in vals.items():
+            if key == 'spatial_representation_type':
+                value = SpatialRepresentationType(identifier=value)
+            elif key == 'topic_category':
+                value, created = TopicCategory.objects.get_or_create(
+                    identifier=value,
+                    defaults={'description': '', 'gn_description': value})
+                key = 'category'
+                defaults[key] = value
+            else:
+                defaults[key] = value
+
+        # Save all the modified information in the instance without triggering signals.
+        try:
+            if not defaults.get('title', saved_layer.title):
+                defaults['title'] = saved_layer.title or saved_layer.name
+            if not defaults.get('abstract', saved_layer.abstract):
+                defaults['abstract'] = saved_layer.abstract or ''
+
+            to_update = {}
+            to_update['charset'] = defaults.pop('charset', saved_layer.charset)
+            to_update['storeType'] = defaults.pop('storeType', saved_layer.storeType)
+            for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
+                if _key in defaults:
+                    to_update[_key] = defaults.pop(_key)
+                else:
+                    to_update[_key] = getattr(saved_layer, _key)
+            to_update.update(defaults)
+
+            with transaction.atomic():
+                ResourceBase.objects.filter(
+                    id=saved_layer.resourcebase_ptr.id).update(
+                    **defaults)
+                Layer.objects.filter(id=saved_layer.id).update(**to_update)
+
+                # Refresh from DB
+                saved_layer.refresh_from_db()
+        except IntegrityError:
+            raise
+    return saved_layer
