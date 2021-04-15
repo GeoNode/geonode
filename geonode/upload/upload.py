@@ -58,7 +58,7 @@ from geonode import GeoNodeException
 from geonode.upload import UploadException, LayerNotReady
 
 from ..people.utils import get_default_user
-from ..layers.metadata import convert_keyword, parse_metadata
+from ..layers.metadata import parse_metadata
 from ..layers.utils import get_valid_layer_name, resolve_regions
 from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import geoserver_finalize_upload
@@ -862,7 +862,6 @@ def final_step(upload_session, user, charset="UTF-8"):
     if upload_session.time_info:
         set_time_info(saved_layer, **upload_session.time_info)
 
-
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions
     geoserver_finalize_upload.apply_async(
@@ -872,6 +871,7 @@ def final_step(upload_session, user, charset="UTF-8"):
     saved_layer = utils.metadata_storers(saved_layer, custom)
 
     return saved_layer
+
 
 def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
     # Updating layer with information coming from the XML file
@@ -892,7 +892,6 @@ def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
 
         # Assign the keywords (needs to be done after saving)
         saved_layer = utils.KeywordHandler(saved_layer, keywords).set_keywords()
-
 
         # set model properties
         defaults = {}

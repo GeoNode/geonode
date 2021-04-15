@@ -1850,7 +1850,7 @@ class TestSetMetadata(TestCase):
 
     def test_set_metadata_return_expected_values_from_xml(self):
         import datetime
-        identifier, vals, regions, keywords = set_metadata(open(self.exml_path).read())
+        identifier, vals, regions, keywords, _ = set_metadata(open(self.exml_path).read())
         expected_vals = {
                 "abstract": "real abstract",
                 "constraints_other": "Not Specified: The original author did not specify a license.",
@@ -1918,7 +1918,7 @@ class TestCustomMetadataParser(TestCase):
             "title": "test_layer"
         }
 
-        self.custom = [
+        self.keywords = [
                 {
                     "keywords": ["features", "test_layer"],
                     "thesaurus": {"date": None, "datetype": None, "title": None},
@@ -1949,7 +1949,7 @@ class TestCustomMetadataParser(TestCase):
         identifier, vals, regions, keywords, _ = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
         self.assertListEqual(['Global'], regions)
-        self.assertListEqual(self.custom, keywords)
+        self.assertListEqual(self.keywords, keywords)
         self.assertDictEqual(self.expected_vals, vals)
 
     @override_settings(METADATA_PARSERS=['__DEFAULT__', 'geonode.layers.tests.dummy_metadata_parser'])
@@ -1959,11 +1959,6 @@ class TestCustomMetadataParser(TestCase):
         self.assertListEqual(['Global', 'Europe'], regions)
         self.assertEqual("Passed through new parser", keywords)
         self.assertDictEqual(self.expected_vals, vals)
-
-        self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
-        self.assertListEqual(['Global'], regions)
-        self.assertDictEqual(self.expected_vals, vals)
-        self.assertListEqual(self.custom, keywords)
 
     def test_convert_keyword_should_empty_list_for_empty_keyword(self):
         actual = convert_keyword([])
@@ -1979,13 +1974,12 @@ class TestCustomMetadataParser(TestCase):
         self.assertListEqual(expected, actual)
 
 
-
 '''
 Just a dummy function required for the smoke test above
 '''
 
 
-def dummy_metadata_parser(exml, uuid, vals, regions, keywords):
+def dummy_metadata_parser(exml, uuid, vals, regions, keywords, custom):
     keywords = "Passed through new parser"
     regions.append("Europe")
-    return uuid, vals, regions, keywords
+    return uuid, vals, regions, keywords, custom
