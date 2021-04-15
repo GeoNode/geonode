@@ -51,10 +51,9 @@ from django.utils.translation import ugettext_lazy as _
 import geoserver
 import gsimporter
 
+from geonode import GeoNodeException
 from geoserver.resource import Coverage
 from geoserver.resource import FeatureType
-
-from geonode import GeoNodeException
 from geonode.upload import UploadException, LayerNotReady
 
 from ..people.utils import get_default_user
