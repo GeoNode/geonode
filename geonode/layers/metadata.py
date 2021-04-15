@@ -20,8 +20,8 @@
 
 """Utilities for managing GeoNode resource metadata
 """
-
 # Standard Modules
+import uuid
 import logging
 import datetime
 from defusedxml import lxml as dlxml
@@ -37,7 +37,7 @@ from django.utils import timezone
 LOGGER = logging.getLogger(__name__)
 
 
-def set_metadata(xml):
+def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[]):
     """Generate dict of model properties based on XML metadata"""
 
     # check if document is XML
@@ -63,6 +63,7 @@ def set_metadata(xml):
         identifier, vals, regions, keywords = dc2dict(exml)
     else:
         raise RuntimeError('Unsupported metadata format')
+    identifier = identifier or str(uuid.uuid1())
     if not vals.get("date"):
         vals["date"] = datetime.datetime.now(timezone.get_current_timezone()).strftime("%Y-%m-%dT%H:%M:%S")
 
@@ -105,6 +106,9 @@ def iso2dict(exml):
                     regions.extend(kw['keywords'])
                 else:
                     keywords.extend(kw['keywords'])
+
+            keywords = convert_keyword(mdata.identification.keywords, iso2dict=True)
+
         if len(mdata.identification.otherconstraints) > 0:
             vals['constraints_other'] = \
                 mdata.identification.otherconstraints[0]
@@ -176,6 +180,8 @@ def fgdc2dict(exml):
     if raw_date is not None:
         vals['date'] = sniff_date(raw_date)
 
+    keywords = convert_keyword(keywords)
+
     return [identifier, vals, regions, keywords]
 
 
@@ -198,6 +204,8 @@ def dc2dict(exml):
     vals['date'] = sniff_date(mdata.modified)
     vals['title'] = mdata.title
     vals['abstract'] = mdata.abstract
+
+    keywords = convert_keyword(keywords)
 
     return [identifier, vals, regions, keywords]
 
@@ -232,3 +240,13 @@ def get_tagname(element):
     except IndexError:
         tagname = element.tag
     return tagname
+
+
+def convert_keyword(keyword, iso2dict=False):
+    if not iso2dict and keyword:
+        return [{
+            "keywords": keyword,
+            "thesaurus": {"date": None, "datetype": None, "title": None},
+            "type": "theme",
+        }]
+    return keyword

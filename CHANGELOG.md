@@ -23,8 +23,8 @@
    * Save Map Preferences into the adapter model
    * Advanced Style Editor with graphical UI
    * Improved Map Save Widget, specific for GeoNode
-   * New MapStore client configuration subsytem
-   * Group Layer as namend groups
+   * New MapStore client configuration subsystem
+   * Group Layer as named groups
  - Upgraded `Dokerfile` and `docker-compose` to version 3.4
  - Migration of CI from Travis to CircleCI
  - General Code Quality and Performance Improvements
@@ -42,19 +42,19 @@
      - GeoServer Importer Uploads are now stateful and can be resumed or canceled
    * [GNIP-85: Map legend](https://github.com/GeoNode/geonode/issues/7254)
    * [GNIP 86: metadata parsing and storing](https://github.com/GeoNode/geonode/issues/7263)
-   * Append data to an existing layer feature
+   * Append data to an existing layer
    * Improved Metadata Editors, now able to handle HTML tags
    * Improved Catalog and Thesauri
    * Improved Thumbnails creation logic which is now relies on GetMap instead of outdated GeoServer Print Plugin
    * Possibility to Upload RDF thesaurus via web
    * Pluggable CSW prefiltering from external apps
-   * New Contrib moudle: [GeoNode Keycloak Support](https://github.com/GeoNode/geonode-contribs/tree/master/django-geonode-keycloak)
+   * New Contrib module: [GeoNode Keycloak Support](https://github.com/GeoNode/geonode-contribs/tree/master/django-geonode-keycloak)
    * Delete existing table on restore command feature (general improvements to Backup/Restore machinery)
    * Advanced Upload Workflow Improvements:
      - Non admin user cannot change permission
      - Disable edit permissions globally when read-only mode is active
      - RESOURCE_PUBLISHING:
-        1. "unpublished" won't be visibile to Anonymous users
+        1. "unpublished" won't be visible to Anonymous users
         2. "unpublished" will be visible to registered users **IF** they have view permissions
         3. "unpublished" will be always visible to the owner and Group Managers
         By default the uploaded resources will be "unpublished".
@@ -64,9 +64,9 @@
         1. The owner won't be able to change to neither "approved" nor "published" state (unless he is a superuser)
         2. If the Resource belongs to a Group somehow, the Managers will be able to change the state to "approved"
           but **NOT** to "published". Only a superuser can publish a resource.
-        3. Superusers can do enything.
+        3. Superusers can do anything.
      - GROUP_PRIVATE_RESOURCES:
-        The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and member of the belonging groups.
+        The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and members of the belonging groups.
      - GROUP_MANDATORY_RESOURCES:
         Editor will be **FORCED** to select a Group when editing the resource metadata.
 
@@ -80,14 +80,14 @@
    * [How to setup rabbitmq, supervisor and memcached in order to fully enable async workers](https://docs.geonode.org/en/master/install/advanced/core/index.html?highlight=Enabling%20Fully%20Asynchronous%20Tasks#enabling-fully-asynchronous-tasks)
    * [How to Upgrade from 2.10.x / 3.0](https://docs.geonode.org/en/master/admin/upgrade/index.html?highlight=Upgrade%20from%202.10.x)
    * [Docs to connect production docker to external postgreSQL db server](https://github.com/GeoNode/documentation/pull/74)
-   * [Documentantion for new metadata settings](https://github.com/GeoNode/documentation/pull/75)
+   * [Documentation for new metadata settings](https://github.com/GeoNode/documentation/pull/75)
    * [Refers #6925: add documentation for thesaurus configuration](https://github.com/GeoNode/documentation/pull/77)
-   * [Refers #6952: add documentantion for uuidhandler](https://github.com/GeoNode/documentation/pull/78)
+   * [Refers #6952: add documentation for uuidhandler](https://github.com/GeoNode/documentation/pull/78)
    * [Adding new settings in order to let the optional metadata in metadata wizard to become required](https://github.com/GeoNode/documentation/pull/84)
-   * [Remove outdated/misleading SPC GeoNdoe documentation](https://github.com/GeoNode/documentation/pull/85)
+   * [Remove outdated/misleading SPC GeoNode documentation](https://github.com/GeoNode/documentation/pull/85)
    * [Relates to #7089 Delete existing table on restore](https://github.com/GeoNode/documentation/pull/86)
    * [Allow XSL customization](https://github.com/GeoNode/documentation/pull/87)
-   * [Relates to #7150 Doc for upload thesausus from admin interface](https://github.com/GeoNode/documentation/pull/88)
+   * [Relates to #7150 Doc for upload thesaurus from admin interface](https://github.com/GeoNode/documentation/pull/88)
    * [Relates to #7194 Append data to layer](https://github.com/GeoNode/documentation/pull/89)
    * [Refers to #7214 Sorting Thesauri](https://github.com/GeoNode/documentation/pull/90)
    * [Relates to #6995 Documentation for ADVANCED_EDIT_EXCLUDE_FIELD](https://github.com/GeoNode/documentation/pull/91)
@@ -96,7 +96,7 @@
  - Implementation of an action to assign bulk permissions on layer to users selected from People and/or Group Django admin forms enhancement #6582
  - Review of the current advanced resource workflow implementation enhancement security #6551
  - File system operations do not adhere to Django file storage API enhancement in progress #6414
- - Nav Toolbar gets distorted when multiple nav bar items are added by the admin enhancement frontend major #6412
+ - Nav Toolbar gets distorted when multiple navbar items are added by the admin enhancement frontend major #6412
  - Allow only admins to edit/create keywords enhancement regression #6360
  - In home page show only ISO categories currently assigned to some dataset enhancement frontend #6332
  - Modify the admin theme customisation feature to allow for the use of a slide show in the home page enhancement feature frontend #6301

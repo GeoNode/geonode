@@ -35,6 +35,7 @@ from django.utils.timezone import now
 from django.core.files.storage import FileSystemStorage
 
 from geonode.layers.models import Layer
+from geonode.tasks.tasks import AcquireLock
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
 from .utils import next_step_response, get_next_step
@@ -202,27 +203,30 @@ class Upload(models.Model):
                     self.state = Upload.STATE_INVALID
                     Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
             if session:
-                try:
-                    content = next_step_response(None, self.get_session).content
-                    if isinstance(content, bytes):
-                        content = content.decode('UTF-8')
-                    response_json = json.loads(content)
-                    if response_json['success'] and 'redirect_to' in response_json:
-                        if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
-                            return f"{reverse('data_upload')}?id={self.import_id}"
-                        else:
-                            next = get_next_step(self.get_session)
-                            if next == 'final' and session.state == Upload.STATE_COMPLETE and self.state == Upload.STATE_PENDING:
-                                if not self.layer or not self.layer.processed:
-                                    from .views import final_step_view
-                                    final_step_view(None, self.get_session)
-                                self.state = Upload.STATE_RUNNING
-                                Upload.objects.filter(id=self.id).update(state=Upload.STATE_RUNNING)
-                except (NotFound, Exception) as e:
-                    logger.exception(e)
-                    if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
-                        self.state = Upload.STATE_INVALID
-                        Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
+                lock_id = f'{self.import_id}'
+                with AcquireLock(lock_id) as lock:
+                    if lock.acquire() is True:
+                        try:
+                            content = next_step_response(None, self.get_session).content
+                            if isinstance(content, bytes):
+                                content = content.decode('UTF-8')
+                            response_json = json.loads(content)
+                            if response_json['success'] and 'redirect_to' in response_json:
+                                if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
+                                    return f"{reverse('data_upload')}?id={self.import_id}"
+                                else:
+                                    next = get_next_step(self.get_session)
+                                    if next == 'final' and session.state == Upload.STATE_COMPLETE and self.state == Upload.STATE_PENDING:
+                                        if not self.layer or not self.layer.processed:
+                                            from .views import final_step_view
+                                            final_step_view(None, self.get_session)
+                                        self.state = Upload.STATE_RUNNING
+                                        Upload.objects.filter(id=self.id).update(state=Upload.STATE_RUNNING)
+                        except (NotFound, Exception) as e:
+                            logger.exception(e)
+                            if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
+                                self.state = Upload.STATE_INVALID
+                                Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
         return None
 
     def get_delete_url(self):
@@ -269,23 +273,23 @@ class Upload(models.Model):
             try:
                 session.delete()
             except Exception:
-                logging.exception('error deleting upload session')
+                logging.warning('error deleting upload session')
         for _file in upload_files:
             try:
                 if os.path.isfile(_file.path):
                     os.remove(_file.path)
             except Exception as e:
-                logger.exception(e)
+                logger.warning(e)
         for _location in importer_locations:
             try:
                 shutil.rmtree(_location)
             except Exception as e:
-                logger.exception(e)
+                logger.warning(e)
         if self.upload_dir and os.path.exists(self.upload_dir):
             try:
                 shutil.rmtree(self.upload_dir)
             except Exception as e:
-                logger.exception(e)
+                logger.warning(e)
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'

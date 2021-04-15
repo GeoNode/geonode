@@ -46,7 +46,7 @@ from geonode.geoserver.helpers import (gs_catalog,
                                        get_store,
                                        set_time_dimension,
                                        create_geoserver_db_featurestore)  # mosaic_delete_first_granule
-
+from geonode.base.models import ThesaurusKeyword
 ogr.UseExceptions()
 
 logger = logging.getLogger(__name__)
@@ -296,11 +296,12 @@ def next_step_response(req, upload_session, force_ajax=True):
 
     if next == 'error':
         return json_response(
-            {'status': 'error',
-             'success': False,
-             'id': import_session.id,
-             'error_msg': str(upload_session.error_msg),
-             }
+            {
+                'status': 'error',
+                'success': False,
+                'id': import_session.id,
+                'error_msg': str(upload_session.error_msg),
+            }
         )
 
     if next == 'check':
@@ -870,3 +871,72 @@ max\ connections={db_conn_max}"""
         cat.reset()
         # cat.reload()
         return append_to_mosaic_name, files_to_upload
+
+
+class KeywordHandler:
+    '''
+    Object needed to handle the keywords coming from the XML
+    The expected input are:
+     - instance (Layer/Document/Map): instance of any object inherited from ResourceBase.
+     - keywords (list(dict)): Is required to analyze the keywords to find if some thesaurus is available.
+    '''
+
+    def __init__(self, instance, keywords):
+        self.instance = instance
+        self.keywords = keywords
+
+    def set_keywords(self):
+        '''
+        Method with the responsible to set the keywords (free and thesaurus) to the object.
+        At return there is always a call to final_step to let it hookable.
+        '''
+        keywords, tkeyword = self.handle_metadata_keywords()
+        self._set_free_keyword(keywords)
+        self._set_tkeyword(tkeyword)
+        return self.instance
+
+    def handle_metadata_keywords(self):
+        '''
+        Method the extract the keyword from the dict.
+        If the raw_keyword are passed, try to extract them from the dict
+        by splitting free-keyword from the thesaurus
+        '''
+        fkeyword = []
+        tkeyword = []
+        if len(self.keywords) > 0:
+            for dkey in self.keywords:
+                if dkey['type'] == 'place':
+                    continue
+                thesaurus = dkey['thesaurus']
+                if thesaurus['date'] or thesaurus['datetype'] or thesaurus['title']:
+                    for k in dkey['keywords']:
+                        tavailable = self.is_thesaurus_available(thesaurus, k)
+                        if tavailable.exists():
+                            tkeyword += [tavailable.first()]
+                        else:
+                            fkeyword += [k]
+                else:
+                    fkeyword += dkey['keywords']
+            return fkeyword, tkeyword
+        return self.keywords, []
+
+    @staticmethod
+    def is_thesaurus_available(thesaurus, keyword):
+        is_available = ThesaurusKeyword.objects.filter(alt_label=keyword).filter(thesaurus__title=thesaurus['title'])
+        return is_available
+
+    def _set_free_keyword(self, keywords):
+        if len(keywords) > 0:
+            if not self.instance.keywords:
+                self.instance.keywords = keywords
+            else:
+                self.instance.keywords.add(*keywords)
+        return keywords
+
+    def _set_tkeyword(self, tkeyword):
+        if len(tkeyword) > 0:
+            if not self.instance.tkeywords:
+                self.instance.tkeywords = tkeyword
+            else:
+                self.instance.tkeywords.add(*tkeyword)
+        return [t.alt_label for t in tkeyword]

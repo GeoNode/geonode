@@ -1714,7 +1714,7 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         x.save()
         layers = Layer.objects.all()
         actual = get_visible_resources(queryset=layers, user=self.user)
-        self.assertEqual(9, len(actual))
+        self.assertEqual(layers.filter(dirty_state=False).count(), len(actual))
 
     @override_settings(
         ADMIN_MODERATE_UPLOADS=True,
@@ -1808,3 +1808,25 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(1, actual.count())
+
+    def test_get_visible_resources(self):
+        standard_user = get_user_model().objects.get(username="bobby")
+        layers = Layer.objects.all()
+        # update user's perm on a layer,
+        # this should not return the layer since it will not be in user's allowed resources
+        x = Layer.objects.get(title='common bar')
+        remove_perm('view_resourcebase', standard_user, x.get_self_resource())
+        anonymous_group = Group.objects.get(name='anonymous')
+        remove_perm('view_resourcebase', anonymous_group, x.get_self_resource())
+        actual = get_visible_resources(
+            queryset=layers,
+            user=standard_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        self.assertNotIn(x.title, list(actual.values_list('title', flat=True)))
+        # get layers as admin, this should return all layers with metadata_only = True
+        actual = get_visible_resources(
+            queryset=layers,
+            user=self.user)
+        self.assertIn(x.title, list(actual.values_list('title', flat=True)))

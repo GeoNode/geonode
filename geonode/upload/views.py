@@ -309,11 +309,12 @@ def srs_step_view(request, upload_session):
 
     if error:
         return json_response(
-            {'status': 'error',
-             'success': False,
-             'id': upload_session.import_session.id,
-             'error_msg': f"{error}",
-             }
+            {
+                'status': 'error',
+                'success': False,
+                'id': upload_session.import_session.id,
+                'error_msg': f"{error}",
+            }
         )
     else:
         upload_session.completed_step = 'srs'
@@ -403,11 +404,12 @@ def csv_step_view(request, upload_session):
 
         if error:
             return json_response(
-                {'status': 'error',
-                 'success': False,
-                 'id': upload_session.import_session.id,
-                 'error_msg': f"{error}",
-                 }
+                {
+                    'status': 'error',
+                    'success': False,
+                    'id': upload_session.import_session.id,
+                    'error_msg': f"{error}",
+                }
             )
         else:
             csv_step(upload_session, lat_field, lng_field)
@@ -569,12 +571,13 @@ def final_step_view(req, upload_session):
             error_msg = upload_session.import_session.tasks[0].error_message
             url = "/upload/layer_upload_invalid.html"
             _json_response = json_response(
-                {'url': url,
+                {
+                    'url': url,
                     'status': 'error',
                     'id': import_session.id,
                     'error_msg': error_msg or 'Import Session is Invalid!',
-                    'success': True
-                 }
+                    'success': False
+                }
             )
             return _json_response
         else:
@@ -609,13 +612,14 @@ def final_step_view(req, upload_session):
                     }
                 )
             except Exception as e:
+                logger.exception(e)
                 url = "upload/layer_upload_invalid.html"
                 _json_response = json_response(
                     {
                         'status': 'error',
                         'url': url,
                         'error_msg': str(e),
-                        'success': True
+                        'success': False
                     }
                 )
                 return _json_response
@@ -626,7 +630,7 @@ def final_step_view(req, upload_session):
                 'status': 'error',
                 'url': url,
                 'error_msg': _('Upload Session invalid or no more accessible!'),
-                'success': True
+                'success': False
             }
         )
         return _json_response

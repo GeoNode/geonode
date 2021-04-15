@@ -18,6 +18,7 @@
 #
 #########################################################################
 from collections import namedtuple
+from geonode.layers.metadata import convert_keyword, set_metadata
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 from django.test import TestCase
@@ -1417,19 +1418,19 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
             base_file=SimpleUploadedFile(
                 f'{thelayer_name}.shp',
                 open(os.path.join(thelayer_path,
-                     f'{thelayer_name}.shp'), mode='rb').read()),
+                                  f'{thelayer_name}.shp'), mode='rb').read()),
             shx_file=SimpleUploadedFile(
                 f'{thelayer_name}.shx',
                 open(os.path.join(thelayer_path,
-                     f'{thelayer_name}.shx'), mode='rb').read()),
+                                  f'{thelayer_name}.shx'), mode='rb').read()),
             dbf_file=SimpleUploadedFile(
                 f'{thelayer_name}.dbf',
                 open(os.path.join(thelayer_path,
-                     f'{thelayer_name}.dbf'), mode='rb').read()),
+                                  f'{thelayer_name}.dbf'), mode='rb').read()),
             prj_file=SimpleUploadedFile(
                 f'{thelayer_name}.prj',
                 open(os.path.join(thelayer_path,
-                     f'{thelayer_name}.prj'), mode='rb').read())
+                                  f'{thelayer_name}.prj'), mode='rb').read())
         )
         files['permissions'] = '{}'
         files['charset'] = 'windows-1258'
@@ -1489,23 +1490,23 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
             base_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.shp',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.shp'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.shp'), mode='rb').read()),
             shx_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.shx',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.shx'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.shx'), mode='rb').read()),
             dbf_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.dbf',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.dbf'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.dbf'), mode='rb').read()),
             prj_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.prj',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.prj'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.prj'), mode='rb').read()),
             xml_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.xml',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.xml'), mode='rb').read())
+                                  f'{same_uuid_root_file}.xml'), mode='rb').read())
         )
         files['permissions'] = '{}'
         files['charset'] = 'utf-8'
@@ -1520,23 +1521,23 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
             base_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.shp',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.shp'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.shp'), mode='rb').read()),
             shx_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.shx',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.shx'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.shx'), mode='rb').read()),
             dbf_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.dbf',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.dbf'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.dbf'), mode='rb').read()),
             prj_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.prj',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.prj'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.prj'), mode='rb').read()),
             xml_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.xml',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.xml'), mode='rb').read())
+                                  f'{same_uuid_root_file}.xml'), mode='rb').read())
         )
         files['permissions'] = '{}'
         files['charset'] = 'utf-8'
@@ -1809,3 +1810,74 @@ class TestalidateInputSource(TestCase):
         }
         actual = validate_input_source(layer, filename, files, action_type="append")
         self.assertTrue(actual)
+
+
+class TestSetMetadata(TestCase):
+    def setUp(self):
+        self.maxDiff = None
+        self.invalid_xml = "xml"
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.custom = [
+            {
+                "keywords": ["features", "test_layer"],
+                "thesaurus": {"date": None, "datetype": None, "title": None},
+                "type": "theme",
+            },
+            {
+                "keywords": ["no conditions to access and use"],
+                "thesaurus": {
+                    "date": "2020-10-30T16:58:34",
+                    "datetype": "publication",
+                    "title": "Test for ordering",
+                },
+                "type": None,
+            },
+            {
+                "keywords": ["ad", "af"],
+                "thesaurus": {
+                    "date": "2008-06-01",
+                    "datetype": "publication",
+                    "title": "GEMET - INSPIRE themes, version 1.0",
+                },
+                "type": None,
+            },
+            {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
+        ]
+
+    def test_set_metadata_will_rase_an_exception_if_is_not_valid_xml(self):
+        with self.assertRaises(GeoNodeException):
+            set_metadata(self.invalid_xml)
+
+    def test_set_metadata_return_expected_values_from_xml(self):
+        import datetime
+        identifier, vals, regions, keywords = set_metadata(open(self.exml_path).read())
+        expected_vals = {
+            "abstract": "real abstract",
+            "constraints_other": "Not Specified: The original author did not specify a license.",
+            "data_quality_statement": "Created with GeoNode",
+            'date': datetime.datetime(2021, 4, 9, 9, 0, 46),
+            "language": "eng",
+            "purpose": None,
+            "spatial_representation_type": "dataset",
+            "supplemental_information": "No information provided",
+            "temporal_extent_end": None,
+            "temporal_extent_start": None,
+            "title": "test_layer"
+        }
+        self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
+        self.assertListEqual(['Global'], regions)
+        self.assertDictEqual(expected_vals, vals)
+        self.assertListEqual(self.custom, keywords)
+
+    def test_convert_keyword_should_empty_list_for_empty_keyword(self):
+        actual = convert_keyword([])
+        self.assertListEqual([], actual)
+
+    def test_convert_keyword_should_non_empty_list_for_empty_keyword(self):
+        expected = [{
+            "keywords": ['abc'],
+            "thesaurus": {"date": None, "datetype": None, "title": None},
+            "type": "theme",
+        }]
+        actual = convert_keyword(['abc'])
+        self.assertListEqual(expected, actual)

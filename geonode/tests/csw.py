@@ -221,7 +221,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         # test BBOX properties in Dublin Core
         from decimal import Decimal
         logger.debug([Decimal(record.bbox.minx), Decimal(record.bbox.miny),
-                     Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
+                      Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
         self.assertAlmostEqual(Decimal(record.bbox.minx), Decimal('-81.859356'), places=3)
         self.assertAlmostEqual(Decimal(record.bbox.miny), Decimal('12.166532'), places=3)
         self.assertAlmostEqual(Decimal(record.bbox.maxx), Decimal('-81.356409'), places=3)

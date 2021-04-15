@@ -57,8 +57,8 @@ from geonode.layers.models import UploadSession, LayerFile
 from geonode.base.models import SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
-from geonode.layers.metadata import set_metadata
-from geonode.upload.utils import _fixup_base_file
+from geonode.layers.metadata import convert_keyword, set_metadata
+from geonode.upload.utils import KeywordHandler, _fixup_base_file
 from geonode.utils import (check_ogc_backend,
                            unzip_file,
                            extract_tarfile)
@@ -573,7 +573,8 @@ def file_upload(filename,
             defaults[key] = value
 
     regions_resolved, regions_unresolved = resolve_regions(regions)
-    keywords.extend(regions_unresolved)
+    if keywords and regions_unresolved:
+        keywords.extend(convert_keyword(regions_unresolved))
 
     # If it is a vector file, create the layer in postgis.
     if is_vector(filename):
@@ -643,14 +644,7 @@ def file_upload(filename,
         upload_session.processed = False
         upload_session.save()
 
-    # Assign the keywords (needs to be done after saving)
-    keywords = list(set(keywords))
-    if keywords:
-        if len(keywords) > 0:
-            if not layer.keywords:
-                layer.keywords = keywords
-            else:
-                layer.keywords.add(*keywords)
+    layer = KeywordHandler(layer, keywords).set_keywords()
 
     # Assign the regions (needs to be done after saving)
     regions_resolved = list(set(regions_resolved))
