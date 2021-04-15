@@ -22,9 +22,7 @@ import re
 import uuid
 
 from unittest.mock import patch, PropertyMock
-
 from django.conf import settings
-from django.core.validators import URLValidator
 
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
@@ -76,23 +74,6 @@ class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
 
         self.assertEqual(height / width, ratio, "Expected ratio to be equal target ratio after transformation")
         self.assertEqual(center, new_center, "Expected center to be preserved after transformation")
-
-    def test_construct_wms_url(self):
-        url_regex = URLValidator.regex
-
-        ogc_server_location = "http://ogclocation.com:8000/"
-        layers = ["layer1", "layer2"]
-        bbox = [623869.6556559108, 2458358.334500141, 4291621.974352865, 5270015.93640312, "EPSG:3857"]
-        wms_version = "1.1.0"
-        mime_type = "image/png"
-        width = 240
-        height = 200
-
-        url = utils.construct_wms_url(
-            ogc_server_location, layers, bbox, wms_version, mime_type, width=width, height=height
-        )
-
-        self.assertIsNotNone(re.search(url_regex, url), f"Expected the URL to match URL regex: {url}")
 
 
 class ThumbnailsUnitTest(GeoNodeBaseTestSupport):

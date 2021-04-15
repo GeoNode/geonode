@@ -281,7 +281,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             instance=geonode_layer,
             wms_version=self.parsed_service.version,
             bbox=geonode_layer.bbox,
-            forced_crs=geonode_layer.srid,
+            forced_crs=geonode_layer.srid if 'EPSG:' in str(geonode_layer.srid) else f'EPSG:{geonode_layer.srid}',
             overwrite=True,
         )
 

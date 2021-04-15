@@ -23,6 +23,7 @@ import base64
 import logging
 
 from pyproj import Transformer, CRS
+from owslib.wms import WebMapService
 from typing import List, Tuple, Callable, Union
 
 from django.conf import settings
@@ -31,7 +32,7 @@ from django.contrib.auth import get_user_model
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.auth import get_or_create_token
-from geonode.utils import http_client
+from geonode.thumbs.exceptions import ThumbnailError
 from geonode.geoserver.helpers import OGC_Servers_Handler
 
 logger = logging.getLogger(__name__)
@@ -94,8 +95,8 @@ def expand_bbox_to_ratio(
     :return: BBOX (in input's format) with provided height/width ratio, and unchanged center point
              (in regard to the input BBOX)
     """
-    # convert bbox to EPSG:3857
-    x_min, x_max, y_min, y_max, _ = transform_bbox(bbox)
+
+    x_min, x_max, y_min, y_max, crs = bbox
 
     # scale up to ratio
     ratio = target_height / target_width
@@ -118,7 +119,7 @@ def expand_bbox_to_ratio(
         x_mid + new_width / 2,
         y_mid - new_height / 2,
         y_mid + new_height / 2,
-        "epsg:3857",
+        crs,
     ]
 
     # make sure we do not fell into a 'zero-area' use case
@@ -131,7 +132,7 @@ def expand_bbox_to_ratio(
         new_bbox[3] += TOLERANCE
 
     # convert bbox to target_crs
-    return transform_bbox(new_bbox, target_crs=bbox[-1].lower())
+    return new_bbox
 
 
 def assign_missing_thumbnail(instance: Union[Layer, Map]) -> None:
@@ -143,48 +144,39 @@ def assign_missing_thumbnail(instance: Union[Layer, Map]) -> None:
     instance.save_thumbnail("", image=None)
 
 
-def construct_wms_url(
-    ogc_server_location: str,
-    layers: List,
-    bbox: List,
-    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.0"),
-    mime_type: str = "image/png",
-    styles: str = None,
-    width: int = 240,
-    height: int = 200,
-) -> str:
+def get_map(
+        ogc_server_location: str,
+        layers: List,
+        bbox: List,
+        wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"),
+        mime_type: str = "image/png",
+        styles: List = None,
+        width: int = 240,
+        height: int = 200,
+        max_retries: int = 3,
+        retry_delay: int = 1,
+):
     """
-    Method constructing a GetMap URL to the OGC server.
+    Function fetching an image from OGC server.
+    For the requests to the configured OGC backend (ogc_server_settings.LOCATION) the function tries to generate
+    an access_token and attach it to the URL.
+    If access_token is not added ant the request is against Geoserver Basic Authentication is used instead.
+    If image retrieval fails, function retries to fetch the image max_retries times, waiting
+    retry_delay seconds between consecutive requests.
 
     :param ogc_server_location: OGC server URL
     :param layers: layers which should be fetched from the OGC server
     :param bbox: area's bounding box in format: [west, east, south, north, CRS]
-    :param wms_version: WMS version of the query
+    :param wms_version: WMS version of the query (default: 1.1.1)
     :param mime_type: mime type of the returned image
     :param styles: styles, which OGC server should use for rendering an image
     :param width: width of the returned image
     :param height: height of the returned image
-
-    :return: GetMap URL
+    :param max_retries: maximum number of retries before skipping retrieval
+    :param retry_delay: number of seconds waited between retries
+    :returns: retrieved image
     """
-    # create GetMap query parameters
-    params = {
-        "service": "WMS",
-        "version": wms_version,
-        "request": "GetMap",
-        "layers": ",".join(layers),
-        "bbox": ",".join([str(bbox[0]), str(bbox[2]), str(bbox[1]), str(bbox[3])]),
-        "crs": bbox[-1],
-        "width": width,
-        "height": height,
-        "format": mime_type,
-        "transparent": True,
-    }
 
-    if styles is not None:
-        params["styles"] = styles
-
-    # create GetMap request
     ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 
     if ogc_server_location is not None:
@@ -193,6 +185,7 @@ def construct_wms_url(
         thumbnail_url = ogc_server_settings.LOCATION
 
     wms_endpoint = ""
+    additional_kwargs = {}
     if thumbnail_url == ogc_server_settings.LOCATION:
         # add access token to requests to Geoserver (logic based on the previous implementation)
         username = ogc_server_settings.credentials.username
@@ -200,67 +193,55 @@ def construct_wms_url(
         if user:
             access_token = get_or_create_token(user)
             if access_token and not access_token.is_expired():
-                params["access_token"] = access_token.token
+                additional_kwargs['access_token'] = access_token.token
 
         # add WMS endpoint to requests to Geoserver
         wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or "ows"
 
-    thumbnail_url = f"{thumbnail_url}{wms_endpoint}?{'&'.join(f'{key}={val}' for key, val in params.items())}"
-
-    return thumbnail_url
-
-
-def fetch_wms(url: str, max_retries: int = 3, retry_delay: int = 1):
-    """
-    Function fetching an image from OGC server. The request is performed based on the WMS URL.
-    In case access_token in not present in the URL , and Geoserver is used and the OGC backend, Basic Authentication
-    is used instead. If image retrieval fails, function retries to fetch the image max_retries times, waiting
-    retry_delay seconds between consecutive requests.
-
-    :param url: WMS URL of the image
-    :param max_retries: maximum number of retries before skipping retrieval
-    :param retry_delay: number of seconds waited between retries
-    :returns: retrieved image
-    """
-
     # prepare authorization for WMS service
     headers = {}
-    if "access_token" not in url:
-        if url.startswith(settings.OGC_SERVER["default"]["LOCATION"]):
+    if "access_token" not in additional_kwargs.keys():
+        if thumbnail_url.startswith(settings.OGC_SERVER["default"]["LOCATION"]):
             # for the Geoserver backend, use Basic Auth, if access_token is not provided
             _user = settings.OGC_SERVER["default"].get("USER")
             _pwd = settings.OGC_SERVER["default"].get("PASSWORD")
             encoded_credentials = base64.b64encode(f"{_user}:{_pwd}".encode("UTF-8")).decode("ascii")
             headers["Authorization"] = f"Basic {encoded_credentials}"
 
-    image = None
+    wms = WebMapService(f"{thumbnail_url}{wms_endpoint}", version=wms_version, headers=headers)
 
+    image = None
     for retry in range(max_retries):
         try:
             # fetch data
-            resp, image = http_client.request(url, headers=headers)
+            image = wms.getmap(
+                layers=layers,
+                styles=styles,
+                srs=bbox[-1],
+                bbox=[bbox[0], bbox[2], bbox[1], bbox[3]],
+                size=(width, height),
+                format=mime_type,
+                transparent=True,
+                **additional_kwargs,
+            )
 
             # validate response
-            if not resp or resp.status_code < 200 or resp.status_code > 299 or "ServiceException" in str(image):
-                _status_code = resp.status_code if resp else 'Unknown'
-                logger.debug(
-                    f"Fetching partial thumbnail from {url} failed with status code: "
-                    f"{_status_code} and response: {str(image)}"
+            if not image or "ServiceException" in str(image.read()):
+                raise ThumbnailError(
+                    f"Fetching partial thumbnail from {thumbnail_url} failed with response: {str(image)}"
                 )
-                image = None
-                time.sleep(retry_delay)
-                continue
 
         except Exception as e:
             if retry + 1 >= max_retries:
                 logger.exception(e)
+                return
 
             time.sleep(retry_delay)
             continue
         else:
             break
 
-    return image
+    return image.read()
 
 
 def epsg_3857_area_of_use():

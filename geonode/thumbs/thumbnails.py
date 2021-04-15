@@ -21,8 +21,8 @@
 import re
 import logging
 
-from PIL import Image, UnidentifiedImageError
 from io import BytesIO
+from PIL import Image, UnidentifiedImageError
 from typing import List, Union, Optional, Tuple
 
 from django.conf import settings
@@ -46,7 +46,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     Create a thumbnail with a GeoServer request.
     """
     ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
-    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or "1.1.0"
+    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or "1.1.1"
 
     create_thumbnail(
         instance,
@@ -57,10 +57,10 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
 
 def create_thumbnail(
     instance: Union[Layer, Map],
-    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.0"),
+    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"),
     bbox: Optional[Union[List, Tuple]] = None,
     forced_crs: Optional[str] = None,
-    styles: Optional[str] = None,
+    styles: Optional[List] = None,
     overwrite: bool = False,
     background_zoom: Optional[int] = None,
 ) -> None:
@@ -79,8 +79,6 @@ def create_thumbnail(
                        the thumbnail
     :param styles: styles, which OGC server should use for rendering an image
     :param overwrite: overwrite existing thumbnail
-    :param width: target width of a thumbnail in pixels
-    :param height: target height of a thumbnail in pixels
     :param background_zoom: zoom of the XYZ Slippy Map used to retrieve background image,
                             if Slippy Map is used as background
     """
@@ -139,25 +137,19 @@ def create_thumbnail(
             bbox = layers_bbox
 
     # --- expand the BBOX to match the set thumbnail's ratio (prevent thumbnail's distortions) ---
-    # implemented BBOX expansion requires it's conversion to EPSG:3857, which may cause issues if provided BBOX
-    # is in a different CRS, with coords exceeding EPSG:3857's area of use.
-    if bbox[-1] != 'EPSG:3857' and utils.exceeds_epsg3857_area_of_use(bbox):
-        logger.info("Thumbnail generation: provided BBOX exceeds EPSG:3857's area of use. Skipping ratio preservation.")
-    else:
-        bbox = utils.expand_bbox_to_ratio(bbox)
+    bbox = utils.expand_bbox_to_ratio(bbox)
 
     # --- add default style ---
     if not styles and hasattr(instance, "default_style"):
         if instance.default_style:
-            styles = instance.default_style.name
+            styles = [instance.default_style.name]
 
     # --- fetch WMS layers ---
     partial_thumbs = []
 
     for ogc_server, layers in locations:
         try:
-            # construct WMS url for the thumbnail
-            thumbnail_url = utils.construct_wms_url(
+            partial_thumbs.append(utils.get_map(
                 ogc_server,
                 layers,
                 wms_version=wms_version,
@@ -166,10 +158,7 @@ def create_thumbnail(
                 styles=styles,
                 width=width,
                 height=height,
-            )
-
-            logger.debug(f" -- fetching thumnail URL: {thumbnail_url}")
-            partial_thumbs.append(utils.fetch_wms(thumbnail_url))
+            ))
         except Exception as e:
             logger.error(f"Exception occurred while fetching partial thumbnail for {instance.name}.")
             logger.exception(e)
