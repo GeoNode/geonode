@@ -295,11 +295,12 @@ def next_step_response(req, upload_session, force_ajax=True):
 
     if next == 'error':
         return json_response(
-            {'status': 'error',
-             'success': False,
-             'id': import_session.id,
-             'error_msg': str(upload_session.error_msg),
-             }
+            {
+                'status': 'error',
+                'success': False,
+                'id': import_session.id,
+                'error_msg': str(upload_session.error_msg),
+            }
         )
 
     if next == 'check':

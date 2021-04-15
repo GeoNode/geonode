@@ -380,10 +380,12 @@ define(function (require, exports) {
             default_message += gettext(" - 510 Not Extended. This error occurs when an extension attached to the HTTP request is not supported by the web server. To resolve the issue, you may need to update the server.");
         }
         else {
-            default_message += " - " + status + gettext(" Error Code. Contact the system administrator for more information regarding this error message.");
+            default_message += " - " + gettext("Unknwon") + gettext(" Error Code. Contact the system administrator for more information regarding this error message.");
         }
-        var error = (error != undefined ? error : default_message);
-        common.logError(error, this.element.find('#status'));
+        if (error != undefined) {
+            default_message += " " + gettext("Additional info: ") + "[" + error + "]";
+        }
+        common.logError(default_message, this.element.find('#status'));
     };
 
     /** Function to mark the start of the upload
@@ -517,7 +519,8 @@ define(function (require, exports) {
                 },
                 failure: function (resp, status) {
                     self.polling = false;
-                    self.markError(resp.errors, status);
+                    var error = (resp.errors != undefined ? resp.errors : resp.error_msg);
+                    self.markError(error, status);
 
                     callback(array);
                 },
