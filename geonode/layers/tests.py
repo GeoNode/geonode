@@ -1418,19 +1418,19 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
             base_file=SimpleUploadedFile(
                 f'{thelayer_name}.shp',
                 open(os.path.join(thelayer_path,
-                     f'{thelayer_name}.shp'), mode='rb').read()),
+                                  f'{thelayer_name}.shp'), mode='rb').read()),
             shx_file=SimpleUploadedFile(
                 f'{thelayer_name}.shx',
                 open(os.path.join(thelayer_path,
-                     f'{thelayer_name}.shx'), mode='rb').read()),
+                                  f'{thelayer_name}.shx'), mode='rb').read()),
             dbf_file=SimpleUploadedFile(
                 f'{thelayer_name}.dbf',
                 open(os.path.join(thelayer_path,
-                     f'{thelayer_name}.dbf'), mode='rb').read()),
+                                  f'{thelayer_name}.dbf'), mode='rb').read()),
             prj_file=SimpleUploadedFile(
                 f'{thelayer_name}.prj',
                 open(os.path.join(thelayer_path,
-                     f'{thelayer_name}.prj'), mode='rb').read())
+                                  f'{thelayer_name}.prj'), mode='rb').read())
         )
         files['permissions'] = '{}'
         files['charset'] = 'windows-1258'
@@ -1490,23 +1490,23 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
             base_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.shp',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.shp'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.shp'), mode='rb').read()),
             shx_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.shx',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.shx'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.shx'), mode='rb').read()),
             dbf_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.dbf',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.dbf'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.dbf'), mode='rb').read()),
             prj_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.prj',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.prj'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.prj'), mode='rb').read()),
             xml_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.xml',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.xml'), mode='rb').read())
+                                  f'{same_uuid_root_file}.xml'), mode='rb').read())
         )
         files['permissions'] = '{}'
         files['charset'] = 'utf-8'
@@ -1521,23 +1521,23 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
             base_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.shp',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.shp'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.shp'), mode='rb').read()),
             shx_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.shx',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.shx'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.shx'), mode='rb').read()),
             dbf_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.dbf',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.dbf'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.dbf'), mode='rb').read()),
             prj_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.prj',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.prj'), mode='rb').read()),
+                                  f'{same_uuid_root_file}.prj'), mode='rb').read()),
             xml_file=SimpleUploadedFile(
                 f'{same_uuid_root_file}.xml',
                 open(os.path.join(thelayer_path,
-                     f'{same_uuid_root_file}.xml'), mode='rb').read())
+                                  f'{same_uuid_root_file}.xml'), mode='rb').read())
         )
         files['permissions'] = '{}'
         files['charset'] = 'utf-8'

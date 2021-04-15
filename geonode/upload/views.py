@@ -577,7 +577,7 @@ def final_step_view(req, upload_session):
                     'id': import_session.id,
                     'error_msg': error_msg or 'Import Session is Invalid!',
                     'success': False
-                 }
+                }
             )
             return _json_response
         else:
