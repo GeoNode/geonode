@@ -632,28 +632,34 @@ def final_step(upload_session, user, charset="UTF-8"):
     metadata_uploaded = False
     xml_file = upload_session.base_file[0].xml_files
     if xml_file:
-        # get model properties from XML
-        # If it's contained within a zip, need to extract it
-        if upload_session.base_file.archive:
-            archive = upload_session.base_file.archive
-            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-            zf.extract(xml_file[0], os.path.dirname(archive))
-            # Assign the absolute path to this file
-            xml_file = f"{os.path.dirname(archive)}/{xml_file[0]}"
+        try:
+            # get model properties from XML
+            # If it's contained within a zip, need to extract it
+            if upload_session.base_file.archive:
+                archive = upload_session.base_file.archive
+                zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
+                zf.extract(xml_file[0], os.path.dirname(archive))
+                # Assign the absolute path to this file
+                xml_file = f"{os.path.dirname(archive)}/{xml_file[0]}"
 
-        # Sanity checks
-        if isinstance(xml_file, list):
-            if len(xml_file) > 0:
-                xml_file = xml_file[0]
-            else:
+            # Sanity checks
+            if isinstance(xml_file, list):
+                if len(xml_file) > 0:
+                    xml_file = xml_file[0]
+                else:
+                    xml_file = None
+            elif not isinstance(xml_file, str):
                 xml_file = None
-        elif not isinstance(xml_file, str):
-            xml_file = None
 
-        if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
-            metadata_uploaded = True
-            layer_uuid, vals, regions, keywords, custom = parse_metadata(
-                open(xml_file).read())
+            if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
+                metadata_uploaded = True
+                layer_uuid, vals, regions, keywords, custom = parse_metadata(
+                    open(xml_file).read())
+        except Exception as e:
+            Upload.objects.invalidate_from_session(upload_session)
+            logger.error(e)
+            raise GeoNodeException(
+                _("Exception occurred while parsing the provided Metadata file."), e)
 
     # Make sure the layer does not exists already
     if Layer.objects.filter(uuid=layer_uuid).count():
