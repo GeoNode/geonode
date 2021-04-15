@@ -129,7 +129,6 @@ def fgdc2dict(exml):
     vals = {}
     regions = []
     keywords = []
-    custom = {}
 
     mdata = Metadata(exml)
     identifier = mdata.idinfo.datasetid
@@ -185,7 +184,7 @@ def fgdc2dict(exml):
 
     keywords = convert_keyword(keywords)
 
-    return [identifier, vals, regions, keywords, custom]
+    return [identifier, vals, regions, keywords]
 
 
 def dc2dict(exml):
@@ -194,7 +193,6 @@ def dc2dict(exml):
     vals = {}
     regions = []
     keywords = []
-    custom = {}
 
     mdata = CswRecord(exml)
     identifier = mdata.identifier
@@ -211,7 +209,7 @@ def dc2dict(exml):
 
     keywords = convert_keyword(keywords)
 
-    return [identifier, vals, regions, keywords, custom]
+    return [identifier, vals, regions, keywords]
 
 
 def sniff_date(datestr):
