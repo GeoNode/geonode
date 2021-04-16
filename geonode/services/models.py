@@ -163,7 +163,7 @@ class Service(ResourceBase):
     @property
     def ptype(self):
         # Return the gxp ptype that should be used to display layers
-        return enumerations.GXP_PTYPES[self.type]
+        return enumerations.GXP_PTYPES[self.type] if self.type else None
 
     @property
     def service_type(self):

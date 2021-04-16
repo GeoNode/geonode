@@ -18,7 +18,7 @@
 #########################################################################
 
 """Utilities for enabling OGC WMS remote services in geonode."""
-
+import re
 import json
 import logging
 import requests
@@ -277,14 +277,30 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             uuid=str(uuid4()),
             **resource_fields
         )
+        srid = geonode_layer.srid
+        bbox_polygon = geonode_layer.bbox_polygon
         geonode_layer.full_clean()
-        try:
-            geonode_layer.save(notify=True)
-        except Exception as e:
-            logger.error(e)
+        geonode_layer.save(notify=True)
         geonode_layer.keywords.add(*keywords)
         geonode_layer.set_default_permissions()
-        set_attributes_from_geoserver(geonode_layer)
+        try:
+            set_attributes_from_geoserver(geonode_layer)
+        except Exception as e:
+            logger.error(e)
+        if bbox_polygon and srid:
+            try:
+                # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
+                Layer.objects.filter(id=geonode_layer.id).update(
+                    bbox_polygon=bbox_polygon, srid='EPSG:4326')
+                match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+                bbox_polygon.srid = int(match.group('srid')) if match else 4326
+                Layer.objects.filter(id=geonode_layer.id).update(
+                    ll_bbox_polygon=bbox_polygon, srid=srid)
+            except Exception as e:
+                logger.error(e)
+
+            # Refresh from DB
+            geonode_layer.refresh_from_db()
         return geonode_layer
 
     def _create_layer_thumbnail(self, geonode_layer):
