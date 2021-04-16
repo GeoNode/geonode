@@ -389,6 +389,9 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def _get_indexed_layer_fields(self, layer_meta):
         bbox = utils.decimal_encode(layer_meta.boundingBox)
+        if len(bbox) < 4:
+            raise RuntimeError(
+                f"Resource BBOX is not valid: {bbox}")
         return {
             "name": layer_meta.name,
             "store": self.name,
