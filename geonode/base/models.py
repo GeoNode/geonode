@@ -1264,18 +1264,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             [xmin, ymin, xmax, ymax]
         :param srid: srid as string (e.g. 'EPSG:4326' or '4326')
         """
-        try:
+        bbox_polygon = Polygon.from_bbox(bbox)
+        self.bbox_polygon = bbox_polygon.clone()
+        self.srid = srid
+        if srid == 4326:
+            self.ll_bbox_polygon = bbox_polygon
+        else:
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-            bbox_polygon = Polygon.from_bbox(bbox)
             bbox_polygon.srid = int(match.group('srid')) if match else 4326
-            self.bbox_polygon = bbox_polygon
-            self.srid = srid
-            if srid == 4326:
-                self.ll_bbox_polygon = bbox_polygon
-            else:
+            try:
                 self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
-        except AttributeError:
-            logger.warning("No srid found for layer %s bounding box", self)
+            except Exception as e:
+                logger.error(e)
+                self.ll_bbox_polygon = bbox_polygon
 
     def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
         """
