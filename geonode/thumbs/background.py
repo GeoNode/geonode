@@ -82,7 +82,7 @@ class GenericWMSBackground(BaseThumbBackground):
         :key layer_name: name of a layer to be used as the background
         :key format: retrieve image's format/mime-type (defautl 'image/png')
         :key version: WMS service version (default '1.3.0')
-        :key style: layer's style (default None)
+        :key styles: layer's style (default None)
         :key srid: CRS which an image should be retrieved in (default 'EPSG:3857')
         """
         super().__init__(thumbnail_width, thumbnail_height, max_retries, retry_delay)
@@ -95,7 +95,7 @@ class GenericWMSBackground(BaseThumbBackground):
         self.layer_name = options.get("layer_name", None)
         self.format = options.get("format", "image/png")
         self.version = options.get("version", "1.3.0")
-        self.style = options.get("style", None)
+        self.styles = options.get("styles", None)
         srid = options.get("srid", "EPSG:3857")
         self.srid = srid if "EPSG:" in srid else f"EPSG:{srid}"
         # ---
@@ -129,19 +129,20 @@ class GenericWMSBackground(BaseThumbBackground):
             logger.error("Thumbnail background configured improperly: service URL and layer name may not be empty")
             return
 
-        background_url = utils.construct_wms_url(
+        background = Image.new("RGB", (self.thumbnail_width, self.thumbnail_height), (250, 250, 250))
+        img = utils.get_map(
             self.service_url,
             [self.layer_name],
             self.bbox_to_projection(bbox) + [self.srid],
             wms_version=self.version,
             mime_type=self.format,
-            styles=self.style,
+            styles=self.styles,
             width=self.thumbnail_width,
             height=self.thumbnail_height,
+            max_retries=self.max_retries,
+            retry_delay=self.retry_delay,
         )
 
-        background = Image.new("RGB", (self.thumbnail_width, self.thumbnail_height), (250, 250, 250))
-        img = utils.fetch_wms(background_url, self.max_retries, self.retry_delay)
         try:
             content = BytesIO(img)
             with Image.open(content) as image:
