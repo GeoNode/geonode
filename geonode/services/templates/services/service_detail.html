@@ -32,14 +32,16 @@
                                         {{job.status}} - {{ job.details }}
                                     </div>
                                     <div class="btn-group pull-right">
+                                       {% if job.status == 'FAILED' %}
                                         <button title="{% trans " Retry job" %}" class="btn" name="retry-{{ job.resource_id }}"><i
                                                 class="fa fa-refresh fa-fw" aria-hidden="true"></i></button>
+                                       {% endif %}
                                     </div>
                                 </div>
                             </td>
                         {% else %}
                             {% for layer in layers %}
-                                {% if layer.name == job.resource_id %}
+                                {% if layer.name == job.resource_id or layer.alternate == job.resource_id %}
                                     <td><a href='{{ layer.get_absolute_url }}'>{{layer.title|striptags}}</a></td>
                                     <td>
                                         <div class="row">
