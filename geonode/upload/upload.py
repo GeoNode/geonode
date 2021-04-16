@@ -57,7 +57,7 @@ from geoserver.resource import FeatureType
 from geonode.upload import UploadException, LayerNotReady
 
 from ..people.utils import get_default_user
-from ..layers.metadata import convert_keyword, set_metadata
+from ..layers.metadata import convert_keyword, parse_metadata
 from ..layers.utils import get_valid_layer_name, resolve_regions
 from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import geoserver_finalize_upload
@@ -627,32 +627,39 @@ def final_step(upload_session, user, charset="UTF-8"):
     regions = []
     keywords = []
     vals = {}
+    custom = {}
     # look for xml and finalize Layer metadata
     metadata_uploaded = False
     xml_file = upload_session.base_file[0].xml_files
     if xml_file:
-        # get model properties from XML
-        # If it's contained within a zip, need to extract it
-        if upload_session.base_file.archive:
-            archive = upload_session.base_file.archive
-            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-            zf.extract(xml_file[0], os.path.dirname(archive))
-            # Assign the absolute path to this file
-            xml_file = f"{os.path.dirname(archive)}/{xml_file[0]}"
+        try:
+            # get model properties from XML
+            # If it's contained within a zip, need to extract it
+            if upload_session.base_file.archive:
+                archive = upload_session.base_file.archive
+                zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
+                zf.extract(xml_file[0], os.path.dirname(archive))
+                # Assign the absolute path to this file
+                xml_file = f"{os.path.dirname(archive)}/{xml_file[0]}"
 
-        # Sanity checks
-        if isinstance(xml_file, list):
-            if len(xml_file) > 0:
-                xml_file = xml_file[0]
-            else:
+            # Sanity checks
+            if isinstance(xml_file, list):
+                if len(xml_file) > 0:
+                    xml_file = xml_file[0]
+                else:
+                    xml_file = None
+            elif not isinstance(xml_file, str):
                 xml_file = None
-        elif not isinstance(xml_file, str):
-            xml_file = None
 
-        if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
-            metadata_uploaded = True
-            layer_uuid, vals, regions, keywords = set_metadata(
-                open(xml_file).read())
+            if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
+                metadata_uploaded = True
+                layer_uuid, vals, regions, keywords, custom = parse_metadata(
+                    open(xml_file).read())
+        except Exception as e:
+            Upload.objects.invalidate_from_session(upload_session)
+            logger.error(e)
+            raise GeoNodeException(
+                _("Exception occurred while parsing the provided Metadata file."), e)
 
     # Make sure the layer does not exists already
     if Layer.objects.filter(uuid=layer_uuid).count():
@@ -860,27 +867,13 @@ def final_step(upload_session, user, charset="UTF-8"):
     if upload_session.time_info:
         set_time_info(saved_layer, **upload_session.time_info)
 
-    # saved keywords and thesaurus for the uploaded layer
-    regions_resolved, regions_unresolved = resolve_regions(regions)
-    if keywords and regions_unresolved:
-        keywords.extend(convert_keyword(regions_unresolved))
-
-    saved_layer = utils.KeywordHandler(saved_layer, keywords).set_keywords()
-
-    regions_resolved = list(set(regions_resolved))
-    if regions_resolved:
-        if len(regions_resolved) > 0:
-            if not saved_layer.regions:
-                saved_layer.regions = regions_resolved
-            else:
-                saved_layer.regions.clear()
-                saved_layer.regions.add(*regions_resolved)
-
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions
     geoserver_finalize_upload.apply_async(
         (import_session.id, saved_layer.id, permissions, created,
          xml_file, sld_file, sld_uploaded, upload_session.tempdir))
+
+    saved_layer = utils.metadata_storers(saved_layer, custom)
 
     return saved_layer
 
@@ -890,7 +883,7 @@ def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
     if xml_file:
         saved_layer.metadata_xml = open(xml_file).read()
         regions_resolved, regions_unresolved = resolve_regions(regions)
-        keywords.extend(regions_unresolved)
+        keywords.extend(convert_keyword(regions_unresolved))
 
         # Assign the regions (needs to be done after saving)
         regions_resolved = list(set(regions_resolved))
@@ -903,21 +896,7 @@ def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
                     saved_layer.regions.add(*regions_resolved)
 
         # Assign the keywords (needs to be done after saving)
-        if len(keywords) > 0 and isinstance(keywords[0], dict):
-            if 'keywords' in keywords[0]:
-                _keywords = keywords[0]['keywords']
-        try:
-            _keywords = list(set(_keywords))
-        except Exception as e:
-            logger.exception(e)
-            _keywords = None
-
-        if _keywords:
-            if len(_keywords) > 0:
-                if not saved_layer.keywords:
-                    saved_layer.keywords = _keywords
-                else:
-                    saved_layer.keywords.add(*_keywords)
+        saved_layer = utils.KeywordHandler(saved_layer, keywords).set_keywords()
 
         # set model properties
         defaults = {}
