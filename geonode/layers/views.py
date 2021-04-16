@@ -497,7 +497,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "store": layer.store,
         "name": layer.alternate,
         "title": layer.title,
-        "style": layer.default_style.name if layer.default_style else '',
+        "style": '',
         "queryable": True,
         "storeType": layer.storeType,
         "bbox": {
