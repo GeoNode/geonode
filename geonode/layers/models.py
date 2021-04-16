@@ -645,10 +645,12 @@ def pre_save_layer(instance, sender, **kwargs):
 
     if instance.bbox_polygon is None:
         instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
-    instance.set_bounds_from_bbox(
-        instance.bbox_polygon,
-        instance.bbox_polygon.srid
-    )
+    if instance.ll_bbox_polygon is None or instance.srid is None:
+        instance.set_bounds_from_bbox(
+            instance.bbox_polygon,
+            instance.bbox_polygon.srid
+        )
+
     # Send a notification when a layer is created
     if instance.pk is None and instance.title:
         # Resource Created

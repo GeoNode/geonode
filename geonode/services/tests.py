@@ -498,6 +498,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             handler._harvest_resource(layer_meta, geonode_service)
             geonode_layer = Layer.objects.filter(remote_service=geonode_service).get()
             self.assertIsNotNone(geonode_layer)
+            self.assertNotEqual(geonode_layer.srid, "EPSG:4326")
             harvest_job, created = HarvestJob.objects.get_or_create(
                 service=geonode_service,
                 resource_id=geonode_layer.alternate
@@ -532,8 +533,12 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_parsed_wms.identification.keywords = self.phony_keywords
         mock_layer_meta = mock.MagicMock(ContentMetadata)
         mock_layer_meta.name = self.phony_layer_name
+        mock_layer_meta.title = self.phony_layer_name
+        mock_layer_meta.abstract = ""
+        mock_layer_meta.keywords = []
         mock_layer_meta.children = []
         mock_layer_meta.crsOptions = ["EPSG:3857"]
+        mock_layer_meta.boundingBox = [-5000, -5000, 5000, 5000, "EPSG:3857"]
         mock_parsed_wms.contents = {
             mock_layer_meta.name: mock_layer_meta,
         }
@@ -644,6 +649,38 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         handler = wms.WmsServiceHandler(self.phony_url)
         result = list(handler.get_resources())
         self.assertEqual(result[0].name, self.phony_layer_name)
+        test_user, created = get_user_model().objects.get_or_create(username="serviceowner")
+        if created:
+            test_user.set_password("somepassword")
+            test_user.save()
+        result = handler.create_geonode_service(test_user)
+        try:
+            geonode_service, created = Service.objects.get_or_create(
+                base_url=result.base_url,
+                owner=test_user)
+            Layer.objects.filter(remote_service=geonode_service).delete()
+            HarvestJob.objects.filter(service=geonode_service).delete()
+            result = list(handler.get_resources())
+            layer_meta = handler.get_resource(result[0].name)
+            resource_fields = handler._get_indexed_layer_fields(layer_meta)
+            keywords = resource_fields.pop("keywords")
+            resource_fields["keywords"] = keywords
+            resource_fields["is_approved"] = True
+            resource_fields["is_published"] = True
+            geonode_layer = handler._create_layer(geonode_service, **resource_fields)
+            self.assertIsNotNone(geonode_layer)
+            self.assertNotEqual(geonode_layer.srid, "EPSG:4326")
+            harvest_job, created = HarvestJob.objects.get_or_create(
+                service=geonode_service,
+                resource_id=geonode_layer.alternate
+            )
+            self.assertIsNotNone(harvest_job)
+            Layer.objects.filter(remote_service=geonode_service).delete()
+            self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
+                                                       resource_id=geonode_layer.alternate).count(), 0)
+        except Service.DoesNotExist as e:
+            # In the case the Service URL becomes inaccessible for some reason
+            logger.error(e)
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)
