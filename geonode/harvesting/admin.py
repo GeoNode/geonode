@@ -45,6 +45,7 @@ class HarvestingSessionAdmin(admin.ModelAdmin):
         "started",
         "updated",
         "ended",
+        "total_records_found",
         "records_harvested",
         "harvester",
     )

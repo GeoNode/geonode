@@ -19,15 +19,16 @@
 
 """Signal handlers for harvesting"""
 
-import logging
 import typing
 
-from django.db.models.signals import post_save
+from django.db.models.signals import (
+    post_delete,
+    post_save,
+)
 from django.dispatch import receiver
+from django_celery_beat.models import IntervalSchedule
 
 from . import models
-
-logger = logging.getLogger(__name__)
 
 
 @receiver(
@@ -38,16 +39,26 @@ def create_or_update_periodic_task(
         created: bool,
         **kwargs
 ):
-    logger.debug("Inside handle_harvester_save")
     if created:
-        logger.debug(
-            "A new instance has been created. Call its `setup_periodic_task()` method")
         instance.setup_periodic_task()
     elif instance.periodic_task is not None:
-        logger.debug(
-            "The instance already existed. Adjust its periodic task properties...")
-        instance.periodic_task.name = instance.name
         instance.periodic_task.enabled = instance.scheduling_enabled
-        instance.periodic_task.every = instance.update_frequency
-        instance.periodic_task.period = "minutes"
+        instance.periodic_task.name = instance.name
+        interval, interval_created = IntervalSchedule.objects.get_or_create(
+            every=instance.update_frequency,
+            period="minutes"
+        )
+        if interval_created:
+            instance.periodic_task.interval = interval
         instance.periodic_task.save()
+
+
+@receiver(
+    post_delete, sender=models.Harvester, dispatch_uid="delete_periodic_task")
+def delete_periodic_task(
+        sender: typing.Type[models.Harvester],
+        instance: models.Harvester,
+        **kwargs
+):
+    if instance.periodic_task is not None:
+        instance.periodic_task.delete()

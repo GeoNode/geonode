@@ -18,7 +18,6 @@
 #########################################################################
 
 import json
-import logging
 
 from django.conf import settings
 from django.db import models
@@ -33,8 +32,6 @@ from jsonfield import JSONField
 
 from .config import HARVESTER_CLASSES
 from .harvesters.base import BaseHarvester
-
-logger = logging.getLogger(__name__)
 
 
 class Harvester(models.Model):
@@ -97,7 +94,6 @@ class Harvester(models.Model):
 
         """
 
-        logger.debug("inside setup_periodic_task")
         schedule_interval, created = IntervalSchedule.objects.get_or_create(
             every=self.update_frequency,
             period="minutes"
@@ -112,25 +108,15 @@ class Harvester(models.Model):
         self.save()
 
     def get_harvester_worker(self) -> BaseHarvester:
-        logger.debug("Inside get_harvester_worker")
         worker_class = import_string(self.harvester_type)
         return worker_class.from_django_record(self)
-
-    # TODO: This does not work OK when deletion is done via the django admin - Implement via post_delete signal instead
-    #
-    # https://docs.djangoproject.com/en/2.2/ref/models/fields/#django.db.models.ForeignKey.on_delete
-    #
-    def delete(self, *args, **kwargs):
-        """Delete the corresponding periodic task too, if it exists."""
-        if self.periodic_task is not None:
-            self.periodic_task.delete()
-        return super().delete(*args, **kwargs)
 
 
 class HarvestingSession(models.Model):
     started = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     ended = models.DateTimeField(null=True, blank=True)
+    total_records_found = models.IntegerField(default=0)
     records_harvested = models.IntegerField(default=0)
     harvester = models.ForeignKey(
         Harvester,

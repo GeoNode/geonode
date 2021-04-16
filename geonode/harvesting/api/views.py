@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 class IsAdminOrListOnly(rest_framework.permissions.BasePermission):
 
     def has_permission(self, request, view):
-        if request.user.is_admin:
+        if request.user.is_superuser:
             result = True
         elif view.action == "list":
             result = True

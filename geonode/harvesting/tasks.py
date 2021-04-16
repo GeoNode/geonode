@@ -36,6 +36,4 @@ def harvesting_session_dispatcher(self, harvester_id: int):
     harvester = models.Harvester.objects.get(pk=harvester_id)
     worker = harvester.get_harvester_worker()
     logger.debug(f"harvester running every {harvester.update_frequency!r} minutes")
-    logger.debug(f"harvester worker: {worker}")
-    logger.debug(f"harvester worker remote url: {worker.remote_url!r}")
     worker.perform_metadata_harvesting()

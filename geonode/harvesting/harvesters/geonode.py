@@ -50,12 +50,13 @@ class GeonodeHarvester(BaseHarvester):
         try:
             total_records = self._get_existing_records()
             logger.info(f"total_records: {total_records}")
+            self.update_harvesting_session(total_records_found=total_records)
         except requests.HTTPError as exc:
             logger.exception(f"Could not contact {self.remote_url!r}")
         except AttributeError as exc:
             logger.exception(f"Could not extract total number of records")
         else:
-            self.finish_harvesting_session(records_harvested=total_records)
+            self.finish_harvesting_session()
 
     def _get_existing_records(self) -> int:
         payload = render_to_string(

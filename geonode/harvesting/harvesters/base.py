@@ -17,14 +17,11 @@
 #
 #########################################################################
 
-import logging
 import typing
 
 from django.utils import timezone
 
 from .. import models
-
-logger = logging.getLogger(__name__)
 
 
 class BaseHarvester:
@@ -44,10 +41,10 @@ class BaseHarvester:
             record.id,
         )
 
-    @property
-    def harvesting_session(self):
+    def get_harvesting_session(self) -> "HarvestingSession":
         if self._harvesting_session_id is None:
-            session = self._start_harvesting_session()
+            session = models.HarvestingSession.objects.create(
+                harvester_id=self.harvester_id)
             self._harvesting_session_id = session.id
             result = session
         else:
@@ -55,18 +52,26 @@ class BaseHarvester:
                 pk=self._harvesting_session_id)
         return result
 
-    def _start_harvesting_session(self) -> "HarvestingSession":
-        return models.HarvestingSession.objects.create(harvester_id=self.harvester_id)
-
-    def finish_harvesting_session(self, records_harvested: typing.Optional[int] = None):
-        self.harvesting_session.ended = timezone.now()
-        self.update_harvesting_session(records_harvested)
-
-    def update_harvesting_session(self, records_harvested: typing.Optional[int] = None):
+    def finish_harvesting_session(
+            self, records_harvested: typing.Optional[int] = None) -> None:
+        session = self.get_harvesting_session()
+        session.ended = timezone.now()
         if records_harvested is not None:
-            self.harvesting_session.records_harvested = records_harvested
-        self.harvesting_session.save()
+            session.records_harvested = records_harvested
+        session.save()
 
-    def perform_metadata_harvesting(self):
+    def update_harvesting_session(
+            self,
+            total_records_found: typing.Optional[int] = None,
+            records_harvested: typing.Optional[int] = None
+    ) -> None:
+        session = self.get_harvesting_session()
+        if total_records_found is not None:
+            session.total_records_found = total_records_found
+        if records_harvested is not None:
+            session.records_harvested = records_harvested
+        session.save()
+
+    def perform_metadata_harvesting(self) -> None:
         """Harvest resources from the remote service"""
         raise NotImplementedError
