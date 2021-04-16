@@ -83,6 +83,9 @@ class Harvester(models.Model):
         editable=False,
     )
 
+    def __str__(self):
+        return f"{self.name}({self.id})"
+
     def setup_periodic_task(self) -> None:
         """Setup the related `periodic_task` for the instance.
 
