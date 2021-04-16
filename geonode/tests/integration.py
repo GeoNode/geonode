@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.layers.metadata import parse_metadata
 from .base import GeoNodeLiveTestSupport
 
 import timeout_decorator
@@ -431,14 +432,13 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                                  'Expected specific date from uploaded layer XML metadata')
 
                 # Set
-                from geonode.layers.metadata import set_metadata
                 from geonode.layers.utils import resolve_regions
 
                 thelayer_metadata = os.path.join(
                     gisdata.PROJECT_ROOT,
                     'both/good/sangis.org/Airport/Air_Runways.shp.xml')
 
-                identifier, vals, regions, keywords = set_metadata(
+                identifier, vals, regions, keywords, _ = parse_metadata(
                     open(thelayer_metadata).read())
                 self.assertIsNotNone(regions)
                 uploaded.metadata_xml = thelayer_metadata
@@ -523,14 +523,13 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                                      "Expected specific date from uploaded layer XML metadata")
 
                     # Set
-                    from geonode.layers.metadata import set_metadata
                     from geonode.layers.utils import resolve_regions
 
                     thelayer_metadata = os.path.join(
                         gisdata.PROJECT_ROOT,
                         'both/good/sangis.org/Airport/Air_Runways.shp.xml')
 
-                    identifier, vals, regions, keywords = set_metadata(
+                    identifier, vals, regions, keywords, _ = parse_metadata(
                         open(thelayer_metadata).read())
                     self.assertIsNotNone(regions)
                     uploaded.metadata_xml = thelayer_metadata

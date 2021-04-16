@@ -25,6 +25,7 @@ import uuid
 import logging
 import datetime
 from defusedxml import lxml as dlxml
+from django.conf import settings
 
 # Geonode functionality
 from geonode import GeoNodeException
@@ -37,7 +38,7 @@ from django.utils import timezone
 LOGGER = logging.getLogger(__name__)
 
 
-def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[]):
+def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}):
     """Generate dict of model properties based on XML metadata"""
 
     # check if document is XML
@@ -67,7 +68,7 @@ def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[]):
     if not vals.get("date"):
         vals["date"] = datetime.datetime.now(timezone.get_current_timezone()).strftime("%Y-%m-%dT%H:%M:%S")
 
-    return [identifier, vals, regions, keywords]
+    return [identifier, vals, regions, keywords, custom]
 
 
 def iso2dict(exml):
@@ -243,11 +244,27 @@ def get_tagname(element):
     return tagname
 
 
-def convert_keyword(keyword, iso2dict=False):
+def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[], custom={}):
+    from django.utils.module_loading import import_string
+    available_parsers = (
+        settings.METADATA_PARSERS
+        if hasattr(settings, "METADATA_PARSERS")
+        else []
+    )
+    available_parsers = ['__DEFAULT__'] if len(available_parsers) == 0 else available_parsers
+    for parser_path in available_parsers:
+        if parser_path == '__DEFAULT__':
+            parser_path = "geonode.layers.metadata.set_metadata"
+        parser = import_string(parser_path)
+        uuid, vals, regions, keywords, custom = parser(exml, uuid, vals, regions, keywords, custom)
+    return uuid, vals, regions, keywords, custom
+
+
+def convert_keyword(keyword, iso2dict=False, theme='theme'):
     if not iso2dict and keyword:
         return [{
             "keywords": keyword,
             "thesaurus": {"date": None, "datetype": None, "title": None},
-            "type": "theme",
+            "type": theme,
         }]
     return keyword

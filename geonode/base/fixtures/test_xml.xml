@@ -171,7 +171,7 @@
            <gmd:date>
              <gmd:CI_Date>
                <gmd:date>
-                 <gco:DateTime>2021-04-09T15:01:00Z</gco:DateTime>
+                 <gco:DateTime>2021-04-09T08:49:00Z</gco:DateTime>
                </gmd:date>
                <gmd:dateType>
                  <gmd:CI_DateTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
@@ -257,7 +257,7 @@
        <gmd:graphicOverview>
          <gmd:MD_BrowseGraphic>
            <gmd:fileName>
-             <gco:CharacterString>/static/geonode/img/missing_thumb.png?v=a420fa61</gco:CharacterString>
+             <gco:CharacterString>/static/geonode/img/missing_thumb.png?v=d498e972</gco:CharacterString>
            </gmd:fileName>
            <gmd:fileDescription>
              <gco:CharacterString>Thumbnail for 'test_layer'</gco:CharacterString>
@@ -450,7 +450,7 @@
        <gco:Boolean>0</gco:Boolean>
      </gmd:includedWithDataset>
      <gmd:MD_FeatureCatalogueDescription>
-       <gmd:featureCatalogueCitation uuidref="5f68505d-106c-48df-8a48-df74db4f7f40" xlink:href="http://localhost:8000/layers/geonode_data:geonode:test_layer/feature_catalogue"/>
+       <gmd:featureCatalogueCitation uuidref="7cfbc42c-efa7-431c-8daa-1399dff4cd19" xlink:href="http://localhost:8000/layers/geonode_data:geonode:test_layer/feature_catalogue"/>
      </gmd:MD_FeatureCatalogueDescription>
      
    </gmd:contentInfo>
@@ -471,45 +471,11 @@
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
-           
+          
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>/static/geonode/img/missing_thumb.png?v=77d61dc6</gmd:URL>
-               </gmd:linkage>
-               <gmd:protocol>
-                 <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
-               </gmd:protocol>
-               <gmd:name>
-                 <gco:CharacterString>test_layer.png</gco:CharacterString>
-               </gmd:name>
-               <gmd:description>
-                 <gco:CharacterString>test_layer (Thumbnail Format)</gco:CharacterString>
-               </gmd:description>
-             </gmd:CI_OnlineResource>
-           </gmd:onLine>
-           
-           <gmd:onLine>
-             <gmd:CI_OnlineResource>
-               <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=geonode:test_layer&amp;STYLE=point&amp;legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on</gmd:URL>
-               </gmd:linkage>
-               <gmd:protocol>
-                 <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
-               </gmd:protocol>
-               <gmd:name>
-                 <gco:CharacterString>test_layer.png</gco:CharacterString>
-               </gmd:name>
-               <gmd:description>
-                 <gco:CharacterString>test_layer (Legend Format)</gco:CharacterString>
-               </gmd:description>
-             </gmd:CI_OnlineResource>
-           </gmd:onLine>
-           
-           <gmd:onLine>
-             <gmd:CI_OnlineResource>
-               <gmd:linkage>
-                 <gmd:URL>http://localhost:8000/download/68</gmd:URL>
+                 <gmd:URL>http://localhost:8000/download/62</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
@@ -676,7 +642,41 @@
              </gmd:CI_OnlineResource>
            </gmd:onLine>
            
+           <gmd:onLine>
+             <gmd:CI_OnlineResource>
+               <gmd:linkage>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=geonode:test_layer&amp;STYLE=point&amp;legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on</gmd:URL>
+               </gmd:linkage>
+               <gmd:protocol>
+                 <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
+               </gmd:protocol>
+               <gmd:name>
+                 <gco:CharacterString>test_layer.png</gco:CharacterString>
+               </gmd:name>
+               <gmd:description>
+                 <gco:CharacterString>test_layer (Legend Format)</gco:CharacterString>
+               </gmd:description>
+             </gmd:CI_OnlineResource>
+           </gmd:onLine>
            
+           <gmd:onLine>
+             <gmd:CI_OnlineResource>
+               <gmd:linkage>
+                 <gmd:URL>/static/geonode/img/missing_thumb.png?v=409a3f9b</gmd:URL>
+               </gmd:linkage>
+               <gmd:protocol>
+                 <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
+               </gmd:protocol>
+               <gmd:name>
+                 <gco:CharacterString>test_layer.png</gco:CharacterString>
+               </gmd:name>
+               <gmd:description>
+                 <gco:CharacterString>test_layer (Thumbnail Format)</gco:CharacterString>
+               </gmd:description>
+             </gmd:CI_OnlineResource>
+           </gmd:onLine>
+
+
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
