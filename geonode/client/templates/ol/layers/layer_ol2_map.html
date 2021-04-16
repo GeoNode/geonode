@@ -64,17 +64,17 @@
         // olMap is used by thumbnail.js to POST to the thumbnail update view
     	var map = window.olMap = new OpenLayers.Map({
             div: 'preview_map',
-            projection: new OpenLayers.Projection('EPSG:900913'),
+            projection: new OpenLayers.Projection('EPSG:3857'),
             layers: layers,
             center: [0, 0],
             zoom: 2
     	});
 
     	if (bbox != null) {
-    	  if (crs != 'EPSG:900913') {
+    	  if (crs != 'EPSG:3857') {
           bbox = new OpenLayers.Bounds(bbox).transform(
             new OpenLayers.Projection(crs),
-            new OpenLayers.Projection("EPSG:900913"));
+            new OpenLayers.Projection("EPSG:3857"));
         }
     		map.zoomToExtent(bbox);
     	}
