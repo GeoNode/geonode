@@ -719,7 +719,8 @@ def view(req, step):
 
                     if delete_session:
                         # we're done with this session, wax it
-                        Upload.objects.update_from_session(upload_session)
+                        if resp_js.get('status') != 'error':
+                            Upload.objects.update_from_session(upload_session)
                         upload_session = None
                         del req.session[upload_id]
                         req.session.modified = True
