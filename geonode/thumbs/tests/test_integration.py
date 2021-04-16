@@ -28,6 +28,7 @@ import timeout_decorator
 from io import BytesIO
 from datetime import datetime
 from unittest.mock import patch
+from owslib.map.wms111 import WebMapService_1_1_1
 from PIL import UnidentifiedImageError, Image
 from pixelmatch.contrib.PIL import pixelmatch
 
@@ -42,7 +43,7 @@ from geonode.utils import check_ogc_backend
 from geonode.layers.utils import file_upload
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map
-from geonode.utils import HttpClient, http_client, DisableDjangoSignals
+from geonode.utils import http_client, DisableDjangoSignals
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
 from geonode.thumbs.background import (
@@ -67,12 +68,13 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
             "options": {
                 "url": "http://some_fancy_url/",
                 "tile_size": 256,
+                "version": "1.1.1",
             }
         }
     )
-    @patch.object(HttpClient, "request")
+    @patch.object(WebMapService_1_1_1, "getmap")
     def test_tile_background_retries(self, request_mock):
-        request_mock.return_value = (None, None)
+        request_mock.return_value = None
 
         width = 240
         height = 200
@@ -315,12 +317,13 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
                 "service_url": settings.OGC_SERVER["default"]["LOCATION"],
                 "layer_name": "san_andres_y_providencia_coastline_foo",
                 "srid": "EPSG:3857",
+                "version": "1.1.1"
             }
         }
     )
-    @patch.object(HttpClient, "request")
+    @patch.object(WebMapService_1_1_1, "getmap")
     def test_wms_background_retries(self, request_mock):
-        request_mock.return_value = (None, None)
+        request_mock.return_value = None
 
         width = 240
         height = 200
@@ -352,7 +355,7 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
                 "service_url": f"{settings.OGC_SERVER['default']['LOCATION']}ows/",
                 "layer_name": "san_andres_y_providencia_coastline",
                 "srid": "EPSG:3857",
-                "version": "1.1.0"
+                "version": "1.1.1"
             }
         }
     )
@@ -399,7 +402,7 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
                 "service_url": f"{settings.OGC_SERVER['default']['LOCATION']}ows/",
                 "layer_name": "san_andres_y_providencia_coastline",
                 "srid": "EPSG:4326",
-                "version": "1.1.0"
+                "version": "1.1.1"
             }
         }
     )
