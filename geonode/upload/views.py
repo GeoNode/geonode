@@ -44,16 +44,17 @@ import gsimporter
 
 from http.client import BadStatusLine
 
-from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
+from django.contrib import auth
 from django.urls import reverse
-from django.http import HttpResponseRedirect
-from django.utils.html import escape
-from django.shortcuts import get_object_or_404
+from django.conf import settings
 from django.shortcuts import render
+from django.utils.html import escape
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import PermissionDenied
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView, DeleteView
+from django.contrib.auth.decorators import login_required
 
 from geonode.upload import UploadException
 from geonode.base.models import Configuration
@@ -655,7 +656,6 @@ _steps = {
 @logged_in_or_basicauth(realm="GeoNode")
 def view(req, step):
     """Main uploader view"""
-    from django.contrib import auth
     if not auth.get_user(req).is_authenticated:
         return error_response(req, errors=["Not Authorized"])
 
