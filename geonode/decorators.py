@@ -81,11 +81,11 @@ def view_or_basicauth(view, request, test_func, realm="", *args, **kwargs):
             if basic_auth[0].lower() == "basic":
                 uname, passwd = base64.b64decode(basic_auth[1]).decode('utf-8').split(':', 1)
                 user = authenticate(username=uname, password=passwd)
-                if user is not None:
-                    if user.is_active:
-                        login(request, user)
-                        request.user = user
-                        return view(request, *args, **kwargs)
+                if user and user.is_active:
+                    login(request, user)
+                    request.user = user
+                    auth.update_session_auth_hash(request, user)
+                    return view(request, *args, **kwargs)
 
     # Either they did not provide an authorization header or
     # something in the authorization attempt failed. Send a 401
