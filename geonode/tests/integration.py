@@ -315,7 +315,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 layers[item['file']] = item['name']
 
         msg = f'There were {len(expected_layers)} compatible layers in the directory, but only {len(layers)} were sucessfully uploaded'
-        # assert len(layers) == len(expected_layers), msg
+        logger.error(msg)
 
         for layer in expected_layers:
             msg = f'The following file should have been uploadedbut was not: {layer}. '

@@ -1795,8 +1795,10 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 if style:
                     style_name = os.path.basename(
                         urlparse(style.sld_url).path).split('.')[0]
-                    legend_url = (f"{ogc_server_settings.PUBLIC_LOCATION}ows?service=WMS&request=GetLegendGraphic&format=image/png"
-                                  f"&WIDTH=20&HEIGHT=20&LAYER={instance.alternate}&STYLE={style_name}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on")
+                    legend_url = (f"{ogc_server_settings.PUBLIC_LOCATION}ows?"
+                                  "service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&"
+                                  f"LAYER={instance.alternate}&STYLE={style_name}&"
+                                  "legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on")
 
                     if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
                         Link.objects.update_or_create(

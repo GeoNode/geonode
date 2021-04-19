@@ -2603,7 +2603,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
 
     def test_countries_endpoint(self):
         # url
-        url = f"{reverse('monitoring:api_metric_data', args={'request.country'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.country'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}")
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
         self.assertEqual(out["error"], "unauthorized_request")

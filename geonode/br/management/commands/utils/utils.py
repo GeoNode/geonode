@@ -280,8 +280,8 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
         empty_folder(target_folder)
         for table in pg_tables:
             print(f"Dump Table: {db_name}:{table}")
-            os.system(f"PGPASSWORD=\"{db_passwd}\" {config.pg_dump_cmd} -h {db_host} -p {str(db_port)} -U {db_user} -F c -b -t '\"{str(table)}\"' "
-                      f"-f {os.path.join(target_folder, f'{table}.dump {db_name}')}")
+            os.system(f"PGPASSWORD=\"{db_passwd}\" {config.pg_dump_cmd} -h {db_host} -p {str(db_port)} -U {db_user} "
+                      f"-F c -b -t '\"{str(table)}\"' -f {os.path.join(target_folder, f'{table}.dump {db_name}')}")
         conn.commit()
     except Exception:
         try:
@@ -307,8 +307,8 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
                       if any(fn.endswith(ext) for ext in included_extenstions)]
         for table in file_names:
             print(f"Restoring GeoServer Vectorial Data : {db_name}:{os.path.splitext(table)[0]} ")
-            pg_rstcmd = (f"PGPASSWORD=\"{db_passwd}\" {config.pg_restore_cmd} -h {db_host} -p {str(db_port)} -U {db_user} --role={db_user} "
-                         f"-F c -t \"{os.path.splitext(table)[0]}\" {os.path.join(source_folder, table)} -d {db_name}"
+            pg_rstcmd = (f"PGPASSWORD=\"{db_passwd}\" {config.pg_restore_cmd} -h {db_host} -p {str(db_port)} -U {db_user} "
+                         f"--role={db_user} -F c -t \"{os.path.splitext(table)[0]}\" {os.path.join(source_folder, table)} -d {db_name}"
                          " -c" if preserve_tables else "")
             os.system(pg_rstcmd)
         conn.commit()

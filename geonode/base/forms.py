@@ -104,9 +104,11 @@ class CategoryChoiceField(forms.ModelChoiceField):
     choices = property(_get_choices, ChoiceField._set_choices)
 
     def label_from_instance(self, obj):
-        return (f"<i class=\"fa {obj.fa_class} fa-2x unchecked\"></i><i class=\"fa {obj.fa_class} fa-2x checked\"></i>"
-                f"<span class=\"has-popover\" data-container=\"body\" data-toggle=\"popover\" data-placement=\"top\" "
-                f"data-content=\"{obj.description}\" trigger=\"hover\"><br/><strong>{obj.gn_description}</strong></span>")
+        return '<i class="fa ' + obj.fa_class + ' fa-2x unchecked"></i>' \
+            '<i class="fa ' + obj.fa_class + ' fa-2x checked"></i>' \
+            '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
+            'data-content="' + obj.description + '" trigger="hover">' \
+            '<br/><strong>' + obj.gn_description + '</strong></span>'
 
 
 # NOTE: This is commented as it needs updating to work with select2 and autocomlete light.

@@ -85,8 +85,7 @@ def check_geoserver_is_up():
     """
     url = f"{ogc_server_settings.LOCATION}"
     req, content = http_client.get(url, user=_user)
-    msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-           'have started it.' % url)
+    msg = f'Cannot connect to the GeoServer at {url}\nPlease make sure you have started it.'
     logger.debug(req)
     assert req.status_code == 200, msg
 
@@ -179,7 +178,7 @@ _style_templates = dict(
 
 
 def _style_name(resource):
-    return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
+    return _punc.sub("_", f"{resource.store.workspace.name}:{resource.name}")
 
 
 def extract_name_from_sld(gs_catalog, sld, sld_file=None):
@@ -489,7 +488,7 @@ def cascading_delete(layer_name=None, catalog=None):
         else:
             if store.resource_type == 'coverageStore':
                 try:
-                    logger.debug(" - Going to purge the " + store.resource_type + " : " + store.href)
+                    logger.debug(f" - Going to purge the {store.resource_type} : {store.href}")
                     cat.reset()  # this resets the coverage readers and unlocks the files
                     cat.delete(store, purge='all', recurse=True)
                     # cat.reload()  # this preservers the integrity of geoserver
@@ -1200,19 +1199,17 @@ def get_attribute_statistics(layer_name, field):
 
 
 def get_wcs_record(instance, retry=True):
-    wcs = WebCoverageService(ogc_server_settings.LOCATION + 'wcs', '1.0.0')
-    key = instance.workspace + ':' + instance.name
+    wcs = WebCoverageService(f"{ogc_server_settings.LOCATION}wcs", '1.0.0')
+    key = f"{instance.workspace}:{instance.name}"
     logger.debug(wcs.contents)
     if key in wcs.contents:
         return wcs.contents[key]
     else:
-        msg = ("Layer '%s' was not found in WCS service at %s." %
-               (key, ogc_server_settings.public_url)
+        msg = (f"Layer '{key}' was not found in WCS service at {ogc_server_settings.public_url}."
                )
         if retry:
             logger.debug(
-                msg +
-                ' Waiting a couple of seconds before trying again.')
+                f"{msg} Waiting a couple of seconds before trying again.")
             time.sleep(2)
             return get_wcs_record(instance, retry=False)
         else:
@@ -1248,8 +1245,7 @@ def cleanup(name, uuid):
     except Layer.DoesNotExist:
         pass
     else:
-        msg = ('Not doing any cleanup because the layer %s exists in the '
-               'Django db.' % name)
+        msg = f'Not doing any cleanup because the layer {name} exists in the Django db.'
         raise GeoNodeException(msg)
 
     cat = gs_catalog
@@ -1617,7 +1613,7 @@ def fetch_gs_resource(instance, values, tries):
             values = {}
         values.update(dict(store=gs_resource.store.name,
                            storeType=gs_resource.store.resource_type,
-                           alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+                           alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
                            title=gs_resource.title or gs_resource.store.name,
                            abstract=gs_resource.abstract or '',
                            owner=instance.owner))
@@ -1633,8 +1629,7 @@ def fetch_gs_resource(instance, values, tries):
 
 
 def get_wms():
-    wms_url = ogc_server_settings.internal_ows + \
-        "?service=WMS&request=GetCapabilities&version=1.1.0"
+    wms_url = f"{ogc_server_settings.internal_ows}?service=WMS&request=GetCapabilities&version=1.1.0"
     req, body = http_client.get(wms_url, user=_user)
     _wms = WebMapService(wms_url, xml=body)
     return _wms
@@ -1994,8 +1989,8 @@ def _dump_image_spec(request_body, image_spec):
 def _fixup_ows_url(thumb_spec):
     # @HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
     # so rendering of thumbnails fails - replace those uri's with full geoserver URL
-    gspath = '"' + ogc_server_settings.public_url  # this should be in img src attributes
-    repl = '"' + ogc_server_settings.LOCATION
+    gspath = f"\"{ogc_server_settings.public_url}"  # this should be in img src attributes
+    repl = f"\"{ogc_server_settings.LOCATION}"
     return re.sub(gspath, repl, thumb_spec)
 
 
@@ -2006,7 +2001,7 @@ def mosaic_delete_first_granule(cat, layer):
     store = cat.get_store(layer)
     coverages = cat.mosaic_coverages(store)
 
-    granule_id = layer + ".1"
+    granule_id = f"{layer}.1"
 
     cat.mosaic_delete_granule(coverages['coverages']['coverage'][0]['name'], store, granule_id)
 

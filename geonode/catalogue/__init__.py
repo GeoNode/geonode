@@ -54,8 +54,9 @@ def load_backend(backend_name):
 
         if backend_name not in available_backends:
             backend_reprs = list(map(repr, available_backends))
-            error_msg = (f"{backend_name!r} isn't an available catalogue backend.\nTry using geonode.catalogue.backends.BACKEND, where BACKEND is one of:"
-                         f"\n    {', '.join(backend_reprs)}\nError was: {e_user}")
+            error_msg = (f"{backend_name!r} isn't an available catalogue backend.\n"
+                         "Try using geonode.catalogue.backends.BACKEND, where BACKEND is one of:\n"
+                         f"    {', '.join(backend_reprs)}\nError was: {e_user}")
             raise ImproperlyConfigured(error_msg)
         else:
             # If there's some other error, this must be an error in GeoNode
