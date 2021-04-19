@@ -31,7 +31,8 @@ from geonode.groups.conf import settings as groups_settings
 from guardian.shortcuts import (
     assign_perm,
     get_anonymous_user,
-    get_groups_with_perms
+    get_groups_with_perms,
+    get_perms
 )
 
 from geonode.groups.models import GroupProfile
@@ -401,17 +402,26 @@ class PermissionLevelMixin(object):
         resource_perms = Permission.objects.filter(
             codename__in=PERMISSIONS_TO_FETCH,
             content_type_id=ctype.id
-        ).values('codename')
+        ).values_list('codename', flat=True)
+
+        # Don't filter for admin users
+        if user.is_superuser or user.is_staff:
+            return resource_perms
 
         user_model = get_user_obj_perms_model(self)
         user_resource_perms = user_model.objects.filter(
             object_pk=self.pk,
             content_type_id=ctype.id,
-            user_id=user.id,
+            user__username=str(user),
             permission__codename__in=resource_perms
-        ).values_list('permission__codename', flat=True)
+        )
 
-        return user_resource_perms
+        # get user's implicit perms for anyone flag
+        implicit_perms = get_perms(user, self)
+
+        return user_resource_perms.union(
+            user_model.objects.filter(permission__codename__in=implicit_perms)
+            ).values_list('permission__codename', flat=True)
 
     def user_can(self, user, permission):
         """
