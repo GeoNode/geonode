@@ -275,13 +275,7 @@ def rescan_service(request, service_id):
 def service_detail(request, service_id):
     """This view shows the details of a service"""
     service = get_object_or_404(Service, pk=service_id)
-    job_statuses = (
-        enumerations.QUEUED,
-        enumerations.IN_PROCESS,
-        enumerations.FAILED,
-    )
-    resources_being_harvested = HarvestJob.objects.filter(
-        service=service, status__in=job_statuses)
+    resources_being_harvested = HarvestJob.objects.filter(service=service)
     already_imported_layers = Layer.objects.filter(remote_service=service)
     service_list = service.service_set.all()
     all_resources = (list(resources_being_harvested) +
@@ -314,13 +308,13 @@ def service_detail(request, service_id):
         template_name="services/service_detail.html",
         context={
             "service": service,
-            "layers": (r for r in resources if isinstance(r, Layer)),
+            "layers": already_imported_layers,
             "services": (r for r in resources if isinstance(r, Service)),
             "resource_jobs": (
                 r for r in resources if isinstance(r, HarvestJob)),
             "permissions_json": _perms_info_json(service),
             "resources": resources,
-            "total_resources": len(all_resources),
+            "total_resources": len(already_imported_layers),
         }
     )
 

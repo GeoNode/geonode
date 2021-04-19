@@ -880,7 +880,6 @@ class KeywordHandler:
      - instance (Layer/Document/Map): instance of any object inherited from ResourceBase.
      - keywords (list(dict)): Is required to analyze the keywords to find if some thesaurus is available.
     '''
-
     def __init__(self, instance, keywords):
         self.instance = instance
         self.keywords = keywords
@@ -898,7 +897,7 @@ class KeywordHandler:
     def handle_metadata_keywords(self):
         '''
         Method the extract the keyword from the dict.
-        If the raw_keyword are passed, try to extract them from the dict
+        If the keyword are passed, try to extract them from the dict
         by splitting free-keyword from the thesaurus
         '''
         fkeyword = []
@@ -940,3 +939,16 @@ class KeywordHandler:
             else:
                 self.instance.tkeywords.add(*tkeyword)
         return [t.alt_label for t in tkeyword]
+
+
+def metadata_storers(layer, custom={}):
+    from django.utils.module_loading import import_string
+    available_storers = (
+        settings.METADATA_STORERS
+        if hasattr(settings, "METADATA_STORERS")
+        else []
+    )
+    for storer_path in available_storers:
+        storer = import_string(storer_path)
+        storer(layer, custom)
+    return layer

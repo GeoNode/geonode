@@ -42,6 +42,7 @@
      - GeoServer Importer Uploads are now stateful and can be resumed or canceled
    * [GNIP-85: Map legend](https://github.com/GeoNode/geonode/issues/7254)
    * [GNIP 86: metadata parsing and storing](https://github.com/GeoNode/geonode/issues/7263)
+   * [GNIP-87: Reduce information returned to users to only what is strictly required and accessible](https://github.com/GeoNode/geonode/issues/7282)
    * Append data to an existing layer
    * Improved Metadata Editors, now able to handle HTML tags
    * Improved Catalog and Thesauri
