@@ -66,10 +66,6 @@ def view_or_basicauth(view, request, test_func, realm="", *args, **kwargs):
     are already logged in or if they have provided proper http-authorization
     and returning the view if all goes well, otherwise responding with a 401.
     """
-    if test_func(request.user):
-        # Already logged in, just return the view.
-        #
-        return view(request, *args, **kwargs)
 
     # They are not logged in. See if they provided login credentials
     #

@@ -56,9 +56,11 @@ from django.shortcuts import render
 from django.views.generic import CreateView, DeleteView
 
 from geonode.upload import UploadException
-from geonode.utils import fixup_shp_columnnames
 from geonode.base.models import Configuration
 from geonode.base.enumerations import CHARSETS
+from geonode.utils import fixup_shp_columnnames
+from geonode.decorators import logged_in_or_basicauth
+
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
 
@@ -650,6 +652,7 @@ _steps = {
 
 
 @login_required
+@logged_in_or_basicauth(realm="GeoNode")
 def view(req, step):
     """Main uploader view"""
     from django.contrib import auth
