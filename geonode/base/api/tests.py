@@ -418,42 +418,57 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
+        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'set_perms/')
+        get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'get_perms/')
 
         url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
 
-        url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'get_perms/')
-        response = self.client.get(url, format='json')
+        response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
         self.assertTrue('bobby' in resource_perm_spec['users'])
         self.assertFalse('norman' in resource_perm_spec['users'])
 
         # Add perms to Norman
-        url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'set_perms/')
         resource_perm_spec['users']['norman'] = resource_perm_spec['users']['bobby']
-        response = self.client.put(url, data=resource_perm_spec, format='json')
+        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
         self.assertEqual(response.status_code, 200)
 
-        url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'get_perms/')
-        response = self.client.get(url, format='json')
+        response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
         self.assertTrue('norman' in resource_perm_spec['users'])
 
         # Remove perms to Norman
-        url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'set_perms/')
         resource_perm_spec['users']['norman'] = []
-        response = self.client.put(url, data=resource_perm_spec, format='json')
+        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
         self.assertEqual(response.status_code, 200)
 
-        url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'get_perms/')
-        response = self.client.get(url, format='json')
+        response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
         self.assertFalse('norman' in resource_perm_spec['users'])
+
+        # Ensure get_perms and set_perms are done by users with correct permissions.
+        # logout admin user
+        self.assertIsNone(self.client.logout())
+        # get perms
+        response = self.client.get(get_perms_url, format='json')
+        self.assertEqual(response.status_code, 403)
+        # set perms
+        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
+        self.assertEqual(response.status_code, 403)
+        # login resourse owner
+        # get perms
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(get_perms_url, format='json')
+        self.assertEqual(response.status_code, 200)
+        # set perms
+        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
+        self.assertEqual(response.status_code, 200)
 
     def test_featured_and_published_resources(self):
         """
