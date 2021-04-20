@@ -223,8 +223,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         )
 
         # Update: POST
-        data = response.data['geoapp']
-        data['data'] = {
+        data = {
             "test_data": {
                 "test": [
                     'test_1',

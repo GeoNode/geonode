@@ -1031,6 +1031,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return self.owner.get_full_name() or self.owner.username
 
     @property
+    def perms(self):
+        return []
+
+    @property
     def organizationname(self):
         return self.owner.organization
 
