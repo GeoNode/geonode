@@ -177,7 +177,7 @@ def create_thumbnail(
                 img = Image.open(content)
                 img.verify()  # verify that it is, in fact an image
                 img = Image.open(BytesIO(image))  # "re-open" the file (required after running verify method)
-                merged_partial_thumbs.paste(img, mask=img)
+                merged_partial_thumbs.paste(img, mask=img.convert('RGBA'))
             except UnidentifiedImageError as e:
                 logger.error(f"Thumbnail generation. Error occurred while fetching layer image: {image}")
                 logger.exception(e)
