@@ -125,12 +125,16 @@ def notify_admins_new_signup(sender, **kwargs):
 
 def profile_post_save(instance, sender, **kwargs):
     """
-    Make sure the user belongs by default to the anonymous group.
-    This will make sure that anonymous permissions will be granted to the new users.
+    Make sure the user belongs by default to the anonymous and contributors groups.
+    This will make sure that anonymous and contributors permissions will be granted to the new users.
     """
     from django.contrib.auth.models import Group
     anon_group, created = Group.objects.get_or_create(name='anonymous')
     instance.groups.add(anon_group)
+    is_anonymous = instance.username == 'AnonymousUser'
+    if not (instance.is_staff or instance.is_superuser or is_anonymous):
+        cont_group, created = Group.objects.get_or_create(name='contributors')
+        instance.groups.add(cont_group)
 
     if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT == 'activation':
         created = kwargs.get('created', False)
