@@ -58,9 +58,19 @@ define(function (require, exports) {
         if (empty) {
             status.empty();
         }
+        var msg = options.msg;
+        var level = options.level;
+        if (msg.error_msg !== undefined) {
+            msg = msg.error_msg;
+            level = 'alert-warning';
+        }
+        if (msg.errors !== undefined) {
+            msg = msg.errors;
+            level = 'alert-warning';
+        }
         status.append(progressTemplate({
-            message: options.msg,
-            alertLevel: options.level
+            message: msg,
+            alertLevel: level
         }));
     };
 

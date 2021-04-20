@@ -108,6 +108,7 @@ class Upload(models.Model):
     STATE_READY = "READY"
     STATE_RUNNING = "RUNNING"
     STATE_PENDING = "PENDING"
+    STATE_WAITING = "WAITING"
     STATE_INCOMPLETE = "INCOMPLETE"
     STATE_COMPLETE = "COMPLETE"
     STATE_INVALID = "INVALID"
@@ -178,6 +179,8 @@ class Upload(models.Model):
             return 0.0
         elif self.state == Upload.STATE_PENDING:
             return 33.0
+        elif self.state == Upload.STATE_WAITING:
+            return 50.0
         elif self.state == Upload.STATE_PROCESSED:
             return 100.0
         elif self.complete or self.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
@@ -190,7 +193,9 @@ class Upload(models.Model):
             return 80.0
 
     def get_resume_url(self):
-        if self.state != Upload.STATE_PROCESSED:
+        if self.state == Upload.STATE_WAITING and self.import_id:
+            return f"{reverse('data_upload')}?id={self.import_id}"
+        else:
             session = None
             try:
                 if not self.import_id:
@@ -213,6 +218,8 @@ class Upload(models.Model):
                             response_json = json.loads(content)
                             if response_json['success'] and 'redirect_to' in response_json:
                                 if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
+                                    self.state = Upload.STATE_WAITING
+                                    Upload.objects.filter(id=self.id).update(state=Upload.STATE_WAITING)
                                     return f"{reverse('data_upload')}?id={self.import_id}"
                                 else:
                                     next = get_next_step(self.get_session)
