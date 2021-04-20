@@ -40,6 +40,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from .permissions import (
     IsSelfOrAdmin,
+    IsOwnerOrAdmin,
     IsOwnerOrReadOnly,
     ResourceBasePermissionsFilter
 )
@@ -242,7 +243,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         }
         ```
         """)
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['get'], permission_classes=[IsOwnerOrAdmin, ])
     def get_perms(self, request, pk=None):
         resource = self.get_object()
         perms_spec = resource.get_all_level_info()
@@ -282,7 +283,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         }
         ```
         """)
-    @action(detail=True, methods=['put'])
+    @action(detail=True, methods=['put'], permission_classes=[IsOwnerOrAdmin, ])
     def set_perms(self, request, pk=None):
         resource = self.get_object()
         resource.set_permissions(request.data)
