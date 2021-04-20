@@ -194,6 +194,10 @@ class Profile(AbstractUser):
         return format_address(self.delivery, self.zipcode,
                               self.city, self.area, self.country)
 
+    @property
+    def perms(self):
+        return []
+
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)
         self._notify_account_activated()
