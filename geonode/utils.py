@@ -1655,53 +1655,58 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         workspace=instance.workspace)
                 if not gs_resource:
                     gs_resource = gs_catalog.get_resource(name=instance.name)
-                srid = gs_resource.projection
-                bbox = gs_resource.native_bbox
-                instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
-                if instance.srid:
-                    instance.srid_url = f"http://www.spatialreference.org/ref/{instance.srid.replace(':', '/').lower()}/"
-                elif instance.bbox_polygon is not None:
-                    # Guessing 'EPSG:4326' by default
-                    instance.srid = 'EPSG:4326'
-                else:
-                    raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
 
-                from geonode.layers.models import Layer
-                try:
-                    with transaction.atomic():
-                        # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
-                        instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
-                        Layer.objects.filter(id=instance.id).update(
-                            bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
+                if gs_resource:
+                    srid = gs_resource.projection
+                    bbox = gs_resource.native_bbox
+                    instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
+                    if instance.srid:
+                        instance.srid_url = f"http://www.spatialreference.org/ref/{instance.srid.replace(':', '/').lower()}/"
+                    elif instance.bbox_polygon is not None:
+                        # Guessing 'EPSG:4326' by default
+                        instance.srid = 'EPSG:4326'
+                    else:
+                        raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
 
-                        # Refresh from DB
-                        instance.refresh_from_db()
-                except Exception as e:
-                    logger.exception(e)
-
-                try:
-                    with transaction.atomic():
-                        match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-                        instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
-                        Layer.objects.filter(id=instance.id).update(
-                            ll_bbox_polygon=instance.bbox_polygon, srid=srid)
-                except Exception as e:
-                    logger.warning(e)
+                    from geonode.layers.models import Layer
                     try:
                         with transaction.atomic():
-                            instance.bbox_polygon.srid = 4326
+                            # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
+                            instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
                             Layer.objects.filter(id=instance.id).update(
-                                ll_bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
+                                bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
+
+                            # Refresh from DB
+                            instance.refresh_from_db()
+                    except Exception as e:
+                        logger.exception(e)
+
+                    try:
+                        with transaction.atomic():
+                            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+                            instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
+                            Layer.objects.filter(id=instance.id).update(
+                                ll_bbox_polygon=instance.bbox_polygon, srid=srid)
                     except Exception as e:
                         logger.warning(e)
-                dx = float(bbox[1]) - float(bbox[0])
-                dy = float(bbox[3]) - float(bbox[2])
-                dataAspect = 1 if dy == 0 else dx / dy
-                width = int(height * dataAspect)
-                # Rewriting BBOX as a plain string
-                bbox = ','.join(str(x) for x in [bbox[0], bbox[2], bbox[1], bbox[3]])
+                        try:
+                            with transaction.atomic():
+                                instance.bbox_polygon.srid = 4326
+                                Layer.objects.filter(id=instance.id).update(
+                                    ll_bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
+                        except Exception as e:
+                            logger.warning(e)
+                    dx = float(bbox[1]) - float(bbox[0])
+                    dy = float(bbox[3]) - float(bbox[2])
+                    dataAspect = 1 if dy == 0 else dx / dy
+                    width = int(height * dataAspect)
+                    # Rewriting BBOX as a plain string
+                    bbox = ','.join(str(x) for x in [bbox[0], bbox[2], bbox[1], bbox[3]])
+                else:
+                    bbox = instance.bbox_string
             except Exception as e:
                 logger.exception(e)
+                bbox = instance.bbox_string
 
         # Create Raw Data download link
         if settings.DISPLAY_ORIGINAL_DATASET_LINK:
