@@ -41,6 +41,9 @@ class BaseHarvester:
             record.id,
         )
 
+    def set_harvesting_session_id(self, id_: int) -> None:
+        self._harvesting_session_id = id_
+
     def get_harvesting_session(self) -> "HarvestingSession":
         if self._harvesting_session_id is None:
             session = models.HarvestingSession.objects.create(
@@ -74,4 +77,7 @@ class BaseHarvester:
 
     def perform_metadata_harvesting(self) -> None:
         """Harvest resources from the remote service"""
+        raise NotImplementedError
+
+    def harvest_batch(self, *args, **kwargs):
         raise NotImplementedError

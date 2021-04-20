@@ -4,7 +4,7 @@
         service="CSW"
         version="2.0.2"
         resultType="{{ result_type }}"
-        startPosition="1"
+        startPosition="{{ start_position }}"
         maxRecords="{{ max_records }}"
         outputFormat="application/xml"
         outputSchema="http://www.isotc211.org/2005/gmd"

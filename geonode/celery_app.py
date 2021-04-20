@@ -35,6 +35,7 @@ def _log(msg, *args):
 # pickle the object when using Windows.
 app.config_from_object('django.conf:settings', namespace="CELERY")
 app.autodiscover_tasks()
+app.autodiscover_tasks(packages=["geonode.harvesting.harvesters"])
 
 """ CELERAY SAMPLE TASKS
 @app.on_after_configure.connect

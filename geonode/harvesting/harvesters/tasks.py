@@ -17,23 +17,41 @@
 #
 #########################################################################
 
+"""Additional celery tasks for the GeoNode harvester"""
+
 import logging
 
 from geonode.celery_app import app
 
-from . import models
+from geonode.harvesting import models
 
 logger = logging.getLogger(__name__)
 
 
 @app.task(
     bind=True,
-    name='geonode.harvesting.tasks.harvesting_session_dispatcher',
+    name='geonode.harvesting.harvesters.tasks.harvest_records',
     queue='geonode',
     acks_late=False,
 )
-def harvesting_session_dispatcher(self, harvester_id: int):
-    harvester = models.Harvester.objects.get(pk=harvester_id)
+def harvest_records(self, harvesting_session_id: int, start_index: int, page_size: int):
+    harvesting_session = models.HarvestingSession.objects.get(pk=harvesting_session_id)
+    harvester = harvesting_session.harvester
     worker = harvester.get_harvester_worker()
-    logger.debug(f"harvester running every {harvester.update_frequency!r} minutes")
-    worker.perform_metadata_harvesting()
+    worker.set_harvesting_session_id(harvesting_session_id)
+    worker.harvest_record_batch(start_index, page_size)
+
+
+@app.task(
+    bind=True,
+    name='geonode.harvesting.harvesters.tasks.finalize_harvesting_session',
+    queue='geonode',
+    acks_late=False,
+)
+def finalize_harvesting_session(harvesting_session_id: int):
+    harvesting_session = models.HarvestingSession.objects.get(pk=harvesting_session_id)
+    harvester = harvesting_session.harvester
+    worker = harvester.get_harvester_worker()
+    worker.set_harvesting_session_id(harvesting_session_id)
+    worker.finish_harvesting_session()
+
