@@ -1852,18 +1852,18 @@ class TestSetMetadata(TestCase):
         import datetime
         identifier, vals, regions, keywords, _ = set_metadata(open(self.exml_path).read())
         expected_vals = {
-                "abstract": "real abstract",
-                "constraints_other": "Not Specified: The original author did not specify a license.",
-                "data_quality_statement": "Created with GeoNode",
-                'date': datetime.datetime(2021, 4, 9, 9, 0, 46),
-                "language": "eng",
-                "purpose": None,
-                "spatial_representation_type": "dataset",
-                "supplemental_information": "No information provided",
-                "temporal_extent_end": None,
-                "temporal_extent_start": None,
-                "title": "test_layer"
-            }
+            "abstract": "real abstract",
+            "constraints_other": "Not Specified: The original author did not specify a license.",
+            "data_quality_statement": "Created with GeoNode",
+            'date': datetime.datetime(2021, 4, 9, 9, 0, 46),
+            "language": "eng",
+            "purpose": None,
+            "spatial_representation_type": "dataset",
+            "supplemental_information": "No information provided",
+            "temporal_extent_end": None,
+            "temporal_extent_start": None,
+            "title": "test_layer"
+        }
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)
         self.assertListEqual(['Global'], regions)
         self.assertDictEqual(expected_vals, vals)
@@ -1919,31 +1919,31 @@ class TestCustomMetadataParser(TestCase):
         }
 
         self.keywords = [
-                {
-                    "keywords": ["features", "test_layer"],
-                    "thesaurus": {"date": None, "datetype": None, "title": None},
-                    "type": "theme",
+            {
+                "keywords": ["features", "test_layer"],
+                "thesaurus": {"date": None, "datetype": None, "title": None},
+                "type": "theme",
+            },
+            {
+                "keywords": ["no conditions to access and use"],
+                "thesaurus": {
+                    "date": "2020-10-30T16:58:34",
+                    "datetype": "publication",
+                    "title": "Test for ordering",
                 },
-                {
-                    "keywords": ["no conditions to access and use"],
-                    "thesaurus": {
-                        "date": "2020-10-30T16:58:34",
-                        "datetype": "publication",
-                        "title": "Test for ordering",
-                    },
-                    "type": None,
+                "type": None,
+            },
+            {
+                "keywords": ["ad", "af"],
+                "thesaurus": {
+                    "date": "2008-06-01",
+                    "datetype": "publication",
+                    "title": "GEMET - INSPIRE themes, version 1.0",
                 },
-                {
-                    "keywords": ["ad", "af"],
-                    "thesaurus": {
-                        "date": "2008-06-01",
-                        "datetype": "publication",
-                        "title": "GEMET - INSPIRE themes, version 1.0",
-                    },
-                    "type": None,
-                },
-                {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
-            ]
+                "type": None,
+            },
+            {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
+        ]
 
     def test_will_use_only_the_default_metadata_parser(self):
         identifier, vals, regions, keywords, _ = parse_metadata(open(self.exml_path).read())

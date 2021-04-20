@@ -880,6 +880,7 @@ class KeywordHandler:
      - instance (Layer/Document/Map): instance of any object inherited from ResourceBase.
      - keywords (list(dict)): Is required to analyze the keywords to find if some thesaurus is available.
     '''
+
     def __init__(self, instance, keywords):
         self.instance = instance
         self.keywords = keywords
