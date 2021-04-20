@@ -187,7 +187,7 @@ class UserSerializer(DynamicModelSerializer):
         ref_name = 'UserProfile'
         model = get_user_model()
         name = 'user'
-        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar', 'perms')
 
     @classmethod
     def setup_eager_loading(cls, queryset):
@@ -280,7 +280,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         model = ResourceBase
         name = 'resource'
         fields = (
-            'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id',
+            'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id', 'perms',
             'owner', 'poc', 'metadata_author',
             'keywords', 'regions', 'category',
             'title', 'abstract', 'attribution', 'doi', 'alternate', 'bbox_polygon', 'll_bbox_polygon', 'srid',
@@ -297,3 +297,10 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
             # users_geolimits, groups_geolimits
         )
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        data = super(ResourceBaseSerializer, self).to_representation(instance)
+        if request:
+            data['perms'] = instance.get_user_perms(request.user)
+        return data
