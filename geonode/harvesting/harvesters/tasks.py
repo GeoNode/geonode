@@ -32,7 +32,8 @@ logger = logging.getLogger(__name__)
     bind=True,
     name='geonode.harvesting.harvesters.tasks.harvest_records',
     queue='geonode',
-    acks_late=False,
+    acks_late=True,
+    ignore_result=False,
 )
 def harvest_records(self, harvesting_session_id: int, start_index: int, page_size: int):
     harvesting_session = models.HarvestingSession.objects.get(pk=harvesting_session_id)
@@ -46,9 +47,10 @@ def harvest_records(self, harvesting_session_id: int, start_index: int, page_siz
     bind=True,
     name='geonode.harvesting.harvesters.tasks.finalize_harvesting_session',
     queue='geonode',
-    acks_late=False,
+    acks_late=True,
+    ignore_result=False,
 )
-def finalize_harvesting_session(harvesting_session_id: int):
+def finalize_harvesting_session(self, harvesting_session_id: int):
     harvesting_session = models.HarvestingSession.objects.get(pk=harvesting_session_id)
     harvester = harvesting_session.harvester
     worker = harvester.get_harvester_worker()

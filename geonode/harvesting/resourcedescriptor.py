@@ -22,6 +22,8 @@ import datetime as dt
 import typing
 import uuid
 
+from django.contrib.gis import geos
+
 
 @dataclasses.dataclass()
 class RecordDescriptionContact:
@@ -53,12 +55,24 @@ class RecordIdentification:
     native_format: str
     place_keywords: typing.List[str]
     other_keywords: typing.Tuple
-    license: typing.Tuple[str, str]
+    license: typing.List[str]
     other_constraints: typing.Optional[str]
     topic_category: typing.Optional[str]
-    spatial_extent: str
-    temporal_extent: str
+    spatial_extent: typing.Optional[geos.Polygon]
+    temporal_extent: typing.Optional[typing.Tuple[dt.datetime, dt.datetime]]
     supplemental_information: typing.Optional[str]
+
+
+@dataclasses.dataclass()
+class RecordDistribution:
+    link_url: typing.Optional[str]
+    wms_url: typing.Optional[str]
+    wfs_url: typing.Optional[str]
+    wcs_url: typing.Optional[str]
+    thumbnail_url: typing.Optional[str]
+    legend_url: typing.Optional[str]
+    geojson_url: typing.Optional[str]
+    original_format_url: typing.Optional[str]
 
 
 @dataclasses.dataclass()
@@ -72,3 +86,5 @@ class RecordDescription:
     date_stamp: dt.datetime
     reference_system: str
     identification: RecordIdentification
+    distribution: RecordDistribution
+    data_quality: str

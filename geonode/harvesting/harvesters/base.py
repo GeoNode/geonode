@@ -19,6 +19,7 @@
 
 import typing
 
+from django.db.models import F
 from django.utils import timezone
 
 from .. import models
@@ -41,39 +42,41 @@ class BaseHarvester:
             record.id,
         )
 
+    def create_harvesting_session(self) -> int:
+        session = models.HarvestingSession.objects.create(
+            harvester_id=self.harvester_id)
+        self._harvesting_session_id = session.id
+        return self._harvesting_session_id
+
     def set_harvesting_session_id(self, id_: int) -> None:
         self._harvesting_session_id = id_
 
-    def get_harvesting_session(self) -> "HarvestingSession":
-        if self._harvesting_session_id is None:
-            session = models.HarvestingSession.objects.create(
-                harvester_id=self.harvester_id)
-            self._harvesting_session_id = session.id
-            result = session
-        else:
-            result = models.HarvestingSession.objects.get(
-                pk=self._harvesting_session_id)
-        return result
-
     def finish_harvesting_session(
-            self, records_harvested: typing.Optional[int] = None) -> None:
-        session = self.get_harvesting_session()
-        session.ended = timezone.now()
-        if records_harvested is not None:
-            session.records_harvested = records_harvested
-        session.save()
+            self, additional_harvested_records: typing.Optional[int] = None) -> None:
+
+        update_kwargs = {
+            "ended": timezone.now()
+        }
+        if additional_harvested_records is not None:
+            update_kwargs["records_harvested"] = (
+                    F("records_harvested") + additional_harvested_records)
+        models.HarvestingSession.objects.filter(
+            id=self._harvesting_session_id).update(**update_kwargs)
 
     def update_harvesting_session(
             self,
             total_records_found: typing.Optional[int] = None,
-            records_harvested: typing.Optional[int] = None
+            additional_harvested_records: typing.Optional[int] = None
     ) -> None:
-        session = self.get_harvesting_session()
+
+        update_kwargs = {}
         if total_records_found is not None:
-            session.total_records_found = total_records_found
-        if records_harvested is not None:
-            session.records_harvested = records_harvested
-        session.save()
+            update_kwargs["total_records_found"] = total_records_found
+        if additional_harvested_records is not None:
+            update_kwargs["records_harvested"] = (
+                    F("records_harvested") + additional_harvested_records)
+        models.HarvestingSession.objects.filter(
+            id=self._harvesting_session_id).update(**update_kwargs)
 
     def perform_metadata_harvesting(self) -> None:
         """Harvest resources from the remote service"""
