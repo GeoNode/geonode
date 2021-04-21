@@ -267,19 +267,19 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         # Check user permissions
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
         # Admin
-        response = self.client.get(url + '/{}/'.format(resource.id), format='json')
+        response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
         # Annonymous
         self.assertIsNone(self.client.logout())
-        response = self.client.get(url + '/{}/'.format(resource.id), format='json')
+        response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
         # user owner
         self.assertTrue(self.client.login(username='bobby', password='bob'))
-        response = self.client.get(url + '/{}/'.format(resource.id), format='json')
+        response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
         # user not owner and not assigned
         self.assertTrue(self.client.login(username='norman', password='norman'))
-        response = self.client.get(url + '/{}/'.format(resource.id), format='json')
+        response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
 
     def test_search_resources(self):
