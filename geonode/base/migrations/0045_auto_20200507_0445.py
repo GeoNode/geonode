@@ -7,6 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('base', '0044_resourcebase_bbox_polygon'),
+        ('layers', '0028_auto_20200323_1945'),
     ]
 
     operations = [
