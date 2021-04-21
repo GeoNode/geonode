@@ -24,6 +24,47 @@ RUN apt-get update && apt-get install -y \
     firefox-esr \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
+# GDAL upgrade to fix this issue https://github.com/OSGeo/gdal/issues/1692
+# proj-7 && gdal 3.2.1 installation should be removed if base image upgraded to Bullseye
+# install proj-7
+WORKDIR /usr/src
+RUN wget https://download.osgeo.org/proj/proj-7.2.1.tar.gz
+RUN tar xvzf proj-7.2.1.tar.gz
+WORKDIR ./proj-7.2.1
+RUN ./configure --without-curl
+RUN make && make install
+
+# Download GDAL v3.2.1 Source (ex. 3.2.1)
+WORKDIR /usr/src
+ENV CPUS 2
+ENV GDAL_SHORT_VERSION 3.2.1
+ENV GDAL_VERSION 3.2.1
+RUN wget -q https://download.osgeo.org/gdal/${GDAL_SHORT_VERSION}/gdal-${GDAL_VERSION}.tar.gz
+RUN tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_SHORT_VERSION} && \
+    ./configure \
+    --disable-debug \
+    --prefix=/usr/local \
+    --disable-static \
+    --with-curl=/usr/local/bin/curl-config \
+    --with-geos \
+    #--with-geotiff=/usr/local \
+    --with-hide-internal-symbols=yes \
+    #--with-libtiff=/usr/local \
+    --with-jpeg=/usr/local \
+    --with-png \
+    #--with-openjpeg \
+    --with-sqlite3 \
+    --with-proj=/usr/local \
+    #--with-rename-internal-libgeotiff-symbols=yes \
+    #--with-rename-internal-libtiff-symbols=yes \
+    --with-threads=yes \
+    --with-webp=/usr/local \
+    #--with-zstd=/usr/local \
+    #--with-libdeflate \
+    && echo "building GDAL ${GDAL_VERSION}..." \
+    && make -j${CPUS} && make --quiet install
+
+
 # add bower and grunt command
 COPY . /usr/src/geonode/
 WORKDIR /usr/src/geonode
