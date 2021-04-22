@@ -41,7 +41,7 @@ from django.test.utils import override_settings
 from django.core.exceptions import ObjectDoesNotExist
 
 from django.templatetags.static import static
-#from django.contrib.staticfiles.templatetags import staticfiles
+
 
 from geonode.layers.utils import (
     upload,

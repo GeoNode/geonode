@@ -27,7 +27,7 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 from django.templatetags.static import static
-#from django.contrib.staticfiles.templatetags import staticfiles
+
 
 from celery.utils.log import get_task_logger
 

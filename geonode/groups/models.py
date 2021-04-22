@@ -33,7 +33,7 @@ from django.db.models import signals
 from django.utils.timezone import now
 
 from django.templatetags.static import static
-#from django.contrib.staticfiles.templatetags import staticfiles
+
 
 from taggit.managers import TaggableManager
 
