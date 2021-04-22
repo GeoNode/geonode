@@ -21,7 +21,7 @@ from django.test.testcases import SimpleTestCase
 from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel
 from django.test import TestCase
 from django.core import management
-from defusedxml import ElementTree as dlxml
+from owslib.etree import etree as dlxml
 from geonode.base.management.commands.load_thesaurus import get_all_lang_available_with_title, determinate_value
 import os
 
