@@ -24,7 +24,6 @@
 import uuid
 import logging
 import datetime
-#from owslib.etree import etree as dlxml
 from owslib.etree import etree as dlxml
 from django.conf import settings
 

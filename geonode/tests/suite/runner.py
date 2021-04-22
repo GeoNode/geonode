@@ -80,6 +80,7 @@ class GeoNodeBaseSuiteDiscoverRunner(DiscoverRunner):
                 for pattern in test_name_patterns
             }
 
+
 class BufferWritesDevice(object):
 
     def __init__(self):
