@@ -421,7 +421,7 @@ class PermissionLevelMixin(object):
 
         return user_resource_perms.union(
             user_model.objects.filter(permission__codename__in=implicit_perms)
-            ).values_list('permission__codename', flat=True)
+        ).values_list('permission__codename', flat=True)
 
     def user_can(self, user, permission):
         """
