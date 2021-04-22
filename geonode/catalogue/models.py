@@ -49,7 +49,7 @@ def catalogue_post_save(instance, sender, **kwargs):
         catalogue.create_record(instance)
         record = catalogue.get_record(instance.uuid)
     except EnvironmentError as err:
-        msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
+        msg = f'Could not connect to catalogue to save information for layer "{instance.name}"'
         if err.errno == errno.ECONNREFUSED:
             LOGGER.warn(msg, err)
             return
@@ -57,13 +57,12 @@ def catalogue_post_save(instance, sender, **kwargs):
             raise err
 
     if not record:
-        msg = ('Metadata record for %s does not exist,'
-               ' check the catalogue signals.' % instance.title)
-        LOGGER.exception(msg)
+        msg = f'Metadata record for {instance.title} does not exist, check the catalogue signals.'
+        LOGGER.warning(msg)
         return
 
     if not hasattr(record, 'links'):
-        msg = ('Metadata record for %s should contain links.' % instance.title)
+        msg = f'Metadata record for {instance.title} should contain links.'
         raise Exception(msg)
 
     # Create the different metadata links with the available formats

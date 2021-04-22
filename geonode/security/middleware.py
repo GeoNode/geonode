@@ -32,6 +32,12 @@ from geonode.base.auth import get_token_object_from_session, basic_auth_authenti
 
 from guardian.shortcuts import get_anonymous_user
 
+
+# make sure login_url can be mapped to redirection URL and will match request.path
+login_url = settings.LOGIN_URL.replace(settings.SITEURL.rstrip('/'), '')
+if not login_url.startswith('/'):
+    login_url = f"/{login_url}"
+
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     white_list_paths = (
         reverse('account_login'),
@@ -44,6 +50,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         '/account/(?!.*(?:signup))',
         # block unauthenticated users from creating new accounts.
         '/static/*',
+        login_url,
     )
 else:
     white_list_paths = (
@@ -53,6 +60,7 @@ else:
         '/account/(?!.*(?:signup))',
         # block unauthenticated users from creating new accounts.
         '/static/*',
+        login_url,
     )
 
 white_list = [compile(x) for x in white_list_paths + getattr(settings, "AUTH_EXEMPT_URLS", ())]
@@ -72,7 +80,7 @@ class LoginRequiredMiddleware(MiddlewareMixin):
     authentication_classes).
     """
 
-    redirect_to = getattr(settings, "LOGIN_URL", reverse("account_login"))
+    redirect_to = login_url
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -93,7 +101,7 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
-                    "{login_path}?next={request_path}".format(login_path=self.redirect_to, request_path=request.path)
+                    f"{self.redirect_to}?next={request.path}"
                 )
 
 
@@ -135,6 +143,4 @@ class SessionControlMiddleware(MiddlewareMixin):
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
-                    '{login_path}?next={request_path}'.format(
-                        login_path=self.redirect_to,
-                        request_path=request.path))
+                    f'{self.redirect_to}?next={request.path}')

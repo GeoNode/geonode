@@ -53,19 +53,10 @@
 
         <section>
           <a href="{% url "document_thumb_upload" resource.id %}" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
-          <a href="#" id="upload-button" class="btn btn-danger">{% trans "Upload files" %}</a>
+          <a href="#" id="upload-button" class="btn btn-primary">{% trans "Upload files" %}</a>
         </section>
         </div>
 
-        {% endblock %}
-
-        {% block sidebar %}
-            <div class="col-md-4">
-              <h3>{% trans "Permissions"  %}</h3>
-              <form id="permission_form">
-                {% include "_permissions.html" %}
-              </form>
-            </div>
         {% endblock %}
     </div>
 </div>

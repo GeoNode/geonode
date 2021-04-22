@@ -10,7 +10,7 @@
 
 {% block title %} {% trans "Upload Layer Metadata"  %} - {{ block.super }}  {% endblock %}
 
-{% block body_class %}{% trans "layers upload" %}{% endblock %}
+{% block body_class %}layers upload{% endblock %}
 
 
 {% block head %}
@@ -28,28 +28,6 @@
 
 <div class="row">
   <div class="col-md-8">
-    {% if incomplete %}
-    <section class="widget" id="incomplete-download-list">
-      <h3>{% trans "Incomplete Uploads" %}</h3>
-      <p>{% trans "You have the following incomplete uploads" %}:</p>
-      {% for u in incomplete %}
-      <div class="clearfix uip" id="incomplete-{{ u.import_id }}">
-        <div class="pull-left">{{ u.name }}, {% trans "last updated on" %} {{ u.date }}</div>
-        <div class="upload_actions pull-right">
-          <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">{% trans "Resume" %}</a>
-          <a class="btn btn-mini" href="#" id="delete-{{ u.import_id }}"><i class="icon-trash"></i> {% trans "Delete" %}</a>
-        </div>
-      </div>
-      {% endfor %}
-    </section>
-    <div id="confirm-delete" class="hidden alert alert-warning">
-      {% trans "Are you sure you want to delete this upload?" %}
-      <a href="#y" class="btn btn-danger">{% trans "Delete" %}</a>
-      <a href="#n" class="btn btn-default">{% trans "Cancel" %}</a>
-      <a href="#yy">{% trans "Delete, and don't ask me again." %}</a>
-    </div>
-    {% endif %}
-
     {% block additional_info %}{% endblock %}
 
     {% if errors %}
@@ -86,7 +64,7 @@
 
     <section>
       <a href="{% url "layer_metadata_upload" resource.alternate %}" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
-      <a href="#" id="upload-button" class="btn btn-danger">{% trans "Upload files" %}</a>
+      <a href="#" id="upload-button" class="btn btn-primary">{% trans "Upload files" %}</a>
     </section>
   </div>
 
@@ -104,15 +82,6 @@
       </li>
     {% endif %}
   {% endif %}
-  {% endif %}
-
-  {% if GEONODE_SECURITY_ENABLED %}
-  <div class="col-md-4">
-    <h3>{% trans "Permissions"  %}</h3>
-    <form id="permission_form">
-      {% include "_permissions.html" %}
-    </form>
-  </div>
   {% endif %}
 
 </div>

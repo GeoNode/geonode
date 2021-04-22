@@ -154,6 +154,7 @@ class CommonModelApi(ModelResource):
         'is_approved',
         'is_published',
         'dirty_state',
+        'metadata_only'
     ]
 
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
@@ -182,6 +183,7 @@ class CommonModelApi(ModelResource):
         types = applicable_filters.pop('type', None)
         extent = applicable_filters.pop('extent', None)
         keywords = applicable_filters.pop('keywords__slug__in', None)
+        metadata_only = applicable_filters.pop('metadata_only', False)
         filtering_method = applicable_filters.pop('f_method', 'and')
         if filtering_method == 'or':
             filters = Q()
@@ -224,46 +226,20 @@ class CommonModelApi(ModelResource):
         else:
             filtered = semi_filtered
 
-        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
-            filtered = self.filter_published(filtered, request)
-
-        if settings.GROUP_PRIVATE_RESOURCES:
-            filtered = self.filter_group(filtered, request)
-
         if extent:
             filtered = filter_bbox(filtered, extent)
 
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
 
-        # Hide Dirty State Resources
-        user = request.user if request else None
-        if not user or not user.is_superuser:
-            if user:
-                filtered = filtered.exclude(Q(dirty_state=True) & ~(
-                    Q(owner__username__iexact=str(user))))
-            else:
-                filtered = filtered.exclude(Q(dirty_state=True))
-        return filtered
-
-    def filter_published(self, queryset, request):
-        filter_set = get_visible_resources(
-            queryset,
+        # return filtered
+        return get_visible_resources(
+            filtered,
             request.user if request else None,
-            request=request,
+            metadata_only=metadata_only,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING)
-
-        return filter_set
-
-    def filter_group(self, queryset, request):
-        filter_set = get_visible_resources(
-            queryset,
-            request.user if request else None,
-            request=request,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
-
-        return filter_set
 
     def filter_h_keywords(self, queryset, keywords):
         treeqs = HierarchicalKeyword.objects.none()
@@ -340,12 +316,11 @@ class CommonModelApi(ModelResource):
 
             if len(subtypes) > 0:
                 types.append("layer")
-                sqs = SearchQuerySet().narrow("subtype:%s" %
-                                              ','.join(map(str, subtypes)))
+                sqs = SearchQuerySet().narrow(f"subtype:{','.join(map(str, subtypes))}")
 
             if len(types) > 0:
                 sqs = (SearchQuerySet() if sqs is None else sqs).narrow(
-                    "type:%s" % ','.join(map(str, types)))
+                    f"type:{','.join(map(str, types))}")
 
         # Filter by Query Params
         # haystack bug? if boosted fields aren't included in the
@@ -391,7 +366,7 @@ class CommonModelApi(ModelResource):
         # filter by category
         if category:
             sqs = (SearchQuerySet() if sqs is None else sqs).narrow(
-                'category:%s' % ','.join(map(str, category)))
+                f"category:{','.join(map(str, category))}")
 
         # filter by keyword: use filter_or with keywords_exact
         # not using exact leads to fuzzy matching and too many results
@@ -417,7 +392,7 @@ class CommonModelApi(ModelResource):
         if owner:
             sqs = (
                 SearchQuerySet() if sqs is None else sqs).narrow(
-                    "owner__username:%s" % ','.join(map(str, owner)))
+                    f"owner__username:{','.join(map(str, owner))}")
 
         # filter by date
         if date_start:
@@ -723,6 +698,13 @@ class LayerResource(CommonModelApi):
             null=True,
             use_in='detail')
 
+    def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
+        _filters = filters.copy()
+        metadata_only = _filters.pop('metadata_only', False)
+        orm_filters = super(LayerResource, self).build_filters(_filters)
+        orm_filters['metadata_only'] = False if not metadata_only else metadata_only[0]
+        return orm_filters
+
     def format_objects(self, objects):
         """
         Formats the object.
@@ -866,12 +848,20 @@ class LayerResource(CommonModelApi):
             'id': ALL,
             'name': ALL,
             'alternate': ALL,
+            'metadata_only': ALL
         })
 
 
 class MapResource(CommonModelApi):
 
     """Maps API"""
+
+    def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
+        _filters = filters.copy()
+        metadata_only = _filters.pop('metadata_only', False)
+        orm_filters = super(MapResource, self).build_filters(_filters)
+        orm_filters['metadata_only'] = False if not metadata_only else metadata_only[0]
+        return orm_filters
 
     def format_objects(self, objects):
         """
@@ -1013,6 +1003,13 @@ class GeoAppResource(CommonModelApi):
 class DocumentResource(CommonModelApi):
 
     """Documents API"""
+
+    def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
+        _filters = filters.copy()
+        metadata_only = _filters.pop('metadata_only', False)
+        orm_filters = super(DocumentResource, self).build_filters(_filters)
+        orm_filters['metadata_only'] = False if not metadata_only else metadata_only[0]
+        return orm_filters
 
     def format_objects(self, objects):
         """

@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-23 15:40+0000\n"
+"POT-Creation-Date: 2021-04-07 15:01+0200\n"
 "PO-Revision-Date: 2020-12-08 16:02+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
@@ -42,142 +42,107 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.4.2\n"
 
-#: geonode/monitoring/static/monitoring/bundle.js:170
 #, fuzzy
 msgid "STORE_UPDATED"
 msgstr "STORE_UPDATED"
 
-#: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "Es fehlt eine erforderliche %s Datei"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
 msgstr "ESRI Shapefile"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:13
 msgid "ASCII Text File"
 msgstr "ASCII-Textdatei"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:18
-#: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
 msgstr "Komma getrennte Werte"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:39
 msgid "Google Earth KML with a GroundOverlay"
 msgstr "Google Earth KML mit einer Überlagerung"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:45
 msgid "Google Earth KMZ"
 msgstr "Google Earth KMZ"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
 msgstr "Zip Archiv"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
 msgstr "ERDAS Imagine"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:66
-#: geonode/static/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
 msgstr "National Imagery Transmission Format"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
 msgstr "Controlled Image Base-1 Meter"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:84
 msgid "Controlled Image Base-5 Meter"
 msgstr "Controlled Image Base-5 Meter"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:91
 msgid "Controlled Image Base-10 Meter"
 msgstr "Controlled Image Base-10 Meter"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:98
 msgid "CADRG-Global Navigation Chart"
 msgstr "CADRG-Global Navigation Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:105
 msgid "CADRG-Jet Navigation Chart"
 msgstr "CADRG-Jet Navigation Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:112
 msgid "CADRG-Operational Navigation Chart"
 msgstr "CADRG-Operational Navigation Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:119
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr "CADRG-Tactical Pilotage Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:126
 msgid "CADRG-Joint Operations Graphic"
 msgstr "CADRG-Joint Operations Graphic"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:133
 msgid "CADRG-Topographic Line Map 100K"
 msgstr "CADRG-Topographic Line Map 100K"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:140
 msgid "CADRG-Topographic Line Map 50K"
 msgstr "CADRG-Topographic Line Map 50K"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:147
 msgid "JPEG2000"
 msgstr "JPEG2000"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:152
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr "MrSID-Multi-resolution Seamless Image Database"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:157
 msgid "XML Metadata File"
 msgstr "XML Metadaten Datei"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:163
 msgid "Style Layer Descriptor"
 msgstr "Style Layer Descriptor"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:169
 msgid "JPEG"
 msgstr "JPEG"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:174
 msgid "PNG"
 msgstr "PNG"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:179
 msgid "GIF"
 msgstr "GIF"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:296
 msgid "Unexpected error!"
 msgstr "Unerwarteter Fehler!"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:299
 msgid ""
 " - 400 Bad Request. Server cannot or will not process the request due to "
 "something that is perceived to be a client error (e.g., malformed request "
 "syntax, invalid request message framing, or deceptive request routing)."
 msgstr " - 400 Bad Request. Die Anfrage-Nachricht war fehlerhaft aufgebaut."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:302
 msgid ""
 " - 401 Unauthorized. Request was not sent with the proper authentication "
 "credentials."
@@ -185,7 +150,6 @@ msgstr ""
 " - 401 Unauthorized. Die Anfrage kann nicht ohne gültige Authentifizierung "
 "durchgeführt werden."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:305
 msgid ""
 " - 403 Forbidden. This is generally related to permission rules on your "
 "server. Contact the system administrator for more information regarding this "
@@ -195,13 +159,11 @@ msgstr ""
 "Clients. Kontaktieren Sie bitte den Administrator für weitere Informationen "
 "bzgl. dieser Fehlermeldung."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:308
 msgid ""
 " - 404 Not Found. Origin server was unable or unwilling to find the resource "
 "requested."
 msgstr " - 404 Not Found. Die angeforderte Ressource wurde nicht gefunden."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:311
 msgid ""
 " - 405 Method Not Allowed. Origin server is aware of the requested resource, "
 "but the request method used is not supported."
@@ -209,7 +171,6 @@ msgstr ""
 " - 405 Method Not Allowed. Die Anfrage darf nur mit anderen HTTP-Methoden "
 "gestellt werden."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:314
 msgid ""
 " - 406 Not Acceptable. Resource is not available at the origin that adheres "
 "to negotiation headers that were  set prior (e.g. via 'Accept-Charset' and "
@@ -219,7 +180,6 @@ msgstr ""
 "Ort, der zuvor z.b. via 'Accept-Charset' oder 'Accept-Language' vereinbart "
 "wurde."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:317
 msgid ""
 " - 407 Authentication Required. The client did not send the required "
 "authentication with the request."
@@ -227,7 +187,6 @@ msgstr ""
 " - 407 Authentication Required. Der Client hat sich nicht korrekt "
 "authentifiziert."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:320
 msgid ""
 " - 408 Request Timeout. The origin server did not receive the complete "
 "request in what it considers a reasonable time."
@@ -235,7 +194,6 @@ msgstr ""
 " - 408 Request Timeout. Innerhalb der vom Server erlaubten Zeitspanne wurde "
 "keine vollständige Anfrage des Clients empfangen."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:323
 msgid ""
 " - 409 Conflict. The request did not complete because of a conflict with the "
 "current state of the resource. Typically happens on a PUT request where "
@@ -245,14 +203,12 @@ msgstr ""
 "Falle einer PUT-Anfrage kann dies zum Beispiel auf eine zwischenzeitliche "
 "Veränderung der Ressource durch Dritte zurückgehen."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:326
 msgid ""
 " - 410 Gone. The resource requested is permanently missing at the origin."
 msgstr ""
 " - 410 Gone. Die angeforderte Ressource wird nicht länger bereitgestellt und "
 "wurde dauerhaft entfernt."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:329
 msgid ""
 " - 411 Length Required. Client did not define the 'Content-Length' of the "
 "request body in the headers and this is required to obtain the resource."
@@ -260,7 +216,6 @@ msgstr ""
 " - 411 Length Required. Die Anfrage kann ohne ein „Content-Length“-Header-"
 "Feld nicht bearbeitet werden."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:332
 msgid ""
 " - 412 Precondition Failed. Server denies the request because the resource "
 "failed to meet the conditions specified by the client."
@@ -268,7 +223,6 @@ msgstr ""
 " - 412 Precondition Failed. Der Server lehnt die Anfrage ab, da die "
 "Ressource nicht den Anforderungen des Clients entsprach."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:335
 msgid ""
 " - 413 Payload Too Large. Refusal from the server to process the request "
 "because the payload sent from the client is larger than the server wished to "
@@ -277,7 +231,6 @@ msgstr ""
 " - 413 Payload Too Large. Die gestellte Anfrage war zu groß, um vom Server "
 "bearbeitet werden zu können."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:338
 msgid ""
 " - 414 URI Too Long. Refusal from the server that the URI was too long to be "
 "processed. For example, if a client is attempting a GET request with an "
@@ -288,7 +241,6 @@ msgstr ""
 "einer ungewöhnlich langen URL nach einer POST-Anfrage kann z.B. als "
 "Sicherheitsproblem angesehen werden, was in einem 414 Fehlercode resultiert."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:341
 msgid ""
 " - 415 Unsupported Media Type. Refusal from the server to process the format "
 "of the current payload. One way to identify and fix this issue would be to "
@@ -300,7 +252,6 @@ msgstr ""
 "durch Änderungen im Headerfeld 'Content-Type' oder 'Content-Encoding' der "
 "Anfrage behoben werden."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:344
 msgid ""
 " - 417 Expectation Failed. Failure of server to meet the requirements "
 "specified in the 'Expect' header of the client’s request."
@@ -308,7 +259,6 @@ msgstr ""
 " - 417 Expectation Failed. Das im 'Expect'-Header-Feld geforderte Verhalten "
 "des Servers kann nicht erfüllt werden."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:347
 msgid ""
 " - 429 Too Many Requests. Client has sent too many requests in the specified "
 "amount of time according to the server."
@@ -316,7 +266,6 @@ msgstr ""
 " - 429 Too Many Requests. Der Client hat zu viele Anfragen in einem "
 "bestimmten Zeitraum gesendet."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:350
 msgid ""
 " - 499 Client Close Request. Nginx specific response code to indicate when "
 "the connection has been closed by the client while the server is still "
@@ -325,7 +274,6 @@ msgstr ""
 " - 499 Client Close Request. Nginx spezifischer Code für den Fall, dass ein "
 "Client die Verbindung schließt, während nginx die Anforderung verarbeitet."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:353
 msgid ""
 " - 500 Internal Server Error. This error indicates that the server has "
 "encountered an unexpected condition. This often occurs when an application "
@@ -336,7 +284,6 @@ msgstr ""
 "aufgetreten. Dies tritt oft auf, wenn eine Anfrage nicht verarbeitet werden "
 "kann, da die Serveranwendung fehlerhaft konfiguriert wurde."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:356
 msgid ""
 " - 501 Not Implemented. This error indicates that the HTTP method sent by "
 "the client is not supported by the server. This is most often caused by the "
@@ -346,7 +293,6 @@ msgstr ""
 " - 501 Not Implemented. Die Funktionalität, um die Anfrage zu bearbeiten, "
 "wird von diesem Server nicht bereitgestellt."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:359
 msgid ""
 " - 502 Bad Gateway. This error is usually due to improperly configured proxy "
 "servers. The first step in resolving the issue is to clear the client's "
@@ -356,7 +302,6 @@ msgstr ""
 "nicht erfüllen. Möglicherweise kann der Fehler durch Leeren des Clientcaches "
 "behoben werden."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:362
 msgid ""
 " - 503 Service Unavailable. This error occurs when the server is unable to "
 "handle requests due to a temporary overload or due to the server being "
@@ -366,7 +311,6 @@ msgstr ""
 " - 503 Service Unavailable. Der Server steht temporär nicht zur Verfügung, "
 "zum Beispiel wegen Überlastung oder Wartungsarbeiten."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:365
 msgid ""
 " - 504 Gateway Timeout. GeoNode lost the connection with GeoServer or DB due "
 "to a connection timeout. Consider using the management commands to import "
@@ -376,7 +320,6 @@ msgstr ""
 "Datenbank verloren. Möglicherweise kann ein Import auch über die Management-"
 "Kommandos erfolgen."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:368
 msgid ""
 " - 505 HTTP Version Not Supported. This error occurs when the server refuses "
 "to support the HTTP protocol that has been specified by the client computer. "
@@ -387,7 +330,6 @@ msgstr ""
 " - 505 HTTP Version Not Supported. Dieser Fehler tritt auf, wenn der Server "
 "die vom Client angefragte HTTP-Version nicht unterstützt."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:371
 msgid ""
 " - 506 Variant Also Negotiates. This error indicates that the server is not "
 "properly configured. Contact the system administrator to resolve this issue."
@@ -396,7 +338,6 @@ msgstr ""
 "fehlerhaft konfiguriert ist. Kontaktieren Sie bitte den Administrator, um "
 "den Fehler zu beheben."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:374
 msgid ""
 " - 507 Insufficient Storage. This error indicates that the server is out of "
 "free memory. This is most likely to occur when an application that is being "
@@ -410,7 +351,6 @@ msgstr ""
 "Kontaktieren Sie bitte den Administrator, wenn Sie mehr über den Fehler "
 "erfahren möchten."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:377
 msgid ""
 " - 509 Bandwidth Limit Exceeded. This error occurs when the bandwidth limit "
 "imposed by the system administrator has been reached. The only fix for this "
@@ -420,7 +360,6 @@ msgstr ""
 " - 509 Bandwidth Limit Exceeded. Dieser Fehler tritt auf, da die verfügbare "
 "Bandbreite überschritten wurde."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:380
 msgid ""
 " - 510 Not Extended. This error occurs when an extension attached to the "
 "HTTP request is not supported by the web server. To resolve the issue, you "
@@ -430,7 +369,6 @@ msgstr ""
 "Anfrage nicht durch den Server unterstützt wird. Um das Problem zu beheben, "
 "muss möglicherweise der Server aktualisiert werden."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:383
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
@@ -438,66 +376,52 @@ msgstr ""
 " Fehlercode. Kontaktieren Sie bitte den Administrator, wenn Sie mehr über "
 "den Fehler erfahren möchten."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:406
 msgid "Finalizing"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:421
-#: geonode/static/geonode/js/upload/LayerInfo.js:592
 msgid "Unexpected Error"
 msgstr "Unerwarteter Fehler"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:459
-msgid " Info"
-msgstr " Info"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:460
-msgid "Edit Metadata"
-msgstr "Metadaten bearbeiten"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:461
-msgid "Upload Metadata"
-msgstr "Metadaten hochladen"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:462
-msgid "Upload SLD"
-msgstr "SLD hochladen"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:463
-msgid "Manage Styles"
-msgstr "Stilverwaltung"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:476
-msgid "The column %1 was renamed to %2 <br/>"
-msgstr "Die Spalte %1 wurde umbenannt in %2 <br/>"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:482
 msgid "Your "
 msgstr "Ihre "
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:511
+msgid " Info"
+msgstr " Info"
+
+msgid "Edit Metadata"
+msgstr "Metadaten bearbeiten"
+
+msgid "Upload Metadata"
+msgstr "Metadaten hochladen"
+
+msgid "Upload SLD"
+msgstr "SLD hochladen"
+
+msgid "Manage Styles"
+msgstr "Stilverwaltung"
+
+msgid "Please wait until GeoNode finished configuring it!"
+msgstr ""
+
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr "Die Spalte %1 wurde umbenannt in %2 <br/>"
+
 msgid "Performing Final GeoServer Config Step"
 msgstr "GeoServer Konfiguration abschliessen"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:528
-#: geonode/static/geonode/js/upload/LayerInfo.js:572
 msgid "You need to specify more information in order to complete your upload"
 msgstr ""
 "Sie müssen weitere Informationen angeben, um Ihren Upload abzuschließen"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:552
 msgid "Files are ready to be ingested!"
 msgstr "Die Dateien können jetzt hinzugefügt werden!"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:555
 msgid "A temporal dimension may be added to this Layer."
 msgstr "Zu dieser Ebene kann eine zeitliche Dimension hinzugefügt werden."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:610
 msgid "Performing GeoServer Config Step"
 msgstr "GeoServer Konfiguration wird ausgeführt"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:696
 msgid ""
 "<br>Please check your network connection. In case of Layer Upload make sure "
 "GeoServer is running and accepting connections."
@@ -506,38 +430,28 @@ msgstr ""
 "hochladen wollten, stellen Sie sicher, dass die Verbindung zum GeoServer "
 "gewährleistet ist."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:700
-#: geonode/static/geonode/js/upload/LayerInfo.js:703
-#: geonode/static/geonode/js/upload/LayerInfo.js:710
-#: geonode/static/geonode/js/upload/LayerInfo.js:713
 msgid "<br>"
 msgstr "<br>"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:705
 msgid "<br>Bad request or URL not found."
 msgstr "<br>Fehlerhafte Anfrage oder URL nicht verfügbar."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:715
 #, fuzzy
 msgid "<br>Unknown."
 msgstr "Unbekannte Karte."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:723
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Layer-Dateien hochgeladen, diese werden im GeoServer konfiguriert"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:874
 msgid "Remove"
 msgstr "Entfernen"
 
-#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
 "Die Datei %s ist ein nicht unterstützter Dateityp, wählen Sie bitte eine "
 "andere Datei."
 
-#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -548,6 +462,210 @@ msgstr ""
 "erforderlichen Eingaben wurden erfüllt.\n"
 "\n"
 "Bitte prüfen Sie die Fehlermeldung im Formular!"
+
+#, fuzzy, javascript-format
+#| msgid "Available Layers"
+msgid "Available %s"
+msgstr "Verfügbare Ebenen"
+
+#, javascript-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+
+#, javascript-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "Choose all"
+msgstr ""
+
+#, javascript-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+msgid "Choose"
+msgstr ""
+
+#, javascript-format
+msgid "Chosen %s"
+msgstr ""
+
+#, javascript-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+
+#, fuzzy
+#| msgid "Remove"
+msgid "Remove all"
+msgstr "Entfernen"
+
+#, javascript-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+msgid ""
+"You have selected an action, but you haven't saved your changes to "
+"individual fields yet. Please click OK to save. You'll need to re-run the "
+"action."
+msgstr ""
+
+msgid ""
+"You have selected an action, and you haven't made any changes on individual "
+"fields. You're probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+msgid "'"
+msgstr ""
+
+msgid "trailingComments"
+msgstr ""
+
+msgid "leadingComments"
+msgstr ""
+
+#, fuzzy
+#| msgid "Enter comments here."
+msgid "innerComments"
+msgstr "Kommentare hier eingeben."
+
+msgid "Multiselect"
+msgstr ""
+
+#, fuzzy
+#| msgid "Select"
+msgid "SelectList"
+msgstr "Auswählen"
+
+#, fuzzy
+#| msgid "onerror"
+msgid "error"
+msgstr "onerror"
+
+msgid "show:"
+msgstr ""
+
+msgid "uirevision"
+msgstr ""
+
+msgid "bgcolor"
+msgstr ""
+
+msgid "bordercolor"
+msgstr ""
+
+msgid "borderwidth"
+msgstr ""
+
+msgid "orientation"
+msgstr ""
+
+msgid "traceorder"
+msgstr ""
+
+msgid "tracegroupgap"
+msgstr ""
+
+msgid "itemsizing"
+msgstr ""
+
+msgid "itemclick"
+msgstr ""
+
+msgid "itemdoubleclick"
+msgstr ""
+
+msgid "x"
+msgstr ""
+
+msgid "xanchor"
+msgstr ""
+
+msgid "y"
+msgstr ""
+
+msgid "yanchor"
+msgstr ""
+
+msgid "valign"
+msgstr ""
+
+msgid "title.text"
+msgstr ""
+
+msgid "title.side"
+msgstr ""
+
+msgid "visible"
+msgstr ""
+
+msgid "thickness"
+msgstr ""
+
+msgid "autorange"
+msgstr ""
+
+msgid "range"
+msgstr ""
+
+msgid "bingroup"
+msgstr ""
+
+msgid "layerProperties.visibilityLimits.rangeError"
+msgstr ""
+
+msgid "layerProperties.visibilityLimits.serverValuesError"
+msgstr ""
+
+msgid "typed_constructor"
+msgstr ""
+
+msgid "def_constructor"
+msgstr ""
+
+msgid "POP"
+msgstr ""
+
+msgid "PUSH"
+msgstr ""
+
+msgid "layerdownload.exportResultsMessages.newExport"
+msgstr ""
+
+msgid "layerdownload.exportResultsMessages.exportSuccess"
+msgstr ""
+
+msgid "layerdownload.exportResultsMessages.exportFailure"
+msgstr ""
+
+msgid "data-grid"
+msgstr ""
+
+msgid "Abort"
+msgstr ""
+
+msgid "As Sibling"
+msgstr ""
+
+msgid "As child"
+msgstr ""
 
 #, fuzzy
 #~| msgid "None"
@@ -606,9 +724,6 @@ msgstr ""
 
 #~ msgid "Done"
 #~ msgstr "Fertig"
-
-#~ msgid "Available Layers"
-#~ msgstr "Verfügbare Ebenen"
 
 #~ msgid "Add feeds"
 #~ msgstr "Feed hinzufügen"
@@ -970,9 +1085,6 @@ msgstr ""
 #~ msgid "Include legend?"
 #~ msgstr "Legende einfügen?"
 
-#~ msgid "Enter comments here."
-#~ msgstr "Kommentare hier eingeben."
-
 #~ msgid "Creating PDF..."
 #~ msgstr "Erstelle PDF ..."
 
@@ -1002,9 +1114,6 @@ msgstr ""
 
 #~ msgid "permalink"
 #~ msgstr "permalink"
-
-#~ msgid "Select"
-#~ msgstr "Auswählen"
 
 #~ msgid "Select:"
 #~ msgstr "Auswählen:"
@@ -1145,10 +1254,6 @@ msgstr ""
 
 #~ msgid "false write response, pause"
 #~ msgstr "false write response, pause"
-
-#~| msgid "Connection Error"
-#~ msgid "onerror"
-#~ msgstr "onerror"
 
 #~ msgid "onfinish"
 #~ msgstr "onfinish"

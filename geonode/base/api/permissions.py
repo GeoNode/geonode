@@ -100,21 +100,16 @@ class IsSelfOrAdminOrAuthenticatedReadOnly(IsSelfOrAdmin):
         return IsSelfOrAdmin.has_object_permission(self, request, view, obj)
 
 
-class IsOwnerOrReadOnly(permissions.BasePermission):
+class IsOwnerOrAdmin(permissions.BasePermission):
     """
-    Object-level permission to only allow owners of an object to edit it.
+    Object-level permission to only allow admin and owners of an object to edit it.
     Assumes the model instance has an `owner` attribute.
     """
-    def has_object_permission(self, request, view, obj):
-        if request.user is None or \
-        (not request.user.is_anonymous and not request.user.is_active):
-            return False
-        if request.user.is_superuser:
-            return True
 
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
-        if request.method in permissions.SAFE_METHODS and not isinstance(obj, get_user_model()):
+    def has_object_permission(self, request, view, obj):
+        if request.user is None or (not request.user.is_anonymous and not request.user.is_active):
+            return False
+        if request.user.is_superuser or request.user.is_staff:
             return True
 
         # Instance must have an attribute named `owner`.
@@ -126,6 +121,21 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return obj.user == request.user
         else:
             return False
+
+
+class IsOwnerOrReadOnly(IsOwnerOrAdmin):
+    """
+    Object-level permission to only allow owners of an object to edit it.
+    Assumes the model instance has an `owner` attribute.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        if request.method in permissions.SAFE_METHODS and not isinstance(obj, get_user_model()):
+            return True
+
+        return IsOwnerOrAdmin.has_object_permission(self, request, view, obj)
 
 
 class ResourceBasePermissionsFilter(BaseFilterBackend):

@@ -55,8 +55,8 @@ class DocumentFormMixin(object):
         for obj in resources:
             type_id = ContentType.objects.get_for_model(obj.__class__).id
             choices.append([
-                "type:%s-id:%s" % (type_id, obj.id),
-                '%s (%s)' % (obj.title, obj.polymorphic_ctype.model)
+                f"type:{type_id}-id:{obj.id}",
+                f"{obj.title} ({obj.polymorphic_ctype.model})"
             ])
 
         return choices
@@ -96,6 +96,20 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
         self.fields['links'].initial = self.generate_link_values(
             resources=get_related_resources(self.instance)
         )
+        for field in self.fields:
+            help_text = self.fields[field].help_text
+            self.fields[field].help_text = None
+            if help_text != '':
+                self.fields[field].widget.attrs.update(
+                    {
+                        'class': 'has-external-popover',
+                        'data-content': help_text,
+                        'placeholder': help_text,
+                        'data-placement': 'right',
+                        'data-container': 'body',
+                        'data-html': 'true'
+                    }
+                )
 
     class Meta(ResourceBaseForm.Meta):
         model = Document

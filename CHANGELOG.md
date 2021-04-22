@@ -1,15 +1,76 @@
 # Change Log
 
-## Features
+## [3.2.0](https://github.com/GeoNode/geonode/tree/3.2.0) (2021-04)
+### Breaking Changes
+
+ - Bump to postgresql-13; *do not upgrade the docker image or be prepared to do a dump/restore of the DB*
+ - Based on MapStore client [2.1.3](https://github.com/GeoNode/geonode-mapstore-client/releases/tag/2.1.3)
+ - MapStore client is no more compatible with 3.0.x train
+ - ResourceBase Model `BBOX` now is a geometry; that is no more compatible with the 3.1.x one
+ - [GNIP-81: GeoNode Core Cleanup](https://github.com/GeoNode/geonode/issues/6917):
+   - Removed GeoNetwork support
+   - Removed QGIS-Server support
+   - Removed SPC GeoNode support
+ - Advanced Resources Publishing Logic has been revised (see below)
+
+### Features
 
  - Python upgrade 3.7+
- - Django upgrade 2.2.16
- - GeoServer upgrade 2.17.2
+ - Django upgrade 2.2.16+
+ - GeoServer upgrade 2.18.2
  - MapStore2 Client Updates:
    * Save Search Services to the Map
    * Save Map Preferences into the adapter model
    * Advanced Style Editor with graphical UI
    * Improved Map Save Widget, specific for GeoNode
+   * New MapStore client configuration subsystem
+   * Group Layer as named groups
+ - Upgraded `Dokerfile` and `docker-compose` to version 3.4
+ - Migration of CI from Travis to CircleCI
+ - General Code Quality and Performance Improvements
+
+ - Highlights GeoNode 3.2:
+   * [GNIP-76: Add RTL Support](https://github.com/GeoNode/geonode/issues/6156)
+   * [GNIP-77: GetFeatureInfo Templating For GeoNode](https://github.com/GeoNode/geonode/issues/6182)
+   * [GNIP-78: GeoNode generic "Apps" model to include pluggable entities into the framework](https://github.com/GeoNode/geonode/issues/6684)
+     - Added MapStore GeoStories as part of the GeoNode MapStore client
+   * [GNIP-79: GeoNode REST APIs (v2)](https://github.com/GeoNode/geonode/issues/6685)
+   * [GNIP-82: Thesauri improvements](https://github.com/GeoNode/geonode/issues/6925)
+   * [GNIP-83: ResourceBase for metadata-only resources](https://github.com/GeoNode/geonode/issues/7057)
+   * [GNIP-84: Upload Page Enhancements](https://github.com/GeoNode/geonode/issues/7154)
+     - Improved Async Upload of Layers
+     - GeoServer Importer Uploads are now stateful and can be resumed or canceled
+   * [GNIP-85: Map legend](https://github.com/GeoNode/geonode/issues/7254)
+   * [GNIP 86: metadata parsing and storing](https://github.com/GeoNode/geonode/issues/7263)
+   * [GNIP-87: Reduce information returned to users to only what is strictly required and accessible](https://github.com/GeoNode/geonode/issues/7282)
+   * Append data to an existing layer
+   * Improved Metadata Editors, now able to handle HTML tags
+   * Improved Catalog and Thesauri
+   * Improved Thumbnails creation logic which is now relies on GetMap instead of outdated GeoServer Print Plugin
+   * Possibility to Upload RDF thesaurus via web
+   * Pluggable CSW prefiltering from external apps
+   * New Contrib module: [GeoNode Keycloak Support](https://github.com/GeoNode/geonode-contribs/tree/master/django-geonode-keycloak)
+   * Delete existing table on restore command feature (general improvements to Backup/Restore machinery)
+   * Advanced Upload Workflow Improvements:
+     - Non admin user cannot change permission
+     - Disable edit permissions globally when read-only mode is active
+     - RESOURCE_PUBLISHING:
+        1. "unpublished" won't be visible to Anonymous users
+        2. "unpublished" will be visible to registered users **IF** they have view permissions
+        3. "unpublished" will be always visible to the owner and Group Managers
+        By default the uploaded resources will be "unpublished".
+        The owner will be able to change them to "published" **UNLESS** the ADMIN_MODERATE_UPLOADS is activated.
+        If the owner assigns unpublished resources to a Group, both from Metadata and Permissions, in any case the Group "Managers" will be able to edit the Resource.
+     - ADMIN_MODERATE_UPLOADS:
+        1. The owner won't be able to change to neither "approved" nor "published" state (unless he is a superuser)
+        2. If the Resource belongs to a Group somehow, the Managers will be able to change the state to "approved"
+          but **NOT** to "published". Only a superuser can publish a resource.
+        3. Superusers can do anything.
+     - GROUP_PRIVATE_RESOURCES:
+        The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and members of the belonging groups.
+     - GROUP_MANDATORY_RESOURCES:
+        Editor will be **FORCED** to select a Group when editing the resource metadata.
+
  - Documentation Updates:
    * [GetFeatureInfo Templating For GeoNode](https://docs.geonode.org/en/master/usage/managing_maps/exploring_maps/get_fetureinfo.html?highlight=GetFeatureInfo)
    * [HowTo: Geonode with QGIS](https://docs.geonode.org/en/master/usage/other_apps/qgis/index.html)
@@ -19,20 +80,46 @@
    * [Update Advanced Installation steps to work against RHEL 7.x](https://docs.geonode.org/en/master/install/advanced/core/index.html?highlight=Ubuntu%2020.04LTS#rhel-7-x)
    * [How to setup rabbitmq, supervisor and memcached in order to fully enable async workers](https://docs.geonode.org/en/master/install/advanced/core/index.html?highlight=Enabling%20Fully%20Asynchronous%20Tasks#enabling-fully-asynchronous-tasks)
    * [How to Upgrade from 2.10.x / 3.0](https://docs.geonode.org/en/master/admin/upgrade/index.html?highlight=Upgrade%20from%202.10.x)
- - [GNIP-77: GetFeatureInfo Templating For GeoNode](https://github.com/GeoNode/geonode/issues/6182)
- - [GNIP-76: Add RTL Support](https://github.com/GeoNode/geonode/issues/6156)
+   * [Docs to connect production docker to external postgreSQL db server](https://github.com/GeoNode/documentation/pull/74)
+   * [Documentation for new metadata settings](https://github.com/GeoNode/documentation/pull/75)
+   * [Refers #6925: add documentation for thesaurus configuration](https://github.com/GeoNode/documentation/pull/77)
+   * [Refers #6952: add documentation for uuidhandler](https://github.com/GeoNode/documentation/pull/78)
+   * [Adding new settings in order to let the optional metadata in metadata wizard to become required](https://github.com/GeoNode/documentation/pull/84)
+   * [Remove outdated/misleading SPC GeoNode documentation](https://github.com/GeoNode/documentation/pull/85)
+   * [Relates to #7089 Delete existing table on restore](https://github.com/GeoNode/documentation/pull/86)
+   * [Allow XSL customization](https://github.com/GeoNode/documentation/pull/87)
+   * [Relates to #7150 Doc for upload thesaurus from admin interface](https://github.com/GeoNode/documentation/pull/88)
+   * [Relates to #7194 Append data to layer](https://github.com/GeoNode/documentation/pull/89)
+   * [Refers to #7214 Sorting Thesauri](https://github.com/GeoNode/documentation/pull/90)
+   * [Relates to #6995 Documentation for ADVANCED_EDIT_EXCLUDE_FIELD](https://github.com/GeoNode/documentation/pull/91)
+
  - Improving GeoNode Theme Library: introducing Jumbotron Slides
- - [Admin bulk perms] Implementation of an action to assign bulk permissions on layer to users selected from People and/or Group Django admin forms enhancement #6582
+ - Implementation of an action to assign bulk permissions on layer to users selected from People and/or Group Django admin forms enhancement #6582
  - Review of the current advanced resource workflow implementation enhancement security #6551
  - File system operations do not adhere to Django file storage API enhancement in progress #6414
- - Nav Toolbar gets distorted when multiple nav bar items are added by the admin enhancement frontend major #6412
+ - Nav Toolbar gets distorted when multiple navbar items are added by the admin enhancement frontend major #6412
  - Allow only admins to edit/create keywords enhancement regression #6360
  - In home page show only ISO categories currently assigned to some dataset enhancement frontend #6332
  - Modify the admin theme customisation feature to allow for the use of a slide show in the home page enhancement feature frontend #6301
  - Improve GeoNode OpenID SP Protocol in order to be able to provide access to external clients enhancement security #6273
  - Limit "maps using this layer" to maps the user has permission to see enhancement security #6261
  - Prevent integrity errors on singleton model save enhancement #6223
- - Extend SPCGeonode setup to be customizable using Kubernetes docker enhancement #6208
+
+ - **[Full list of Implemented GNIP](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Agnip)**
+ - **[Full list of Implemented Features](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Afeature)**
+ - **[Full list of Implemented Enhancements](https://github.com/GeoNode/geonode/issues?page=1&q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Aenhancement&utf8=%E2%9C%93)**
+ - **[Full list of Dependencies Updates](https://github.com/GeoNode/geonode/issues?q=is%3Aclosed+milestone%3A3.2+label%3Adependencies+)**
+ - **[Full list of Fixed Security Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Asecurity)**
+ - **[Full list of Fixed Security Pull Requests](https://github.com/GeoNode/geonode/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+label%3Asecurity+milestone%3A3.2+)**
+ - **[Full list of Resolved Regressions](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Aregression)**
+ - **[Full list of Fixed Critical Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Ablocker)**
+ - **[Full list of Fixed Major Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Amajor)**
+ - **[Full list of Fixed Minor Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Aminor)**
+ - **[Full list of Updated Translations](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Atranslations)**
+ - **[All Closed Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2)**
+### Full Changelog
+
+[https://github.com/GeoNode/geonode/compare/3.1...3.2.0](https://github.com/GeoNode/geonode/compare/3.1...3.2.x)
 
 ## [3.1](https://github.com/GeoNode/geonode/tree/3.1) (2020-11-30)
 

@@ -56,11 +56,9 @@ def service_proxy(request, service_id):
     if not service.proxy_base:
         service_url = service.base_url
     else:
-        service_url = "{ows_url}?{ows_request}".format(
-            ows_url=service.base_url, ows_request=request.META['QUERY_STRING'])
+        service_url = f"{service.base_url}?{request.META['QUERY_STRING']}"
         if urljoin(settings.SITEURL, reverse('proxy')) != service.proxy_base:
-            service_url = "{proxy_base}?url={service_url}".format(proxy_base=service.proxy_base,
-                                                                  service_url=quote(service_url, safe=''))
+            service_url = f"{service.proxy_base}?url={quote(service_url, safe='')}"
     return proxy(request, url=service_url, sec_chk_hosts=False)
 
 
@@ -178,7 +176,7 @@ def harvest_resources_handle_post(request, service, handler):
     requested = list(set(requested))
     resources_to_harvest = []
     for id in _gen_harvestable_ids(requested, available_resources):
-        logger.debug("id: {}".format(id))
+        logger.debug(f"id: {id}")
         harvest_job, created = HarvestJob.objects.get_or_create(
             service=service,
             resource_id=id
@@ -188,7 +186,7 @@ def harvest_resources_handle_post(request, service, handler):
             tasks.harvest_resource.apply_async((harvest_job.id,))
         else:
             logger.warning(
-                "resource {} already has a harvest job".format(id))
+                f"resource {id} already has a harvest job")
     msg_async = _("The selected resources are being imported")
     msg_sync = _("The selected resources have been imported")
     messages.add_message(
@@ -239,7 +237,7 @@ def harvest_single_resource(request, service_id, resource_id):
     messages.add_message(
         request,
         messages.SUCCESS,
-        _("Resource {} is being processed".format(resource_id))
+        _(f"Resource {resource_id} is being processed")
     )
     return redirect(
         reverse("service_detail",
@@ -277,13 +275,7 @@ def rescan_service(request, service_id):
 def service_detail(request, service_id):
     """This view shows the details of a service"""
     service = get_object_or_404(Service, pk=service_id)
-    job_statuses = (
-        enumerations.QUEUED,
-        enumerations.IN_PROCESS,
-        enumerations.FAILED,
-    )
-    resources_being_harvested = HarvestJob.objects.filter(
-        service=service, status__in=job_statuses)
+    resources_being_harvested = HarvestJob.objects.filter(service=service)
     already_imported_layers = Layer.objects.filter(remote_service=service)
     service_list = service.service_set.all()
     all_resources = (list(resources_being_harvested) +
@@ -316,13 +308,13 @@ def service_detail(request, service_id):
         template_name="services/service_detail.html",
         context={
             "service": service,
-            "layers": (r for r in resources if isinstance(r, Layer)),
+            "layers": already_imported_layers,
             "services": (r for r in resources if isinstance(r, Service)),
             "resource_jobs": (
                 r for r in resources if isinstance(r, HarvestJob)),
             "permissions_json": _perms_info_json(service),
             "resources": resources,
-            "total_resources": len(all_resources),
+            "total_resources": len(already_imported_layers),
         }
     )
 
@@ -377,6 +369,6 @@ def remove_service(request, service_id):
         messages.add_message(
             request,
             messages.INFO,
-            _("Service {} has been deleted".format(service.name))
+            _(f"Service {service.name} has been deleted")
         )
         return HttpResponseRedirect(reverse("services"))

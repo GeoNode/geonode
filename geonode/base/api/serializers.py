@@ -187,7 +187,7 @@ class UserSerializer(DynamicModelSerializer):
         ref_name = 'UserProfile'
         model = get_user_model()
         name = 'user'
-        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar', 'perms')
 
     @classmethod
     def setup_eager_loading(cls, queryset):
@@ -258,6 +258,8 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['raw_constraints_other'] = serializers.CharField(read_only=True)
         self.fields['raw_supplemental_information'] = serializers.CharField(read_only=True)
         self.fields['raw_data_quality_statement'] = serializers.CharField(read_only=True)
+        self.fields['metadata_only'] = serializers.BooleanField()
+        self.fields['processed'] = serializers.BooleanField(read_only=True)
 
         self.fields['embed_url'] = EmbedUrlField()
         self.fields['thumbnail_url'] = ThumbnailUrlField()
@@ -278,7 +280,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         model = ResourceBase
         name = 'resource'
         fields = (
-            'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id',
+            'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id', 'perms',
             'owner', 'poc', 'metadata_author',
             'keywords', 'regions', 'category',
             'title', 'abstract', 'attribution', 'doi', 'alternate', 'bbox_polygon', 'll_bbox_polygon', 'srid',
@@ -289,9 +291,16 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             'popular_count', 'share_count', 'rating', 'featured', 'is_published', 'is_approved',
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
-            'raw_supplemental_information', 'raw_data_quality_statement'
+            'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
             # users_geolimits, groups_geolimits
         )
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        data = super(ResourceBaseSerializer, self).to_representation(instance)
+        if request:
+            data['perms'] = instance.get_user_perms(request.user)
+        return data

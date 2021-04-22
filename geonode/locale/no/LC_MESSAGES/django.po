@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Norwegian (http://www.transifex.com/geonode/geonode/language/"
@@ -144,9 +144,6 @@ msgstr "datasettet oppdaters hver tredje måned"
 msgid "No information provided"
 msgstr "Ingen informasjon oppgitt"
 
-msgid "Category"
-msgstr "Kategori"
-
 msgid "Category is required."
 msgstr "Kategori er påkrevd."
 
@@ -217,6 +214,9 @@ msgstr "Regioner"
 #| msgid "Groups"
 msgid "Group"
 msgstr "Grupper"
+
+msgid "Category"
+msgstr "Kategori"
 
 msgid "License"
 msgstr "Lisens"
@@ -447,6 +447,12 @@ msgstr ""
 #| msgid "Resources"
 msgid "Resource Type"
 msgstr "Ressurser"
+
+msgid "Metadata"
+msgstr "Metadata"
+
+msgid "If true, will be excluded from search"
+msgstr ""
 
 msgid "For example \"kml\""
 msgstr "For eksempel \"kml\""
@@ -702,34 +708,6 @@ msgstr "Beskrivelse"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Hjelp"
 
-msgid "Explore Maps"
-msgstr "Utforsk kart"
-
-msgid "Edit Map"
-msgstr "Endre kartet"
-
-msgid "Update"
-msgstr "Oppdater"
-
-msgid "Create a New Map"
-msgstr "Lag et nytt kart"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Tilgjengelige stiler"
-
-msgid "Save"
-msgstr "Lagre"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "Fjern kart"
-
-msgid "Close"
-msgstr "Lukk"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -750,7 +728,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -794,8 +772,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "Tillegsinformasjon"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -811,10 +791,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -825,7 +808,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -846,7 +829,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -898,10 +881,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "Bruker aktiviteter"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Document Updated"
@@ -1067,9 +1048,6 @@ msgstr "Endre dokument"
 msgid "Request change"
 msgstr "Be om nedlasting"
 
-msgid "Metadata"
-msgstr "Metadata"
-
 msgid "Wizard"
 msgstr ""
 
@@ -1088,6 +1066,9 @@ msgstr "Erstatt"
 
 msgid "Remove"
 msgstr "Fjern"
+
+msgid "Close"
+msgstr "Lukk"
 
 msgid "Download Metadata"
 msgstr "Lat ned metadata"
@@ -1166,6 +1147,9 @@ msgstr ""
 msgid "<< Back"
 msgstr ""
 
+msgid "Update"
+msgstr "Oppdater"
+
 #, fuzzy
 #| msgid "Next"
 msgid "Next >>"
@@ -1181,6 +1165,9 @@ msgstr "Endre Metadata"
 
 msgid "Editing details for"
 msgstr "Endre detaljer for"
+
+msgid "Return to Document"
+msgstr ""
 
 msgid "Deleting"
 msgstr "Sletter"
@@ -1291,17 +1278,14 @@ msgid "Responsible and Permissions"
 msgstr ""
 
 #, fuzzy
-#| msgid "Message Inbox"
-msgid "Message box"
-msgstr "Meldinger"
-
-msgid "OK"
-msgstr ""
-
-#, fuzzy
 #| msgid "Published"
 msgid "Publishing"
 msgstr "Publisert"
+
+#, fuzzy
+#| msgid "You do not have permission to view this document"
+msgid "You are not allowed to view this document."
+msgstr "You do not have permission to view this document"
 
 #, fuzzy
 #| msgid "You are not permitted to delete this layer"
@@ -1337,11 +1321,6 @@ msgstr "Ikke oppgitt"
 #| msgid "Documents"
 msgid "Not found"
 msgstr "Dokumenter"
-
-#, fuzzy
-#| msgid "You do not have permission to view this document"
-msgid "You are not allowed to view this document."
-msgstr "You do not have permission to view this document"
 
 #, fuzzy
 #| msgid "You are not permitted to remove this service."
@@ -1670,6 +1649,11 @@ msgstr "Opprett"
 
 #, fuzzy
 #| msgid "Not provided"
+msgid "No title provided"
+msgstr "Ikke oppgitt"
+
+#, fuzzy
+#| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "Ikke oppgitt"
 
@@ -1974,16 +1958,19 @@ msgstr "Opprett en gruppe"
 msgid "Edit Group Category"
 msgstr "Opprett gruppe"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+msgid "Save"
+msgstr "Lagre"
+
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2275,6 +2262,27 @@ msgstr "sist endret"
 msgid "date when attribute statistics were last updated"
 msgstr ""
 
+#, fuzzy
+#| msgid "Edit Layer"
+msgid "Append to Layer"
+msgstr "Endre kartlag"
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "Et kartlag ble oppdatert"
+
+msgid "Return to Layer"
+msgstr ""
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Preserve Metadata XML"
+msgstr "Ende tjeneste metadata"
+
+msgid "Select the charset or leave default"
+msgstr ""
+
 msgid "Home"
 msgstr "Hjem"
 
@@ -2439,6 +2447,9 @@ msgid_plural "Layers"
 msgstr[0] "Kartlag"
 msgstr[1] "Kartlag"
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr "Endre data"
 
@@ -2585,9 +2596,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -2611,6 +2619,12 @@ msgstr "Visningsrekkefølge"
 msgid "Visible"
 msgstr "synlig?"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2622,27 +2636,6 @@ msgid "layers upload"
 msgstr "Et kartlag ble oppdatert"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
-msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "Ufullstendige opplastinger"
-
-msgid "You have the following incomplete uploads"
-msgstr ""
-
-msgid "last updated on"
-msgstr "sist endret på"
-
-msgid "Resume"
-msgstr "Fortsett"
-
-msgid "Delete"
-msgstr "Fjern"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr ""
-
-msgid "Delete, and don't ask me again."
 msgstr ""
 
 msgid "Remove Layers"
@@ -2658,14 +2651,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "Erstatt kartlag"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Preserve Metadata XML"
-msgstr "Ende tjeneste metadata"
-
-msgid "Select the charset or leave default"
-msgstr ""
 
 msgid "Manage Styles"
 msgstr "Forvalte stilene"
@@ -2710,12 +2695,58 @@ msgid "Preview"
 msgstr "Forhåndsvisning"
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Ende tjeneste metadata"
+
+#, fuzzy
 #| msgid "Attributes"
 msgid "Dataset Attributes"
 msgstr "attributt"
 
 msgid "Upload Layer"
 msgstr "Last opp kartlag"
+
+msgid "Incomplete Uploads"
+msgstr "Ufullstendige opplastinger"
+
+msgid "You have the following incomplete uploads"
+msgstr ""
+
+msgid "Resume"
+msgstr "Fortsett"
+
+msgid "Delete"
+msgstr "Fjern"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Opprett"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr "side"
+
+msgid "of"
+msgstr "av"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Ufullstendige opplastinger"
+
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "          Are you sure you want to remove the group: %(group_title)s?\n"
+#| "        "
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr ""
+"\n"
+"Er du sikker på at du vil slette gruppen: %(group_title)s?"
 
 #, fuzzy
 #| msgid "Upload Layer"
@@ -3146,31 +3177,47 @@ msgstr "nå"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector layer with a raster."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a raster layer with a vector."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3211,18 +3258,21 @@ msgstr "Du har ikke lov til å slettet dette kartlaget"
 msgid "Failed to upload the layer"
 msgstr "Last opp nytt kartlag"
 
-#, fuzzy
-#| msgid "Upload new layers"
-msgid "Unable to delete layer"
-msgstr "Last opp nytt kartlag"
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "Kart opprettet"
@@ -3376,6 +3426,9 @@ msgstr "Kopier kart"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr ""
 
+msgid "Create a New Map"
+msgstr "Lag et nytt kart"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3420,6 +3473,12 @@ msgstr "Nedlasting komplett"
 msgid "Download Failed"
 msgstr "Nedlasting mislykket"
 
+msgid "Edit Map"
+msgstr "Endre kartet"
+
+msgid "Explore Maps"
+msgstr "Utforsk kart"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3432,6 +3491,11 @@ msgid ""
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "Tilbake til"
 
 msgid "Remove Map"
 msgstr "Fjern kart"
@@ -3476,11 +3540,6 @@ msgstr "You do not have permission to view this map"
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Miniatyrbilde"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Miniatyrbilde"
 
@@ -3496,7 +3555,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3563,7 +3622,8 @@ msgstr ""
 msgid "Show data for specific label"
 msgstr ""
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3730,7 +3790,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4057,7 +4118,9 @@ msgstr "Oppdater profil"
 msgid "Explore People"
 msgstr "Se medlemer"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "Ditt brukernavn for"
 
 msgid "Your username has been emailed to you."
@@ -4365,9 +4428,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "Ressurser"
 
 #, fuzzy
@@ -4383,9 +4446,9 @@ msgstr "Du har ikke retigheter til å fjerne denne tjenesten."
 msgid "You are not permitted to remove this service."
 msgstr "Du har ikke retigheter til å fjerne denne tjenesten."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "A layer has been deleted"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Et kartlag har blit slettet"
 
 #, fuzzy
@@ -4632,6 +4695,14 @@ msgstr ""
 #| msgid "Delete from Favorites"
 msgid "Delete Geo Limits"
 msgstr "Slett fra favorittene"
+
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "Message box"
+msgstr "Meldinger"
+
+msgid "OK"
+msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5596,22 +5667,11 @@ msgstr ""
 msgid "Updating Metadata..."
 msgstr "Lat ned metadata"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
-
-msgid "Return to Document"
-msgstr ""
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "Tilbake til"
 
 msgid "Identification"
 msgstr ""
@@ -5674,6 +5734,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy
@@ -6067,12 +6130,6 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr "Dato slutter før:"
 
-msgid "page"
-msgstr "side"
-
-msgid "of"
-msgstr "av"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6130,9 +6187,6 @@ msgstr "Å - A"
 
 msgid "Most popular"
 msgstr "Mest populær"
-
-msgid "Thesaurus"
-msgstr ""
 
 msgid "Text"
 msgstr "Tekst"
@@ -6279,6 +6333,11 @@ msgstr ""
 msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
+#, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "All inhold"
+
 msgid "Could not access to uploaded data."
 msgstr ""
 
@@ -6298,6 +6357,19 @@ msgid "Layer already exists"
 msgstr "Kart opprettet"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6342,20 +6414,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 msgid "Could not find any valid Time Regex for the Mosaic files."
@@ -6374,3 +6445,31 @@ msgstr "Definer tillatelser"
 
 msgid "Permission Denied"
 msgstr "Ingen tillatelse"
+
+#~ msgid "last updated on"
+#~ msgstr "sist endret på"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Tilgjengelige stiler"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "Fjern kart"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "Bruker aktiviteter"
+
+#, fuzzy
+#~| msgid "Upload new layers"
+#~ msgid "Unable to delete layer"
+#~ msgstr "Last opp nytt kartlag"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Miniatyrbilde"

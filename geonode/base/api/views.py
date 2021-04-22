@@ -27,7 +27,7 @@ from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly  # noqa
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
@@ -40,6 +40,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from .permissions import (
     IsSelfOrAdmin,
+    IsOwnerOrAdmin,
     IsOwnerOrReadOnly,
     ResourceBasePermissionsFilter
 )
@@ -162,7 +163,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         exclude = []
         for resource in resources:
             if not request.user.is_superuser and \
-            not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
+                    not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
                 exclude.append(resource.id)
         resources = resources.exclude(id__in=exclude)
         result_page = paginator.paginate_queryset(resources, request)
@@ -242,7 +243,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         }
         ```
         """)
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['get'], permission_classes=[IsOwnerOrAdmin, ])
     def get_perms(self, request, pk=None):
         resource = self.get_object()
         perms_spec = resource.get_all_level_info()
@@ -282,7 +283,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         }
         ```
         """)
-    @action(detail=True, methods=['put'])
+    @action(detail=True, methods=['put'], permission_classes=[IsOwnerOrAdmin, ])
     def set_perms(self, request, pk=None):
         resource = self.get_object()
         resource.set_permissions(request.data)

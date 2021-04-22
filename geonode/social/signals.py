@@ -119,8 +119,8 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
             if created is False:
                 # object was saved.
                 if not isinstance(instance, Layer) and \
-                not isinstance(instance, Document) and \
-                not isinstance(instance, Map):
+                        not isinstance(instance, Document) and \
+                        not isinstance(instance, Map):
                     verb = action.get('updated_verb')
                     raw_action = 'updated'
 
@@ -136,12 +136,11 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     if verb:
         try:
             activity.send(action.get('actor'),
-                          verb="{verb}".format(verb=verb),
+                          verb=str(verb),
                           action_object=action.get('action_object'),
                           target=action.get('target', None),
                           object_name=action.get('object_name'),
-                          raw_action=raw_action,
-                          )
+                          raw_action=raw_action)
         # except ModelNotActionable:
         except Exception:
             logger.warning('The activity received a non-actionable Model or None as the actor/action.')
@@ -175,7 +174,7 @@ if activity:
 def rating_post_save(instance, sender, created, **kwargs):
     """ Send a notification when rating a layer, map or document
     """
-    notice_type_label = '%s_rated' % instance.content_object.class_name.lower()
+    notice_type_label = f'{instance.content_object.class_name.lower()}_rated'
     recipients = get_notification_recipients(notice_type_label,
                                              instance.user,
                                              resource=instance.content_object)
@@ -188,7 +187,7 @@ def comment_post_save(instance, sender, created, **kwargs):
     """ Send a notification when a comment to a layer, map or document has
     been submitted
     """
-    notice_type_label = '%s_comment' % instance.content_type.model.lower()
+    notice_type_label = f'{instance.content_type.model.lower()}_comment'
     recipients = get_comment_notification_recipients(notice_type_label,
                                                      instance.author,
                                                      resource=instance.content_object)

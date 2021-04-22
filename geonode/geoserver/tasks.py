@@ -22,7 +22,7 @@ import re
 import shutil
 
 from django.conf import settings
-from django.db import IntegrityError, transaction
+from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
@@ -38,12 +38,8 @@ from geonode import GeoNodeException
 from geonode.upload import signals
 from geonode.layers.models import (
     Layer, UploadSession)
-from geonode.layers.utils import resolve_regions
-from geonode.layers.metadata import set_metadata
 from geonode.base.models import (
-    ResourceBase,
-    TopicCategory,
-    SpatialRepresentationType)
+    ResourceBase)
 from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
@@ -232,8 +228,6 @@ def geoserver_finalize_upload(
         logger.debug(f"Layer id {instance_id} does not exist yet!")
         raise
 
-    title = None
-    abstract = None
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
@@ -241,6 +235,14 @@ def geoserver_finalize_upload(
             upload = Upload.objects.get(import_id=import_id)
             upload.layer = instance
             upload.save()
+
+            try:
+                # Update the upload sessions
+                geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
+                geonode_upload_sessions.update(processed=False)
+                instance.upload_session = geonode_upload_sessions.first()
+            except Exception as e:
+                logger.exception(e)
 
             # Sanity checks
             if isinstance(xml_file, list):
@@ -253,132 +255,46 @@ def geoserver_finalize_upload(
 
             if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
                 instance.metadata_uploaded = True
-                identifier, vals, regions, keywords = set_metadata(
-                    open(xml_file).read())
 
+            try:
+                gs_resource = gs_catalog.get_resource(
+                    name=instance.name,
+                    store=instance.store,
+                    workspace=instance.workspace)
+            except Exception:
                 try:
                     gs_resource = gs_catalog.get_resource(
-                        name=instance.name,
+                        name=instance.alternate,
                         store=instance.store,
                         workspace=instance.workspace)
                 except Exception:
                     try:
                         gs_resource = gs_catalog.get_resource(
-                            name=instance.alternate,
-                            store=instance.store,
-                            workspace=instance.workspace)
+                            name=instance.alternate or instance.typename)
                     except Exception:
-                        try:
-                            gs_resource = gs_catalog.get_resource(
-                                name=instance.alternate or instance.typename)
-                        except Exception:
-                            gs_resource = None
+                        gs_resource = None
 
-                if vals:
-                    title = vals.get('title', '')
-                    abstract = vals.get('abstract', '')
-
-                    # Updating GeoServer resource
-                    gs_resource.title = title
-                    gs_resource.abstract = abstract
-                    gs_catalog.save(gs_resource)
-                else:
-                    vals = {}
-
-                vals.update(dict(
-                    uuid=instance.uuid,
-                    name=instance.name,
-                    owner=instance.owner,
-                    store=gs_resource.store.name,
-                    storeType=gs_resource.store.resource_type,
-                    alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
-                    title=gs_resource.title or gs_resource.store.name,
-                    abstract=gs_resource.abstract or ''))
-
-                instance.metadata_xml = xml_file
-                regions_resolved, regions_unresolved = resolve_regions(regions)
-                keywords.extend(regions_unresolved)
-
-                # Assign the regions (needs to be done after saving)
-                regions_resolved = list(set(regions_resolved))
-                if regions_resolved:
-                    if len(regions_resolved) > 0:
-                        if not instance.regions:
-                            instance.regions = regions_resolved
-                        else:
-                            instance.regions.clear()
-                            instance.regions.add(*regions_resolved)
-
-                # Assign the keywords (needs to be done after saving)
-                keywords = list(set(keywords))
-                if keywords:
-                    if len(keywords) > 0:
-                        if not instance.keywords:
-                            instance.keywords = keywords
-                        else:
-                            instance.keywords.add(*keywords)
-
-                # set model properties
-                defaults = {}
-                for key, value in vals.items():
-                    if key == 'spatial_representation_type':
-                        value = SpatialRepresentationType(identifier=value)
-                    elif key == 'topic_category':
-                        value, created = TopicCategory.objects.get_or_create(
-                            identifier=value.lower(),
-                            defaults={'description': '', 'gn_description': value})
-                        key = 'category'
-                        defaults[key] = value
-                    else:
-                        defaults[key] = value
-
-                # Save all the modified information in the instance without triggering signals.
-                try:
-                    if not defaults.get('title', title):
-                        defaults['title'] = instance.title or instance.name
-                    if not defaults.get('abstract', abstract):
-                        defaults['abstract'] = instance.abstract or ''
-
-                    to_update = {}
-                    to_update['charset'] = defaults.pop('charset', instance.charset)
-                    to_update['storeType'] = defaults.pop('storeType', instance.storeType)
-                    for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
-                        if _key in defaults:
-                            to_update[_key] = defaults.pop(_key)
-                        else:
-                            to_update[_key] = getattr(instance, _key)
-                    to_update.update(defaults)
-
-                    with transaction.atomic():
-                        ResourceBase.objects.filter(
-                            id=instance.resourcebase_ptr.id).update(
-                            **defaults)
-                        Layer.objects.filter(id=instance.id).update(**to_update)
-
-                        # Refresh from DB
-                        instance.refresh_from_db()
-                except IntegrityError:
-                    raise
+            if gs_resource:
+                # Updating GeoServer resource
+                gs_resource.title = instance.title
+                gs_resource.abstract = instance.abstract
+                gs_catalog.save(gs_resource)
+                if gs_resource.store:
+                    instance.storeType = gs_resource.store.resource_type
+                    if not instance.alternate:
+                        instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
 
             if sld_uploaded:
                 geoserver_set_style(instance.id, sld_file)
             else:
                 geoserver_create_style(instance.id, instance.name, sld_file, tempdir)
 
-            logger.debug('Finalizing (permissions and notifications) Layer {0}'.format(instance))
+            logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
             instance.handle_moderated_uploads()
 
             if permissions is not None and not spec_perms_is_empty(permissions):
                 logger.debug(f'Setting permissions {permissions} for {instance.name}')
                 instance.set_permissions(permissions, created=created)
-
-            try:
-                # Update the upload sessions
-                geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
-                geonode_upload_sessions.update(processed=False)
-                instance.upload_session = geonode_upload_sessions.first()
-            except Exception as e:
-                logger.exception(e)
 
             instance.save(notify=not created)
 
@@ -386,6 +302,8 @@ def geoserver_finalize_upload(
                 logger.debug(f"... Cleaning up the temporary folders {tempdir}")
                 if tempdir and os.path.exists(tempdir):
                     shutil.rmtree(tempdir)
+            except Exception as e:
+                logger.warning(e)
             finally:
                 upload.complete = True
                 upload.save()
@@ -412,6 +330,8 @@ def geoserver_post_save_layers(
     """
     Runs update layers.
     """
+    from geonode.geoserver.signals import geoserver_post_save_complete
+
     instance = None
     try:
         instance = Layer.objects.get(id=instance_id)
@@ -423,15 +343,18 @@ def geoserver_post_save_layers(
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
             # Don't run this signal if is a Layer from a remote service
-            if getattr(instance, "remote_service", None) is not None:
-                return
-
-            if instance.storeType == "remoteStore":
+            if getattr(instance, "remote_service", None) is not None or instance.storeType == "remoteStore":
+                # Creating Layer Thumbnail by sending a signal
+                geoserver_post_save_complete.send(
+                    sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
                 return
 
             # Don't run this signal handler if it is a tile layer or a remote store (Service)
             #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
             if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
+                # Creating Layer Thumbnail by sending a signal
+                geoserver_post_save_complete.send(
+                    sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
                 return instance
 
             if isinstance(instance, ResourceBase):
@@ -442,6 +365,7 @@ def geoserver_post_save_layers(
 
             geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
             geonode_upload_sessions.update(processed=False)
+            instance.set_dirty_state()
 
             gs_resource = None
             values = None
@@ -478,7 +402,7 @@ def geoserver_post_save_layers(
                 metadata_links.append((link.mime, link.name, link.url))
 
             if gs_resource:
-                logger.debug("Found geoserver resource for this layer: %s" % instance.name)
+                logger.debug(f"Found geoserver resource for this layer: {instance.name}")
                 gs_resource.metadata_links = metadata_links
                 instance.gs_resource = gs_resource
 
@@ -523,16 +447,14 @@ def geoserver_post_save_layers(
                     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
                         gs_catalog.save(gs_resource)
                 except Exception as e:
-                    msg = ('Error while trying to save resource named %s in GeoServer, '
-                           'try to use: "%s"' % (gs_resource, str(e)))
+                    msg = (f'Error while trying to save resource named {gs_resource} in GeoServer, '
+                           f'try to use: "{e}"')
                     e.args = (msg,)
                     logger.exception(e)
 
                 # store the resource to avoid another geoserver call in the post_save
                 """Get information from geoserver.
-
                 The attributes retrieved include:
-
                 * Bounding Box
                 * SRID
                 """
@@ -549,8 +471,7 @@ def geoserver_post_save_layers(
                     bbox = instance.bbox
 
                 if instance.srid:
-                    instance.srid_url = "http://www.spatialreference.org/ref/" + \
-                        instance.srid.replace(':', '/').lower() + "/"
+                    instance.srid_url = f"http://www.spatialreference.org/ref/{instance.srid.replace(':', '/').lower()}/"
                 elif instance.bbox_polygon is not None:
                     # Guessing 'EPSG:4326' by default
                     instance.srid = 'EPSG:4326'
@@ -585,15 +506,27 @@ def geoserver_post_save_layers(
                         instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
                         Layer.objects.filter(id=instance.id).update(
                             bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
-                        match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-                        instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
-                        Layer.objects.filter(id=instance.id).update(
-                            ll_bbox_polygon=instance.bbox_polygon, srid=srid)
 
                         # Refresh from DB
                         instance.refresh_from_db()
                 except Exception as e:
                     logger.exception(e)
+
+                try:
+                    with transaction.atomic():
+                        match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+                        instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
+                        Layer.objects.filter(id=instance.id).update(
+                            ll_bbox_polygon=instance.bbox_polygon, srid=srid)
+                except Exception as e:
+                    logger.warning(e)
+                    try:
+                        with transaction.atomic():
+                            instance.bbox_polygon.srid = 4326
+                            Layer.objects.filter(id=instance.id).update(
+                                ll_bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
+                    except Exception as e:
+                        logger.warning(e)
 
                 # Refreshing CSW records
                 logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")
@@ -631,7 +564,6 @@ def geoserver_post_save_layers(
                     pass
 
                 # Creating Layer Thumbnail by sending a signal
-                from geonode.geoserver.signals import geoserver_post_save_complete
                 geoserver_post_save_complete.send(
                     sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
             try:
@@ -639,6 +571,8 @@ def geoserver_post_save_layers(
                 geonode_upload_sessions.update(processed=True)
             except Exception as e:
                 logger.exception(e)
+            finally:
+                instance.clear_dirty_state()
 
             # Updating HAYSTACK Indexes if needed
             if settings.HAYSTACK_SEARCH:

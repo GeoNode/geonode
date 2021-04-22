@@ -57,18 +57,18 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
 
     def test_extract_bbox_param(self):
         fake_north = "70.000"
-        kml_bytes = """
+        kml_bytes = f"""
             <?xml version="1.0" encoding="UTF-8"?>
             <kml xmlns="http://earth.google.com/kml/2.1">
             <Document>
               <GroundOverlay id="groundoverlay">
                 <LatLonBox>
-                  <north>{}</north>
+                  <north>{fake_north}</north>
                 </LatLonBox>
               </GroundOverlay>
             </Document>
             </kml>
-        """.format(fake_north).strip()
+        """.strip()
         kml_doc, ns = get_kml_doc(kml_bytes)
         result = upload_preprocessing._extract_bbox_param(
             kml_doc, ns, "north")

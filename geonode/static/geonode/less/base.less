@@ -893,10 +893,19 @@ article.tab-pane {
   word-break: break-all;
   padding-left: 0px;
   padding-left: 12px;
+  display: flex;
+}
+.treeview .list-group-item .badge{
+  margin: auto;
+  margin-right: 0;
 }
 
 .treeview span.icon {
   margin-right: 5px;
+}
+
+.treeview span.node-icon {
+  padding-right: 17px;
 }
 
 span.icon.node-icon:before {
@@ -1027,6 +1036,7 @@ nav.filter {
 
     a {
       color: white;
+      display: flex;
     }
 
     a.toggle {
@@ -1977,4 +1987,17 @@ form-inline {
 }
 .jumbotron .gn-container {
     margin-top: -2px;
+}
+
+.map-layers {
+  display: flex;
+  word-break: break-all;
+}
+.map-layers i {
+  padding: 7px 0px;
+  font-size: small;
+}
+.map-legend {
+  font-size: 10px;
+  margin: 2px 15px;
 }

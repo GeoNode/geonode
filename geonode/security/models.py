@@ -21,8 +21,9 @@ import logging
 import traceback
 
 from django.conf import settings
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 
 from geonode.groups.conf import settings as groups_settings
@@ -30,7 +31,8 @@ from geonode.groups.conf import settings as groups_settings
 from guardian.shortcuts import (
     assign_perm,
     get_anonymous_user,
-    get_groups_with_perms
+    get_groups_with_perms,
+    get_perms
 )
 
 from geonode.groups.models import GroupProfile
@@ -40,7 +42,8 @@ from .utils import (
     set_owner_permissions,
     remove_object_permissions,
     purge_geofence_layer_rules,
-    sync_geofence_with_guardian
+    sync_geofence_with_guardian,
+    get_user_obj_perms_model
 )
 
 logger = logging.getLogger("geonode.security.models")
@@ -91,7 +94,7 @@ class PermissionLevelMixin(object):
                     if managers:
                         for manager in managers:
                             if manager not in users and not manager.is_superuser and \
-                            manager != resource.owner:
+                                    manager != resource.owner:
                                 for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS:
                                     assign_perm(perm, manager, resource)
                                 users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
@@ -105,7 +108,7 @@ class PermissionLevelMixin(object):
                 if managers:
                     for manager in managers:
                         if manager not in users and not manager.is_superuser and \
-                        manager != resource.owner:
+                                manager != resource.owner:
                             for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS:
                                 assign_perm(perm, manager, resource)
                             users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
@@ -159,7 +162,7 @@ class PermissionLevelMixin(object):
             if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
                 _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
                 if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
-                _members_group_name == user_group.name:
+                        _members_group_name == user_group.name:
                     return True
             return False
 
@@ -388,3 +391,62 @@ class PermissionLevelMixin(object):
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                 if self.polymorphic_ctype.name == 'layer':
                     sync_geofence_with_guardian(self.layer, VIEW_PERMISSIONS)
+
+    def get_user_perms(self, user):
+        """
+        Returns a list of permissions a user has on a given resource
+        """
+        ctype = ContentType.objects.get_for_model(self)
+        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
+
+        resource_perms = Permission.objects.filter(
+            codename__in=PERMISSIONS_TO_FETCH,
+            content_type_id=ctype.id
+        ).values_list('codename', flat=True)
+
+        # Don't filter for admin users
+        if user.is_superuser or user.is_staff:
+            return resource_perms
+
+        user_model = get_user_obj_perms_model(self)
+        user_resource_perms = user_model.objects.filter(
+            object_pk=self.pk,
+            content_type_id=ctype.id,
+            user__username=str(user),
+            permission__codename__in=resource_perms
+        )
+
+        # get user's implicit perms for anyone flag
+        implicit_perms = get_perms(user, self)
+
+        return user_resource_perms.union(
+            user_model.objects.filter(permission__codename__in=implicit_perms)
+        ).values_list('permission__codename', flat=True)
+
+    def user_can(self, user, permission):
+        """
+        Checks if a has a given permission to the resource
+        """
+        # To avoid circular import
+        from geonode.base.models import Configuration
+
+        config = Configuration.load()
+        # Check read-only status if given permission is for edit, change or publish
+        perm_prefixes = ['change', 'delete', 'publish']
+        if any(prefix in permission for prefix in perm_prefixes):
+            if config.read_only:
+                return False
+        resource = self.get_self_resource()
+        user_perms = self.get_user_perms(user).union(resource.get_user_perms(user))
+        is_admin = user.is_superuser
+        is_staff = user.is_staff
+        is_owner = user == self.owner
+        try:
+            is_manager = user.groupmember_set.all().filter(
+                role='manager').exists()
+        except Exception:
+            is_manager = False
+        has_access = is_admin or is_staff or is_owner or is_manager or user.has_perm(permission, obj=self)
+        if permission in user_perms or has_access:
+            return True
+        return False

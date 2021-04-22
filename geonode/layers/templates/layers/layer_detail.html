@@ -24,13 +24,17 @@
   {% if OPENGRAPH_ENABLED %}
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
-
+  <script type="text/javascript">
+    // this is used by thumbnail.js to POST to the thumbnail update view
+    window.thumbnailUpdateUrl = '{% url 'layer_thumbnail' resource.alternate %}';
+  </script>
+  <script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
   {% get_layer_detail %}
 {{ block.super }}
 {% endblock %}
 
 
-{% block body_class %}{% trans "layers" %}{% endblock %}
+{% block body_class %}layers{% endblock %}
 
 {% block body_outer %}
 <div class="page-header">
@@ -41,11 +45,6 @@
     </style>
 
     <h2 class="page-title">{{ resource.title|default:resource.alternate }}</h2>
-    {% if not processed %}
-    <em>
-      <i class="fa fa-cog fa-spin fa-fw"></i>{% trans "Layer not ready yet. Still finalizing layer ingestion..." %}
-    </em>
-    {% endif %}
     {% if storeType == 'remoteStore' %}
     <em>
       <i class="fa fa-power-off {% if online %}text-success{% else %}text-danger{% endif %}"></i> {% trans "Service is" %} {% if online %}{% trans "online" %}{% else %}{% trans "offline" %}{% endif %} 
@@ -506,6 +505,9 @@
                   {% if "change_resourcebase" in perms_list and resource.storeType != "remoteStore" %}
                   <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                   {% endif %}
+                  {% if "change_resourcebase" in perms_list and resource.storeType != "remoteStore" %}
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "layer_append" resource.service_typename %}">{% trans "Append Data" %}</a>
+                  {% endif %}
                   {% if "change_layer_data" in layer_perms and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
                     {% if layer_type != "raster" and resource.storeType != "remoteStore" %}
                     <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}&storeType={{resource.storeType}}">{% trans "Edit data" %}</a>
@@ -582,7 +584,8 @@
       {% if resource.default_style %}
       {% get_all_resource_styles resource as resource_styles_all%}
       {% for style in resource_styles_all %}
-          {% if resource.default_style == style or resource.default_style.name == style.name or resource.default_style.sld_title == style.sld_title %}
+        {% if style.name or style.sld_title %}
+          {% if resource.default_style == style or resource.default_style.name == style.name or style.sld_title and resource.default_style.sld_title == style.sld_title %}
               {% for legend in resource.get_legend %}
                   {% get_sld_name_from_url style.sld_url as sld_name %}
                   {% with "STYLE="|add:sld_name as style_name %}
@@ -599,6 +602,7 @@
                   {% endwith %}
               {% endfor %}
           {% endif %}
+        {% endif %}
       {% endfor %}
       {% else %}
         {% for legend in resource.get_legend %}

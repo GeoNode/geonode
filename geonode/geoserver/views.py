@@ -128,8 +128,7 @@ def layer_style(request, layername):
     old_default = layer.default_style
     if old_default.name == style_name:
         return HttpResponse(
-            "Default style for %s remains %s" %
-            (layer.name, style_name), status=200)
+            f"Default style for {layer.name} remains {style_name}", status=200)
 
     # This code assumes without checking
     # that the new default style name is included
@@ -151,8 +150,7 @@ def layer_style(request, layername):
         pass
 
     return HttpResponse(
-        "Default style for %s changed to %s" %
-        (layer.name, style_name), status=200)
+        f"Default style for {layer.name} changed to {style_name}", status=200)
 
 
 @login_required
@@ -189,7 +187,7 @@ def layer_style_upload(request, layername):
         sld_name = extract_name_from_sld(
             gs_catalog, sld, sld_file=request.FILES['sld'])
     except Exception as e:
-        respond(errors="The uploaded SLD file is not valid XML: {}".format(e))
+        respond(errors=f"The uploaded SLD file is not valid XML: {e}")
 
     name = data.get('name') or sld_name
 
@@ -267,10 +265,8 @@ def layer_style_manage(request, layername):
         except (FailedRequestError, EnvironmentError):
             tb = traceback.format_exc()
             logger.debug(tb)
-            msg = ('Could not connect to geoserver at "%s"'
-                   'to manage style information for layer "%s"' % (
-                       ogc_server_settings.LOCATION, layer.name)
-                   )
+            msg = (f'Could not connect to geoserver at "{ogc_server_settings.LOCATION}"'
+                   f'to manage style information for layer "{layer.name}"')
             logger.debug(msg)
             # If geoserver is not online, return an error
             return render(
@@ -335,8 +331,7 @@ def layer_style_manage(request, layername):
         except (FailedRequestError, EnvironmentError, MultiValueDictKeyError):
             tb = traceback.format_exc()
             logger.debug(tb)
-            msg = ('Error Saving Styles for Layer "%s"' % (layer.name)
-                   )
+            msg = (f'Error Saving Styles for Layer "{layer.name}"')
             logger.warn(msg)
             return render(
                 request,
@@ -360,30 +355,14 @@ def feature_edit_check(request, layername, permission='change_layer_data'):
         return HttpResponse(
             json.dumps({'authorized': False}), content_type="application/json")
     datastore = ogc_server_settings.DATASTORE
-    feature_edit = datastore
-    is_admin = False
-    is_staff = False
-    is_owner = False
-    is_manager = False
-    if request.user:
-        is_admin = request.user.is_superuser if request.user else False
-        is_staff = request.user.is_staff if request.user else False
-        is_owner = (str(request.user) == str(layer.owner))
-        try:
-            is_manager = request.user.groupmember_set.all().filter(
-                role='manager').exists()
-        except Exception:
-            is_manager = False
-    if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
-            permission,
-            obj=layer) and \
-            ((permission == 'change_layer_data' and layer.storeType == 'dataStore' and feature_edit) or
-             True):
-        return HttpResponse(
-            json.dumps({'authorized': True}), content_type="application/json")
-    else:
-        return HttpResponse(
-            json.dumps({'authorized': False}), content_type="application/json")
+    authorized = False
+    if layer.user_can(request.user, permission):
+        authorized = True
+        if permission == 'change_layer_data':
+            if not (layer.storeType == 'dataStore' and datastore):
+                authorized = False
+    return HttpResponse(
+        json.dumps({'authorized': authorized}), content_type="application/json")
 
 
 def style_edit_check(request, layername):
@@ -436,7 +415,7 @@ def style_change_check(request, path):
                 except Exception:
                     authorized = (request.method == 'POST')  # The user is probably trying to create a new style
                     logger.warn(
-                        'There is not a style with such a name: %s.' % style_name)
+                        f'There is not a style with such a name: {style_name}.')
     return authorized
 
 
@@ -485,8 +464,7 @@ def geoserver_proxy(request,
         assert _prefix in path
         prefix_idx = path.index(_prefix)
         _prefix = path[:prefix_idx] + _prefix
-        full_prefix = "%s/%s/%s" % (
-            _prefix, layername, downstream_path) if layername else _prefix
+        full_prefix = f"{_prefix}/{layername}/{downstream_path}" if layername else _prefix
         return path[len(full_prefix):]
 
     path = strip_prefix(request.get_full_path(), proxy_path)
@@ -499,11 +477,11 @@ def geoserver_proxy(request,
         if ws and ws in path:
             # Strip out WS from PATH
             try:
-                path = "/%s" % strip_prefix(path, "/%s:" % (ws))
+                path = f'/{strip_prefix(path, f"/{ws}:")}'
             except Exception:
                 pass
 
-        if proxy_path == '/gs/%s' % settings.DEFAULT_WORKSPACE and layername:
+        if proxy_path == f'/gs/{settings.DEFAULT_WORKSPACE}' and layername:
             import posixpath
             raw_url = urljoin(ogc_server_settings.LOCATION,
                               posixpath.join(workspace, layername, downstream_path, path))
@@ -530,9 +508,9 @@ def geoserver_proxy(request,
     url = urlsplit(raw_url)
     affected_layers = None
 
-    if '%s/layers' % ws in path:
+    if f'{ws}/layers' in path:
         downstream_path = 'rest/layers'
-    elif '%s/styles' % ws in path:
+    elif f'{ws}/styles' in path:
         downstream_path = 'rest/styles'
 
     if request.method in ("POST", "PUT", "DELETE"):
@@ -546,28 +524,26 @@ def geoserver_proxy(request,
                     status=401)
             elif downstream_path == 'rest/styles':
                 logger.debug(
-                    "[geoserver_proxy] Updating Style ---> url %s" %
-                    url.geturl())
+                    f"[geoserver_proxy] Updating Style ---> url {url.geturl()}")
                 _style_name, _style_ext = os.path.splitext(os.path.basename(urlsplit(url.geturl()).path))
+                _parsed_get_args = dict(parse_qsl(urlsplit(url.geturl()).query))
                 if _style_name == 'styles.json' and request.method == "PUT":
-                    _parsed_get_args = dict(parse_qsl(urlsplit(url.geturl()).query))
-                    if 'name' in _parsed_get_args:
-                        _style_name, _style_ext = os.path.splitext(_parsed_get_args['name'])
+                    if _parsed_get_args.get('name'):
+                        _style_name, _style_ext = os.path.splitext(_parsed_get_args.get('name'))
                 else:
                     _style_name, _style_ext = os.path.splitext(_style_name)
-                if _style_name != 'style-check' and _style_ext == '.json' and \
-                not re.match(temp_style_name_regex, _style_name):
+                if _style_name != 'style-check' and (_style_ext == '.json' or _parsed_get_args.get('raw')) and \
+                        not re.match(temp_style_name_regex, _style_name):
                     affected_layers = style_update(request, raw_url)
             elif downstream_path == 'rest/layers':
                 logger.debug(
-                    "[geoserver_proxy] Updating Layer ---> url %s" %
-                    url.geturl())
+                    f"[geoserver_proxy] Updating Layer ---> url {url.geturl()}")
                 try:
                     _layer_name = os.path.splitext(os.path.basename(request.path))[0]
-                    _layer = Layer.objects.get(name__icontains=_layer_name)
+                    _layer = Layer.objects.get(name=_layer_name)
                     affected_layers = [_layer]
                 except Exception:
-                    logger.warn("Could not find any Layer %s on DB" % os.path.basename(request.path))
+                    logger.warn(f"Could not find any Layer {os.path.basename(request.path)} on DB")
 
     kwargs = {'affected_layers': affected_layers}
     raw_url = unquote(raw_url)
@@ -601,7 +577,7 @@ def _response_callback(**kwargs):
                 _content = content.decode('UTF-8')
             else:
                 _content = content
-            if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
+            if re.findall(f"(?=(\\b{'|'.join(content_type_list)}\\b))", content_type):
                 _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
                 content = _content\
                     .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
@@ -736,13 +712,11 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
     """
     workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
     if not layer.remote_service:
-        wms_url = '%s%s/%s/wms?service=wms&version=%s&request=GetCapabilities'\
-            % (ogc_server_settings.LOCATION, workspace, layername, version)
+        wms_url = f'{ogc_server_settings.LOCATION}{workspace}/{layername}/wms?service=wms&version={version}&request=GetCapabilities'  # noqa
         if access_token:
-            wms_url += ('&access_token=%s' % access_token)
+            wms_url += f'&access_token={access_token}'
     else:
-        wms_url = '%s?service=wms&version=%s&request=GetCapabilities'\
-            % (layer.remote_service.service_url, version)
+        wms_url = f'{layer.remote_service.service_url}?service=wms&version={version}&request=GetCapabilities'
 
     _user, _password = ogc_server_settings.credentials
     req, content = http_client.get(wms_url, user=_user)
@@ -751,10 +725,9 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
         if tolerant and ('ServiceException' in getcap or req.status_code == 404):
             # WARNING Please make sure to have enabled DJANGO CACHE as per
             # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-            wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\
-                % (ogc_server_settings.public_url, workspace, version, layer)
+            wms_url = f'{ogc_server_settings.public_url}{workspace}/ows?service=wms&version={version}&request=GetCapabilities&layers={layer}'  # noqa
             if access_token:
-                wms_url += ('&access_token=%s' % access_token)
+                wms_url += f'&access_token={access_token}'
             req, content = http_client.get(wms_url, user=_user)
             getcap = ensure_string(content)
 
@@ -773,14 +746,14 @@ def format_online_resource(workspace, layer, element, namespaces):
     if layerName is None:
         return
 
-    layerName.text = workspace + ":" + layer if workspace else layer
+    layerName.text = f"{workspace}:{layer}" if workspace else layer
     layerresources = element.findall('.//wms:OnlineResource', namespaces)
     if layerresources is None:
         return
 
     for resource in layerresources:
         wtf = resource.attrib['{http://www.w3.org/1999/xlink}href']
-        replace_string = "/" + workspace + "/" + layer if workspace else "/" + layer
+        replace_string = f"/{workspace}/{layer}" if workspace else f"/{layer}"
         resource.attrib['{http://www.w3.org/1999/xlink}href'] = wtf.replace(
             replace_string, "")
 
@@ -843,8 +816,7 @@ def get_capabilities(request, layerid=None, user=None,
                         import traceback
                         traceback.print_exc()
                         logger.error(
-                            "Error occurred creating GetCapabilities for %s: %s" %
-                            (layer.typename, str(e)))
+                            f"Error occurred creating GetCapabilities for {layer.typename}: {str(e)}")
                         rootdoc = None
                 if layercap is None or not len(layercap) or rootdoc is None or not len(rootdoc):
                     # Get the required info from layer model
@@ -863,8 +835,7 @@ def get_capabilities(request, layerid=None, user=None,
                 import traceback
                 traceback.print_exc()
                 logger.error(
-                    "Error occurred creating GetCapabilities for %s:%s" %
-                    (layer.typename, str(e)))
+                    f"Error occurred creating GetCapabilities for {layer.typename}:{str(e)}")
                 rootdoc = None
     if rootdoc is not None:
         capabilities = etree.tostring(

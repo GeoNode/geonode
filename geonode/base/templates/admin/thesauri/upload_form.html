@@ -1,0 +1,13 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+    <div>
+        <form action="." method="POST" enctype="multipart/form-data">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <button style="width:auto;margin-top:10px" class="grp-button" type="submit">Upload RDF</button>
+        </form>
+    </div>
+    <br />
+
+{% endblock %}{{ block.super }}

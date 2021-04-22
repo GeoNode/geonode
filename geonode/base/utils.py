@@ -78,7 +78,7 @@ def delete_orphaned_thumbs():
             remove_thumb(filename)
             deleted.append(filename)
         except NotImplementedError as e:
-            logger.error("Failed to delete orphaned thumbnail '{}': {}".format(filename, e))
+            logger.error(f"Failed to delete orphaned thumbnail '{filename}': {e}")
 
     return deleted
 
@@ -98,11 +98,9 @@ def remove_duplicate_links(resource):
     if isinstance(resource, Layer):
         # fixup Legend links
         layer = resource
-        legend_url_template = \
-            ogc_server_settings.PUBLIC_LOCATION + \
-            'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-            '{alternate}&STYLE={style_name}' + \
-            '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+        legend_url_template = (f"{ogc_server_settings.PUBLIC_LOCATION}ows?"
+                               "service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&"
+                               f"LAYER={{alternate}}&STYLE={{style_name}}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on")
         if layer.default_style and not layer.get_legend_url(style_name=layer.default_style.name):
             Link.objects.update_or_create(
                 resource=layer.resourcebase_ptr,

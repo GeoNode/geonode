@@ -20,7 +20,7 @@
     var center = [center_x, center_y];
     var settings_crs = '{{ crs }}';
     if (settings_crs != 'EPSG:4326') {
-        settings_crs = 'EPSG:900913';
+        settings_crs = 'EPSG:3857';
     }
     if ('EPSG:4326' != model_crs) {
         // if the two crs are not the same, user must have switched default crs for project after map was created
@@ -46,9 +46,10 @@
         layers.push(source);
         {% endif %}
     {% endfor %}
-    var map = new OpenLayers.Map({
+    // olMap is used by thumbnail.js to POST to the thumbnail update view
+    window.olMap = new OpenLayers.Map({
         div: 'preview_map',
-        projection: new OpenLayers.Projection('EPSG:900913'),
+        projection: new OpenLayers.Projection('EPSG:3857'),
         layers: layers,
         center: center,
         zoom: zoom

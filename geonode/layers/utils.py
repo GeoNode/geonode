@@ -32,7 +32,6 @@ import logging
 import tarfile
 
 from datetime import datetime
-from urllib.parse import urlparse
 
 from osgeo import gdal, osr, ogr
 from zipfile import ZipFile, is_zipfile
@@ -51,25 +50,19 @@ from django.core.files.storage import default_storage as storage
 from django.utils.translation import ugettext as _
 
 # Geonode functionality
-from geonode.maps.models import Map
-from geonode.base.auth import get_or_create_token
 from geonode.base.bbox_utils import BBOXHelper
 from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import UploadSession, LayerFile
-from geonode.base.thumb_utils import thumb_exists
-from geonode.base.models import Link, SpatialRepresentationType,  \
+from geonode.base.models import SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
-from geonode.layers.metadata import set_metadata
-from geonode.upload.utils import _fixup_base_file
-from geonode.utils import (http_client,
-                           check_ogc_backend,
+from geonode.layers.metadata import convert_keyword, parse_metadata
+from geonode.upload.utils import KeywordHandler, _fixup_base_file
+from geonode.utils import (check_ogc_backend,
                            unzip_file,
-                           extract_tarfile,
-                           get_layer_name,
-                           get_layer_workspace,
-                           bbox_to_projection)
+                           extract_tarfile)
+from geonode.geoserver.helpers import gs_catalog, gs_uploader
 
 READ_PERMISSIONS = [
     'view_resourcebase'
@@ -89,18 +82,9 @@ OWNER_PERMISSIONS = [
     'publish_resourcebase'
 ]
 
-if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    # FIXME: The post service providing the map_status object
-    # should be moved to geonode.geoserver.
-    from geonode.geoserver.helpers import ogc_server_settings
-
-    # Use the http_client with one that knows the username
-    # and password for GeoServer's management user.
-    from geonode.geoserver.helpers import _prepare_thumbnail_body_from_opts
-
 logger = logging.getLogger('geonode.layers.utils')
 
-_separator = '\n' + ('-' * 100) + '\n'
+_separator = f"\n{'-' * 100}\n"
 
 
 def _clean_string(
@@ -144,8 +128,7 @@ def get_files(filename):
     try:
         filename.encode('ascii')
     except UnicodeEncodeError:
-        msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." \
-            % os.path.basename(filename).encode('UTF-8', 'strict')
+        msg = f"Please use only characters from the english alphabet for the filename. '{os.path.basename(filename).encode('UTF-8', 'strict')}' is not yet supported."
         raise GeoNodeException(msg)
 
     # Let's unzip the filname in case it is a ZIP file
@@ -171,8 +154,7 @@ def get_files(filename):
 
     # Make sure the file exists.
     if not os.path.exists(filename):
-        msg = ('Could not open %s. Make sure you are using a '
-               'valid file' % filename)
+        msg = f'Could not open {filename}. Make sure you are using a valid file'
         logger.debug(msg)
         raise GeoNodeException(msg)
 
@@ -186,10 +168,9 @@ def get_files(filename):
         for ext, pattern in required_extensions.items():
             matches = glob.glob(glob_name + pattern)
             if len(matches) == 0:
-                msg = ('Expected helper file %s does not exist; a Shapefile '
+                msg = (f'Expected helper file {base_name}.{ext} does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
-                       '%s') % (base_name + "." + ext,
-                                list(required_extensions.keys()))
+                       f'{list(required_extensions.keys())}')
                 raise GeoNodeException(msg)
             elif len(matches) > 1:
                 msg = ('Multiple helper files for %s exist; they need to be '
@@ -198,7 +179,7 @@ def get_files(filename):
             else:
                 files[ext] = matches[0]
 
-        matches = glob.glob(glob_name + ".[pP][rR][jJ]")
+        matches = glob.glob(f"{glob_name}.[pP][rR][jJ]")
         if len(matches) == 1:
             files['prj'] = matches[0]
         elif len(matches) > 1:
@@ -211,11 +192,11 @@ def get_files(filename):
 
     # Only for GeoServer
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        matches = glob.glob(os.path.dirname(glob_name) + ".[sS][lL][dD]")
+        matches = glob.glob(f"{os.path.dirname(glob_name)}.[sS][lL][dD]")
         if len(matches) == 1:
             files['sld'] = matches[0]
         else:
-            matches = glob.glob(glob_name + ".[sS][lL][dD]")
+            matches = glob.glob(f"{glob_name}.[sS][lL][dD]")
             if len(matches) == 1:
                 files['sld'] = matches[0]
             elif len(matches) > 1:
@@ -223,12 +204,12 @@ def get_files(filename):
                        'distinct by spelling and not just case.') % filename
                 raise GeoNodeException(msg)
 
-    matches = glob.glob(glob_name + ".[xX][mM][lL]")
+    matches = glob.glob(f"{glob_name}.[xX][mM][lL]")
 
     # shapefile XML metadata is sometimes named base_name.shp.xml
     # try looking for filename.xml if base_name.xml does not exist
     if len(matches) == 0:
-        matches = glob.glob(filename + ".[xX][mM][lL]")
+        matches = glob.glob(f"{filename}.[xX][mM][lL]")
 
     if len(matches) == 1:
         files['xml'] = matches[0]
@@ -270,7 +251,7 @@ def layer_type(filename):
     elif extension.lower() in cov_exts:
         return 'raster'
     else:
-        msg = ('Saving of extension [%s] is not implemented' % extension)
+        msg = f'Saving of extension [{extension}] is not implemented'
         raise GeoNodeException(msg)
 
 
@@ -283,9 +264,9 @@ def get_valid_name(layer_name):
     while Layer.objects.filter(name=proposed_name).exists():
         possible_chars = string.ascii_lowercase + string.digits
         suffix = "".join([choice(possible_chars) for i in range(4)])
-        proposed_name = '%s_%s' % (name, suffix)
+        proposed_name = f'{name}_{suffix}'
         logger.debug('Requested name already used; adjusting name '
-                     '[%s] => [%s]', layer_name, proposed_name)
+                     f'[{layer_name}] => [{proposed_name}]')
 
     return proposed_name
 
@@ -345,7 +326,7 @@ def get_resolution(filename):
         gtif = gdal.Open(filename)
         gt = gtif.GetGeoTransform()
         __, resx, __, __, __, resy = gt
-        resolution = '%s %s' % (resx, resy)
+        resolution = f'{resx} {resy}'
         return resolution
     except Exception:
         return None
@@ -420,7 +401,7 @@ def get_bbox(filename):
     except Exception:
         pass
 
-    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
+    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, f"EPSG:{str(srid)}"]
 
 
 @transaction.atomic
@@ -478,52 +459,7 @@ def file_upload(filename,
 
     # We are going to replace an existing Layer...
     if layer and overwrite:
-        if layer.is_vector() and is_raster(filename):
-            raise Exception(_(
-                "You are attempting to replace a vector layer with a raster."))
-        elif (not layer.is_vector()) and is_vector(filename):
-            raise Exception(_(
-                "You are attempting to replace a raster layer with a vector."))
-
-        if layer.is_vector():
-            absolute_base_file = None
-            try:
-                if 'shp' in files and os.path.exists(files['shp']):
-                    absolute_base_file = _fixup_base_file(files['shp'])
-                elif 'zip' in files and os.path.exists(files['zip']):
-                    absolute_base_file = _fixup_base_file(files['zip'])
-            except Exception:
-                absolute_base_file = None
-
-            if not absolute_base_file or \
-            os.path.splitext(absolute_base_file)[1].lower() != '.shp':
-                raise Exception(
-                    _("You are attempting to replace a vector layer with an unknown format."))
-            else:
-                try:
-                    gtype = layer.gtype if not gtype else gtype
-                    inDataSource = ogr.Open(absolute_base_file)
-                    lyr = inDataSource.GetLayer(str(layer.name))
-                    if not lyr:
-                        raise Exception(
-                            _("Please ensure the name is consistent with the file you are trying to replace."))
-                    schema_is_compliant = False
-                    _ff = json.loads(lyr.GetFeature(0).ExportToJson())
-                    if gtype:
-                        logger.warning(
-                            _("Local GeoNode layer has no geometry type."))
-                        if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
-                            schema_is_compliant = True
-                    elif "geometry" in _ff and _ff["geometry"]["type"]:
-                        schema_is_compliant = True
-
-                    if not schema_is_compliant:
-                        raise Exception(
-                            _("Please ensure there is at least one geometry type \
-                                that is consistent with the file you are trying to replace."))
-                except Exception as e:
-                    raise Exception(
-                        _("Some error occurred while trying to access the uploaded schema: %s" % str(e)))
+        validate_input_source(layer, filename, files, gtype, action_type='replace')
 
     # Set a default title that looks nice ...
     if title is None:
@@ -568,8 +504,7 @@ def file_upload(filename,
         with open(fn, 'rb') as f:
             upload_session.layerfile_set.create(
                 name=type_name, file=File(
-                    f, name='%s.%s' %
-                    (assigned_name or valid_name, type_name)))
+                    f, name=f'{assigned_name or valid_name}.{type_name}'))
             # save the system assigned name for the remaining files
             if not assigned_name:
                 the_file = upload_session.layerfile_set.all()[0].file.name
@@ -580,7 +515,7 @@ def file_upload(filename,
     bbox_polygon = BBOXHelper.from_xy(bbox).as_polygon()
 
     if srid:
-        srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
+        srid_url = f"http://www.spatialreference.org/ref/{srid.replace(':', '/').lower()}/"  # noqa
         bbox_polygon.srid = int(srid.split(':')[1])
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
@@ -614,7 +549,7 @@ def file_upload(filename,
         defaults['metadata_uploaded_preserve'] = metadata_uploaded_preserve
 
         # get model properties from XML
-        identifier, vals, regions, keywords = set_metadata(xml_file)
+        identifier, vals, regions, keywords, custom = parse_metadata(xml_file)
 
         if defaults['metadata_uploaded_preserve']:
             defaults['metadata_xml'] = xml_file
@@ -632,13 +567,14 @@ def file_upload(filename,
                 value = SpatialRepresentationType(identifier=value)
             elif key == 'topic_category':
                 value, created = TopicCategory.objects.get_or_create(
-                    identifier=value.lower(),
+                    identifier=value,
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
             defaults[key] = value
 
     regions_resolved, regions_unresolved = resolve_regions(regions)
-    keywords.extend(regions_unresolved)
+    if keywords and regions_unresolved:
+        keywords.extend(convert_keyword(regions_unresolved))
 
     # If it is a vector file, create the layer in postgis.
     if is_vector(filename):
@@ -708,14 +644,7 @@ def file_upload(filename,
         upload_session.processed = False
         upload_session.save()
 
-    # Assign the keywords (needs to be done after saving)
-    keywords = list(set(keywords))
-    if keywords:
-        if len(keywords) > 0:
-            if not layer.keywords:
-                layer.keywords = keywords
-            else:
-                layer.keywords.add(*keywords)
+    layer = KeywordHandler(layer, keywords).set_keywords()
 
     # Assign the regions (needs to be done after saving)
     regions_resolved = list(set(regions_resolved))
@@ -814,7 +743,7 @@ def upload(incoming, user=None, overwrite=False,
 
     elif not os.path.isdir(incoming):
         msg = ('Please pass a filename or a directory name as the "incoming" '
-               'parameter, instead of %s: %s' % (incoming, type(incoming)))
+               f'parameter, instead of {incoming}: {type(incoming)}')
         logger.exception(msg)
         raise GeoNodeException(msg)
     else:
@@ -910,7 +839,7 @@ def upload(incoming, user=None, overwrite=False,
                         print(msg, file=sys.stderr)
                         raise Exception from e
 
-        msg = "[%s] Layer for '%s' (%d/%d)" % (status, filename, i + 1, number)
+        msg = f"[{status}] Layer for '{filename}' ({i + 1}/{number})"
         info = {'file': filename, 'status': status}
         if status == 'failed':
             info['traceback'] = traceback
@@ -925,263 +854,6 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
-                     check_bbox=False, ogc_client=None, overwrite=False,
-                     width=240, height=200):
-    thumbnail_name = None
-    instance.refresh_from_db()
-    if isinstance(instance, Layer):
-        thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
-    elif isinstance(instance, Map):
-        thumbnail_name = 'map-%s-thumb.png' % instance.uuid
-
-    _thumb_exists = thumb_exists(thumbnail_name)
-    if overwrite or not _thumb_exists:
-        is_remote = False
-        if not thumbnail_create_url:
-            thumbnail_create_url = thumbnail_remote_url
-            is_remote = True
-
-        if check_bbox:
-            valid = instance.bbox_polygon and instance.bbox_polygon.valid
-        else:
-            valid = True
-
-        image = None
-
-        if valid:
-            Link.objects.get_or_create(
-                resource=instance.get_self_resource(),
-                url=thumbnail_remote_url,
-                defaults=dict(
-                    extension='png',
-                    name="Remote Thumbnail",
-                    mime='image/png',
-                    link_type='image')
-            )
-            ResourceBase.objects.filter(id=instance.id) \
-                .update(thumbnail_url=thumbnail_remote_url)
-
-            # Download thumbnail and save it locally.
-            if not ogc_client:
-                ogc_client = http_client
-
-            if ogc_client:
-                headers = {}
-                if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                    if is_remote and thumbnail_remote_url:
-                        try:
-                            _ogc_server_settings = settings.OGC_SERVER['default']
-                            resp, image = ogc_client.request(
-                                thumbnail_remote_url,
-                                headers=headers,
-                                timeout=_ogc_server_settings.get('TIMEOUT', 60))
-                            if 'ServiceException' in image or \
-                                    resp.status_code < 200 or resp.status_code > 299:
-                                msg = 'Unable to obtain thumbnail: %s' % image
-                                logger.error(msg)
-                                # Replace error message with None.
-                                image = None
-                        except Exception:
-                            image = None
-                    if image is None:
-                        request_body = {
-                            'width': width,
-                            'height': height
-                        }
-                        if instance.bbox and \
-                        (not thumbnail_create_url or 'bbox' not in thumbnail_create_url):
-                            instance_bbox = instance.bbox[0:4]
-                            request_body['bbox'] = [str(coord) for coord in instance_bbox]
-                            request_body['srid'] = instance.srid
-
-                        if thumbnail_create_url:
-                            params = urlparse(thumbnail_create_url).query.split('&')
-                            request_body = {key: value for (key, value) in
-                                            [(lambda p: (p.split("=")[0], p.split("=")[1]))(p) for p in params]}
-                            if 'bbox' in request_body and isinstance(request_body['bbox'], str):
-                                request_body['bbox'] = [str(coord) for coord in request_body['bbox'].split(",")]
-                            if 'crs' in request_body and 'srid' not in request_body:
-                                request_body['srid'] = request_body['crs']
-                        elif instance.alternate:
-                            request_body['layers'] = instance.alternate
-
-                        if hasattr(instance, 'default_style'):
-                            if instance.default_style:
-                                request_body['styles'] = instance.default_style.name
-
-                        try:
-                            image = _prepare_thumbnail_body_from_opts(request_body)
-                        except Exception as e:
-                            logger.exception(e)
-                            image = None
-
-                if image is None:
-                    try:
-                        params = {
-                            'width': width,
-                            'height': height
-                        }
-                        # Add the bbox param only if the bbox is different to [None, None,
-                        # None, None]
-                        if None not in instance.bbox:
-                            params['bbox'] = instance.bbox_string
-                            params['crs'] = instance.srid
-
-                        if hasattr(instance, 'default_style'):
-                            if instance.default_style:
-                                params['styles'] = instance.default_style.name
-
-                        for _p in params.keys():
-                            if _p.lower() not in thumbnail_create_url.lower():
-                                thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (str(_p), str(params[_p]))
-                        _ogc_server_settings = settings.OGC_SERVER['default']
-                        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                            _user = _ogc_server_settings.get('USER', 'admin')
-                            _pwd = _ogc_server_settings.get('PASSWORD', 'geoserver')
-                            import base64
-                            valid_uname_pw = base64.b64encode(
-                                ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
-                            headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-                        resp, image = ogc_client.request(
-                            thumbnail_create_url,
-                            headers=headers,
-                            timeout=_ogc_server_settings.get('TIMEOUT', 60))
-                        if 'ServiceException' in str(image) or \
-                        resp.status_code < 200 or resp.status_code > 299:
-                            msg = 'Unable to obtain thumbnail: %s' % image
-                            logger.debug(msg)
-
-                            # Replace error message with None.
-                            image = None
-                    except Exception as e:
-                        logger.exception(e)
-                        # Replace error message with None.
-                        image = None
-
-                if image is not None:
-                    instance.save_thumbnail(thumbnail_name, image=image)
-                else:
-                    msg = 'Unable to obtain thumbnail for: %s' % instance
-                    logger.debug(msg)
-                    instance.save_thumbnail(thumbnail_name, image=None)
-                    raise Exception(msg)
-
-
-# this is the original implementation of create_gs_thumbnail()
-def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
-    """
-    Create a thumbnail with a GeoServer request.
-    """
-    layers = None
-    bbox = None  # x0, x1, y0, y1
-    local_layers = []
-    local_bboxes = []
-    if isinstance(instance, Map):
-        # a map could be empty!
-        if not instance.layers:
-            return
-        for layer in instance.layers:
-            if layer.local:
-                # Compute Bounds
-                _layer_name = get_layer_name(layer)
-                _layer_store = layer.store
-                _layer_workspace = get_layer_workspace(layer)
-                _l = None
-                if _layer_store and \
-                Layer.objects.filter(store=_layer_store, workspace=_layer_workspace, name=_layer_name).count() > 0:
-                    _l = Layer.objects.filter(
-                        store=_layer_store,
-                        workspace=_layer_workspace,
-                        name=_layer_name).first()
-                elif _layer_workspace and \
-                Layer.objects.filter(workspace=_layer_workspace, name=_layer_name).count() > 0:
-                    _l = Layer.objects.filter(workspace=_layer_workspace, name=_layer_name).first()
-                elif Layer.objects.filter(alternate=layer.name).count() > 0:
-                    _l = Layer.objects.filter(alternate=layer.name).first()
-                if _l:
-                    wgs84_bbox = bbox_to_projection(_l.bbox)
-                    local_bboxes.append(wgs84_bbox)
-                    if _l.storeType != "remoteStore":
-                        local_layers.append(_l.alternate)
-        layers = ",".join(local_layers)
-    else:
-        # Compute Bounds
-        if instance.store:
-            _ll = Layer.objects.filter(
-                store=instance.store,
-                alternate=instance.alternate)
-        else:
-            _ll = Layer.objects.filter(
-                alternate=instance.alternate)
-        for _l in _ll:
-            if _l.name == instance.name:
-                wgs84_bbox = bbox_to_projection(_l.bbox)
-                local_bboxes.append(wgs84_bbox)
-                if _l.storeType != "remoteStore":
-                    local_layers.append(_l.alternate)
-        layers = ",".join(local_layers)
-
-    if local_bboxes:
-        for _bbox in local_bboxes:
-            if bbox is None:
-                bbox = list(_bbox)
-            else:
-                if float(bbox[0]) > float(_bbox[0]):
-                    bbox[0] = float(_bbox[0])
-                if float(bbox[1]) < float(_bbox[1]):
-                    bbox[1] = float(_bbox[1])
-                if float(bbox[2]) > float(_bbox[2]):
-                    bbox[2] = float(_bbox[2])
-                if float(bbox[3]) < float(_bbox[3]):
-                    bbox[3] = float(_bbox[3])
-
-    wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
-    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.0'
-    wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png'
-
-    params = {
-        'service': 'WMS',
-        'version': wms_version,
-        'request': 'GetMap',
-        'layers': layers,
-        'format': wms_format,
-        # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
-    }
-
-    if bbox:
-        _default_thumb_size = getattr(
-            settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
-        params['bbox'] = "%s,%s,%s,%s" % (bbox[0], bbox[2], bbox[1], bbox[3])
-        params['crs'] = 'EPSG:4326'
-        params['width'] = _default_thumb_size['width']
-        params['height'] = _default_thumb_size['height']
-
-    access_token = None
-    username = ogc_server_settings.credentials.username
-    user = get_user_model().objects.filter(username=username).first()
-    if user:
-        access_token = get_or_create_token(user)
-        if access_token and not access_token.is_expired():
-            params['access_token'] = access_token.token
-
-    # Avoid using urllib.urlencode here because it breaks the url.
-    # commas and slashes in values get encoded and then cause trouble
-    # with the WMS parser.
-    _p = "&".join("%s=%s" % item for item in params.items())
-
-    import posixpath
-    thumbnail_remote_url = posixpath.join(
-        ogc_server_settings.PUBLIC_LOCATION,
-        wms_endpoint) + "?" + _p
-    thumbnail_create_url = posixpath.join(
-        ogc_server_settings.LOCATION,
-        wms_endpoint) + "?" + _p
-
-    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
-                     overwrite=overwrite, check_bbox=check_bbox)
-
-
 def delete_orphaned_layers():
     """Delete orphaned layer files."""
     deleted = []
@@ -1189,13 +861,13 @@ def delete_orphaned_layers():
 
     for filename in files:
         if LayerFile.objects.filter(file__icontains=filename).count() == 0:
-            logger.debug("Deleting orphaned layer file " + filename)
+            logger.debug(f"Deleting orphaned layer file {filename}")
             try:
                 storage.delete(os.path.join("layers", filename))
                 deleted.append(filename)
             except NotImplementedError as e:
                 logger.error(
-                    "Failed to delete orphaned layer file '{}': {}".format(filename, e))
+                    f"Failed to delete orphaned layer file '{filename}': {e}")
 
     return deleted
 
@@ -1221,9 +893,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
             resources = Layer.objects.filter(Q(title__in=resources_names) | Q(name__in=resources_names))
         except Layer.DoesNotExist:
             logger.warning(
-                'No resources have been found with these names: %s.' % (
-                    ", ".join(resources_names)
-                )
+                f'No resources have been found with these names: {", ".join(resources_names)}.'
             )
     if not resources:
         logger.warning("No resources have been found. No update operations have been executed.")
@@ -1238,7 +908,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
                     permissions = READ_PERMISSIONS
                 else:
                     permissions = READ_PERMISSIONS + WRITE_PERMISSIONS \
-                                  + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
+                        + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
             elif permissions_name.lower() in ('write', 'w'):
                 if not delete_flag:
                     permissions = READ_PERMISSIONS + WRITE_PERMISSIONS
@@ -1252,7 +922,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
             elif permissions_name.lower() in ('owner', 'o'):
                 if not delete_flag:
                     permissions = READ_PERMISSIONS + WRITE_PERMISSIONS \
-                                  + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
+                        + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
                 else:
                     permissions = OWNER_PERMISSIONS
             if not permissions:
@@ -1275,8 +945,8 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                 users.append(user)
                             except User.DoesNotExist:
                                 logger.warning(
-                                    'The user {} does not exists. '
-                                    'It has been skipped.'.format(username)
+                                    f'The user {username} does not exists. '
+                                    'It has been skipped.'
                                 )
                     # GROUPS
                     groups = []
@@ -1287,8 +957,8 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                 groups.append(group)
                             except Group.DoesNotExist:
                                 logger.warning(
-                                    'The group {} does not exists. '
-                                    'It has been skipped.'.format(group_name)
+                                    f'The group {group_name} does not exists. '
+                                    'It has been skipped.'
                                 )
                     if not users and not groups:
                         logger.error(
@@ -1340,15 +1010,16 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                             perm_spec["users"][_user] = list(u_perms_set)
                                         else:
                                             logger.warning(
-                                                "The user %s does not have "
-                                                "any permission on the layer %s. "
-                                                "It has been skipped." % (_user.username, resource.title)
+                                                f"The user {_user.username} does not have "
+                                                f"any permission on the layer {resource.title}. "
+                                                "It has been skipped."
                                             )
                                     else:
                                         logger.warning(
-                                            "Warning! - The user %s is the layer %s owner, "
+                                            f"Warning! - The user {_user.username} is the "
+                                            f"layer {resource.title} owner, "
                                             "so its permissions can't be changed. "
-                                            "It has been skipped." % (_user.username, resource.title)
+                                            "It has been skipped."
                                         )
                             for g in groups:
                                 _group = g
@@ -1381,8 +1052,9 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                         perm_spec["groups"][g] = list(g_perms_set)
                                     else:
                                         logger.warning(
-                                            "The group %s does not have any permission on the layer %s. "
-                                            "It has been skipped." % (g.name, resource.title)
+                                            f"The group {g.name} does not have any permission "
+                                            f"on the layer {resource.title}. "
+                                            "It has been skipped."
                                         )
                             # Set final permissions
                             resource.set_permissions(perm_spec)
@@ -1401,3 +1073,93 @@ def set_layers_permissions(permissions_name, resources_names=None,
 def get_uuid_handler():
     from django.utils.module_loading import import_string
     return import_string(settings.LAYER_UUID_HANDLER)
+
+
+def gs_append_data_to_layer(layer, base_files, user):
+    gs_layer = gs_catalog.get_layer(layer.name)
+    if gs_layer and gs_layer.type == 'VECTOR':
+        #  opening upload session for the selected layer
+        upload_session, created = UploadSession.objects.get_or_create(resource=layer, user=user)
+        upload_session.resource = layer
+        upload_session.processed = False
+        upload_session.save()
+
+        #  opening Import session for the selected layer
+        import_session = gs_uploader.start_import(
+            import_id=upload_session.id, name=layer.name, target_store=gs_layer.resource.store.name
+        )
+
+        import_session.upload_task(base_files)
+        task = import_session.tasks[0]
+        #  Changing layer name, mode and target
+        task.layer.set_target_layer_name(layer.name)
+        task.set_update_mode("APPEND")
+        task.set_target(store_name=gs_layer.resource.store.name, workspace=gs_layer.resource.workspace.name)
+        #  Starting import process
+        import_session.commit()
+        return upload_session
+
+
+def validate_input_source(layer, filename, files, gtype=None, action_type='replace'):
+    if layer.is_vector() and is_raster(filename):
+        raise Exception(_(
+            f"You are attempting to {action_type} a vector layer with a raster."))
+    elif (not layer.is_vector()) and is_vector(filename):
+        raise Exception(_(
+            f"You are attempting to {action_type} a raster layer with a vector."))
+
+    if layer.is_vector():
+        absolute_base_file = None
+        try:
+            if 'shp' in files and os.path.exists(files['shp']):
+                absolute_base_file = _fixup_base_file(files['shp'])
+            elif 'zip' in files and os.path.exists(files['zip']):
+                absolute_base_file = _fixup_base_file(files['zip'])
+        except Exception:
+            absolute_base_file = None
+
+        if not absolute_base_file or \
+                os.path.splitext(absolute_base_file)[1].lower() != '.shp':
+            raise Exception(
+                _(f"You are attempting to {action_type} a vector layer with an unknown format."))
+        else:
+            try:
+                gtype = layer.gtype if not gtype else gtype
+                inDataSource = ogr.Open(absolute_base_file)
+                lyr = inDataSource.GetLayer(str(layer.name))
+                if not lyr:
+                    raise Exception(
+                        _(f"Please ensure the name is consistent with the file you are trying to {action_type}."))
+                schema_is_compliant = False
+                _ff = json.loads(lyr.GetFeature(0).ExportToJson())
+                if gtype:
+                    logger.warning(
+                        _("Local GeoNode layer has no geometry type."))
+                    if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
+                        schema_is_compliant = True
+                elif "geometry" in _ff and _ff["geometry"]["type"]:
+                    schema_is_compliant = True
+
+                if not schema_is_compliant:
+                    raise Exception(
+                        _(f"Please ensure there is at least one geometry type \
+                            that is consistent with the file you are trying to {action_type}."))
+
+                new_schema_fields = [field.name for field in lyr.schema]
+                gs_layer = gs_catalog.get_layer(layer.name)
+
+                if not gs_layer:
+                    raise Exception(
+                        _("The selected Layer does not exists in the catalog."))
+
+                gs_layer = gs_layer.resource.attributes
+                schema_is_compliant = all([x in gs_layer for x in new_schema_fields])
+
+                if not schema_is_compliant:
+                    raise Exception(
+                        _("Please ensure that the layer structure is consistent "
+                          f"with the file you are trying to {action_type}."))
+                return True
+            except Exception as e:
+                raise Exception(
+                    _(f"Some error occurred while trying to access the uploaded schema: {str(e)}"))

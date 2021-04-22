@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.layers.metadata import parse_metadata
 from .base import GeoNodeLiveTestSupport
 
 import timeout_decorator
@@ -158,7 +159,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
 
             import requests
             from requests.auth import HTTPBasicAuth
-            r = requests.get(url + 'gwc/rest/seed/%s.json' % saved_layer.alternate,
+            r = requests.get(f"{url}gwc/rest/seed/{saved_layer.alternate}.json",
                              auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 200)
             o = json.loads(r.text)
@@ -170,14 +171,14 @@ class NormalUserTest(GeoNodeLiveTestSupport):
                 set_styles,
                 create_gs_thumbnail)
 
-            _log("0. ------------ %s " % saved_layer)
+            _log(f"0. ------------ {saved_layer} ")
             self.assertIsNotNone(saved_layer)
             workspace, name = saved_layer.alternate.split(':')
             self.assertIsNotNone(workspace)
             self.assertIsNotNone(name)
             ws = gs_catalog.get_workspace(workspace)
             self.assertIsNotNone(ws)
-            _log("1. ------------ %s " % saved_layer.store)
+            _log(f"1. ------------ {saved_layer.store} ")
             self.assertIsNotNone(saved_layer.store)
 
             # Save layer attributes
@@ -189,7 +190,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             # set SLD
             sld = saved_layer.default_style.sld_body if saved_layer.default_style else None
             self.assertIsNotNone(sld)
-            _log("2. ------------ %s " % sld)
+            _log(f"2. ------------ {sld} ")
             set_layer_style(saved_layer, saved_layer.alternate, sld)
 
             create_gs_thumbnail(saved_layer, overwrite=True)
@@ -305,24 +306,19 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 if item['file'] in not_expected_layers:
                     continue
                 else:
-                    msg = ('Could not upload file "%s", '
-                           'and it is not in %s' % (
-                               item['file'], not_expected_layers))
+                    msg = (f"Could not upload file '{item['file']}', "
+                           f"and it is not in {not_expected_layers}")
                     assert errors, msg
             else:
-                msg = ('Upload should have returned either "name" or '
-                       '"errors" for file %s.' % item['file'])
+                msg = f"Upload should have returned either \"name\" or \"errors\" for file {item['file']}."
                 assert 'name' in item, msg
                 layers[item['file']] = item['name']
 
-        msg = ('There were %s compatible layers in the directory,'
-               ' but only %s were sucessfully uploaded' %
-               (len(expected_layers), len(layers)))
-        # assert len(layers) == len(expected_layers), msg
+        msg = f'There were {len(expected_layers)} compatible layers in the directory, but only {len(layers)} were sucessfully uploaded'
+        logger.error(msg)
 
         for layer in expected_layers:
-            msg = ('The following file should have been uploaded'
-                   'but was not: %s. ' % layer)
+            msg = f'The following file should have been uploadedbut was not: {layer}. '
             assert layer in layers, msg
 
             layer_name = layers[layer]
@@ -340,7 +336,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     'rest/layers'),
                 username=gs_username,
                 password=gs_password)
-            if page.find('rest/layers/%s.html' % layer_name) > 0:
+            if page.find(f'rest/layers/{layer_name}.html') > 0:
                 found = True
             if not found:
                 msg = (
@@ -381,7 +377,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             gisdata.PROJECT_ROOT,
             'both/good/sangis.org/Airport/Air_Runways.shp')
 
-        self.assertTrue('%s.xml' % thelayer,
+        self.assertTrue(f'{thelayer}.xml',
                         'Expected layer XML metadata to exist')
         try:
             if os.path.exists(thelayer):
@@ -436,14 +432,13 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                                  'Expected specific date from uploaded layer XML metadata')
 
                 # Set
-                from geonode.layers.metadata import set_metadata
                 from geonode.layers.utils import resolve_regions
 
                 thelayer_metadata = os.path.join(
                     gisdata.PROJECT_ROOT,
                     'both/good/sangis.org/Airport/Air_Runways.shp.xml')
 
-                identifier, vals, regions, keywords = set_metadata(
+                identifier, vals, regions, keywords, _ = parse_metadata(
                     open(thelayer_metadata).read())
                 self.assertIsNotNone(regions)
                 uploaded.metadata_xml = thelayer_metadata
@@ -528,14 +523,13 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                                      "Expected specific date from uploaded layer XML metadata")
 
                     # Set
-                    from geonode.layers.metadata import set_metadata
                     from geonode.layers.utils import resolve_regions
 
                     thelayer_metadata = os.path.join(
                         gisdata.PROJECT_ROOT,
                         'both/good/sangis.org/Airport/Air_Runways.shp.xml')
 
-                    identifier, vals, regions, keywords = set_metadata(
+                    identifier, vals, regions, keywords, _ = parse_metadata(
                         open(thelayer_metadata).read())
                     self.assertIsNotNone(regions)
                     uploaded.metadata_xml = thelayer_metadata
@@ -680,10 +674,10 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         uploaded3 = file_upload(thefile, overwrite=False)
         check_layer(uploaded3)
         try:
-            msg = ('Expected %s but got %s' % (uploaded1.name, uploaded2.name))
+            msg = (f'Expected {uploaded1.name} but got {uploaded2.name}')
             assert uploaded1.name == uploaded2.name, msg
-            msg = ('Expected a different name when uploading %s using '
-                   'overwrite=False but got %s' % (thefile, uploaded3.name))
+            msg = (f'Expected a different name when uploading {thefile} using '
+                   f'overwrite=False but got {uploaded3.name}')
             assert uploaded1.name != uploaded3.name, msg
         finally:
             # Clean up and completely delete the layers
@@ -837,12 +831,12 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             overwrite=True)
         try:
             keywords = uploaded.keyword_list()
-            msg = 'No keywords found in layer %s' % uploaded.name
+            msg = f'No keywords found in layer {uploaded.name}'
             assert len(keywords) > 0, msg
             assert 'foo' in uploaded.keyword_list(
-            ), 'Could not find "foo" in %s' % keywords
+            ), f'Could not find "foo" in {keywords}'
             assert 'bar' in uploaded.keyword_list(
-            ), 'Could not find "bar" in %s' % keywords
+            ), f'Could not find "bar" in {keywords}'
         finally:
             # Clean up and completely delete the layers
             uploaded.delete()
@@ -922,9 +916,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             layer_path, __ = os.path.splitext(new_vector_file)
 
             with open(f'{layer_path}.shp', 'rb') as layer_base, \
-                 open(f'{layer_path}.dbf', 'rb') as layer_dbf, \
-                 open(f'{layer_path}.shx', 'rb') as layer_shx, \
-                 open(f'{layer_path}.prj', 'rb') as layer_prj:
+                    open(f'{layer_path}.dbf', 'rb') as layer_dbf, \
+                    open(f'{layer_path}.shx', 'rb') as layer_shx, \
+                    open(f'{layer_path}.prj', 'rb') as layer_prj:
 
                 response = self.client.post(
                     vector_replace_url,
@@ -951,10 +945,10 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     gisdata.VECTOR_DATA,
                     'san_andres_y_providencia_administrative.shp')
                 layer_path, __ = os.path.splitext(new_vector_file)
-                with open(layer_path + '.shp', 'rb') as layer_base, \
-                     open(layer_path + '.dbf', 'rb') as layer_dbf, \
-                     open(layer_path + '.shx', 'rb') as layer_shx, \
-                     open(layer_path + '.prj', 'rb') as layer_prj:
+                with open(f"{layer_path}.shp", 'rb') as layer_base, \
+                        open(f"{layer_path}.dbf", 'rb') as layer_dbf, \
+                        open(f"{layer_path}.shx", 'rb') as layer_shx, \
+                        open(f"{layer_path}.prj", 'rb') as layer_prj:
 
                     response = self.client.post(
                         vector_replace_url,
@@ -1155,7 +1149,7 @@ class LayersStylesApiInteractionTests(
         self.assertTrue('styles' in obj and obj['styles'])
 
         # Test filter layers by id
-        filter_url = self.layer_list_url + '?id=' + str(layer_id)
+        filter_url = f"{self.layer_list_url}?id={str(layer_id)}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         # This is a list url
@@ -1171,7 +1165,7 @@ class LayersStylesApiInteractionTests(
 
         prev_obj = obj
         # Test filter layers by name
-        filter_url = self.layer_list_url + '?name=' + self.layer.name
+        filter_url = f"{self.layer_list_url}?name={self.layer.name}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         # This is a list url
@@ -1185,7 +1179,7 @@ class LayersStylesApiInteractionTests(
     def test_style_interaction(self):
         """Style API interaction check."""
         # filter styles by layer id
-        filter_url = self.style_list_url + '?layer__id=' + str(self.layer.id)
+        filter_url = f"{self.style_list_url}?layer__id={str(self.layer.id)}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         # This is a list url
@@ -1193,7 +1187,7 @@ class LayersStylesApiInteractionTests(
         self.assertEqual(len(objects), 1)
 
         # filter styles by layer name
-        filter_url = self.style_list_url + '?layer__name=' + self.layer.name
+        filter_url = f"{self.style_list_url}?layer__name={self.layer.name}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         # This is a list url
@@ -1244,7 +1238,7 @@ class LayersStylesApiInteractionTests(
                 'resource_name': 'styles'
             }
         )
-        filter_url = style_list_url + '?layer__name=' + self.layer.name
+        filter_url = f"{style_list_url}?layer__name={self.layer.name}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         objects = self.deserialize(resp)['objects']
@@ -1276,7 +1270,7 @@ class LayersStylesApiInteractionTests(
         self.assertIsNotNone(style_body)
 
         # Check styles count
-        filter_url = style_list_url + '?layer__name=' + self.layer.name
+        filter_url = f"{style_list_url}?layer__name={self.layer.name}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         objects = self.deserialize(resp)['objects']

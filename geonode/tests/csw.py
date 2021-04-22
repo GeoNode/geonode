@@ -156,11 +156,11 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         for link in record.references:
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                 if link['scheme'] == 'OGC:WMS':
-                    self.assertEqual(link['url'], "{}ows".format(settings.GEOSERVER_PUBLIC_LOCATION))
+                    self.assertEqual(link['url'], f"{settings.GEOSERVER_PUBLIC_LOCATION}ows")
                 elif link['scheme'] == 'OGC:WFS':
-                    self.assertEqual(link['url'], "{}ows".format(settings.GEOSERVER_PUBLIC_LOCATION))
+                    self.assertEqual(link['url'], f"{settings.GEOSERVER_PUBLIC_LOCATION}ows")
                 elif link['scheme'] == 'OGC:WCS':
-                    self.assertEqual(link['url'], "{}ows".format(settings.GEOSERVER_PUBLIC_LOCATION))
+                    self.assertEqual(link['url'], f"{settings.GEOSERVER_PUBLIC_LOCATION}ows")
 
     def test_csw_outputschema_iso(self):
         """Verify that GeoNode CSW can handle ISO metadata with ISO outputSchema"""
@@ -195,12 +195,12 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                 if link.protocol == 'OGC:WMS':
                     self.assertEqual(
                         link.url,
-                        '{}ows'.format(settings.GEOSERVER_PUBLIC_LOCATION),
+                        f'{settings.GEOSERVER_PUBLIC_LOCATION}ows',
                         'Expected a specific OGC:WMS URL')
                 elif link.protocol == 'OGC:WFS':
                     self.assertEqual(
                         link.url,
-                        '{}wfs'.format(settings.GEOSERVER_PUBLIC_LOCATION),
+                        f'{settings.GEOSERVER_PUBLIC_LOCATION}wfs',
                         'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_dc_bbox(self):
@@ -221,7 +221,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         # test BBOX properties in Dublin Core
         from decimal import Decimal
         logger.debug([Decimal(record.bbox.minx), Decimal(record.bbox.miny),
-                     Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
+                      Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
         self.assertAlmostEqual(Decimal(record.bbox.minx), Decimal('-81.859356'), places=3)
         self.assertAlmostEqual(Decimal(record.bbox.miny), Decimal('12.166532'), places=3)
         self.assertAlmostEqual(Decimal(record.bbox.maxx), Decimal('-81.356409'), places=3)

@@ -282,7 +282,7 @@ class TopicCategoryResource(TypeFilteredResource):
         request = bundle.request
         obj_with_perms = get_objects_for_user(request.user,
                                               'base.view_resourcebase').filter(polymorphic_ctype__model='layer')
-        filter_set = bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id'))
+        filter_set = bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)
 
         if not settings.SKIP_PERMS_FILTER:
             filter_set = get_visible_resources(
@@ -432,7 +432,7 @@ class GroupResource(ModelResource):
         request = bundle.request
         counts = _get_resource_counts(
             request,
-            resourcebase_filter_kwargs={'group': bundle.obj}
+            resourcebase_filter_kwargs={'group': bundle.obj, 'metadata_only': False}
         )
 
         bundle.data.update(resource_counts=counts)
@@ -506,17 +506,20 @@ class ProfileResource(TypeFilteredResource):
     def dehydrate_layers_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').filter(polymorphic_ctype__model='layer')
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)\
+            .distinct().count()
 
     def dehydrate_maps_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').filter(polymorphic_ctype__model='map')
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)\
+            .distinct().count()
 
     def dehydrate_documents_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').filter(polymorphic_ctype__model='document')
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)\
+            .distinct().count()
 
     def dehydrate_avatar_100(self, bundle):
         return avatar_url(bundle.obj, 240)
@@ -534,6 +537,26 @@ class ProfileResource(TypeFilteredResource):
                 'content_type_id': ContentType.objects.get_for_model(
                     bundle.obj).pk,
                 'object_id': bundle.obj.pk})
+
+    def dehydrate(self, bundle):
+        """
+        Protects user's personal information from non staff
+        """
+        is_owner = bundle.request.user == bundle.obj
+        is_admin = bundle.request.user.is_staff or bundle.request.user.is_superuser
+        if not (is_owner or is_admin):
+            bundle.data = dict(
+                id=bundle.data.get('id', ''),
+                username=bundle.data.get('username', ''),
+                first_name=bundle.data.get('first_name', ''),
+                last_name=bundle.data.get('last_name', ''),
+                avatar_100=bundle.data.get('avatar_100', ''),
+                profile_detail_url=bundle.data.get('profile_detail_url', ''),
+                documents_count=bundle.data.get('documents_count', 0),
+                maps_count=bundle.data.get('maps_count', 0),
+                layers_count=bundle.data.get('layers_count', 0),
+            )
+        return bundle
 
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
@@ -580,6 +603,16 @@ class OwnersResource(TypeFilteredResource):
         if bundle.request.user.is_superuser:
             email = bundle.obj.email
         return email
+
+    def dehydrate(self, bundle):
+        """
+        Protects user's personal information from non staff
+        """
+        is_owner = bundle.request.user == bundle.obj
+        is_admin = bundle.request.user.is_staff or bundle.request.user.is_superuser
+        if not (is_owner or is_admin):
+            bundle.data = dict(id=bundle.obj.id, username=bundle.obj)
+        return bundle
 
     def serialize(self, request, data, format, options=None):
         if options is None:

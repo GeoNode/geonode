@@ -43,7 +43,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.core.files.storage import default_storage as storage
-
+from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image, ImageOps
@@ -126,8 +126,7 @@ class ContactRole(models.Model):
                 # only allow this if we are updating the same contact
                 if self.contact != contacts.get():
                     raise ValidationError(
-                        'There can be only one %s for a given resource' %
-                        self.role)
+                        f'There can be only one {self.role} for a given resource')
         if self.contact is None:
             # verify that any unbound contact is only associated to one
             # resource
@@ -184,7 +183,7 @@ class SpatialRepresentationType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __str__(self):
-        return "{0}".format(self.gn_description)
+        return str(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -231,7 +230,7 @@ class Region(MPTTModel):
         default='EPSG:4326')
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return str(self.name)
 
     @property
     def bbox(self):
@@ -280,7 +279,7 @@ class RestrictionCodeType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __str__(self):
-        return "{0}".format(self.gn_description)
+        return str(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -296,14 +295,14 @@ class License(models.Model):
     license_text = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return str(self.name)
 
     @property
     def name_long(self):
         if self.abbreviation is None or len(self.abbreviation) == 0:
             return self.name
         else:
-            return self.name + " (" + self.abbreviation + ")"
+            return f"{self.name} ({self.abbreviation})"
 
     @property
     def description_bullets(self):
@@ -313,7 +312,7 @@ class License(models.Model):
             bullets = []
             lines = self.description.split("\n")
             for line in lines:
-                bullets.append("+ " + line)
+                bullets.append(f"+ {line}")
             return bullets
 
     class Meta:
@@ -419,10 +418,10 @@ class TaggedContentItem(ItemBase):
     def tags_for(cls, model, instance=None):
         if instance is not None:
             return cls.tag_model().objects.filter(**{
-                '%s__content_object' % cls.tag_relname(): instance
+                f'{cls.tag_relname()}__content_object': instance
             })
         return cls.tag_model().objects.filter(**{
-            '%s__content_object__isnull' % cls.tag_relname(): False
+            f'{cls.tag_relname()}__content_object__isnull': False
         }).distinct()
 
 
@@ -483,9 +482,10 @@ class Thesaurus(models.Model):
     card_min = models.IntegerField(default=0)
     card_max = models.IntegerField(default=-1)
     facet = models.BooleanField(default=True)
+    order = models.IntegerField(null=False, default=0)
 
     def __str__(self):
-        return "{0}".format(self.identifier)
+        return str(self.identifier)
 
     class Meta:
         ordering = ("identifier",)
@@ -506,7 +506,7 @@ class ThesaurusKeywordLabel(models.Model):
     keyword = models.ForeignKey('ThesaurusKeyword', related_name='keyword', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{0}".format(self.label)
+        return str(self.label)
 
     class Meta:
         ordering = ("keyword", "lang")
@@ -530,7 +530,7 @@ class ThesaurusKeyword(models.Model):
     thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{0}".format(self.alt_label)
+        return str(self.alt_label)
 
     @property
     def labels(self):
@@ -554,7 +554,7 @@ class ThesaurusLabel(models.Model):
     thesaurus = models.ForeignKey('Thesaurus', related_name='rel_thesaurus', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{0}".format(self.label)
+        return str(self.label)
 
     class Meta:
         ordering = ("lang",)
@@ -891,6 +891,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True)
 
+    metadata_only = models.BooleanField(
+        _("Metadata"),
+        default=False,
+        help_text=_('If true, will be excluded from search'))
+
     __is_approved = False
     __is_published = False
 
@@ -916,7 +921,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         super(ResourceBase, self).__init__(*args, **kwargs)
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return str(self.title)
 
     def _remove_html_tags(self, attribute_str):
         _attribute_str = attribute_str
@@ -928,7 +933,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if attribute_str:
                 _attribute_str = html.unescape(
                     attribute_str.replace('\n', ' ').replace('\r', '').strip())
-        return _attribute_str
+        return strip_tags(_attribute_str)
 
     @property
     def raw_abstract(self):
@@ -955,14 +960,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Send a notification when a resource is created or updated
         """
         if not self.resource_type and self.polymorphic_ctype and \
-        self.polymorphic_ctype.model:
+                self.polymorphic_ctype.model:
             self.resource_type = self.polymorphic_ctype.model.lower()
 
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and self.title:
                 # Resource Created
 
-                notice_type_label = '%s_created' % self.class_name.lower()
+                notice_type_label = f'{self.class_name.lower()}_created'
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
             elif self.pk:
@@ -976,7 +981,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     self.set_workflow_perms(approved=True)
 
                     # Send "approved" notification
-                    notice_type_label = '%s_approved' % self.class_name.lower()
+                    notice_type_label = f'{self.class_name.lower()}_approved'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
                     _notification_sent = True
@@ -988,14 +993,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     self.set_workflow_perms(published=True)
 
                     # Send "published" notification
-                    notice_type_label = '%s_published' % self.class_name.lower()
+                    notice_type_label = f'{self.class_name.lower()}_published'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
                     _notification_sent = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
-                    notice_type_label = '%s_updated' % self.class_name.lower()
+                    notice_type_label = f'{self.class_name.lower()}_updated'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
@@ -1008,7 +1013,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Send a notification when a layer, map or document is deleted
         """
         if hasattr(self, 'class_name') and notify:
-            notice_type_label = '%s_deleted' % self.class_name.lower()
+            notice_type_label = f'{self.class_name.lower()}_deleted'
             recipients = get_notification_recipients(notice_type_label, resource=self)
             send_notification(recipients, notice_type_label, {'resource': self})
 
@@ -1024,6 +1029,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def creator(self):
         return self.owner.get_full_name() or self.owner.username
+
+    @property
+    def perms(self):
+        return []
 
     @property
     def organizationname(self):
@@ -1062,7 +1071,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', self.srid)
             srid = int(match.group('srid')) if match else 4326
             bbox = BBOXHelper(self.bbox_polygon.extent)
-            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
+            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, f"EPSG:{srid}"]
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1082,11 +1091,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.bbox_polygon:
             bbox = BBOXHelper.from_xy(self.ll_bbox[:4])
 
-            return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
-                x0=bbox.xmin,
-                y0=bbox.ymin,
-                x1=bbox.xmax,
-                y1=bbox.ymax)
+            return f"{bbox.xmin:.7f},{bbox.ymin:.7f},{bbox.xmax:.7f},{bbox.ymax:.7f}"
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1097,11 +1102,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.bbox_polygon:
             bbox = BBOXHelper.from_xy(self.bbox[:4])
 
-            return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
-                x0=bbox.xmin,
-                y0=bbox.ymin,
-                x1=bbox.xmax,
-                y1=bbox.ymax)
+            return f"{bbox.xmin:.7f},{bbox.ymin:.7f},{bbox.xmax:.7f},{bbox.ymax:.7f}"
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1161,7 +1162,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.license.name is not None and (len(self.license.name) > 0):
             a.append(self.license.name)
         if self.license.url is not None and (len(self.license.url) > 0):
-            a.append("(" + self.license.url + ")")
+            a.append(f"({self.license.url})")
         return " ".join(a)
 
     @property
@@ -1169,12 +1170,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         a = []
         if self.license.name_long is not None and (
                 len(self.license.name_long) > 0):
-            a.append(self.license.name_long + ":")
+            a.append(f"{self.license.name_long}:")
         if self.license.description is not None and (
                 len(self.license.description) > 0):
             a.append(self.license.description)
         if self.license.url is not None and (len(self.license.url) > 0):
-            a.append("(" + self.license.url + ")")
+            a.append(f"({self.license.url})")
         return " ".join(a)
 
     @property
@@ -1205,7 +1206,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     if not field.identifier:
                         continue
                 filled_fields.append(field)
-        return '{}%'.format(len(filled_fields) * 100 / len(required_fields))
+        return f'{len(filled_fields) * 100 / len(required_fields)}%'
 
     @property
     def instance_is_processed(self):
@@ -1237,14 +1238,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 return None
 
     def set_dirty_state(self):
-        if not self.dirty_state:
-            self.dirty_state = True
-            self.save()
+        self.dirty_state = True
+        ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
 
     def clear_dirty_state(self):
-        if self.dirty_state:
-            self.dirty_state = False
-            self.save()
+        self.dirty_state = False
+        ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
+
+    @property
+    def processed(self):
+        return not self.dirty_state
 
     @property
     def keyword_csv(self):
@@ -1265,18 +1268,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             [xmin, ymin, xmax, ymax]
         :param srid: srid as string (e.g. 'EPSG:4326' or '4326')
         """
-        try:
+        bbox_polygon = Polygon.from_bbox(bbox)
+        self.bbox_polygon = bbox_polygon.clone()
+        self.srid = srid
+        if srid == 4326:
+            self.ll_bbox_polygon = bbox_polygon
+        else:
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-            bbox_polygon = Polygon.from_bbox(bbox)
             bbox_polygon.srid = int(match.group('srid')) if match else 4326
-            self.bbox_polygon = bbox_polygon
-            self.srid = srid
-            if srid == 4326:
-                self.ll_bbox_polygon = bbox_polygon
-            else:
+            try:
                 self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
-        except AttributeError:
-            logger.warning("No srid found for layer %s bounding box", self)
+            except Exception as e:
+                logger.error(e)
+                self.ll_bbox_polygon = bbox_polygon
 
     def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
         """
@@ -1342,12 +1346,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         if not bbox or len(bbox) < 4:
             raise ValidationError(
-                'Bounding Box cannot be empty %s for a given resource' %
-                self.name)
+                f'Bounding Box cannot be empty {self.name} for a given resource')
         if not srid:
             raise ValidationError(
-                'Projection cannot be empty %s for a given resource' %
-                self.name)
+                f'Projection cannot be empty {self.name} for a given resource')
 
         self.srid = srid
         self.set_bbox_polygon(
@@ -1386,9 +1388,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 links.append((self.title, link.name, link.link_type, link.url))
             else:
                 _link_type = 'WWW:DOWNLOAD-1.0-http--download'
-                if self.storeType == 'remoteStore' and link.extension in ('html'):
-                    _link_type = 'WWW:DOWNLOAD-%s' % self.remote_service.type
-                description = '%s (%s Format)' % (self.title, link.name)
+                try:
+                    _store_type = getattr(self.get_real_instance(), 'storeType', None)
+                    if _store_type and _store_type == 'remoteStore' and link.extension in ('html'):
+                        _remote_service = getattr(self.get_real_instance(), '_remote_service', None)
+                        if _remote_service:
+                            _link_type = f'WWW:DOWNLOAD-{_remote_service.type}'
+                except Exception as e:
+                    logger.exception(e)
+                description = f'{self.title} ({link.name} Format)'
                 links.append(
                     (self.title,
                      description,
@@ -1507,7 +1515,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                             storage.path(_upload_path)
                         )
                     except Exception as e:
-                        logger.debug(e)
+                        logger.exception(e)
 
                 try:
                     # Optimize the Thumbnail size and resolution
@@ -1518,9 +1526,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         (_default_thumb_size['width'], _default_thumb_size['height']),
                         resample=Image.ANTIALIAS)
                     cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
-                    cover.save(storage.path(_upload_path), format='JPEG')
+                    cover.save(storage.path(_upload_path), format='PNG')
                 except Exception as e:
-                    logger.debug(e)
+                    logger.exception(e)
 
                 # check whether it is an URI or not
                 parsed = urlsplit(url)
@@ -1551,10 +1559,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     thumbnail_url=url
                 )
         except Exception as e:
-            logger.debug(
-                'Error when generating the thumbnail for resource %s. (%s)' %
-                (self.id, str(e)))
-            logger.warn('Check permissions for file %s.' % upload_path)
+            logger.error(
+                f'Error when generating the thumbnail for resource {self.id}. ({e})'
+            )
+            logger.error(f'Check permissions for file {upload_path}.')
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
                 _thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
@@ -1575,9 +1583,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     thumbnail_url=_thumbnail_url
                 )
             except Exception as e:
-                logger.debug(
-                    'Error when generating the thumbnail for resource %s. (%s)' %
-                    (self.id, str(e)))
+                logger.error(
+                    f'Error when generating the thumbnail for resource {self.id}. ({e})'
+                )
 
     def set_missing_info(self):
         """Set default permissions and point of contacts.
@@ -1734,7 +1742,7 @@ class Link(models.Model):
     objects = LinkManager()
 
     def __str__(self):
-        return "{0} link".format(self.link_type)
+        return f"{self.link_type} link"
 
 
 class MenuPlaceholder(models.Model):
@@ -1746,7 +1754,7 @@ class MenuPlaceholder(models.Model):
     )
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return str(self.name)
 
 
 class Menu(models.Model):
@@ -1765,7 +1773,7 @@ class Menu(models.Model):
     )
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return str(self.title)
 
     class Meta:
         unique_together = (
@@ -1818,7 +1826,7 @@ class MenuItem(models.Model):
         return hash(self.url)
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return str(self.title)
 
     class Meta:
         unique_together = (

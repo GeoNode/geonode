@@ -90,8 +90,7 @@ class Map(ResourceBase, GXPMapBase):
     # Full URL for featured map view, ie http://domain/someview
 
     def __str__(self):
-        return '%s by %s' % (
-            self.title, (self.owner.username if self.owner else "<Anonymous>"))
+        return f'{self.title} by {(self.owner.username if self.owner else "<Anonymous>")}'
 
     @property
     def center(self):
@@ -131,17 +130,17 @@ class Map(ResourceBase, GXPMapBase):
 
         # the readme text will appear in a README file in the zip
         readme = (
-            "Title: %s\n" +
-            "Author: %s\n" +
-            "Abstract: %s\n"
-        ) % (self.title, self.poc, self.abstract)
+            f"Title: {self.title}\n" +
+            f"Author: {self.poc}\n" +
+            f"Abstract: {self.abstract}\n"
+        )
         if self.license:
-            readme += "License: %s" % self.license
+            readme += f"License: {self.license}"
             if self.license.url:
-                readme += " (%s)" % self.license.url
+                readme += f" ({self.license.url})"
             readme += "\n"
         if self.constraints_other:
-            readme += "Additional constraints: %s\n" % self.constraints_other
+            readme += f"Additional constraints: {self.constraints_other}\n"
 
         def layer_json(lyr):
             return {
@@ -294,8 +293,7 @@ class Map(ResourceBase, GXPMapBase):
                     layer = Layer.objects.get(alternate=layer)
                 except ObjectDoesNotExist:
                     raise Exception(
-                        'Could not find layer with name %s' %
-                        layer)
+                        f'Could not find layer with name {layer}')
 
             if not user.has_perm(
                     'base.view_resourcebase',
@@ -359,7 +357,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
-            lg_name = '%s_%d' % (slugify(self.title), self.id)
+            lg_name = f'{slugify(self.title)}_{self.id}'
             try:
                 return {
                     'catalog': gs_catalog.get_layergroup(lg_name),
@@ -405,7 +403,7 @@ class Map(ResourceBase, GXPMapBase):
 
         # Group layer bounds and name
         lg_bounds = [str(coord) for coord in self.bbox]
-        lg_name = '%s_%d' % (slugify(self.title), self.id)
+        lg_name = f'{slugify(self.title)}_{self.id}'
 
         # Update existing or add new group layer
         lg = self.layer_group
@@ -573,19 +571,41 @@ class MapLayer(models.Model, GXPLayerBase):
                         store=self.store, alternate=self.name)
                 else:
                     layer = Layer.objects.get(alternate=self.name)
-                link = "<a href=\"%s\">%s</a>" % (
-                    layer.get_absolute_url(), layer.title)
+                link = f"<a href=\"{layer.get_absolute_url()}\">{layer.title}</a>"
         except Exception:
             link = None
         if link is None:
-            link = "<span>%s</span> " % self.name
+            link = f"<span>{self.name}</span> "
         return link
+
+    @property
+    def get_legend(self):
+        try:
+            layer_params = json.loads(self.layer_params)
+
+            capability = layer_params.get('capability', {})
+            style_name = capability.get('style')
+            if style_name:
+                if ':' in style_name:
+                    style_name = style_name.split(':')[1]
+                href = Layer.objects.filter(title=self.layer_title).first().get_legend_url(style_name=style_name)
+                return {style_name: href}
+            else:
+                # use the default style on layer
+                layer_obj = Layer.objects.filter(alternate=self.name).first()
+                if layer_obj:
+                    default_style_name = layer_obj.default_style.name
+                    legend_url = layer_obj.get_legend_url(style_name=default_style_name)
+                    return {default_style_name: legend_url}
+        except Exception as e:
+            logger.exception(e)
+            return None
 
     class Meta:
         ordering = ["stack_order"]
 
     def __str__(self):
-        return '%s?layers=%s' % (self.ows_url, self.name)
+        return f'{self.ows_url}?layers={self.name}'
 
 
 def pre_delete_map(instance, sender, **kwrargs):

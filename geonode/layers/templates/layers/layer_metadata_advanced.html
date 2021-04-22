@@ -7,7 +7,7 @@
 
 {% block title %}{{ layer.title }} — {{ block.super }}{% endblock %}
 
-{% block body_class %}{% trans "data" %}{% endblock %}
+{% block body_class %}data{% endblock %}
 
 {% block body_outer %}
 
@@ -36,8 +36,10 @@
         Editing details for {{ layer_title }}
       {% endblocktrans %}
     </p>
-
+    {% block advanced_edit_form %}
     <form id="metadata_update" class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="POST">
+
+      {% block metadata_uploaded_check %}
       {% if layer.metadata_uploaded_preserve %}
         <p class="bg-warning">{% blocktrans %}Note: this layer's orginal metadata was populated and preserved by importing a metadata XML file.
           This metadata cannot be edited.{% endblocktrans %}</p>
@@ -46,9 +48,11 @@
           GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.
           Some of your original metadata may have been lost.{% endblocktrans %}</p>
       {% endif %}
+      {% endblock metadata_uploaded_check %}
 
+      {% block layer_form_errors %}
       {% if layer_form.errors or attribute_form.errors or category_form.errors or author_form.errors or poc.errors %}
-    	  <p class="bg-danger">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}</p>
+    	    <p class="bg-danger">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}</p>
           <ul class="bg-danger">
           {% if author_form.errors %}
             <li>{% trans "Metadata Author" %}</li>
@@ -76,6 +80,7 @@
           {% endif %}
           </ul>
         {% endif %}
+      {% endblock layer_form_errors %}
 
         {% if not layer.metadata_uploaded_preserve %}
         <div class="form-actions">
@@ -88,20 +93,37 @@
         <!-- Added in the thesuarus field here since saving the form without it causes the thesuarus keywords to be removed. 
              Unfortunately this needs to appear at the bottom of the form since tkeywords_form is a complete other django form. 
              There might be a better way to solve this. -->
-        <div class="col-md-6 form-controls">
+        <div class="col-md-12 form-controls">
+          {% block layer_fields %}
           {% for field in layer_form %}
-            {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' %}
-            <div>
-              <span><label for="{{ field.id }}">{{ field.label }}</label></span>
-              {{ field }}
+            {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' and field.name not in ADVANCED_EDIT_EXCLUDE_FIELD  %}
+            <div class="form_item_spacing">
+              <div {% if field.name in UI_MANDATORY_FIELDS %} id='adv_req' {% else %}{% endif %} >
+                <span><label for="{{ field.id }}">{{ field.label }}</label></span>
+                {{ field }}
+                </div>
             </div>
             {% endif %}
           {% endfor %}
+          {% endblock layer_fields %}
+
+
+          {% block thesauri %}
           {# layer_form|as_bootstrap #}
           {% if THESAURI_FILTERS %}
-            {{ tkeywords_form }}
+            {% for field in tkeywords_form %}
+            <div class="form_item_spacing thesauri_keywords" id="tadv_req">
+              <p>
+              <label for="{{ field.thesaurus_id }}">{{ field.label }}</label>
+              {{ field }}
+              </p>
+            </div>
+            {% endfor %}
           {% endif %}
+          {% endblock thesauri %}
         </div>
+
+        {% block category %}
         <div class="row">
           <div class="col-md-12">
             <label class="control-label required-field">{% trans "Category" %}</label>
@@ -109,10 +131,10 @@
               {% autoescape off %}
               {% for choice in category_form.category_choice_field.field.choices %}
               <div class="col-md-6">
-                <label class="fancy-checkbox">
+                <label class="fancy-checkbox form_item_spacing">
                     <input type="radio" name="category_choice_field" value="{{ choice.0 }}"
                       {% ifequal category_form.initial choice.0 %} checked="checked" {% endifequal %} />
-                    {{ choice.1 }}
+                      {{ choice.1 }}
                 </label>
               </div>
               <!-- div class="radio col-md-6">
@@ -125,7 +147,11 @@
               {% endautoescape %}
             </fieldset>
           </div>
+          {% endblock category %}
 
+          {% block other_tab %}{% endblock other_tab %}
+
+          {% block attributes %}
           <div class="col-md-12 grid-spacer">
             <h5>{% trans "Attributes" %}</h5>
             <label>{% trans "Use a custom template?" %}</label>
@@ -161,31 +187,42 @@
                 {% endfor %}
                 </table>
             </div>
+            {% endblock attributes %}
+
+            {% block layer_custom_template %}
             <div id="layer-attributes-custom_template"
                   {% if not resource.use_featureinfo_custom_template %}style="visibility: collapse;" {% endif %}>
                 {{layer_form.featureinfo_custom_template}}
             </div>
+            {% endblock layer_custom_template %}
 
+            {% block point_of_contact %}
             <fieldset class="form-controls modal-forms modal hide fade" id="poc_form" >
               <h2>{% trans "Point of Contact" %}</h2>
               {{ poc_form|as_bootstrap }}
               <button type='button' class="modal-cloose-btn btn btn-primary">{% trans "Done" %}</button>
             </fieldset>
+            {% endblock point_of_contact %}
+            {% block metadata_provider %}
             <fieldset class="form-controls modal-forms modal hide fade" id="metadata_form">
               <h2>{% trans "Metadata Provider" %}</h2>
                 {{ author_form|as_bootstrap }}
               <button type='button' class="modal-cloose-btn btn btn-primary">{% trans "Done" %}</button>
             </fieldset>
+            {% endblock metadata_provider %}
 
             {% if not layer.metadata_uploaded_preserve %}
+            {% block form_actions %}
             <div class="form-actions">
               <a href="{% url 'layer_detail' layername=resource.alternate %}" class="btn btn-primary">{% trans "Return to Layer" %}</a>
               <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
             </div>
+            {% endblock form_actions %}
             {% endif %}
           </div>
         </div>
       </form>
+      {% endblock advanced_edit_form %}
   </div>
 </div>
 

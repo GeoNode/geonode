@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,9 +116,6 @@ msgstr ""
 msgid "No information provided"
 msgstr ""
 
-msgid "Category"
-msgstr ""
-
 msgid "Category is required."
 msgstr ""
 
@@ -176,6 +173,9 @@ msgid "Regions"
 msgstr ""
 
 msgid "Group"
+msgstr ""
+
+msgid "Category"
 msgstr ""
 
 msgid "License"
@@ -392,6 +392,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr ""
 
+msgid "Metadata"
+msgstr ""
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr ""
 
@@ -598,30 +604,6 @@ msgstr ""
 msgid "GeoNode Client Library"
 msgstr ""
 
-msgid "Explore Maps"
-msgstr ""
-
-msgid "Edit Map"
-msgstr ""
-
-msgid "Update"
-msgstr ""
-
-msgid "Create a New Map"
-msgstr ""
-
-msgid "Available layers"
-msgstr ""
-
-msgid "Save"
-msgstr ""
-
-msgid "Save Map"
-msgstr ""
-
-msgid "Close"
-msgstr ""
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -642,7 +624,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -686,7 +668,7 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
+msgid "Geoscientific Information"
 msgstr ""
 
 msgid ""
@@ -703,10 +685,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -717,7 +702,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -738,7 +723,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -786,7 +771,7 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-msgid "Utilities"
+msgid "Utilities Communication"
 msgstr ""
 
 msgid "Document Created"
@@ -927,9 +912,6 @@ msgstr ""
 msgid "Request change"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Wizard"
 msgstr ""
 
@@ -945,6 +927,9 @@ msgid "Replace"
 msgstr ""
 
 msgid "Remove"
+msgstr ""
+
+msgid "Close"
 msgstr ""
 
 msgid "Download Metadata"
@@ -1014,6 +999,9 @@ msgstr ""
 msgid "<< Back"
 msgstr ""
 
+msgid "Update"
+msgstr ""
+
 msgid "Next >>"
 msgstr ""
 
@@ -1024,6 +1012,9 @@ msgid "Edit Metadata"
 msgstr ""
 
 msgid "Editing details for"
+msgstr ""
+
+msgid "Return to Document"
 msgstr ""
 
 msgid "Deleting"
@@ -1118,13 +1109,10 @@ msgstr ""
 msgid "Responsible and Permissions"
 msgstr ""
 
-msgid "Message box"
-msgstr ""
-
-msgid "OK"
-msgstr ""
-
 msgid "Publishing"
+msgstr ""
+
+msgid "You are not allowed to view this document."
 msgstr ""
 
 msgid "You are not permitted to delete this document"
@@ -1146,9 +1134,6 @@ msgid "Not allowed"
 msgstr ""
 
 msgid "Not found"
-msgstr ""
-
-msgid "You are not allowed to view this document."
 msgstr ""
 
 msgid "You must set a point of contact for this resource"
@@ -1381,6 +1366,9 @@ msgid "Add Attribute"
 msgstr ""
 
 msgid "Create"
+msgstr ""
+
+msgid "No title provided"
 msgstr ""
 
 msgid "No abstract provided"
@@ -1653,16 +1641,19 @@ msgstr ""
 msgid "Edit Group Category"
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+msgid "Save"
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
+msgstr ""
+
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 msgid "E-mail"
@@ -1898,6 +1889,21 @@ msgstr ""
 msgid "date when attribute statistics were last updated"
 msgstr ""
 
+msgid "Append to Layer"
+msgstr ""
+
+msgid "layers append"
+msgstr ""
+
+msgid "Return to Layer"
+msgstr ""
+
+msgid "Preserve Metadata XML"
+msgstr ""
+
+msgid "Select the charset or leave default"
+msgstr ""
+
 msgid "Home"
 msgstr ""
 
@@ -2046,6 +2052,9 @@ msgid_plural "Layers"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr ""
 
@@ -2182,9 +2191,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -2204,6 +2210,12 @@ msgstr ""
 msgid "Visible"
 msgstr ""
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 msgid "Upload Layer Metadata"
 msgstr ""
 
@@ -2211,27 +2223,6 @@ msgid "layers upload"
 msgstr ""
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
-msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr ""
-
-msgid "You have the following incomplete uploads"
-msgstr ""
-
-msgid "last updated on"
-msgstr ""
-
-msgid "Resume"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
-msgid "Are you sure you want to delete this upload?"
-msgstr ""
-
-msgid "Delete, and don't ask me again."
 msgstr ""
 
 msgid "Remove Layers"
@@ -2246,12 +2237,6 @@ msgid ""
 msgstr ""
 
 msgid "Replace Layer"
-msgstr ""
-
-msgid "Preserve Metadata XML"
-msgstr ""
-
-msgid "Select the charset or leave default"
 msgstr ""
 
 msgid "Manage Styles"
@@ -2294,10 +2279,43 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
+msgid "Required Metadata"
+msgstr ""
+
 msgid "Dataset Attributes"
 msgstr ""
 
 msgid "Upload Layer"
+msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr ""
+
+msgid "You have the following incomplete uploads"
+msgstr ""
+
+msgid "Resume"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr ""
+
+msgid "Delete incomplete upload"
+msgstr ""
+
+msgid "Are you sure you want to remove this incomplete upload?"
 msgstr ""
 
 msgid "Upload Layer Step: Set SRS"
@@ -2711,31 +2729,47 @@ msgstr ""
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector layer with a raster."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a raster layer with a vector."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -2766,7 +2800,10 @@ msgstr ""
 msgid "Failed to upload the layer"
 msgstr ""
 
-msgid "Unable to delete layer"
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
+
+msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
 msgid ""
@@ -2774,7 +2811,8 @@ msgid ""
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
+#, python-format
+msgid "couldn't generate thumbnail: %s"
 msgstr ""
 
 msgid "Map Created"
@@ -2899,6 +2937,9 @@ msgstr ""
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr ""
 
+msgid "Create a New Map"
+msgstr ""
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -2943,6 +2984,12 @@ msgstr ""
 msgid "Download Failed"
 msgstr ""
 
+msgid "Edit Map"
+msgstr ""
+
+msgid "Explore Maps"
+msgstr ""
+
 msgid "maps explore"
 msgstr ""
 
@@ -2952,6 +2999,9 @@ msgid ""
 "        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
+msgstr ""
+
+msgid "Return to Map"
 msgstr ""
 
 msgid "Remove Map"
@@ -2983,9 +3033,6 @@ msgstr ""
 msgid "You are not allowed to view this map."
 msgstr ""
 
-msgid "Thumbnail saved"
-msgstr ""
-
 msgid "error saving thumbnail"
 msgstr ""
 
@@ -3001,7 +3048,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 msgid "Enter valid email addresses."
@@ -3064,7 +3111,8 @@ msgstr ""
 msgid "Show data for specific label"
 msgstr ""
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3207,7 +3255,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -3506,7 +3555,8 @@ msgstr ""
 msgid "Explore People"
 msgstr ""
 
-msgid "Your username for "
+#, python-brace-format
+msgid "Your username for {site.name}"
 msgstr ""
 
 msgid "Your username has been emailed to you."
@@ -3755,7 +3805,8 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-msgid "Resource {} is being processed"
+#, python-brace-format
+msgid "Resource {resource_id} is being processed"
 msgstr ""
 
 msgid "Service rescanned successfully"
@@ -3767,7 +3818,8 @@ msgstr ""
 msgid "You are not permitted to remove this service."
 msgstr ""
 
-msgid "Service {} has been deleted"
+#, python-brace-format
+msgid "Service {service.name} has been deleted"
 msgstr ""
 
 msgid "created"
@@ -3986,6 +4038,12 @@ msgid "Save Geo Limits"
 msgstr ""
 
 msgid "Delete Geo Limits"
+msgstr ""
+
+msgid "Message box"
+msgstr ""
+
+msgid "OK"
 msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
@@ -4873,19 +4931,10 @@ msgstr ""
 msgid "Updating Metadata..."
 msgstr ""
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
 msgid "Group is mandatory and cannot be empty!"
-msgstr ""
-
-msgid "Return to Document"
-msgstr ""
-
-msgid "Return to Map"
 msgstr ""
 
 msgid "Identification"
@@ -4943,6 +4992,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 msgid "Request perission"
@@ -5235,12 +5287,6 @@ msgstr ""
 msgid "Date ends before:"
 msgstr ""
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr ""
-
 msgid "Search by region"
 msgstr ""
 
@@ -5287,9 +5333,6 @@ msgid "Z - A"
 msgstr ""
 
 msgid "Most popular"
-msgstr ""
-
-msgid "Thesaurus"
 msgstr ""
 
 msgid "Text"
@@ -5417,6 +5460,9 @@ msgstr ""
 msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
+msgid "Empty content"
+msgstr ""
+
 msgid "Could not access to uploaded data."
 msgstr ""
 
@@ -5434,6 +5480,19 @@ msgid "Layer already exists"
 msgstr ""
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -5478,20 +5537,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 msgid "Could not find any valid Time Regex for the Mosaic files."

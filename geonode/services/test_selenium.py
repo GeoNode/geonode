@@ -26,7 +26,7 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
             cls.cookie = cls.client.cookies['sessionid']
             cls.selenium = webdriver.Firefox()
             cls.selenium.implicitly_wait(10)
-            cls.selenium.get(cls.live_server_url + '/')
+            cls.selenium.get(f"{cls.live_server_url}/")
             cls.selenium.add_cookie({'name': 'sessionid', 'value': cls.cookie.value, 'secure': False, 'path': '/'})
             cls.selenium.refresh()
             reg_url = reverse('register_service')

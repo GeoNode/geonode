@@ -160,6 +160,7 @@ urlpatterns += [
                 namespace='oauth2_provider')),
 
     # Api Views
+
     url(r'^api/o/v4/tokeninfo',
         verify_token, name='tokeninfo'),
     url(r'^api/o/v4/userinfo',
@@ -227,7 +228,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     ]
 
 if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:
-    notifications_urls = '{}.urls'.format(settings.NOTIFICATIONS_MODULE)
+    notifications_urls = f'{settings.NOTIFICATIONS_MODULE}.urls'
     urlpatterns += [  # '',
         url(r'^notifications/', include(notifications_urls)),
     ]

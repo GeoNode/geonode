@@ -31,7 +31,7 @@ js_info_dict = {
 }
 
 documents_list = register_url_event()(TemplateView.as_view(
-        template_name='documents/document_list.html'))
+    template_name='documents/document_list.html'))
 
 urlpatterns = [  # 'geonode.documents.views',
     url(r'^$',
@@ -43,6 +43,8 @@ urlpatterns = [  # 'geonode.documents.views',
         views.document_detail, name='document_detail'),
     url(r'^(?P<docid>\d+)/download/?$',
         views.document_download, name='document_download'),
+    url(r'^(?P<docid>\d+)/link/?$',
+        views.document_link, name='document_link'),
     url(r'^(?P<docid>\d+)/replace$', login_required(DocumentUpdateView.as_view()),
         name="document_replace"),
     url(r'^(?P<docid>\d+)/remove$',

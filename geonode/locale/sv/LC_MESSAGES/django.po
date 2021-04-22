@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swedish (http://www.transifex.com/geonode/geonode/language/"
@@ -148,9 +148,6 @@ msgstr "data uppdateras var tredje månad"
 msgid "No information provided"
 msgstr "Ingen information tillgänglig"
 
-msgid "Category"
-msgstr "Kategori"
-
 msgid "Category is required."
 msgstr "Kategori krävs."
 
@@ -221,6 +218,9 @@ msgstr "Regioner"
 #| msgid "Groups"
 msgid "Group"
 msgstr "Grupper"
+
+msgid "Category"
+msgstr "Kategori"
 
 msgid "License"
 msgstr "Licens"
@@ -471,6 +471,12 @@ msgstr ""
 #| msgid "Resources"
 msgid "Resource Type"
 msgstr "Källor"
+
+msgid "Metadata"
+msgstr ""
+
+msgid "If true, will be excluded from search"
+msgstr ""
 
 msgid "For example \"kml\""
 msgstr "Till exempel \"kml\""
@@ -726,34 +732,6 @@ msgstr "Beskrivning"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Hjälp"
 
-msgid "Explore Maps"
-msgstr "Utforska Kartor"
-
-msgid "Edit Map"
-msgstr "Redigera Karta"
-
-msgid "Update"
-msgstr "Uppdatera"
-
-msgid "Create a New Map"
-msgstr "Skapa en ny karta"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Tillgängliga färger"
-
-msgid "Save"
-msgstr "Spara"
-
-#, fuzzy
-#| msgid "Create a Map"
-msgid "Save Map"
-msgstr "Skapa en karta"
-
-msgid "Close"
-msgstr "Stänga"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -774,7 +752,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -820,8 +798,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "Kompletterande information"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -837,10 +817,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -851,7 +834,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -872,7 +855,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -924,10 +907,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "Användaraktiviteter"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Documents related to this map"
@@ -1101,9 +1082,6 @@ msgstr "Redigera dokument"
 msgid "Request change"
 msgstr ""
 
-msgid "Metadata"
-msgstr ""
-
 msgid "Wizard"
 msgstr ""
 
@@ -1120,6 +1098,9 @@ msgstr ""
 
 msgid "Remove"
 msgstr "Ta bort"
+
+msgid "Close"
+msgstr "Stänga"
 
 msgid "Download Metadata"
 msgstr "Hämta Metadata"
@@ -1199,6 +1180,9 @@ msgstr "Metadata Provider"
 msgid "<< Back"
 msgstr ""
 
+msgid "Update"
+msgstr "Uppdatera"
+
 #, fuzzy
 #| msgid "Next"
 msgid "Next >>"
@@ -1213,6 +1197,9 @@ msgid "Edit Metadata"
 msgstr "Redigera metadata"
 
 msgid "Editing details for"
+msgstr ""
+
+msgid "Return to Document"
 msgstr ""
 
 msgid "Deleting"
@@ -1330,17 +1317,12 @@ msgid "Responsible and Permissions"
 msgstr "Ändra Layer Behörigheter"
 
 #, fuzzy
-#| msgid "Message Inbox"
-msgid "Message box"
-msgstr "Meddelande Inkorg"
-
-msgid "OK"
-msgstr ""
-
-#, fuzzy
 #| msgid "Public"
 msgid "Publishing"
 msgstr "Offentlig"
+
+msgid "You are not allowed to view this document."
+msgstr "Du har inte rätt att visa det här dokumentet."
 
 msgid "You are not permitted to delete this document"
 msgstr "Du får inte ta bort det här dokumentet"
@@ -1366,9 +1348,6 @@ msgstr "Inte tillgänglig"
 #| msgid "Page Not Found"
 msgid "Not found"
 msgstr "Sidan kan inte hittas"
-
-msgid "You are not allowed to view this document."
-msgstr "Du har inte rätt att visa det här dokumentet."
 
 #, fuzzy
 #| msgid "Set permissions for this resource"
@@ -1702,6 +1681,11 @@ msgstr "Skapa"
 
 #, fuzzy
 #| msgid "Not provided"
+msgid "No title provided"
+msgstr "Inte tillgänglig"
+
+#, fuzzy
+#| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "Inte tillgänglig"
 
@@ -2022,16 +2006,19 @@ msgstr "Skapa en Grupp"
 msgid "Edit Group Category"
 msgstr "Skapa grupp"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+msgid "Save"
+msgstr "Spara"
+
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2307,6 +2294,27 @@ msgstr "Senast ändrad"
 msgid "date when attribute statistics were last updated"
 msgstr "datum då attribut statistiken senast uppdaterades"
 
+#, fuzzy
+#| msgid "Edit Layer"
+msgid "Append to Layer"
+msgstr "Redigera Layer"
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "Ett skikt laddades upp"
+
+msgid "Return to Layer"
+msgstr ""
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Preserve Metadata XML"
+msgstr "Redigera Tjänst Metadata"
+
+msgid "Select the charset or leave default"
+msgstr "Välj charset eller lämna standard"
+
 msgid "Home"
 msgstr "Start"
 
@@ -2473,6 +2481,9 @@ msgid_plural "Layers"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr ""
 
@@ -2630,9 +2641,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -2658,6 +2666,12 @@ msgstr "Visningsordning"
 msgid "Visible"
 msgstr "synlig?"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2670,27 +2684,6 @@ msgstr "Ett skikt laddades upp"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr "Ofullständiga uppladdningar"
-
-msgid "You have the following incomplete uploads"
-msgstr "Du har följande ofullständiga uppladdningar"
-
-msgid "last updated on"
-msgstr "uppdaterades senast"
-
-msgid "Resume"
-msgstr "Resume"
-
-msgid "Delete"
-msgstr "Radera"
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Är du säker på att du vill ta bort denna uppladdning?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Radera, och fråga mig inte igen."
 
 msgid "Remove Layers"
 msgstr ""
@@ -2705,14 +2698,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "Ersätt Layer"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Preserve Metadata XML"
-msgstr "Redigera Tjänst Metadata"
-
-msgid "Select the charset or leave default"
-msgstr "Välj charset eller lämna standard"
 
 msgid "Manage Styles"
 msgstr "Hantera format"
@@ -2762,12 +2747,53 @@ msgid "Preview"
 msgstr "Förhandsgranska"
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Redigera Tjänst Metadata"
+
+#, fuzzy
 #| msgid "Attributes"
 msgid "Dataset Attributes"
 msgstr "Attribut"
 
 msgid "Upload Layer"
 msgstr "Överför Layer"
+
+msgid "Incomplete Uploads"
+msgstr "Ofullständiga uppladdningar"
+
+msgid "You have the following incomplete uploads"
+msgstr "Du har följande ofullständiga uppladdningar"
+
+msgid "Resume"
+msgstr "Resume"
+
+msgid "Delete"
+msgstr "Radera"
+
+#, fuzzy
+#| msgid "Create"
+msgid "Created"
+msgstr "Skapa"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "av"
+
+#, fuzzy
+#| msgid "Incomplete Uploads"
+msgid "Delete incomplete upload"
+msgstr "Ofullständiga uppladdningar"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Är du säker på att du vill ta bort denna uppladdning?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
@@ -3257,31 +3283,47 @@ msgstr "nu"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector layer with a raster."
+msgstr ""
+
+#, python-brace-format
+msgid "You are attempting to {action_type} a raster layer with a vector."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3316,18 +3358,21 @@ msgstr "Det är inte tillåtet att visa detta lager"
 msgid "Failed to upload the layer"
 msgstr "Filer som laddas upp"
 
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Unable to delete layer"
-msgstr "Filer som laddas upp"
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "Karta Skapat"
@@ -3471,6 +3516,9 @@ msgstr "Kopiera denna karta"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplicera denna kartan och ändra det för egna syften"
 
+msgid "Create a New Map"
+msgstr "Skapa en ny karta"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3526,6 +3574,12 @@ msgstr "Nedladdning klar"
 msgid "Download Failed"
 msgstr "Hämta misslyckades"
 
+msgid "Edit Map"
+msgstr "Redigera Karta"
+
+msgid "Explore Maps"
+msgstr "Utforska Kartor"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3542,6 +3596,11 @@ msgstr ""
 "metadata XML-fil. GeoNode s metadata import stöder en delmängd av ISO, FGDC "
 "och Dublin Core-metadataelement. Några av din ursprungliga metadata kan ha "
 "gått förlorade."
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "Återgå till"
 
 msgid "Remove Map"
 msgstr ""
@@ -3574,11 +3633,6 @@ msgstr "Du har inte tillåtelse att se denna karta."
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3594,7 +3648,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3669,7 +3723,8 @@ msgstr "referensdatum för den citerade resursen"
 msgid "Show data for specific label"
 msgstr "referensdatum för den citerade resursen"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3838,7 +3893,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4174,7 +4230,9 @@ msgstr "Uppdatera profil"
 msgid "Explore People"
 msgstr "Utforska Människor"
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "Ditt användarnamn för"
 
 msgid "Your username has been emailed to you."
@@ -4482,9 +4540,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "Källor"
 
 #, fuzzy
@@ -4500,9 +4558,9 @@ msgstr "Det är inte tillåtet att ta bort den här tjänsten."
 msgid "You are not permitted to remove this service."
 msgstr "Det är inte tillåtet att ta bort den här tjänsten."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Tjänsten har skapats:"
 
 msgid "created"
@@ -4755,6 +4813,14 @@ msgstr ""
 #| msgid "Delete These"
 msgid "Delete Geo Limits"
 msgstr "Ta bort dessa"
+
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "Message box"
+msgstr "Meddelande Inkorg"
+
+msgid "OK"
+msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5753,22 +5819,11 @@ msgstr "Följande grupper:"
 msgid "Updating Metadata..."
 msgstr "Hämta Metadata"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
-
-msgid "Return to Document"
-msgstr ""
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "Återgå till"
 
 msgid "Identification"
 msgstr ""
@@ -5831,6 +5886,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy
@@ -6230,12 +6288,6 @@ msgstr "åååå-mm-dd"
 msgid "Date ends before:"
 msgstr "Datum slutar före:"
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "av"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6293,9 +6345,6 @@ msgstr "Z - A"
 
 msgid "Most popular"
 msgstr "Mest populära"
-
-msgid "Thesaurus"
-msgstr ""
 
 msgid "Text"
 msgstr "Text"
@@ -6445,6 +6494,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Allt innehåll"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Det gick inte att hitta några lager i en kompatibel projektion."
@@ -6465,6 +6519,19 @@ msgid "Layer already exists"
 msgstr "Karta Skapat"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6513,20 +6580,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6545,3 +6611,34 @@ msgstr "Ogiltig behörighetsnivå."
 
 msgid "Permission Denied"
 msgstr "Permission Denied"
+
+#~ msgid "last updated on"
+#~ msgstr "uppdaterades senast"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Radera, och fråga mig inte igen."
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Tillgängliga färger"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Save Map"
+#~ msgstr "Skapa en karta"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "Användaraktiviteter"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Unable to delete layer"
+#~ msgstr "Filer som laddas upp"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"

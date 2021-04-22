@@ -73,6 +73,7 @@ from geonode.base.views import batch_modify
 from .tasks import delete_map
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
+from geonode.thumbs.thumbnails import create_thumbnail
 from deprecated import deprecated
 
 from dal import autocomplete
@@ -83,9 +84,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
-    from geonode.geoserver.helpers import (
-        _render_thumbnail,
-        _prepare_thumbnail_body_from_opts)
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -277,9 +275,8 @@ def map_metadata(
                             if len(tkl) > 0:
                                 tkl_ids = ",".join(
                                     map(str, tkl.values_list('id', flat=True)))
-                                tkeywords_list += "," + \
-                                    tkl_ids if len(
-                                        tkeywords_list) > 0 else tkl_ids
+                                tkeywords_list += f",{tkl_ids}" if len(
+                                    tkeywords_list) > 0 else tkl_ids
                     except Exception:
                         tb = traceback.format_exc()
                         logger.error(tb)
@@ -442,6 +439,7 @@ def map_metadata(
         "metadata_author_groups": metadata_author_groups,
         "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
+        "UI_MANDATORY_FIELDS": ['title', 'abstract', 'doi', 'attribution', 'data_quality_statement', 'restriction_code_type']
     })
 
 
@@ -474,21 +472,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
             "map": map_obj
         })
     elif request.method == 'POST':
-        if getattr(settings, 'SLACK_ENABLED', False):
-            slack_message = None
-            try:
-                from geonode.contrib.slack.utils import build_slack_message_map
-                slack_message = build_slack_message_map("map_delete", map_obj)
-            except Exception:
-                logger.error("Could not build slack message for delete map.")
-            delete_map.apply_async((map_obj.id, ))
-            try:
-                from geonode.contrib.slack.utils import send_slack_messages
-                send_slack_messages(slack_message)
-            except Exception:
-                logger.error("Could not send slack message for delete map.")
-        else:
-            delete_map.apply_async((map_obj.id, ))
+        delete_map.apply_async((map_obj.id, ))
 
         register_event(request, EventType.EVENT_REMOVE, map_obj)
 
@@ -643,7 +627,7 @@ def map_json_handle_put(request, mapid):
                 map_obj.viewer_json(request)))
     except ValueError as e:
         return HttpResponse(
-            "The server could not understand the request." + str(e),
+            f"The server could not understand the request.{str(e)}",
             content_type="text/plain",
             status=400
         )
@@ -874,9 +858,7 @@ def add_layers_to_map_config(
                 "legend": {
                     "height": "40",
                     "width": "22",
-                    "href": layer.ows_url +
-                    "?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=" +
-                    quote(layer.service_typename, safe=''),
+                    "href": f"{layer.ows_url}?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer={quote(layer.service_typename, safe='')}",
                     "format": "image/png"
                 },
                 "name": style.name
@@ -890,12 +872,10 @@ def add_layers_to_map_config(
                 'properties': layer.srid
             }
         # Add required parameters for GXP lazy-loading
-        attribution = "%s %s" % (layer.owner.first_name,
-                                 layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
-            layer.owner)
+        attribution = f"{layer.owner.first_name} {layer.owner.last_name}" if layer.owner.first_name or layer.owner.last_name else str(layer.owner)  # noqa
         srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
         srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
-        config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
+        config["attribution"] = f"<span class='gx-attribution-title'>{attribution}</span>"
         config["format"] = getattr(
             settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
         config["title"] = layer.title
@@ -910,6 +890,7 @@ def add_layers_to_map_config(
             "store": layer.store,
             "name": layer.alternate,
             "title": layer.title,
+            "style": '',
             "queryable": True,
             "storeType": layer.storeType,
             "bbox": {
@@ -979,7 +960,7 @@ def add_layers_to_map_config(
                                       'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
                         e = dlxml.fromstring(wms_capabilities)
                         for atype in e.findall(
-                                "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                                f"./[wms:Name='{layer.alternate}']/wms:Dimension[@name='time']", namespaces):
                             dim_name = atype.get('name')
                             if dim_name:
                                 dim_name = str(dim_name).lower()
@@ -1011,7 +992,7 @@ def add_layers_to_map_config(
                     "remote": True,
                     "url": service.service_url,
                     "name": service.name,
-                    "title": "[R] %s" % service.title}
+                    "title": f"[R] {service.title}"}
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,
@@ -1026,7 +1007,7 @@ def add_layers_to_map_config(
 
             access_token = request.session['access_token'] if request and 'access_token' in request.session else None
             if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
-                url = '%s?access_token=%s' % (layer.ows_url, access_token)
+                url = f'{layer.ows_url}?access_token={access_token}'
             else:
                 url = layer.ows_url
             maplayer = MapLayer(
@@ -1143,8 +1124,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             request.session["map_status"] = map_status
         else:
             raise Exception(
-                'Could not start the download of %s. Error was: %s' %
-                (map_obj.title, content))
+                f'Could not start the download of {map_obj.title}. Error was: {content}')
 
     locked_layers = []
     remote_layers = []
@@ -1340,29 +1320,18 @@ def map_thumbnail(request, mapid):
         raise Http404(_("Not found"))
 
     try:
-        image = None
-        try:
-            image = _prepare_thumbnail_body_from_opts(
-                request.body, request=request)
-        except Exception as e:
-            logger.debug(e)
-            try:
-                image = _render_thumbnail(request.body)
-            except Exception as e:
-                logger.debug(e)
-                image = None
 
-        if not image:
-            return HttpResponse(
-                content=_('couldn\'t generate thumbnail'),
-                status=500,
-                content_type='text/plain'
-            )
-        filename = "map-%s-thumb.png" % map_obj.uuid
-        map_obj.save_thumbnail(filename, image)
+        request_body = json.loads(request.body)
+        bbox = request_body['bbox'] + [request_body['srid']]
+        zoom = request_body.get('zoom', None)
 
-        return HttpResponse(_('Thumbnail saved'))
-    except Exception:
+        create_thumbnail(map_obj, bbox=bbox, background_zoom=zoom, overwrite=True)
+
+        return HttpResponse('Thumbnail saved')
+
+    except Exception as e:
+        logger.exception(e)
+
         return HttpResponse(
             content=_('error saving thumbnail'),
             status=500,

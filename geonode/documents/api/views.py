@@ -23,7 +23,7 @@ from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly  # noqa
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
@@ -67,7 +67,7 @@ class DocumentViewSet(DynamicModelViewSet):
         exclude = []
         for resource in resources:
             if not request.user.is_superuser and \
-            not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
+                    not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
                 exclude.append(resource.id)
         resources = resources.exclude(id__in=exclude)
         paginator = GeoNodeApiPagination()

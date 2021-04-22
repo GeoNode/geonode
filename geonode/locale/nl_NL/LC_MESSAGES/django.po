@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-04-07 15:00+0200\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/geonode/geonode/"
@@ -146,9 +146,6 @@ msgstr "data wordt per kwartaal bijgewerkt"
 msgid "No information provided"
 msgstr "Geen informatie voorzien"
 
-msgid "Category"
-msgstr "Categorie"
-
 msgid "Category is required."
 msgstr "Categorie is verplicht."
 
@@ -223,6 +220,9 @@ msgstr "Streken"
 #| msgid "Groups"
 msgid "Group"
 msgstr "Groepen"
+
+msgid "Category"
+msgstr "Categorie"
 
 msgid "License"
 msgstr "Licentie"
@@ -459,6 +459,12 @@ msgstr ""
 #| msgid "Resources"
 msgid "Resource Type"
 msgstr "Bronnen"
+
+msgid "Metadata"
+msgstr "Metadata"
+
+msgid "If true, will be excluded from search"
+msgstr ""
 
 msgid "For example \"kml\""
 msgstr "Bijvoorbeeld \"kml\""
@@ -714,34 +720,6 @@ msgstr "Beschrijving"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Help"
 
-msgid "Explore Maps"
-msgstr ""
-
-msgid "Edit Map"
-msgstr ""
-
-msgid "Update"
-msgstr "Update"
-
-msgid "Create a New Map"
-msgstr ""
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "Beschikbare styles"
-
-msgid "Save"
-msgstr "Bewaar"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "Verwijder kaart"
-
-msgid "Close"
-msgstr "Sluit"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -762,7 +740,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -806,8 +784,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "Bijkomende informatie"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -823,10 +803,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -837,7 +820,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -858,7 +841,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -910,10 +893,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "Gebruikersactiviteiten"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Document Updated"
@@ -1071,9 +1052,6 @@ msgstr "Bewerk document"
 msgid "Request change"
 msgstr "Verzoek om te downloaden"
 
-msgid "Metadata"
-msgstr "Metadata"
-
 msgid "Wizard"
 msgstr ""
 
@@ -1092,6 +1070,9 @@ msgstr "Vervang"
 
 msgid "Remove"
 msgstr "Verwijder"
+
+msgid "Close"
+msgstr "Sluit"
 
 msgid "Download Metadata"
 msgstr "Download Metadata"
@@ -1167,6 +1148,9 @@ msgstr ""
 msgid "<< Back"
 msgstr ""
 
+msgid "Update"
+msgstr "Update"
+
 msgid "Next >>"
 msgstr ""
 
@@ -1180,6 +1164,9 @@ msgstr "Bewerk Metadata"
 
 msgid "Editing details for"
 msgstr ""
+
+msgid "Return to Document"
+msgstr "Keer terug naar document"
 
 msgid "Deleting"
 msgstr "Verwijderen"
@@ -1295,17 +1282,12 @@ msgid "Responsible and Permissions"
 msgstr "Wijzig de rechten van de laag"
 
 #, fuzzy
-#| msgid "Message Inbox"
-msgid "Message box"
-msgstr "Inbox"
-
-msgid "OK"
-msgstr ""
-
-#, fuzzy
 #| msgid "Published"
 msgid "Publishing"
 msgstr "Gepubliceerd"
+
+msgid "You are not allowed to view this document."
+msgstr "Je hebt geen toelating dit document te bekijken."
 
 msgid "You are not permitted to delete this document"
 msgstr "Je hebt geen toelating dit document te verwijderen"
@@ -1329,9 +1311,6 @@ msgstr ""
 #| msgid "Page Not Found"
 msgid "Not found"
 msgstr "Pagina niet gevonden"
-
-msgid "You are not allowed to view this document."
-msgstr "Je hebt geen toelating dit document te bekijken."
 
 msgid "You must set a point of contact for this resource"
 msgstr "Je moet een contactpunt voor deze bron opgeven"
@@ -1658,6 +1637,11 @@ msgstr ""
 
 #, fuzzy
 #| msgid "No information provided"
+msgid "No title provided"
+msgstr "Geen informatie voorzien"
+
+#, fuzzy
+#| msgid "No information provided"
 msgid "No abstract provided"
 msgstr "Geen informatie voorzien"
 
@@ -1965,16 +1949,19 @@ msgstr "Maak een groep"
 msgid "Edit Group Category"
 msgstr "Maak een groep"
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
+msgid "Save"
+msgstr "Bewaar"
+
+#, python-brace-format
+msgid "The e-mail address '{email}' has already been invited."
 msgstr ""
 
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
+#, python-brace-format
+msgid "The e-mail address '{email}' has already accepted an invite."
 msgstr ""
 
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
+#, python-brace-format
+msgid "An active user is already using the e-mail address '{email}'"
 msgstr ""
 
 #, fuzzy
@@ -2250,6 +2237,25 @@ msgstr ""
 msgid "date when attribute statistics were last updated"
 msgstr ""
 
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Append to Layer"
+msgstr "Keer terug naar laag"
+
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "layers append"
+msgstr "Laag werd geupload"
+
+msgid "Return to Layer"
+msgstr "Keer terug naar laag"
+
+msgid "Preserve Metadata XML"
+msgstr ""
+
+msgid "Select the charset or leave default"
+msgstr ""
+
 msgid "Home"
 msgstr "Home"
 
@@ -2414,6 +2420,9 @@ msgid_plural "Layers"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Append Data"
+msgstr ""
+
 msgid "Edit data"
 msgstr "Bewerk data"
 
@@ -2570,9 +2579,6 @@ msgid ""
 "          Some of your original metadata may have been lost."
 msgstr ""
 
-msgid "Return to Layer"
-msgstr "Keer terug naar laag"
-
 #, python-format
 msgid ""
 "\n"
@@ -2592,6 +2598,12 @@ msgstr ""
 msgid "Visible"
 msgstr ""
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layers"
 msgid "Upload Layer Metadata"
@@ -2604,27 +2616,6 @@ msgstr "Laag werd geupload"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
-
-msgid "Incomplete Uploads"
-msgstr ""
-
-msgid "You have the following incomplete uploads"
-msgstr "Je hebt de volgende onvolledige uploads: "
-
-msgid "last updated on"
-msgstr ""
-
-msgid "Resume"
-msgstr "CV"
-
-msgid "Delete"
-msgstr ""
-
-msgid "Are you sure you want to delete this upload?"
-msgstr "Ben je zeker dat je deze upload wilt verwijderen ?"
-
-msgid "Delete, and don't ask me again."
-msgstr "Verwijder en vraag niet opnieuw"
 
 msgid "Remove Layers"
 msgstr "Verwijder Lagen"
@@ -2639,12 +2630,6 @@ msgstr ""
 
 msgid "Replace Layer"
 msgstr "Vervang laag"
-
-msgid "Preserve Metadata XML"
-msgstr ""
-
-msgid "Select the charset or leave default"
-msgstr ""
 
 msgid "Manage Styles"
 msgstr "Beheer Stijlen"
@@ -2688,11 +2673,52 @@ msgstr ""
 msgid "Preview"
 msgstr "Bekijk preview"
 
+#, fuzzy
+#| msgid "Metadata"
+msgid "Required Metadata"
+msgstr "Metadata"
+
 msgid "Dataset Attributes"
 msgstr ""
 
 msgid "Upload Layer"
 msgstr ""
+
+msgid "Incomplete Uploads"
+msgstr ""
+
+msgid "You have the following incomplete uploads"
+msgstr "Je hebt de volgende onvolledige uploads: "
+
+msgid "Resume"
+msgstr "CV"
+
+msgid "Delete"
+msgstr ""
+
+#, fuzzy
+#| msgid "created"
+msgid "Created"
+msgstr "aangemaakt"
+
+msgid "Progress"
+msgstr ""
+
+msgid "page"
+msgstr ""
+
+msgid "of"
+msgstr "of"
+
+#, fuzzy
+#| msgid "You have the following incomplete uploads"
+msgid "Delete incomplete upload"
+msgstr "Je hebt de volgende onvolledige uploads: "
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this upload?"
+msgid "Are you sure you want to remove this incomplete upload?"
+msgstr "Ben je zeker dat je deze upload wilt verwijderen ?"
 
 #, fuzzy
 #| msgid "Upload Layers"
@@ -3118,31 +3144,50 @@ msgstr ""
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "Je probeert een vector layer te vervangen door een raster. "
 
-msgid "You are attempting to replace a vector layer with a raster."
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector layer with a raster."
 msgstr "Je probeert een vector layer te vervangen door een raster. "
 
-msgid "You are attempting to replace a raster layer with a vector."
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster layer with a vector."
 msgstr "Je probeert een raster layer te vervangen door een vector."
 
+#, fuzzy, python-brace-format
+#| msgid "You are attempting to replace a vector layer with a raster."
 msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
+"You are attempting to {action_type} a vector layer with an unknown format."
+msgstr "Je probeert een vector layer te vervangen door een raster. "
+
+#, python-brace-format
+msgid ""
+"Please ensure the name is consistent with the file you are trying to "
+"{action_type}."
 msgstr ""
 
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
+#, python-brace-format
 msgid ""
 "Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
+"type                             that is consistent with the file you are "
+"trying to {action_type}."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "The selected Layer does not exists in the catalog."
+msgstr ""
+
+msgid "Please ensure that the layer structure is consistent "
 msgstr ""
 
 msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3177,10 +3222,11 @@ msgstr "Je hebt geen toelating om deze layer te bekijken"
 msgid "Failed to upload the layer"
 msgstr "Bestanden die moeten worden geupload"
 
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Unable to delete layer"
-msgstr "Bestanden die moeten worden geupload"
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "Je probeert een vector layer te vervangen door een raster. "
+
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "Je probeert een raster layer te vervangen door een vector."
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
@@ -3189,8 +3235,10 @@ msgstr ""
 "Deze layer is onderdeel van een layer groep. Je moet de layer eerst "
 "verwijderen uit de groep vooraleer je deze kunt verwijderen."
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 #, fuzzy
 #| msgid "Layer Created"
@@ -3357,6 +3405,9 @@ msgid "Duplicate this map and modify it for your own purposes"
 msgstr ""
 "Maak een kopie van deze kaart om die naar je eigen voorkeur te bewerken"
 
+msgid "Create a New Map"
+msgstr ""
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3410,6 +3461,12 @@ msgstr "Downloaden klaar"
 msgid "Download Failed"
 msgstr "Downloaden mislukt"
 
+msgid "Edit Map"
+msgstr ""
+
+msgid "Explore Maps"
+msgstr ""
+
 msgid "maps explore"
 msgstr ""
 
@@ -3420,6 +3477,11 @@ msgid ""
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 msgstr ""
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Map"
+msgstr "Keer terug naar"
 
 msgid "Remove Map"
 msgstr "Verwijder kaart"
@@ -3452,11 +3514,6 @@ msgstr "Je hebt geen toelating om deze kaart te bekijken."
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3472,7 +3529,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3543,7 +3600,8 @@ msgstr "versie van de geciteerde bron"
 msgid "Show data for specific label"
 msgstr ""
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3708,7 +3766,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4043,7 +4102,9 @@ msgstr "Update profiel"
 msgid "Explore People"
 msgstr ""
 
-msgid "Your username for "
+#, fuzzy, python-brace-format
+#| msgid "Your username for "
+msgid "Your username for {site.name}"
 msgstr "Je gebruikersnaam voor"
 
 msgid "Your username has been emailed to you."
@@ -4346,9 +4407,9 @@ msgstr ""
 msgid "Resource is already being processed"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Resources"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "Bronnen"
 
 #, fuzzy
@@ -4364,9 +4425,9 @@ msgstr "U heeft geen toelating om deze service te verwijderen"
 msgid "You are not permitted to remove this service."
 msgstr "U heeft geen toelating om deze service te verwijderen"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "A Layer was deleted"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Een laag werd verwijderd"
 
 #, fuzzy
@@ -4629,6 +4690,14 @@ msgstr ""
 #| msgid "Delete from Favorites"
 msgid "Delete Geo Limits"
 msgstr "Verwijder uit favorieten"
+
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "Message box"
+msgstr "Inbox"
+
+msgid "OK"
+msgstr ""
 
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
@@ -5625,22 +5694,11 @@ msgstr "De volgende groepen:"
 msgid "Updating Metadata..."
 msgstr "Download Metadata"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
-
-msgid "Return to Document"
-msgstr "Keer terug naar document"
-
-#, fuzzy
-#| msgid "Return to"
-msgid "Return to Map"
-msgstr "Keer terug naar"
 
 msgid "Identification"
 msgstr "Identificatie"
@@ -5701,6 +5759,9 @@ msgid "Online Link"
 msgstr ""
 
 msgid "* Field declared Mandatory by the Metadata Schema"
+msgstr ""
+
+msgid "Please, fill the following items before clicking on preview:"
 msgstr ""
 
 #, fuzzy
@@ -6110,12 +6171,6 @@ msgstr "yyyy-mm-dd"
 msgid "Date ends before:"
 msgstr ""
 
-msgid "page"
-msgstr ""
-
-msgid "of"
-msgstr "of"
-
 #, fuzzy
 #| msgid "Search"
 msgid "Search by region"
@@ -6173,9 +6228,6 @@ msgstr "Z - A"
 
 msgid "Most popular"
 msgstr "Meest populaire"
-
-msgid "Thesaurus"
-msgstr ""
 
 msgid "Text"
 msgstr "Text"
@@ -6325,6 +6377,11 @@ msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
 #, fuzzy
+#| msgid "All contents"
+msgid "Empty content"
+msgstr "Alle inhoud"
+
+#, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
 msgstr "Kon geen lagen vinden in een compatibele projectie."
@@ -6345,6 +6402,19 @@ msgid "Layer already exists"
 msgstr "Layer aangemaakt"
 
 msgid "Name already in use and overwrite is False"
+msgstr ""
+
+msgid "Error configuring time:"
+msgstr ""
+
+msgid "The GeoServer Import Session is no more available"
+msgstr ""
+
+#, python-brace-format
+msgid "Expected to find layer named '{name}' in geoserver"
+msgstr ""
+
+msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6393,20 +6463,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6425,3 +6494,31 @@ msgstr "Niet gemachtigd"
 
 msgid "Permission Denied"
 msgstr "Toestemming geweigerd"
+
+#~ msgid "Delete, and don't ask me again."
+#~ msgstr "Verwijder en vraag niet opnieuw"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "Beschikbare styles"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "Verwijder kaart"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "Gebruikersactiviteiten"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Unable to delete layer"
+#~ msgstr "Bestanden die moeten worden geupload"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"

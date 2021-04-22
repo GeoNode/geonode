@@ -139,7 +139,7 @@ class Profile(AbstractUser):
         return reverse('profile_detail', args=[self.username, ])
 
     def __str__(self):
-        return "{0}".format(self.username)
+        return str(self.username)
 
     @staticmethod
     def class_name(value):
@@ -170,20 +170,18 @@ class Profile(AbstractUser):
     @property
     def name_long(self):
         if self.first_name and self.last_name:
-            return '%s %s (%s)' % (self.first_name,
-                                   self.last_name, self.username)
+            return f'{self.first_name} {self.last_name} ({self.username})'
         elif (not self.first_name) and self.last_name:
-            return '%s (%s)' % (self.last_name, self.username)
+            return f'{self.last_name} ({self.username})'
         elif self.first_name and (not self.last_name):
-            return '%s (%s)' % (self.first_name, self.username)
+            return f'{self.first_name} ({self.username})'
         else:
             return self.username
 
     @property
     def full_name_or_nick(self):
         if self.first_name and self.last_name:
-            return '%s %s' % (self.first_name,
-                              self.last_name)
+            return f'{self.first_name} {self.last_name}'
         else:
             return self.username
 
@@ -195,6 +193,10 @@ class Profile(AbstractUser):
     def location(self):
         return format_address(self.delivery, self.zipcode,
                               self.city, self.area, self.country)
+
+    @property
+    def perms(self):
+        return []
 
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)

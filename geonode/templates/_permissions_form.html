@@ -104,7 +104,7 @@
                             <div id="gis-limits-users">
                                 <div class="row">
                                   <div class="col-md-12">
-                                    <!-- input class="search form-control" placeholder="{% trans "Search" %}" / -->
+                                    <input class="search form-control" id="search-users" placeholder="{% trans "Search" %}">
                                     <!-- button class="sort btn btn-primary" data-sort="gis-limits-user-name">Sort by name</button -->
                                     <!-- button class="sort btn btn-primary" data-sort="gis-limits-user-title">Sort by title</button -->
                                   </div>
@@ -265,13 +265,23 @@
       $('[data-toggle="tooltip"]').tooltip()
     })
 
-    var userList = new List('gis-limits-users', {valueNames: ['gis-limits-user-name', 'gis-limits-user-title']});
+    // var userList = new List('gis-limits-users', {valueNames: ['gis-limits-user-name', 'gis-limits-user-title']});
     var groupList = new List('gis-limits-groups', {valueNames: ['gis-limits-group-name', 'gis-limits-group-title']});
     var limit = 5;
     var offset = 0;
     var lastOffset = 0;
+    var searchValue = ''
+
     $(function() {
       load_gis_limits_users();
+
+      var searchUserDelay = delay(load_gis_limits_users, 300)
+      $("#search-users").keyup(function() {
+        searchValue = $(this).val()
+        offset = 0
+        searchUserDelay()
+      });
+
       $('#gis-limits-users-content').on("scroll", function(event) {
         var scrollHeight = $('#gis-limits-users').height();
         var scrollPosition = $('#gis-limits-users-content').scrollTop();
@@ -285,11 +295,27 @@
        }
       });
 
+      function delay(callback, waitTime) {
+        var timer = 0;
+        return function() {
+          var context = this, args = arguments;
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            callback.apply(context, args);
+          }, waitTime);
+        };
+      };
+
       function load_gis_limits_users() {
         $.ajax({
           url: "/api/profiles/",
           dataType: 'json',
-          data: {
+          data:  !!searchValue ? {
+            limit:limit,
+            offset:offset,
+            order_by: 'username',
+            username__icontains: searchValue
+          } : {
             limit: limit,
             offset: offset,
             order_by: 'username'
@@ -347,7 +373,17 @@
               });
 
               if (html) {
-                $('#gis-limits-users-list').append(html);
+                if (searchValue && offset === 0){
+                  $('#gis-limits-users-list').html(html);
+                }
+                else{
+                  if (offset === 0) {
+                    $('#gis-limits-users-list').html(html);
+                  }
+                  else{
+                    $('#gis-limits-users-list').append(html);
+                  }
+                }
                 lastOffset = offset;
                 // offset += limit;
               }

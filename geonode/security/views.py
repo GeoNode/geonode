@@ -85,9 +85,9 @@ def resource_permissions_handle_post(request, resource):
                not view_any:
 
                 success = False
-                message = "User {} has download permissions but cannot " \
+                message = f"User {user.username} has download permissions but cannot " \
                           "access the resource. Please update permission " \
-                          "consistently!".format(user.username)
+                          "consistently!"
 
         return HttpResponse(
             json.dumps({'success': success, 'message': message}),
@@ -337,7 +337,7 @@ def attributes_sats_refresh(request):
                     json.dumps(
                         {
                             'success': 'false',
-                            'message': 'Error trying to fetch the resource "%s" from GeoServer!' % layer.store
+                            'message': f'Error trying to fetch the resource "{layer.store}" from GeoServer!'
                         }),
                     status=302,
                     content_type='text/plain')
@@ -355,7 +355,7 @@ def attributes_sats_refresh(request):
                 json.dumps(
                     {
                         'success': 'false',
-                        'message': 'Exception occurred: "%s"' % str(e)
+                        'message': f'Exception occurred: "{str(e)}"'
                     }),
                 status=302,
                 content_type='text/plain')
@@ -415,7 +415,15 @@ def set_bulk_permissions(request):
                     'base.change_resourcebase_permissions')
                 resource.set_permissions(permission_spec)
             except PermissionDenied:
-                not_permitted.append(ResourceBase.objects.get(id=resource_id).title)
+                try:
+                    resolve_object(
+                        request, ResourceBase, {
+                            'id': resource_id
+                        },
+                        'base.change_resourcebase')
+                    resource.set_permissions(permission_spec)
+                except PermissionDenied:
+                    not_permitted.append(ResourceBase.objects.get(id=resource_id).title)
 
         return HttpResponse(
             json.dumps({'success': 'ok', 'not_changed': not_permitted}),
@@ -468,8 +476,8 @@ def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.n
         from django.core.mail import EmailMessage
         # TODO: Copy edit message.
         subject_email = "Your Layer has been seen."
-        msg = ("Your layer called {0} with uuid={1}"
-               " was seen by {2}").format(layer.name, layer.uuid, viewer)
+        msg = (f"Your layer called {layer.name} with uuid={layer.uuid}"
+               f" was seen by {viewer}")
         try:
             email = EmailMessage(
                 subject=subject_email,

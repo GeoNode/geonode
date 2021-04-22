@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
+#########################################################################
 #
-#
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2021 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,9 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#
-
-from django.conf.urls import url
+#########################################################################
+from django.conf.urls import url, include
 from geonode.upload.views import UploadFileCreateView, UploadFileDeleteView
 
 from . import views
@@ -33,4 +32,5 @@ urlpatterns = [  # 'geonode.upload.views',
         views.delete, name='data_upload_delete'),
     url(r'^remove/(?P<pk>\d+)$',
         UploadFileDeleteView.as_view(), name='data_upload_remove'),
+    url(r'^', include('geonode.upload.api.urls')),
 ]

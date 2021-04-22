@@ -17,7 +17,7 @@
   {{ block.super }}
 {% endblock %}
 
-{% block body_class %}{% trans "people explore" %}{% endblock %}
+{% block body_class %}people explore{% endblock %}
 
 {% block body %}
 
@@ -62,6 +62,7 @@
   <h3>{{ profile.first_name|default:profile.name_long }}</h3>
   <table class="table table-user-profile">
     <tbody>
+      {% if user.is_authenticated and user == profile or user.is_superuser or user.is_staff %}
       {% if SHOW_PROFILE_EMAIL %}
       <tr>
         <td class="table-user-profile-attribute">{% trans 'Email' %}</td>
@@ -80,7 +81,6 @@
         <td class="table-user-profile-attribute">{% trans 'Organization'  %}</td>
         <td>{{ profile.organization | default:_('Not provided.') }}</td>
       </tr>
-      {% if user.is_authenticated %}
       <tr>
         <td class="table-user-profile-attribute">{% trans 'Location' %}</td>
         <td>{{ profile.location | default:_('Not provided.') }}</td>
@@ -101,7 +101,6 @@
         <td class="table-user-profile-attribute">{% trans 'Description' %}</td>
         <td>{{ profile.profile | default:_('Not provided.') }}</td>
       </tr>
-      {% endif %}
       <tr>
         <td class="table-user-profile-attribute">{% trans 'Keywords' %}</td>
         <td>
@@ -114,6 +113,13 @@
             {% endif %}
         </td>
       </tr>
+      {% else %}
+      <tr>
+        <td class="table-user-profile-attribute">{% trans 'Organization'  %}</td>
+        <td>{{ profile.organization | default:_('Not provided.') }}</td>
+      </tr>
+
+      {% endif %}
     </tbody>
   </table>
   {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}

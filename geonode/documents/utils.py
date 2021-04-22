@@ -27,9 +27,17 @@ import logging
 
 # Django functionality
 from django.core.files.storage import default_storage as storage
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.template import loader
+from django.utils.translation import ugettext as _
+from django.utils.text import slugify
+from django_downloadview.response import DownloadResponse
 
 # Geonode functionality
 from geonode.documents.models import Document
+from geonode.monitoring import register_event
+from geonode.monitoring.models import EventType
 
 logger = logging.getLogger(__name__)
 
@@ -43,13 +51,37 @@ def delete_orphaned_document_files():
 
     for filename in files:
         if Document.objects.filter(doc_file__contains=filename).count() == 0:
-            logger.debug("Deleting orphaned document " + filename)
+            logger.debug(f"Deleting orphaned document {filename}")
             try:
                 storage.delete(os.path.join(
                     os.path.join("documents", "document"), filename))
                 deleted.append(filename)
             except NotImplementedError as e:
                 logger.error(
-                    "Failed to delete orphaned document '{}': {}".format(filename, e))
+                    f"Failed to delete orphaned document '{filename}': {e}")
 
     return deleted
+
+
+def get_download_response(request, docid, attachment=False):
+    """
+    Returns a download response if user has access to download the document of a given id,
+    and an http response if they have no permissions to download it.
+    """
+    document = get_object_or_404(Document, pk=docid)
+
+    if not request.user.has_perm(
+            'base.download_resourcebase',
+            obj=document.get_self_resource()):
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', context={
+                    'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
+    if attachment:
+        register_event(request, EventType.EVENT_DOWNLOAD, document)
+    filename = slugify(os.path.splitext(os.path.basename(document.title))[0])
+    return DownloadResponse(
+        document.doc_file,
+        basename=f'{filename}.{document.extension}',
+        attachment=attachment
+    )

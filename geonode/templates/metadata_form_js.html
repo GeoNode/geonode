@@ -69,6 +69,7 @@
       $('#profileCompleteness .progress-bar').html(parseFloat(((completeness)*100).toFixed(0)) + ' %').width(parseFloat(((completeness)*100).toFixed(2)) + '%');
       $('#profileCompleteness .completed').toggle(completeness === 1);
       $('#profileCompleteness .not-completed').toggle(completeness !== 1);
+      
       var mandatoryMissing = $('#mandatory').find('.input-empty:not([class^="select2"])').length > 0;
           if (mandatoryMissing) {
             var inputs = $('#mandatory').find('.input-empty:not([class^="select2"])');
@@ -80,6 +81,10 @@
             }
             mandatoryMissing = empty > 0;
           }
+        var imgMissing = $('img#image').attr('src');
+        if (imgMissing && imgMissing.includes('missing_thumb')) {
+            mandatoryMissing = true
+        }
       var advancedMissing = $('#advanced').find('.input-empty').length > 0;
           if (advancedMissing) {
             var inputs = $('#advanced').find('.input-empty');
@@ -235,6 +240,14 @@
           } else if( !$(target).hasClass('autocomplete') ){
             // display error status for token fields if not completed
             $(target).toggleClass("input-empty", empty);
+            if (target.id.startsWith('id_tkeywords')) {
+                $("#" + target.id).closest("p").toggleClass("has-error", empty);   
+              }
+          }
+          var imgMissing = $('img#image').attr('src');
+          if (imgMissing && !imgMissing.includes('missing_thumb')) {
+              $('input#id_crop_file').removeClass("input-empty");
+              $('input#id_crop_file').parent().find(".mandatory-warning").remove();
           }
 
           if(target.id === 'id_resource-keywords') {
@@ -244,13 +257,16 @@
         {% block target %}
           if(target.id === 'category_form' ||
              target.id === 'id_resource-regions' ||
-             target.id === 'id_resource-group' || {{UI_REQUIRED_FIELDS}}.includes(target.id)
+             target.id === 'id_resource-group' || 
+             target.id === 'id_resource-date' ||
+             target.id === 'id_resource-links' || {{UI_REQUIRED_FIELDS}}.includes(target.id)
           ) {
               // group selector
               $(target).closest('#basicGroupInfo').toggleClass('has-error', empty);
 
               // category selector
               $(target).closest('#basicCategoryInfo').toggleClass('has-error', empty);
+              $(target).closest('#req_item').toggleClass('has-error', empty);
 
               // regions container
               $(target).closest('#regions_multiselect_container').toggleClass('has-error', empty);
@@ -312,6 +328,12 @@
             return false;
           }
 
+          if (el.id.startsWith('id_tkeywords') && $(el).hasClass('treq')) {
+              return true;
+          } else if (el.id.startsWith('id_tkeywords') && !$(el).hasClass('treq')) {
+              return false;
+          }
+
           var is_mandatory = (el.id.indexOf("autocomplete") < 0 &&
                         (typeof $(el).attr("class") !== 'undefined' && $(el).attr("class").indexOf("select2") < 0) &&
                         !$(el).hasClass('value-select') &&
@@ -328,9 +350,11 @@
                     if(isMandatoryField(this)) {
                         setInputEmpty(e.target, true);
                         var mandatoryWarning = "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>{% trans "* Field declared Mandatory by the Metadata Schema" %}</strong></p>"
-                        if (!!$(this).closest('.check-select').length) {
+                        if (!!$(this).closest('.date').length) {
                             $(e.target).parent().parent().append(gettext(mandatoryWarning));
-                        } else if (!!$(this).closest('#mdinfo').length) {
+                        } else if (!!$(this).closest('.check-select').length ) {
+                            $(e.target).parent().parent().append(gettext(mandatoryWarning));
+                        } else if (!!$(this).closest('#mdinfo').length || !!$(this).closest('#basicDescriptiveInfo').length || !!$(this).closest('#tadv_req').length || !!$(this).closest('#adv_req').length ) {
                             $(e.target).parent().append(gettext(mandatoryWarning));
                         }
                         empty++;
@@ -343,7 +367,12 @@
                         empty--;
                     }
                     setInputEmpty(e.target, false);
-                    $(e.target).parent().find(".mandatory-warning").remove();
+                    if (!!$(e.target).closest('.date').length) { 
+                        $(e.target).parent().parent().find(".mandatory-warning").remove();
+                    } else {
+                        $(e.target).parent().find(".mandatory-warning").remove();
+                    }
+                    
                 }
             }
 
@@ -360,19 +389,38 @@
         };
         {% endblock onInputChange %}
         {% block trigger_onInputChange %}
+
         {{UI_REQUIRED_FIELDS}}.forEach(element => $('#' + element).change(onInputChange).change());
+
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
 
-        $( ':input[id*="id_tkeywords"][required]:visible').each( function () {
-            $('#' + this.id).change(onInputChange).change();
-        });
+        $('#id_resource-title').change(onInputChange).change();
+        $('#id_resource-abstract').change(onInputChange).change();
+        $('#id_resource-doi').change(onInputChange).change();
+        $('#id_resource-attribution').change(onInputChange).change();
+        $('#id_resource-data_quality_statement').change(onInputChange).change();
+        $('#id_resource-restriction_code_type').change(onInputChange).change();
 
-        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
+        $('#id_resource-date').change(onInputChange).change();
+        $('#id_resource-links').change(onInputChange).change();
+
+        var selection = document.querySelector('select[name="resource-keywords"]');
+        if (selection  !== null) {
+            selection.onchange=onInputChange
+        }
+        
+        {{REQ_THESAURI}}.forEach(element => document.querySelector('select[name="'+ element + '"]').onchange=onInputChange);
+        
+        // workaround to trigger the change in advanced metadata editing
+        // otherwise will remain not-required untill a change on the item
+        for (item in {{REQ_THESAURI}}) {
+            $("#id_" + {{REQ_THESAURI}}[item]).trigger("change");
+        }
 
         $('#id_resource-regions').change(onInputChange).change();
-$('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})
-$('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(onInputChange).change();})
+        $('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})
+        $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(onInputChange).change();})
         $('#mandatory').find(":input:not(.value-select):not(.autocomplete)").each(function(){
             if(isMandatoryField(this)) {
                 prevNum++;
@@ -501,13 +549,13 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
         });
         
         function validateRequiredInput() {
-            var errors = []
+            var errors = ['{% trans "Following items are required:" %}']
             $( ':input[required]').each( function () {
                 if ( this.value.trim() == '' ) {
                     errors.push(this.id)
                 }
             });
-            if (errors.length > 0) {
+            if (errors.length > 1) {
                 console.error("Following items are required: " + errors)
                 $(".general_errors").find("p").html(errors.join('<br>'));
                 $('#error_mandatoryDialog').modal();
@@ -540,8 +588,19 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
             }
         });
 
-        $('#preview_tab').on('show.bs.tab', function(){
-            if
+        $('#preview_tab').on('show.bs.tab', function(e){
+            var errors = ['{% trans "Please, fill the following items before clicking on preview:" %}<br>']
+                $( ':input[required]').each( function () {
+                    if ( this.value.trim() == '' ) {
+                        errors.push(this.id)
+                    }
+                });
+            if (errors.length > 1) {
+	                e.preventDefault();
+                    console.error("Please, fill the following items before clicking on preview: " + errors)
+                    $(".general_errors").find("p").html(errors.join('<br>'));
+                    $('#error_mandatoryDialog').modal();
+                } else if
             ( is_category_mandatory &&
                 (
                     (!is_advanced && $('#category_form').hasClass("input-empty")) ||

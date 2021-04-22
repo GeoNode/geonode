@@ -103,7 +103,7 @@ def ajax_lookup(request):
             Q(slug__icontains=keyword)).exclude(
                 Q(access='private') & ~Q(
                     slug__in=request.user.groupmember_set.all().values_list("group__slug", flat=True))
-            )
+        )
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
@@ -119,9 +119,7 @@ def ajax_lookup(request):
 def err403(request, exception):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(
-            reverse('account_login') +
-            '?next=' +
-            request.get_full_path())
+            f"{reverse('account_login')}?next={request.get_full_path()}")
     else:
         return TemplateResponse(request, '401.html', {}, status=401).render()
 
@@ -147,7 +145,7 @@ def ident_json(request):
     json_data['poc'] = {
         'name': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_name'],
         'email': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_email'],
-        'twitter': 'https://twitter.com/%s' % settings.TWITTER_SITE
+        'twitter': f'https://twitter.com/{settings.TWITTER_SITE}'
     }
 
     json_data['version'] = get_version()

@@ -36,6 +36,9 @@ from urllib.parse import urlparse, urljoin
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode import get_version
 from kombu import Queue, Exchange
+from kombu.serialization import register
+
+from . import serializer
 
 SILENCED_SYSTEM_CHECKS = [
     '1_8.W001',
@@ -88,9 +91,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 SITE_HOST_SCHEMA = os.getenv('SITE_HOST_SCHEMA', 'http')
 SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
 SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
-_default_siteurl = "%s://%s:%s/" % (SITE_HOST_SCHEMA,
-                                    SITE_HOST_NAME,
-                                    SITE_HOST_PORT) if SITE_HOST_PORT else "%s://%s/" % (SITE_HOST_SCHEMA, SITE_HOST_NAME)
+_default_siteurl = f"{SITE_HOST_SCHEMA}://{SITE_HOST_NAME}:{SITE_HOST_PORT}/" \
+                   if SITE_HOST_PORT else f"{SITE_HOST_SCHEMA}://{SITE_HOST_NAME}/"
 SITEURL = os.getenv('SITEURL', _default_siteurl)
 
 # we need hostname for deployed
@@ -99,13 +101,12 @@ HOSTNAME = _surl.hostname
 
 # add trailing slash to site url. geoserver url will be relative to this
 if not SITEURL.endswith('/'):
-    SITEURL = '{}/'.format(SITEURL)
+    SITEURL = f'{SITEURL}/'
 
+_DB_PATH = os.path.join(PROJECT_ROOT, 'development.db')
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'spatialite:///{path}'.format(
-        path=os.path.join(PROJECT_ROOT, 'development.db')
-    )
+    f'spatialite:///{_DB_PATH}'
 )
 
 if DATABASE_URL.startswith("spatialite"):
@@ -115,6 +116,7 @@ if DATABASE_URL.startswith("spatialite"):
         if spatialite_version < 5:
             # To workaround Shapely/Spatialite interaction bug for Spatialite < 5
             from shapely import speedups
+            speedups.enable()
     except FileNotFoundError as ex:
         print(ex)
 
@@ -289,8 +291,8 @@ MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(PROJECT_ROOT, MEDIAFILES_LOCAT
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = os.getenv('MEDIA_URL', '%s/%s/' % (FORCE_SCRIPT_NAME, MEDIAFILES_LOCATION))
-LOCAL_MEDIA_URL = os.getenv('LOCAL_MEDIA_URL', '%s/%s/' % (FORCE_SCRIPT_NAME, MEDIAFILES_LOCATION))
+MEDIA_URL = os.getenv('MEDIA_URL', f'{FORCE_SCRIPT_NAME}/{MEDIAFILES_LOCATION}/')
+LOCAL_MEDIA_URL = os.getenv('LOCAL_MEDIA_URL', f'{FORCE_SCRIPT_NAME}/{MEDIAFILES_LOCATION}/')
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
@@ -300,7 +302,7 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 
 # URL that handles the static files like app media.
 # Example: "http://media.lawrence.com"
-STATIC_URL = os.getenv('STATIC_URL', '%s/%s/' % (FORCE_SCRIPT_NAME, STATICFILES_LOCATION))
+STATIC_URL = os.getenv('STATIC_URL', f'{FORCE_SCRIPT_NAME}/{STATICFILES_LOCATION}/')
 
 # Additional directories which hold static files
 _DEFAULT_STATICFILES_DIRS = [
@@ -327,18 +329,17 @@ AWS_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
-AWS_S3_BUCKET_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_BUCKET_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
 AWS_QUERYSTRING_AUTH = False
 if not DEBUG and S3_STATIC_ENABLED:
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    STATIC_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN,
-                                     STATICFILES_LOCATION)
+    STATIC_URL = f"https://{AWS_S3_BUCKET_DOMAIN}/{STATICFILES_LOCATION}/"
 
 if not DEBUG and S3_MEDIA_ENABLED:
     MEDIAFILES_LOCATION = 'media'
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
+    MEDIA_URL = f"https://{AWS_S3_BUCKET_DOMAIN}/{MEDIAFILES_LOCATION}/"
 
 # Cache Bustin Settings
 CACHE_BUSTING_STATIC_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_STATIC_ENABLED', 'False'))
@@ -562,7 +563,7 @@ DYNAMIC_REST = {
     # ENABLE_SERIALIZER_OPTIMIZATIONS: enable/disable representation speedups
     'ENABLE_SERIALIZER_OPTIMIZATIONS': True,
 
-    # DEFER_MANY_RELATIONS: automatically defer many-relations, unless 
+    # DEFER_MANY_RELATIONS: automatically defer many-relations, unless
     # `deferred=False` is explicitly set on the field.
     'DEFER_MANY_RELATIONS': False,
 
@@ -764,7 +765,7 @@ if SESSION_EXPIRED_CONTROL_ENABLED:
     # This middleware checks for ACCESS_TOKEN validity and if expired forces
     # user logout
     MIDDLEWARE += \
-            ('geonode.security.middleware.SessionControlMiddleware',)
+        ('geonode.security.middleware.SessionControlMiddleware',)
 
 SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get('SESSION_COOKIE_SECURE', 'False'))
 CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get('CSRF_COOKIE_SECURE', 'False'))
@@ -845,16 +846,16 @@ LOCKDOWN_GEONODE = ast.literal_eval(os.getenv('LOCKDOWN_GEONODE', 'False'))
 # - authorized exempt urls needed for oauth when GeoNode is set to lockdown
 AUTH_EXEMPT_URLS = (
     r'^%s/?$' % FORCE_SCRIPT_NAME,
-    '%s/o/*' % FORCE_SCRIPT_NAME,
-    '%s/gs/*' % FORCE_SCRIPT_NAME,
-    '%s/account/*' % FORCE_SCRIPT_NAME,
-    '%s/static/*' % FORCE_SCRIPT_NAME,
-    '%s/api/o/*' % FORCE_SCRIPT_NAME,
-    '%s/api/roles' % FORCE_SCRIPT_NAME,
-    '%s/api/adminRole' % FORCE_SCRIPT_NAME,
-    '%s/api/users' % FORCE_SCRIPT_NAME,
-    '%s/api/layers' % FORCE_SCRIPT_NAME,
-    '%s/monitoring' % FORCE_SCRIPT_NAME,
+    f'{FORCE_SCRIPT_NAME}/o/*',
+    f'{FORCE_SCRIPT_NAME}/gs/*',
+    f'{FORCE_SCRIPT_NAME}/account/*',
+    f'{FORCE_SCRIPT_NAME}/static/*',
+    f'{FORCE_SCRIPT_NAME}/api/o/*',
+    f'{FORCE_SCRIPT_NAME}/api/roles',
+    f'{FORCE_SCRIPT_NAME}/api/adminRole',
+    f'{FORCE_SCRIPT_NAME}/api/users',
+    f'{FORCE_SCRIPT_NAME}/api/layers',
+    f'{FORCE_SCRIPT_NAME}/monitoring',
     r'^/i18n/setlang/?$',
 )
 
@@ -916,8 +917,8 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # per-deployment settings should go here
 
 # Login and logout urls override
-LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
-LOGOUT_URL = os.getenv('LOGOUT_URL', '{}account/logout/'.format(SITEURL))
+LOGIN_URL = os.getenv('LOGIN_URL', f'{SITEURL}account/login/')
+LOGOUT_URL = os.getenv('LOGOUT_URL', f'{SITEURL}account/logout/')
 
 ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
 ACCOUNT_LOGOUT_REDIRECT_URL = os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
@@ -946,8 +947,8 @@ GEOSERVER_LOCATION = os.getenv(
 
 # add trailing slash to geoserver location url.
 if not GEOSERVER_LOCATION.endswith('/'):
-    GEOSERVER_LOCATION = '{}/'.format(GEOSERVER_LOCATION)
-    
+    GEOSERVER_LOCATION = f'{GEOSERVER_LOCATION}/'
+
 GEOSERVER_PUBLIC_SCHEMA = os.getenv(
     'GEOSERVER_PUBLIC_SCHEMA', SITE_HOST_SCHEMA
 )
@@ -960,10 +961,10 @@ GEOSERVER_PUBLIC_PORT = os.getenv(
     'GEOSERVER_PUBLIC_PORT', 8080
 )
 
-_default_public_location = '{}://{}:{}/geoserver/'.format(
-    GEOSERVER_PUBLIC_SCHEMA,
-    GEOSERVER_PUBLIC_HOST,
-    GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else '{}://{}/geoserver/'.format(GEOSERVER_PUBLIC_SCHEMA, GEOSERVER_PUBLIC_HOST)
+if GEOSERVER_PUBLIC_PORT:
+    _default_public_location = f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}:{GEOSERVER_PUBLIC_PORT}/geoserver/'
+else:
+    _default_public_location = f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}/geoserver/'
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
     'GEOSERVER_PUBLIC_LOCATION', _default_public_location
@@ -981,7 +982,8 @@ OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
     'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
 )
 
-GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else ast.literal_eval(os.getenv('GEOFENCE_SECURITY_ENABLED', 'True'))
+GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION \
+    else ast.literal_eval(os.getenv('GEOFENCE_SECURITY_ENABLED', 'True'))
 
 # OGC (WMS/WFS/WCS) Server Settings
 # OGC (WMS/WFS/WCS) Server Settings
@@ -1006,8 +1008,7 @@ OGC_SERVER = {
         'WMST_ENABLED': ast.literal_eval(os.getenv('WMST_ENABLED', 'False')),
         'BACKEND_WRITE_ENABLED': ast.literal_eval(os.getenv('BACKEND_WRITE_ENABLED', 'True')),
         'WPS_ENABLED': ast.literal_eval(os.getenv('WPS_ENABLED', 'False')),
-        'LOG_FILE': '%s/geoserver/data/logs/geoserver.log'
-        % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+        'LOG_FILE': f'{os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir))}/geoserver/data/logs/geoserver.log',
         # Set to name of database in DATABASES dictionary to enable
         # 'datastore',
         'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
@@ -1226,7 +1227,7 @@ except ValueError:
 #
 # AUTH_IP_WHITELIST = ['192.168.1.158', '192.168.1.159']
 AUTH_IP_WHITELIST = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('AUTH_IP_WHITELIST') is None \
-        else re.split(r' *[,|:|;] *', os.getenv('AUTH_IP_WHITELIST'))
+    else re.split(r' *[,|:|;] *', os.getenv('AUTH_IP_WHITELIST'))
 
 # A tuple of hosts the proxy can send requests to.
 try:
@@ -1234,7 +1235,10 @@ try:
     PROXY_ALLOWED_HOSTS = ast.literal_eval(os.getenv('PROXY_ALLOWED_HOSTS'))
 except ValueError:
     # fallback to regular list of values separated with misc chars
-    PROXY_ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode', 'spatialreference.org', 'nominatim.openstreetmap.org', 'dev.openlayers.org'] if os.getenv('PROXY_ALLOWED_HOSTS') is None \
+    PROXY_ALLOWED_HOSTS = [
+        HOSTNAME, 'localhost', 'django', 'geonode',
+        'spatialreference.org', 'nominatim.openstreetmap.org', 'dev.openlayers.org'] \
+        if os.getenv('PROXY_ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
 
 # The proxy to use when making cross origin requests.
@@ -1311,10 +1315,10 @@ try:
 except ValueError:
     # fallback to regular list of values separated with misc chars
     AVATAR_PROVIDERS = (
-    'avatar.providers.PrimaryAvatarProvider',
-    'avatar.providers.GravatarAvatarProvider',
-    'avatar.providers.DefaultAvatarProvider'
-   ) if os.getenv('AVATAR_PROVIDERS') is None \
+        'avatar.providers.PrimaryAvatarProvider',
+        'avatar.providers.GravatarAvatarProvider',
+        'avatar.providers.DefaultAvatarProvider'
+    ) if os.getenv('AVATAR_PROVIDERS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('AVATAR_PROVIDERS'))
 
 # Number of results per page listed in the GeoNode search pages
@@ -1413,15 +1417,15 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
         if PYCSW:
             pycsw_config = PYCSW["CONFIGURATION"]
             if pycsw_config:
-                    pycsw_catalogue = {
-                        ("%s" % pycsw_config['metadata:main']['identification_title']): {
-                            "url": CATALOGUE['default']['URL'],
-                            "type": "csw",
-                            "title": pycsw_config['metadata:main']['identification_title'],
-                            "autoload": True
-                         }
+                pycsw_catalogue = {
+                    f"{pycsw_config['metadata:main']['identification_title']}": {
+                        "url": CATALOGUE['default']['URL'],
+                        "type": "csw",
+                        "title": pycsw_config['metadata:main']['identification_title'],
+                        "autoload": True
                     }
-                    return pycsw_catalogue
+                }
+                return pycsw_catalogue
         return None
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
@@ -1432,7 +1436,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "type": "wms",
             "title": "Demo WMS Service",
             "autoload": False
-         },
+        },
         "Demo WMTS Service": {
             "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
             "type": "wmts",
@@ -1444,7 +1448,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
 
     if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]
+        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]  # noqa
         MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
 
     DEFAULT_MS2_BACKGROUNDS = [
@@ -1471,9 +1475,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "name": "s2cloudless:s2cloudless",
             "url": "https://maps.geo-solutions.it/geoserver/wms",
             "group": "background",
-            "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
+            "thumbURL": f"{SITEURL}static/mapstorestyle/img/s2cloudless-s2cloudless.png",
             "visibility": False
-       }, {
+        }, {
             "source": "ol",
             "group": "background",
             "id": "none",
@@ -1482,20 +1486,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "type": "empty",
             "visibility": False,
             "args": ["Empty Background", {"visibility": False}]
-       }
-       # Custom XYZ Tile Provider
-        # {
-        #     "type": "tileprovider",
-        #     "title": "Title",
-        #     "provider": "custom", // or undefined
-        #     "name": "Name",
-        #     "group": "background",
-        #     "visibility": false,
-        #     "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        #     "options": {
-        #         "subdomains": [ "a", "b"]
-        #     }
-        # }
+        }
     ]
 
     if MAPBOX_ACCESS_TOKEN:
@@ -1504,13 +1495,13 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "title": "MapBox streets-v11",
             "provider": "MapBoxStyle",
             "name": "MapBox streets-v11",
-            "accessToken": "%s" % MAPBOX_ACCESS_TOKEN,
+            "accessToken": f"{MAPBOX_ACCESS_TOKEN}",
             "source": "streets-v11",
-            "thumbURL": "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token=%s" % MAPBOX_ACCESS_TOKEN,
+            "thumbURL": f"https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token={MAPBOX_ACCESS_TOKEN}",  # noqa
             "group": "background",
             "visibility": True
         }
-        DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
+        DEFAULT_MS2_BACKGROUNDS = [BASEMAP, ] + DEFAULT_MS2_BACKGROUNDS
 
     if BING_API_KEY:
         BASEMAP = {
@@ -1522,7 +1513,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "apiKey": "{{apiKey}}",
             "visibility": False
         }
-        DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
+        DEFAULT_MS2_BACKGROUNDS = [BASEMAP, ] + DEFAULT_MS2_BACKGROUNDS
 
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 
@@ -1549,10 +1540,10 @@ SEARCH_FILTERS = {
 TINYMCE_DEFAULT_CONFIG = {
     "theme": "silver",
     "height": 500,
-    "plugins": 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+    "plugins": 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',  # noqa
     "imagetools_cors_hosts": ['picsum.photos'],
     "menubar": 'file edit view insert format tools table help',
-    "toolbar": 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save | insertfile image media template link anchor codesample | ltr rtl',
+    "toolbar": 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save | insertfile image media template link anchor codesample | ltr rtl',  # noqa
     "toolbar_sticky": "true",
     "autosave_ask_before_unload": "true",
     "autosave_interval": "30s",
@@ -1571,7 +1562,7 @@ TINYMCE_DEFAULT_CONFIG = {
         {
             "title": 'New Table',
             "description": 'creates a new table',
-            "content": '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>'
+            "content": '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>'  # noqa
         },
         {
             "title": 'Starting my story',
@@ -1581,7 +1572,7 @@ TINYMCE_DEFAULT_CONFIG = {
         {
             "title": 'New list with dates',
             "description": 'New List with dates',
-            "content": '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>'
+            "content": '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>'  # noqa
         }
     ],
     "template_cdate_format": '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
@@ -1638,7 +1629,7 @@ else:
         'CELERY_RESULT_BACKEND_PATH', os.path.join(PROJECT_ROOT, '.celery_results'))
     if not os.path.exists(CELERY_RESULT_BACKEND_PATH):
         os.makedirs(CELERY_RESULT_BACKEND_PATH)
-    CELERY_RESULT_BACKEND = 'file:///%s' % CELERY_RESULT_BACKEND_PATH
+    CELERY_RESULT_BACKEND = f'file:///{CELERY_RESULT_BACKEND_PATH}'
 
 CELERY_BROKER_URL = os.environ.get('BROKER_URL', _BROKER_URL)
 CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get('CELERY_RESULT_PERSISTENT', 'False'))
@@ -1656,9 +1647,6 @@ CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_E
 CELERY_TASK_EAGER_PROPAGATES = ast.literal_eval(os.environ.get('CELERY_TASK_EAGER_PROPAGATES', 'True'))
 CELERY_TASK_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_TASK_IGNORE_RESULT', 'True'))
 
-
-from . import serializer
-from kombu.serialization import register
 register('geonode_json', serializer.dumps, serializer.loads, content_type='application/json', content_encoding='utf-8')
 
 # I use these to debug kombu crashes; we get a more informative message.
@@ -1757,7 +1745,7 @@ CELERY_SEND_TASK_ERROR_EMAILS = ast.literal_eval(os.environ.get('CELERY_SEND_TAS
 # NOTIFICATIONS SETTINGS
 # ########################################################################### #
 NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get('NOTIFICATION_ENABLED', 'True')) or TEST
-#PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "people.Profile"
+# PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "people.Profile"
 
 # notifications backends
 NOTIFICATIONS_BACKEND = os.environ.get('NOTIFICATIONS_BACKEND', 'geonode.notifications_backend.EmailBackend')
@@ -1808,7 +1796,7 @@ if os.name == 'nt':
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
             # maybe it will be found regardless if not it will throw 500 error
-            from django.contrib.gis.geos import GEOSGeometry  # flake8: noqa
+            from django.contrib.gis.geos import GEOSGeometry  # noqa
 
 # Keywords thesauri
 # e.g. THESAURUS = {'name':'inspire_themes', 'required':True, 'filter':True}
@@ -1836,7 +1824,7 @@ if os.name == 'nt':
       3. Superusers can do enything.
 
     - if [ GROUP_PRIVATE_RESOURCES == True ]
-      The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and member of 
+      The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and member of
        the belonging groups.
 
     - if [ GROUP_MANDATORY_RESOURCES == True ]
@@ -1886,7 +1874,7 @@ ACCOUNT_MAX_EMAIL_ADDRESSES = int(os.getenv('ACCOUNT_MAX_EMAIL_ADDRESSES', '2'))
 
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = ast.literal_eval(os.environ.get('SOCIALACCOUNT_AUTO_SIGNUP', 'True'))
-#This will hide or show local registration form in allauth view. True will show form
+# This will hide or show local registration form in allauth view. True will show form
 SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP = strtobool(os.environ.get('SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP', 'True'))
 
 # Uncomment this to enable Linkedin and Facebook login
@@ -1938,15 +1926,26 @@ SOCIALACCOUNT_PROFILE_EXTRACTORS = {
 
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 
+
 # Choose thumbnail generator -- this is the default generator
 THUMBNAIL_GENERATOR = os.environ.get(
-    'THUMBNAIL_GENERATOR', 'geonode.layers.utils.create_gs_thumbnail_geonode')
-THUMBNAIL_GENERATOR_DEFAULT_BG = os.environ.get(
-    'THUMBNAIL_GENERATOR_DEFAULT_BG',
-    'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png')
-THUMBNAIL_GENERATOR_DEFAULT_SIZE = {
+    'THUMBNAIL_GENERATOR', 'geonode.thumbs.thumbnails.create_gs_thumbnail_geonode')
+
+THUMBNAIL_SIZE = {
     'width': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_WIDTH', 240)),
     'height': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_HEIGHT', 200))
+}
+
+THUMBNAIL_BACKGROUND = {
+    # class generating thumbnail's background
+    'class': 'geonode.thumbs.background.WikiMediaTileBackground',
+    # 'class': 'geonode.thumbs.background.OSMTileBackground',
+    # 'class': 'geonode.thumbs.background.GenericXYZBackground',
+    # initialization parameters for generator instance, valid only for generic classes
+    'options': {
+        # 'url': URL for the generic xyz service
+        # 'tile_size': tile size for the generic xyz service, default is 256
+    },
 }
 
 # define the urls after the settings are overridden
@@ -1955,16 +1954,16 @@ if USE_GEOSERVER:
     PUBLIC_GEOSERVER = {
         "source": {
             "title": "GeoServer - Public Layers",
-            "attribution": "&copy; %s" % SITEURL,
+            "attribution": f"&copy; {SITEURL}",
             "ptype": LOCAL_GXP_PTYPE,
-            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
+            "url": f"{OGC_SERVER['default']['PUBLIC_LOCATION']}ows",
             "restUrl": "/gs/rest"
         }
     }
     LOCAL_GEOSERVER = {
         "source": {
             "title": "GeoServer - Private Layers",
-            "attribution": "&copy; %s" % SITEURL,
+            "attribution": f"&copy; {SITEURL}",
             "ptype": LOCAL_GXP_PTYPE,
             "url": "/gs/ows",
             "restUrl": "/gs/rest"
@@ -2025,9 +2024,8 @@ USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'F
 USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv('USER_ANALYTICS_GZIP', 'False'))
 
 GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
-#This controls if tastypie search on resourches is performed only with titles
+# This controls if tastypie search on resourches is performed only with titles
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
-
