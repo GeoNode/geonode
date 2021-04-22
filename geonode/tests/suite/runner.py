@@ -39,7 +39,7 @@ null_file = open('/dev/null', 'w')
 class GeoNodeBaseSuiteDiscoverRunner(DiscoverRunner):
 
     def __init__(self, pattern=None, top_level=None, verbosity=1,
-                 interactive=True, failfast=False, keepdb=False,
+                 interactive=True, failfast=True, keepdb=False,
                  reverse=False, debug_mode=False, debug_sql=False, parallel=0,
                  tags=None, exclude_tags=None, test_name_patterns=None,
                  pdb=False, buffer=False, enable_faulthandler=True,
