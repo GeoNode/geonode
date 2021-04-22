@@ -357,8 +357,19 @@ def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
                     for format in formats:
                         gwc_format = etree.Element('string')
                         gwc_format.text = format
-
                         gwc_mimeFormats.append(gwc_format)
+
+                gwc_gridSubsets = tree.find('gridSubsets')
+                tree.remove(gwc_gridSubsets)
+                gwc_gridSubsets = etree.Element('gridSubsets')
+                for gridSubset in ('EPSG:4326', 'EPSG:3857', 'EPSG:900913'):
+                    gwc_gridSubset = etree.Element('gridSubset')
+                    gwc_gridSetName = etree.Element('gridSetName')
+                    gwc_gridSetName.text = gridSubset
+                    gwc_gridSubset.append(gwc_gridSetName)
+                    gwc_gridSubsets.append(gwc_gridSubset)
+
+                tree.append(gwc_gridSubsets)
 
                 gwc_parameterFilters = tree.find('parameterFilters')
                 if filters is None:
@@ -599,11 +610,12 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
         }]
         formats = [
             'application/json;type=utfgrid',
-            'image/png',
-            'image/vnd.jpeg-png',
-            'image/jpeg',
             'image/gif',
-            'image/png8'
+            'image/jpeg',
+            'image/png',
+            'image/png8',
+            'image/vnd.jpeg-png',
+            'image/vnd.jpeg-png8'
         ]
     toggle_layer_cache(f'{_layer_workspace}:{_layer_name}', enable=True, filters=filters, formats=formats)
 
