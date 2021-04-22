@@ -24,7 +24,7 @@ from django.apps import apps
 from django.db.models import Q
 from django.urls import reverse
 from django.conf import settings
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template.response import TemplateResponse
 from geonode.base.templatetags.base_tags import facets
 from django.http import HttpResponse, HttpResponseRedirect
@@ -125,13 +125,13 @@ def err403(request, exception):
 
 
 def handler404(request, exception, template_name="404.html"):
-    response = render_to_response(template_name)
+    response = render(template_name)
     response.status_code = 404
     return response
 
 
 def handler500(request, template_name="500.html"):
-    response = render_to_response(template_name)
+    response = render(template_name)
     response.status_code = 500
     return response
 

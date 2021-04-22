@@ -24,7 +24,7 @@ import json
 import logging
 import traceback
 from lxml import etree
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from os.path import isfile
 
 from urllib.parse import (

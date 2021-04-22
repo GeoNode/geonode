@@ -69,6 +69,8 @@ def view_or_basicauth(view, request, test_func, realm="", *args, **kwargs):
     if test_func(auth.get_user(request)):
         # Already logged in, just return the view.
         #
+        if 'step' not in kwargs:
+            kwargs['step'] = None
         return view(request, *args, **kwargs)
 
     # They are not logged in. See if they provided login credentials

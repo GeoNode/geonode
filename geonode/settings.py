@@ -521,11 +521,18 @@ INSTALLED_APPS = (
 )
 
 INSTALLED_APPS += ('markdownify',)
-MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
-markdown_white_listed_tags = {
+
+markdown_white_listed_tags = [
     'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'ul', 'li', 'span', 'blockquote', 'strong', 'code'
+]
+
+MARKDOWNIFY = {
+   "default": {
+      "WHITELIST_TAGS": os.getenv('MARKDOWNIFY_WHITELIST_TAGS', markdown_white_listed_tags)
+   }
 }
-MARKDOWNIFY_WHITELIST_TAGS = os.getenv('MARKDOWNIFY_WHITELIST_TAGS', markdown_white_listed_tags)
+
+MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
 
 INSTALLED_APPS += GEONODE_APPS
 
@@ -2029,3 +2036,5 @@ SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'Tr
 # -- END Settings for MONITORING plugin
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

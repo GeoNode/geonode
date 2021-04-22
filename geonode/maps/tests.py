@@ -21,7 +21,7 @@ import json
 import logging
 
 from mock import patch
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from django.test.utils import override_settings
 
 from pinax.ratings.models import OverallRating

@@ -19,7 +19,7 @@
 #########################################################################
 
 from typing import List
-from defusedxml import lxml as dlxml
+from defusedxml import ElementTree as dlxml
 from django.conf import settings
 
 from django.core.management.base import BaseCommand, CommandError

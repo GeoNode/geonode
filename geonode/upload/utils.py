@@ -28,7 +28,7 @@ import traceback
 from osgeo import ogr
 from lxml import etree
 from itertools import islice
-from defusedxml import lxml as dlxml
+from defusedxml import ElementTree as dlxml
 
 from django.conf import settings
 from django.urls import reverse

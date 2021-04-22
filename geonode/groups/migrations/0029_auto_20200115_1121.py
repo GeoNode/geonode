@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='groupprofile',
             name='group',
-            field=models.OneToOneField(on_delete='CASCASE', to='auth.Group'),
+            field=models.OneToOneField(on_delete=models.CASCADE, to='auth.Group'),
         ),
     ]

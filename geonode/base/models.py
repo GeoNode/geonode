@@ -41,7 +41,7 @@ from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.staticfiles.templatetags import staticfiles
+from django.templatetags.static import static
 from django.core.files.storage import default_storage as storage
 from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
@@ -1470,7 +1470,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
            It could be a local one if it exists, a remote one (WMS GetImage) for example
            or a 'Missing Thumbnail' one.
         """
-        _thumbnail_url = self.thumbnail_url or staticfiles.static(settings.MISSING_THUMBNAIL)
+        _thumbnail_url = self.thumbnail_url or static(settings.MISSING_THUMBNAIL)
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
         if local_thumbnails.count() > 0:
@@ -1565,7 +1565,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             logger.error(f'Check permissions for file {upload_path}.')
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
-                _thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
+                _thumbnail_url = static(settings.MISSING_THUMBNAIL)
                 obj, _created = Link.objects.get_or_create(
                     resource=self,
                     name='Thumbnail',

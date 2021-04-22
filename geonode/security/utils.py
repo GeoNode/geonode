@@ -21,7 +21,7 @@ from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from lxml import etree
 import xml.etree.ElementTree as ET
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 
 import json
 import logging
