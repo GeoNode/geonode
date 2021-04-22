@@ -32,7 +32,6 @@ from django.utils.translation import ugettext as _
 
 from geonode.base.models import Link
 from geonode.layers.models import Layer
-from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.base.bbox_utils import BBOXHelper
 
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
@@ -294,13 +293,10 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def _create_layer_thumbnail(self, geonode_layer):
         """Create a thumbnail with a WMS request."""
-        create_thumbnail(
-            instance=geonode_layer,
-            wms_version=self.parsed_service.version,
-            bbox=geonode_layer.bbox,
-            forced_crs=geonode_layer.srid if 'EPSG:' in str(geonode_layer.srid) else f'EPSG:{geonode_layer.srid}',
-            overwrite=True,
-        )
+        # The thumbnail generation implementation relies on WMS image retrieval, which fails for layers from ESRI
+        # services (not all of them support GetCapabilities or GetCapabilities path is different from the service's
+        # URL); in order to create a thumbnail for ESRI layer, a user must upload one.
+        logger.debug("Skipping thumbnail execution for layer from ESRI service.")
 
     def _create_layer_service_link(self, geonode_layer):
         Link.objects.get_or_create(
