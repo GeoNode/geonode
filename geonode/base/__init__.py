@@ -29,6 +29,3 @@ class BaseAppConfig(NotificationsAppConfigBase):
                      ("request_resource_edit", _("Request resource change"),
                       _("Owner has requested permissions to modify a resource")),
                      )
-
-
-default_app_config = 'geonode.base.BaseAppConfig'

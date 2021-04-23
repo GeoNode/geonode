@@ -659,7 +659,7 @@ community."
         map_obj.update_from_viewer(config_map, context={})
         title = config_map.get('title', config_map['about']['title'])
         abstract = config_map.get('abstract', config_map['about']['abstract'])
-        center = config_map['map'].get('center', settings.DEFAULT_CONTENT_TYPE)
+        center = config_map['map'].get('center', {})
         zoom = config_map['map'].get('zoom', settings.DEFAULT_MAP_ZOOM)
 
         projection = config_map['map']['projection']
