@@ -149,7 +149,7 @@
       {% endif %}
     </ul>
     <ul class="list-group">
-      {% if not READ_ONLY_MODE %}
+      {% if user.is_authenticated and not READ_ONLY_MODE %}
         <li class="list-group-item"><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
         {% if USE_GEOSERVER and CREATE_LAYER %}
           <li class="list-group-item"><a href="{% url "layer_create" %}"><i class="fa fa-map-o"></i> {% trans "Create a new layer" %}</a></li>
