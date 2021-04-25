@@ -8,6 +8,10 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" | tee /
 RUN echo "deb http://deb.debian.org/debian/ stable main contrib non-free" | tee /etc/apt/sources.list.d/debian.list
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
+# To get GDAL 3.2.1 to fix this issue https://github.com/OSGeo/gdal/issues/1692
+# TODO: The following line should be removed if base image upgraded to Bullseye
+RUN echo "deb http://deb.debian.org/debian/ bullseye main contrib non-free" | tee /etc/apt/sources.list.d/debian.list
+
 # This section is borrowed from the official Django image but adds GDAL and others
 RUN apt-get update && apt-get install -y \
     libgdal-dev libpq-dev libxml2-dev \
@@ -23,46 +27,6 @@ RUN apt-get update && apt-get install -y \
     uwsgi uwsgi-plugin-python3 \
     firefox-esr \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
-
-# GDAL upgrade to fix this issue https://github.com/OSGeo/gdal/issues/1692
-# proj-7 && gdal 3.2.1 installation should be removed if base image upgraded to Bullseye
-# install proj-7
-WORKDIR /usr/src
-RUN wget https://download.osgeo.org/proj/proj-7.2.1.tar.gz
-RUN tar xvzf proj-7.2.1.tar.gz
-WORKDIR ./proj-7.2.1
-RUN ./configure --without-curl
-RUN make && make install
-
-# Download GDAL v3.2.1 Source (ex. 3.2.1)
-WORKDIR /usr/src
-ENV CPUS 2
-ENV GDAL_SHORT_VERSION 3.2.1
-ENV GDAL_VERSION 3.2.1
-RUN wget -q https://download.osgeo.org/gdal/${GDAL_SHORT_VERSION}/gdal-${GDAL_VERSION}.tar.gz
-RUN tar -xzf gdal-${GDAL_VERSION}.tar.gz && cd gdal-${GDAL_SHORT_VERSION} && \
-    ./configure \
-    --disable-debug \
-    --prefix=/usr/local \
-    --disable-static \
-    --with-curl=/usr/local/bin/curl-config \
-    --with-geos \
-    #--with-geotiff=/usr/local \
-    --with-hide-internal-symbols=yes \
-    #--with-libtiff=/usr/local \
-    --with-jpeg=/usr/local \
-    --with-png \
-    #--with-openjpeg \
-    --with-sqlite3 \
-    --with-proj=/usr/local \
-    #--with-rename-internal-libgeotiff-symbols=yes \
-    #--with-rename-internal-libtiff-symbols=yes \
-    --with-threads=yes \
-    --with-webp=/usr/local \
-    #--with-zstd=/usr/local \
-    #--with-libdeflate \
-    && echo "building GDAL ${GDAL_VERSION}..." \
-    && make -j${CPUS} && make --quiet install
 
 
 # add bower and grunt command
@@ -97,7 +61,7 @@ RUN pip install --upgrade --no-cache-dir  --src /usr/src -r requirements.txt \
 RUN pip install --upgrade  -e .
 
 # Activate "memcached"
-RUN apt install memcached
+RUN apt install -y memcached
 RUN pip install pylibmc \
     && pip install sherlock
 
