@@ -275,7 +275,7 @@
           {% endif %}
         {% endif %}
 
-        {% if not READ_ONLY_MODE %}
+        {% if user.is_authenticated and not READ_ONLY_MODE %}
           <li class="list-group-item">
             <h4>{% trans "Copy this map" %}</h4>
             <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
