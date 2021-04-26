@@ -6,7 +6,7 @@
 
 {% block body %}
   <div class="page-header">
-    {% if not READ_ONLY_MODE %}
+    {% if user.is_authenticated and not READ_ONLY_MODE %}
       <a href="{% url "new_geoapp" %}" class="btn btn-primary pull-right">{% trans "Create New" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
     {% endif %}
     <h2>{% trans "Explore" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</h2>

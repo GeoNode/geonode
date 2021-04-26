@@ -624,7 +624,7 @@
           {% endfor %}
         </ul>
     </li>
-    {% if not READ_ONLY_MODE %}
+    {% if user.is_authenticated and not READ_ONLY_MODE %}
       <li class="list-group-item">
         <h4>{% trans "Create a map using this layer" %}</h4>
         <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
