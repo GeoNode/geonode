@@ -9,7 +9,7 @@
     <div class="row">
       <div class="col-xs-12">
 
-        {% if facet_type == 'layers' %}
+        {% if user.is_authenticated and facet_type == 'layers' %}
           {% block bulk_perms_button %}
           <div class="btn-group btn-group-justified" role="group" aria-label="tools">
             <div class="btn-group" role="group">
