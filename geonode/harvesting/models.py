@@ -19,7 +19,9 @@
 
 import json
 
+import jsonschema.exceptions
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.module_loading import import_string
@@ -28,6 +30,7 @@ from django_celery_beat.models import (
     IntervalSchedule,
     PeriodicTask,
 )
+from jsonschema import validate
 from jsonfield import JSONField
 
 from .config import HARVESTER_CLASSES
@@ -85,6 +88,24 @@ class Harvester(models.Model):
 
     def __str__(self):
         return f"{self.name}({self.id})"
+
+    def clean(self):
+        """Perform model validation by inspecting fields that depend on each other.
+
+        We validate the harvester type specific configuration by determining if it meets
+        the configured jsonschema (if any).
+
+        """
+
+        worker = self.get_harvester_worker()
+        json_schema = worker.get_extra_config_schema()
+        if json_schema is not None:
+            try:
+                validate(self.harvester_type_specific_configuration, json_schema)
+            except jsonschema.exceptions.ValidationError as exc:
+                raise ValidationError(str(exc))
+            except jsonschema.exceptions.SchemaError as exc:
+                raise RuntimeError(f"Invalid schema: {exc}")
 
     def setup_periodic_task(self) -> None:
         """Setup the related `periodic_task` for the instance.

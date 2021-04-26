@@ -42,6 +42,13 @@ class BaseHarvester:
             record.id,
         )
 
+    def get_extra_config_schema(self) -> typing.Optional[typing.Dict]:
+        """
+        Return a jsonschema schema that is used to validate models.Harvester objects.
+        """
+
+        return None
+
     def create_harvesting_session(self) -> int:
         session = models.HarvestingSession.objects.create(
             harvester_id=self.harvester_id)

@@ -31,6 +31,7 @@ from django.template.loader import render_to_string
 from lxml import etree
 
 from .. import resourcedescriptor
+from ..utils import XML_PARSER
 from .base import BaseHarvester
 from . import tasks
 
@@ -126,7 +127,7 @@ class GeonodeHarvester(BaseHarvester):
         logger.debug(
             f"get_records_response.status_code: {get_records_response.status_code}")
         get_records_response.raise_for_status()
-        root = etree.fromstring(get_records_response.content)
+        root = etree.fromstring(get_records_response.content, parser=XML_PARSER)
         # logger.debug(etree.tostring(root, pretty_print=True))
         records = root.xpath(
             f"csw:SearchResults/{self.typename}", namespaces=root.nsmap)
@@ -161,7 +162,7 @@ class GeonodeHarvester(BaseHarvester):
             data=payload
         )
         get_records_response.raise_for_status()
-        root = etree.fromstring(get_records_response.content)
+        root = etree.fromstring(get_records_response.content, parser=XML_PARSER)
         # logger.debug(etree.tostring(root, pretty_print=True))
         total_records = int(
             root.xpath(
@@ -172,6 +173,33 @@ class GeonodeHarvester(BaseHarvester):
                 "csw:SearchResults/@numberOfRecordsReturned", namespaces=root.nsmap)[0]
         )
         return total_records, page_size
+
+    def get_extra_config_schema(self) -> typing.Dict:
+        return {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "https://geonode.org/harvesting/geonode-harvester.schema.json",
+            "title": "GeoNode harvester config",
+            "description": (
+                "A jsonschema for validating configuration option for GeoNode's "
+                "remote GeoNode harvester"
+            ),
+            "type": "object",
+            "properties": {
+                "harvest_documents": {
+                    "type": "boolean",
+                    "default": True
+                },
+                "harvest_layers": {
+                    "type": "boolean",
+                    "default": True
+                },
+                "harvest_maps": {
+                    "type": "boolean",
+                    "default": True
+                },
+            },
+            "additionalProperties": False,
+        }
 
 
 def get_resource_descriptor(record: etree.Element):
