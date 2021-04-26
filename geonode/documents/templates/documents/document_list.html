@@ -8,7 +8,7 @@
 
 {% block body %}
   <div class="page-header">
-    {% if not READ_ONLY_MODE %}
+    {% if user.is_authenticated and not READ_ONLY_MODE %}
       <a href="{% url "document_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Documents" %}</a>
     {% endif %}
     <h2>{% trans "Explore Documents" %}</h2>

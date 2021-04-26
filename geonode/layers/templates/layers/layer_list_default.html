@@ -8,7 +8,7 @@
 
 {% block body %}
 <div class="page-header">
-  {% if not READ_ONLY_MODE %}
+  {% if user.is_authenticated and not READ_ONLY_MODE %}
     <a href="{% url "layer_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Layers" %}</a>
   {% endif %}
   <h2 class="page-title">{% trans "Explore Layers" %}</h2>
