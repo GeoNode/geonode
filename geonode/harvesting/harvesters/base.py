@@ -88,6 +88,3 @@ class BaseHarvester:
     def perform_metadata_harvesting(self) -> None:
         """Harvest resources from the remote service"""
         raise NotImplementedError
-
-    def harvest_batch(self, *args, **kwargs):
-        raise NotImplementedError

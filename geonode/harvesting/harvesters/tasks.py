@@ -35,7 +35,24 @@ logger = logging.getLogger(__name__)
     acks_late=True,
     ignore_result=False,
 )
-def harvest_records(self, harvesting_session_id: int, start_index: int, page_size: int):
+def harvest_record_batch(
+        self, harvesting_session_id: int, offset: int, endpoint_suffix: str = None):
+    harvesting_session = models.HarvestingSession.objects.get(pk=harvesting_session_id)
+    harvester = harvesting_session.harvester
+    worker = harvester.get_harvester_worker()
+    worker.set_harvesting_session_id(harvesting_session_id)
+    worker.harvest_record_batch(endpoint_suffix, offset)
+
+
+@app.task(
+    bind=True,
+    name='geonode.harvesting.harvesters.tasks.harvest_csw_records',
+    queue='geonode',
+    acks_late=True,
+    ignore_result=False,
+)
+def harvest_csw_records(
+        self, harvesting_session_id: int, start_index: int, page_size: int):
     harvesting_session = models.HarvestingSession.objects.get(pk=harvesting_session_id)
     harvester = harvesting_session.harvester
     worker = harvester.get_harvester_worker()

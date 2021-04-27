@@ -38,7 +38,188 @@ from . import tasks
 logger = logging.getLogger(__name__)
 
 
-class GeonodeHarvester(BaseHarvester):
+class GeonodeLegacyHarvester(BaseHarvester):
+    harvest_documents: bool
+    harvest_layers: bool
+    harvest_maps: bool
+    resource_title_filter: typing.Optional[str]
+    http_session: requests.Session
+    page_size: int = 10
+
+    def __init__(
+            self,
+            *args,
+            harvest_documents: typing.Optional[bool] = True,
+            harvest_layers: typing.Optional[bool] = True,
+            harvest_maps: typing.Optional[bool] = True,
+            resource_title_filter: typing.Optional[str] = None,
+            **kwargs
+    ):
+        """A harvester for remote GeoNode instances."""
+        super().__init__(*args, **kwargs)
+        self.http_session = requests.Session()
+        self.harvest_documents = (
+            harvest_documents if harvest_documents is not None else True)
+        self.harvest_layers = harvest_layers if harvest_layers is not None else True
+        self.harvest_maps = harvest_maps if harvest_maps is not None else True
+        self.resource_title_filter = resource_title_filter
+
+    @property
+    def base_api_url(self):
+        return f"{self.remote_url}/api"
+
+    @classmethod
+    def from_django_record(cls, record: "Harvester"):
+        return cls(
+            record.remote_url,
+            record.id,
+            harvest_documents=(
+                record.harvester_type_specific_configuration.get(
+                    "harvest_documents", True)
+            ),
+            harvest_layers=(
+                record.harvester_type_specific_configuration.get(
+                    "harvest_layers", True)
+            ),
+            harvest_maps=(
+                record.harvester_type_specific_configuration.get(
+                    "harvest_maps", True)
+            ),
+            resource_title_filter=(
+                record.harvester_type_specific_configuration.get(
+                    "resource_title_filter")
+            ),
+        )
+
+    def get_extra_config_schema(self) -> typing.Dict:
+        return {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": (
+                "https://geonode.org/harvesting/geonode-legacy-harvester.schema.json"),
+            "title": "GeoNode harvester config",
+            "description": (
+                "A jsonschema for validating configuration option for GeoNode's "
+                "remote GeoNode harvester"
+            ),
+            "type": "object",
+            "properties": {
+                "harvest_documents": {
+                    "type": "boolean",
+                    "default": True
+                },
+                "harvest_layers": {
+                    "type": "boolean",
+                    "default": True
+                },
+                "harvest_maps": {
+                    "type": "boolean",
+                    "default": True
+                },
+                "resource_title_filter": {
+                    "type": "string",
+                },
+            },
+            "additionalProperties": False,
+        }
+
+    def perform_metadata_harvesting(self) -> None:
+        harvesting_session_id = self.create_harvesting_session()
+        total_resources = 0
+        harvesting_batches = []
+        for resource_type_suffix in ("documents", "layers", "maps"):
+            total_records = self._get_total_records(resource_type_suffix)
+            num_pages = math.ceil(total_records / self.page_size)
+            total_resources += total_records
+            harvesting_batches.extend(
+                self._generate_harvest_batches(
+                    num_pages, harvesting_session_id, resource_type_suffix)
+            )
+        logger.debug(
+            f"There are {total_resources!r} resources that match the current "
+            f"configuration on the remote"
+        )
+        self.update_harvesting_session(total_records_found=total_resources)
+        harvesting_finalizer = tasks.finalize_harvesting_session.signature(
+            args=(harvesting_session_id,), immutable=True)
+        harvesting_workflow = chord(harvesting_batches, body=harvesting_finalizer)
+        harvesting_workflow.apply_async()
+
+    def harvest_record_batch(self, endpoint_suffix: str, offset: int):
+        request_params = self._get_resource_list_params()
+        request_params["offset"] = offset
+        response = self.http_session.get(
+            f"{self.base_api_url}/{endpoint_suffix}/",
+            params=request_params
+        )
+        response.raise_for_status()
+        brief_record_list = response.json().get("objects", [])
+        record_descriptions = []
+        for index, brief_record in enumerate(brief_record_list):
+            logger.debug(
+                f"Harvesting {endpoint_suffix!r} batch "
+                f"{index + 1}/{len(brief_record_list)}..."
+            )
+            detail_url = f"{self.base_api_url}{brief_record['detail_url']}"
+            # we get the full record representation because that contains more
+            # information, including embedded CSW GetRecord too
+            full_record_response = self.http_session.get(detail_url)
+            full_record_response.raise_for_status()
+            full_record = full_record_response.json()
+            record_description = self._get_resource_descriptor(full_record)
+            logger.debug(
+                f"Found details for record {record_description.uuid!r} - "
+                f"{record_description.identification.title!r}"
+            )
+            record_descriptions.append(record_description)
+            self.update_harvesting_session(additional_harvested_records=1)
+
+    def _generate_harvest_batches(
+            self,
+            num_pages: int,
+            session_id: int,
+            endpoint_suffix: str
+    ) -> typing.List[typing.Callable]:
+        batches = []
+        for page in range(num_pages):
+            logger.debug(
+                f"Creating batch for {endpoint_suffix!r}, page "
+                f"({page + 1!r}/{num_pages})..."
+            )
+            pagination_offset = page * self.page_size
+            batches.append(
+                tasks.harvest_record_batch.signature(
+                    args=(session_id, pagination_offset),
+                    kwargs={"endpoint_suffix": endpoint_suffix}
+                )
+            )
+        return batches
+
+    def _get_resource_list_params(self) -> typing.Dict:
+        result = {
+            "limit": self.page_size
+        }
+        if self.resource_title_filter is not None:
+            result["title__icontains"] = self.resource_title_filter
+        return result
+
+    def _get_total_records(
+            self,
+            endpoint_suffix: str,
+    ) -> int:
+        response = self.http_session.get(
+            f"{self.base_api_url}/{endpoint_suffix}/",
+            params=self._get_resource_list_params()
+        )
+        response.raise_for_status()
+        return response.json().get("meta", {}).get("total_count", 0)
+
+    def _get_resource_descriptor(
+            self, record: typing.Dict) -> resourcedescriptor.RecordDescription:
+        xml_root = etree.fromstring(record["metadata_xml"], parser=XML_PARSER)
+        return get_resource_descriptor(xml_root)
+
+
+class GeonodeCswHarvester(BaseHarvester):
     http_session: requests.Session
     max_records: int = 10
     typename: str = "gmd:MD_Metadata"
@@ -85,7 +266,7 @@ class GeonodeHarvester(BaseHarvester):
                 start_index = current_page * page_size
                 logger.debug(f"Creating batch with start_index {start_index!r}...")
                 harvesting_batches.append(
-                    tasks.harvest_records.signature(
+                    tasks.harvest_csw_records.signature(
                         args=(harvesting_session_id, start_index, page_size))
                 )
             harvesting_workflow = chord(harvesting_batches, body=harvesting_finalizer)
@@ -173,33 +354,6 @@ class GeonodeHarvester(BaseHarvester):
                 "csw:SearchResults/@numberOfRecordsReturned", namespaces=root.nsmap)[0]
         )
         return total_records, page_size
-
-    def get_extra_config_schema(self) -> typing.Dict:
-        return {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": "https://geonode.org/harvesting/geonode-harvester.schema.json",
-            "title": "GeoNode harvester config",
-            "description": (
-                "A jsonschema for validating configuration option for GeoNode's "
-                "remote GeoNode harvester"
-            ),
-            "type": "object",
-            "properties": {
-                "harvest_documents": {
-                    "type": "boolean",
-                    "default": True
-                },
-                "harvest_layers": {
-                    "type": "boolean",
-                    "default": True
-                },
-                "harvest_maps": {
-                    "type": "boolean",
-                    "default": True
-                },
-            },
-            "additionalProperties": False,
-        }
 
 
 def get_resource_descriptor(record: etree.Element):

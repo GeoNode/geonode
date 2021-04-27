@@ -75,7 +75,9 @@ class Harvester(models.Model):
     harvester_type_specific_configuration = JSONField(
         help_text=_(
             "Configuration specific to each harvester type. Please consult GeoNode "
-            "documentation on harvesting for more info.")
+            "documentation on harvesting for more info. This field is mandatory, so at "
+            "the very least an empty object (i.e. {}) must be supplied."
+        )
     )
     periodic_task = models.OneToOneField(
         PeriodicTask,

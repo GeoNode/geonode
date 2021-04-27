@@ -25,13 +25,17 @@ This module provides sensible default values for the harvesting app.
 
 from django.conf import settings
 
-_default_harvester_class = "geonode.harvesting.harvesters.geonode.GeonodeHarvester"
+_default_harvesters = [
+    "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester",
+    # "geonode.harvesting.harvesters.geonode.GeonodeCswHarvester",
+    "geonode.harvesting.harvesters.wms.OgcWmsHarvester",
+]
 
 try:
     _configured_harvester_classes = getattr(settings, "HARVESTER_CLASSES")
     HARVESTER_CLASSES = (
-        [_default_harvester_class] +
-        [i for i in _configured_harvester_classes if i != _default_harvester_class]
+        _default_harvesters +
+        [i for i in _configured_harvester_classes if i not in _default_harvesters]
     )
 except AttributeError:
-    HARVESTER_CLASSES = [_default_harvester_class]
+    HARVESTER_CLASSES = _default_harvesters
