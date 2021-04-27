@@ -110,7 +110,7 @@ services:
 
   # PostGIS database.
   db:
-    # use geonode official postgis 11 image
+    # use geonode official postgis 13 image
     image: geonode/postgis:13
     container_name: db4${COMPOSE_PROJECT_NAME}
     env_file:
