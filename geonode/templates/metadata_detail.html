@@ -1,7 +1,7 @@
 {% extends "geonode_base.html" %}
 {% load i18n %}
 {% load bootstrap_tags %}
-
+{% load thesaurus %}
 {% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
 {% block body_class %}data{% endblock %}
@@ -79,12 +79,31 @@
         <dd>{{ resource.display_type }}</dd>
         {% endif %}
 
-        {% if resource.keyword_list %}
-        <dt>{% trans "Keywords" %}</dt>
-        <dd>{% for keyword in resource.keyword_list %}
-            {{ keyword }}
-            {% endfor %}</dd>
-        {% endif %}
+          {% if resource.keywords.count > 0 or resource.tkeywords.count > 0 %}
+            <dt>{% trans "Keywords" %}</dt>
+            <dd itemprop="keywords">
+                <ul>
+                    {% for keyword in resource.keywords.all %}
+                    <li>
+                        <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?keywords__slug__in={{ keyword.slug }}" >
+                        {{ keyword.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                    {% for tid in resource.tkeywords.all|get_unique_thesaurus_set %}
+                    <li>{{ tid|get_thesaurus_translation_by_id }}
+                        {% for tkeywords in resource.tkeywords.all %}
+                        <ul>
+                        {% if tid == tkeywords.thesaurus.id %}
+                            <li><a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?tkeywords__id__in={{ tkeywords.id }}">{{tkeywords|get_thesaurus_localized_label}}</a></li>
+                        {% endif %}
+                        </ul>
+                        {% endfor %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </dd>
+            {% endif %}
 
         {% if resource.category %}
         <dt>{% trans "Category" %}</dt>

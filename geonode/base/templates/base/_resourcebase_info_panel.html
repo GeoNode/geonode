@@ -1,5 +1,6 @@
 {% load i18n %}
 {% block content %}
+{% load thesaurus %}
 
 <dl class="dl-horizontal">
     {% if resource.title %}
@@ -54,30 +55,29 @@
     <dd>{{ resource.display_type }}</dd>
     {% endif %}
 
-    {% if resource.keywords.count > 0 or resource.tkeywords.count > 0 %}
+  {% if resource.keywords.count > 0 or resource.tkeywords.count > 0 %}
     <dt>{% trans "Keywords" %}</dt>
       <dd itemprop="keywords">
-      {% for keyword in resource.keywords.all %}
-        <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?keywords__slug__in={{ keyword.slug }}" >
-          {{ keyword.name }}
-        </a>
-        {% if not forloop.last %},{% endif %}
-      {% endfor %}
-      {% if THESAURI_FILTERS %}
-        {% if resource.tkeywords.count > 0 %}
-          {% get_current_language as LANGUAGE_CODE %}
-          {% for keyword in resource.tkeywords.all %}
-            <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?tkeywords__id__in={{ keyword.id }}">
-              {% for label in keyword.labels %}
-                {% if forloop.first %},{% endif %}
-                {% if label.lang == LANGUAGE_CODE %}
-                  {{ label }}
-                {% endif %}
-              {% endfor %}
-            </a>
-          {% endfor %}
-        {% endif %}
-      {% endif %}
+        <ul>
+            {% for keyword in resource.keywords.all %}
+              <li>
+                <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?keywords__slug__in={{ keyword.slug }}" >
+                  {{ keyword.name }}
+                </a>
+              </li>
+            {% endfor %}
+            {% for tid in resource.tkeywords.all|get_unique_thesaurus_set %}
+              <li>{{ tid|get_thesaurus_translation_by_id }}
+                {% for tkeywords in resource.tkeywords.all %}
+                <ul>
+                  {% if tid == tkeywords.thesaurus.id %}
+                      <li><a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?tkeywords__id__in={{ tkeywords.id }}">{{tkeywords|get_thesaurus_localized_label}}</a></li>
+                  {% endif %}
+                </ul>
+                {% endfor %}
+              </li>
+            {% endfor %}
+        </ul>
       </dd>
     {% endif %}
 
