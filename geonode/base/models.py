@@ -1271,7 +1271,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox_polygon = Polygon.from_bbox(bbox)
         self.bbox_polygon = bbox_polygon.clone()
         self.srid = srid
-        if srid == 4326:
+        if srid == 4326 or srid == "EPSG:4326":
             self.ll_bbox_polygon = bbox_polygon
         else:
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
