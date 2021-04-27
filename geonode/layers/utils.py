@@ -1153,7 +1153,7 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
                         _("The selected Layer does not exists in the catalog."))
 
                 gs_layer = gs_layer.resource.attributes
-                schema_is_compliant = all([x in gs_layer for x in new_schema_fields])
+                schema_is_compliant = all([x.replace("-", '_') in gs_layer for x in new_schema_fields])
 
                 if not schema_is_compliant:
                     raise Exception(
