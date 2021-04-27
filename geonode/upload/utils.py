@@ -46,7 +46,7 @@ from geonode.geoserver.helpers import (gs_catalog,
                                        get_store,
                                        set_time_dimension,
                                        create_geoserver_db_featurestore)  # mosaic_delete_first_granule
-from geonode.base.models import ThesaurusKeyword
+from geonode.base.models import HierarchicalKeyword, ThesaurusKeyword
 ogr.UseExceptions()
 
 logger = logging.getLogger(__name__)
@@ -905,6 +905,9 @@ class KeywordHandler:
         tkeyword = []
         if len(self.keywords) > 0:
             for dkey in self.keywords:
+                if isinstance(dkey, HierarchicalKeyword):
+                    fkeyword += [dkey.name]
+                    continue
                 if dkey['type'] == 'place':
                     continue
                 thesaurus = dkey['thesaurus']
