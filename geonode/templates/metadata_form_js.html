@@ -194,10 +194,11 @@
                 
                 // Removes the second help icon from select2 fields
                 if (help_text) {
+                    var spanPopoverText = $('<span>', { class: 'external-popover', 'data-content': help_text  }).append("<strong><i class='fa fa fa-question-circle fa-1x'></i></strong>");
                     $(this)
                         .closest("div")
                         .children("span:not(.input-group):not(.select2)")  // Removes the second help icon for select2
-                        .append("<span class='external-popover' data-content='" + help_text + "'><strong><i class='fa fa fa-question-circle fa-1x'></i></strong></span>");
+                        .append(spanPopoverText);
             }});
 
         $('.external-popover').each(function(){
