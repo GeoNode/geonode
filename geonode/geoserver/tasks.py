@@ -506,7 +506,7 @@ def geoserver_post_save_layers(
                         # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
                         instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
                         Layer.objects.filter(id=instance.id).update(
-                            bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
+                            bbox_polygon=instance.bbox_polygon, srid=srid)
 
                         # Refresh from DB
                         instance.refresh_from_db()
@@ -519,13 +519,19 @@ def geoserver_post_save_layers(
                         instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
                         Layer.objects.filter(id=instance.id).update(
                             ll_bbox_polygon=instance.bbox_polygon, srid=srid)
+
+                        # Refresh from DB
+                        instance.refresh_from_db()
                 except Exception as e:
                     logger.warning(e)
                     try:
                         with transaction.atomic():
                             instance.bbox_polygon.srid = 4326
                             Layer.objects.filter(id=instance.id).update(
-                                ll_bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
+                                ll_bbox_polygon=instance.bbox_polygon, srid=srid)
+
+                            # Refresh from DB
+                            instance.refresh_from_db()
                     except Exception as e:
                         logger.warning(e)
 

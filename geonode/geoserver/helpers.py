@@ -1749,7 +1749,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         )
 
 
-def style_update(request, url):
+def style_update(request, url, workspace=None):
     """
     Sync style stuff from GS to GN.
     Ideally we should call this from a view straight from GXP, and we should use
@@ -1770,8 +1770,9 @@ def style_update(request, url):
                 txml = re.sub(r'NS[0-9]:', '', txml)
                 request._body = txml
         style_name = os.path.basename(request.path)
-        elm_user_style_title = style_name
+        sld_title = style_name
         sld_body = None
+        sld_url = url
         layer_name = None
         if 'name' in request.GET:
             style_name = request.GET['name']
@@ -1779,21 +1780,30 @@ def style_update(request, url):
         elif request.method == 'DELETE':
             style_name = os.path.basename(request.path)
         else:
-            try:
-                tree = ET.ElementTree(dlxml.fromstring(request.body))
-                elm_namedlayer_name = tree.findall(
-                    './/{http://www.opengis.net/sld}Name')[0]
-                elm_user_style_name = tree.findall(
-                    './/{http://www.opengis.net/sld}Name')[1]
-                elm_user_style_title = tree.find(
-                    './/{http://www.opengis.net/sld}Title')
-                if not elm_user_style_title:
-                    elm_user_style_title = elm_user_style_name.text
-                layer_name = elm_namedlayer_name.text
-                style_name = elm_user_style_name.text
-                sld_body = f'<?xml version="1.0" encoding="UTF-8"?>{request.body}'
-            except Exception:
-                logger.warn("Could not recognize Style and Layer name from Request!")
+            sld_body = request.body
+            gs_style = gs_catalog.get_style(name=style_name) or gs_catalog.get_style(name=style_name, workspace=workspace)
+            if gs_style:
+                sld_title = gs_style.sld_title if gs_style.style_format != 'css' and gs_style.sld_title else style_name
+                sld_body = gs_style.sld_body
+                sld_url = gs_style.body_href
+            else:
+                try:
+                    tree = ET.ElementTree(dlxml.fromstring(request.body))
+                    elm_namedlayer_name = tree.findall(
+                        './/{http://www.opengis.net/sld}Name')[0]
+                    elm_user_style_name = tree.findall(
+                        './/{http://www.opengis.net/sld}Name')[1]
+                    elm_user_style_title = tree.find(
+                        './/{http://www.opengis.net/sld}Title')
+                    layer_name = elm_namedlayer_name.text
+                    if elm_user_style_title is None:
+                        sld_title = elm_user_style_name.text
+                    else:
+                        sld_title = elm_user_style_title.text
+                    sld_body = f'<?xml version="1.0" encoding="UTF-8"?>{request.body}'
+                except Exception:
+                    logger.warn("Could not recognize Style and Layer name from Request!")
+
         # add style in GN and associate it to layer
         if request.method == 'DELETE':
             if style_name:
@@ -1802,8 +1812,10 @@ def style_update(request, url):
             style = None
             if style_name and not re.match(temp_style_name_regex, style_name):
                 style, created = Style.objects.get_or_create(name=style_name)
+                style.workspace = workspace
                 style.sld_body = sld_body
-                style.sld_url = url
+                style.sld_url = sld_url
+                style.sld_title = sld_title
                 style.save()
             layer = None
             if layer_name:
@@ -1822,18 +1834,19 @@ def style_update(request, url):
         elif request.method == 'PUT':  # update style in GN
             if style_name and not re.match(temp_style_name_regex, style_name):
                 style, created = Style.objects.get_or_create(name=style_name)
+                style.workspace = workspace
                 style.sld_body = sld_body
-                style.sld_url = url
-                if elm_user_style_title and len(elm_user_style_title) > 0:
-                    style.sld_title = elm_user_style_title
+                style.sld_url = sld_url
+                style.sld_title = sld_title
                 style.save()
                 for layer in style.layer_styles.all():
                     affected_layers.append(layer)
 
         # Invalidate GeoWebCache so it doesn't retain old style in tiles
         try:
-            _stylefilterparams_geowebcache_layer(layer_name)
-            _invalidate_geowebcache_layer(layer_name)
+            if layer_name:
+                _stylefilterparams_geowebcache_layer(layer_name)
+                _invalidate_geowebcache_layer(layer_name)
         except Exception:
             pass
     return affected_layers
