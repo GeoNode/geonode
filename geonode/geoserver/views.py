@@ -534,7 +534,7 @@ def geoserver_proxy(request,
                     _style_name, _style_ext = os.path.splitext(_style_name)
                 if _style_name != 'style-check' and (_style_ext == '.json' or _parsed_get_args.get('raw')) and \
                         not re.match(temp_style_name_regex, _style_name):
-                    affected_layers = style_update(request, raw_url)
+                    affected_layers = style_update(request, raw_url, workspace)
             elif downstream_path == 'rest/layers':
                 logger.debug(
                     f"[geoserver_proxy] Updating Layer ---> url {url.geturl()}")
