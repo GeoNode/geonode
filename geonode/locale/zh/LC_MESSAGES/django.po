@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -550,9 +550,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -578,9 +575,6 @@ msgstr "浏览地图"
 msgid "Batch Edit"
 msgstr "高级编辑"
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "取消"
 
@@ -590,11 +584,6 @@ msgstr "提交"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "设置权限"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "设置权限"
 
 msgid "Discover the available datasets."
@@ -748,6 +737,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr "高程"
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -819,6 +811,9 @@ msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+
+msgid "Location"
+msgstr "位置"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -997,11 +992,6 @@ msgstr "的文档的URL，如果它是外部的。"
 msgid "URL"
 msgstr "网址"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "文件"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1111,11 +1101,6 @@ msgstr "浏览文件"
 
 msgid "Upload Documents"
 msgstr "上传文件"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "数据集"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1466,11 +1451,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "生成新地图"
@@ -1771,11 +1751,6 @@ msgstr "尚无活动信息"
 msgid "Explore Group Categories"
 msgstr "浏览群体类别"
 
-#, fuzzy
-#| msgid "Group Categories"
-msgid "groups explore"
-msgstr "群体类别"
-
 msgid "Create a New Group Category"
 msgstr "创建群体类别"
 
@@ -1793,16 +1768,6 @@ msgstr "删除群体"
 
 msgid "Create Group"
 msgstr "创建群体"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "一张地图完成"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "群体"
 
 msgid "Last Modified"
 msgstr "最近修改"
@@ -1873,9 +1838,6 @@ msgstr "添加新成员"
 msgid "Add Group Members"
 msgstr "添加群体成员"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1890,11 +1852,6 @@ msgstr "从群体中删除地图/数据"
 
 msgid "Remove selected maps/data"
 msgstr "删除所选地图/数据"
-
-#, fuzzy
-#| msgid "A Map was updated"
-msgid "groups update"
-msgstr "一个地图更新"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2188,11 +2145,6 @@ msgstr "上一次统计更新的时间"
 msgid "Append to Layer"
 msgstr "返回图层"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "一个图层已被上传"
-
 msgid "Return to Layer"
 msgstr "返回图层"
 
@@ -2213,11 +2165,6 @@ msgstr "改变联络地址"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "给以下图层添加一个新的联系点"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "图层"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2235,9 +2182,6 @@ msgstr "边界矩形"
 
 msgid "Time"
 msgstr "时间"
-
-msgid "Elevation"
-msgstr "高程"
 
 msgid "Actions"
 msgstr "操作"
@@ -2508,11 +2452,6 @@ msgstr "此操作会影响以下地图："
 msgid "No maps are using this layer"
 msgstr "没有地图使用此图层。"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "一个图层已被上传"
-
 msgid "Upload Layers"
 msgstr "上传图层"
 
@@ -2572,11 +2511,6 @@ msgstr ""
 
 msgid "Upload Layer Metadata"
 msgstr "上传图层元数据"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "一个图层已被上传"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2655,17 +2589,28 @@ msgstr "数据集属性"
 msgid "Upload Layer"
 msgstr "上传图层"
 
-msgid "Incomplete Uploads"
-msgstr "不完整的上传"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "下载元数据"
 
-msgid "You have the following incomplete uploads"
-msgstr "您有以下不完整的上传"
-
-msgid "Resume"
-msgstr "简历"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "删除"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "上传文件"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3370,9 +3315,6 @@ msgstr "图层参数"
 msgid "source params"
 msgstr "数据源参数"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3470,11 +3412,6 @@ msgstr "编辑地图"
 
 msgid "Explore Maps"
 msgstr "浏览地图"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4006,11 +3943,6 @@ msgstr "创建个人信息"
 msgid "Profile of "
 msgstr "简介-"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr "未提供信息。"
 
@@ -4019,9 +3951,6 @@ msgstr "位置"
 
 msgid "Organization"
 msgstr "组织"
-
-msgid "Location"
-msgstr "位置"
 
 msgid "Not provided"
 msgstr "未提供"
@@ -4080,11 +4009,6 @@ msgstr "用户活动"
 
 msgid "Resources"
 msgstr "资源"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "邀请用户"
 
 msgid "Edit Your Profile"
 msgstr "编辑您的个人信息"
@@ -6630,6 +6554,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6710,6 +6637,90 @@ msgstr "权限等级不够。"
 
 msgid "Permission Denied"
 msgstr "权限级别"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "设置权限"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "文件"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "数据集"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Group Categories"
+#~ msgid "groups explore"
+#~ msgstr "群体类别"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "一张地图完成"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "群体"
+
+#, fuzzy
+#~| msgid "A Map was updated"
+#~ msgid "groups update"
+#~ msgstr "一个地图更新"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "一个图层已被上传"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "图层"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "一个图层已被上传"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "一个图层已被上传"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "不完整的上传"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "您有以下不完整的上传"
+
+#~ msgid "Resume"
+#~ msgstr "简历"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "邀请用户"
 
 #~ msgid "last updated on"
 #~ msgstr "最新更新"

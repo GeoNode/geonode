@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2021-03-24 11:11-0400\n"
 "Last-Translator: Sylvain POULAIN <sylvain.poulain@giscan.com>\n"
 "Language-Team: French\n"
@@ -533,9 +533,6 @@ msgstr "en ligne"
 msgid "offline"
 msgstr "hors ligne"
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr "La couche n'est pas encore prête. Nous finalisons l'ajout des couches…"
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr "LA SECURITE N'EST PAS ENCORE SYNCHRONISEE"
 
@@ -557,9 +554,6 @@ msgstr "Voir la carte"
 msgid "Batch Edit"
 msgstr "Modifier en série"
 
-msgid "batch edit"
-msgstr "modifier en série"
-
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -568,9 +562,6 @@ msgstr "Envoyer"
 
 msgid "Set Permissions"
 msgstr "Définir les autorisations"
-
-msgid "set permissions"
-msgstr "définir les autorisations"
 
 msgid "Discover the available datasets."
 msgstr "Explorez les jeux de données disponibles."
@@ -709,6 +700,9 @@ msgstr ""
 "Hauteur au-dessus ou au-dessous du niveau de la mer. Exemples : altitude, "
 "bathymétrie, modèles numériques d'élévation, pente, produits dérivés."
 
+msgid "Elevation"
+msgstr "Altitude"
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -802,6 +796,9 @@ msgid ""
 msgstr ""
 "Informations et services de positionnement. Exemples : adresses, réseaux "
 "géodésiques, points de contrôle, zones et services postaux, noms de lieux."
+
+msgid "Location"
+msgstr "Lieux"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -993,9 +990,6 @@ msgstr "L'URL du document si il s'agit d'un document distant."
 msgid "URL"
 msgstr "URL"
 
-msgid "documents"
-msgstr "documents"
-
 msgid "Your browser does not support the audio element."
 msgstr "Votre navigateur ne prend pas en charge l'élément audio."
 
@@ -1092,9 +1086,6 @@ msgstr "Explorer les documents"
 
 msgid "Upload Documents"
 msgstr "Ajouter des documents"
-
-msgid "data"
-msgstr "données"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1395,9 +1386,6 @@ msgstr "Télécharger"
 msgid "%(GEONODE_APPS_NAME)s"
 msgstr "%(GEONODE_APPS_NAME)s"
 
-msgid "apps explore"
-msgstr "explorer les applications"
-
 msgid "Create New"
 msgstr "Créer un nouveau"
 
@@ -1672,9 +1660,6 @@ msgstr "Pas encore d'actions"
 msgid "Explore Group Categories"
 msgstr "Explorez les catégories de groupe"
 
-msgid "groups explore"
-msgstr "les groupes explorent"
-
 msgid "Create a New Group Category"
 msgstr "Créer une nouvelle catégorie de groupe"
 
@@ -1692,12 +1677,6 @@ msgstr "Supprimer le groupe"
 
 msgid "Create Group"
 msgstr "Créer un groupe"
-
-msgid "groups create"
-msgstr "créer le groupe"
-
-msgid "groups"
-msgstr "groupes"
 
 msgid "Last Modified"
 msgstr "Dernière modification"
@@ -1771,9 +1750,6 @@ msgstr "Ajouter de nouveaux membres"
 msgid "Add Group Members"
 msgstr "Inviter des personnes"
 
-msgid "groups remove"
-msgstr "les groupes suppriment"
-
 #, python-format
 msgid ""
 "\n"
@@ -1789,9 +1765,6 @@ msgstr "Supprimer des cartes/données du groupe"
 
 msgid "Remove selected maps/data"
 msgstr "Supprimer les cartes et les données sélectionnées"
-
-msgid "groups update"
-msgstr "mise à jour des groupes"
 
 msgid "Edit Group Category Details"
 msgstr "Modifier les détails des catégories de groupes"
@@ -2074,11 +2047,6 @@ msgstr "date de dernière mise à jour des statistiques d'attribut"
 msgid "Append to Layer"
 msgstr "Retourner à la couche"
 
-#, fuzzy
-#| msgid "layers upload"
-msgid "layers append"
-msgstr "téléchargement des couches"
-
 msgid "Return to Layer"
 msgstr "Retourner à la couche"
 
@@ -2097,9 +2065,6 @@ msgstr "Changez votre point de contact"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Attribuer un nouveau point de contact aux couches suivantes :"
 
-msgid "layers"
-msgstr "couches"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr "Document: Couche WMS GetCapabilities"
 
@@ -2117,9 +2082,6 @@ msgstr "Boîte de délimitation"
 
 msgid "Time"
 msgstr "Dimension temporelle"
-
-msgid "Elevation"
-msgstr "Altitude"
 
 msgid "Actions"
 msgstr "Actions"
@@ -2370,9 +2332,6 @@ msgstr "Cette action affecte les cartes suivantes :"
 msgid "No maps are using this layer"
 msgstr "Aucune carte n'utilise cette couche"
 
-msgid "layers explore"
-msgstr "les couches explorent"
-
 msgid "Upload Layers"
 msgstr "Ajouter des couches"
 
@@ -2432,9 +2391,6 @@ msgstr "Les éléments suivants sont requis :"
 
 msgid "Upload Layer Metadata"
 msgstr "Téléchargez la couche"
-
-msgid "layers upload"
-msgstr "téléchargement des couches"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
@@ -2512,17 +2468,28 @@ msgstr "Attributs d'ensemble de données"
 msgid "Upload Layer"
 msgstr "Téléchargez la couche"
 
-msgid "Incomplete Uploads"
-msgstr "Téléchargements incomplets"
+#, fuzzy
+#| msgid "Upload Metadata"
+msgid "Upload status"
+msgstr "Télécharger"
 
-msgid "You have the following incomplete uploads"
-msgstr "Vous avez les téléchargements incomplets suivants"
-
-msgid "Resume"
-msgstr "Reprendre"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Supprimer"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Télécharger un document"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3323,9 +3290,6 @@ msgstr "paramètres de la couche"
 msgid "source params"
 msgstr "paramètres de la source"
 
-msgid "maps"
-msgstr "cartes"
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr "Document 'WMS GetCapabilities' de couches cartographiques"
 
@@ -3432,9 +3396,6 @@ msgstr "Modifier la Carte"
 
 msgid "Explore Maps"
 msgstr "Explorer les cartes"
-
-msgid "maps explore"
-msgstr "explorer les cartes"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -3952,9 +3913,6 @@ msgstr "Créer un profil"
 msgid "Profile of "
 msgstr "Profil de "
 
-msgid "people explore"
-msgstr "explorer les utilisateurs"
-
 msgid "Not provided."
 msgstr "Non fourni."
 
@@ -3963,9 +3921,6 @@ msgstr "Position"
 
 msgid "Organization"
 msgstr "Organisation"
-
-msgid "Location"
-msgstr "Lieux"
 
 msgid "Not provided"
 msgstr "Non fournit"
@@ -4020,9 +3975,6 @@ msgstr "Activités de l'utilisateur"
 
 msgid "Resources"
 msgstr "Ressources"
-
-msgid "edit people"
-msgstr "modifier un utilisateur"
 
 msgid "Edit Your Profile"
 msgstr "Éditer votre profil"
@@ -4189,6 +4141,8 @@ msgstr "Ressources des services"
 msgid "No resources have been imported yet."
 msgstr "Aucune ressource n'a encore été importée."
 
+#, fuzzy
+#| msgid "Retry job"
 msgid "Retry job"
 msgstr "Réessayer"
 
@@ -6359,6 +6313,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6441,6 +6398,75 @@ msgstr "Niveau d'autorisation non valide."
 
 msgid "Permission Denied"
 msgstr "Autorisation refusée"
+
+#~ msgid "Layer not ready yet. Still finalizing layer ingestion..."
+#~ msgstr ""
+#~ "La couche n'est pas encore prête. Nous finalisons l'ajout des couches…"
+
+#~ msgid "batch edit"
+#~ msgstr "modifier en série"
+
+#~ msgid "set permissions"
+#~ msgstr "définir les autorisations"
+
+#~ msgid "documents"
+#~ msgstr "documents"
+
+#~ msgid "data"
+#~ msgstr "données"
+
+#~ msgid "apps explore"
+#~ msgstr "explorer les applications"
+
+#~ msgid "groups explore"
+#~ msgstr "les groupes explorent"
+
+#~ msgid "groups create"
+#~ msgstr "créer le groupe"
+
+#~ msgid "groups"
+#~ msgstr "groupes"
+
+#~ msgid "groups remove"
+#~ msgstr "les groupes suppriment"
+
+#~ msgid "groups update"
+#~ msgstr "mise à jour des groupes"
+
+#, fuzzy
+#~| msgid "layers upload"
+#~ msgid "layers append"
+#~ msgstr "téléchargement des couches"
+
+#~ msgid "layers"
+#~ msgstr "couches"
+
+#~ msgid "layers explore"
+#~ msgstr "les couches explorent"
+
+#~ msgid "layers upload"
+#~ msgstr "téléchargement des couches"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Téléchargements incomplets"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Vous avez les téléchargements incomplets suivants"
+
+#~ msgid "Resume"
+#~ msgstr "Reprendre"
+
+#~ msgid "maps"
+#~ msgstr "cartes"
+
+#~ msgid "maps explore"
+#~ msgstr "explorer les cartes"
+
+#~ msgid "people explore"
+#~ msgstr "explorer les utilisateurs"
+
+#~ msgid "edit people"
+#~ msgstr "modifier un utilisateur"
 
 #~ msgid "last updated on"
 #~ msgstr "dernière mise à jour sur"

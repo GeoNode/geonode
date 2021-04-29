@@ -38,8 +38,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
-"PO-Revision-Date: 2021-04-07 15:06+0200\n"
+"POT-Creation-Date: 2021-04-29 13:37+0200\n"
+"PO-Revision-Date: 2021-04-29 13:43+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
 "it/)\n"
@@ -535,9 +535,6 @@ msgstr "online"
 msgid "offline"
 msgstr "offline"
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr "Livello non ancora pronto. Ingestione/pubblicazione in corso..."
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr "SICUREZZA NON SINCRONIZZATA"
 
@@ -559,9 +556,6 @@ msgstr "Visualizza mappa"
 msgid "Batch Edit"
 msgstr "Modifica in gruppo"
 
-msgid "batch edit"
-msgstr "modifica in serie"
-
 msgid "Cancel"
 msgstr "Annulla"
 
@@ -570,9 +564,6 @@ msgstr "Invia"
 
 msgid "Set Permissions"
 msgstr "Imposta autorizzazioni"
-
-msgid "set permissions"
-msgstr "imposta permessi"
 
 msgid "Discover the available datasets."
 msgstr "Esplora i dataset disponibili."
@@ -710,6 +701,9 @@ msgstr ""
 "Altezza sopra o sotto il livello del mare. Esempi: altitudine, batimetria, "
 "modelli digitali di elevazione, pendenza, prodotti derivati."
 
+msgid "Elevation"
+msgstr "Elevazione"
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -801,6 +795,9 @@ msgid ""
 msgstr ""
 "Informazioni e servizi di localizzazione. Esempi: indirizzi, reti "
 "geodetiche, punti di controllo, zone postali e servizi, nomi di luoghi."
+
+msgid "Location"
+msgstr "Posizione"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -989,9 +986,6 @@ msgstr "La URL del documento nel caso sia esterno."
 msgid "URL"
 msgstr "URL"
 
-msgid "documents"
-msgstr "documenti"
-
 msgid "Your browser does not support the audio element."
 msgstr "Il tuo browser non supporta l'elemento audio."
 
@@ -1087,9 +1081,6 @@ msgstr "Esplora Documenti"
 
 msgid "Upload Documents"
 msgstr "Carica Documenti"
-
-msgid "data"
-msgstr "data"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1389,9 +1380,6 @@ msgstr "Scarica"
 msgid "%(GEONODE_APPS_NAME)s"
 msgstr "%(GEONODE_APPS_NAME)s"
 
-msgid "apps explore"
-msgstr "esplora apps"
-
 msgid "Create New"
 msgstr "Crea nuovo"
 
@@ -1664,9 +1652,6 @@ msgstr "Ancora nessuna azione"
 msgid "Explore Group Categories"
 msgstr "Esplora categorie gruppo"
 
-msgid "groups explore"
-msgstr "esplora gruppi"
-
 msgid "Create a New Group Category"
 msgstr "Creare una nuova categoria di gruppo"
 
@@ -1684,12 +1669,6 @@ msgstr "Rimuovi gruppo"
 
 msgid "Create Group"
 msgstr "Crea gruppo"
-
-msgid "groups create"
-msgstr "crea gruppi"
-
-msgid "groups"
-msgstr "gruppi"
 
 msgid "Last Modified"
 msgstr "Ultima modifica"
@@ -1763,9 +1742,6 @@ msgstr "Aggiungi nuovi membri"
 msgid "Add Group Members"
 msgstr "Aggiungi membri al gruppo"
 
-msgid "groups remove"
-msgstr "elimina gruppi"
-
 #, python-format
 msgid ""
 "\n"
@@ -1781,9 +1757,6 @@ msgstr "Rimuovere mappe / dati da gruppo"
 
 msgid "Remove selected maps/data"
 msgstr "Rimuovere mappe selezionate / dati"
-
-msgid "groups update"
-msgstr "aggiorna gruppi"
 
 msgid "Edit Group Category Details"
 msgstr "Modifica dettagli categoria gruppo"
@@ -2059,9 +2032,6 @@ msgstr "data in cui le statistiche degli attributi sono stati aggiornati"
 msgid "Append to Layer"
 msgstr "Aggiungi al livello"
 
-msgid "layers append"
-msgstr "appendi a livelli"
-
 msgid "Return to Layer"
 msgstr "Torna al livello"
 
@@ -2080,9 +2050,6 @@ msgstr "Modifica contatto"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Assegna un nuovo contatto ai layer sottostanti:"
 
-msgid "layers"
-msgstr "livelli"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr "Documento WMS GetCapabilities del livello"
 
@@ -2100,9 +2067,6 @@ msgstr "Estensione geografica"
 
 msgid "Time"
 msgstr "Tempo"
-
-msgid "Elevation"
-msgstr "Elevazione"
 
 msgid "Actions"
 msgstr "Operazioni"
@@ -2351,9 +2315,6 @@ msgstr "Questa azione avrà effetto sulle seguenti mappe:"
 msgid "No maps are using this layer"
 msgstr "Nessuna mappa utilizza questo livello"
 
-msgid "layers explore"
-msgstr "esplora livelli"
-
 msgid "Upload Layers"
 msgstr "Carica livelli"
 
@@ -2413,9 +2374,6 @@ msgstr "I seguenti elementi sono obbligatori:"
 
 msgid "Upload Layer Metadata"
 msgstr "Carica metadati del livello"
-
-msgid "layers upload"
-msgstr "carica livelli"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
@@ -2494,17 +2452,29 @@ msgstr "Attributi del dataset"
 msgid "Upload Layer"
 msgstr "Carica livello"
 
-msgid "Upload Status"
+msgid "Upload status"
 msgstr "Stato caricamento"
 
-msgid "You have the following incomplete uploads"
-msgstr "Sono disponibili i seguenti caricamenti incompleti"
-
-msgid "Resume"
-msgstr "Riprendi"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
+"Questo file necessita di una configurazione aggiuntiva per completare il "
+"processo di caricamento. Clicca sul pulsante per riempire la configurazione "
+"richiesta"
 
 msgid "Delete"
 msgstr "Cancella"
+
+msgid "Upload process completed"
+msgstr "Processo di caricamento completato"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
+"Impossibile completare il processo di caricamento perché il file originale "
+"non è più disponibile"
 
 msgid "Created"
 msgstr "Creato"
@@ -3267,9 +3237,6 @@ msgstr "parametri del livello"
 msgid "source params"
 msgstr "parametri sorgente"
 
-msgid "maps"
-msgstr "mappe"
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr "Documento WMS GetCapabilities dei livelli della mappa"
 
@@ -3375,9 +3342,6 @@ msgstr "Modifica Mappa"
 
 msgid "Explore Maps"
 msgstr "Esplora mappe"
-
-msgid "maps explore"
-msgstr "esplora mappe"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -3889,9 +3853,6 @@ msgstr "Crea profilo"
 msgid "Profile of "
 msgstr "Profilo di "
 
-msgid "people explore"
-msgstr "esplora utenti"
-
 msgid "Not provided."
 msgstr "Non fornito."
 
@@ -3900,9 +3861,6 @@ msgstr "Posizione"
 
 msgid "Organization"
 msgstr "Organizzazione"
-
-msgid "Location"
-msgstr "Posizione"
 
 msgid "Not provided"
 msgstr "Non fornito"
@@ -3957,9 +3915,6 @@ msgstr "Attività degli utenti"
 
 msgid "Resources"
 msgstr "Risorse"
-
-msgid "edit people"
-msgstr "modifica utenti"
 
 msgid "Edit Your Profile"
 msgstr "Modifica il tuo profilo"
@@ -5218,8 +5173,7 @@ msgstr ""
 "disponibile all'indirizzo <a href=\"http://github.com/GeoNode/geonode"
 "\">http://github.com/GeoNode/geonode/</a>. Il issue tracker per il progetto "
 "è disponibile all'indirizzo <a href=\"http://github.com/GeoNode/geonode/"
-"issues\">http://github.com/GeoNode/geonode/issues</a>.</p>"
-"\n"
+"issues\">http://github.com/GeoNode/geonode/issues</a>.</p>\n"
 "    <p>GeoNode è costruito utilizzando diversi progetti open source, ognuno "
 "con la propria comunità. Se siete interessati a contribuire con nuove "
 "funzionalità al GeoNode, vi invitiamo a farlo contribuendo ad uno dei "
@@ -5228,9 +5182,8 @@ msgstr ""
 "      <li><a href=\"http://geoserver.org\">GeoServer</a> - Server basato su "
 "standard per informazioni geospaziali</li>\n"
 "      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Motore di "
-"cache per WMS Tiles</li><li><a href=\"http://openlayers.org"
-"\">OpenLayers</a> - Pura libreria JavaScript che alimenta le mappe di "
-"GeoExt</li>\n"
+"cache per WMS Tiles</li><li><a href=\"http://openlayers.org\">OpenLayers</a> "
+"- Pura libreria JavaScript che alimenta le mappe di GeoExt</li>\n"
 "      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW, OpenSearch e OAI-PMH "
 "metadata catalogue server</li>\n"
 "    </ul>\n"
@@ -5262,8 +5215,7 @@ msgstr ""
 "    <p><code>from owslib.csw import CatalogueServiceWeb</code></p>\n"
 "    <p><code>from owslib.fes import PropertyIsLike</code></p>\n"
 "    <p><code>csw = CatalogueServiceWeb('%(CATALOGUE_BASE_URL)s')</code></p>\n"
-"    <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></"
-"p>\n"
+"    <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></p>\n"
 "    <p><code>csw.getrecords2(constraints=[anytext])</code></p>\n"
 "    <p><code>print csw.results</code></p>\n"
 "    <p><code>print csw.records</code></p>\n"
@@ -5271,13 +5223,13 @@ msgstr ""
 "    <h3>Codice d'esempio OpenLayers</h3>\n"
 "\n"
 "    <p>Per includere un livello di mappa GeoNode in una mappa OpenLayers, "
-"trovare prima il nome di quel livello. Questo si trova nel campo "
-"<code>nome</code> del livello (non <code>titolo</code>) della lista "
-"dei livelli. Per questo esempio, useremo il livello di sfondo dei confini "
-"politici del Nicaragua, il cui nome è <code>risk:nicaragua_admin</code>. "
-"Quindi, creare un'istanza di OpenLayers.Layer.WMS:</p>\n"
-"    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk "
-"Data\", \"http://demo.geonode.org/geoserver/wms\",{ strati: \"risk:"
+"trovare prima il nome di quel livello. Questo si trova nel campo <code>nome</"
+"code> del livello (non <code>titolo</code>) della lista dei livelli. Per "
+"questo esempio, useremo il livello di sfondo dei confini politici del "
+"Nicaragua, il cui nome è <code>risk:nicaragua_admin</code>. Quindi, creare "
+"un'istanza di OpenLayers.Layer.WMS:</p>\n"
+"    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"\", \"http://demo.geonode.org/geoserver/wms\",{ strati: \"risk:"
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Codice di esempio di Google Maps</h3>\n"
@@ -5298,8 +5250,7 @@ msgstr ""
 "code>, <code>GML3</code>, o <code>csv</code> si ottengono dati in questi "
 "formati. Il protocollo WFS può anche gestire query più precise, specificando "
 "un bounding box o vari filtri spaziali e non spaziali in base agli attributi "
-"dei dati.</p>"
-"\n"
+"dei dati.</p>\n"
 "    <h3>Codice d'esempio di GeoTools</h3>\n"
 "    <p>Creare un DataStore ed estrarre un FeatureType da esso, quindi "
 "eseguire una query. È tutto documentato sul wiki all'indirizzo <code>http://"
@@ -6263,6 +6214,9 @@ msgstr "La sessione di importazione geoserver non è più disponibile"
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr "Previsto per trovare il livello denominato '{name}' nel geoserver"
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr "Eccezione durante l'analisi del file di metadati fornito."
+
 msgid "Error configuring Layer"
 msgstr "Errore durante la configurazione del livello"
 
@@ -6343,6 +6297,69 @@ msgstr "Livello di permessi non valido."
 
 msgid "Permission Denied"
 msgstr "Permesso negato"
+
+#~ msgid "Layer not ready yet. Still finalizing layer ingestion..."
+#~ msgstr "Livello non ancora pronto. Ingestione/pubblicazione in corso..."
+
+#~ msgid "batch edit"
+#~ msgstr "modifica in serie"
+
+#~ msgid "set permissions"
+#~ msgstr "imposta permessi"
+
+#~ msgid "documents"
+#~ msgstr "documenti"
+
+#~ msgid "data"
+#~ msgstr "data"
+
+#~ msgid "apps explore"
+#~ msgstr "esplora apps"
+
+#~ msgid "groups explore"
+#~ msgstr "esplora gruppi"
+
+#~ msgid "groups create"
+#~ msgstr "crea gruppi"
+
+#~ msgid "groups"
+#~ msgstr "gruppi"
+
+#~ msgid "groups remove"
+#~ msgstr "elimina gruppi"
+
+#~ msgid "groups update"
+#~ msgstr "aggiorna gruppi"
+
+#~ msgid "layers append"
+#~ msgstr "appendi a livelli"
+
+#~ msgid "layers"
+#~ msgstr "livelli"
+
+#~ msgid "layers explore"
+#~ msgstr "esplora livelli"
+
+#~ msgid "layers upload"
+#~ msgstr "carica livelli"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Sono disponibili i seguenti caricamenti incompleti"
+
+#~ msgid "Resume"
+#~ msgstr "Riprendi"
+
+#~ msgid "maps"
+#~ msgstr "mappe"
+
+#~ msgid "maps explore"
+#~ msgstr "esplora mappe"
+
+#~ msgid "people explore"
+#~ msgstr "esplora utenti"
+
+#~ msgid "edit people"
+#~ msgstr "modifica utenti"
 
 #~ msgid "last updated on"
 #~ msgstr "ultimo aggiornamento su"
