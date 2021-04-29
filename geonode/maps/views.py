@@ -440,7 +440,7 @@ def map_metadata(
         "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
         "UI_MANDATORY_FIELDS": list(
-            set(getattr(settings, 'DEFAULT_MANDATORY_FIELDS', [])) 
+            set(getattr(settings, 'UI_DEFAULT_MANDATORY_FIELDS', [])) 
             | 
             set(getattr(settings, 'UI_REQUIRED_FIELDS', []))
         )

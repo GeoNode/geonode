@@ -2029,7 +2029,7 @@ SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'Tr
 # -- END Settings for MONITORING plugin
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
-DEFAULT_MANDATORY_FIELDS = [
+UI_DEFAULT_MANDATORY_FIELDS = [
     'id_resource-title', 
     'id_resource-abstract', 
     'id_resource-language',
