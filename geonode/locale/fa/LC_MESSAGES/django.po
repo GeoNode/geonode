@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (http://www.transifex.com/geonode/geonode/language/"
@@ -574,9 +574,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -600,9 +597,6 @@ msgstr "مشاهده نقشه"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "لغو"
 
@@ -612,11 +606,6 @@ msgstr "ثبت کردن"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "اجازه انتخاب"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "اجازه انتخاب"
 
 msgid "Discover the available datasets."
@@ -770,6 +759,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -840,6 +832,9 @@ msgstr ""
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid ""
@@ -1037,11 +1032,6 @@ msgstr "URL سند اگر آن خارجی است."
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "اسناد"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1147,11 +1137,6 @@ msgstr "کاوش اسناد"
 
 msgid "Upload Documents"
 msgstr "اسناد آپلود"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "مجموعه داده"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1518,11 +1503,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "ایجاد یک نقشه جدید"
@@ -1843,11 +1823,6 @@ msgid "Explore Group Categories"
 msgstr "کاوش گروه"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "دسته بندی ها"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "ایجاد یک گروه"
@@ -1866,16 +1841,6 @@ msgstr "حذف گروه"
 
 msgid "Create Group"
 msgstr "ایجاد گروه"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "نقشه شد"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "گروه"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1954,9 +1919,6 @@ msgstr "اضافه کردن کاربران"
 msgid "Add Group Members"
 msgstr "مدیریت کاربران گروه"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1971,11 +1933,6 @@ msgstr "حذف نقشه / اطلاعات از گروه"
 
 msgid "Remove selected maps/data"
 msgstr "حذف نقشه انتخاب / اطلاعات"
-
-#, fuzzy
-#| msgid "updated"
-msgid "groups update"
-msgstr "به روز"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2293,11 +2250,6 @@ msgstr "تاریخ و زمان آخرین آمار صفت بودند به روز
 msgid "Append to Layer"
 msgstr "ویرایش لایه"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "لایه آپلود شد"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2318,11 +2270,6 @@ msgstr "نقطه تماس را تغییر دهید"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "اختصاص یک نقطه نظر جدید تماس با به لایه های زیر:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "لایه"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2339,9 +2286,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2607,11 +2551,6 @@ msgstr "این عمل از نقشه زیر تاثیر می گذارد:"
 msgid "No maps are using this layer"
 msgstr "نقشه ای با استفاده از این لایه"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "لایه آپلود شد"
-
 msgid "Upload Layers"
 msgstr "لایه بارگذاری"
 
@@ -2668,11 +2607,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "بارگذاری لایه"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "لایه آپلود شد"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2751,17 +2685,28 @@ msgstr "خواص"
 msgid "Upload Layer"
 msgstr "بارگذاری لایه"
 
-msgid "Incomplete Uploads"
-msgstr "ارسال ناقص"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "دانلود فراداده"
 
-msgid "You have the following incomplete uploads"
-msgstr "شما از این ارسال زیر ناقص"
-
-msgid "Resume"
-msgstr "خلاصه"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "حذف کردن"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "آپلود سند"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3464,9 +3409,6 @@ msgstr "پارامترهای لایه"
 msgid "source params"
 msgstr "پارامترهای منبع"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3565,11 +3507,6 @@ msgstr "نقشه ویرایش"
 
 msgid "Explore Maps"
 msgstr "کاوش نقشه"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4111,11 +4048,6 @@ msgstr "ایجاد پروفایل"
 msgid "Profile of "
 msgstr "پروفایل"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr ""
 
@@ -4123,9 +4055,6 @@ msgid "Position"
 msgstr ""
 
 msgid "Organization"
-msgstr ""
-
-msgid "Location"
 msgstr ""
 
 msgid "Not provided"
@@ -4189,11 +4118,6 @@ msgstr "فعالیت های کاربر"
 
 msgid "Resources"
 msgstr "منابع"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "دعوت از مردم"
 
 msgid "Edit Your Profile"
 msgstr "ویرایش نمایه خود"
@@ -6511,6 +6435,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6591,6 +6518,90 @@ msgstr "سطح مجوز نامعتبر است."
 
 msgid "Permission Denied"
 msgstr "اجازه ممنوع"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "اجازه انتخاب"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "اسناد"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "مجموعه داده"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "دسته بندی ها"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "نقشه شد"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "گروه"
+
+#, fuzzy
+#~| msgid "updated"
+#~ msgid "groups update"
+#~ msgstr "به روز"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "لایه آپلود شد"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "لایه"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "لایه آپلود شد"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "لایه آپلود شد"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "ارسال ناقص"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "شما از این ارسال زیر ناقص"
+
+#~ msgid "Resume"
+#~ msgstr "خلاصه"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "دعوت از مردم"
 
 #~ msgid "last updated on"
 #~ msgstr "آخرین بروز رسانی در"

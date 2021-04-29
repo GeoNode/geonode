@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swahili (http://www.transifex.com/geonode/geonode/language/"
@@ -582,9 +582,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -608,9 +605,6 @@ msgstr "Mtazamo Ramani"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "Sitisha"
 
@@ -620,11 +614,6 @@ msgstr "Wasilisha"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Idhinisha ruhusa"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Idhinisha ruhusa"
 
 msgid "Discover the available datasets."
@@ -778,6 +767,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -848,6 +840,9 @@ msgstr ""
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid ""
@@ -1045,11 +1040,6 @@ msgstr "URL ya hati kama ni kutoka nje."
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "Hati"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1158,11 +1148,6 @@ msgstr "Peruzi Hati"
 
 msgid "Upload Documents"
 msgstr "Pakia Hati"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "kanzidata"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1530,11 +1515,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Tengeneza ramani mpya"
@@ -1857,11 +1837,6 @@ msgid "Explore Group Categories"
 msgstr "Peruzi Makundi"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "Makundi"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "Unda kundi"
@@ -1880,16 +1855,6 @@ msgstr "Ondoa Kundi"
 
 msgid "Create Group"
 msgstr "Unda Kundi"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "Ramani iliundwa"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "kundi"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1968,9 +1933,6 @@ msgstr "Ongeza wanachama"
 msgid "Add Group Members"
 msgstr "Simamia Wanachama wa Kundi"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1985,11 +1947,6 @@ msgstr "Ondoa Ramani/Data kwenye Kundi"
 
 msgid "Remove selected maps/data"
 msgstr "Ondoa ramani/data zilizochaguliwa"
-
-#, fuzzy
-#| msgid "updated"
-msgid "groups update"
-msgstr "kusasishwa"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2308,11 +2265,6 @@ msgstr "tarehe ambapo takwimu za sifa zilisasishwa kwa mara ya mwisho"
 msgid "Append to Layer"
 msgstr "Hariri Tabaka"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "Tabaka limepakiwa"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2333,11 +2285,6 @@ msgstr "Mabadiliko ya hatua ya kuwasiliana"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Hawawajui hatua mpya ya kuwasiliana na tabaka chini:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "Matabaka"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2354,9 +2301,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2624,11 +2568,6 @@ msgstr "Hatua hii ina athari kwa ramani zifuatazo:"
 msgid "No maps are using this layer"
 msgstr "Hakuna ramani zinazotumia tabaka hili"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "Tabaka limepakiwa"
-
 msgid "Upload Layers"
 msgstr "Pakia Matabaka"
 
@@ -2685,11 +2624,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "Pakia Tabaka"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "Tabaka limepakiwa"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2768,17 +2702,28 @@ msgstr "Sifa"
 msgid "Upload Layer"
 msgstr "Pakia Tabaka"
 
-msgid "Incomplete Uploads"
-msgstr "Upakiaji usio kamili"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "Pakua Metadata"
 
-msgid "You have the following incomplete uploads"
-msgstr "Kuna upakiaji ufuatao ambaosi kamili"
-
-msgid "Resume"
-msgstr "Resume"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Futa"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Pakia hati"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3485,9 +3430,6 @@ msgstr "safu zilizounganishwa"
 msgid "source params"
 msgstr "chanzo zilizounganishwa"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3587,11 +3529,6 @@ msgstr "Hariri Ramani"
 
 msgid "Explore Maps"
 msgstr "Peruzi Ramani"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4137,11 +4074,6 @@ msgstr "Tengeneza Wasifu"
 msgid "Profile of "
 msgstr "Wasifu wa "
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr ""
 
@@ -4149,9 +4081,6 @@ msgid "Position"
 msgstr ""
 
 msgid "Organization"
-msgstr ""
-
-msgid "Location"
 msgstr ""
 
 msgid "Not provided"
@@ -4215,11 +4144,6 @@ msgstr "Matukio ya mtumiaji"
 
 msgid "Resources"
 msgstr "Rasilimali"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Alika watu"
 
 msgid "Edit Your Profile"
 msgstr "Hariri Wasifu wako"
@@ -6533,6 +6457,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6613,6 +6540,90 @@ msgstr "Kibali batili."
 
 msgid "Permission Denied"
 msgstr "Kibali kimekataliwa"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Idhinisha ruhusa"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "Hati"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "kanzidata"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "Makundi"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "Ramani iliundwa"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "kundi"
+
+#, fuzzy
+#~| msgid "updated"
+#~ msgid "groups update"
+#~ msgstr "kusasishwa"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "Tabaka limepakiwa"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "Matabaka"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "Tabaka limepakiwa"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "Tabaka limepakiwa"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Upakiaji usio kamili"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Kuna upakiaji ufuatao ambaosi kamili"
+
+#~ msgid "Resume"
+#~ msgstr "Resume"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Alika watu"
 
 #~ msgid "last updated on"
 #~ msgstr "mara ya mwisho kusasishwa ni"
