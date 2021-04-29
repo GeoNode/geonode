@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Afrikaans (http://www.transifex.com/geonode/geonode/language/"
@@ -578,9 +578,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -604,9 +601,6 @@ msgstr "View Map"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "Kanselleer"
 
@@ -616,11 +610,6 @@ msgstr "Stuur"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Stel regte"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Stel regte"
 
 msgid "Discover the available datasets."
@@ -774,6 +763,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -844,6 +836,9 @@ msgstr ""
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid ""
@@ -1041,11 +1036,6 @@ msgstr "Die URL van die dokument as dit ekstern."
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "Dokumente"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1152,11 +1142,6 @@ msgstr "Verken dokumente"
 
 msgid "Upload Documents"
 msgstr "Oplaai dokumente"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "dataset"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1523,11 +1508,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Skep 'n nuwe gids"
@@ -1852,11 +1832,6 @@ msgid "Explore Group Categories"
 msgstr "Verken Groepe"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "Kategorieë"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "Skep 'n groep"
@@ -1875,16 +1850,6 @@ msgstr "Verwyder groep"
 
 msgid "Create Group"
 msgstr "Skep Groep"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "'N Plan is geskep"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "groep"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1964,9 +1929,6 @@ msgstr "Voeg lede"
 msgid "Add Group Members"
 msgstr "Bestuur Groep Lede"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1981,11 +1943,6 @@ msgstr "Verwyder kaarte / Data uit Groep"
 
 msgid "Remove selected maps/data"
 msgstr "Verwyder gekies kaarte / data"
-
-#, fuzzy
-#| msgid "updated"
-msgid "groups update"
-msgstr "updated"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2307,11 +2264,6 @@ msgstr "datum wanneer kenmerk statistieke was laas"
 msgid "Append to Layer"
 msgstr "Wysig Layer"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "'N laag is opgelaai"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2332,11 +2284,6 @@ msgstr "Verander punt van kontak"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Ken 'n nuwe punt van kontak met die lae hieronder:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "Lae"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2353,9 +2300,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2624,11 +2568,6 @@ msgstr "Hierdie aksie raak die volgende kaarte:"
 msgid "No maps are using this layer"
 msgstr "Geen kaarte gebruik hierdie laag"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "'N laag is opgelaai"
-
 msgid "Upload Layers"
 msgstr "Oplaai Lae"
 
@@ -2685,11 +2624,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "Oplaai Layer"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "'N laag is opgelaai"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2768,17 +2702,28 @@ msgstr "Eienskappe"
 msgid "Upload Layer"
 msgstr "Oplaai Layer"
 
-msgid "Incomplete Uploads"
-msgstr "Onvolledige Uploads"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "Aflaai Metadata"
 
-msgid "You have the following incomplete uploads"
-msgstr "Jy het die volgende onvolledige oplaai"
-
-msgid "Resume"
-msgstr "CV"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Verwyder"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Oplaai Document"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3492,9 +3437,6 @@ msgstr "laag params"
 msgid "source params"
 msgstr "bron params"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3594,11 +3536,6 @@ msgstr "Wysig Map"
 
 msgid "Explore Maps"
 msgstr "Verken Maps"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4152,11 +4089,6 @@ msgstr "Skep Profiel"
 msgid "Profile of "
 msgstr "Profiel van"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr ""
 
@@ -4164,9 +4096,6 @@ msgid "Position"
 msgstr ""
 
 msgid "Organization"
-msgstr ""
-
-msgid "Location"
 msgstr ""
 
 msgid "Not provided"
@@ -4230,11 +4159,6 @@ msgstr "Gebruikers Aktiwiteite"
 
 msgid "Resources"
 msgstr "Hulpbronne"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Nooi mense"
 
 msgid "Edit Your Profile"
 msgstr "Verander jou profiel"
@@ -6553,6 +6477,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6633,6 +6560,90 @@ msgstr "Ongeldig toestemming vlak."
 
 msgid "Permission Denied"
 msgstr "Toestemming geweier"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Stel regte"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "Dokumente"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "dataset"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "Kategorieë"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "'N Plan is geskep"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "groep"
+
+#, fuzzy
+#~| msgid "updated"
+#~ msgid "groups update"
+#~ msgstr "updated"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "'N laag is opgelaai"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "Lae"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "'N laag is opgelaai"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "'N laag is opgelaai"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Onvolledige Uploads"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Jy het die volgende onvolledige oplaai"
+
+#~ msgid "Resume"
+#~ msgstr "CV"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Nooi mense"
 
 #~ msgid "last updated on"
 #~ msgstr "laas op"

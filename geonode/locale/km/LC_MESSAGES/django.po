@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/geonode/geonode/language/"
@@ -570,9 +570,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -596,9 +593,6 @@ msgstr "មើល​ផែនទី"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "បោះបង់"
 
@@ -608,11 +602,6 @@ msgstr "ដាក់​​​ស្នើ"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "សិទ្ធិ​កំណត់"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "សិទ្ធិ​កំណត់"
 
 msgid "Discover the available datasets."
@@ -766,6 +755,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -836,6 +828,9 @@ msgstr ""
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid ""
@@ -1031,11 +1026,6 @@ msgstr "URL របស់​ឯកសារ​នេះ​ប្រសិន​�
 msgid "URL"
 msgstr "URL ដែល"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "ឯកសារ"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1141,11 +1131,6 @@ msgstr "រក​មើល​ឯកសារ"
 
 msgid "Upload Documents"
 msgstr "ឯកសារ​ផ្ទុក​ឡើង"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "ទិន្នន័យ"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1512,11 +1497,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "បង្កើត​ផែនទី​ថ្មី"
@@ -1836,11 +1816,6 @@ msgid "Explore Group Categories"
 msgstr "រុករក​ក្រុម"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "ប្រភេទ"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "បង្កើត​ក្រុម​មួយ"
@@ -1859,16 +1834,6 @@ msgstr "យក​ក្រុម​ចេញ"
 
 msgid "Create Group"
 msgstr "បង្កើត​ក្រុម"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "ក្រុម"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1947,9 +1912,6 @@ msgstr "បន្ថែម​សមាជិក"
 msgid "Add Group Members"
 msgstr "គ្រប់គ្រង​សមាជិក​ក្រុម"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1964,11 +1926,6 @@ msgstr "យក​ផែនទី / ទិន្នន័យ​ពី​ក្រ
 
 msgid "Remove selected maps/data"
 msgstr "យក​ផែនទី​ដែល​បាន​ជ្រើសរើស / ទិន្នន័យ"
-
-#, fuzzy
-#| msgid "updated"
-msgid "groups update"
-msgstr "ធ្វើ​ឱ្យ​ទាន់សម័យ"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2286,11 +2243,6 @@ msgstr "កាលបរិច្ឆេទ​នៅពេល​ដែល​ស្
 msgid "Append to Layer"
 msgstr "កែសម្រួល​ស្រទាប់"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2311,11 +2263,6 @@ msgstr "ផ្លាស់​ប្តូ​រ​ចំណុច​នៃ​ក
 msgid "Assign a new point of contact to the layers below:"
 msgstr "កំណត់​ចំណុច​ថ្មី​មួយ​នៃ​ទំនាក់​ទំនង​ទៅ​នឹង​ស្រទាប់​ខាងក្រោម​:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "ស្រទាប់"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2332,9 +2279,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2600,11 +2544,6 @@ msgstr "សកម្មភាព​នេះ​ប៉ះពាល់​ដល់
 msgid "No maps are using this layer"
 msgstr "គ្មាន​ផែនទី​កំពុង​ប្រើ​ស្រទាប់​នេះ"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
-
 msgid "Upload Layers"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
 
@@ -2661,11 +2600,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2744,17 +2678,28 @@ msgstr "គុណលក្ខណៈ"
 msgid "Upload Layer"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
 
-msgid "Incomplete Uploads"
-msgstr "ផ្ទុក​ឡើង​មិន​ពេញលេញ"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "ទិន្នន័យ​មេតា​ទាញ​យក"
 
-msgid "You have the following incomplete uploads"
-msgstr "អ្នក​មាន​ឯកសារ​ផ្ទុក​ឡើង​មិន​ពេញលេញ​ដូច​ខាង​ក្រោម"
-
-msgid "Resume"
-msgstr "បន្ត"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "លុប"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "ផ្ទុក​ឡើង​ឯកសារ"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3457,9 +3402,6 @@ msgstr "ប៉ារ៉ាម៉ែត្រ​ស្រទាប់"
 msgid "source params"
 msgstr "ប៉ារ៉ាម៉ែត្រ​ប្រភព"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3556,11 +3498,6 @@ msgstr "កែសម្រួល​ផែនទី"
 
 msgid "Explore Maps"
 msgstr "ស្វែងរក​ផែនទី"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4102,11 +4039,6 @@ msgstr "បង្កើត​ព​ត៌​មាន"
 msgid "Profile of "
 msgstr "ព​ត៌​មាន​នៃ​ការ"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr ""
 
@@ -4114,9 +4046,6 @@ msgid "Position"
 msgstr ""
 
 msgid "Organization"
-msgstr ""
-
-msgid "Location"
 msgstr ""
 
 msgid "Not provided"
@@ -4180,11 +4109,6 @@ msgstr "សកម្មភាព​របស់​អ្នក​ប្រើ"
 
 msgid "Resources"
 msgstr "ធនធាន"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "អញ្ជើញ​មនុស្ស"
 
 msgid "Edit Your Profile"
 msgstr "កែប្រែ​ព​ត៌​មាន​របស់​អ្នក"
@@ -6495,6 +6419,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6575,6 +6502,90 @@ msgstr "កម្រិត​នៃ​ការ​អនុ​ញ្ញា​ត
 
 msgid "Permission Denied"
 msgstr "សិទ្ធិ​ត្រូវ​បាន​បដិសេធ"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "សិទ្ធិ​កំណត់"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "ឯកសារ"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "ទិន្នន័យ"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "ប្រភេទ"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "ផែនទី​មួយ​ដែល​ត្រូវ​បាន​បង្កើត​ឡើង"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "ក្រុម"
+
+#, fuzzy
+#~| msgid "updated"
+#~ msgid "groups update"
+#~ msgstr "ធ្វើ​ឱ្យ​ទាន់សម័យ"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "ស្រទាប់"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "ស្រទាប់​មួយ​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "ផ្ទុក​ឡើង​មិន​ពេញលេញ"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "អ្នក​មាន​ឯកសារ​ផ្ទុក​ឡើង​មិន​ពេញលេញ​ដូច​ខាង​ក្រោម"
+
+#~ msgid "Resume"
+#~ msgstr "បន្ត"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "អញ្ជើញ​មនុស្ស"
 
 #~ msgid "last updated on"
 #~ msgstr "ធ្វើ​ឱ្យ​ទាន់​សម័យ​ចុង​ក្រោយ​នៅ​លើ"

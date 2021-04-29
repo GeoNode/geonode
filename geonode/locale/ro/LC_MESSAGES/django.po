@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Romanian (http://www.transifex.com/geonode/geonode/language/"
@@ -580,9 +580,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -606,9 +603,6 @@ msgstr "Vezi Harta"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "Anula"
 
@@ -618,11 +612,6 @@ msgstr "Prezenta"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Setarea permisiunilor"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Setarea permisiunilor"
 
 msgid "Discover the available datasets."
@@ -776,6 +765,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -846,6 +838,9 @@ msgstr ""
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid ""
@@ -1043,11 +1038,6 @@ msgstr "Adresa URL a documentului în cazul în care este extern."
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "Documente"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1157,11 +1147,6 @@ msgstr "Exploreaza Documente"
 
 msgid "Upload Documents"
 msgstr "Încarcă Documente"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "CCD"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1530,11 +1515,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Creați o nouă hartă"
@@ -1858,11 +1838,6 @@ msgid "Explore Group Categories"
 msgstr "Exploreaza Grupuri"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "Categorii"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "Creați un grup"
@@ -1881,16 +1856,6 @@ msgstr "Scoateți Group"
 
 msgid "Create Group"
 msgstr "Creare grup"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "O hartă a fost creată"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "grup"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1969,9 +1934,6 @@ msgstr "Adaugă membri"
 msgid "Add Group Members"
 msgstr "Gestionați Membrii grupului"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1986,11 +1948,6 @@ msgstr "Scoateți Hărți / date de la Grupul"
 
 msgid "Remove selected maps/data"
 msgstr "Scoateți hărți selectate / date"
-
-#, fuzzy
-#| msgid "updated"
-msgid "groups update"
-msgstr "actualizat"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2314,11 +2271,6 @@ msgstr ""
 msgid "Append to Layer"
 msgstr "Edit Layer"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "Un strat a fost încărcat"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2339,11 +2291,6 @@ msgstr "Punct de contact se schimbe"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Atribui un nou punct de contact pentru straturile de mai jos:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "Straturi"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2360,9 +2307,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2635,11 +2579,6 @@ msgstr "Această acțiune afectează următoarele hărți:"
 msgid "No maps are using this layer"
 msgstr "Nu există hărți folosesc acest strat"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "Un strat a fost încărcat"
-
 msgid "Upload Layers"
 msgstr "Straturi de încărcare"
 
@@ -2696,11 +2635,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "Încărcați Layer"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "Un strat a fost încărcat"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2779,17 +2713,28 @@ msgstr "Atribute"
 msgid "Upload Layer"
 msgstr "Încărcați Layer"
 
-msgid "Incomplete Uploads"
-msgstr "Încărcări incomplete"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "Descărcare metadate"
 
-msgid "You have the following incomplete uploads"
-msgstr "Aveți următoarele imagini încărcate incomplete"
-
-msgid "Resume"
-msgstr "Relua"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Șterge"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Încărcați documente"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3505,9 +3450,6 @@ msgstr "params strat"
 msgid "source params"
 msgstr "params sursă"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3608,11 +3550,6 @@ msgstr "Edit Map"
 
 msgid "Explore Maps"
 msgstr "Exploreaza hărți"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4167,11 +4104,6 @@ msgstr "Creați Profil"
 msgid "Profile of "
 msgstr "Profilul lui"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr ""
 
@@ -4179,9 +4111,6 @@ msgid "Position"
 msgstr ""
 
 msgid "Organization"
-msgstr ""
-
-msgid "Location"
 msgstr ""
 
 msgid "Not provided"
@@ -4245,11 +4174,6 @@ msgstr "Activități de utilizare"
 
 msgid "Resources"
 msgstr "Resurse"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Invitați persoane"
 
 msgid "Edit Your Profile"
 msgstr "Editare profil"
@@ -6568,6 +6492,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6648,6 +6575,90 @@ msgstr "Nivel de permisiune invalid."
 
 msgid "Permission Denied"
 msgstr "Permission denied"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Setarea permisiunilor"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "Documente"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "CCD"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "Categorii"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "O hartă a fost creată"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "grup"
+
+#, fuzzy
+#~| msgid "updated"
+#~ msgid "groups update"
+#~ msgstr "actualizat"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "Un strat a fost încărcat"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "Straturi"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "Un strat a fost încărcat"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "Un strat a fost încărcat"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Încărcări incomplete"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Aveți următoarele imagini încărcate incomplete"
+
+#~ msgid "Resume"
+#~ msgstr "Relua"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Invitați persoane"
 
 #~ msgid "last updated on"
 #~ msgstr "Ultima actualizare pe"
