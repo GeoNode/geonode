@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/geonode/geonode/language/"
@@ -573,9 +573,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -599,9 +596,6 @@ msgstr "வரைபடத்தை பார்வையிடல் "
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "நீக்கு "
 
@@ -611,11 +605,6 @@ msgstr " வழங்குக "
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "அமை அனுமதிகள்"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "அமை அனுமதிகள்"
 
 msgid "Discover the available datasets."
@@ -769,6 +758,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -840,6 +832,9 @@ msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+
+msgid "Location"
+msgstr "அமைவிடம்"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -1018,11 +1013,6 @@ msgstr "ஆவணத்தின் URL அதை வெளி ஆகிறத�
 msgid "URL"
 msgstr "URL ஐ"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "ஆவணங்கள் "
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1133,11 +1123,6 @@ msgstr "ஆவணத்தை ஆராய்தல்  "
 
 msgid "Upload Documents"
 msgstr "ஆவணத்தை பதிவேற்றல்"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "தரவு தொகுதி"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1503,11 +1488,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "ஜியோ எக்ஸ்புலோரர்"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr " புதிய வரைபடத்தை உருவாக்குதல் "
@@ -1824,11 +1804,6 @@ msgid "Explore Group Categories"
 msgstr "குழுக்கள் ஆராய்ந்து"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "பிரிவுகள் "
-
-#, fuzzy
 #| msgid "Create a New Group"
 msgid "Create a New Group Category"
 msgstr "புதிய குழுவை உருவாக்கு"
@@ -1847,16 +1822,6 @@ msgstr "அகற்று"
 
 msgid "Create Group"
 msgstr "குழு உருவாக்கவும்"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "ஒரு வடைபடம் உருவாக்கப்பட்டது "
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "குழு "
 
 #, fuzzy
 #| msgid "last modified"
@@ -1935,9 +1900,6 @@ msgstr "உறுப்பினர்கள் சேர்க்கவும�
 msgid "Add Group Members"
 msgstr "குழு உறுப்பினர்கள் நிர்வகிக்கவும்"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1952,11 +1914,6 @@ msgstr "குழு இருந்து வரைபடங்கள் / ட�
 
 msgid "Remove selected maps/data"
 msgstr "தேர்ந்தெடுக்கப்பட்டுள்ளன வரைபடங்கள் / Remove தரவு"
-
-#, fuzzy
-#| msgid "A Map was updated"
-msgid "groups update"
-msgstr "வரைபடம் ஒன்று இயல்நிலைப்படுத்தப்பட்டது"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2264,11 +2221,6 @@ msgstr "பண்பு புள்ளிவிவரங்கள் கடந�
 msgid "Append to Layer"
 msgstr "படுகைக்கு மீள்திரும்பல்"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "ஒரு படுகை பதிவேற்றப்பட்டுள்ளது "
-
 msgid "Return to Layer"
 msgstr "படுகைக்கு மீள்திரும்பல்"
 
@@ -2289,11 +2241,6 @@ msgstr "தொடர்பு மையத்தை மாற்றல்"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "கீழுள்ள படுகைக்கு புதிய தொடர்பு மையம் ஒன்றை வழங்குக  "
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "படுகை  "
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2310,9 +2257,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2582,11 +2526,6 @@ msgstr "செயற்பாடு பின்வரும் வரைபட�
 msgid "No maps are using this layer"
 msgstr "எந்தவொரு வரைபடமும் இந்த படுகையை பயன்படுத்தவில்லை"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "ஒரு படுகை பதிவேற்றப்பட்டுள்ளது "
-
 msgid "Upload Layers"
 msgstr "படிமங்களை பதிவேற்றுதல்"
 
@@ -2654,11 +2593,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "படுகையை பதிவேற்றுக "
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "ஒரு படுகை பதிவேற்றப்பட்டுள்ளது "
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2740,17 +2674,28 @@ msgstr "பண்பியல்பு"
 msgid "Upload Layer"
 msgstr "படுகையை பதிவேற்றுக "
 
-msgid "Incomplete Uploads"
-msgstr "முழுமையற்ற பதிவேற்றம் "
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "நுண் தரவகளை பதிவிரக்கம் செய்க "
 
-msgid "You have the following incomplete uploads"
-msgstr "உங்களிடம் பின்வரும் முழுமையற்ற பதிவேற்றங்கள் காணப்படுகின்றன "
-
-msgid "Resume"
-msgstr "மீள வழங்குக "
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "அழி"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "ஆவணத்தை பதிவேற்றல்"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3471,9 +3416,6 @@ msgstr "படுகை முனைகள் "
 msgid "source params"
 msgstr "மூல முனைகள் "
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3573,11 +3515,6 @@ msgstr "திருத்தவும்"
 
 msgid "Explore Maps"
 msgstr "வரைபடங்களை உலாவருதல் "
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "ஜியோ எக்ஸ்புலோரர்"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4122,11 +4059,6 @@ msgstr "விபரத்திரட்டை உருவாக்குத�
 msgid "Profile of "
 msgstr "பதிவு செய்தது"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "ஜியோ எக்ஸ்புலோரர்"
-
 msgid "Not provided."
 msgstr "வழங்கப்படவில்லை "
 
@@ -4135,9 +4067,6 @@ msgstr "அமைவு"
 
 msgid "Organization"
 msgstr "நிறுவனம்"
-
-msgid "Location"
-msgstr "அமைவிடம்"
 
 msgid "Not provided"
 msgstr "வழங்கப்படவில்லை"
@@ -4200,11 +4129,6 @@ msgstr "பயனர் நடவடிக்கைகள்"
 
 msgid "Resources"
 msgstr "வளங்கள்"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "மக்கள் அழைக்கவும்"
 
 msgid "Edit Your Profile"
 msgstr "உங்களின் விபரத்தை திருத்துதல் "
@@ -6516,6 +6440,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6596,6 +6523,90 @@ msgstr "பெறுமதியற்ற அனுமதி மட்டம்"
 
 msgid "Permission Denied"
 msgstr "அனுமதி மறுக்கப்பட்டுள்ளது "
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "அமை அனுமதிகள்"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "ஆவணங்கள் "
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "தரவு தொகுதி"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "ஜியோ எக்ஸ்புலோரர்"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "பிரிவுகள் "
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "ஒரு வடைபடம் உருவாக்கப்பட்டது "
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "குழு "
+
+#, fuzzy
+#~| msgid "A Map was updated"
+#~ msgid "groups update"
+#~ msgstr "வரைபடம் ஒன்று இயல்நிலைப்படுத்தப்பட்டது"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "ஒரு படுகை பதிவேற்றப்பட்டுள்ளது "
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "படுகை  "
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "ஒரு படுகை பதிவேற்றப்பட்டுள்ளது "
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "ஒரு படுகை பதிவேற்றப்பட்டுள்ளது "
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "முழுமையற்ற பதிவேற்றம் "
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "உங்களிடம் பின்வரும் முழுமையற்ற பதிவேற்றங்கள் காணப்படுகின்றன "
+
+#~ msgid "Resume"
+#~ msgstr "மீள வழங்குக "
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "ஜியோ எக்ஸ்புலோரர்"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "ஜியோ எக்ஸ்புலோரர்"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "மக்கள் அழைக்கவும்"
 
 #~ msgid "last updated on"
 #~ msgstr "இறுதியாக இயல்நிலைப்படுத்தப்பட்டது"

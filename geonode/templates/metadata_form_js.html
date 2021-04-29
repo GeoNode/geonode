@@ -23,6 +23,7 @@
     var is_advanced = (metadata_uri.match(/metadata_advanced/i) != null);
     var is_category_mandatory = {% if TOPICCATEGORY_MANDATORY %}true{% else %}false{% endif %};
     var is_group_mandatory = {% if GROUP_MANDATORY_RESOURCES %}true{% else %}false{% endif %};
+    var ui_mandatory_fields = {{ UI_MANDATORY_FIELDS }};
 
     var updateWizard = function() {
       var activeTab = $("#edit-metadata .wizard--progress li.is-active");
@@ -194,10 +195,11 @@
                 
                 // Removes the second help icon from select2 fields
                 if (help_text) {
+                    var spanPopoverText = $('<span>', { class: 'external-popover', 'data-content': help_text  }).append("<strong><i class='fa fa fa-question-circle fa-1x'></i></strong>");
                     $(this)
                         .closest("div")
                         .children("span:not(.input-group):not(.select2)")  // Removes the second help icon for select2
-                        .append("<span class='external-popover' data-content='" + help_text + "'><strong><i class='fa fa fa-question-circle fa-1x'></i></strong></span>");
+                        .append(spanPopoverText);
             }});
 
         $('.external-popover').each(function(){
@@ -321,24 +323,25 @@
         }
 
         var isMandatoryField = function (el) {
-          if(el.id.indexOf("resource-constraints") >= 0) {
-            if(otherRestrictionsSelected()) {
-                return true;
+            var is_mandatory = false;
+
+            is_mandatory = ui_mandatory_fields.some(function(field){
+                return el.id == field;
+            })
+
+            if (el.id == 'id_resource-group') {
+                if (is_group_mandatory) {
+                    is_mandatory = true;
+                }
             }
-            return false;
-          }
 
-          if (el.id.startsWith('id_tkeywords') && $(el).hasClass('treq')) {
-              return true;
-          } else if (el.id.startsWith('id_tkeywords') && !$(el).hasClass('treq')) {
-              return false;
-          }
+            // Workaround for Thesauri
+            if (el.id.startsWith('id_tkeywords') && $(el).hasClass('treq')) {
+                is_mandatory = true;
+            } else if (el.id.startsWith('id_tkeywords') && !$(el).hasClass('treq')) {
+                is_mandatory = false;
+            }
 
-          var is_mandatory = (el.id.indexOf("autocomplete") < 0 &&
-                        (typeof $(el).attr("class") !== 'undefined' && $(el).attr("class").indexOf("select2") < 0) &&
-                        !$(el).hasClass('value-select') &&
-                        el.type !== 'radio' &&
-                        el.type !== 'button');
             return is_mandatory;
         }
         
@@ -392,18 +395,9 @@
 
         {{UI_REQUIRED_FIELDS}}.forEach(element => $('#' + element).change(onInputChange).change());
 
-        $('#category_form').change(onInputChange).change();
-        $('#id_resource-group').change(onInputChange).change();
-
-        $('#id_resource-title').change(onInputChange).change();
-        $('#id_resource-abstract').change(onInputChange).change();
-        $('#id_resource-doi').change(onInputChange).change();
-        $('#id_resource-attribution').change(onInputChange).change();
-        $('#id_resource-data_quality_statement').change(onInputChange).change();
-        $('#id_resource-restriction_code_type').change(onInputChange).change();
-
-        $('#id_resource-date').change(onInputChange).change();
-        $('#id_resource-links').change(onInputChange).change();
+        ui_mandatory_fields.forEach(function(field){
+            $('#'+field).change(onInputChange).change();
+        })
 
         var selection = document.querySelector('select[name="resource-keywords"]');
         if (selection  !== null) {

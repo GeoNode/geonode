@@ -603,12 +603,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     VALID_DATE_TYPES = [(x.lower(), _(x))
                         for x in ['Creation', 'Publication', 'Revision']]
-
+    
+    abstract_help_text = _(
+        'brief narrative summary of the content of the resource(s)')
     date_help_text = _('reference date for the cited resource')
     date_type_help_text = _('identification of when a given event occurred')
     edition_help_text = _('version of the cited resource')
-    abstract_help_text = _(
-        'brief narrative summary of the content of the resource(s)')
+    attribution_help_text = _(
+        'authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.')
+    doi_help_text = _(
+        'a DOI will be added by Admin before publication.')
     purpose_help_text = _(
         'summary of the intentions with which the resource(s) was developed')
     maintenance_frequency_help_text = _(
@@ -640,24 +644,21 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     data_quality_statement_help_text = _(
         'general explanation of the data producer\'s knowledge about the lineage of a'
         ' dataset')
-    doi_help_text = _(
-        'a DOI will be added by Admin before publication.')
-    doi = models.CharField(
-        _('DOI'),
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text=doi_help_text)
-    attribution_help_text = _(
-        'authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.')
-    attribution = models.CharField(
-        _('Attribution'),
-        max_length=2048,
-        blank=True,
-        null=True,
-        help_text=attribution_help_text)
     # internal fields
     uuid = models.CharField(max_length=36)
+    title = models.CharField(_('title'), max_length=255, help_text=_(
+        'name by which the cited resource is known'))
+    abstract = models.TextField(
+        _('abstract'),
+        max_length=2000,
+        blank=True,
+        help_text=abstract_help_text)
+    purpose = models.TextField(
+        _('purpose'),
+        max_length=500,
+        null=True,
+        blank=True,
+        help_text=purpose_help_text)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         blank=True,
@@ -668,8 +669,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     contacts = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='ContactRole')
-    title = models.CharField(_('title'), max_length=255, help_text=_(
-        'name by which the cited resource is known'))
     alternate = models.CharField(max_length=128, null=True, blank=True)
     date = models.DateTimeField(
         _('date'),
@@ -687,17 +686,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True,
         help_text=edition_help_text)
-    abstract = models.TextField(
-        _('abstract'),
-        max_length=2000,
+    attribution = models.CharField(
+        _('Attribution'),
+        max_length=2048,
         blank=True,
-        help_text=abstract_help_text)
-    purpose = models.TextField(
-        _('purpose'),
-        max_length=500,
         null=True,
+        help_text=attribution_help_text)
+    doi = models.CharField(
+        _('DOI'),
+        max_length=255,
         blank=True,
-        help_text=purpose_help_text)
+        null=True,
+        help_text=doi_help_text)
     maintenance_frequency = models.CharField(
         _('maintenance frequency'),
         max_length=255,
@@ -1271,7 +1271,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox_polygon = Polygon.from_bbox(bbox)
         self.bbox_polygon = bbox_polygon.clone()
         self.srid = srid
-        if srid == 4326:
+        if srid == 4326 or srid == "EPSG:4326":
             self.ll_bbox_polygon = bbox_polygon
         else:
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
