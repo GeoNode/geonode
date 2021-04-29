@@ -32,7 +32,7 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.core.cache import cache
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Style
 from geonode.compat import ensure_string
 from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
@@ -589,7 +589,13 @@ class MapLayer(models.Model, GXPLayerBase):
             layer_obj = Layer.objects.filter(alternate=self.name).first()
             if ':' in style_name:
                 style_name = style_name.split(':')[1]
+            elif layer_obj.default_style:
+                style_name = layer_obj.default_style.name
             href = layer_obj.get_legend_url(style_name=style_name)
+            style = Style.objects.filter(name=style_name).first()
+            if style:
+                # replace map-legend display name if style has a title
+                style_name = style.sld_title or style_name
             return {style_name: href}
         except Exception as e:
             logger.exception(e)

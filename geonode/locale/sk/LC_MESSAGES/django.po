@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2021-03-11 16:40+0100\n"
 "Last-Translator: \n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -617,10 +617,6 @@ msgid "offline"
 msgstr "offline"
 
 #, fuzzy
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr "Vrstva ešte nie je pripravená. Stále sa dokončuje príjem vrstvy ..."
-
-#, fuzzy
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr "BEZPEČNOSŤ NIE JE EŠTE SYNCHRONIZOVANÁ"
 
@@ -648,10 +644,6 @@ msgstr "Zobraziť mapu"
 msgid "Batch Edit"
 msgstr "Dávková úprava"
 
-#, fuzzy
-msgid "batch edit"
-msgstr "dávková úprava"
-
 msgid "Cancel"
 msgstr "Zrušiť"
 
@@ -661,10 +653,6 @@ msgstr "Odoslať"
 #, fuzzy
 msgid "Set Permissions"
 msgstr "Nastaviť povolenia"
-
-#, fuzzy
-msgid "set permissions"
-msgstr "nastaviť povolenia"
 
 #, fuzzy
 msgid "Discover the available datasets."
@@ -827,6 +815,10 @@ msgstr ""
 "digitálne výškové modely, sklon, odvodené produkty."
 
 #, fuzzy
+msgid "Elevation"
+msgstr "Nadmorská výška"
+
+#, fuzzy
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -928,6 +920,9 @@ msgid ""
 msgstr ""
 "Pozičné informácie a služby. Príklady: adresy, geodetické siete, kontrolné "
 "body, poštové zóny a služby, názvy miest."
+
+msgid "Location"
+msgstr "Lokalita"
 
 #, fuzzy
 msgid ""
@@ -1147,9 +1142,6 @@ msgstr "URL dokumentu, ak je externý."
 msgid "URL"
 msgstr "Url"
 
-msgid "documents"
-msgstr "dokumenty"
-
 #, fuzzy
 msgid "Your browser does not support the audio element."
 msgstr "Prehliadač nepodporuje zvukový prvok."
@@ -1266,10 +1258,6 @@ msgstr "Preskúmať dokumenty"
 #, fuzzy
 msgid "Upload Documents"
 msgstr "Odovzdajte dokumenty"
-
-#, fuzzy
-msgid "data"
-msgstr "údaje"
 
 #, fuzzy, python-format
 msgid "for %(document_title)s"
@@ -1627,10 +1615,6 @@ msgstr "Stiahnuť"
 msgid "%(GEONODE_APPS_NAME)s"
 msgstr "% (GEONODE_APPS_NAME) s"
 
-#, fuzzy
-msgid "apps explore"
-msgstr "aplikácie preskúmať"
-
 msgid "Create New"
 msgstr "Vytvoriť"
 
@@ -1949,10 +1933,6 @@ msgid "Explore Group Categories"
 msgstr "Preskúmajte kategórie skupín"
 
 #, fuzzy
-msgid "groups explore"
-msgstr "skupiny skúmajú"
-
-#, fuzzy
 msgid "Create a New Group Category"
 msgstr "Vytvorte novú kategóriu skupiny"
 
@@ -1973,13 +1953,6 @@ msgstr "Odstrániť skupinu"
 
 msgid "Create Group"
 msgstr "& Vytvoriť skupinu"
-
-#, fuzzy
-msgid "groups create"
-msgstr "skupiny vytvárajú"
-
-msgid "groups"
-msgstr "skupiny"
 
 msgid "Last Modified"
 msgstr "Naposledy zmenené"
@@ -2063,10 +2036,6 @@ msgstr "Pridajte nových členov"
 msgid "Add Group Members"
 msgstr "Pridajte členov skupiny"
 
-#, fuzzy
-msgid "groups remove"
-msgstr "skupiny odstrániť"
-
 #, fuzzy, python-format
 msgid ""
 "\n"
@@ -2084,10 +2053,6 @@ msgstr "Odstrániť mapy / údaje zo skupiny"
 #, fuzzy
 msgid "Remove selected maps/data"
 msgstr "Odstrániť vybrané mapy / údaje"
-
-#, fuzzy
-msgid "groups update"
-msgstr "skupiny aktualizovať"
 
 #, fuzzy
 msgid "Edit Group Category Details"
@@ -2429,10 +2394,6 @@ msgid "Append to Layer"
 msgstr "Vráťte sa do vrstvy"
 
 #, fuzzy
-msgid "layers append"
-msgstr "upload vrstiev"
-
-#, fuzzy
 msgid "Return to Layer"
 msgstr "Vráťte sa do vrstvy"
 
@@ -2456,10 +2417,6 @@ msgid "Assign a new point of contact to the layers below:"
 msgstr "Priraďte nový kontaktný bod vrstvám uvedeným nižšie:"
 
 #, fuzzy
-msgid "layers"
-msgstr "vrstiev"
-
-#, fuzzy
 msgid "Layer WMS GetCapabilities document"
 msgstr "Vrstvový dokument WMS GetCapabilities"
 
@@ -2480,10 +2437,6 @@ msgstr "Pole ohraničenia"
 
 msgid "Time"
 msgstr "Čas"
-
-#, fuzzy
-msgid "Elevation"
-msgstr "Nadmorská výška"
 
 msgid "Actions"
 msgstr "Akcie"
@@ -2776,10 +2729,6 @@ msgid "No maps are using this layer"
 msgstr "Túto vrstvu nepoužívajú žiadne mapy"
 
 #, fuzzy
-msgid "layers explore"
-msgstr "vrstvy preskúmať"
-
-#, fuzzy
 msgid "Upload Layers"
 msgstr "Odovzdajte vrstvy"
 
@@ -2843,10 +2792,6 @@ msgstr ""
 #, fuzzy
 msgid "Upload Layer Metadata"
 msgstr "Nahrajte metadáta vrstvy"
-
-#, fuzzy
-msgid "layers upload"
-msgstr "upload vrstiev"
 
 #, fuzzy
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
@@ -2935,19 +2880,26 @@ msgid "Upload Layer"
 msgstr "Odovzdať vrstvu"
 
 #, fuzzy
-msgid "Incomplete Uploads"
-msgstr "Neúplné nahrávanie"
+msgid "Upload status"
+msgstr "Odovzdajte metadáta"
 
-#, fuzzy
-msgid "You have the following incomplete uploads"
-msgstr "Máte nasledujúce neúplné nahratia"
-
-msgid "Resume"
-msgstr "Životopis"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 #, fuzzy
 msgid "Delete"
 msgstr "Zmazať"
+
+#, fuzzy
+msgid "Upload process completed"
+msgstr "Nahrať dokument"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3811,10 +3763,6 @@ msgid "source params"
 msgstr "parametre zdroja"
 
 #, fuzzy
-msgid "maps"
-msgstr "mapy"
-
-#, fuzzy
 msgid "Map layers WMS GetCapabilities document"
 msgstr "Mapujte vrstvy dokument WMS GetCapabilities"
 
@@ -3936,10 +3884,6 @@ msgstr "Upraviť mapu"
 #, fuzzy
 msgid "Explore Maps"
 msgstr "Preskúmajte Mapy"
-
-#, fuzzy
-msgid "maps explore"
-msgstr "mapy preskúmať"
 
 #, fuzzy
 msgid ""
@@ -4565,10 +4509,6 @@ msgid "Profile of "
 msgstr "Profil používateľa"
 
 #, fuzzy
-msgid "people explore"
-msgstr "ľudia skúmajú"
-
-#, fuzzy
 msgid "Not provided."
 msgstr "Neboli poskytnuté."
 
@@ -4577,9 +4517,6 @@ msgstr "Pozícia"
 
 msgid "Organization"
 msgstr "Názov organizácie"
-
-msgid "Location"
-msgstr "Lokalita"
 
 #, fuzzy
 msgid "Not provided"
@@ -4646,10 +4583,6 @@ msgstr "Činnosti používateľov"
 
 msgid "Resources"
 msgstr "Zdroje"
-
-#, fuzzy
-msgid "edit people"
-msgstr "upravovať ľudí"
 
 msgid "Edit Your Profile"
 msgstr "Upraviť profil"
@@ -7237,6 +7170,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -7332,6 +7268,91 @@ msgstr "Neplatná úroveň povolenia."
 
 msgid "Permission Denied"
 msgstr "Povolenie bolo odmietnuté"
+
+#, fuzzy
+#~ msgid "Layer not ready yet. Still finalizing layer ingestion..."
+#~ msgstr "Vrstva ešte nie je pripravená. Stále sa dokončuje príjem vrstvy ..."
+
+#, fuzzy
+#~ msgid "batch edit"
+#~ msgstr "dávková úprava"
+
+#, fuzzy
+#~ msgid "set permissions"
+#~ msgstr "nastaviť povolenia"
+
+#~ msgid "documents"
+#~ msgstr "dokumenty"
+
+#, fuzzy
+#~ msgid "data"
+#~ msgstr "údaje"
+
+#, fuzzy
+#~ msgid "apps explore"
+#~ msgstr "aplikácie preskúmať"
+
+#, fuzzy
+#~ msgid "groups explore"
+#~ msgstr "skupiny skúmajú"
+
+#, fuzzy
+#~ msgid "groups create"
+#~ msgstr "skupiny vytvárajú"
+
+#~ msgid "groups"
+#~ msgstr "skupiny"
+
+#, fuzzy
+#~ msgid "groups remove"
+#~ msgstr "skupiny odstrániť"
+
+#, fuzzy
+#~ msgid "groups update"
+#~ msgstr "skupiny aktualizovať"
+
+#, fuzzy
+#~ msgid "layers append"
+#~ msgstr "upload vrstiev"
+
+#, fuzzy
+#~ msgid "layers"
+#~ msgstr "vrstiev"
+
+#, fuzzy
+#~ msgid "layers explore"
+#~ msgstr "vrstvy preskúmať"
+
+#, fuzzy
+#~ msgid "layers upload"
+#~ msgstr "upload vrstiev"
+
+#, fuzzy
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Neúplné nahrávanie"
+
+#, fuzzy
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Máte nasledujúce neúplné nahratia"
+
+#~ msgid "Resume"
+#~ msgstr "Životopis"
+
+#, fuzzy
+#~ msgid "maps"
+#~ msgstr "mapy"
+
+#, fuzzy
+#~ msgid "maps explore"
+#~ msgstr "mapy preskúmať"
+
+#, fuzzy
+#~ msgid "people explore"
+#~ msgstr "ľudia skúmajú"
+
+#, fuzzy
+#~ msgid "edit people"
+#~ msgstr "upravovať ľudí"
 
 #, fuzzy
 #~ msgid "last updated on"
