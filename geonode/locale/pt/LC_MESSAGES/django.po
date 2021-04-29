@@ -33,7 +33,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2020-05-25 23:49+0100\n"
 "Last-Translator: João Gaspar <joao.f.r.gaspar@gmail.com>\n"
 "Language-Team: Portuguese (http://www.transifex.com/geonode/geonode/language/"
@@ -555,9 +555,6 @@ msgstr "online"
 msgid "offline"
 msgstr "offline"
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr "SEGURANÇA AINDA NÃO ESTÁ SINCRONIZADA"
 
@@ -579,9 +576,6 @@ msgstr "Ver Mapa"
 msgid "Batch Edit"
 msgstr "Edição em série"
 
-msgid "batch edit"
-msgstr "edição em série"
-
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -590,9 +584,6 @@ msgstr "Enviar"
 
 msgid "Set Permissions"
 msgstr "Definir permissões"
-
-msgid "set permissions"
-msgstr "definir permissões"
 
 msgid "Discover the available datasets."
 msgstr "Descobrir conjunto de dados disponíveis."
@@ -742,6 +733,9 @@ msgstr ""
 "Altura acima ou abaixo do nível do mar. Exemplos: altitude, batimetria, "
 "modelos digitais de elevação, declive, produtos derivados."
 
+msgid "Elevation"
+msgstr "Elevação"
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -842,6 +836,9 @@ msgid ""
 msgstr ""
 "Informações e serviços posicionais. Exemplos: endereços, redes geodésicas, "
 "pontos de controlo, zonas e serviços postais, nomes de lugares."
+
+msgid "Location"
+msgstr "Localização"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -1034,9 +1031,6 @@ msgstr "O URL do documento, se for externo."
 msgid "URL"
 msgstr "URL"
 
-msgid "documents"
-msgstr "documentos"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1131,9 +1125,6 @@ msgstr "Explorar Documentos"
 
 msgid "Upload Documents"
 msgstr "Carregar Documentos"
-
-msgid "data"
-msgstr "conjunto de dados"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1474,11 +1465,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "maps explore"
-msgid "apps explore"
-msgstr "explorar mapas"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Criar um Novo Mapa"
@@ -1778,9 +1764,6 @@ msgstr "Ainda sem ações"
 msgid "Explore Group Categories"
 msgstr "Explorar Grupos de Categorias"
 
-msgid "groups explore"
-msgstr "explorar grupos"
-
 msgid "Create a New Group Category"
 msgstr "Criar Nova Categoria de Grupo"
 
@@ -1798,12 +1781,6 @@ msgstr "Remover grupo"
 
 msgid "Create Group"
 msgstr "Criar Grupo"
-
-msgid "groups create"
-msgstr "criação de grupos"
-
-msgid "groups"
-msgstr "grupos"
 
 msgid "Last Modified"
 msgstr "Última Modificação"
@@ -1876,9 +1853,6 @@ msgstr "Adicionar novos membros"
 msgid "Add Group Members"
 msgstr "Adicionar Membros do Grupo"
 
-msgid "groups remove"
-msgstr "remover grupos"
-
 #, python-format
 msgid ""
 "\n"
@@ -1894,9 +1868,6 @@ msgstr "Remover Mapas / Informação do Grupo"
 
 msgid "Remove selected maps/data"
 msgstr "Remover mapas seleccionados / dados"
-
-msgid "groups update"
-msgstr "grupos atualizado"
 
 msgid "Edit Group Category Details"
 msgstr "Editar Detalhes da Categoria do Grupo"
@@ -2183,11 +2154,6 @@ msgstr "data de quando as estatísticas dos atributos foram atualizadas"
 msgid "Append to Layer"
 msgstr "Voltar à Camada"
 
-#, fuzzy
-#| msgid "layers upload"
-msgid "layers append"
-msgstr "carregamento de camadas"
-
 msgid "Return to Layer"
 msgstr "Voltar à Camada"
 
@@ -2206,9 +2172,6 @@ msgstr "Mudar ponto de contato"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Associar um novo ponto de contato às camadas abaixo:"
 
-msgid "layers"
-msgstr "camadas"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr "Documento WMS GetCapabilities da camada"
 
@@ -2226,9 +2189,6 @@ msgstr "Extensão Espacial"
 
 msgid "Time"
 msgstr "Tempo"
-
-msgid "Elevation"
-msgstr "Elevação"
 
 msgid "Actions"
 msgstr "Acções"
@@ -2472,9 +2432,6 @@ msgstr "Esta ação afeta os seguintes mapas:"
 msgid "No maps are using this layer"
 msgstr "Nenhum mapa está usando esta camada"
 
-msgid "layers explore"
-msgstr "explorar camadas"
-
 msgid "Upload Layers"
 msgstr "Carregar Camadas"
 
@@ -2538,9 +2495,6 @@ msgstr ""
 
 msgid "Upload Layer Metadata"
 msgstr "Carregar Metadados da Camada"
-
-msgid "layers upload"
-msgstr "carregamento de camadas"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
@@ -2620,17 +2574,28 @@ msgstr "Atributos do Conjunto de dados"
 msgid "Upload Layer"
 msgstr "Carregar Camada"
 
-msgid "Incomplete Uploads"
-msgstr "Uploads incompletos"
+#, fuzzy
+#| msgid "Upload Metadata"
+msgid "Upload status"
+msgstr "Carregar Metadados"
 
-msgid "You have the following incomplete uploads"
-msgstr "Você tem estes carregamentos incompletos"
-
-msgid "Resume"
-msgstr "Resumo"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Apagar"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Carregar Documento"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3424,9 +3389,6 @@ msgstr "parâmetros da camada"
 msgid "source params"
 msgstr "parâmetros da fonte de dados"
 
-msgid "maps"
-msgstr "mapas"
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr "Documento WMS GetCapabilities do mapa de camadas"
 
@@ -3530,9 +3492,6 @@ msgstr "Editar Mapa"
 
 msgid "Explore Maps"
 msgstr "Explorar Mapas"
-
-msgid "maps explore"
-msgstr "explorar mapas"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4041,9 +4000,6 @@ msgstr "Criar Perfil"
 msgid "Profile of "
 msgstr "Perfil de "
 
-msgid "people explore"
-msgstr "explorar pessoas"
-
 msgid "Not provided."
 msgstr "Não fornecido."
 
@@ -4052,9 +4008,6 @@ msgstr "Cargo"
 
 msgid "Organization"
 msgstr "Organização"
-
-msgid "Location"
-msgstr "Localização"
 
 msgid "Not provided"
 msgstr "Não fornecido"
@@ -4109,9 +4062,6 @@ msgstr "Atividades do Usuário"
 
 msgid "Resources"
 msgstr "Recursos"
-
-msgid "edit people"
-msgstr "editar pessoas"
 
 msgid "Edit Your Profile"
 msgstr "Editar seu Perfil"
@@ -4289,6 +4239,8 @@ msgstr "Recursos do Serviço"
 msgid "No resources have been imported yet."
 msgstr "Ainda não foram importados recursos."
 
+#, fuzzy
+#| msgid "Retry job"
 msgid "Retry job"
 msgstr "Tentar importação"
 
@@ -6451,6 +6403,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6538,6 +6493,73 @@ msgstr "Nível de permissão inválido."
 
 msgid "Permission Denied"
 msgstr "Permissão Negada"
+
+#~ msgid "batch edit"
+#~ msgstr "edição em série"
+
+#~ msgid "set permissions"
+#~ msgstr "definir permissões"
+
+#~ msgid "documents"
+#~ msgstr "documentos"
+
+#~ msgid "data"
+#~ msgstr "conjunto de dados"
+
+#, fuzzy
+#~| msgid "maps explore"
+#~ msgid "apps explore"
+#~ msgstr "explorar mapas"
+
+#~ msgid "groups explore"
+#~ msgstr "explorar grupos"
+
+#~ msgid "groups create"
+#~ msgstr "criação de grupos"
+
+#~ msgid "groups"
+#~ msgstr "grupos"
+
+#~ msgid "groups remove"
+#~ msgstr "remover grupos"
+
+#~ msgid "groups update"
+#~ msgstr "grupos atualizado"
+
+#, fuzzy
+#~| msgid "layers upload"
+#~ msgid "layers append"
+#~ msgstr "carregamento de camadas"
+
+#~ msgid "layers"
+#~ msgstr "camadas"
+
+#~ msgid "layers explore"
+#~ msgstr "explorar camadas"
+
+#~ msgid "layers upload"
+#~ msgstr "carregamento de camadas"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Uploads incompletos"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Você tem estes carregamentos incompletos"
+
+#~ msgid "Resume"
+#~ msgstr "Resumo"
+
+#~ msgid "maps"
+#~ msgstr "mapas"
+
+#~ msgid "maps explore"
+#~ msgstr "explorar mapas"
+
+#~ msgid "people explore"
+#~ msgstr "explorar pessoas"
+
+#~ msgid "edit people"
+#~ msgstr "editar pessoas"
 
 #~ msgid "last updated on"
 #~ msgstr "última atualização em"

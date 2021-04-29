@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-24 07:02+0000\n"
 "Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/geonode/geonode/language/"
@@ -572,9 +572,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -598,9 +595,6 @@ msgstr "지도 보기"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "취소"
 
@@ -610,11 +604,6 @@ msgstr "제출"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "권한 설정"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "권한 설정"
 
 msgid "Discover the available datasets."
@@ -770,6 +759,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr "고도"
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -841,6 +833,9 @@ msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+
+msgid "Location"
+msgstr "위치"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -1019,11 +1014,6 @@ msgstr "외부 문서인 경우 문서의 URL."
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "문서"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1133,11 +1123,6 @@ msgstr "문서 검색"
 
 msgid "Upload Documents"
 msgstr "문서 업로드"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "데이터셋"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1501,11 +1486,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "새로운 지도 생성"
@@ -1821,11 +1801,6 @@ msgid "Explore Group Categories"
 msgstr "그룹 검색"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "카테고리"
-
-#, fuzzy
 #| msgid "Create a New Group"
 msgid "Create a New Group Category"
 msgstr "새로운 그룹 새성"
@@ -1844,16 +1819,6 @@ msgstr "그룹 삭제"
 
 msgid "Create Group"
 msgstr "그룹 생성"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "지도가 생성되었습니다"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "그룹"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1932,9 +1897,6 @@ msgstr "회원 추가"
 msgid "Add Group Members"
 msgstr "그룹 회원 관리"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1949,11 +1911,6 @@ msgstr "이 그룹에서 지도/데이터 삭제"
 
 msgid "Remove selected maps/data"
 msgstr "선택한 지도/데이터 삭제"
-
-#, fuzzy
-#| msgid "A Map was updated"
-msgid "groups update"
-msgstr "지도를 갱신했습니다"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2265,11 +2222,6 @@ msgstr "속성 통계가 마지막으로 갱신된 날짜"
 msgid "Append to Layer"
 msgstr "레이어로 돌아가기"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "업로드된 레이어"
-
 msgid "Return to Layer"
 msgstr "레이어로 돌아가기"
 
@@ -2290,11 +2242,6 @@ msgstr "담당자 변경"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "아래 레이어에 대한 새로운 담당자 설정:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "레이어"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2312,9 +2259,6 @@ msgstr "최소경계영역"
 
 msgid "Time"
 msgstr "시간"
-
-msgid "Elevation"
-msgstr "고도"
 
 msgid "Actions"
 msgstr "활동"
@@ -2584,11 +2528,6 @@ msgstr "이 작업은 다음의 지도에 영향을 미칩니다:"
 msgid "No maps are using this layer"
 msgstr "이 레이어를 사용하는 지도가 없습니다"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "업로드된 레이어"
-
 msgid "Upload Layers"
 msgstr "레이어 업로드"
 
@@ -2653,11 +2592,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "레이어 업로드"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "업로드된 레이어"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2739,17 +2673,28 @@ msgstr "속성"
 msgid "Upload Layer"
 msgstr "레이어 업로드"
 
-msgid "Incomplete Uploads"
-msgstr "불완전 업로드"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "메타데이터 다운로드"
 
-msgid "You have the following incomplete uploads"
-msgstr "다음과 같은 불완전한 업로드가 있습니다"
-
-msgid "Resume"
-msgstr "재시작"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "삭제"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "문서 업로드"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3462,9 +3407,6 @@ msgstr "레이어 파라미터"
 msgid "source params"
 msgstr "원본 파라미터"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3563,11 +3505,6 @@ msgstr "지도 편집"
 
 msgid "Explore Maps"
 msgstr "지도 검색"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4112,11 +4049,6 @@ msgstr "프로필 생성"
 msgid "Profile of "
 msgstr "프로필 정보: "
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr "제공되지 않음."
 
@@ -4125,9 +4057,6 @@ msgstr "직위"
 
 msgid "Organization"
 msgstr "기관"
-
-msgid "Location"
-msgstr "위치"
 
 msgid "Not provided"
 msgstr "제공되지 않음"
@@ -4190,11 +4119,6 @@ msgstr "사용자 활동"
 
 msgid "Resources"
 msgstr "자원"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "회원 초대"
 
 msgid "Edit Your Profile"
 msgstr "프로필 편집"
@@ -6836,6 +6760,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6916,6 +6843,90 @@ msgstr "유효하지 않은 권한 수준."
 
 msgid "Permission Denied"
 msgstr "사용 권한이 거부되었습니다"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "권한 설정"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "문서"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "데이터셋"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "카테고리"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "지도가 생성되었습니다"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "그룹"
+
+#, fuzzy
+#~| msgid "A Map was updated"
+#~ msgid "groups update"
+#~ msgstr "지도를 갱신했습니다"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "업로드된 레이어"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "레이어"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "업로드된 레이어"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "업로드된 레이어"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "불완전 업로드"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "다음과 같은 불완전한 업로드가 있습니다"
+
+#~ msgid "Resume"
+#~ msgstr "재시작"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "회원 초대"
 
 #~ msgid "last updated on"
 #~ msgstr "마지막 수정 "

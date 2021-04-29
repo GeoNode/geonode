@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swedish (http://www.transifex.com/geonode/geonode/language/"
@@ -574,9 +574,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -600,9 +597,6 @@ msgstr "Visa karta"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "Avboka"
 
@@ -612,11 +606,6 @@ msgstr "Skicka in"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Ange behörigheter"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Ange behörigheter"
 
 msgid "Discover the available datasets."
@@ -770,6 +759,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -840,6 +832,9 @@ msgstr ""
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid ""
@@ -1037,11 +1032,6 @@ msgstr "Webbadressen till dokumentet om den är extern."
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "Dokument"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1149,11 +1139,6 @@ msgstr "Utforska Dokument"
 
 msgid "Upload Documents"
 msgstr "Ladda upp dokument"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "dataset"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1520,11 +1505,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Skapa en ny karta"
@@ -1848,11 +1828,6 @@ msgid "Explore Group Categories"
 msgstr "Utforska Grupper"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "Kategorier"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "Skapa en Grupp"
@@ -1871,16 +1846,6 @@ msgstr "Avlägsna gruppen"
 
 msgid "Create Group"
 msgstr "Skapa grupp"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "En kart skapades"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "grupp"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1960,9 +1925,6 @@ msgstr "Lägg till medlemmar"
 msgid "Add Group Members"
 msgstr "Hantera Gruppmedlemmar"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1977,11 +1939,6 @@ msgstr "Ta bort kartor / Data från gruppen"
 
 msgid "Remove selected maps/data"
 msgstr "Ta bort markerade kartor / data"
-
-#, fuzzy
-#| msgid "updated"
-msgid "groups update"
-msgstr "uppdaterad"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2299,11 +2256,6 @@ msgstr "datum då attribut statistiken senast uppdaterades"
 msgid "Append to Layer"
 msgstr "Redigera Layer"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "Ett skikt laddades upp"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2324,11 +2276,6 @@ msgstr "Ändra kontaktpunkt"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Tilldela en ny kontaktpunkt till lagren under:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "Skikt"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2345,9 +2292,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2615,11 +2559,6 @@ msgstr "Denna åtgärd berör följande kartor:"
 msgid "No maps are using this layer"
 msgstr "Inga kartor använder detta skikt"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "Ett skikt laddades upp"
-
 msgid "Upload Layers"
 msgstr "Ladda Skikt"
 
@@ -2676,11 +2615,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "Överför Layer"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "Ett skikt laddades upp"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2759,17 +2693,28 @@ msgstr "Attribut"
 msgid "Upload Layer"
 msgstr "Överför Layer"
 
-msgid "Incomplete Uploads"
-msgstr "Ofullständiga uppladdningar"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "Hämta Metadata"
 
-msgid "You have the following incomplete uploads"
-msgstr "Du har följande ofullständiga uppladdningar"
-
-msgid "Resume"
-msgstr "Resume"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Radera"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Överför dokument"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3478,9 +3423,6 @@ msgstr "skikt params"
 msgid "source params"
 msgstr "käll params"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3579,11 +3521,6 @@ msgstr "Redigera Karta"
 
 msgid "Explore Maps"
 msgstr "Utforska Kartor"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4131,11 +4068,6 @@ msgstr "Skapa profil"
 msgid "Profile of "
 msgstr "Profil för"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr ""
 
@@ -4143,9 +4075,6 @@ msgid "Position"
 msgstr ""
 
 msgid "Organization"
-msgstr ""
-
-msgid "Location"
 msgstr ""
 
 msgid "Not provided"
@@ -4209,11 +4138,6 @@ msgstr "Användaraktiviteter"
 
 msgid "Resources"
 msgstr "Källor"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Bjud in personer"
 
 msgid "Edit Your Profile"
 msgstr "Redigera din profil"
@@ -6531,6 +6455,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6611,6 +6538,90 @@ msgstr "Ogiltig behörighetsnivå."
 
 msgid "Permission Denied"
 msgstr "Permission Denied"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Ange behörigheter"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "Dokument"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "dataset"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "Kategorier"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "En kart skapades"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "grupp"
+
+#, fuzzy
+#~| msgid "updated"
+#~ msgid "groups update"
+#~ msgstr "uppdaterad"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "Ett skikt laddades upp"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "Skikt"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "Ett skikt laddades upp"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "Ett skikt laddades upp"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Ofullständiga uppladdningar"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Du har följande ofullständiga uppladdningar"
+
+#~ msgid "Resume"
+#~ msgstr "Resume"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Bjud in personer"
 
 #~ msgid "last updated on"
 #~ msgstr "uppdaterades senast"

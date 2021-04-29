@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Lithuanian (http://www.transifex.com/geonode/geonode/language/"
@@ -513,9 +513,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -537,9 +534,6 @@ msgstr ""
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr ""
 
@@ -547,9 +541,6 @@ msgid "Submit"
 msgstr ""
 
 msgid "Set Permissions"
-msgstr ""
-
-msgid "set permissions"
 msgstr ""
 
 msgid "Discover the available datasets."
@@ -689,6 +680,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -755,6 +749,9 @@ msgstr ""
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid ""
@@ -920,9 +917,6 @@ msgstr ""
 msgid "URL"
 msgstr ""
 
-msgid "documents"
-msgstr ""
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1021,9 +1015,6 @@ msgid "Explore Documents"
 msgstr ""
 
 msgid "Upload Documents"
-msgstr ""
-
-msgid "data"
 msgstr ""
 
 #, python-format
@@ -1330,11 +1321,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "Group details"
-msgid "apps explore"
-msgstr "Group details"
-
-#, fuzzy
 #| msgid "Create a map"
 msgid "Create New"
 msgstr "Create a map"
@@ -1608,11 +1594,6 @@ msgstr ""
 msgid "Explore Group Categories"
 msgstr ""
 
-#, fuzzy
-#| msgid "Group details"
-msgid "groups explore"
-msgstr "Group details"
-
 msgid "Create a New Group Category"
 msgstr ""
 
@@ -1629,12 +1610,6 @@ msgid "Remove Group"
 msgstr ""
 
 msgid "Create Group"
-msgstr ""
-
-msgid "groups create"
-msgstr ""
-
-msgid "groups"
 msgstr ""
 
 msgid "Last Modified"
@@ -1704,9 +1679,6 @@ msgstr ""
 msgid "Add Group Members"
 msgstr ""
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1718,9 +1690,6 @@ msgid "Remove Maps/Data from Group"
 msgstr ""
 
 msgid "Remove selected maps/data"
-msgstr ""
-
-msgid "groups update"
 msgstr ""
 
 #, fuzzy
@@ -1995,9 +1964,6 @@ msgstr ""
 msgid "Append to Layer"
 msgstr "Create a map"
 
-msgid "layers append"
-msgstr ""
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2016,9 +1982,6 @@ msgstr ""
 msgid "Assign a new point of contact to the layers below:"
 msgstr ""
 
-msgid "layers"
-msgstr ""
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2035,9 +1998,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2275,9 +2235,6 @@ msgstr ""
 msgid "No maps are using this layer"
 msgstr ""
 
-msgid "layers explore"
-msgstr ""
-
 msgid "Upload Layers"
 msgstr ""
 
@@ -2328,9 +2285,6 @@ msgstr ""
 #| msgid "Edit Map Metadata"
 msgid "Upload Layer Metadata"
 msgstr "Edit Map Metadata"
-
-msgid "layers upload"
-msgstr ""
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2402,16 +2356,27 @@ msgstr ""
 msgid "Upload Layer"
 msgstr ""
 
-msgid "Incomplete Uploads"
-msgstr ""
+#, fuzzy
+#| msgid "Edit Map Metadata"
+msgid "Upload status"
+msgstr "Edit Map Metadata"
 
-msgid "You have the following incomplete uploads"
-msgstr ""
-
-msgid "Resume"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
 msgstr ""
 
 msgid "Delete"
+msgstr ""
+
+#, fuzzy
+#| msgid "Replace this Document"
+msgid "Upload process completed"
+msgstr "Replace this Document"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
 msgstr ""
 
 #, fuzzy
@@ -3022,9 +2987,6 @@ msgstr ""
 msgid "source params"
 msgstr ""
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3112,9 +3074,6 @@ msgid "Edit Map"
 msgstr ""
 
 msgid "Explore Maps"
-msgstr ""
-
-msgid "maps explore"
 msgstr ""
 
 msgid ""
@@ -3600,9 +3559,6 @@ msgstr ""
 msgid "Profile of "
 msgstr ""
 
-msgid "people explore"
-msgstr ""
-
 msgid "Not provided."
 msgstr ""
 
@@ -3610,9 +3566,6 @@ msgid "Position"
 msgstr ""
 
 msgid "Organization"
-msgstr ""
-
-msgid "Location"
 msgstr ""
 
 msgid "Not provided"
@@ -3669,9 +3622,6 @@ msgid "User Activities"
 msgstr ""
 
 msgid "Resources"
-msgstr ""
-
-msgid "edit people"
 msgstr ""
 
 msgid "Edit Your Profile"
@@ -5647,6 +5597,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -5721,6 +5674,16 @@ msgstr ""
 
 msgid "Permission Denied"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Group details"
+#~ msgid "apps explore"
+#~ msgstr "Group details"
+
+#, fuzzy
+#~| msgid "Group details"
+#~ msgid "groups explore"
+#~ msgstr "Group details"
 
 #, fuzzy
 #~| msgid "Create a map"

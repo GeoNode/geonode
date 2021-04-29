@@ -31,7 +31,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bengali (http://www.transifex.com/geonode/geonode/language/"
@@ -577,9 +577,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -603,9 +600,6 @@ msgstr "মানচিত্র দেখুন"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "বাতিল করুন"
 
@@ -615,11 +609,6 @@ msgstr "দাখিল করুন"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "অনুমতি স্থাপন করুন"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "অনুমতি স্থাপন করুন"
 
 msgid "Discover the available datasets."
@@ -773,6 +762,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -844,6 +836,9 @@ msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+
+msgid "Location"
+msgstr "অঞ্চল"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -1022,11 +1017,6 @@ msgstr "ডকুমেন্টের ইউআরএল এটা বাইর
 msgid "URL"
 msgstr "URL টি"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "কাগজপত্র"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1137,11 +1127,6 @@ msgstr "ডকুমেন্টস এবং পুরুষ"
 
 msgid "Upload Documents"
 msgstr "আপলোড ডকুমেন্টস"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "ডেটা সেটটি"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1506,11 +1491,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "একটি নতুন মানচিত্র তৈরি করুন"
@@ -1828,11 +1808,6 @@ msgid "Explore Group Categories"
 msgstr "গ্রুপ টেলিভিশন"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "ফোরাম"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "একটি গ্রুপ তৈরি করুন"
@@ -1851,16 +1826,6 @@ msgstr "গ্রুপ সরান"
 
 msgid "Create Group"
 msgstr "গ্রুপ তৈরি করুন"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "গ্রুপ"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1939,9 +1904,6 @@ msgstr "সদস্যদের করো"
 msgid "Add Group Members"
 msgstr "গ্রুপের সদস্যদের পরিচালনা"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1956,11 +1918,6 @@ msgstr "গ্রুপ থেকে মানচিত্র / ডেটা স
 
 msgid "Remove selected maps/data"
 msgstr "নির্বাচিত মানচিত্র সরান / তথ্য"
-
-#, fuzzy
-#| msgid "A Map was updated"
-msgid "groups update"
-msgstr "একটি মানচিত্র হালনাগাদ করা হয়েছিল"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2266,11 +2223,6 @@ msgstr "অ্যাট্রিবিউট পরিসংখ্যান গ�
 msgid "Append to Layer"
 msgstr "সম্পাদনা লেয়ার"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "একটি স্তর আপলোড করা হয় নি"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2291,11 +2243,6 @@ msgstr "যোগাযোগ বিন্দু পরিবর্তন কর
 msgid "Assign a new point of contact to the layers below:"
 msgstr "নিচের স্তর থেকে যোগাযোগের একটি নতুন পয়েন্ট নির্ধারণ:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "স্তরসমূহ"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2312,9 +2259,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2583,11 +2527,6 @@ msgstr "এই কর্ম নিম্নলিখিত ম্যাপের
 msgid "No maps are using this layer"
 msgstr "কোন মানচিত্র এই স্তর ব্যবহার করছেন"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "একটি স্তর আপলোড করা হয় নি"
-
 msgid "Upload Layers"
 msgstr "আপলোড স্তরসমূহ"
 
@@ -2644,11 +2583,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "আপলোড লেয়ার"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "একটি স্তর আপলোড করা হয় নি"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2727,17 +2661,28 @@ msgstr "আরোপ করা"
 msgid "Upload Layer"
 msgstr "আপলোড লেয়ার"
 
-msgid "Incomplete Uploads"
-msgstr "অসম্পূর্ণ আপলোড"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "ডাউনলোড মেটাডাটা"
 
-msgid "You have the following incomplete uploads"
-msgstr "আপনি নিম্নলিখিত অসম্পূর্ণ আপলোডসমূহ আছে"
-
-msgid "Resume"
-msgstr "সারসংকলন"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "মুছে দিন"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "আপলোড ডকুমেন্ট"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3443,9 +3388,6 @@ msgstr "লেয়ার প্যারাম"
 msgid "source params"
 msgstr "উৎস প্যারাম"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3544,11 +3486,6 @@ msgstr "সম্পাদনা ম্যাপ"
 
 msgid "Explore Maps"
 msgstr "মানচিত্র টেলিভিশন"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4088,11 +4025,6 @@ msgstr "প্রোফাইল তৈরি করুন"
 msgid "Profile of "
 msgstr "এর প্রোফাইল"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr "প্রদান করা হয়নি"
 
@@ -4101,9 +4033,6 @@ msgstr "অবস্থান"
 
 msgid "Organization"
 msgstr "প্রতিষ্ঠান"
-
-msgid "Location"
-msgstr "অঞ্চল"
 
 msgid "Not provided"
 msgstr "উপলব্ধ নেই"
@@ -4166,11 +4095,6 @@ msgstr "ব্যবহারকারী ক্রিয়াকলাপ"
 
 msgid "Resources"
 msgstr "সম্পদ"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "মানুষ আমন্ত্রণ করুন"
 
 msgid "Edit Your Profile"
 msgstr "আপনার প্রোফাইল সম্পাদনা করুন"
@@ -6500,6 +6424,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6580,6 +6507,90 @@ msgstr "অবৈধ অনুমতি স্তর."
 
 msgid "Permission Denied"
 msgstr "অনুমতি অস্বীকার"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "অনুমতি স্থাপন করুন"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "কাগজপত্র"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "ডেটা সেটটি"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "ফোরাম"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "একটি মানচিত্র তৈরি করা হয়েছে"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "গ্রুপ"
+
+#, fuzzy
+#~| msgid "A Map was updated"
+#~ msgid "groups update"
+#~ msgstr "একটি মানচিত্র হালনাগাদ করা হয়েছিল"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "একটি স্তর আপলোড করা হয় নি"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "স্তরসমূহ"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "একটি স্তর আপলোড করা হয় নি"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "একটি স্তর আপলোড করা হয় নি"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "অসম্পূর্ণ আপলোড"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "আপনি নিম্নলিখিত অসম্পূর্ণ আপলোডসমূহ আছে"
+
+#~ msgid "Resume"
+#~ msgstr "সারসংকলন"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "মানুষ আমন্ত্রণ করুন"
 
 #~ msgid "last updated on"
 #~ msgstr "গত আপডেট"
