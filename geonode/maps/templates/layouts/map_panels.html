@@ -415,12 +415,6 @@ span.grippy::after {
                                         {{ map_form.license }}
                                     </div>
                                     {% endblock map_license %}
-                                    {% block map_doi %}
-                                    <div>
-                                        <span><label for="{{ map_form.doi|id }}">{{ map_form.doi.label }}</label></span>
-                                        {{ map_form.doi }}
-                                    </div>
-                                    {% endblock map_doi %}
                                     {% block map_attribution %}
                                     <div>
                                         <span><label for="{{ map_form.attribution|id }}">{{ map_form.attribution.label }}</label></span>
@@ -481,6 +475,12 @@ span.grippy::after {
                     {{ map_form.edition }}
                 </div>
                 {% endblock map_edition %}
+                {% block map_doi %}
+                <div>
+                    <span><label for="{{ map_form.doi|id }}">{{ map_form.doi.label }}</label></span>
+                    {{ map_form.doi }}
+                </div>
+                {% endblock map_doi %}
                 {% block map_purpose %}
                 <div>
                     <span><label for="{{ map_form.purpose|id }}">{{ map_form.purpose.label }}</label></span>
