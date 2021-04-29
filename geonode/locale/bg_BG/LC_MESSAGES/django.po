@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bulgarian (Bulgaria) (http://www.transifex.com/geonode/"
@@ -574,9 +574,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -600,9 +597,6 @@ msgstr "Преглед на карта"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "Отмени"
 
@@ -612,11 +606,6 @@ msgstr "Предай"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Задай разрешения за достъп"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Задай разрешения за достъп"
 
 msgid "Discover the available datasets."
@@ -770,6 +759,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -841,6 +833,9 @@ msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+
+msgid "Location"
+msgstr "Локация"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -1019,11 +1014,6 @@ msgstr "URL адресът на документа, ако е външен."
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "Документи"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1134,11 +1124,6 @@ msgstr "Преглед на документи"
 
 msgid "Upload Documents"
 msgstr "Зареждане на документи"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "набор на данни"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1505,11 +1490,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoEplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Създаване на нова карта"
@@ -1834,11 +1814,6 @@ msgid "Explore Group Categories"
 msgstr "Преглед на групи"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "Категории"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "Създай група"
@@ -1857,16 +1832,6 @@ msgstr "Премахни група"
 
 msgid "Create Group"
 msgstr "Създай група"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "Нова карта беше създадена"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "група"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1945,9 +1910,6 @@ msgstr "Добави членове"
 msgid "Add Group Members"
 msgstr "Управлявай Членове на Групата"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1962,11 +1924,6 @@ msgstr "Премахни карти/данни от група"
 
 msgid "Remove selected maps/data"
 msgstr "Премахни избраните карти/данни"
-
-#, fuzzy
-#| msgid "A Map was updated"
-msgid "groups update"
-msgstr "Карта беше актуализирана"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2272,11 +2229,6 @@ msgstr "дата, на която статистиките на атрибута
 msgid "Append to Layer"
 msgstr "Редактиране на слой "
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "Слой беше зареден"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2297,11 +2249,6 @@ msgstr "Промяна точка за контакт"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Присвояване на нова точка за контакт към слоевете по-долу:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "Слоеве"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2318,9 +2265,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2595,11 +2539,6 @@ msgstr "Действието засяга следните карти: "
 msgid "No maps are using this layer"
 msgstr "Няма карти, които използват този слой "
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "Слой беше зареден"
-
 msgid "Upload Layers"
 msgstr "Зареждане на слоеве"
 
@@ -2661,11 +2600,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "Зареждане на слой"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "Слой беше зареден"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2747,17 +2681,28 @@ msgstr "Атрибути "
 msgid "Upload Layer"
 msgstr "Зареждане на слой"
 
-msgid "Incomplete Uploads"
-msgstr "Незавършено зареждане"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "Сваляне на метаданни"
 
-msgid "You have the following incomplete uploads"
-msgstr "Имате следните непълни качвания "
-
-msgid "Resume"
-msgstr "Започни отново"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Изтрий"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Зареждане на документи"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3478,9 +3423,6 @@ msgstr "параметри на слоя"
 msgid "source params"
 msgstr "параметри на източника"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3580,11 +3522,6 @@ msgstr "Редакция на карта"
 
 msgid "Explore Maps"
 msgstr "Преглед на карти"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoEplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4138,11 +4075,6 @@ msgstr "Създаване профил"
 msgid "Profile of "
 msgstr "Профил на"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoEplorer"
-
 msgid "Not provided."
 msgstr "Не е предоставено."
 
@@ -4151,9 +4083,6 @@ msgstr "Позиция"
 
 msgid "Organization"
 msgstr "Организация"
-
-msgid "Location"
-msgstr "Локация"
 
 msgid "Not provided"
 msgstr "Не е предоставен "
@@ -4216,11 +4145,6 @@ msgstr "Дейности на потребителя"
 
 msgid "Resources"
 msgstr "Ресурси "
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Покани хора"
 
 msgid "Edit Your Profile"
 msgstr "Редактиране на профил "
@@ -6707,6 +6631,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6787,6 +6714,90 @@ msgstr "Невалидно ниво на достъп"
 
 msgid "Permission Denied"
 msgstr "Отказано разрешение"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Задай разрешения за достъп"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "Документи"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "набор на данни"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoEplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "Категории"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "Нова карта беше създадена"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "група"
+
+#, fuzzy
+#~| msgid "A Map was updated"
+#~ msgid "groups update"
+#~ msgstr "Карта беше актуализирана"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "Слой беше зареден"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "Слоеве"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "Слой беше зареден"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "Слой беше зареден"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Незавършено зареждане"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Имате следните непълни качвания "
+
+#~ msgid "Resume"
+#~ msgstr "Започни отново"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoEplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoEplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Покани хора"
 
 #~ msgid "last updated on"
 #~ msgstr "последно обновяване на "

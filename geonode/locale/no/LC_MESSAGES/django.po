@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Norwegian (http://www.transifex.com/geonode/geonode/language/"
@@ -552,9 +552,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -578,9 +575,6 @@ msgstr "Vis kartet"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -590,11 +584,6 @@ msgstr "Send"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Definer tillatelser"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Definer tillatelser"
 
 msgid "Discover the available datasets."
@@ -746,6 +735,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -815,6 +807,9 @@ msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+
+msgid "Location"
+msgstr "Sted"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -1001,11 +996,6 @@ msgstr ""
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "Dokumenter"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1116,11 +1106,6 @@ msgstr "Utforsk dokumentene"
 
 msgid "Upload Documents"
 msgstr "Last opp dokumenter"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "datasett"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1493,11 +1478,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Lag et nytt kart"
@@ -1805,11 +1785,6 @@ msgid "Explore Group Categories"
 msgstr "Utforsk gruppene"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "Kategorier"
-
-#, fuzzy
 #| msgid "Create a New Group"
 msgid "Create a New Group Category"
 msgstr "Opprett en ny gruppe"
@@ -1828,14 +1803,6 @@ msgstr "Slett gruppen"
 
 msgid "Create Group"
 msgstr "Opprett gruppe"
-
-msgid "groups create"
-msgstr ""
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "gruppe"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1914,9 +1881,6 @@ msgstr "Legg til medlem"
 msgid "Add Group Members"
 msgstr "Forvalte gruppe medlemer"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1930,9 +1894,6 @@ msgid "Remove Maps/Data from Group"
 msgstr "Fjern kart/data fra gruppe"
 
 msgid "Remove selected maps/data"
-msgstr ""
-
-msgid "groups update"
 msgstr ""
 
 #, fuzzy
@@ -2267,11 +2228,6 @@ msgstr ""
 msgid "Append to Layer"
 msgstr "Endre kartlag"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "Et kartlag ble oppdatert"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2292,11 +2248,6 @@ msgstr ""
 msgid "Assign a new point of contact to the layers below:"
 msgstr ""
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "Kartlag"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2313,9 +2264,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2570,11 +2518,6 @@ msgstr ""
 msgid "No maps are using this layer"
 msgstr ""
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "Et kartlag ble oppdatert"
-
 msgid "Upload Layers"
 msgstr "Last opp kartlag"
 
@@ -2629,11 +2572,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "Last opp kartlag"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "Et kartlag ble oppdatert"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2707,17 +2645,28 @@ msgstr "attributt"
 msgid "Upload Layer"
 msgstr "Last opp kartlag"
 
-msgid "Incomplete Uploads"
-msgstr "Ufullstendige opplastinger"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "Lat ned metadata"
 
-msgid "You have the following incomplete uploads"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
 msgstr ""
-
-msgid "Resume"
-msgstr "Fortsett"
 
 msgid "Delete"
 msgstr "Fjern"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Last opp dokument"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3388,9 +3337,6 @@ msgstr "Kartlag"
 msgid "source params"
 msgstr "Ressurser"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3478,11 +3424,6 @@ msgstr "Endre kartet"
 
 msgid "Explore Maps"
 msgstr "Utforsk kart"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4019,11 +3960,6 @@ msgstr "Opprett profil"
 msgid "Profile of "
 msgstr ""
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr "Ikke oppgitt."
 
@@ -4032,9 +3968,6 @@ msgstr "Stilling"
 
 msgid "Organization"
 msgstr "Organisasjon"
-
-msgid "Location"
-msgstr "Sted"
 
 msgid "Not provided"
 msgstr "Ikke oppgitt"
@@ -4097,11 +4030,6 @@ msgstr "Bruker aktiviteter"
 
 msgid "Resources"
 msgstr "Ressurser"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Inviter andre"
 
 msgid "Edit Your Profile"
 msgstr "Endre din profil"
@@ -6369,6 +6297,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6445,6 +6376,77 @@ msgstr "Definer tillatelser"
 
 msgid "Permission Denied"
 msgstr "Ingen tillatelse"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Definer tillatelser"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "Dokumenter"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "datasett"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "Kategorier"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "gruppe"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "Et kartlag ble oppdatert"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "Kartlag"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "Et kartlag ble oppdatert"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "Et kartlag ble oppdatert"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Ufullstendige opplastinger"
+
+#~ msgid "Resume"
+#~ msgstr "Fortsett"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Inviter andre"
 
 #~ msgid "last updated on"
 #~ msgstr "sist endret på"
