@@ -1,0 +1,24 @@
+GeoNode is distributed under the GNU General Public License Version 2.0 license:
+
+    GeoNode, open geospatial information server
+    Copyright (C) 2014-2020 Open Source Geospatial Foundation.
+    Copyright (C) 2001-2014 OpenPlans
+    
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version (collectively, "GPL").
+    
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335  USA
+
+For latest contact information of Open Source Geospatial Foundation see the website at
+http://www.osgeo.org.  Current email is info@osgeo.org and address is OSGeo, 14525 SW Millikan #42523, Beaverton, Oregon, United States, 97005-2343.
+
+The full GPL license is available in this directory in the file GPL.txt
