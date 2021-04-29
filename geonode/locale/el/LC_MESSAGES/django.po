@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2019-07-19 12:46+0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/geonode/geonode/language/"
@@ -563,9 +563,6 @@ msgstr "σε σύνδεση"
 msgid "offline"
 msgstr "χωρίς σύνδεση"
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr "Οι κανόνες ασφαλείας δεν έχουν συγχρονιστεί"
 
@@ -587,9 +584,6 @@ msgstr "Επισκόπηση Χάρτη"
 msgid "Batch Edit"
 msgstr "Μαζική Επεξεργασία"
 
-msgid "batch edit"
-msgstr "μαζική επεξεργασία"
-
 msgid "Cancel"
 msgstr "Ακύρωση"
 
@@ -599,11 +593,6 @@ msgstr "Υποβολή"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Ρυθμίστε τα δικαιώματα"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Ρυθμίστε τα δικαιώματα"
 
 msgid "Discover the available datasets."
@@ -745,6 +734,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr "Υψομετρο"
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -816,6 +808,9 @@ msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+
+msgid "Location"
+msgstr "Τοποθεσια"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -982,9 +977,6 @@ msgstr "Η διεύθυνση URL του εγγράφου, εάν είναι ε�
 msgid "URL"
 msgstr "URL"
 
-msgid "documents"
-msgstr "έγγραφα"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1082,9 +1074,6 @@ msgstr "Εξερεύνηση Εγγράφων"
 
 msgid "Upload Documents"
 msgstr "Ανέβασμα Εγγραφων"
-
-msgid "data"
-msgstr "δεδομένα"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1423,11 +1412,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "Εφαρμογή GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Δημιουργία Νέου Χάρτη"
@@ -1729,9 +1713,6 @@ msgstr "Δεν υπάρχουν ακόμη ενέργειες"
 msgid "Explore Group Categories"
 msgstr "Εξερεύνηση Ομάδων Κατηγοριών"
 
-msgid "groups explore"
-msgstr "εξερεύνηση ομάδων"
-
 msgid "Create a New Group Category"
 msgstr "Δημιουργία ομάδας κατηγοριών"
 
@@ -1749,12 +1730,6 @@ msgstr "Κατάργηση Ομάδας"
 
 msgid "Create Group"
 msgstr "Δημιουργία Ομάδας"
-
-msgid "groups create"
-msgstr "δημιουργία ομάδων"
-
-msgid "groups"
-msgstr "ομάδες"
 
 msgid "Last Modified"
 msgstr "Τελευταία Τροποποίηση"
@@ -1827,9 +1802,6 @@ msgstr "Προσθήκη νέων μελών"
 msgid "Add Group Members"
 msgstr "Προσθήκη μελών ομάδας"
 
-msgid "groups remove"
-msgstr "διαγραφή ομάδων"
-
 #, python-format
 msgid ""
 "\n"
@@ -1844,9 +1816,6 @@ msgstr "Κατάργηση Χαρτών / Δεδομένων από την Ομ�
 
 msgid "Remove selected maps/data"
 msgstr "Κατάργηση επιλεγμένων χαρτών / δεδομένων"
-
-msgid "groups update"
-msgstr "ενημέρωση ομάδας"
 
 msgid "Edit Group Category Details"
 msgstr "Επεξεργασία Λεπτομερειών Ομάδας"
@@ -2141,11 +2110,6 @@ msgstr ""
 msgid "Append to Layer"
 msgstr "Επιστροφή στο Επίπεδο"
 
-#, fuzzy
-#| msgid "layers upload"
-msgid "layers append"
-msgstr "μεταφόρτωση επιπέδων"
-
 msgid "Return to Layer"
 msgstr "Επιστροφή στο Επίπεδο"
 
@@ -2164,9 +2128,6 @@ msgstr "Αλλαγή σημείου επαφής"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Αντιστοιχίστε ένα νέο σημείο επαφής για τις επιφάνειες παρακάτω:"
 
-msgid "layers"
-msgstr "επίπεδα"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr "Έγγραφο δυνατοτήτων υπηρεσίας WMS"
 
@@ -2184,9 +2145,6 @@ msgstr "Πλαίσιο οριοθέτησης"
 
 msgid "Time"
 msgstr "Χρόνος"
-
-msgid "Elevation"
-msgstr "Υψομετρο"
 
 msgid "Actions"
 msgstr "Ενέργειες"
@@ -2428,9 +2386,6 @@ msgstr "Η ενέργεια αυτή επηρεάζει τους παρακάτ�
 msgid "No maps are using this layer"
 msgstr "Κανένας χάρτης δεν χρησιμοποιεί αυτή την επιφάνεια"
 
-msgid "layers explore"
-msgstr "εξερεύνηση επιπέδων"
-
 msgid "Upload Layers"
 msgstr "Μεταφόρτωση Επιπέδων"
 
@@ -2484,9 +2439,6 @@ msgstr ""
 
 msgid "Upload Layer Metadata"
 msgstr "Μεταφόρτωση Μεταδεδομένων Επιπέδου"
-
-msgid "layers upload"
-msgstr "μεταφόρτωση επιπέδων"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2561,17 +2513,28 @@ msgstr "Χαρακτηριστικά"
 msgid "Upload Layer"
 msgstr "Μεταφόρτωση Επιπέδου"
 
-msgid "Incomplete Uploads"
-msgstr "Ελλιπής Μεταφόρτωση"
+#, fuzzy
+#| msgid "Upload Metadata"
+msgid "Upload status"
+msgstr "Μεταφόρτωση Μεταδεδομένων"
 
-msgid "You have the following incomplete uploads"
-msgstr "Έχετε τις παρακάτω ελλιπείς μεταφορτώσεις"
-
-msgid "Resume"
-msgstr "Περίληψη"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Διαγραφή"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Μεταφόρτωση Εγγράφων"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3242,9 +3205,6 @@ msgstr "παράμετροι επιφάνειας"
 msgid "source params"
 msgstr "παράμετροι πηγής"
 
-msgid "maps"
-msgstr "χάρτες"
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr "Έγγραφο δυνατοτήτων υπηρεσίας WMS"
 
@@ -3348,11 +3308,6 @@ msgstr "Επεξεργασία Χάρτη"
 
 msgid "Explore Maps"
 msgstr "Εξερεύνηση Χαρτών"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "Εφαρμογή GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -3898,11 +3853,6 @@ msgstr "Δημιουργία προφίλ"
 msgid "Profile of "
 msgstr "Προφίλ"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "Εφαρμογή GeoExplorer"
-
 msgid "Not provided."
 msgstr "Δεν παρέχεται."
 
@@ -3911,9 +3861,6 @@ msgstr "Θέση"
 
 msgid "Organization"
 msgstr "Οργανισμός"
-
-msgid "Location"
-msgstr "Τοποθεσια"
 
 msgid "Not provided"
 msgstr "Δεν παρέχεται"
@@ -3972,11 +3919,6 @@ msgstr "Χρήστης Δραστηριότητες"
 
 msgid "Resources"
 msgstr "Πόροι"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Προσκαλέστε τους ανθρώπους"
 
 msgid "Edit Your Profile"
 msgstr "Επεξεργασία του προφίλ σας"
@@ -6249,6 +6191,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6327,6 +6272,81 @@ msgstr "Άκυρο επίπεδο δικαιωμάτων."
 
 msgid "Permission Denied"
 msgstr "Πρόσβαση Απορρίφθηκε"
+
+#~ msgid "batch edit"
+#~ msgstr "μαζική επεξεργασία"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Ρυθμίστε τα δικαιώματα"
+
+#~ msgid "documents"
+#~ msgstr "έγγραφα"
+
+#~ msgid "data"
+#~ msgstr "δεδομένα"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "Εφαρμογή GeoExplorer"
+
+#~ msgid "groups explore"
+#~ msgstr "εξερεύνηση ομάδων"
+
+#~ msgid "groups create"
+#~ msgstr "δημιουργία ομάδων"
+
+#~ msgid "groups"
+#~ msgstr "ομάδες"
+
+#~ msgid "groups remove"
+#~ msgstr "διαγραφή ομάδων"
+
+#~ msgid "groups update"
+#~ msgstr "ενημέρωση ομάδας"
+
+#, fuzzy
+#~| msgid "layers upload"
+#~ msgid "layers append"
+#~ msgstr "μεταφόρτωση επιπέδων"
+
+#~ msgid "layers"
+#~ msgstr "επίπεδα"
+
+#~ msgid "layers explore"
+#~ msgstr "εξερεύνηση επιπέδων"
+
+#~ msgid "layers upload"
+#~ msgstr "μεταφόρτωση επιπέδων"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Ελλιπής Μεταφόρτωση"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Έχετε τις παρακάτω ελλιπείς μεταφορτώσεις"
+
+#~ msgid "Resume"
+#~ msgstr "Περίληψη"
+
+#~ msgid "maps"
+#~ msgstr "χάρτες"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "Εφαρμογή GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "Εφαρμογή GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Προσκαλέστε τους ανθρώπους"
 
 #~ msgid "last updated on"
 #~ msgstr "τελευταία ενημέρωση"

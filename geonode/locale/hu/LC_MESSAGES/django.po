@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Hungarian (http://www.transifex.com/geonode/geonode/language/"
@@ -579,9 +579,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -605,9 +602,6 @@ msgstr "Térkép megtekintése"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "Mégsem"
 
@@ -617,11 +611,6 @@ msgstr "Küldés"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Engedélyek beállítása"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Engedélyek beállítása"
 
 msgid "Discover the available datasets."
@@ -775,6 +764,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -845,6 +837,9 @@ msgstr ""
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid ""
@@ -1042,11 +1037,6 @@ msgstr "Az URL a dokumentum, ha a külső."
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "Dokumentumok"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1155,11 +1145,6 @@ msgstr "Fedezze fel a dokumentumok"
 
 msgid "Upload Documents"
 msgstr "Dokumentumok feltöltése"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "adatbázisba"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1528,11 +1513,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Új térkép létrehozása"
@@ -1855,11 +1835,6 @@ msgid "Explore Group Categories"
 msgstr "Fedezze fel a csoportok"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "Kategóriák"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "Csoport létrehozása"
@@ -1878,16 +1853,6 @@ msgstr "Csoport törlése"
 
 msgid "Create Group"
 msgstr "Csoport létrehozása"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "A Map jött létre"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "csoport"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1966,9 +1931,6 @@ msgstr "Új tagok"
 msgid "Add Group Members"
 msgstr "Kezelése Klub tagok"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1983,11 +1945,6 @@ msgstr "Távolítsuk Maps / Adatok Group"
 
 msgid "Remove selected maps/data"
 msgstr "Távolítsuk el a kiválasztott térképek / adatok"
-
-#, fuzzy
-#| msgid "updated"
-msgid "groups update"
-msgstr "korszerűsített"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2307,11 +2264,6 @@ msgstr "időpont, amikor az attribútum statisztika utolsó frissítés"
 msgid "Append to Layer"
 msgstr "Szerkesztés réteg"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "A réteget feltöltve"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2332,11 +2284,6 @@ msgstr "Kapcsolattartási forma megváltoztatása"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Rendeljen új kapcsolattartó pontot, hogy a rétegek az alábbi:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "Rétegek"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2353,9 +2300,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2626,11 +2570,6 @@ msgstr "Ez a művelet érinti a következő térképek:"
 msgid "No maps are using this layer"
 msgstr "Nem térképeket használja ezt a réteget"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "A réteget feltöltve"
-
 msgid "Upload Layers"
 msgstr "Feltöltés Rétegek"
 
@@ -2687,11 +2626,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "Feltöltés réteg"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "A réteget feltöltve"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2770,17 +2704,28 @@ msgstr "Attribútumok"
 msgid "Upload Layer"
 msgstr "Feltöltés réteg"
 
-msgid "Incomplete Uploads"
-msgstr "Hiányos feltöltések"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "Download Metadata"
 
-msgid "You have the following incomplete uploads"
-msgstr "Az alábbi hiányos feltöltések"
-
-msgid "Resume"
-msgstr "Folytatás"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Töröl"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Dokumentum feltöltése"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3491,9 +3436,6 @@ msgstr "fólia paraméterek"
 msgid "source params"
 msgstr "forrás paraméterek"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3593,11 +3535,6 @@ msgstr "Térkép szerkesztése"
 
 msgid "Explore Maps"
 msgstr "Fedezze Maps"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4141,11 +4078,6 @@ msgstr "Profil létrehozása"
 msgid "Profile of "
 msgstr "Profilja"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr ""
 
@@ -4153,9 +4085,6 @@ msgid "Position"
 msgstr ""
 
 msgid "Organization"
-msgstr ""
-
-msgid "Location"
 msgstr ""
 
 msgid "Not provided"
@@ -4219,11 +4148,6 @@ msgstr "Felhasználói tevékenységek"
 
 msgid "Resources"
 msgstr "Erőforrás"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Mások meghívása"
 
 msgid "Edit Your Profile"
 msgstr "Profil szerkesztése"
@@ -6544,6 +6468,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6624,6 +6551,90 @@ msgstr "Érvénytelen jogosultsági szint."
 
 msgid "Permission Denied"
 msgstr "Engedély megtagadva"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Engedélyek beállítása"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "Dokumentumok"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "adatbázisba"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "Kategóriák"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "A Map jött létre"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "csoport"
+
+#, fuzzy
+#~| msgid "updated"
+#~ msgid "groups update"
+#~ msgstr "korszerűsített"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "A réteget feltöltve"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "Rétegek"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "A réteget feltöltve"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "A réteget feltöltve"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Hiányos feltöltések"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Az alábbi hiányos feltöltések"
+
+#~ msgid "Resume"
+#~ msgstr "Folytatás"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Mások meghívása"
 
 #~ msgid "last updated on"
 #~ msgstr "utolsó frissítése"

@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/geonode/geonode/"
@@ -566,9 +566,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -592,9 +589,6 @@ msgstr ""
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "Annuleer"
 
@@ -604,11 +598,6 @@ msgstr ""
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Bewerk rechten"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Bewerk rechten"
 
 msgid "Discover the available datasets."
@@ -758,6 +747,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -827,6 +819,9 @@ msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+
+msgid "Location"
+msgstr "Locatie"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -1005,11 +1000,6 @@ msgstr "Externe URL van het document"
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "Documenten"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1117,11 +1107,6 @@ msgstr "Verken Documenten"
 
 msgid "Upload Documents"
 msgstr "Documenten uploaden"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "dataset"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1479,11 +1464,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "Group Activities"
-msgid "apps explore"
-msgstr "Activiteiten van de groep"
-
-#, fuzzy
 #| msgid "Create a Map"
 msgid "Create New"
 msgstr "Maak een Kaart"
@@ -1795,11 +1775,6 @@ msgid "Explore Group Categories"
 msgstr "Verken groepen"
 
 #, fuzzy
-#| msgid "Group Activities"
-msgid "groups explore"
-msgstr "Activiteiten van de groep"
-
-#, fuzzy
 #| msgid "Create a New Group"
 msgid "Create a New Group Category"
 msgstr "Maak een nieuwe groep"
@@ -1818,16 +1793,6 @@ msgstr "Verwijder groep"
 
 msgid "Create Group"
 msgstr "Maak een groep"
-
-#, fuzzy
-#| msgid "created"
-msgid "groups create"
-msgstr "aangemaakt"
-
-#, fuzzy
-#| msgid "Groups"
-msgid "groups"
-msgstr "Groepen"
 
 msgid "Last Modified"
 msgstr ""
@@ -1905,9 +1870,6 @@ msgstr "Voeg leden toe"
 msgid "Add Group Members"
 msgstr "Beheer groepsleden"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1922,9 +1884,6 @@ msgstr "Verwijder Kaarten/Data uit de Groep"
 
 msgid "Remove selected maps/data"
 msgstr "Verwijder de geselecteerde kaarten/data"
-
-msgid "groups update"
-msgstr ""
 
 #, fuzzy
 #| msgid "Group Activities"
@@ -2242,11 +2201,6 @@ msgstr ""
 msgid "Append to Layer"
 msgstr "Keer terug naar laag"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "Laag werd geupload"
-
 msgid "Return to Layer"
 msgstr "Keer terug naar laag"
 
@@ -2265,11 +2219,6 @@ msgstr "Wijzig contactpunt"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Voeg een contactpunt toe voor onderstaande lagen:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "Lagen"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2286,9 +2235,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2553,11 +2499,6 @@ msgstr ""
 msgid "No maps are using this layer"
 msgstr "Geen enkele kaart gebruikt deze layer"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "Laag werd geupload"
-
 msgid "Upload Layers"
 msgstr "Laad lagen op"
 
@@ -2608,11 +2549,6 @@ msgstr ""
 #| msgid "Upload Layers"
 msgid "Upload Layer Metadata"
 msgstr "Laad lagen op"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "Laag werd geupload"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2684,16 +2620,27 @@ msgstr ""
 msgid "Upload Layer"
 msgstr ""
 
-msgid "Incomplete Uploads"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "Download Metadata"
+
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
 msgstr ""
 
-msgid "You have the following incomplete uploads"
-msgstr "Je hebt de volgende onvolledige uploads: "
-
-msgid "Resume"
-msgstr "CV"
-
 msgid "Delete"
+msgstr ""
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Upload Document"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
 msgstr ""
 
 #, fuzzy
@@ -3366,9 +3313,6 @@ msgstr "Lagen"
 msgid "source params"
 msgstr "Bronnen"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3465,9 +3409,6 @@ msgid "Edit Map"
 msgstr ""
 
 msgid "Explore Maps"
-msgstr ""
-
-msgid "maps explore"
 msgstr ""
 
 msgid ""
@@ -4005,9 +3946,6 @@ msgstr ""
 msgid "Profile of "
 msgstr ""
 
-msgid "people explore"
-msgstr ""
-
 msgid "Not provided."
 msgstr ""
 
@@ -4016,9 +3954,6 @@ msgstr ""
 
 msgid "Organization"
 msgstr "Organisatie"
-
-msgid "Location"
-msgstr "Locatie"
 
 msgid "Not provided"
 msgstr ""
@@ -4081,11 +4016,6 @@ msgstr "Gebruikersactiviteiten"
 
 msgid "Resources"
 msgstr "Bronnen"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Nodig mensen uit"
 
 msgid "Edit Your Profile"
 msgstr "Bewerk je profiel"
@@ -6414,6 +6344,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6494,6 +6427,72 @@ msgstr "Niet gemachtigd"
 
 msgid "Permission Denied"
 msgstr "Toestemming geweigerd"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Bewerk rechten"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "Documenten"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "dataset"
+
+#, fuzzy
+#~| msgid "Group Activities"
+#~ msgid "apps explore"
+#~ msgstr "Activiteiten van de groep"
+
+#, fuzzy
+#~| msgid "Group Activities"
+#~ msgid "groups explore"
+#~ msgstr "Activiteiten van de groep"
+
+#, fuzzy
+#~| msgid "created"
+#~ msgid "groups create"
+#~ msgstr "aangemaakt"
+
+#, fuzzy
+#~| msgid "Groups"
+#~ msgid "groups"
+#~ msgstr "Groepen"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "Laag werd geupload"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "Lagen"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "Laag werd geupload"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "Laag werd geupload"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Je hebt de volgende onvolledige uploads: "
+
+#~ msgid "Resume"
+#~ msgstr "CV"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Nodig mensen uit"
 
 #~ msgid "Delete, and don't ask me again."
 #~ msgstr "Verwijder en vraag niet opnieuw"

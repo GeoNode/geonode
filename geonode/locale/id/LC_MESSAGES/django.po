@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Indonesian (http://www.transifex.com/geonode/geonode/language/"
@@ -573,9 +573,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -599,9 +596,6 @@ msgstr "Lihat Peta"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "Batal"
 
@@ -611,11 +605,6 @@ msgstr "Proses"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Mengatur hak akses"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Mengatur hak akses"
 
 msgid "Discover the available datasets."
@@ -769,6 +758,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -839,6 +831,9 @@ msgstr ""
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid ""
@@ -1036,11 +1031,6 @@ msgstr "URL dari dokumen jika eksternal."
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "Dokumen"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1146,11 +1136,6 @@ msgstr "Telusuri Dokumen"
 
 msgid "Upload Documents"
 msgstr "Unggah Dokumen"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "dataset"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1517,11 +1502,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Buat peta baru"
@@ -1845,11 +1825,6 @@ msgid "Explore Group Categories"
 msgstr "Jelajahi Grup"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "Kategori"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "Buat Grup a"
@@ -1868,16 +1843,6 @@ msgstr "Hapus Grup"
 
 msgid "Create Group"
 msgstr "Buat Grup"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "Peta telah dibuat"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "grup"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1957,9 +1922,6 @@ msgstr "Tambah anggota"
 msgid "Add Group Members"
 msgstr "Kelola Anggota Grup"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1974,11 +1936,6 @@ msgstr "Hapus Maps / Data dari Grup"
 
 msgid "Remove selected maps/data"
 msgstr "Hapus peta yang dipilih / data"
-
-#, fuzzy
-#| msgid "updated"
-msgid "groups update"
-msgstr "diperbaharui"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2296,11 +2253,6 @@ msgstr "tanggal ketika statistik atribut diperbaharui"
 msgid "Append to Layer"
 msgstr "Ubah Layer"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "layer telah diunggah"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2321,11 +2273,6 @@ msgstr "Ubah Kontak"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Kontak baru untuk penanggungjawab layer berikut:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "Layer"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2342,9 +2289,6 @@ msgid "Bounding Box"
 msgstr "Batas"
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2610,11 +2554,6 @@ msgstr "Proses ini mempengaruhi peta berikut:"
 msgid "No maps are using this layer"
 msgstr "Tidak ada peta yang menggunakan layer ini"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "layer telah diunggah"
-
 msgid "Upload Layers"
 msgstr "Unggah Layer"
 
@@ -2672,11 +2611,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "Unggah Layer"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "layer telah diunggah"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2756,17 +2690,28 @@ msgstr "Atribut"
 msgid "Upload Layer"
 msgstr "Unggah Layer"
 
-msgid "Incomplete Uploads"
-msgstr "Unggahan tidak sempurna"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "Mengunduh Metadata"
 
-msgid "You have the following incomplete uploads"
-msgstr "Anda memiliki unggahan yang belum selesai"
-
-msgid "Resume"
-msgstr "Ulang"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Hapus"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Unggah Dokumen"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3480,9 +3425,6 @@ msgstr "parameter layer"
 msgid "source params"
 msgstr "parameter sumber"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3585,11 +3527,6 @@ msgstr "Edit Peta"
 
 msgid "Explore Maps"
 msgstr "Telusuri Peta"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4132,11 +4069,6 @@ msgstr "Buat Profil"
 msgid "Profile of "
 msgstr "Profil dari"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr ""
 
@@ -4145,9 +4077,6 @@ msgstr "Posisi"
 
 msgid "Organization"
 msgstr "Organisasi"
-
-msgid "Location"
-msgstr ""
 
 msgid "Not provided"
 msgstr "Tidak tersedia"
@@ -4210,11 +4139,6 @@ msgstr "Pengguna Aktivitas"
 
 msgid "Resources"
 msgstr "Sumber"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Undang orang"
 
 msgid "Edit Your Profile"
 msgstr "Edit Profil Anda"
@@ -6536,6 +6460,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6616,6 +6543,90 @@ msgstr "Ijin level tidak benar"
 
 msgid "Permission Denied"
 msgstr "Tidak diizinkan"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Mengatur hak akses"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "Dokumen"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "dataset"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "Kategori"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "Peta telah dibuat"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "grup"
+
+#, fuzzy
+#~| msgid "updated"
+#~ msgid "groups update"
+#~ msgstr "diperbaharui"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "layer telah diunggah"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "Layer"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "layer telah diunggah"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "layer telah diunggah"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Unggahan tidak sempurna"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Anda memiliki unggahan yang belum selesai"
+
+#~ msgid "Resume"
+#~ msgstr "Ulang"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Undang orang"
 
 #~ msgid "last updated on"
 #~ msgstr "diperbaharui pada"
