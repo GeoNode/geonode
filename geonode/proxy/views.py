@@ -185,7 +185,7 @@ def proxy(request, url=None, response_callback=None,
     response, content = http_client.request(
         _url,
         method=request.method,
-        data=_data,
+        data=_data.encode('utf-8'),
         headers=headers,
         timeout=timeout,
         user=request.user)
