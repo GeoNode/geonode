@@ -258,7 +258,11 @@ span.grippy::after {
           <a>{% trans "Location and Licenses" %}</a>
       </li>
       <li data-step="3" data-toggle="tab" href="#ownership">
-          <a>{% trans "Optional Metadata" %}</a>
+          {% if UI_REQUIRED_FIELDS %}
+            <a>{% trans "Required Metadata" %}</a>
+        {% else %}
+            <a>{% trans "Optional Metadata" %}</a>
+        {% endif %}
       </li>
   </ul>
     <div id="mandatory" class="tab-pane fade in active">
@@ -465,7 +469,7 @@ span.grippy::after {
 
     <div id="ownership" class="tab-pane fade">
         <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
-        <div>
+        <div id="mdinfo">
             <div class="col-xs-12 col-lg-4">
               <p>{% trans "Other, Optional, Metadata" %}</p>
                 {% block map_edition %}
