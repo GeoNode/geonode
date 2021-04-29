@@ -77,7 +77,7 @@ class Command(BaseCommand):
         max_id_len = len(max(Thesaurus.objects.values_list('identifier', flat=True), key=len))
 
         for t in Thesaurus.objects.order_by('order').all():
-            if t.card_max==0:
+            if t.card_max == 0:
                 card = 'DISABLED'
             else:
                 # DISABLED
