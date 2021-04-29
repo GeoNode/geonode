@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Finnish (http://www.transifex.com/geonode/geonode/language/"
@@ -571,9 +571,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -597,9 +594,6 @@ msgstr "Katso karttaa"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "Peruuttaa"
 
@@ -609,11 +603,6 @@ msgstr "Esittää"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "Määritä käyttöoikeudet"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "Määritä käyttöoikeudet"
 
 msgid "Discover the available datasets."
@@ -767,6 +756,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -837,6 +829,9 @@ msgstr ""
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+msgstr ""
+
+msgid "Location"
 msgstr ""
 
 msgid ""
@@ -1034,11 +1029,6 @@ msgstr "URL asiakirja, jos se on ulkoinen."
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "Dokumentit"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1145,11 +1135,6 @@ msgstr "Tutustu Asiakirjat"
 
 msgid "Upload Documents"
 msgstr "Ladata dokumentteja"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "aineisto"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1516,11 +1501,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "Luo uusi kartta"
@@ -1842,11 +1822,6 @@ msgid "Explore Group Categories"
 msgstr "Tutki ryhmiä"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "Kategoriat"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "Luo ryhmä"
@@ -1865,16 +1840,6 @@ msgstr "Poista Group"
 
 msgid "Create Group"
 msgstr "Luo ryhmä"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "Kartta luotiin"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "ryhmä"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1954,9 +1919,6 @@ msgstr "Lisää jäseniä"
 msgid "Add Group Members"
 msgstr "Hallitse ryhmän jäsenet"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1971,11 +1933,6 @@ msgstr "Poista Kartat / Data Group"
 
 msgid "Remove selected maps/data"
 msgstr "Poista valitut kartat / data"
-
-#, fuzzy
-#| msgid "updated"
-msgid "groups update"
-msgstr "päivitetty"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2293,11 +2250,6 @@ msgstr "jolloin määrite tilastoja on viimeksi päivitetty"
 msgid "Append to Layer"
 msgstr "Edit Layer"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "Kerros ladattu"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2318,11 +2270,6 @@ msgstr "Muuta yhteyspisteen"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Määritä uusi yhteyspiste kerroksiin alla:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "Kerrokset"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2339,9 +2286,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2609,11 +2553,6 @@ msgstr "Tämä toimenpide koskee seuraavia karttoja:"
 msgid "No maps are using this layer"
 msgstr "Ei karttoja käyttävät tätä kerrosta"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "Kerros ladattu"
-
 msgid "Upload Layers"
 msgstr "Tallennettu Tasot"
 
@@ -2670,11 +2609,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "Tallennettu Layer"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "Kerros ladattu"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2753,17 +2687,28 @@ msgstr "Attribuutteja"
 msgid "Upload Layer"
 msgstr "Tallennettu Layer"
 
-msgid "Incomplete Uploads"
-msgstr "Epätäydellinen lataukset"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "Lataa Metadata"
 
-msgid "You have the following incomplete uploads"
-msgstr "Sinulla on seuraavat epätäydellinen kuvat"
-
-msgid "Resume"
-msgstr "Jatkaa"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Poistaa"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Tallennettu asiakirja"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3470,9 +3415,6 @@ msgstr "kerros params"
 msgid "source params"
 msgstr "lähde params"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3572,11 +3514,6 @@ msgstr "Edit Kartta"
 
 msgid "Explore Maps"
 msgstr "Tutustu kartat"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4125,11 +4062,6 @@ msgstr "Perusta profiili"
 msgid "Profile of "
 msgstr "Kavereita"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr ""
 
@@ -4137,9 +4069,6 @@ msgid "Position"
 msgstr ""
 
 msgid "Organization"
-msgstr ""
-
-msgid "Location"
 msgstr ""
 
 msgid "Not provided"
@@ -4203,11 +4132,6 @@ msgstr "Käyttäjän toimet"
 
 msgid "Resources"
 msgstr "Resurssit"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "Kutsu ihmisiä"
 
 msgid "Edit Your Profile"
 msgstr "Muokkaa profiilia"
@@ -6525,6 +6449,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6605,6 +6532,90 @@ msgstr "Virheellinen lupataso."
 
 msgid "Permission Denied"
 msgstr "Lupa kielletty"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "Määritä käyttöoikeudet"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "Dokumentit"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "aineisto"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "Kategoriat"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "Kartta luotiin"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "ryhmä"
+
+#, fuzzy
+#~| msgid "updated"
+#~ msgid "groups update"
+#~ msgstr "päivitetty"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "Kerros ladattu"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "Kerrokset"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "Kerros ladattu"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "Kerros ladattu"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "Epätäydellinen lataukset"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "Sinulla on seuraavat epätäydellinen kuvat"
+
+#~ msgid "Resume"
+#~ msgstr "Jatkaa"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "Kutsu ihmisiä"
 
 #~ msgid "last updated on"
 #~ msgstr "viimeksi päivitetty"

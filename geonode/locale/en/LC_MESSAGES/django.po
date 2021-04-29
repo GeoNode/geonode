@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2020-12-23 16:21+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -501,9 +501,6 @@ msgstr "online"
 msgid "offline"
 msgstr "offline"
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr "SECURITY NOT YET SYNCHRONIZED"
 
@@ -525,9 +522,6 @@ msgstr "View Map"
 msgid "Batch Edit"
 msgstr "Batch Edit"
 
-msgid "batch edit"
-msgstr "batch edit"
-
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -536,9 +530,6 @@ msgstr "Submit"
 
 msgid "Set Permissions"
 msgstr "Set Permissions"
-
-msgid "set permissions"
-msgstr "set permissions"
 
 msgid "Discover the available datasets."
 msgstr "Discover the available datasets."
@@ -674,6 +665,9 @@ msgstr ""
 "Height above or below sea level. Examples: altitude, bathymetry, digital "
 "elevation models, slope, derived products."
 
+msgid "Elevation"
+msgstr "Elevation"
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -773,6 +767,9 @@ msgid ""
 msgstr ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
+
+msgid "Location"
+msgstr "Location"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -961,9 +958,6 @@ msgstr "The URL of the document if it is external."
 msgid "URL"
 msgstr "URL"
 
-msgid "documents"
-msgstr "documents"
-
 msgid "Your browser does not support the audio element."
 msgstr "Your browser does not support the audio element."
 
@@ -1058,9 +1052,6 @@ msgstr "Explore Documents"
 
 msgid "Upload Documents"
 msgstr "Upload Documents"
-
-msgid "data"
-msgstr "data"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1357,9 +1348,6 @@ msgstr "Download"
 msgid "%(GEONODE_APPS_NAME)s"
 msgstr "%(GEONODE_APPS_NAME)s"
 
-msgid "apps explore"
-msgstr "apps explore"
-
 msgid "Create New"
 msgstr "Create New"
 
@@ -1630,9 +1618,6 @@ msgstr "No actions yet"
 msgid "Explore Group Categories"
 msgstr "Explore Group Categories"
 
-msgid "groups explore"
-msgstr "groups explore"
-
 msgid "Create a New Group Category"
 msgstr "Create a New Group Category"
 
@@ -1650,12 +1635,6 @@ msgstr "Remove Group"
 
 msgid "Create Group"
 msgstr "Create Group"
-
-msgid "groups create"
-msgstr "groups create"
-
-msgid "groups"
-msgstr "groups"
 
 msgid "Last Modified"
 msgstr "Last Modified"
@@ -1727,9 +1706,6 @@ msgstr "Add new members"
 msgid "Add Group Members"
 msgstr "Add Group Members"
 
-msgid "groups remove"
-msgstr "groups remove"
-
 #, python-format
 msgid ""
 "\n"
@@ -1745,9 +1721,6 @@ msgstr "Remove Maps/Data from Group"
 
 msgid "Remove selected maps/data"
 msgstr "Remove selected maps/data"
-
-msgid "groups update"
-msgstr "groups update"
 
 msgid "Edit Group Category Details"
 msgstr "Edit Group Category Details"
@@ -2026,11 +1999,6 @@ msgstr "date when attribute statistics were last updated"
 msgid "Append to Layer"
 msgstr "Return to Layer"
 
-#, fuzzy
-#| msgid "layers upload"
-msgid "layers append"
-msgstr "layers upload"
-
 msgid "Return to Layer"
 msgstr "Return to Layer"
 
@@ -2049,9 +2017,6 @@ msgstr "Change point of contact"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Assign a new point of contact to the layers below:"
 
-msgid "layers"
-msgstr "layers"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr "Layer WMS GetCapabilities document"
 
@@ -2069,9 +2034,6 @@ msgstr "Bounding Box"
 
 msgid "Time"
 msgstr "Time"
-
-msgid "Elevation"
-msgstr "Elevation"
 
 msgid "Actions"
 msgstr "Actions"
@@ -2314,9 +2276,6 @@ msgstr "This action affects the following maps:"
 msgid "No maps are using this layer"
 msgstr "No maps are using this layer"
 
-msgid "layers explore"
-msgstr "layers explore"
-
 msgid "Upload Layers"
 msgstr "Upload Layers"
 
@@ -2376,9 +2335,6 @@ msgstr ""
 
 msgid "Upload Layer Metadata"
 msgstr "Upload Layer Metadata"
-
-msgid "layers upload"
-msgstr "layers upload"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
@@ -2458,17 +2414,28 @@ msgstr "Dataset Attributes"
 msgid "Upload Layer"
 msgstr "Upload Layer"
 
-msgid "Upload Status"
+#, fuzzy
+#| msgid "Upload Status"
+msgid "Upload status"
 msgstr "Upload Status"
 
-msgid "You have the following incomplete uploads"
-msgstr "You have the following incomplete uploads"
-
-msgid "Resume"
-msgstr "Resume"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "Delete"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "Upload Document"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3239,9 +3206,6 @@ msgstr "layer params"
 msgid "source params"
 msgstr "source params"
 
-msgid "maps"
-msgstr "maps"
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr "Map layers WMS GetCapabilities document"
 
@@ -3346,9 +3310,6 @@ msgstr "Edit Map"
 
 msgid "Explore Maps"
 msgstr "Explore Maps"
-
-msgid "maps explore"
-msgstr "maps explore"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -3862,9 +3823,6 @@ msgstr "Create Profile"
 msgid "Profile of "
 msgstr "Profile of "
 
-msgid "people explore"
-msgstr "people explore"
-
 msgid "Not provided."
 msgstr "Not provided."
 
@@ -3873,9 +3831,6 @@ msgstr "Position"
 
 msgid "Organization"
 msgstr "Organization"
-
-msgid "Location"
-msgstr "Location"
 
 msgid "Not provided"
 msgstr "Not provided"
@@ -3930,9 +3885,6 @@ msgstr "User Activities"
 
 msgid "Resources"
 msgstr "Resources"
-
-msgid "edit people"
-msgstr "edit people"
 
 msgid "Edit Your Profile"
 msgstr "Edit Your Profile"
@@ -4097,6 +4049,8 @@ msgstr "Service Resources"
 msgid "No resources have been imported yet."
 msgstr "No resources have been imported yet."
 
+#, fuzzy
+#| msgid "Retry job"
 msgid "Retry job"
 msgstr "Retry job"
 
@@ -6224,6 +6178,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6306,6 +6263,68 @@ msgstr "Invalid permission level."
 
 msgid "Permission Denied"
 msgstr "Permission Denied"
+
+#~ msgid "batch edit"
+#~ msgstr "batch edit"
+
+#~ msgid "set permissions"
+#~ msgstr "set permissions"
+
+#~ msgid "documents"
+#~ msgstr "documents"
+
+#~ msgid "data"
+#~ msgstr "data"
+
+#~ msgid "apps explore"
+#~ msgstr "apps explore"
+
+#~ msgid "groups explore"
+#~ msgstr "groups explore"
+
+#~ msgid "groups create"
+#~ msgstr "groups create"
+
+#~ msgid "groups"
+#~ msgstr "groups"
+
+#~ msgid "groups remove"
+#~ msgstr "groups remove"
+
+#~ msgid "groups update"
+#~ msgstr "groups update"
+
+#, fuzzy
+#~| msgid "layers upload"
+#~ msgid "layers append"
+#~ msgstr "layers upload"
+
+#~ msgid "layers"
+#~ msgstr "layers"
+
+#~ msgid "layers explore"
+#~ msgstr "layers explore"
+
+#~ msgid "layers upload"
+#~ msgstr "layers upload"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "You have the following incomplete uploads"
+
+#~ msgid "Resume"
+#~ msgstr "Resume"
+
+#~ msgid "maps"
+#~ msgstr "maps"
+
+#~ msgid "maps explore"
+#~ msgstr "maps explore"
+
+#~ msgid "people explore"
+#~ msgstr "people explore"
+
+#~ msgid "edit people"
+#~ msgstr "edit people"
 
 #~ msgid "last updated on"
 #~ msgstr "last updated on"
