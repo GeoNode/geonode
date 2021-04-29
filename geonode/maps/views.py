@@ -439,7 +439,7 @@ def map_metadata(
         "metadata_author_groups": metadata_author_groups,
         "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
-        "UI_MANDATORY_FIELDS": ['title', 'abstract', 'doi', 'attribution', 'data_quality_statement', 'restriction_code_type']
+        "UI_MANDATORY_FIELDS": list(set(['id_resource-title', 'id_resource-abstract', 'category_form', 'id_resource-attribution', 'id_resource-data_quality_statement', 'id_resource-restriction_code_type']) | set(getattr(settings, "UI_REQUIRED_FIELDS", [])))
     })
 
 

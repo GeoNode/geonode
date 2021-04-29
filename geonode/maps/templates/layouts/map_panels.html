@@ -240,9 +240,15 @@ span.grippy::after {
   <div class="advanced-hint progress-bar" role="progressbar" style="width:34%">
     {% trans "Mandatory" %}
   </div>
-  <div class="progress-bar" role="progressbar" style="width:33%">
-    {% trans "Optional" %}
-  </div>
+  {% if UI_REQUIRED_FIELDS %}
+      <div class="metadata-hint progress-bar" role="progressbar" style="width:33%">
+        {% trans "Mandatory" %}
+      </div>
+  {% else %}
+      <div class="progress-bar" role="progressbar" style="width:33%">
+        {% trans "Optional" %}
+      </div>
+  {% endif %}
 </div>
   <ul class="wizard--progress wizard--progress--medium">
       <li data-step="1" id="first" class="is-active" data-toggle="tab" href="#mandatory">
