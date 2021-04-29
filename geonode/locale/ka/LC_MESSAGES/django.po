@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Georgian (http://www.transifex.com/geonode/geonode/language/"
@@ -572,9 +572,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -598,9 +595,6 @@ msgstr "რუკის ნახვა"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "გაუქმება"
 
@@ -610,11 +604,6 @@ msgstr "შეასრულე"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "უფლებების მინიჭება"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "უფლებების მინიჭება"
 
 msgid "Discover the available datasets."
@@ -768,6 +757,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -839,6 +831,9 @@ msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+
+msgid "Location"
+msgstr "ადგილმდებარეობა"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -1017,11 +1012,6 @@ msgstr "დოკუმენტის მისამართი (URL), თუ
 msgid "URL"
 msgstr "მისამართი (URL)"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "დოკუმენტები"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1133,11 +1123,6 @@ msgstr "დოკუმენტების მიმოხილვა"
 
 msgid "Upload Documents"
 msgstr "დოკუმენტების ატვირთვა"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "მონაცემთა ბაზა"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1500,11 +1485,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "Categories"
-msgid "apps explore"
-msgstr "კატეგორიები"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "ახალი რუკის შექმნა"
@@ -1826,11 +1806,6 @@ msgid "Explore Group Categories"
 msgstr "ჯგუფების ნახვა"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "კატეგორიები"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "ჯგუფის შექმნა"
@@ -1849,16 +1824,6 @@ msgstr "ჯგუფის გაუქმება"
 
 msgid "Create Group"
 msgstr "ჯგუფის შექმნა"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "რუკა იყო შექმნილი"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "ჯგუფი"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1937,9 +1902,6 @@ msgstr "მონაწილეების დამატება"
 msgid "Add Group Members"
 msgstr "ჯგუფის წევრების მართვა"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1954,11 +1916,6 @@ msgstr "რუკის წაშლა / მონაცემები ჯგ�
 
 msgid "Remove selected maps/data"
 msgstr "მონიშვნული რუკის / მონაცემის წაშლა"
-
-#, fuzzy
-#| msgid "A Map was updated"
-msgid "groups update"
-msgstr "რუკა იყო განახლებული"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2265,11 +2222,6 @@ msgstr "ატრიბუტის სტატისტიკის ბოლ�
 msgid "Append to Layer"
 msgstr "ფენის რედაქტირება"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "ფენა იყო ატვირთული"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2290,11 +2242,6 @@ msgstr "საკონტაქტო ინფორმაციის შე�
 msgid "Assign a new point of contact to the layers below:"
 msgstr "მიენიჭოს ახალი საკონტაქტო ინფორმაცია ფენის ქვეშ"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "ფენები"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2311,9 +2258,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2581,11 +2525,6 @@ msgstr "ეს ქმედება გავლენას ახდენს
 msgid "No maps are using this layer"
 msgstr "ეს ქმედება გავლენას ახდენს შემდეგი რუკებზე:"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "ფენა იყო ატვირთული"
-
 msgid "Upload Layers"
 msgstr "ფენების ატვირთვა"
 
@@ -2648,11 +2587,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "ფენის ატვირთვა"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "ფენა იყო ატვირთული"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2734,17 +2668,28 @@ msgstr "ატრიბუტები"
 msgid "Upload Layer"
 msgstr "ფენის ატვირთვა"
 
-msgid "Incomplete Uploads"
-msgstr "არასრული ატვირთვა"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "მეტამონაცემის ჩამოტვირთვა"
 
-msgid "You have the following incomplete uploads"
-msgstr "თქვენ გაქვთ შემდეგი არასრული ატვირთვები"
-
-msgid "Resume"
-msgstr "გაგრძელება"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "წაშლა"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "დოკუმენტის ატვირთვა"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3423,9 +3368,6 @@ msgstr "პარამეტრის წყარო"
 msgid "source params"
 msgstr "თქვენ არ გაქვთ წაშალის უფლება ამ რუკის."
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3512,9 +3454,6 @@ msgstr "რუკის რედაქტირება"
 
 msgid "Explore Maps"
 msgstr "რუკების მიმოხილვა"
-
-msgid "maps explore"
-msgstr ""
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4059,9 +3998,6 @@ msgstr "პროფილის შექმნა"
 msgid "Profile of "
 msgstr "პროფილი"
 
-msgid "people explore"
-msgstr ""
-
 msgid "Not provided."
 msgstr "\tმონაცემი არ არის"
 
@@ -4070,9 +4006,6 @@ msgstr "თანამდებობა"
 
 msgid "Organization"
 msgstr "ორგანიზაცია"
-
-msgid "Location"
-msgstr "ადგილმდებარეობა"
 
 msgid "Not provided"
 msgstr "\tმონაცემი არ არის"
@@ -4135,11 +4068,6 @@ msgstr "მომხმარებლის ქმედებები"
 
 msgid "Resources"
 msgstr "რესურსები"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "ხალხის დაპატიჯება"
 
 msgid "Edit Your Profile"
 msgstr "პროფილის რედაქტირება"
@@ -6397,6 +6325,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6477,6 +6408,80 @@ msgstr "არასწორი დაშვების დონეზე."
 
 msgid "Permission Denied"
 msgstr "წვდომა აკრძალულია"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "უფლებების მინიჭება"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "დოკუმენტები"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "მონაცემთა ბაზა"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "apps explore"
+#~ msgstr "კატეგორიები"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "კატეგორიები"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "რუკა იყო შექმნილი"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "ჯგუფი"
+
+#, fuzzy
+#~| msgid "A Map was updated"
+#~ msgid "groups update"
+#~ msgstr "რუკა იყო განახლებული"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "ფენა იყო ატვირთული"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "ფენები"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "ფენა იყო ატვირთული"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "ფენა იყო ატვირთული"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "არასრული ატვირთვა"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "თქვენ გაქვთ შემდეგი არასრული ატვირთვები"
+
+#~ msgid "Resume"
+#~ msgstr "გაგრძელება"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "ხალხის დაპატიჯება"
 
 #~ msgid "last updated on"
 #~ msgstr "ბოლო განახლება"
