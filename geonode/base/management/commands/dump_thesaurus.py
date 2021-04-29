@@ -96,42 +96,42 @@ class Command(BaseCommand):
             'dcterms': DCTERMS_URI
         }
 
-        root = etree.Element(RDF_NS + 'RDF', nsmap=ns)
-        concept_scheme = etree.SubElement(root, SKOS_NS + 'ConceptScheme')
-        concept_scheme.set(RDF_NS + 'about', thesaurus.about)
+        root = etree.Element(f"{RDF_NS}RDF", nsmap=ns)
+        concept_scheme = etree.SubElement(root, f"{SKOS_NS}ConceptScheme")
+        concept_scheme.set(f"{RDF_NS}about", thesaurus.about)
 
         # Default title
         # <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">GEMET - INSPIRE themes, version 1.0</dc:title>
-        title = etree.SubElement(concept_scheme, DC_NS + 'title')
+        title = etree.SubElement(concept_scheme, f"{DC_NS}title")
         title.text = thesaurus.title
 
         # Localized titles
         # <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">Limitations on public access</dc:title>
         for ltitle in ThesaurusLabel.objects.filter(thesaurus=thesaurus).all():
-            title = etree.SubElement(concept_scheme, DC_NS + 'title')
-            title.set(XML_NS + "lang", ltitle.lang)
+            title = etree.SubElement(concept_scheme, f"{DC_NS}title")
+            title.set(f"{XML_NS}lang", ltitle.lang)
             title.text = ltitle.label
 
-        d = etree.SubElement(concept_scheme, DCTERMS_NS + 'issued')
+        d = etree.SubElement(concept_scheme, f"{DCTERMS_NS}issued")
         d.text = thesaurus.date
-        d = etree.SubElement(concept_scheme, DCTERMS_NS + 'modified')
+        d = etree.SubElement(concept_scheme, f"{DCTERMS_NS}modified")
         d.text = thesaurus.date
 
         # Concepts
         for keyword in ThesaurusKeyword.objects.filter(thesaurus=thesaurus).all():
-            concept = etree.SubElement(concept_scheme, SKOS_NS + 'Concept')
+            concept = etree.SubElement(concept_scheme, f"{SKOS_NS}Concept")
             if keyword.about:
-                concept.set(RDF_NS + 'about', keyword.about)
+                concept.set(f"{RDF_NS}about", keyword.about)
 
             if keyword.alt_label:
                 # <skos:altLabel>cp</skos:altLabel>
-                label = etree.SubElement(concept, SKOS_NS + 'altLabel')
+                label = etree.SubElement(concept, f"{SKOS_NS}altLabel")
                 label.text = keyword.alt_label
 
             for label in ThesaurusKeywordLabel.objects.filter(keyword=keyword).all():
                 # <skos:prefLabel xml:lang="en">Geographical grid systems</skos:prefLabel>
-                pref_label = etree.SubElement(concept, SKOS_NS + 'prefLabel')
-                pref_label.set(XML_NS + 'lang', label.lang)
+                pref_label = etree.SubElement(concept, f"{SKOS_NS}prefLabel")
+                pref_label.set(f"{XML_NS}lang", label.lang)
                 pref_label.text = label.label
 
         etree.dump(root, pretty_print=True)
