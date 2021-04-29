@@ -38,8 +38,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
-"PO-Revision-Date: 2021-04-07 15:06+0200\n"
+"POT-Creation-Date: 2021-04-29 13:37+0200\n"
+"PO-Revision-Date: 2021-04-29 13:43+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
 "it/)\n"
@@ -2452,8 +2452,6 @@ msgstr "Attributi del dataset"
 msgid "Upload Layer"
 msgstr "Carica livello"
 
-#, fuzzy
-#| msgid "Upload Status"
 msgid "Upload status"
 msgstr "Stato caricamento"
 
@@ -2461,19 +2459,22 @@ msgid ""
 "This file needs additional configuration to complete the upload process. "
 "Please click on the button to fill the required configuration"
 msgstr ""
+"Questo file necessita di una configurazione aggiuntiva per completare il "
+"processo di caricamento. Clicca sul pulsante per riempire la configurazione "
+"richiesta"
 
 msgid "Delete"
 msgstr "Cancella"
 
-#, fuzzy
-#| msgid "Upload Document"
 msgid "Upload process completed"
-msgstr "Carica documento"
+msgstr "Processo di caricamento completato"
 
 msgid ""
 "The upload process cannot be completed because the original file is no more "
 "available"
 msgstr ""
+"Impossibile completare il processo di caricamento perché il file originale "
+"non è più disponibile"
 
 msgid "Created"
 msgstr "Creato"
@@ -4077,8 +4078,6 @@ msgstr "Risorse del servizio"
 msgid "No resources have been imported yet."
 msgstr "Nessuna risorsa ancora importata."
 
-#, fuzzy
-#| msgid "Retry job"
 msgid "Retry job"
 msgstr "Riprova"
 
@@ -6216,7 +6215,7 @@ msgid "Expected to find layer named '{name}' in geoserver"
 msgstr "Previsto per trovare il livello denominato '{name}' nel geoserver"
 
 msgid "Exception occurred while parsing the provided Metadata file."
-msgstr ""
+msgstr "Eccezione durante l'analisi del file di metadati fornito."
 
 msgid "Error configuring Layer"
 msgstr "Errore durante la configurazione del livello"
