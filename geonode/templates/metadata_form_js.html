@@ -324,12 +324,6 @@
 
         var isMandatoryField = function (el) {
             var is_mandatory = false;
-            // Workaround for Thesauri
-            if (el.id.startsWith('id_tkeywords') && $(el).hasClass('treq')) {
-                is_mandatory = true;
-            } else if (el.id.startsWith('id_tkeywords') && !$(el).hasClass('treq')) {
-                is_mandatory = false;
-            }
 
             is_mandatory = ui_mandatory_fields.some(function(field){
                 return el.id == field;
@@ -339,6 +333,13 @@
                 if (is_group_mandatory) {
                     is_mandatory = true;
                 }
+            }
+
+            // Workaround for Thesauri
+            if (el.id.startsWith('id_tkeywords') && $(el).hasClass('treq')) {
+                is_mandatory = true;
+            } else if (el.id.startsWith('id_tkeywords') && !$(el).hasClass('treq')) {
+                is_mandatory = false;
             }
 
             return is_mandatory;
