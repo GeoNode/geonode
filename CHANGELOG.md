@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.1.1](https://github.com/GeoNode/geonode/tree/3.1.1) (2021-04-30)
+
+[https://github.com/GeoNode/geonode/compare/3.0...3.1](https://github.com/GeoNode/geonode/compare/3.1...3.1.1)
+
 ## [3.2.0](https://github.com/GeoNode/geonode/tree/3.2.0) (2021-04-29)
 ### Breaking Changes
 
