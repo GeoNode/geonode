@@ -24,6 +24,7 @@ from geonode.layers.models import Layer
 from geonode import geoserver  # noqa
 from geonode.catalogue.models import catalogue_post_save
 import logging
+from django.conf import settings
 
 from geonode.utils import (
     check_ogc_backend,
@@ -112,6 +113,12 @@ class Command(BaseCommand):
                 # recalculate the layer statistics
                 set_attributes(layer, overwrite=True)
 
+                if hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
+                    from geonode.layers.utils import get_uuid_handler
+                    uuid = get_uuid_handler()(layer).create_uuid()
+                    x = Layer.objects.filter(resourcebase_ptr=layer.resourcebase_ptr)
+                    x.update(uuid=uuid)
+                    layer.refresh_from_db()
                 # refresh metadata links
                 set_resource_default_links(layer, layer, prune=prune)
 
