@@ -520,14 +520,15 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.phony_url = ("http://a-really-long-and-fake-name-here-so-that-"
                           "we-use-it-in-tests")
         self.phony_title = "a generic title"
-        self.phony_version = "some.version"
+        self.phony_version = "s.version"
         self.phony_layer_name = "phony_name"
         self.phony_keywords = ["first", "second"]
         mock_parsed_wms = mock.MagicMock(OwsWebMapService).return_value
         (url, mock_parsed_wms) = mock.MagicMock(WebMapService,
                                                 return_value=(self.phony_url,
                                                               mock_parsed_wms)).return_value
-        mock_parsed_wms.url = self.phony_url
+        mock_parsed_wms.provider.url = self.phony_url
+        mock_parsed_wms.identification.abstract = None
         mock_parsed_wms.identification.title = self.phony_title
         mock_parsed_wms.identification.version = self.phony_version
         mock_parsed_wms.identification.keywords = self.phony_keywords
@@ -625,6 +626,8 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(result.version, self.phony_version)
         self.assertEqual(result.name, handler.name)
         self.assertEqual(result.title, self.phony_title)
+        # mata_data_only is set to Try
+        self.assertTrue(result.metadata_only)
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)
