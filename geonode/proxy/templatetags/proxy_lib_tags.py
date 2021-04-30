@@ -49,7 +49,7 @@ def original_link_available(context, resourceid, url):
 
     download_url = urljoin(settings.SITEURL, reverse("download", args={resourceid}))
     if urlsplit(url).netloc != urlsplit(download_url).netloc or \
-    urlsplit(url).path != urlsplit(download_url).path:
+            urlsplit(url).path != urlsplit(download_url).path:
         return True
 
     layer_files = []

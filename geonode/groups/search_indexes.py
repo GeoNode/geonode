@@ -56,7 +56,7 @@ class GroupIndex(indexes.SearchIndex, indexes.Indexable):
             "title": obj.title,
             "description": obj.description,
             "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [],
-            "thumb": settings.STATIC_URL + "static/img/contact.png",
+            "thumb": f"{settings.STATIC_URL}static/img/contact.png",
             "detail": None,
         }
 

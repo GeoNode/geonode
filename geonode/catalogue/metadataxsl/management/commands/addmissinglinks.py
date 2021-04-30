@@ -30,15 +30,15 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for resource in ResourceBase.objects.all():
-            print('Checking resource with id {}'.format(resource.id))
+            print(f'Checking resource with id {resource.id}')
 
             # check ISO link exists
             isolink = Link.objects.filter(resource_id=resource.id, link_type='metadata', name='ISO')
 
             if(isolink):
-                print('  ISO link found for resource {} "{}"'.format(resource.id, resource.title))
+                print(f'  ISO link found for resource {resource.id} "{resource.title}"')
                 created = add_xsl_link(resource)
                 if (created):
                     print('   XSL link created')
             else:
-                print('  ISO link NOT found for resource {} "{}"'.format(resource.id, resource.title))
+                print(f'  ISO link NOT found for resource {resource.id} "{resource.title}"')

@@ -91,8 +91,7 @@ def harvest_resource(self, harvest_job_id):
                         f"tentative {_cnt}: {e}")
                     time.sleep(1.0)
     except Exception as err:
-        logger.exception(msg="An error has occurred while harvesting "
-                             "resource {!r}".format(harvest_job.resource_id))
+        logger.exception(msg=f"An error has occurred while harvesting resource {harvest_job.resource_id!r}")
         details = str(err)  # TODO: pass more context about the error
     finally:
         if not details:

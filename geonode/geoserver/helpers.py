@@ -84,10 +84,9 @@ def check_geoserver_is_up():
     """Verifies all geoserver is running,
        this is needed to be able to upload.
     """
-    url = "%s" % ogc_server_settings.LOCATION
+    url = f"{ogc_server_settings.LOCATION}"
     req, content = http_client.get(url, user=_user)
-    msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
-           'have started it.' % url)
+    msg = f'Cannot connect to the GeoServer at {url}\nPlease make sure you have started it.'
     logger.debug(req)
     assert req.status_code == 200, msg
 
@@ -180,7 +179,7 @@ _style_templates = dict(
 
 
 def _style_name(resource):
-    return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
+    return _punc.sub("_", f"{resource.store.workspace.name}:{resource.name}")
 
 
 def extract_name_from_sld(gs_catalog, sld, sld_file=None):
@@ -470,7 +469,7 @@ def cascading_delete(layer_name=None, catalog=None):
         for s in styles:
             if s is not None and s.name not in _default_style_names:
                 try:
-                    logger.debug("Trying to delete Style [%s]" % s.name)
+                    logger.debug(f"Trying to delete Style [{s.name}]")
                     cat.delete(s, purge='true')
                 except Exception as e:
                     # Trying to delete a shared style will fail
@@ -492,7 +491,7 @@ def cascading_delete(layer_name=None, catalog=None):
         else:
             if store.resource_type == 'coverageStore':
                 try:
-                    logger.debug(" - Going to purge the " + store.resource_type + " : " + store.href)
+                    logger.debug(f" - Going to purge the {store.resource_type} : {store.href}")
                     cat.reset()  # this resets the coverage readers and unlocks the files
                     cat.delete(store, purge='all', recurse=True)
                     # cat.reload()  # this preservers the integrity of geoserver
@@ -528,7 +527,7 @@ def delete_from_postgis(layer_name, store):
     try:
         conn = psycopg2.connect(dbname=db_name, user=user, host=host, port=port, password=password)
         cur = conn.cursor()
-        cur.execute("SELECT DropGeometryTable ('%s')" % layer_name)
+        cur.execute(f"SELECT DropGeometryTable ('{layer_name}')")
         conn.commit()
     except Exception as e:
         logger.error(
@@ -638,7 +637,7 @@ def gs_slurp(
     if skip_geonode_registered:
         try:
             resources = [k for k in resources
-                         if not '%s:%s' % (k.workspace.name, k.name) in layer_names]
+                         if f'{k.workspace.name}:{k.name}' not in layer_names]
         except Exception:
             if ignore_errors:
                 pass
@@ -677,7 +676,7 @@ def gs_slurp(
                     workspace=workspace.name,
                     store=the_store.name,
                     storeType=the_store.resource_type,
-                    alternate="%s:%s" % (workspace.name, resource.name),
+                    alternate=f"{workspace.name}:{resource.name}",
                     title=resource.title or 'No title provided',
                     abstract=resource.abstract or "{}".format(_('No abstract provided')),
                     owner=owner,
@@ -722,7 +721,7 @@ def gs_slurp(
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print(msg, file=sys.stderr)
 
-                raise Exception("Failed to process {}".format(resource.name)) from e
+                raise Exception(f"Failed to process {resource.name}") from e
 
         else:
             if created:
@@ -977,7 +976,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                                                            "version": "1.0.0",
                                                            "request": "DescribeFeatureType",
                                                            "typename": typename,
-                                                          })
+                                                           })
         try:
             # The code below will fail if http_client cannot be imported or WFS not supported
             req, body = http_client.get(dft_url, user=_user)
@@ -1210,19 +1209,17 @@ def get_attribute_statistics(layer_name, field):
 
 
 def get_wcs_record(instance, retry=True):
-    wcs = WebCoverageService(ogc_server_settings.LOCATION + 'wcs', '1.0.0')
-    key = instance.workspace + ':' + instance.name
+    wcs = WebCoverageService(f"{ogc_server_settings.LOCATION}wcs", '1.0.0')
+    key = f"{instance.workspace}:{instance.name}"
     logger.debug(wcs.contents)
     if key in wcs.contents:
         return wcs.contents[key]
     else:
-        msg = ("Layer '%s' was not found in WCS service at %s." %
-               (key, ogc_server_settings.public_url)
+        msg = (f"Layer '{key}' was not found in WCS service at {ogc_server_settings.public_url}."
                )
         if retry:
             logger.debug(
-                msg +
-                ' Waiting a couple of seconds before trying again.')
+                f"{msg} Waiting a couple of seconds before trying again.")
             time.sleep(2)
             return get_wcs_record(instance, retry=False)
         else:
@@ -1258,8 +1255,7 @@ def cleanup(name, uuid):
     except Layer.DoesNotExist:
         pass
     else:
-        msg = ('Not doing any cleanup because the layer %s exists in the '
-               'Django db.' % name)
+        msg = f'Not doing any cleanup because the layer {name} exists in the Django db.'
         raise GeoNodeException(msg)
 
     cat = gs_catalog
@@ -1328,7 +1324,7 @@ def create_geoserver_db_featurestore(
         ds_exists = True
     except FailedRequestError:
         logger.debug(
-            'Creating target datastore %s' % dsname)
+            f'Creating target datastore {dsname}')
         ds = cat.create_datastore(dsname, workspace=workspace)
         db = ogc_server_settings.datastore_db
         db_engine = 'postgis' if \
@@ -1412,12 +1408,12 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
         return ds, resource
     except Exception:
         msg = _("An exception occurred loading data to PostGIS")
-        msg += "- %s" % (sys.exc_info()[1])
+        msg += f"- {sys.exc_info()[1]}"
         try:
             delete_from_postgis(name, ds)
         except Exception:
             msg += _(" Additionally an error occured during database cleanup")
-            msg += "- %s" % (sys.exc_info()[1])
+            msg += f"- {sys.exc_info()[1]}"
         raise GeoNodeException(msg)
 
 
@@ -1432,15 +1428,15 @@ def get_store(cat, name, workspace=None):
 
     if workspace:
         try:
-            store = cat.get_xml('%s/%s.xml' % (workspace.datastore_url[:-4], name))
+            store = cat.get_xml(f'{workspace.datastore_url[:-4]}/{name}.xml')
         except FailedRequestError:
             try:
-                store = cat.get_xml('%s/%s.xml' % (workspace.coveragestore_url[:-4], name))
+                store = cat.get_xml(f'{workspace.coveragestore_url[:-4]}/{name}.xml')
             except FailedRequestError:
                 try:
-                    store = cat.get_xml('%s/%s.xml' % (workspace.wmsstore_url[:-4], name))
+                    store = cat.get_xml(f'{workspace.wmsstore_url[:-4]}/{name}.xml')
                 except FailedRequestError:
-                    raise FailedRequestError("No store found named: " + name)
+                    raise FailedRequestError(f"No store found named: {name}")
         if store:
             if store.tag == 'dataStore':
                 store = datastore_from_index(cat, workspace, store)
@@ -1450,9 +1446,9 @@ def get_store(cat, name, workspace=None):
                 store = wmsstore_from_index(cat, workspace, store)
             return store
         else:
-            raise FailedRequestError("No store found named: " + name)
+            raise FailedRequestError(f"No store found named: {name}")
     else:
-        raise FailedRequestError("No store found named: " + name)
+        raise FailedRequestError(f"No store found named: {name}")
 
 
 class ServerDoesNotExist(Exception):
@@ -1530,7 +1526,7 @@ class OGC_Server(object):
         return urlsplit(self.LOCATION).netloc
 
     def __str__(self):
-        return "{0}".format(self.alias)
+        return f"{self.alias}"
 
 
 class OGC_Servers_Handler(object):
@@ -1552,7 +1548,7 @@ class OGC_Servers_Handler(object):
         try:
             server = self.servers[alias]
         except KeyError:
-            raise ServerDoesNotExist("The server %s doesn't exist" % alias)
+            raise ServerDoesNotExist(f"The server {alias} doesn't exist")
 
         if 'PRINTNG_ENABLED' in server:
             raise ImproperlyConfigured("The PRINTNG_ENABLED setting has been removed, use 'PRINT_NG_ENABLED' instead.")
@@ -1564,7 +1560,7 @@ class OGC_Servers_Handler(object):
         try:
             server = self.servers[alias]
         except KeyError:
-            raise ServerDoesNotExist("The server %s doesn't exist" % alias)
+            raise ServerDoesNotExist(f"The server {alias} doesn't exist")
 
         server.setdefault('BACKEND', 'geonode.geoserver')
         server.setdefault('LOCATION', 'http://localhost:8080/geoserver/')
@@ -1627,12 +1623,12 @@ def fetch_gs_resource(instance, values, tries):
             values = {}
         values.update(dict(store=gs_resource.store.name,
                            storeType=gs_resource.store.resource_type,
-                           alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+                           alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
                            title=gs_resource.title or gs_resource.store.name,
                            abstract=gs_resource.abstract or '',
                            owner=instance.owner))
     else:
-        msg = "There isn't a geoserver resource for this layer: %s" % instance.name
+        msg = f"There isn't a geoserver resource for this layer: {instance.name}"
         logger.exception(msg)
         if tries >= _max_tries:
             # raise GeoNodeException(msg)
@@ -1643,8 +1639,7 @@ def fetch_gs_resource(instance, values, tries):
 
 
 def get_wms():
-    wms_url = ogc_server_settings.internal_ows + \
-        "?service=WMS&request=GetCapabilities&version=1.1.0"
+    wms_url = f"{ogc_server_settings.internal_ows}?service=WMS&request=GetCapabilities&version=1.1.0"
     req, body = http_client.get(wms_url, user=_user)
     _wms = WebMapService(wms_url, xml=body)
     return _wms
@@ -1706,7 +1701,7 @@ def _stylefilterparams_geowebcache_layer(layer_name):
     headers = {
         "Content-Type": "text/xml"
     }
-    url = '%sgwc/rest/layers/%s.xml' % (ogc_server_settings.LOCATION, layer_name)
+    url = f'{ogc_server_settings.LOCATION}gwc/rest/layers/{layer_name}.xml'
 
     # read GWC configuration
     req, content = http_client.get(
@@ -1714,9 +1709,7 @@ def _stylefilterparams_geowebcache_layer(layer_name):
         headers=headers,
         user=_user)
     if req.status_code != 200:
-        line = "Error {0} reading Style Filter Params GeoWebCache at {1}".format(
-            req.status_code, url
-        )
+        line = f"Error {req.status_code} reading Style Filter Params GeoWebCache at {url}"
         logger.error(line)
         return
 
@@ -1738,9 +1731,7 @@ def _stylefilterparams_geowebcache_layer(layer_name):
             headers=headers,
             user=_user)
         if req.status_code != 200:
-            line = "Error {0} writing Style Filter Params GeoWebCache at {1}".format(
-                req.status_code, url
-            )
+            line = f"Error {req.status_code} writing Style Filter Params GeoWebCache at {url}"
             logger.error(line)
 
 
@@ -1753,7 +1744,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         <truncateLayer><layerName>{0}</layerName></truncateLayer>
         """.strip().format(layer_name)
     if not url:
-        url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
+        url = f'{ogc_server_settings.LOCATION}gwc/rest/masstruncate'
     req, content = http_client.post(
         url,
         data=body,
@@ -1761,9 +1752,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         user=_user)
 
     if req.status_code != 200:
-        line = "Error {0} invalidating GeoWebCache at {1}".format(
-            req.status_code, url
-        )
+        line = f"Error {req.status_code} invalidating GeoWebCache at {url}"
         logger.debug(line)
 
 
@@ -1809,7 +1798,7 @@ def style_update(request, url):
                     elm_user_style_title = elm_user_style_name.text
                 layer_name = elm_namedlayer_name.text
                 style_name = elm_user_style_name.text
-                sld_body = '<?xml version="1.0" encoding="UTF-8"?>%s' % request.body
+                sld_body = f'<?xml version="1.0" encoding="UTF-8"?>{request.body}'
             except Exception:
                 logger.warn("Could not recognize Style and Layer name from Request!")
         # add style in GN and associate it to layer
@@ -1875,7 +1864,7 @@ def set_time_info(layer, attribute, end_attribute, presentation,
     '''
     layer = gs_catalog.get_layer(layer.name)
     if layer is None:
-        raise ValueError('no such layer: %s' % layer.name)
+        raise ValueError(f'no such layer: {layer.name}')
     resource = layer.resource if layer else None
     if not resource:
         resources = gs_catalog.get_resources(stores=[layer.name])
@@ -1884,7 +1873,7 @@ def set_time_info(layer, attribute, end_attribute, presentation,
 
     resolution = None
     if precision_value and precision_step:
-        resolution = '%s %s' % (precision_value, precision_step)
+        resolution = f'{precision_value} {precision_step}'
     info = DimensionInfo("time", enabled, presentation, resolution, "ISO8601",
                          None, attribute=attribute, end_attribute=end_attribute)
     if resource and resource.metadata:
@@ -1908,7 +1897,7 @@ def get_time_info(layer):
     '''
     layer = gs_catalog.get_layer(layer.name)
     if layer is None:
-        raise ValueError('no such layer: %s' % layer.name)
+        raise ValueError(f'no such layer: {layer.name}')
     resource = layer.resource if layer else None
     if not resource:
         resources = gs_catalog.get_resources(stores=[layer.name])
@@ -2007,8 +1996,8 @@ def _dump_image_spec(request_body, image_spec):
 def _fixup_ows_url(thumb_spec):
     # @HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
     # so rendering of thumbnails fails - replace those uri's with full geoserver URL
-    gspath = '"' + ogc_server_settings.public_url  # this should be in img src attributes
-    repl = '"' + ogc_server_settings.LOCATION
+    gspath = f"\"{ogc_server_settings.public_url}"  # this should be in img src attributes
+    repl = f"\"{ogc_server_settings.LOCATION}"
     return re.sub(gspath, repl, thumb_spec)
 
 
@@ -2019,7 +2008,7 @@ def mosaic_delete_first_granule(cat, layer):
     store = cat.get_store(layer)
     coverages = cat.mosaic_coverages(store)
 
-    granule_id = layer + ".1"
+    granule_id = f"{layer}.1"
 
     cat.mosaic_delete_granule(coverages['coverages']['coverage'][0]['name'], store, granule_id)
 
@@ -2050,8 +2039,8 @@ def set_time_dimension(cat, name, workspace, time_presentation, time_presentatio
             resource = resources[0]
 
     if not resource:
-        logger.exception("No resource could be found on GeoServer with name %s" % name)
-        raise Exception("No resource could be found on GeoServer with name %s" % name)
+        logger.exception(f"No resource could be found on GeoServer with name {name}")
+        raise Exception(f"No resource could be found on GeoServer with name {name}")
 
     resource.metadata = {'time': timeInfo}
     cat.save(resource)

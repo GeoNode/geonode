@@ -47,9 +47,9 @@ def confirm(prompt=None, resp=False):
         prompt = 'Confirm'
 
     if resp:
-        prompt = '%s [%s]|%s: ' % (prompt, 'y', 'n')
+        prompt = f"{prompt} [{'y'}]|{'n'}: "
     else:
-        prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
+        prompt = f"{prompt} [{'n'}]|{'y'}: "
 
     while True:
         ans = six.moves.input(prompt)

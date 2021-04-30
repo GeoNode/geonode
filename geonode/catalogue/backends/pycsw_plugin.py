@@ -126,7 +126,7 @@ class GeoNodeRepository(Repository):
                 Min(domain), Max(domain)).values())]
         else:
             if count:
-                return [(d[domain], d['%s__count' % domain])
+                return [(d[domain], d[f'{domain}__count'])
                         for d in objects.values(domain).annotate(Count(domain))]
             else:
                 return objects.values_list(domain).distinct()
@@ -183,7 +183,7 @@ class GeoNodeRepository(Repository):
                                )[startposition:startposition + int(maxrecords)]]
             else:
                 if sortby['order'] == 'DESC':
-                    pname = '-%s' % sortby['propertyname']
+                    pname = f"-{sortby['propertyname']}"
                 else:
                     pname = sortby['propertyname']
                 return [str(total),

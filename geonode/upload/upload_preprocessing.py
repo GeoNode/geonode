@@ -109,7 +109,6 @@ def preprocess_files(spatial_files):
 
 def _extract_bbox_param(kml_doc, namespaces, param):
     return kml_doc.xpath(
-        "kml:Document/kml:GroundOverlay/kml:LatLonBox/"
-        "kml:{}/text()".format(param),
+        f"kml:Document/kml:GroundOverlay/kml:LatLonBox/kml:{param}/text()",
         namespaces=namespaces
     )[0]

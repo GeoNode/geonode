@@ -140,7 +140,7 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 def log_snippet(log_file):
     if not log_file or not os.path.isfile(log_file):
-        return "No log file at %s" % log_file
+        return f"No log file at {log_file}"
 
     with open(log_file, "r") as f:
         f.seek(0, 2)  # Seek @ EOF
@@ -442,9 +442,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             "legend": {
                 "height": "40",
                 "width": "22",
-                "href": layer.ows_url +
-                "?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=" +
-                quote(layer.service_typename, safe=''),
+                "href": f"{layer.ows_url}?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer={quote(layer.service_typename, safe='')}",
                 "format": "image/png"
             },
             "name": style.name
@@ -467,12 +465,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     ]
 
     # Add required parameters for GXP lazy-loading
-    attribution = "%s %s" % (layer.owner.first_name,
-                             layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
+    attribution = f"{layer.owner.first_name} {layer.owner.last_name}" if layer.owner.first_name or layer.owner.last_name else str(
         layer.owner)
     srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
     srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
-    config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
+    config["attribution"] = f"<span class='gx-attribution-title'>{attribution}</span>"
     config["format"] = getattr(
         settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
     config["title"] = layer.title
@@ -560,7 +557,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
                     e = dlxml.fromstring(wms_capabilities)
                     for atype in e.findall(
-                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                            f"./[wms:Name='{layer.alternate}']/wms:Dimension[@name='time']", namespaces):
                         dim_name = atype.get('name')
                         if dim_name:
                             dim_name = str(dim_name).lower()
@@ -634,7 +631,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 "remote": True,
                 "url": service.service_url,
                 "name": service.name,
-                "title": "[R] %s" % service.title}
+                "title": f"[R] {service.title}"}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
@@ -928,7 +925,7 @@ def layer_metadata(
                 "remote": True,
                 "url": service.service_url,
                 "name": service.name,
-                "title": "[R] %s" % service.title}
+                "title": f"[R] {service.title}"}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
@@ -1050,9 +1047,8 @@ def layer_metadata(
                         if len(tkl) > 0:
                             tkl_ids = ",".join(
                                 map(str, tkl.values_list('id', flat=True)))
-                            tkeywords_list += "," + \
-                                tkl_ids if len(
-                                    tkeywords_list) > 0 else tkl_ids
+                            tkeywords_list += f",{tkl_ids}" if len(
+                                tkeywords_list) > 0 else tkl_ids
                 except Exception:
                     tb = traceback.format_exc()
                     logger.error(tb)
@@ -1100,7 +1096,7 @@ def layer_metadata(
 
         new_category = None
         if category_form and 'category_choice_field' in category_form.cleaned_data and\
-        category_form.cleaned_data['category_choice_field']:
+                category_form.cleaned_data['category_choice_field']:
             new_category = TopicCategory.objects.get(
                 id=int(category_form.cleaned_data['category_choice_field']))
 
@@ -1384,7 +1380,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         })
     if (request.method == 'POST'):
         try:
-            logger.debug('Deleting Layer {0}'.format(layer))
+            logger.debug(f'Deleting Layer {layer}')
             with transaction.atomic():
                 Layer.objects.filter(id=layer.id).delete()
         except IntegrityError:
@@ -1669,12 +1665,12 @@ def batch_permissions(request, model):
             users_usernames = [_data['user'].username, ] if _data['user'] else None
             groups_names = [_data['group'].name, ] if _data['group'] else None
             if users_usernames and 'AnonymousUser' in users_usernames and \
-            (not groups_names or 'anonymous' not in groups_names):
+                    (not groups_names or 'anonymous' not in groups_names):
                 if not groups_names:
                     groups_names = []
                 groups_names.append('anonymous')
             if groups_names and 'anonymous' in groups_names and \
-            (not users_usernames or 'AnonymousUser' not in users_usernames):
+                    (not users_usernames or 'AnonymousUser' not in users_usernames):
                 if not users_usernames:
                     users_usernames = []
                 users_usernames.append('AnonymousUser')

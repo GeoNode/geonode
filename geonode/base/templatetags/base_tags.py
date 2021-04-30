@@ -320,7 +320,7 @@ def get_context_resourcetype(context):
     resource_types = ['layers', 'maps', 'documents', 'search', 'people',
                       'groups/categories', 'groups']
     for resource_type in resource_types:
-        if "/{0}/".format(resource_type) in c_path:
+        if f"/{resource_type}/" in c_path:
             return resource_type
     return 'error'
 
@@ -380,7 +380,7 @@ def display_edit_request_button(resource, user, perms):
             _owner_set == set(['change_resourcebase_permissions', 'publish_resourcebase'])
 
     if not _has_owner_his_permissions() and \
-    (user.is_superuser or resource.owner.pk == user.pk):
+            (user.is_superuser or resource.owner.pk == user.pk):
         return True
     return False
 

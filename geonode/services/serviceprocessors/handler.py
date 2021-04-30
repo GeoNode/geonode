@@ -51,7 +51,7 @@ def get_service_handler(base_url, proxy_base=None, service_type=enumerations.AUT
         else:
             to_check = (k for k, v in handlers.items() if v["OWS"])
         for type_ in to_check:
-            logger.debug("Checking {}...".format(type_))
+            logger.debug(f"Checking {type_}...")
             try:
                 service = get_service_handler(base_url, type_)
             except Exception:
@@ -59,14 +59,13 @@ def get_service_handler(base_url, proxy_base=None, service_type=enumerations.AUT
             else:
                 break
         else:
-            raise RuntimeError("Could not parse service {!r} with any of the "
-                               "available service handlers".format(base_url))
+            raise RuntimeError(f"Could not parse service {base_url!r} with any of the available service handlers")
     else:
         handler = handlers.get(service_type, {}).get("handler")
         try:
             service = handler(base_url)
         except Exception:
             logger.exception(
-                msg="Could not parse service {!r}".format(base_url))
+                msg=f"Could not parse service {base_url!r}")
             raise
     return service

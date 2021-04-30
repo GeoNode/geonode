@@ -69,7 +69,7 @@ def create_gn_layer(workspace, datastore, name, title, owner_name):
         workspace=workspace.name,
         store=datastore.name,
         storeType='dataStore',
-        alternate='%s:%s' % (workspace.name, name),
+        alternate=f'{workspace.name}:{name}',
         title=title,
         owner=owner,
         uuid=str(uuid.uuid4()),
@@ -118,7 +118,7 @@ def get_attributes(geometry_type, json_attrs=None):
     lattrs = []
     gattr = []
     gattr.append('the_geom')
-    gattr.append('com.vividsolutions.jts.geom.%s' % geometry_type)
+    gattr.append(f'com.vividsolutions.jts.geom.{geometry_type}')
     gattr.append({'nillable': False})
     lattrs.append(gattr)
     if json_attrs:
@@ -128,17 +128,17 @@ def get_attributes(geometry_type, json_attrs=None):
             attr_name = slugify(jattr[0])
             attr_type = jattr[1].lower()
             if len(attr_name) == 0:
-                msg = 'You must provide an attribute name for attribute of type %s' % (attr_type)
+                msg = f'You must provide an attribute name for attribute of type {attr_type}'
                 logger.error(msg)
                 raise GeoNodeException(msg)
             if attr_type not in ('float', 'date', 'string', 'integer'):
-                msg = '%s is not a valid type for attribute %s' % (attr_type, attr_name)
+                msg = f'{attr_type} is not a valid type for attribute {attr_name}'
                 logger.error(msg)
                 raise GeoNodeException(msg)
             if attr_type == 'date':
-                attr_type = 'java.util.%s' % attr_type[:1].upper() + attr_type[1:]
+                attr_type = f"java.util.{attr_type[:1].upper()}{attr_type[1:]}"
             else:
-                attr_type = 'java.lang.%s' % attr_type[:1].upper() + attr_type[1:]
+                attr_type = f"java.lang.{attr_type[:1].upper()}{attr_type[1:]}"
             lattr.append(attr_name)
             lattr.append(attr_type)
             lattr.append({'nillable': True})
@@ -180,7 +180,7 @@ def create_gs_layer(name, title, geometry_type, attributes=None):
     resources = datastore.get_resources()
     for resource in resources:
         if resource.name == name:
-            msg = "There is already a layer named %s in %s" % (name, workspace)
+            msg = f"There is already a layer named {name} in {workspace}"
             logger.error(msg)
             raise GeoNodeException(msg)
 
@@ -211,14 +211,13 @@ def create_gs_layer(name, title, geometry_type, attributes=None):
         minx=BBOX[0], maxx=BBOX[1], miny=BBOX[2], maxy=BBOX[3],
         attributes=attributes_block)
 
-    url = ('%s/workspaces/%s/datastores/%s/featuretypes'
-           % (ogc_server_settings.rest, workspace.name, datastore.name))
+    url = f'{ogc_server_settings.rest}/workspaces/{workspace.name}/datastores/{datastore.name}/featuretypes'
     headers = {'Content-Type': 'application/xml'}
     _user, _password = ogc_server_settings.credentials
     req = requests.post(url, data=xml, headers=headers, auth=(_user, _password))
     if req.status_code != 201:
-        logger.error('Request status code was: %s' % req.status_code)
-        logger.error('Response was: %s' % req.text)
-        raise Exception("Layer could not be created in GeoServer {}".format(req.text))
+        logger.error(f'Request status code was: {req.status_code}')
+        logger.error(f'Response was: {req.text}')
+        raise Exception(f"Layer could not be created in GeoServer {req.text}")
 
     return workspace, datastore

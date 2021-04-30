@@ -82,7 +82,7 @@ OWNER_PERMISSIONS = [
 
 logger = logging.getLogger('geonode.layers.utils')
 
-_separator = '\n' + ('-' * 100) + '\n'
+_separator = f"\n{'-' * 100}\n"
 
 
 def _clean_string(
@@ -126,8 +126,7 @@ def get_files(filename):
     try:
         filename.encode('ascii')
     except UnicodeEncodeError:
-        msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." \
-            % os.path.basename(filename).encode('UTF-8', 'strict')
+        msg = f"Please use only characters from the english alphabet for the filename. '{os.path.basename(filename).encode('UTF-8', 'strict')}' is not yet supported."
         raise GeoNodeException(msg)
 
     # Let's unzip the filname in case it is a ZIP file
@@ -153,8 +152,7 @@ def get_files(filename):
 
     # Make sure the file exists.
     if not os.path.exists(filename):
-        msg = ('Could not open %s. Make sure you are using a '
-               'valid file' % filename)
+        msg = f'Could not open {filename}. Make sure you are using a valid file'
         logger.debug(msg)
         raise GeoNodeException(msg)
 
@@ -170,7 +168,7 @@ def get_files(filename):
             if len(matches) == 0:
                 msg = ('Expected helper file %s does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
-                       '%s') % (base_name + "." + ext,
+                       '%s') % (f"{base_name}.{ext}",
                                 list(required_extensions.keys()))
                 raise GeoNodeException(msg)
             elif len(matches) > 1:
@@ -180,7 +178,7 @@ def get_files(filename):
             else:
                 files[ext] = matches[0]
 
-        matches = glob.glob(glob_name + ".[pP][rR][jJ]")
+        matches = glob.glob(f"{glob_name}.[pP][rR][jJ]")
         if len(matches) == 1:
             files['prj'] = matches[0]
         elif len(matches) > 1:
@@ -193,11 +191,11 @@ def get_files(filename):
 
     # Only for GeoServer
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        matches = glob.glob(os.path.dirname(glob_name) + ".[sS][lL][dD]")
+        matches = glob.glob(f"{os.path.dirname(glob_name)}.[sS][lL][dD]")
         if len(matches) == 1:
             files['sld'] = matches[0]
         else:
-            matches = glob.glob(glob_name + ".[sS][lL][dD]")
+            matches = glob.glob(f"{glob_name}.[sS][lL][dD]")
             if len(matches) == 1:
                 files['sld'] = matches[0]
             elif len(matches) > 1:
@@ -205,12 +203,12 @@ def get_files(filename):
                        'distinct by spelling and not just case.') % filename
                 raise GeoNodeException(msg)
 
-    matches = glob.glob(glob_name + ".[xX][mM][lL]")
+    matches = glob.glob(f"{glob_name}.[xX][mM][lL]")
 
     # shapefile XML metadata is sometimes named base_name.shp.xml
     # try looking for filename.xml if base_name.xml does not exist
     if len(matches) == 0:
-        matches = glob.glob(filename + ".[xX][mM][lL]")
+        matches = glob.glob(f"{filename}.[xX][mM][lL]")
 
     if len(matches) == 1:
         files['xml'] = matches[0]
@@ -252,7 +250,7 @@ def layer_type(filename):
     elif extension.lower() in cov_exts:
         return 'raster'
     else:
-        msg = ('Saving of extension [%s] is not implemented' % extension)
+        msg = f'Saving of extension [{extension}] is not implemented'
         raise GeoNodeException(msg)
 
 
@@ -265,7 +263,7 @@ def get_valid_name(layer_name):
     while Layer.objects.filter(name=proposed_name).exists():
         possible_chars = string.ascii_lowercase + string.digits
         suffix = "".join([choice(possible_chars) for i in range(4)])
-        proposed_name = '%s_%s' % (name, suffix)
+        proposed_name = f'{name}_{suffix}'
         logger.debug('Requested name already used; adjusting name '
                      '[%s] => [%s]', layer_name, proposed_name)
 
@@ -327,7 +325,7 @@ def get_resolution(filename):
         gtif = gdal.Open(filename)
         gt = gtif.GetGeoTransform()
         __, resx, __, __, __, resy = gt
-        resolution = '%s %s' % (resx, resy)
+        resolution = f'{resx} {resy}'
         return resolution
     except Exception:
         return None
@@ -402,7 +400,7 @@ def get_bbox(filename):
     except Exception:
         pass
 
-    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
+    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, f"EPSG:{str(srid)}"]
 
 
 @transaction.atomic
@@ -478,7 +476,7 @@ def file_upload(filename,
                 absolute_base_file = None
 
             if not absolute_base_file or \
-            os.path.splitext(absolute_base_file)[1].lower() != '.shp':
+                    os.path.splitext(absolute_base_file)[1].lower() != '.shp':
                 raise Exception(
                     _("You are attempting to replace a vector layer with an unknown format."))
             else:
@@ -505,7 +503,7 @@ def file_upload(filename,
                                 that is consistent with the file you are trying to replace."))
                 except Exception as e:
                     raise Exception(
-                        _("Some error occurred while trying to access the uploaded schema: %s" % str(e)))
+                        _(f"Some error occurred while trying to access the uploaded schema: {str(e)}"))
 
     # Set a default title that looks nice ...
     if title is None:
@@ -550,8 +548,7 @@ def file_upload(filename,
         with open(fn, 'rb') as f:
             upload_session.layerfile_set.create(
                 name=type_name, file=File(
-                    f, name='%s.%s' %
-                    (assigned_name or valid_name, type_name)))
+                    f, name=f'{assigned_name or valid_name}.{type_name}'))
             # save the system assigned name for the remaining files
             if not assigned_name:
                 the_file = upload_session.layerfile_set.all()[0].file.name
@@ -795,8 +792,7 @@ def upload(incoming, user=None, overwrite=False,
             potential_files.append((basename, filename))
 
     elif not os.path.isdir(incoming):
-        msg = ('Please pass a filename or a directory name as the "incoming" '
-               'parameter, instead of %s: %s' % (incoming, type(incoming)))
+        msg = f'Please pass a filename or a directory name as the "incoming" parameter, instead of {incoming}: {type(incoming)}'
         logger.exception(msg)
         raise GeoNodeException(msg)
     else:
@@ -914,13 +910,13 @@ def delete_orphaned_layers():
 
     for filename in files:
         if LayerFile.objects.filter(file__icontains=filename).count() == 0:
-            logger.debug("Deleting orphaned layer file " + filename)
+            logger.debug(f"Deleting orphaned layer file {filename}")
             try:
                 storage.delete(os.path.join("layers", filename))
                 deleted.append(filename)
             except NotImplementedError as e:
                 logger.error(
-                    "Failed to delete orphaned layer file '{}': {}".format(filename, e))
+                    f"Failed to delete orphaned layer file '{filename}': {e}")
 
     return deleted
 
@@ -946,9 +942,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
             resources = Layer.objects.filter(Q(title__in=resources_names) | Q(name__in=resources_names))
         except Layer.DoesNotExist:
             logger.warning(
-                'No resources have been found with these names: %s.' % (
-                    ", ".join(resources_names)
-                )
+                f"No resources have been found with these names: {', '.join(resources_names)}."
             )
     if not resources:
         logger.warning("No resources have been found. No update operations have been executed.")
@@ -963,7 +957,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
                     permissions = READ_PERMISSIONS
                 else:
                     permissions = READ_PERMISSIONS + WRITE_PERMISSIONS \
-                                  + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
+                        + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
             elif permissions_name.lower() in ('write', 'w'):
                 if not delete_flag:
                     permissions = READ_PERMISSIONS + WRITE_PERMISSIONS
@@ -977,7 +971,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
             elif permissions_name.lower() in ('owner', 'o'):
                 if not delete_flag:
                     permissions = READ_PERMISSIONS + WRITE_PERMISSIONS \
-                                  + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
+                        + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
                 else:
                     permissions = OWNER_PERMISSIONS
             if not permissions:
@@ -1000,8 +994,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                 users.append(user)
                             except User.DoesNotExist:
                                 logger.warning(
-                                    'The user {} does not exists. '
-                                    'It has been skipped.'.format(username)
+                                    f'The user {username} does not exists. It has been skipped.'
                                 )
                     # GROUPS
                     groups = []
@@ -1012,8 +1005,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                 groups.append(group)
                             except Group.DoesNotExist:
                                 logger.warning(
-                                    'The group {} does not exists. '
-                                    'It has been skipped.'.format(group_name)
+                                    f'The group {group_name} does not exists. It has been skipped.'
                                 )
                     if not users and not groups:
                         logger.error(
@@ -1065,15 +1057,11 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                             perm_spec["users"][_user] = list(u_perms_set)
                                         else:
                                             logger.warning(
-                                                "The user %s does not have "
-                                                "any permission on the layer %s. "
-                                                "It has been skipped." % (_user.username, resource.title)
+                                                f"The user {_user.username} does not have any permission on the layer {resource.title}. It has been skipped."
                                             )
                                     else:
                                         logger.warning(
-                                            "Warning! - The user %s is the layer %s owner, "
-                                            "so its permissions can't be changed. "
-                                            "It has been skipped." % (_user.username, resource.title)
+                                            f"Warning! - The user {_user.username} is the layer {resource.title} owner, so its permissions can't be changed. It has been skipped."
                                         )
                             for g in groups:
                                 _group = g
@@ -1106,8 +1094,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                         perm_spec["groups"][g] = list(g_perms_set)
                                     else:
                                         logger.warning(
-                                            "The group %s does not have any permission on the layer %s. "
-                                            "It has been skipped." % (g.name, resource.title)
+                                            f"The group {g.name} does not have any permission on the layer {resource.title}. It has been skipped."
                                         )
                             # Set final permissions
                             resource.set_permissions(perm_spec)

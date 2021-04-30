@@ -110,8 +110,7 @@ def validate_django_settings():
 
     if not default_ogc_backend['BACKEND'] == qgis_server.BACKEND_PACKAGE:
         raise ImproperlyConfigured(
-            "OGC_SERVER['default']['BACKEND'] should be set to "
-            "{package}.".format(package=qgis_server.BACKEND_PACKAGE))
+            f"OGC_SERVER['default']['BACKEND'] should be set to {qgis_server.BACKEND_PACKAGE}.")
 
     return True
 
@@ -225,8 +224,7 @@ def tile_url(layer, z, x, y, style=None, internal=True):
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except QGISServerLayer.DoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer {0}'.format(
-            layer.name)
+        msg = f'No QGIS Server Layer for existing layer {layer.name}'
         logger.debug(msg)
         raise
 
@@ -301,13 +299,13 @@ def map_thumbnail_url(instance, bbox=None, internal=True):
     try:
         qgis_map = QGISServerMap.objects.get(map=instance)
     except QGISServerMap.DoesNotExist:
-        msg = 'No QGIS Server Map for existing map {0}'.format(instance.title)
+        msg = f'No QGIS Server Map for existing map {instance.title}'
         logger.debug(msg)
         raise
 
     qgis_project = qgis_map.qgis_project_path
     if not os.path.exists(qgis_project):
-        msg = 'Map project not found for {0}'.format(qgis_project)
+        msg = f'Map project not found for {qgis_project}'
         logger.debug(msg)
         raise ValueError(msg)
 
@@ -342,8 +340,7 @@ def layer_thumbnail_url(instance, style=None, bbox=None, internal=True):
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=instance)
     except QGISServerLayer.DoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer {0}'.format(
-            instance.name)
+        msg = f'No QGIS Server Layer for existing layer {instance.name}'
         logger.debug(msg)
         raise
 
@@ -448,7 +445,7 @@ def legend_url(layer, layertitle=False, style=None, internal=True):
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except QGISServerLayer.DoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer {0}'.format(layer.name)
+        msg = f'No QGIS Server Layer for existing layer {layer.name}'
         logger.debug(msg)
         raise
 
@@ -522,8 +519,7 @@ def qgs_url(layer, style=None, internal=True):
 
     json_layers = json.dumps(layers)
 
-    url_server = qgis_server_url + \
-        '?SERVICE=PROJECTDEFINITIONS&LAYERS=' + json_layers
+    url_server = f"{qgis_server_url}?SERVICE=PROJECTDEFINITIONS&LAYERS={json_layers}"
 
     return url_server
 
@@ -568,8 +564,7 @@ def qlr_url(layer, style=None, internal=True):
     }]
     json_layers = json.dumps(layers)
 
-    url_server = qgis_server_url + \
-        '?SERVICE=LAYERDEFINITIONS&LAYERS=' + json_layers
+    url_server = f"{qgis_server_url}?SERVICE=LAYERDEFINITIONS&LAYERS={json_layers}"
 
     return url_server
 
@@ -590,7 +585,7 @@ def wms_get_capabilities_url(layer=None, internal=True):
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except QGISServerLayer.DoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer {0}'.format(layer.name)
+        msg = f'No QGIS Server Layer for existing layer {layer.name}'
         logger.debug(msg)
         raise
 
@@ -628,7 +623,7 @@ def style_get_url(layer, style_name, internal=True):
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except QGISServerLayer.DoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer {0}'.format(layer.name)
+        msg = f'No QGIS Server Layer for existing layer {layer.name}'
         logger.debug(msg)
         raise
 
@@ -669,7 +664,7 @@ def style_add_url(layer, style_name, internal=True):
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except QGISServerLayer.DoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer {0}'.format(layer.name)
+        msg = f'No QGIS Server Layer for existing layer {layer.name}'
         logger.debug(msg)
         raise
 
@@ -710,7 +705,7 @@ def style_remove_url(layer, style_name, internal=True):
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except QGISServerLayer.DoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer {0}'.format(layer.name)
+        msg = f'No QGIS Server Layer for existing layer {layer.name}'
         logger.debug(msg)
         raise
 
@@ -748,7 +743,7 @@ def style_set_default_url(layer, style_name, internal=True):
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
     except QGISServerLayer.DoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer {0}'.format(layer.name)
+        msg = f'No QGIS Server Layer for existing layer {layer.name}'
         logger.debug(msg)
         raise
 
@@ -804,7 +799,7 @@ def style_list(layer, internal=True, generating_qgis_capabilities=False):
         try:
             qgis_layer = QGISServerLayer.objects.get(layer=layer)
         except QGISServerLayer.DoesNotExist:
-            msg = 'No QGIS Server Layer for existing layer {0}'.format(layer.name)
+            msg = f'No QGIS Server Layer for existing layer {layer.name}'
             logger.debug(msg)
             raise
 
@@ -866,7 +861,7 @@ def style_list(layer, internal=True, generating_qgis_capabilities=False):
 
         return styles_obj
     except Exception:
-        msg = 'No QGIS Style for existing layer {0}'.format(layer.name)
+        msg = f'No QGIS Style for existing layer {layer.name}'
         logger.debug(msg)
         raise
 
@@ -893,9 +888,7 @@ def create_qgis_project(
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
         files = qgis_layer.base_layer_path
         names = layer.name
-        logger.debug('File %s is exists: %s' % (
-            files, str(os.path.exists(files))
-        ))
+        logger.debug(f'File {files} is exists: {str(os.path.exists(files))}')
     elif isinstance(layer, list):
         qgis_layer = []
         for lyr in layer:
@@ -903,9 +896,7 @@ def create_qgis_project(
         files = [ql.base_layer_path for ql in qgis_layer]
 
         for fl in files:
-            logger.debug('File %s is exists: %s' % (
-                fl, str(os.path.exists(fl))
-            ))
+            logger.debug(f'File {fl} is exists: {str(os.path.exists(fl))}')
 
         files = ';'.join(files)
 
@@ -913,7 +904,7 @@ def create_qgis_project(
         names = ';'.join(names)
     else:
         raise ValueError(
-            'Unexpected argument layer: {0}'.format(layer))
+            f'Unexpected argument layer: {layer}')
 
     overwrite = str(overwrite).lower()
 
@@ -934,35 +925,35 @@ def delete_orphaned_qgis_server_layers():
     """Delete orphaned QGIS Server files."""
     layer_path = settings.QGIS_SERVER_CONFIG['layer_directory']
     if not os.path.exists(layer_path):
-        print("{path} not exists".format(path=layer_path))
+        print(f"{layer_path} not exists")
         return
     for filename in os.listdir(layer_path):
         basename, __ = os.path.splitext(filename)
         fn = os.path.join(layer_path, filename)
         if QGISServerLayer.objects.filter(
                 base_layer_path__icontains=basename).count() == 0:
-            print("Removing orphan layer file {}".format(fn))
+            print(f"Removing orphan layer file {fn}")
             try:
                 os.remove(fn)
             except OSError:
-                print("Could not delete file {}".format(fn))
+                print(f"Could not delete file {fn}")
 
 
 def delete_orphaned_qgis_server_caches():
     """Delete orphaned QGIS Server tile caches."""
     tiles_path = settings.QGIS_SERVER_CONFIG['tiles_directory']
     if not os.path.exists(tiles_path):
-        print("{path} not exists".format(path=tiles_path))
+        print(f"{tiles_path} not exists")
         return
     for basename in os.listdir(tiles_path):
         path = os.path.join(tiles_path, basename)
         if QGISServerLayer.objects.filter(
                 base_layer_path__icontains=basename).count() == 0:
-            print("Removing orphan layer file {}".format(path))
+            print(f"Removing orphan layer file {path}")
             try:
                 shutil.rmtree(path)
             except OSError:
-                print("Could not delete file {}".format(path))
+                print(f"Could not delete file {path}")
 
 
 def get_model_path(instance):
@@ -973,7 +964,4 @@ def get_model_path(instance):
     """
 
     model_type = ContentType.objects.get_for_model(instance)
-    return "{app_label}.{model_name}".format(
-        app_label=model_type.app_label,
-        model_name=model_type.model
-    )
+    return f"{model_type.app_label}.{model_type.model}"

@@ -74,7 +74,7 @@ class Catalogue(CatalogueServiceWeb):
 
         upurl = urlparse(self.url)
 
-        self.base = '%s://%s/' % (upurl.scheme, upurl.netloc)
+        self.base = f'{upurl.scheme}://{upurl.netloc}/'
 
         # User and Password are optional
         if 'USER' in kwargs:
@@ -91,7 +91,7 @@ class Catalogue(CatalogueServiceWeb):
 
     def login(self):
         if self.type == 'geonetwork':
-            url = "%sgeonetwork/srv/en/xml.user.login" % self.base
+            url = f"{self.base}geonetwork/srv/en/xml.user.login"
             headers = {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Accept": "text/plain"
@@ -111,7 +111,7 @@ class Catalogue(CatalogueServiceWeb):
 
     def logout(self):
         if self.type == 'geonetwork':
-            url = "%sgeonetwork/srv/en/xml.user.logout" % self.base
+            url = f"{self.base}geonetwork/srv/en/xml.user.logout"
             request = Request(url)
             response = self.opener.open(request)  # noqa
             self.connected = False
@@ -139,14 +139,7 @@ class Catalogue(CatalogueServiceWeb):
             return None
 
     def url_for_uuid(self, uuid, outputschema):
-        return "%s?%s" % (self.url, urlencode({
-            "request": "GetRecordById",
-            "service": "CSW",
-            "version": "2.0.2",
-            "id": uuid,
-            "outputschema": outputschema,
-            "elementsetname": "full"
-        }))
+        return f"{self.url}?{urlencode({'request': 'GetRecordById', 'service': 'CSW', 'version': '2.0.2', 'id': uuid, 'outputschema': outputschema, 'elementsetname': 'full'})}"
 
     def urls_for_uuid(self, uuid):
         """returns list of valid GetRecordById URLs for a given record"""
@@ -281,11 +274,10 @@ class Catalogue(CatalogueServiceWeb):
                     if state is not True:
                         continue
                     op_id = self._operation_ids[op.lower()]
-                    priv_params['_%s_%s' % (group_id, op_id)] = 'on'
+                    priv_params[f'_{group_id}_{op_id}'] = 'on'
 
             # update all privileges
-            update_privs_url = "%sgeonetwork/srv/en/metadata.admin?%s" % (
-                self.base, urlencode(priv_params))
+            update_privs_url = f"{self.base}geonetwork/srv/en/metadata.admin?{urlencode(priv_params)}"
             request = Request(update_privs_url)
             response = self.urlopen(request)
 
@@ -297,8 +289,7 @@ class Catalogue(CatalogueServiceWeb):
         groups.
         """
         # get the ids of the groups.
-        get_groups_url = "%sgeonetwork/srv/en/xml.info?%s" % (
-            self.base, urlencode({'type': 'groups'}))
+        get_groups_url = f"{self.base}geonetwork/srv/en/xml.info?{urlencode({'type': 'groups'})}"
         request = Request(get_groups_url)
         response = self.urlopen(request)
         doc = dlxml.fromstring(response.read())
@@ -313,8 +304,7 @@ class Catalogue(CatalogueServiceWeb):
         'operations' (privileges)
         """
         # get the ids of the operations
-        get_ops_url = "%sgeonetwork/srv/en/xml.info?%s" % (
-            self.base, urlencode({'type': 'operations'}))
+        get_ops_url = f"{self.base}geonetwork/srv/en/xml.info?{urlencode({'type': 'operations'})}"
         request = Request(get_ops_url)
         response = self.urlopen(request)
         doc = dlxml.fromstring(response.read())

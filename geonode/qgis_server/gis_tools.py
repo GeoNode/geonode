@@ -52,13 +52,7 @@ def set_attributes(layer, overwrite=False):
 
         qgis_server = geonode_config.QGIS_SERVER_CONFIG['qgis_server_url']
         basename, _ = splitext(qgis_layer.base_layer_path)
-        dft_url = qgis_server + '?' + urlencode({
-            'MAP': basename + '.qgs',
-            'SERVICE': 'WFS',
-            'VERSION': '1.0.0',
-            'REQUEST': 'DescribeFeatureType',
-            'LAYER': layer_name
-        })
+        dft_url = f"{qgis_server}?{urlencode({'MAP': f'{basename}.qgs', 'SERVICE': 'WFS', 'VERSION': '1.0.0', 'REQUEST': 'DescribeFeatureType', 'LAYER': layer_name})}"
 
         # noinspection PyBroadException
         try:

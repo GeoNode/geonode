@@ -218,7 +218,7 @@ def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
     """
 
     if isinstance(instance, Layer):
-        file_name = "layer-%s-thumb.png" % instance.uuid
+        file_name = f"layer-{instance.uuid}-thumb.png"
 
     elif isinstance(instance, Map):
         # if a Map is empty - nothing to do here
@@ -226,7 +226,7 @@ def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
             logger.debug(f"Thumbnail generation skipped - Map {instance.title} has no defined layers")
             return None
 
-        file_name = "map-%s-thumb.png" % instance.uuid
+        file_name = f"map-{instance.uuid}-thumb.png"
     else:
         raise ThumbnailError(
             "Thumbnail generation didn't recognize the provided instance: it's neither a Layer nor a Map."

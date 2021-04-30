@@ -48,12 +48,12 @@ def create_document_thumbnail(self, object_id):
     """
     Create thumbnail for a document.
     """
-    logger.debug("Generating thumbnail for document #{}.".format(object_id))
+    logger.debug(f"Generating thumbnail for document #{object_id}.")
 
     try:
         document = Document.objects.get(id=object_id)
     except Document.DoesNotExist:
-        logger.error("Document #{} does not exist.".format(object_id))
+        logger.error(f"Document #{object_id} does not exist.")
         raise
 
     image_path = None
@@ -83,23 +83,23 @@ def create_document_thumbnail(self, object_id):
                     image_file = open(image_path, 'rb')
                 except Exception as e:
                     logger.debug(e)
-                    logger.debug("Failed to render document #{}".format(object_id))
+                    logger.debug(f"Failed to render document #{object_id}")
             else:
-                logger.debug("Failed to render document #{}".format(object_id))
+                logger.debug(f"Failed to render document #{object_id}")
         except ConversionError as e:
-            logger.debug("Could not convert document #{}: {}.".format(object_id, e))
+            logger.debug(f"Could not convert document #{object_id}: {e}.")
         except NotImplementedError as e:
-            logger.debug("Failed to render document #{}: {}".format(object_id, e))
+            logger.debug(f"Failed to render document #{object_id}: {e}")
 
     thumbnail_content = None
     try:
         try:
             thumbnail_content = generate_thumbnail_content(image_file)
         except Exception as e:
-            logger.error("Could not generate thumbnail, falling back to 'placeholder': {}".format(e))
+            logger.error(f"Could not generate thumbnail, falling back to 'placeholder': {e}")
             thumbnail_content = generate_thumbnail_content(document.find_placeholder())
     except Exception as e:
-        logger.error("Could not generate thumbnail: {}".format(e))
+        logger.error(f"Could not generate thumbnail: {e}")
         return
     finally:
         if image_file is not None:
@@ -109,10 +109,10 @@ def create_document_thumbnail(self, object_id):
             os.remove(image_path)
 
     if not thumbnail_content:
-        logger.warning("Thumbnail for document #{} empty.".format(object_id))
-    filename = 'document-{}-thumb.png'.format(document.uuid)
+        logger.warning(f"Thumbnail for document #{object_id} empty.")
+    filename = f'document-{document.uuid}-thumb.png'
     document.save_thumbnail(filename, thumbnail_content)
-    logger.debug("Thumbnail for document #{} created.".format(object_id))
+    logger.debug(f"Thumbnail for document #{object_id} created.")
 
 
 @app.task(

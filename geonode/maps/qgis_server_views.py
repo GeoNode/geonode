@@ -155,7 +155,7 @@ class MapCreateView(CreateView):
 
                         if access_token and ogc_server_url == service_url and \
                                 'access_token' not in service.base_url:
-                            url = '%s?access_token=%s' % (service.base_url, access_token)
+                            url = f'{service.base_url}?access_token={access_token}'
                         else:
                             url = service.base_url
                         map_layers = MapLayer(map=map_obj,
@@ -168,7 +168,7 @@ class MapCreateView(CreateView):
                                                   "remote": True,
                                                   "url": url,
                                                   "name": service.name,
-                                                  "title": "[R] %s" % service.title}))
+                                                  "title": f"[R] {service.title}"}))
                     else:
                         ogc_server_url = urlsplit(
                             ogc_server_settings.PUBLIC_LOCATION).netloc
@@ -176,8 +176,7 @@ class MapCreateView(CreateView):
 
                         if access_token and ogc_server_url == layer_url and \
                                 'access_token' not in layer.ows_url:
-                            url = layer.ows_url + '?access_token=' + \
-                                access_token
+                            url = f"{layer.ows_url}?access_token={access_token}"
                         else:
                             url = layer.ows_url
                         map_layers = MapLayer(
@@ -500,15 +499,13 @@ def map_download_qlr(request, mapid):
         })
 
     json_layers = json.dumps(map_layers)
-    url_server = settings.QGIS_SERVER_URL \
-        + '?SERVICE=LAYERDEFINITIONS&LAYERS=' + json_layers
+    url_server = f"{settings.QGIS_SERVER_URL}?SERVICE=LAYERDEFINITIONS&LAYERS={json_layers}"
     fwd_request = requests.get(url_server)
     response = HttpResponse(
         fwd_request.content,
         content_type="application/x-qgis-layer-definition",
         status=fwd_request.status_code)
-    response['Content-Disposition'] = 'attachment; filename=%s.qlr' \
-                                      % map_obj.title
+    response['Content-Disposition'] = f'attachment; filename={map_obj.title}.qlr'
 
     return response
 
@@ -548,8 +545,7 @@ def map_download_leaflet(request, mapid,
     response = HttpResponse(
         the_page.content, content_type="html",
         status=the_page.status_code)
-    response['Content-Disposition'] = 'attachment; filename=%s.html' \
-                                      % (map_obj.title,)
+    response['Content-Disposition'] = f'attachment; filename={map_obj.title}.html'
 
     return response
 
@@ -575,7 +571,7 @@ def set_thumbnail_map(request, mapid):
             _l = Layer.objects.get(typename=layer.name)
             layers[_l.name] = _l
         except Layer.DoesNotExist:
-            msg = 'No Layer found for typename: {0}'.format(layer.name)
+            msg = f'No Layer found for typename: {layer.name}'
             logger.debug(msg)
 
     if not layers:

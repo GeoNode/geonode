@@ -51,7 +51,7 @@ def sync_geonode_layers(ignore_errors,
     for layer in layers:
         try:
             count += 1
-            print("Syncing layer {}/{}: {}".format(count, layers_count, layer.name))
+            print(f"Syncing layer {count}/{layers_count}: {layer.name}")
             if updatepermissions:
                 print("Syncing permissions...")
                 # sync permissions in GeoFence

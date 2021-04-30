@@ -164,24 +164,24 @@ def save_step_view(req, session):
     form = LayerUploadForm(req.POST, req.FILES)
     if form.is_valid():
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-        logger.debug("valid_extensions: {}".format(form.cleaned_data["valid_extensions"]))
+        logger.debug(f"valid_extensions: {form.cleaned_data['valid_extensions']}")
         relevant_files = _select_relevant_files(
             form.cleaned_data["valid_extensions"],
             iter(req.FILES.values())
         )
-        logger.debug("relevant_files: {}".format(relevant_files))
+        logger.debug(f"relevant_files: {relevant_files}")
         _write_uploaded_files_to_disk(tempdir, relevant_files)
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
         name, ext = os.path.splitext(os.path.basename(base_file))
-        logger.debug('Name: {0}, ext: {1}'.format(name, ext))
-        logger.debug("base_file: {}".format(base_file))
+        logger.debug(f'Name: {name}, ext: {ext}')
+        logger.debug(f"base_file: {base_file}")
         scan_hint = get_scan_hint(form.cleaned_data["valid_extensions"])
         spatial_files = scan_file(
             base_file,
             scan_hint=scan_hint,
             charset=form.cleaned_data["charset"]
         )
-        logger.debug("spatial_files: {}".format(spatial_files))
+        logger.debug(f"spatial_files: {spatial_files}")
         import_session = save_step(
             req.user,
             name,
@@ -210,7 +210,7 @@ def save_step_view(req, session):
                                           form.cleaned_data["charset"],
                                           tempdir=tempdir)
 
-        _log('provided sld is %s' % sld)
+        _log(f'provided sld is {sld}')
         # upload_type = get_upload_type(base_file)
         upload_session = UploaderSession(
             tempdir=tempdir,
@@ -307,7 +307,7 @@ def srs_step_view(request, upload_session):
             {'status': 'error',
              'success': False,
              'id': upload_session.import_session.id,
-             'error_msg': "%s" % error,
+             'error_msg': f"{error}",
              }
         )
     else:
@@ -401,7 +401,7 @@ def csv_step_view(request, upload_session):
                 {'status': 'error',
                  'success': False,
                  'id': upload_session.import_session.id,
-                 'error_msg': "%s" % error,
+                 'error_msg': f"{error}",
                  }
             )
         else:
@@ -593,7 +593,7 @@ def final_step_view(req, upload_session):
                 return json_response({'status': 'pending',
                                       'success': True,
                                       'id': req.GET['id'],
-                                      'redirect_to': '/upload/final' + "?id=%s%s" % (req.GET['id'], force_ajax)})
+                                      'redirect_to': f"/upload/final?id={req.GET['id']}{force_ajax}"})
     else:
         # url = reverse('layer_browse') + '?limit={}'.format(settings.CLIENT_RESULTS_LIMIT)
         url = "upload/layer_upload_invalid.html"
@@ -734,16 +734,8 @@ class UploadFileCreateView(CreateView):
         data = [
             {
                 'name': f.name,
-                'url': settings.MEDIA_URL +
-                "uploads/" +
-                f.name.replace(
-                    " ",
-                    "_"),
-                'thumbnail_url': settings.MEDIA_URL +
-                "pictures/" +
-                f.name.replace(
-                    " ",
-                    "_"),
+                'url': f"{settings.MEDIA_URL}uploads/{f.name.replace(' ', '_')}",
+                'thumbnail_url': f"{settings.MEDIA_URL}pictures/{f.name.replace(' ', '_')}",
                 'delete_url': reverse(
                     'data_upload_remove',
                     args=[

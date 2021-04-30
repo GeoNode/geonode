@@ -107,8 +107,7 @@ def WebMapService(url,
                                                          username=username, password=password,
                                                          timeout=timeout, headers=headers))
     raise NotImplementedError(
-        'The WMS version (%s) you requested is not implemented. Please use 1.1.1 or 1.3.0.' %
-        version)
+        f'The WMS version ({version}) you requested is not implemented. Please use 1.1.1 or 1.3.0.')
 
 
 class WmsServiceHandler(base.ServiceHandlerBase,
@@ -221,7 +220,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
         """
         layer_meta = self.get_resource(resource_id)
-        logger.debug("layer_meta: {}".format(layer_meta))
+        logger.debug(f"layer_meta: {layer_meta}")
         if self.indexing_method == CASCADED:
             logger.debug("About to import cascaded layer...")
             geoserver_resource = self._import_cascaded_resource(layer_meta)
@@ -238,7 +237,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         )
         if existance_test_qs.exists():
             raise RuntimeError(
-                "Resource {!r} has already been harvested".format(resource_id))
+                f"Resource {resource_id!r} has already been harvested")
         resource_fields["keywords"] = keywords
         resource_fields["is_approved"] = True
         resource_fields["is_published"] = True
@@ -311,9 +310,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 "fontAntiAliasing:true;fontSize:12;forceLabels:on")
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
-        legend_url = "{}{}{}".format(
-            geonode_layer.remote_service.service_url, _q_separator, kvp)
-        logger.debug("legend_url: {}".format(legend_url))
+        legend_url = f"{geonode_layer.remote_service.service_url}{_q_separator}{kvp}"
+        logger.debug(f"legend_url: {legend_url}")
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
             url=legend_url,
@@ -329,7 +327,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def _create_layer_service_link(self, geonode_layer):
         ogc_wms_url = geonode_layer.ows_url
-        ogc_wms_name = 'OGC WMS: %s Service' % geonode_layer.store
+        ogc_wms_name = f'OGC WMS: {geonode_layer.store} Service'
         ogc_wms_link_type = 'OGC:WMS'
         if Link.objects.filter(resource=geonode_layer.resourcebase_ptr,
                                name=ogc_wms_name,
@@ -351,13 +349,13 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         workspace = geoserver_resource.workspace.name if hasattr(geoserver_resource, 'workspace') else None
         store = geoserver_resource.store if hasattr(geoserver_resource, 'store') else None
         bbox = utils.decimal_encode(geoserver_resource.native_bbox) if hasattr(geoserver_resource, 'native_bbox') else \
-        utils.decimal_encode(geoserver_resource.boundingBox)
+            utils.decimal_encode(geoserver_resource.boundingBox)
         return {
             "name": name,
             "workspace": workspace or "remoteWorkspace",
             "store": store.name if store and hasattr(store, 'name') else self.name,
-            "typename": "{}:{}".format(workspace, name) if workspace not in name else name,
-            "alternate": "{}:{}".format(workspace, name) if workspace not in name else name,
+            "typename": f"{workspace}:{name}" if workspace not in name else name,
+            "alternate": f"{workspace}:{name}" if workspace not in name else name,
             "storeType": "remoteStore",
             "title": geoserver_resource.title,
             "abstract": geoserver_resource.abstract,
@@ -398,8 +396,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         workspace = base.get_geoserver_cascading_workspace(create=create)
         cat = workspace.catalog
         store = cat.get_store(self.name, workspace=workspace)
-        logger.debug("name: {}".format(self.name))
-        logger.debug("store: {}".format(store))
+        logger.debug(f"name: {self.name}")
+        logger.debug(f"store: {store}")
         if store is None and create:  # store did not exist. Create it
             store = cat.create_wmsstore(
                 name=self.name,
@@ -429,12 +427,10 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             layer_resource.projection_policy = "REPROJECT_TO_DECLARED"
             cat.save(layer_resource)
             if layer_resource is None:
-                raise RuntimeError("Could not cascade resource {!r} through "
-                                   "geoserver".format(layer_meta))
+                raise RuntimeError(f"Could not cascade resource {layer_meta!r} through geoserver")
             layer_resource = layer_resource.resource
         else:
-            logger.debug("Layer {} is already present. Skipping...".format(
-                layer_meta.id))
+            logger.debug(f"Layer {layer_meta.id} is already present. Skipping...")
         layer_resource.refresh()
         return layer_resource
 
@@ -520,7 +516,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         )
         if existance_test_qs.exists():
             raise RuntimeError(
-                "Resource {!r} has already been harvested".format(resource_id))
+                f"Resource {resource_id!r} has already been harvested")
         resource_fields["keywords"] = keywords
         resource_fields["is_approved"] = True
         resource_fields["is_published"] = True
@@ -537,9 +533,9 @@ class GeoNodeServiceHandler(WmsServiceHandler):
 
     def _probe_geonode_wms(self, raw_url):
         url = urlsplit(raw_url)
-        base_url = '%s://%s/' % (url.scheme, url.netloc)
+        base_url = f'{url.scheme}://{url.netloc}/'
         response = requests.get(
-            '%sapi/ows_endpoints/' % base_url, {},
+            f'{base_url}api/ows_endpoints/', {},
             timeout=30,
             verify=False)
         content = response.content
@@ -554,21 +550,21 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                     data = _json_obj['data']
                     for ows_endpoint in data:
                         if 'OGC:OWS' == ows_endpoint['type']:
-                            return ows_endpoint['url'] + '?' + url.query
+                            return f"{ows_endpoint['url']}?{url.query}"
             except Exception:
                 pass
 
         # OLD-style not OWS Enabled GeoNode
-        _url = "%s://%s/geoserver/ows" % (url.scheme, url.netloc)
+        _url = f"{url.scheme}://{url.netloc}/geoserver/ows"
         return _url
 
     def _enrich_layer_metadata(self, geonode_layer):
         workspace, layername = geonode_layer.name.split(
             ":") if ":" in geonode_layer.name else (None, geonode_layer.name)
         url = urlsplit(self.url)
-        base_url = '%s://%s/' % (url.scheme, url.netloc)
+        base_url = f'{url.scheme}://{url.netloc}/'
         response = requests.get(
-            '%sapi/layers/?name=%s' % (base_url, layername), {},
+            f'{base_url}api/layers/?name={layername}', {},
             timeout=10,
             verify=False)
         content = response.content
@@ -600,20 +596,19 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                             thumbnail_remote_url = _layer["thumbnail_url"]
                             _url = urlsplit(thumbnail_remote_url)
                             if not _url.scheme:
-                                thumbnail_remote_url = "{}{}".format(
-                                    geonode_layer.remote_service.service_url, _url.path)
+                                thumbnail_remote_url = f"{geonode_layer.remote_service.service_url}{_url.path}"
                             resp, image = http_client.request(
                                 thumbnail_remote_url)
                             if 'ServiceException' in str(image) or \
                                resp.status_code < 200 or resp.status_code > 299:
-                                msg = 'Unable to obtain thumbnail: %s' % image
+                                msg = f'Unable to obtain thumbnail: {image}'
                                 logger.debug(msg)
 
                                 # Replace error message with None.
                                 image = None
 
                             if image is not None:
-                                thumbnail_name = 'layer-%s-thumb.png' % geonode_layer.uuid
+                                thumbnail_name = f'layer-{geonode_layer.uuid}-thumb.png'
                                 geonode_layer.save_thumbnail(
                                     thumbnail_name, image=image)
                             else:

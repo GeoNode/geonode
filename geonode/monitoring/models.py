@@ -84,7 +84,7 @@ class Host(models.Model):
     active = models.BooleanField(null=False, blank=False, default=True)
 
     def __str__(self):
-        return 'Host: {} ({})'.format(self.name, self.ip)
+        return f'Host: {self.name} ({self.ip})'
 
 
 class ServiceType(models.Model):
@@ -110,7 +110,7 @@ class ServiceType(models.Model):
         choices=TYPES)
 
     def __str__(self):
-        return 'Service Type: {}'.format(self.name)
+        return f'Service Type: {self.name}'
 
     @property
     def is_system_monitor(self):
@@ -137,7 +137,7 @@ class Service(models.Model):
     url = models.URLField(null=True, blank=True, default='')
 
     def __str__(self):
-        return 'Service: {}@{}'.format(self.name, self.host.name)
+        return f'Service: {self.name}@{self.host.name}'
 
     def get_metrics(self):
         return [m.metric for m in self.service_type.metric.all()]
@@ -192,7 +192,7 @@ class MonitoredResource(models.Model):
         unique_together = (('name', 'type',),)
 
     def __str__(self):
-        return 'Monitored Resource: {} {}'.format(self.name, self.type)
+        return f'Monitored Resource: {self.name} {self.type}'
 
     @classmethod
     def get(cls, resource_type, resource_name, or_create=False):
@@ -283,7 +283,7 @@ class Metric(models.Model):
         return self.AGGREGATE_MAP[self.type]
 
     def __unicode__(self):
-        return "Metric: {}".format(self.name)
+        return f"Metric: {self.name}"
 
     @property
     def is_rate(self):
@@ -321,7 +321,7 @@ class ServiceTypeMetric(models.Model):
     metric = models.ForeignKey(Metric, related_name='service_type', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{} - {}'.format(self.service_type, self.metric)
+        return f'{self.service_type} - {self.metric}'
 
 
 class EventType(models.Model):
@@ -347,7 +347,7 @@ class EventType(models.Model):
     EVENT_OTHER = 'other'  # non-ows event
     EVENT_ALL = 'all'  # all events - baseline: ows + non-ows
 
-    EVENT_TYPES = list(zip(['OWS:{}'.format(ows) for ows in _ows_types], _ows_types)) + \
+    EVENT_TYPES = list(zip([f'OWS:{ows}' for ows in _ows_types], _ows_types)) + \
         [(EVENT_OTHER, _("Not OWS"))] +\
         [(EVENT_OWS, _("Any OWS"))] +\
         [(EVENT_ALL, _("All"))] +\
@@ -368,7 +368,7 @@ class EventType(models.Model):
                             blank=False)
 
     def __str__(self):
-        return 'Event Type: {}'.format(self.name)
+        return f'Event Type: {self.name}'
 
     @classmethod
     def get(cls, service_name=None):
@@ -767,7 +767,7 @@ class RequestEvent(models.Model):
         rl = rd['responseLength']
         event_type_name = rd.get('service')
         if event_type_name:
-            event_type = EventType.get('OWS:{}'.format(event_type_name.upper()))
+            event_type = EventType.get(f'OWS:{event_type_name.upper()}')
         else:
             event_type = EventType.get(EventType.EVENT_GEOSERVER)
 
@@ -777,7 +777,7 @@ class RequestEvent(models.Model):
                 'event_type': event_type,
                 'service': service,
                 'request_path':
-                    '{}?{}'.format(rd['path'], rd['queryString']) if rd.get(
+                    f"{rd['path']}?{rd['queryString']}" if rd.get(
                         'queryString') else rd['path'],
                 'request_method': rd['httpMethod'],
                 'response_status': rd['responseStatus'],
@@ -830,7 +830,7 @@ class ExceptionEvent(models.Model):
         received = datetime.utcnow().replace(tzinfo=pytz.utc)
         if not isinstance(error_type, string_types):
             _cls = error_type.__class__
-            error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
+            error_type = f'{_cls.__module__}.{_cls.__name__}'
         if not message:
             message = str(error_type)
         if isinstance(stack_trace, (list, tuple)):
@@ -897,7 +897,7 @@ class MetricLabel(models.Model):
         blank=True)
 
     def __unicode__(self):
-        return 'Metric Label: {}'.format(self.name.encode('ascii', 'ignore'))
+        return f"Metric Label: {self.name.encode('ascii', 'ignore')}"
 
 
 class MetricValue(models.Model):
@@ -945,13 +945,10 @@ class MetricValue(models.Model):
         metric = self.service_metric.metric.name
         if self.label:
             _l = self.label.name
-            metric = '{} [{}]'.format(metric, _l)
+            metric = f'{metric} [{_l}]'
         if self.resource and self.resource.type:
-            metric = '{} for {}'.format(
-                metric, '{}={}'.format(
-                    self.resource.type, self.resource.name))
-        return 'Metric Value: {}: [{}] (since {} until {})'.format(
-            metric, self.value, self.valid_from, self.valid_to)
+            metric = f'{metric} for {self.resource.type}={self.resource.name}'
+        return f'Metric Value: {metric}: [{self.value}] (since {self.valid_from} until {self.valid_to})'
 
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
@@ -1120,7 +1117,7 @@ class NotificationCheck(models.Model):
         help_text=_("Is it active"))
 
     def __str__(self):
-        return "Notification Check #{}: {}".format(self.id, self.name)
+        return f"Notification Check #{self.id}: {self.name}"
 
     @property
     def notification_subject(self):
@@ -1456,9 +1453,7 @@ class NotificationMetricDefinition(models.Model):
                 val_ = val
             return {
                 'class':
-                    '{}.{}'.format(
-                        val.__class__.__module__,
-                        val.__class__.__name__),
+                    f'{val.__class__.__module__}.{val.__class__.__name__}',
                     'value': val_}
         except MetricNotificationCheck.DoesNotExist:
             return
@@ -1487,7 +1482,7 @@ class NotificationMetricDefinition(models.Model):
 
     @property
     def field_name(self):
-        return '{}.{}'.format(self.metric.name, self.field_option)
+        return f'{self.metric.name}.{self.field_option}'
 
     def populate_min_max(self):
         notification = self.notification_check
@@ -1503,7 +1498,7 @@ class NotificationMetricDefinition(models.Model):
                                                 .filter(
                                                     notification_check=self.notification_check,
                                                     metric=self.metric,
-                                                    **{'{}__isnull'.format(self.field_option): False})\
+                                                    **{f'{self.field_option}__isnull': False})\
                                                 .get()
                 if mcheck:
                     self.metric_check = mcheck
@@ -1553,16 +1548,14 @@ class MetricNotificationCheck(models.Model):
     def __str__(self):
         indicator = []
         if self.min_value is not None:
-            indicator.append("value above {}".format(self.min_value))
+            indicator.append(f"value above {self.min_value}")
         if self.max_value is not None:
-            indicator.append("value below {}".format(self.max_value))
+            indicator.append(f"value below {self.max_value}")
         if self.max_timeout is not None:
             indicator.append(
-                "value must be collected within {}".format(
-                    self.max_timeout))
+                f"value must be collected within {self.max_timeout}")
         indicator = ' and '.join(indicator)
-        return "MetricCheck({}@{}: {})".format(
-            self.metric.name, self.service.name if self.service else '', indicator)
+        return f"MetricCheck({self.metric.name}@{self.service.name if self.service else ''}: {indicator})"
 
     @property
     def field_option(self):
@@ -1597,10 +1590,7 @@ class MetricNotificationCheck(models.Model):
             self.valid_to = metric.valid_to if hasattr(metric, 'valid_to') else None
 
         def __str__(self):
-            return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity,
-                                                                                self.metric,
-                                                                                self.check,
-                                                                                self.message)
+            return f"MetricValueError({self.severity}: metric {self.metric} misses {self.check} check: {self.message})"
 
     def check_value(self, metric, valid_on):
         """
@@ -1609,7 +1599,7 @@ class MetricNotificationCheck(models.Model):
         v = metric.value_num
         m = metric.service_metric.metric
         metric_name = m.description or m.name
-        unit_name = ' {}'.format(m.unit) if not m.is_count else ''
+        unit_name = f' {m.unit}' if not m.is_count else ''
         had_check = False
 
         if self.definition:
@@ -1618,16 +1608,14 @@ class MetricNotificationCheck(models.Model):
             if self.event_type:
                 os = self.event_type
                 if os.is_all or os.is_other:
-                    msg_prefix.append("for {} OWS".format(os.name))
+                    msg_prefix.append(f"for {os.name} OWS")
                 else:
-                    msg_prefix.append("for {} OWS".format(os.name))
+                    msg_prefix.append(f"for {os.name} OWS")
             if self.service:
-                msg_prefix.append("for {} service".format(self.service.name))
+                msg_prefix.append(f"for {self.service.name} service")
             if self.resource:
                 msg_prefix.append(
-                    "for {}[{}] resource".format(
-                        self.resource.name,
-                        self.resource.type))
+                    f"for {self.resource.name}[{self.resource.type}] resource")
 
             msg_prefix = ' '.join(msg_prefix)
             description_tmpl = ("{} {} should be {{}} "
@@ -1668,9 +1656,8 @@ class MetricNotificationCheck(models.Model):
                     actual_seconds = (valid_on - metric.valid_to).total_seconds()
                     msg = "{} {} seconds".format(def_msg, int(total_seconds))
                     description = description_tmpl.format('recored at most ',
-                                                          '{} seconds ago'.format(
-                                                              total_seconds),
-                                                          '{} seconds'.format(actual_seconds))
+                                                          f'{total_seconds} seconds ago',
+                                                          f'{actual_seconds} seconds')
                     raise self.MetricValueError(metric,
                                                 self,
                                                 msg,
@@ -1684,7 +1671,7 @@ class MetricNotificationCheck(models.Model):
                 "",
                 None,
                 None,
-                "Metric check {} is not checking anything".format(self))
+                f"Metric check {self} is not checking anything")
 
     def check_metric(self, for_timestamp=None):
         """
@@ -1711,7 +1698,7 @@ class MetricNotificationCheck(models.Model):
                 "",
                 None,
                 None,
-                "Cannot find metric values for {} on {}".format(self.metric, for_timestamp))
+                f"Cannot find metric values for {self.metric} on {for_timestamp}")
         for m in metrics:
             self.check_value(m, for_timestamp)
         return True
@@ -1849,14 +1836,13 @@ def do_autoconfigure():
         _host_by_name = '127.0.0.1'
     hosts = [(wsite.hostname, _host_by_name,)]
     # default geonode
-    geonode_name = settings.MONITORING_SERVICE_NAME or '{}-geonode'.format(
-        wsite.hostname)
+    geonode_name = settings.MONITORING_SERVICE_NAME or f'{wsite.hostname}-geonode'
     geonodes = [(geonode_name, settings.SITEURL, hosts[0])]
 
     geoservers = []
     for k, val in settings.OGC_SERVER.items():
         if val.get('BACKEND') == 'geonode.geoserver':
-            gname = '{}-geoserver'.format(k)
+            gname = f'{k}-geoserver'
             gsite = urlparse(val['LOCATION'])
             try:
                 _host_by_name = gethostbyname(gsite.hostname)
@@ -1900,7 +1886,7 @@ def do_autoconfigure():
                 service_type=geonode_type)
         service.save()
 
-        shost_name = '{}-hostgeonode'.format(host.name)
+        shost_name = f'{host.name}-hostgeonode'
         try:
             service = Service.objects.get(name=shost_name)
         except Service.DoesNotExist:
@@ -1928,7 +1914,7 @@ def do_autoconfigure():
                 service_type=geoserver_type)
         service.save()
 
-        shost_name = '{}-hostgeoserver'.format(host.name)
+        shost_name = f'{host.name}-hostgeoserver'
         try:
             service = Service.objects.get(name=shost_name)
         except Service.DoesNotExist:

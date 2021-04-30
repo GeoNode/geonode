@@ -40,7 +40,7 @@ HOSTNAME = _surl.hostname
 
 # add trailing slash to site url. geoserver url will be relative to this
 if not SITEURL.endswith('/'):
-    SITEURL = '{}/'.format(SITEURL)
+    SITEURL = f'{SITEURL}/'
 
 ALLOWED_HOSTS = ['localhost', 'geonode', 'django', 'geonode.example.com']
 
@@ -105,8 +105,7 @@ GEOSERVER_PUBLIC_PORT = os.getenv(
     'GEOSERVER_PUBLIC_PORT', 8080
 )
 
-_default_public_location = 'http://{}:{}/geoserver/'.format(
-    GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST)
+_default_public_location = f'http://{GEOSERVER_PUBLIC_HOST}:{GEOSERVER_PUBLIC_PORT}/geoserver/' if GEOSERVER_PUBLIC_PORT else f'http://{GEOSERVER_PUBLIC_HOST}/geoserver/'
 
 GEOSERVER_WEB_UI_LOCATION = os.getenv(
     'GEOSERVER_WEB_UI_LOCATION', GEOSERVER_LOCATION
@@ -145,7 +144,7 @@ OGC_SERVER = {
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED': False,
-        'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+        'LOG_FILE': f'{os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir))}/geoserver/data/logs/geoserver.log',
         # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
         'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '60')),
@@ -191,7 +190,7 @@ MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'Fals
 USER_ANALYTICS_ENABLED = ast.literal_eval(
     os.getenv('USER_ANALYTICS_ENABLED', os.environ.get('MONITORING_ENABLED', 'False')))
 USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv('USER_ANALYTICS_GZIP',
-    os.environ.get('MONITORING_ENABLED', 'False')))
+                                                 os.environ.get('MONITORING_ENABLED', 'False')))
 
 MONITORING_CONFIG = os.getenv("MONITORING_CONFIG", None)
 MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)

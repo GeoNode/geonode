@@ -244,4 +244,4 @@ class Command(BaseCommand):
             print("{} Failed layers".format(len(failed)))
 
             if len(output) > 0:
-                print("{} seconds per layer".format(duration * 1.0 / len(output)))
+                print(f"{duration * 1.0 / len(output)} seconds per layer")

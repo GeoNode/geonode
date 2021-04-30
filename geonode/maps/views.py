@@ -265,9 +265,8 @@ def map_metadata(
                         if len(tkl) > 0:
                             tkl_ids = ",".join(
                                 map(str, tkl.values_list('id', flat=True)))
-                            tkeywords_list += "," + \
-                                tkl_ids if len(
-                                    tkeywords_list) > 0 else tkl_ids
+                            tkeywords_list += f",{tkl_ids}" if len(
+                                tkeywords_list) > 0 else tkl_ids
                 except Exception:
                     tb = traceback.format_exc()
                     logger.error(tb)
@@ -623,7 +622,7 @@ def map_json_handle_put(request, mapid):
                 map_obj.viewer_json(request)))
     except ValueError as e:
         return HttpResponse(
-            "The server could not understand the request." + str(e),
+            f"The server could not understand the request.{str(e)}",
             content_type="text/plain",
             status=400
         )
@@ -854,13 +853,9 @@ def add_layers_to_map_config(
                 "legend": {
                     "height": "40",
                     "width": "22",
-                    "href": layer.ows_url +
-                    "?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=" +
-                    quote(layer.service_typename, safe=''),
-                    "format": "image/png"
-                },
-                "name": style.name
-            }
+                    "href": f"{layer.ows_url}?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer={quote(layer.service_typename, safe='')}",
+                    "format": "image/png"},
+                "name": style.name}
             return _sld
 
         config = layer.attribute_config()
@@ -870,12 +865,11 @@ def add_layers_to_map_config(
                 'properties': layer.srid
             }
         # Add required parameters for GXP lazy-loading
-        attribution = "%s %s" % (layer.owner.first_name,
-                                 layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
+        attribution = f"{layer.owner.first_name} {layer.owner.last_name}" if layer.owner.first_name or layer.owner.last_name else str(
             layer.owner)
         srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
         srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
-        config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
+        config["attribution"] = f"<span class='gx-attribution-title'>{attribution}</span>"
         config["format"] = getattr(
             settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
         config["title"] = layer.title
@@ -960,7 +954,7 @@ def add_layers_to_map_config(
                                       'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
                         e = dlxml.fromstring(wms_capabilities)
                         for atype in e.findall(
-                                "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                                f"./[wms:Name='{layer.alternate}']/wms:Dimension[@name='time']", namespaces):
                             dim_name = atype.get('name')
                             if dim_name:
                                 dim_name = str(dim_name).lower()
@@ -992,7 +986,7 @@ def add_layers_to_map_config(
                     "remote": True,
                     "url": service.service_url,
                     "name": service.name,
-                    "title": "[R] %s" % service.title}
+                    "title": f"[R] {service.title}"}
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,
@@ -1007,7 +1001,7 @@ def add_layers_to_map_config(
 
             access_token = request.session['access_token'] if request and 'access_token' in request.session else None
             if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
-                url = '%s?access_token=%s' % (layer.ows_url, access_token)
+                url = f'{layer.ows_url}?access_token={access_token}'
             else:
                 url = layer.ows_url
             maplayer = MapLayer(
@@ -1124,8 +1118,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             request.session["map_status"] = map_status
         else:
             raise Exception(
-                'Could not start the download of %s. Error was: %s' %
-                (map_obj.title, content))
+                f'Could not start the download of {map_obj.title}. Error was: {content}')
 
     locked_layers = []
     remote_layers = []

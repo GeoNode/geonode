@@ -73,7 +73,7 @@ class DemoGeonode(object):
 
     def buildJob(self, job):
         """Trigger a job build"""
-        print('Building %s job' % job)
+        print(f'Building {job} job')
         self.j.build_job(job)
         print('Build requested')
 

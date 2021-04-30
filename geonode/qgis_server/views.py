@@ -81,7 +81,7 @@ def download_zip(request, layername):
     # Folder name in ZIP archive which contains the above files
     # E.g [thearchive.zip]/somefiles/file2.txt
     zip_subdir = layer.name
-    zip_filename = "%s.zip" % zip_subdir
+    zip_filename = f"{zip_subdir}.zip"
 
     # Open StringIO to grab in-memory ZIP contents
     s = io.StringIO()
@@ -105,7 +105,7 @@ def download_zip(request, layername):
     resp = HttpResponse(
         s.getvalue(), content_type="application/x-zip-compressed")
     # ..and correct content-disposition
-    resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+    resp['Content-Disposition'] = f'attachment; filename={zip_filename}'
 
     return resp
 
@@ -135,7 +135,7 @@ def download_qgs(request, layername):
         result.content, content_type="application/x-qgis-project",
         status=result.status_code)
     response['Content-Disposition'] = \
-        'attachment; filename=%s.qgs' % layer_title
+        f'attachment; filename={layer_title}.qgs'
 
     return response
 
@@ -153,7 +153,7 @@ def download_map(request, mapid):
     # Folder name in ZIP archive which contains the above files
     # E.g [thearchive.zip]/somefiles/file2.txt
     zip_subdir = mapid
-    zip_filename = "%s.zip" % zip_subdir
+    zip_filename = f"{zip_subdir}.zip"
 
     # Open StringIO to grab in-memory ZIP contents
     s = io.StringIO()
@@ -187,7 +187,7 @@ def download_map(request, mapid):
     resp = HttpResponse(
         s.getvalue(), content_type="application/x-zip-compressed")
     # ..and correct content-disposition
-    resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+    resp['Content-Disposition'] = f'attachment; filename={zip_filename}'
 
     return resp
 
@@ -238,7 +238,7 @@ def legend(request, layername, layertitle=False, style=None):
             return HttpResponseServerError('Failed to fetch legend.')
 
     if image_format(legend_filename) != 'png':
-        logger.error('%s is not valid PNG.' % legend_filename)
+        logger.error(f'{legend_filename} is not valid PNG.')
         os.remove(legend_filename)
 
     if not os.path.exists(legend_filename):
@@ -329,7 +329,7 @@ def tile(request, layername, z, x, y, style=None):
             return HttpResponseServerError('Failed to fetch tile.')
 
     if image_format(tile_filename) != 'png':
-        logger.error('%s is not valid PNG.' % tile_filename)
+        logger.error(f'{tile_filename} is not valid PNG.')
         os.remove(tile_filename)
 
     if not os.path.exists(tile_filename):
@@ -384,7 +384,7 @@ def geotiff(request, layername):
 
     # get geotiff file if exists
     for ext in QGISServerLayer.geotiff_format:
-        target_file = qgis_layer.qgis_layer_path_prefix + '.' + ext
+        target_file = f"{qgis_layer.qgis_layer_path_prefix}.{ext}"
         if os.path.exists(target_file):
             filename = target_file
             break
@@ -392,7 +392,7 @@ def geotiff(request, layername):
         filename = None
 
     if not filename:
-        msg = 'No Geotiff layer found for %s' % layername
+        msg = f'No Geotiff layer found for {layername}'
         logger.debug(msg)
         raise Http404(msg)
 
@@ -463,7 +463,7 @@ def qgis_server_request(request):
     # our proxy
     if params.get('REQUEST') == 'GetCapabilities':
         qgis_server_base_url = qgis_server_endpoint(internal=True)
-        pattern = '{endpoint}'.format(endpoint=qgis_server_base_url)
+        pattern = f'{qgis_server_base_url}'
         content = re.sub(
             pattern, qgis_server_endpoint(internal=False), content)
 
@@ -511,8 +511,8 @@ def qgis_server_pdf(request):
                 "rotation": False
             }
         ],
-        "printURL": "%s" % print_url,
-        "createURL": "%s" % print_url
+        "printURL": f"{print_url}",
+        "createURL": f"{print_url}"
     }
 
     return HttpResponse(
@@ -524,7 +524,7 @@ def qgis_server_map_print(request):
     temp = []
     for key, value in request.POST.items():
         temp[key] = value
-        print("{}\n{}\n--------".format(key, value))
+        print(f"{key}\n{value}\n--------")
     return HttpResponse(
         json.dumps(temp), content_type="application/json")
 
@@ -580,8 +580,7 @@ def qml_style(request, layername, style_name=None):
             response = HttpResponse(
                 ensure_string(response.content), content_type='text/xml')
             response[
-                'Content-Disposition'] = 'attachment; filename=%s.qml' % (
-                style_name, )
+                'Content-Disposition'] = f'attachment; filename={style_name}.qml'
         else:
             response = HttpResponse(
                 ensure_string(response.content), status=response.status_code)
@@ -671,7 +670,7 @@ def qml_style(request, layername, style_name=None):
                 qgis_style.title = style_title
                 qgis_style.save()
 
-                alert_message = 'Successfully add style %s' % style_name
+                alert_message = f'Successfully add style {style_name}'
             except Exception:
                 alert_message = 'Failed to fetch styles'
 
@@ -711,7 +710,7 @@ def qml_style(request, layername, style_name=None):
         if not (response.status_code == 200 and ensure_string(response.content) == 'OK'):
             alert_message = ensure_string(response.content)
             if 'NAME is NOT an existing style.' in ensure_string(response.content):
-                alert_message = '%s is not an existing style' % style_name
+                alert_message = f'{style_name} is not an existing style'
             try:
                 style_list(layer, internal=False)
             except Exception:
@@ -735,7 +734,7 @@ def qml_style(request, layername, style_name=None):
         try:
             style_list(layer, internal=False)
 
-            alert_message = 'Successfully deleted style %s' % style_name
+            alert_message = f'Successfully deleted style {style_name}'
         except Exception:
             alert_message = 'Failed to fetch styles'
 
@@ -802,7 +801,7 @@ def default_qml_style(request, layername, style_name=None):
         qgis_layer.default_style = style
         qgis_layer.save()
 
-        alert_message = 'Successfully changed default style %s' % style_name
+        alert_message = f'Successfully changed default style {style_name}'
 
         return TemplateResponse(
             request,
@@ -876,6 +875,6 @@ def download_qlr(request, layername):
         content_type="application/x-qgis-layer-definition",
         status=result.status_code)
     response['Content-Disposition'] = \
-        'attachment; filename=%s.qlr' % layer_title
+        f'attachment; filename={layer_title}.qlr'
 
     return response

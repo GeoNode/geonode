@@ -110,7 +110,7 @@ class Command(BaseCommand):
             all_layers = all_layers.filter(owner__username=username)
 
         for index, layer in enumerate(all_layers):
-            print("[%s / %s] Updating Layer [%s] ..." % ((index + 1), len(all_layers), layer.name))
+            print(f"[{index + 1} / {len(all_layers)}] Updating Layer [{layer.name}] ...")
             try:
                 # recalculate the layer statistics
                 set_attributes(layer, overwrite=True)
@@ -128,7 +128,7 @@ class Command(BaseCommand):
                 import traceback
                 traceback.print_exc()
                 if ignore_errors:
-                    logger.error("[ERROR] Layer [%s] couldn't be updated" % (layer.name))
+                    logger.error(f"[ERROR] Layer [{layer.name}] couldn't be updated")
                 else:
                     raise e
 

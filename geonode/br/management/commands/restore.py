@@ -264,20 +264,20 @@ class Command(BaseCommand):
                 locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
 
                 try:
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(restore_folder)))
+                    print(f"[Sanity Check] Full Write Access to '{restore_folder}' ...")
                     chmod_tree(restore_folder)
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(media_root)))
+                    print(f"[Sanity Check] Full Write Access to '{media_root}' ...")
                     chmod_tree(media_root)
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(static_root)))
+                    print(f"[Sanity Check] Full Write Access to '{static_root}' ...")
                     chmod_tree(static_root)
                     for static_files_folder in static_folders:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(static_files_folder)))
+                        print(f"[Sanity Check] Full Write Access to '{static_files_folder}' ...")
                         chmod_tree(static_files_folder)
                     for template_files_folder in template_folders:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(template_files_folder)))
+                        print(f"[Sanity Check] Full Write Access to '{template_files_folder}' ...")
                         chmod_tree(template_files_folder)
                     for locale_files_folder in locale_folders:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(locale_files_folder)))
+                        print(f"[Sanity Check] Full Write Access to '{locale_files_folder}' ...")
                         chmod_tree(locale_files_folder)
                 except Exception as exception:
                     if notify:
@@ -290,7 +290,7 @@ class Command(BaseCommand):
 
                 if not skip_geoserver:
                     try:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(target_folder)))
+                        print(f"[Sanity Check] Full Write Access to '{target_folder}' ...")
                         chmod_tree(target_folder)
                         self.restore_geoserver_backup(config, settings, target_folder,
                                                       skip_geoserver_info, skip_geoserver_security, ignore_errors, soft_reset)
@@ -351,18 +351,18 @@ class Command(BaseCommand):
 
                         # Restore Fixtures
                         for app_name, dump_name in zip(config.app_names, config.dump_names):
-                            fixture_file = os.path.join(target_folder, dump_name+'.json')
+                            fixture_file = os.path.join(target_folder, f"{dump_name}.json")
 
-                            print("Deserializing "+fixture_file)
+                            print(f"Deserializing {fixture_file}")
                             try:
                                 call_command('loaddata', fixture_file, app_label=app_name)
                             except IntegrityError as e:
                                 traceback.print_exc()
-                                print("WARNING: The fixture '"+dump_name+"' fails on integrity check and import is aborted after all fixtures have been checked.")
+                                print(f"WARNING: The fixture '{dump_name}' fails on integrity check and import is aborted after all fixtures have been checked.")
                                 abortlater = True
                             except Exception:
                                 traceback.print_exc()
-                                print("WARNING: No valid fixture data found for '"+dump_name+"'.")
+                                print(f"WARNING: No valid fixture data found for '{dump_name}'.")
                                 # helpers.load_fixture(app_name, fixture_file)
                                 raise
                         try: 
@@ -380,7 +380,7 @@ class Command(BaseCommand):
 
                         copy_tree(media_folder, media_root)
                         chmod_tree(media_root)
-                        print("Media Files Restored into '"+media_root+"'.")
+                        print(f"Media Files Restored into '{media_root}'.")
 
                         # Restore Static Root
                         if config.gs_data_dt_filter[0] is None:
@@ -391,7 +391,7 @@ class Command(BaseCommand):
 
                         copy_tree(static_folder, static_root)
                         chmod_tree(static_root)
-                        print("Static Root Restored into '"+static_root+"'.")
+                        print(f"Static Root Restored into '{static_root}'.")
 
                         # Restore Static Folders
                         for static_files_folder in static_folders:
@@ -413,7 +413,7 @@ class Command(BaseCommand):
                                                    os.path.basename(os.path.normpath(static_files_folder))),
                                       static_files_folder)
                             chmod_tree(static_files_folder)
-                            print("Static Files Restored into '"+static_files_folder+"'.")
+                            print(f"Static Files Restored into '{static_files_folder}'.")
 
                         # Restore Template Folders
                         for template_files_folder in template_folders:
@@ -435,7 +435,7 @@ class Command(BaseCommand):
                                                    os.path.basename(os.path.normpath(template_files_folder))),
                                       template_files_folder)
                             chmod_tree(template_files_folder)
-                            print("Template Files Restored into '"+template_files_folder+"'.")
+                            print(f"Template Files Restored into '{template_files_folder}'.")
 
                         # Restore Locale Folders
                         for locale_files_folder in locale_folders:
@@ -457,7 +457,7 @@ class Command(BaseCommand):
                                                    os.path.basename(os.path.normpath(locale_files_folder))),
                                       locale_files_folder)
                             chmod_tree(locale_files_folder)
-                            print("Locale Files Restored into '"+locale_files_folder+"'.")
+                            print(f"Locale Files Restored into '{locale_files_folder}'.")
 
                         call_command('collectstatic', interactive=False)
 
@@ -582,7 +582,7 @@ class Command(BaseCommand):
         backup_hash = utils.md5_file_hash(backup_file)
 
         # check md5 hash for backup archive, if the md5 file is in place
-        archive_md5_file = backup_file.rsplit('.', 1)[0] + '.md5'
+        archive_md5_file = f"{backup_file.rsplit('.', 1)[0]}.md5"
 
         if os.path.exists(archive_md5_file):
             with open(archive_md5_file, 'r') as md5_file:
@@ -611,7 +611,7 @@ class Command(BaseCommand):
         :return: backup_ini_file_path original settings used by the backup file
         """
         # check if the ini file is in place
-        backup_ini_file_path = backup_file.rsplit('.', 1)[0] + '.ini'
+        backup_ini_file_path = f"{backup_file.rsplit('.', 1)[0]}.ini"
 
         if os.path.exists(backup_ini_file_path):
             return backup_ini_file_path
@@ -626,19 +626,18 @@ class Command(BaseCommand):
         geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
 
         if not os.path.exists(geoserver_bk_file) or not os.access(geoserver_bk_file, os.R_OK):
-            raise Exception(('ERROR: geoserver restore: ' +
-                  'file "{}" not found.'.format(geoserver_bk_file)))
+            raise Exception(f"ERROR: geoserver restore: file \"{geoserver_bk_file}\" not found.")
 
-        print("Restoring 'GeoServer Catalog ["+url+"]' from '"+geoserver_bk_file+"'.")
+        print(f"Restoring 'GeoServer Catalog [{url}]' from '{geoserver_bk_file}'.")
 
         # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
         _options = [
-            'BK_PURGE_RESOURCES={}'.format('true' if not soft_reset else 'false'),
+            f"BK_PURGE_RESOURCES={'true' if not soft_reset else 'false'}",
             'BK_CLEANUP_TEMP=true',
-            'BK_SKIP_SETTINGS={}'.format('true' if skip_geoserver_info else 'false'),
-            'BK_SKIP_SECURITY={}'.format('true' if skip_geoserver_security else 'false'),
+            f"BK_SKIP_SETTINGS={'true' if skip_geoserver_info else 'false'}",
+            f"BK_SKIP_SECURITY={'true' if skip_geoserver_security else 'false'}",
             'BK_BEST_EFFORT=true',
-            'exclude.file.path={}'.format(config.gs_exclude_file_path)
+            f'exclude.file.path={config.gs_exclude_file_path}'
         ]
         data = {'restore': {'archiveFile': geoserver_bk_file,
                             'options': {'option': _options}}}
@@ -646,14 +645,13 @@ class Command(BaseCommand):
             'Accept': 'application/json',
             'Content-type': 'application/json'
         }
-        r = requests.post(url + 'rest/br/restore/', data=json.dumps(data),
+        r = requests.post(f"{url}rest/br/restore/", data=json.dumps(data),
                           headers=headers, auth=HTTPBasicAuth(user, passwd))
-        error_backup = 'Could not successfully restore GeoServer ' + \
-                       'catalog [{}rest/br/restore/]: {} - {}'
+        error_backup = f"Could not successfully restore GeoServer catalog [{{}}rest/br/restore/]: {{}} - {{}}"
 
         if r.status_code in (200, 201, 406):
             try:
-                r = requests.get(url + 'rest/br/restore.json',
+                r = requests.get(f"{url}rest/br/restore.json",
                                  headers=headers,
                                  auth=HTTPBasicAuth(user, passwd),
                                  timeout=10)
@@ -676,7 +674,7 @@ class Command(BaseCommand):
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
             gs_bk_exec_id = gs_backup['restore']['execution']['id']
-            r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
+            r = requests.get(f"{url}rest/br/restore/{str(gs_bk_exec_id)}.json",
                              headers=headers,
                              auth=HTTPBasicAuth(user, passwd),
                              timeout=10)
@@ -688,7 +686,7 @@ class Command(BaseCommand):
                 while (gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED'):
                     if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
                         gs_bk_exec_progress_updated = gs_bk_exec_progress
-                    r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
+                    r = requests.get(f"{url}rest/br/restore/{str(gs_bk_exec_id)}.json",
                                      headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
                                      timeout=10)
@@ -702,7 +700,7 @@ class Command(BaseCommand):
 
                         gs_bk_exec_status = gs_backup['restore']['execution']['status']
                         gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
-                        print(str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress)
+                        print(f"{str(gs_bk_exec_status)} - {gs_bk_exec_progress}")
                         time.sleep(3)
                     else:
                         raise ValueError(error_backup.format(url, r.status_code, r.text))
@@ -724,7 +722,7 @@ class Command(BaseCommand):
                 gwc_layers_root = os.path.join(settings.PROJECT_ROOT, '..', gwc_layers_root)
             try:
                 shutil.rmtree(gwc_layers_root)
-                print('Cleaned out old GeoServer GWC Layers Config: ' + gwc_layers_root)
+                print(f"Cleaned out old GeoServer GWC Layers Config: {gwc_layers_root}")
             except Exception:
                 pass
             if not os.path.exists(gwc_layers_root):
@@ -744,10 +742,9 @@ class Command(BaseCommand):
                         os.makedirs(gs_data_root)
 
                     copy_tree(gs_data_folder, gs_data_root)
-                    print("GeoServer Uploaded Raster Data Restored to '" + gs_data_root + "'.")
+                    print(f"GeoServer Uploaded Raster Data Restored to '{gs_data_root}'.")
                 else:
-                    print(('Skipping geoserver raster data restore: ' +
-                          'directory "{}" not found.'.format(gs_data_folder)))
+                    print(f"Skipping geoserver raster data restore: directory \"{gs_data_folder}\" not found.")
 
                 # Restore '$config.gs_data_dir/data/geonode'
                 gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
@@ -760,10 +757,9 @@ class Command(BaseCommand):
                         os.makedirs(gs_data_root)
 
                     copy_tree(gs_data_folder, gs_data_root)
-                    print("GeoServer Uploaded Data Restored to '" + gs_data_root + "'.")
+                    print(f"GeoServer Uploaded Data Restored to '{gs_data_root}'.")
                 else:
-                    print(('Skipping geoserver raster data restore: ' +
-                           'directory "{}" not found.'.format(gs_data_folder)))
+                    print(f"Skipping geoserver raster data restore: directory \"{gs_data_folder}\" not found.")
 
     def restore_geoserver_vector_data(self, config, settings, target_folder, soft_reset):
         """Restore Vectorial Data from DB"""
@@ -771,8 +767,7 @@ class Command(BaseCommand):
 
             gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
             if not os.path.exists(gs_data_folder):
-                print(('Skipping geoserver vector data restore: ' +
-                      'directory "{}" not found.'.format(gs_data_folder)))
+                print(f"Skipping geoserver vector data restore: directory \"{gs_data_folder}\" not found.")
                 return
 
             datastore = settings.OGC_SERVER['default']['DATASTORE']

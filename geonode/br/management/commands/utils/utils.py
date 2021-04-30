@@ -238,8 +238,8 @@ def flush_db(db_name, db_user, db_port, db_host, db_passwd):
         for table in pg_tables:
             if table[0] == 'br_restoredbackup':
                 continue
-            print("Flushing Data : " + table[0])
-            curs.execute("TRUNCATE " + table[0] + " CASCADE;")
+            print(f"Flushing Data : {table[0]}")
+            curs.execute(f"TRUNCATE {table[0]} CASCADE;")
         conn.commit()
     except Exception:
         try:
@@ -438,10 +438,10 @@ def glob2re(pat):
         i = i+1
         if c == '*':
             # res = res + '.*'
-            res = res + '[^/]*'
+            res = f"{res}[^/]*"
         elif c == '?':
             # res = res + '.'
-            res = res + '[^/]'
+            res = f"{res}[^/]"
         elif c == '[':
             j = i
             if j < n and pat[j] == '!':
@@ -451,18 +451,18 @@ def glob2re(pat):
             while j < n and pat[j] != ']':
                 j = j+1
             if j >= n:
-                res = res + '\\['
+                res = f"{res}\\["
             else:
                 stuff = pat[i:j].replace('\\', '\\\\')
                 i = j+1
                 if stuff[0] == '!':
-                    stuff = '^' + stuff[1:]
+                    stuff = f"^{stuff[1:]}"
                 elif stuff[0] == '^':
-                    stuff = '\\' + stuff
+                    stuff = f"\\{stuff}"
                 res = f'{res}[{stuff}]'
         else:
             res = res + re.escape(c)
-    return res + r'\Z(?ms)'
+    return f"{res}\\Z(?ms)"
 
 
 def glob_filter(names, pat):

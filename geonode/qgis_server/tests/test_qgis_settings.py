@@ -48,7 +48,7 @@ class QGISSettingsTest(GeoNodeBaseTestSupport):
             'Service unknown or unsupported', response.content, message)
 
         # Test if OTF-Plugin is installed
-        url = qgis_server_url + '?SERVICE=MAPCOMPOSITION'
+        url = f"{qgis_server_url}?SERVICE=MAPCOMPOSITION"
         response = requests.get(url)
         message = 'OTF-Project is not installed on QGIS-Server {url}'
         message = message.format(url=url)

@@ -196,14 +196,13 @@ def geoserver_create_style(
                 except geoserver.catalog.ConflictingDataError:
                     try:
                         gs_catalog.create_style(
-                            name + '_layer',
+                            f"{name}_layer",
                             sld,
                             raw=True,
                             workspace=settings.DEFAULT_WORKSPACE)
                         gs_catalog.reset()
                     except geoserver.catalog.ConflictingDataError as e:
-                        msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
-                            name, str(e))
+                        msg = f'There was already a style named {name} in GeoServer, cannot overwrite: "{str(e)}"'
                         logger.error(msg)
                         e.args = (msg,)
 
@@ -214,8 +213,8 @@ def geoserver_create_style(
                     except Exception:
                         logger.warn('Could not retreive the Layer default Style name')
                         try:
-                            style = gs_catalog.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
-                                gs_catalog.get_style(name + '_layer')
+                            style = gs_catalog.get_style(f"{name}_layer", workspace=settings.DEFAULT_WORKSPACE) or \
+                                gs_catalog.get_style(f"{name}_layer")
                             logger.warn(
                                 'No style could be created for the layer, falling back to POINT default one')
                         except Exception as e:
@@ -320,7 +319,7 @@ def geoserver_finalize_upload(
                     owner=instance.owner,
                     store=gs_resource.store.name,
                     storeType=gs_resource.store.resource_type,
-                    alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+                    alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
                     title=gs_resource.title or gs_resource.store.name,
                     abstract=gs_resource.abstract or ''))
 
@@ -394,7 +393,7 @@ def geoserver_finalize_upload(
             else:
                 geoserver_create_style(instance.id, instance.name, sld_file, tempdir)
 
-            logger.debug('Finalizing (permissions and notifications) Layer {0}'.format(instance))
+            logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
             instance.handle_moderated_uploads()
 
             if permissions is not None and not spec_perms_is_empty(permissions):
@@ -507,7 +506,7 @@ def geoserver_post_save_layers(
                 metadata_links.append((link.mime, link.name, link.url))
 
             if gs_resource:
-                logger.debug("Found geoserver resource for this layer: %s" % instance.name)
+                logger.debug(f"Found geoserver resource for this layer: {instance.name}")
                 gs_resource.metadata_links = metadata_links
                 instance.gs_resource = gs_resource
 
@@ -579,8 +578,7 @@ def geoserver_post_save_layers(
                     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
                         gs_catalog.save(gs_resource)
                 except Exception as e:
-                    msg = ('Error while trying to save resource named %s in GeoServer, '
-                           'try to use: "%s"' % (gs_resource, str(e)))
+                    msg = f'Error while trying to save resource named {gs_resource} in GeoServer, try to use: "{str(e)}"'
                     e.args = (msg,)
                     logger.exception(e)
 

@@ -85,9 +85,7 @@ def resource_permissions_handle_post(request, resource):
                not view_any:
 
                 success = False
-                message = "User {} has download permissions but cannot " \
-                          "access the resource. Please update permission " \
-                          "consistently!".format(user.username)
+                message = f"User {user.username} has download permissions but cannot access the resource. Please update permission consistently!"
 
         return HttpResponse(
             json.dumps({'success': success, 'message': message}),
@@ -337,7 +335,7 @@ def attributes_sats_refresh(request):
                     json.dumps(
                         {
                             'success': 'false',
-                            'message': 'Error trying to fetch the resource "%s" from GeoServer!' % layer.store
+                            'message': f'Error trying to fetch the resource "{layer.store}" from GeoServer!'
                         }),
                     status=302,
                     content_type='text/plain')
@@ -355,7 +353,7 @@ def attributes_sats_refresh(request):
                 json.dumps(
                     {
                         'success': 'false',
-                        'message': 'Exception occurred: "%s"' % str(e)
+                        'message': f'Exception occurred: "{str(e)}"'
                     }),
                 status=302,
                 content_type='text/plain')

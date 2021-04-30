@@ -88,10 +88,7 @@ def geoserver_upload(
                     assert overwrite, msg
                     existing_type = resource.resource_type
                     if existing_type != the_layer_type:
-                        msg = ('Type of uploaded file %s (%s) '
-                               'does not match type of existing '
-                               'resource type '
-                               '%s' % (name, the_layer_type, existing_type))
+                        msg = f'Type of uploaded file {name} ({the_layer_type}) does not match type of existing resource type {existing_type}'
                         logger.debug(msg)
                         raise GeoNodeException(msg)
 
@@ -109,11 +106,7 @@ def geoserver_upload(
         logger.debug("Uploading raster layer: [%s]", base_file)
         create_store_and_resource = _create_coveragestore
     else:
-        msg = ('The layer type for name %s is %s. It should be '
-               '%s or %s,' % (name,
-                              the_layer_type,
-                              FeatureType.resource_type,
-                              Coverage.resource_type))
+        msg = f'The layer type for name {name} is {the_layer_type}. It should be {FeatureType.resource_type} or {Coverage.resource_type},'
         logger.warn(msg)
         raise GeoNodeException(msg)
 
@@ -133,8 +126,7 @@ def geoserver_upload(
             overwrite=overwrite,
             workspace=workspace)
     except UploadError as e:
-        msg = ('Could not save the layer %s, there was an upload '
-               'error: %s' % (name, str(e)))
+        msg = f'Could not save the layer {name}, there was an upload error: {str(e)}'
         logger.warn(msg)
         e.args = (msg,)
         raise
@@ -163,16 +155,14 @@ def geoserver_upload(
             workspace=workspace)
 
     if not gs_resource:
-        msg = ('GeoNode encountered problems when creating layer %s.'
-               'It cannot find the Layer that matches this Workspace.'
-               'try renaming your files.' % name)
+        msg = f'GeoNode encountered problems when creating layer {name}.It cannot find the Layer that matches this Workspace.try renaming your files.'
         logger.warn(msg)
         raise GeoNodeException(msg)
 
     assert gs_resource.name == name
 
     # Step 6. Make sure our data always has a valid projection
-    logger.debug('>>> Step 6. Making sure [%s] has a valid projection' % name)
+    logger.debug(f'>>> Step 6. Making sure [{name}] has a valid projection')
     _native_bbox = None
     try:
         _native_bbox = gs_resource.native_bbox
@@ -183,7 +173,7 @@ def geoserver_upload(
         box = _native_bbox[:4]
         minx, maxx, miny, maxy = [float(a) for a in box]
         if -180 <= round(minx, 5) <= 180 and -180 <= round(maxx, 5) <= 180 and \
-        -90 <= round(miny, 5) <= 90 and -90 <= round(maxy, 5) <= 90:
+                -90 <= round(miny, 5) <= 90 and -90 <= round(maxy, 5) <= 90:
             gs_resource.latlon_bbox = _native_bbox
             gs_resource.projection = "EPSG:4326"
         else:
@@ -195,7 +185,7 @@ def geoserver_upload(
             logger.debug('BBOX coordinates forced to [-180, -90, 180, 90] for layer [%s].', name)
 
     # Step 7. Create the style and assign it to the created resource
-    logger.debug('>>> Step 7. Creating style for [%s]' % name)
+    logger.debug(f'>>> Step 7. Creating style for [{name}]')
     cat.save(gs_resource)
     publishing = cat.get_layer(name) or gs_resource
     sld = None
@@ -220,13 +210,11 @@ def geoserver_upload(
             cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=workspace)
             cat.reset()
         except geoserver.catalog.ConflictingDataError as e:
-            msg = ('There was already a style named %s in GeoServer, '
-                   'try to use: "%s"' % (name + "_layer", str(e)))
+            msg = f'There was already a style named {name}_layer in GeoServer, try to use: "{str(e)}"'
             logger.warn(msg)
             e.args = (msg,)
         except geoserver.catalog.UploadError as e:
-            msg = ('Error while trying to upload style named %s in GeoServer, '
-                   'try to use: "%s"' % (name + "_layer", str(e)))
+            msg = f'Error while trying to upload style named {name}_layer in GeoServer, try to use: "{str(e)}"'
             e.args = (msg,)
             logger.exception(e)
 
@@ -235,8 +223,7 @@ def geoserver_upload(
                 style = cat.get_style(name, workspace=workspace) or cat.get_style(name)
             except Exception as e:
                 style = cat.get_style('point')
-                msg = ('Could not find any suitable style in GeoServer '
-                       'for Layer: "%s"' % (name))
+                msg = f'Could not find any suitable style in GeoServer for Layer: "{name}"'
                 e.args = (msg,)
                 logger.exception(e)
 
@@ -246,14 +233,13 @@ def geoserver_upload(
             try:
                 cat.save(publishing)
             except geoserver.catalog.FailedRequestError as e:
-                msg = ('Error while trying to save resource named %s in GeoServer, '
-                       'try to use: "%s"' % (publishing, str(e)))
+                msg = f'Error while trying to save resource named {publishing} in GeoServer, try to use: "{str(e)}"'
                 e.args = (msg,)
                 logger.exception(e)
 
     # Step 8. Create the Django record for the layer
     logger.debug('>>> Step 8. Creating Django record for [%s]', name)
-    alternate = workspace.name + ':' + gs_resource.name
+    alternate = f"{workspace.name}:{gs_resource.name}"
     layer_uuid = str(uuid.uuid1())
 
     defaults = dict(store=gs_resource.store.name,

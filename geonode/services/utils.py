@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 def flip_coordinates(c1, c2):
     if c1 > c2:
-        logger.debug('Flipping coordinates %s, %s' % (c1, c2))
+        logger.debug(f'Flipping coordinates {c1}, {c2}')
         temp = c1
         c1 = c2
         c2 = temp
@@ -54,8 +54,7 @@ def bbox2wktpolygon(bbox):
     miny = float(bbox[1])
     maxx = float(bbox[2])
     maxy = float(bbox[3])
-    return 'POLYGON((%.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f))' \
-           % (minx, miny, minx, maxy, maxx, maxy, maxx, miny, minx, miny)
+    return f'POLYGON(({minx:.2f} {miny:.2f}, {minx:.2f} {maxy:.2f}, {maxx:.2f} {maxy:.2f}, {maxx:.2f} {miny:.2f}, {minx:.2f} {miny:.2f}))'
 
 
 def inverse_mercator(xy):

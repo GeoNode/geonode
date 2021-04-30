@@ -147,7 +147,7 @@ class UploaderSession(object):
             if hasattr(self, k):
                 setattr(self, k, v)
             else:
-                raise Exception('not handled : %s' % k)
+                raise Exception(f'not handled : {k}')
 
     def cleanup(self):
         """do what we should at the given state of the upload"""
@@ -257,10 +257,8 @@ def _check_geoserver_store(store_name, layer_type, overwrite):
                                 "Name already in use and overwrite is False")
                         existing_type = resource.resource_type
                         if existing_type != layer_type:
-                            msg = ("Type of uploaded file {} ({}) does not "
-                                   "match type of existing resource type "
-                                   "{}".format(store_name, layer_type,
-                                               existing_type))
+                            msg = (f"Type of uploaded file {store_name} ({layer_type}) does not "
+                                   f"match type of existing resource type {existing_type}")
                             logger.error(msg)
                             raise GeoNodeException(msg)
 
@@ -281,7 +279,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
               time_presentation_reference_value=None,
               charset_encoding="UTF-8"):
     logger.debug(
-        'Uploading layer: {}, files {!r}'.format(layer, spatial_files))
+        f'Uploading layer: {layer}, files {spatial_files!r}')
     if len(spatial_files) > 1:
         # we only support more than one file if they're rasters for mosaicing
         if not all(
@@ -289,7 +287,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
             raise UploadException(
                 "Please upload only one type of file at a time")
     name = get_valid_layer_name(layer, overwrite)
-    logger.debug('Name for layer: {!r}'.format(name))
+    logger.debug(f'Name for layer: {name!r}')
     if not any(spatial_files.all_files()):
         raise UploadException("Unable to recognize the uploaded file(s)")
     the_layer_type = _get_layer_type(spatial_files)
@@ -297,11 +295,10 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
     if the_layer_type not in (
             FeatureType.resource_type,
             Coverage.resource_type):
-        raise RuntimeError("Expected layer type to FeatureType or "
-                           "Coverage, not {}".format(the_layer_type))
+        raise RuntimeError(f"Expected layer type to FeatureType or Coverage, not {the_layer_type}")
     files_to_upload = preprocess_files(spatial_files)
-    logger.debug("files_to_upload: {}".format(files_to_upload))
-    logger.debug('Uploading {}'.format(the_layer_type))
+    logger.debug(f"files_to_upload: {files_to_upload}")
+    logger.debug(f'Uploading {the_layer_type}')
     error_msg = None
     try:
         next_id = _get_next_id()
@@ -506,7 +503,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
         )
 
     if transforms:
-        logger.debug('Setting transforms %s' % transforms)
+        logger.debug(f'Setting transforms {transforms}')
         upload_session.import_session.tasks[0].add_transforms(transforms)
         try:
             upload_session.time_transforms = transforms
@@ -576,7 +573,7 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     if import_session.state == 'INCOMPLETE':
         if task.state != 'ERROR':
-            raise Exception('unknown item state: %s' % task.state)
+            raise Exception(f'unknown item state: {task.state}')
     elif import_session.state == 'READY':
         import_session.commit()
     elif import_session.state == 'PENDING':
@@ -586,8 +583,7 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     if not publishing:
         raise LayerNotReady(
-            "Expected to find layer named '%s' in geoserver" %
-            name)
+            f"Expected to find layer named '{name}' in geoserver")
 
     _log('Creating Django record for [%s]', name)
     target = task.target
@@ -662,8 +658,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                             temporal_extent_start=end)
             except Exception as e:
                 _log(
-                    'There was an error updating the mosaic temporal extent: ' +
-                    str(e))
+                    f"There was an error updating the mosaic temporal extent: {str(e)}")
     else:
         _has_time = (True if upload_session.time and upload_session.time_info and
                      upload_session.time_transforms else False)
@@ -681,7 +676,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                         abstract=abstract or '',
                         owner=user,
                         has_time=_has_time)
-                    )
+                )
         except IntegrityError:
             raise
         assert saved_layer
@@ -711,8 +706,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                 name=file_name,
                 base=base,
                 file=File(
-                    f, name='%s%s' %
-                    (assigned_name or saved_layer.name, type_name)))
+                    f, name=f'{assigned_name or saved_layer.name}{type_name}'))
             # save the system assigned name for the remaining files
             if not assigned_name:
                 the_file = geonode_upload_session.layerfile_set.all()[0].file.name
@@ -770,7 +764,7 @@ def final_step(upload_session, user, charset="UTF-8"):
             zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
             zf.extract(sld_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
-            sld_file[0] = os.path.dirname(archive) + '/' + sld_file[0]
+            sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
         sld_file = sld_file[0]
         sld_uploaded = True
         # geoserver_set_style.apply_async((saved_layer.id, sld_file))
@@ -794,7 +788,7 @@ def final_step(upload_session, user, charset="UTF-8"):
             zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
             zf.extract(xml_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
-            xml_file = os.path.dirname(archive) + '/' + xml_file[0]
+            xml_file = f"{os.path.dirname(archive)}/{xml_file[0]}"
 
     if upload_session.time_info:
         set_time_info(saved_layer, **upload_session.time_info)

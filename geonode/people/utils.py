@@ -64,27 +64,27 @@ def format_address(street=None, zipcode=None, city=None, area=None, country=None
         address = ""
         if city and area:
             if street:
-                address += street + ", "
-            address += city + ", " + area
+                address += f"{street}, "
+            address += f"{city}, {area}"
             if zipcode:
-                address += " " + zipcode
+                address += f" {zipcode}"
         elif (not city) and area:
             if street:
-                address += street + ", "
+                address += f"{street}, "
             address += area
             if zipcode:
-                address += " " + zipcode
+                address += f" {zipcode}"
         elif city and (not area):
             if street:
-                address += street + ", "
+                address += f"{street}, "
             address += city
             if zipcode:
-                address += " " + zipcode
+                address += f" {zipcode}"
         else:
             if street:
-                address += ", " + street
+                address += f", {street}"
             if zipcode:
-                address += " " + zipcode
+                address += f" {zipcode}"
 
         if address:
             address += ", United States"

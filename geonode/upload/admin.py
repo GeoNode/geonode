@@ -24,7 +24,7 @@ from django.contrib import admin
 
 
 def import_link(obj):
-    return "<a href='%s'>Geoserver Importer Link</a>" % obj.get_import_url()
+    return f"<a href='{obj.get_import_url()}'>Geoserver Importer Link</a>"
 
 
 import_link.short_description = 'Link'

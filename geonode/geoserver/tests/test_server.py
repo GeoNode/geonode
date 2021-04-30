@@ -814,13 +814,11 @@ class LayerTests(GeoNodeBaseTestSupport):
         invalid_uname_pw = b"n0t:v@l1d"
 
         valid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(valid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(valid_uname_pw).decode()}",
         }
 
         invalid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(invalid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(invalid_uname_pw).decode()}",
         }
 
         bob = get_user_model().objects.get(username='bobby')
@@ -882,13 +880,11 @@ class LayerTests(GeoNodeBaseTestSupport):
         invalid_uname_pw = b"n0t:v@l1d"
 
         valid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(valid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(valid_uname_pw).decode()}",
         }
 
         invalid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(invalid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(invalid_uname_pw).decode()}",
         }
 
         response = self.client.get(
@@ -1004,8 +1000,8 @@ class UtilsTests(GeoNodeBaseTestSupport):
         defaults = self.OGC_DEFAULT_SETTINGS.get('default')
         ogc_settings = OGC_Servers_Handler(OGC_SERVER)['default']
         self.assertEqual(ogc_settings.server, defaults)
-        self.assertEqual(ogc_settings.rest, defaults['LOCATION'] + 'rest')
-        self.assertEqual(ogc_settings.ows, defaults['LOCATION'] + 'ows')
+        self.assertEqual(ogc_settings.rest, f"{defaults['LOCATION']}rest")
+        self.assertEqual(ogc_settings.ows, f"{defaults['LOCATION']}ows")
 
         # Make sure we get None vs a KeyError when the key does not exist
         self.assertIsNone(ogc_settings.SFDSDFDSF)
@@ -1105,7 +1101,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(instance.default_style.name)
 
         # WMS Links
-        wms_links = wms_links(ogc_settings.public_url + 'wms?',
+        wms_links = wms_links(f"{ogc_settings.public_url}wms?",
                               instance.alternate,
                               bbox,
                               srid,
@@ -1116,13 +1112,13 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wms')
         identifier = urlencode({'layers': instance.alternate})
         for _link in wms_links:
-            logger.debug('%s --> %s' % (wms_url, _link[3]))
+            logger.debug(f'{wms_url} --> {_link[3]}')
             self.assertTrue(wms_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
         # WFS Links
-        wfs_links = wfs_links(ogc_settings.public_url + 'wfs?',
+        wfs_links = wfs_links(f"{ogc_settings.public_url}wfs?",
                               instance.alternate,
                               bbox,
                               srid)
@@ -1131,13 +1127,13 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wfs')
         identifier = urlencode({'typename': instance.alternate})
         for _link in wfs_links:
-            logger.debug('%s --> %s' % (wfs_url, _link[3]))
+            logger.debug(f'{wfs_url} --> {_link[3]}')
             self.assertTrue(wfs_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
         # WCS Links
-        wcs_links = wcs_links(ogc_settings.public_url + 'wcs?',
+        wcs_links = wcs_links(f"{ogc_settings.public_url}wcs?",
                               instance.alternate,
                               bbox,
                               srid)
@@ -1146,9 +1142,9 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
         identifier = urlencode({'coverageid': instance.alternate.replace(':', '__', 1)})
         for _link in wcs_links:
-            logger.debug('%s --> %s' % (wcs_url, _link[3]))
+            logger.debug(f'{wcs_url} --> {_link[3]}')
             self.assertTrue(wcs_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -1252,28 +1248,20 @@ class SignalsTests(GeoNodeBaseTestSupport):
                 )
                 self.assertTrue(
                     _post_migrate_links_orig.count() > 0,
-                    "No 'original' links has been found for the layer '{}'".format(
-                        _lyr.alternate
-                    )
+                    f"No 'original' links has been found for the layer '{_lyr.alternate}'"
                 )
                 for _link_orig in _post_migrate_links_orig:
                     self.assertIn(
                         _link_orig.url,
                         _lyr.csw_anytext,
-                        "The link URL {0} is not present in the 'csw_anytext' attribute of the layer '{1}'".format(
-                            _link_orig.url,
-                            _lyr.alternate
-                        )
-                    )
+                        f"The link URL {_link_orig.url} is not present in the 'csw_anytext' attribute of the layer '{_lyr.alternate}'")
                 # Check catalogue
                 catalogue = get_catalogue()
                 record = catalogue.get_record(_lyr.uuid)
                 self.assertIsNotNone(record)
                 self.assertTrue(
                     hasattr(record, 'links'),
-                    "No records have been found in the catalogue for the resource '{}'".format(
-                        _lyr.alternate
-                    )
+                    f"No records have been found in the catalogue for the resource '{_lyr.alternate}'"
                 )
                 # Check 'metadata' links for each record
                 for mime, name, metadata_url in record.links['metadata']:
@@ -1290,8 +1278,5 @@ class SignalsTests(GeoNodeBaseTestSupport):
                         _post_migrate_link_meta = None
                     self.assertIsNotNone(
                         _post_migrate_link_meta,
-                        "No '{}' links have been found in the catalogue for the resource '{}'".format(
-                            name,
-                            _lyr.alternate
-                        )
+                        f"No '{name}' links have been found in the catalogue for the resource '{_lyr.alternate}'"
                     )

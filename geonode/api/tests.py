@@ -432,7 +432,8 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_extended_text_filter(self):
         """Test that the extended text filter works as expected"""
-        filter_url = f"{self.list_url}?title__icontains=layer2&abstract__icontains=layer2&purpose__icontains=layer2&f_method=or"
+        filter_url = (f"{self.list_url}?title__icontains=layer2&abstract__icontains=layer2"
+                      f"&purpose__icontains=layer2&f_method=or")
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)

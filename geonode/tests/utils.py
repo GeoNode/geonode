@@ -108,12 +108,12 @@ class Client(DjangoTestClient):
         # logger.error(f" make_request ----------> url: {url}")
 
         if ajax:
-            url += "{}force_ajax=true".format('&' if '?' in url else '?')
+            url += f"{'&' if '?' in url else '?'}force_ajax=true"
             self._session.headers['X_REQUESTED_WITH'] = "XMLHttpRequest"
 
         cookie_value = self._session.cookies.get(settings.SESSION_COOKIE_NAME)
         if force_login and cookie_value:
-            self.response_cookies += "; {}={}".format(settings.SESSION_COOKIE_NAME, cookie_value)
+            self.response_cookies += f"; {settings.SESSION_COOKIE_NAME}={cookie_value}"
 
         if self.csrf_token:
             self._session.headers['X-CSRFToken'] = self.csrf_token
@@ -159,9 +159,9 @@ class Client(DjangoTestClient):
             message = ''
             if hasattr(ex, 'message'):
                 if debug:
-                    logger.error('error in request to %s' % path)
+                    logger.error(f'error in request to {path}')
                     logger.error(ex.message)
-                message = ex.message[ex.message.index(':')+2:]
+                message = ex.message[ex.message.index(':') + 2:]
             else:
                 message = str(ex)
             raise HTTPError(url, response.status_code, message, response.headers, None)
@@ -210,7 +210,7 @@ class Client(DjangoTestClient):
         if ext.lower() == '.shp':
             for spatial_file in spatial_files:
                 ext, _ = spatial_file.split('_')
-                file_path = base + '.' + ext
+                file_path = f"{base}.{ext}"
                 # sometimes a shapefile is missing an extra file,
                 # allow for that
                 if os.path.exists(file_path):
@@ -238,7 +238,7 @@ class Client(DjangoTestClient):
         try:
             return resp, resp.json()
         except ValueError:
-            logger.exception(ValueError("probably not json, status {}".format(resp.status_code)))
+            logger.exception(ValueError(f"probably not json, status {resp.status_code}"))
             return resp, resp.content
 
     def get_html(self, path, debug=True):
@@ -307,7 +307,7 @@ def get_web_page(url, username=None, password=None, login_url=None):
         e.args = (msg,)
         raise
     except URLError as e:
-        msg = 'Could not open URL "%s": %s' % (url, e)
+        msg = f'Could not open URL "{url}": {e}'
         e.args = (msg,)
         raise
     else:
@@ -319,9 +319,9 @@ def get_web_page(url, username=None, password=None, login_url=None):
 def check_layer(uploaded):
     """Verify if an object is a valid Layer.
     """
-    msg = ('Was expecting layer object, got %s' % (type(uploaded)))
+    msg = f'Was expecting layer object, got {type(uploaded)}'
     assert isinstance(uploaded, Layer), msg
-    msg = ('The layer does not have a valid name: %s' % uploaded.name)
+    msg = f'The layer does not have a valid name: {uploaded.name}'
     assert len(uploaded.name) > 0, msg
 
 

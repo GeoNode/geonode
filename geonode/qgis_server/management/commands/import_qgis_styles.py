@@ -33,7 +33,7 @@ class Command(BaseCommand):
             try:
                 l.qgis_layer
             except Exception:
-                print("Layer {} has no associated qgis_layer".format(l.name))
+                print(f"Layer {l.name} has no associated qgis_layer")
                 continue
 
             if l.qgis_layer:

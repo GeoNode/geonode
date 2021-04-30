@@ -131,17 +131,15 @@ class Map(ResourceBase, GXPMapBase):
 
         # the readme text will appear in a README file in the zip
         readme = (
-            "Title: %s\n" +
-            "Author: %s\n" +
-            "Abstract: %s\n"
+            "Title: %s\nAuthor: %s\nAbstract: %s\n"
         ) % (self.title, self.poc, self.abstract)
         if self.license:
-            readme += "License: %s" % self.license
+            readme += f"License: {self.license}"
             if self.license.url:
-                readme += " (%s)" % self.license.url
+                readme += f" ({self.license.url})"
             readme += "\n"
         if self.constraints_other:
-            readme += "Additional constraints: %s\n" % self.constraints_other
+            readme += f"Additional constraints: {self.constraints_other}\n"
 
         def layer_json(lyr):
             return {
@@ -290,16 +288,14 @@ class Map(ResourceBase, GXPMapBase):
                     layer = Layer.objects.get(alternate=layer)
                 except ObjectDoesNotExist:
                     raise Exception(
-                        'Could not find layer with name %s' %
-                        layer)
+                        f'Could not find layer with name {layer}')
 
             if not user.has_perm(
                     'base.view_resourcebase',
                     obj=layer.resourcebase_ptr):
                 # invisible layer, skip inclusion or raise Exception?
                 logger.error(
-                    'User %s tried to create a map with layer %s without having premissions' %
-                    (user, layer))
+                    f'User {user} tried to create a map with layer {layer} without having premissions')
             else:
                 _layers.append(layer)
 
@@ -499,10 +495,7 @@ class MapLayer(models.Model, GXPLayerBase):
     def layer_config(self, user=None):
         # Try to use existing user-specific cache of layer config
         if self.id:
-            cfg = cache.get("layer_config" +
-                            str(self.id) +
-                            "_" +
-                            str(0 if user is None else user.id))
+            cfg = cache.get(f"layer_config{str(self.id)}_{str(0 if user is None else user.id)}")
             if cfg is not None:
                 return cfg
 
@@ -537,10 +530,7 @@ class MapLayer(models.Model, GXPLayerBase):
             # Create temporary cache of maplayer config, should not last too long in case
             # local layer permissions or configuration values change (default
             # is 5 minutes)
-            cache.set("layer_config" +
-                      str(self.id) +
-                      "_" +
-                      str(0 if user is None else user.id), cfg)
+            cache.set(f"layer_config{str(self.id)}_{str(0 if user is None else user.id)}", cfg)
         return cfg
 
     @property
@@ -569,12 +559,11 @@ class MapLayer(models.Model, GXPLayerBase):
                         store=self.store, alternate=self.name)
                 else:
                     layer = Layer.objects.get(alternate=self.name)
-                link = "<a href=\"%s\">%s</a>" % (
-                    layer.get_absolute_url(), layer.title)
+                link = f"<a href=\"{layer.get_absolute_url()}\">{layer.title}</a>"
         except Exception:
             link = None
         if link is None:
-            link = "<span>%s</span> " % self.name
+            link = f"<span>{self.name}</span> "
         return link
 
     @property
@@ -604,7 +593,7 @@ class MapLayer(models.Model, GXPLayerBase):
         ordering = ["stack_order"]
 
     def __str__(self):
-        return '%s?layers=%s' % (self.ows_url, self.name)
+        return f'{self.ows_url}?layers={self.name}'
 
 
 def pre_delete_map(instance, sender, **kwrargs):

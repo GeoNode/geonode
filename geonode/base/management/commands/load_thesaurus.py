@@ -72,8 +72,8 @@ class Command(BaseCommand):
         RDF_URI = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
         XML_URI = 'http://www.w3.org/XML/1998/namespace'
 
-        ABOUT_ATTRIB = '{' + RDF_URI + '}about'
-        LANG_ATTRIB = '{' + XML_URI + '}lang'
+        ABOUT_ATTRIB = f"{{{RDF_URI}}}about"
+        LANG_ATTRIB = f"{{{XML_URI}}}lang"
 
         ns = {
             'rdf': RDF_URI,
@@ -94,7 +94,7 @@ class Command(BaseCommand):
         descr = scheme.find('dc:description', ns).text if scheme.find('dc:description', ns) else title
         date_issued = scheme.find('dcterms:issued', ns).text
 
-        print('Thesaurus "{}" issued on {}'.format(title, date_issued))
+        print(f'Thesaurus "{title}" issued on {date_issued}')
 
         thesaurus = Thesaurus()
         thesaurus.identifier = name
@@ -110,7 +110,7 @@ class Command(BaseCommand):
             about = concept.attrib.get(ABOUT_ATTRIB)
             alt_label = concept.find('skos:altLabel', ns).text
 
-            print('Concept {} ({})'.format(alt_label, about))
+            print(f'Concept {alt_label} ({about})')
 
             tk = ThesaurusKeyword()
             tk.thesaurus = thesaurus
@@ -124,7 +124,7 @@ class Command(BaseCommand):
                 lang = pref_label.attrib.get(LANG_ATTRIB)
                 label = pref_label.text
 
-                print('    Label {}: {}'.format(lang, label))
+                print(f'    Label {lang}: {label}')
 
                 tkl = ThesaurusKeywordLabel()
                 tkl.keyword = tk
@@ -138,7 +138,7 @@ class Command(BaseCommand):
         thesaurus = Thesaurus()
         thesaurus.identifier = name
 
-        thesaurus.title = "Title: " + name
+        thesaurus.title = f"Title: {name}"
         thesaurus.description = "SAMPLE FAKE THESAURUS USED FOR TESTING"
         thesaurus.date = "2016-10-01"
 
@@ -147,13 +147,13 @@ class Command(BaseCommand):
         for keyword in ['aaa', 'bbb', 'ccc']:
             tk = ThesaurusKeyword()
             tk.thesaurus = thesaurus
-            tk.about = keyword + '_about'
-            tk.alt_label = keyword + '_alt'
+            tk.about = f"{keyword}_about"
+            tk.alt_label = f"{keyword}_alt"
             tk.save()
 
             for l in ['it', 'en', 'es']:
                 tkl = ThesaurusKeywordLabel()
                 tkl.keyword = tk
                 tkl.lang = l
-                tkl.label = keyword + "_l_" + l + "_t_" + name
+                tkl.label = f"{keyword}_l_{l}_t_{name}"
                 tkl.save()

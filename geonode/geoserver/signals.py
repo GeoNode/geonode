@@ -119,7 +119,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             GsLayer)
     except EnvironmentError as e:
         if e.errno == errno.ECONNREFUSED:
-            msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
+            msg = f'Could not connect to catalog to verify if layer {instance.name} was local'
             logger.warn(msg)
         else:
             raise e
@@ -130,8 +130,8 @@ def geoserver_post_save_map(instance, sender, created, **kwargs):
     instance.set_missing_info()
     if not created:
         if not instance.thumbnail_url or \
-        instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL):
-            logger.debug("... Creating Thumbnail for Map [%s]" % (instance.title))
+                instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL):
+            logger.debug(f"... Creating Thumbnail for Map [{instance.title}]")
             # create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
             geoserver_create_thumbnail.apply_async(((instance.id, False, True, )))
 
@@ -146,11 +146,11 @@ def geoserver_post_save_thumbnail(sender, instance, **kwargs):
         logger.debug(f"... Creating Thumbnail for Layer {instance.title}")
         _recreate_thumbnail = False
         if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
-        'thumbnail_url' in kwargs['update_fields']:
+                'thumbnail_url' in kwargs['update_fields']:
             _recreate_thumbnail = True
         if not instance.thumbnail_url or \
-        instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL) or \
-        is_monochromatic_image(instance.thumbnail_url):
+                instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL) or \
+                is_monochromatic_image(instance.thumbnail_url):
             _recreate_thumbnail = True
         if _recreate_thumbnail:
             geoserver_create_thumbnail.apply_async(((instance.id, False, True, )))

@@ -31,7 +31,7 @@ js_info_dict = {
 }
 
 documents_list = register_url_event()(TemplateView.as_view(
-        template_name='documents/document_list.html'))
+    template_name='documents/document_list.html'))
 
 urlpatterns = [  # 'geonode.documents.views',
     url(r'^$',

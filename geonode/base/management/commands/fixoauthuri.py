@@ -86,4 +86,4 @@ class Command(BaseCommand):
                     client_secret=client_secret,
                     user=get_user_model().objects.filter(is_superuser=True)[0]
                 )
-        return '%s,%s' % (client_id, client_secret)
+        return f'{client_id},{client_secret}'

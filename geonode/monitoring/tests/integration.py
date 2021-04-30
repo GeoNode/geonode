@@ -78,13 +78,7 @@ DB_PORT = settings.DATABASES['default']['PORT']
 DB_NAME = settings.DATABASES['default']['NAME']
 DB_USER = settings.DATABASES['default']['USER']
 DB_PASSWORD = settings.DATABASES['default']['PASSWORD']
-DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
-    DB_USER,
-    DB_PASSWORD,
-    DB_HOST,
-    DB_PORT,
-    DB_NAME
-)
+DATASTORE_URL = f'postgis://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger('south').setLevel(logging.WARNING)
@@ -123,7 +117,7 @@ class TestClient(DjangoTestClient):
         # See https://www.python.org/dev/peps/pep-3333/#environ-variables
         environ = {
             'HTTP_COOKIE': '; '.join(sorted(
-                '%s=%s' % (morsel.key, morsel.coded_value)
+                f'{morsel.key}={morsel.coded_value}'
                 for morsel in self.cookies.values()
             )),
             'PATH_INFO': str('/'),
@@ -161,7 +155,7 @@ class TestClient(DjangoTestClient):
         """
         if 'django.contrib.sessions' not in settings.INSTALLED_APPS:
             raise AssertionError("Unable to login without django.contrib.sessions in INSTALLED_APPS")
-        user.backend = "%s.%s" % ("django.contrib.auth.backends", "ModelBackend")
+        user.backend = f"{'django.contrib.auth.backends'}.{'ModelBackend'}"
 
         # Login
         self.force_login(user, backend=user.backend)
@@ -194,7 +188,7 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
                 pass
 
         self.catalog = Catalog(
-            GEOSERVER_URL + 'rest',
+            f"{GEOSERVER_URL}rest",
             GEOSERVER_USER,
             GEOSERVER_PASSWD,
             retries=ogc_server_settings.MAX_RETRIES,
@@ -1923,10 +1917,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             {'name': 'OWS:ALL', 'type_label': 'Any OWS'}
         ]
         # url
-        url = "%s?%s" % (
-            reverse('monitoring:api_event_types'),
-            'ows_service=true'
-        )
+        url = f"{reverse('monitoring:api_event_types')}?{'ows_service=true'}"
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1964,10 +1955,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             {'name': 'geoserver', 'type_label': 'Geoserver event'}
         ]
         # url
-        url = "%s?%s" % (
-            reverse('monitoring:api_event_types'),
-            'ows_service=false'
-        )
+        url = f"{reverse('monitoring:api_event_types')}?{'ows_service=false'}"
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -2181,11 +2169,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             }
         ]
         # url
-        url = "%s?%s&%s" % (
-            reverse('monitoring:api_metric_data', args={'request.users'}),
-            'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000',
-            'group_by=user'
-        )
+        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'group_by=user'}"
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -2214,12 +2198,12 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             month_data = d["data"]
             is_empty = [
                 md for md in month_data if not (
-                        md["max"]
-                        or md["metric_count"]
-                        or md["min"]
-                        or md["samples_count"]
-                        or md["sum"]
-                        or md["val"]
+                    md["max"]
+                    or md["metric_count"]
+                    or md["min"]
+                    or md["samples_count"]
+                    or md["sum"]
+                    or md["val"]
                 )
             ]
             if is_empty:
@@ -2275,12 +2259,12 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             month_data = d["data"]
             is_empty = [
                 md for md in month_data if not (
-                        md["max"]
-                        or md["metric_count"]
-                        or md["min"]
-                        or md["samples_count"]
-                        or md["sum"]
-                        or md["val"]
+                    md["max"]
+                    or md["metric_count"]
+                    or md["min"]
+                    or md["samples_count"]
+                    or md["sum"]
+                    or md["val"]
                 )
             ]
             if is_empty:
@@ -2340,11 +2324,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             }
         ]
         # url
-        url = "%s?%s&%s" % (
-            reverse('monitoring:api_metric_data', args={'request.users'}),
-            'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000',
-            'group_by=user_on_label'
-        )
+        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'group_by=user_on_label'}"
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -2667,11 +2647,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
              'val': '0.0000'}
         ]
         # url
-        url = "%s?%s&%s" % (
-            reverse('monitoring:api_metric_data', args={'request.count'}),
-            'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000',
-            'group_by=event_type'
-        )
+        url = f"{reverse('monitoring:api_metric_data', args={'request.count'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'group_by=event_type'}"
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
         self.assertEqual(out["error"], "unauthorized_request")
@@ -2700,10 +2676,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
 
     def test_countries_endpoint(self):
         # url
-        url = "%s?%s" % (
-            reverse('monitoring:api_metric_data', args={'request.country'}),
-            'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'
-        )
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.country'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}")
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
         self.assertEqual(out["error"], "unauthorized_request")

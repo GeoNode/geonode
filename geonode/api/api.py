@@ -528,7 +528,7 @@ class ProfileResource(TypeFilteredResource):
                 documents_count=bundle.data.get('documents_count', 0),
                 maps_count=bundle.data.get('maps_count', 0),
                 layers_count=bundle.data.get('layers_count', 0),
-                )
+            )
         return bundle
 
     def prepend_urls(self):

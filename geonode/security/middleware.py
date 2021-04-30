@@ -36,7 +36,7 @@ from guardian.shortcuts import get_anonymous_user
 # make sure login_url can be mapped to redirection URL and will match request.path
 login_url = settings.LOGIN_URL.replace(settings.SITEURL.rstrip('/'), '')
 if not login_url.startswith('/'):
-    login_url = '/' + login_url
+    login_url = f"/{login_url}"
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     white_list_paths = (
@@ -101,7 +101,7 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
-                    "{login_path}?next={request_path}".format(login_path=self.redirect_to, request_path=request.path)
+                    f"{self.redirect_to}?next={request.path}"
                 )
 
 
@@ -143,6 +143,4 @@ class SessionControlMiddleware(MiddlewareMixin):
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
-                    '{login_path}?next={request_path}'.format(
-                        login_path=self.redirect_to,
-                        request_path=request.path))
+                    f'{self.redirect_to}?next={request.path}')

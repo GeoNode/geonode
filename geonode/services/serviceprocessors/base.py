@@ -76,7 +76,7 @@ def get_proxified_ows_url(url, version=None, proxy_base=None):
         urlencode(
             qd,
             doseq=True),
-        safe='') if qd else 'version%3D' + version + '%26request%3DGetCapabilities%26service%3Dwms'
+        safe='') if qd else f"version%3D{version}%26request%3DGetCapabilities%26service%3Dwms"
     proxy_base = proxy_base if proxy_base else urljoin(
         settings.SITEURL, reverse('proxy'))
     proxified_url = "{proxy_base}?url={ows_url}%3F{ows_request}".format(proxy_base=proxy_base,
@@ -93,7 +93,7 @@ def get_geoserver_cascading_workspace(create=True):
     name = getattr(settings, "CASCADE_WORKSPACE", "cascaded-services")
     workspace = catalog.get_workspace(name)
     if workspace is None and create:
-        uri = "http://www.geonode.org/{}".format(name)
+        uri = f"http://www.geonode.org/{name}"
         workspace = catalog.create_workspace(name, uri)
     return workspace
 

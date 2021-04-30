@@ -115,7 +115,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     qgis_layer, created = QGISServerLayer.objects.get_or_create(
         layer=instance)
-    logger.debug('Geonode Layer Path %s' % geonode_layer_path)
+    logger.debug(f'Geonode Layer Path {geonode_layer_path}')
 
     base_filename, original_ext = os.path.splitext(geonode_layer_path)
     extensions = QGISServerLayer.accepted_format
@@ -123,14 +123,14 @@ def qgis_server_post_save(instance, sender, **kwargs):
     is_shapefile = False
 
     for ext in extensions:
-        if os.path.exists(base_filename + '.' + ext):
+        if os.path.exists(f"{base_filename}.{ext}"):
             is_shapefile = is_shapefile or ext == 'shp'
             try:
                 if created:
                     # Assuming different layer has different filename because
                     # geonode rename it
                     shutil.copy2(
-                        base_filename + '.' + ext,
+                        f"{base_filename}.{ext}",
                         QGIS_layer_directory
                     )
                     logger.debug('Create new basefile')
@@ -138,16 +138,16 @@ def qgis_server_post_save(instance, sender, **kwargs):
                     # If there is already a file, replace the old one
                     qgis_layer_base_filename = qgis_layer.qgis_layer_path_prefix
                     shutil.copy2(
-                        base_filename + '.' + ext,
-                        qgis_layer_base_filename + '.' + ext
+                        f"{base_filename}.{ext}",
+                        f"{qgis_layer_base_filename}.{ext}"
                     )
                     logger.debug('Overwrite existing basefile')
                 logger.debug(
-                    'Copying %s' % base_filename + '.' + ext + ' Success')
-                logger.debug('Into %s' % QGIS_layer_directory)
+                    f"Copying {base_filename}.{ext} Success")
+                logger.debug(f'Into {QGIS_layer_directory}')
             except IOError as e:
                 logger.debug(
-                    'Copying %s' % base_filename + '.' + ext + ' FAILED ' + e)
+                    f"Copying {base_filename}.{ext} FAILED {e}")
     if created:
         # Only set when creating new QGISServerLayer Object
         geonode_filename = os.path.basename(geonode_layer_path)
@@ -178,8 +178,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
             if srid:
                 instance.srid = srid
     except Exception as e:
-        logger.debug("Can't retrieve projection: {layer}".format(
-            layer=geonode_layer_path))
+        logger.debug(f"Can't retrieve projection: {geonode_layer_path}")
         logger.exception(e)
 
     # Refresh and create the instance default links
@@ -212,7 +211,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     # Get the path of the metadata file
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
-    xml_file_path = basename + '.xml'
+    xml_file_path = f"{basename}.xml"
     if os.path.exists(xml_file_path):
         try:
             update_xml(xml_file_path, new_values)
@@ -220,7 +219,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
             pass
 
     # Also update xml in QGIS Server
-    xml_file_path = qgis_layer.qgis_layer_path_prefix + '.xml'
+    xml_file_path = f"{qgis_layer.qgis_layer_path_prefix}.xml"
     if os.path.exists(xml_file_path):
         try:
             update_xml(xml_file_path, new_values)
@@ -242,7 +241,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
 @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
-    logger.debug('QGIS Server Pre Save Map Layer %s' % instance.name)
+    logger.debug(f'QGIS Server Pre Save Map Layer {instance.name}')
     try:
         layer = Layer.objects.get(alternate=instance.name)
         if layer:
@@ -275,11 +274,10 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
                 raise QGISServerLayer.DoesNotExist
             layers.append(_l)
         except Layer.DoesNotExist:
-            msg = 'No Layer found for typename: {0}'.format(layer.name)
+            msg = f'No Layer found for typename: {layer.name}'
             logger.debug(msg)
         except QGISServerLayer.DoesNotExist:
-            msg = 'No QGIS Server Layer found for typename: {0}'.format(
-                layer.name)
+            msg = f'No QGIS Server Layer found for typename: {layer.name}'
             logger.debug(msg)
 
     if not layers:
@@ -293,7 +291,7 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         reverse(
             'map_download',
             kwargs={'mapid': instance.id}))
-    logger.debug('map_download_url: %s' % map_download_url)
+    logger.debug(f'map_download_url: {map_download_url}')
     link_name = 'Download Data Layers'
     Link.objects.update_or_create(
         resource=instance.resourcebase_ptr,
@@ -311,7 +309,7 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         reverse(
             'map_wmc',
             kwargs={'mapid': instance.id}))
-    logger.debug('wmc_download_url: %s' % ogc_wmc_url)
+    logger.debug(f'wmc_download_url: {ogc_wmc_url}')
     link_name = 'Download Web Map Context'
     link_mime = 'application/xml'
     Link.objects.update_or_create(
@@ -331,7 +329,7 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         reverse(
             'map_download_qlr',
             kwargs={'mapid': instance.id}))
-    logger.debug('qlr_map_download_url: %s' % ogc_qlr_url)
+    logger.debug(f'qlr_map_download_url: {ogc_qlr_url}')
     link_name = 'Download QLR Layer file'
     link_mime = 'application/xml'
     Link.objects.update_or_create(
@@ -374,10 +372,9 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         overwrite=overwrite,
         internal=True)
 
-    logger.debug('Create project url: {url}'.format(url=response.url))
+    logger.debug(f'Create project url: {response.url}')
     logger.debug(
-        'Creating the QGIS Project : %s -> %s' % (
-            qgis_map.qgis_project_path, ensure_string(response.content)))
+        f'Creating the QGIS Project : {qgis_map.qgis_project_path} -> {ensure_string(response.content)}')
 
     # Generate map thumbnail
     create_qgis_server_thumbnail.apply_async((
