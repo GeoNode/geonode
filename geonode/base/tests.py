@@ -59,7 +59,7 @@ from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
 from geonode.base.templatetags.base_tags import get_visibile_resources, facets
 from geonode.base.templatetags.thesaurus import (
-    get_name_translation, get_unique_thesaurus_set,
+    get_name_translation, get_thesaurus_localized_label, get_thesaurus_translation_by_id, get_unique_thesaurus_set,
     get_thesaurus_title,
     get_thesaurus_date,
 )
@@ -896,6 +896,21 @@ class TestTagThesaurus(TestCase):
         lang.return_value = 'ke'
         actual = get_name_translation('inspire-theme')
         expected = "GEMET - INSPIRE themes, version 1.0"
+        self.assertEqual(expected, actual)
+
+    @patch('geonode.base.templatetags.thesaurus.get_language')
+    def test_get_thesaurus_translation_by_id(self, lang):
+        lang.return_value = 'it'
+        actual = get_thesaurus_translation_by_id(1)
+        expected = "Tema GEMET - INSPIRE, versione 1.0"
+        self.assertEqual(expected, actual)
+
+    @patch('geonode.base.templatetags.thesaurus.get_language')
+    def test_get_thesaurus_localized_label(self, lang):
+        lang.return_value = 'de'
+        keyword = ThesaurusKeyword.objects.get(id=1)
+        actual = get_thesaurus_localized_label(keyword)
+        expected = "Adressen"
         self.assertEqual(expected, actual)
 
     @patch('geonode.base.templatetags.thesaurus.get_language')

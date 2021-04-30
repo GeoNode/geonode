@@ -111,8 +111,8 @@ class CountJSONSerializer(Serializer):
         counts = list()
         if subtypes:
             for subtype in subtypes:
-                counts.append(
-                    subtype.values(options['count_type']).annotate(count=Count(options['count_type'])).first()
+                counts.extend(
+                    list(subtype.values(options['count_type']).annotate(count=Count(options['count_type'])))
                 )
         else:
             counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))

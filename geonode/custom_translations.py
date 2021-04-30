@@ -38,6 +38,7 @@ texts = [
     _("Economy"),
     _("Height above or below sea level. Examples: altitude, bathymetry, digital elevation models, slope, "
       "derived products."),
+    _("Elevation"),
     _("Environmental resources, protection and conservation. Examples: environmental pollution, waste storage and "
       "treatment, environmental impact assessment, monitoring environmental risk, nature reserves, landscape."),
     _("Environment"),
@@ -61,6 +62,7 @@ texts = [
     _("Intelligence Military"),
     _("Positional information and services. Examples: addresses, geodetic networks, control points, postal zones "
       "and services, place names."),
+    _("Location"),
     _("Features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, "
       "coastal information, reefs."),
     _("Oceans"),

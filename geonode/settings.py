@@ -1539,7 +1539,7 @@ SEARCH_FILTERS = {
 # HTML WYSIWYG Editor (TINYMCE) Menu Bar Settings
 TINYMCE_DEFAULT_CONFIG = {
     "theme": "silver",
-    "height": 500,
+    "height": 200,
     "plugins": 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',  # noqa
     "imagetools_cors_hosts": ['picsum.photos'],
     "menubar": 'file edit view insert format tools table help',
@@ -2029,3 +2029,18 @@ SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'Tr
 # -- END Settings for MONITORING plugin
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
+UI_DEFAULT_MANDATORY_FIELDS = [
+    'id_resource-title',
+    'id_resource-abstract',
+    'id_resource-language',
+    'id_resource-license',
+    'id_resource-regions',
+    'id_resource-date_type',
+    'id_resource-date',
+    'category_form',
+    'id_resource-attribution',
+    'id_resource-constraints_other',
+    'id_resource-data_quality_statement',
+    'id_resource-restriction_code_type'
+]
+UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv('UI_REQUIRED_FIELDS ', '[]'))

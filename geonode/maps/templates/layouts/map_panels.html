@@ -240,9 +240,15 @@ span.grippy::after {
   <div class="advanced-hint progress-bar" role="progressbar" style="width:34%">
     {% trans "Mandatory" %}
   </div>
-  <div class="progress-bar" role="progressbar" style="width:33%">
-    {% trans "Optional" %}
-  </div>
+  {% if UI_REQUIRED_FIELDS %}
+      <div class="metadata-hint progress-bar" role="progressbar" style="width:33%">
+        {% trans "Mandatory" %}
+      </div>
+  {% else %}
+      <div class="progress-bar" role="progressbar" style="width:33%">
+        {% trans "Optional" %}
+      </div>
+  {% endif %}
 </div>
   <ul class="wizard--progress wizard--progress--medium">
       <li data-step="1" id="first" class="is-active" data-toggle="tab" href="#mandatory">
@@ -252,7 +258,11 @@ span.grippy::after {
           <a>{% trans "Location and Licenses" %}</a>
       </li>
       <li data-step="3" data-toggle="tab" href="#ownership">
-          <a>{% trans "Optional Metadata" %}</a>
+          {% if UI_REQUIRED_FIELDS %}
+            <a>{% trans "Required Metadata" %}</a>
+        {% else %}
+            <a>{% trans "Optional Metadata" %}</a>
+        {% endif %}
       </li>
   </ul>
     <div id="mandatory" class="tab-pane fade in active">
@@ -409,12 +419,6 @@ span.grippy::after {
                                         {{ map_form.license }}
                                     </div>
                                     {% endblock map_license %}
-                                    {% block map_doi %}
-                                    <div>
-                                        <span><label for="{{ map_form.doi|id }}">{{ map_form.doi.label }}</label></span>
-                                        {{ map_form.doi }}
-                                    </div>
-                                    {% endblock map_doi %}
                                     {% block map_attribution %}
                                     <div>
                                         <span><label for="{{ map_form.attribution|id }}">{{ map_form.attribution.label }}</label></span>
@@ -465,7 +469,7 @@ span.grippy::after {
 
     <div id="ownership" class="tab-pane fade">
         <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
-        <div>
+        <div id="mdinfo">
             <div class="col-xs-12 col-lg-4">
               <p>{% trans "Other, Optional, Metadata" %}</p>
                 {% block map_edition %}
@@ -475,6 +479,12 @@ span.grippy::after {
                     {{ map_form.edition }}
                 </div>
                 {% endblock map_edition %}
+                {% block map_doi %}
+                <div>
+                    <span><label for="{{ map_form.doi|id }}">{{ map_form.doi.label }}</label></span>
+                    {{ map_form.doi }}
+                </div>
+                {% endblock map_doi %}
                 {% block map_purpose %}
                 <div>
                     <span><label for="{{ map_form.purpose|id }}">{{ map_form.purpose.label }}</label></span>

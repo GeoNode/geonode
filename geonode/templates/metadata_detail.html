@@ -1,7 +1,7 @@
 {% extends "geonode_base.html" %}
 {% load i18n %}
 {% load bootstrap_tags %}
-
+{% load thesaurus %}
 {% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
 {% block body_class %}data{% endblock %}
@@ -39,22 +39,26 @@
 
     <span class="subtitle">{% trans "Identification" %}</span>
     <div class="sep_title"><hr></div>
-
     <dl class="dl-horizontal">
+        {% block resource_title %}
         {% if resource.title %}
         <dt>{% trans "Title" %}</dt>
         <dd>{{ resource.title|truncatechars:80 }}</dd>
         {% endif %}
+        {% endblock resource_title %}
 
+        {% block abstract %}
         {% if resource.abstract %}
         <dt>{% trans "Abstract" %}</dt>
         <dd>{{ resource.abstract|safe }}</dd>
         {% endif %}
+        {% endblock abstract %}
 
     </dl>
 
     <dl class="dl-horizontal">
 
+        {% block license %}
         {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resource.license %}
         <dt>{% trans "License" %}</dt>
         <dd>{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
@@ -68,24 +72,51 @@
             {% endif %}
         </dd>
 
+        {% endblock license %}
 
+        {% block date %}
         {% if resource.date %}
         <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
         <dd>{{ resource.date }}</dd>
         {% endif %}
+        {% endblock date %}
 
+        {% block display_type %}
         {% if resource.display_type %}
         <dt>{% trans "Type" %}</dt>
         <dd>{{ resource.display_type }}</dd>
         {% endif %}
+        {% endblock display_type %}
 
-        {% if resource.keyword_list %}
-        <dt>{% trans "Keywords" %}</dt>
-        <dd>{% for keyword in resource.keyword_list %}
-            {{ keyword }}
-            {% endfor %}</dd>
-        {% endif %}
+        {% block keyword_list %}
+          {% if resource.keywords.count > 0 or resource.tkeywords.count > 0 %}
+            <dt>{% trans "Keywords" %}</dt>
+            <dd itemprop="keywords">
+                <ul>
+                    {% for keyword in resource.keywords.all %}
+                    <li>
+                        <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?keywords__slug__in={{ keyword.slug }}" >
+                        {{ keyword.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                    {% for tid in resource.tkeywords.all|get_unique_thesaurus_set %}
+                    <li>{{ tid|get_thesaurus_translation_by_id }}
+                        {% for tkeywords in resource.tkeywords.all %}
+                        <ul>
+                        {% if tid == tkeywords.thesaurus.id %}
+                            <li><a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?tkeywords__id__in={{ tkeywords.id }}">{{tkeywords|get_thesaurus_localized_label}}</a></li>
+                        {% endif %}
+                        </ul>
+                        {% endfor %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </dd>
+            {% endif %}
+        {% endblock keyword_list %}
 
+        {% block category %}
         {% if resource.category %}
         <dt>{% trans "Category" %}</dt>
         <dd><a href="/search/?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
@@ -95,32 +126,48 @@
         </dd>
         {% endif %}
         {% endif %}
+        {% endblock category %}
 
+        {% block regions %}
         {% if resource.regions.all %}
         <dt>{% trans "Regions" %}</dt>
         <dd>{{ resource.regions.all|join:", " }}</dd>
         {% endif %}
+        {% endblock regions %}
 
+        {% block is_approved %}
         <dt>{% trans "Approved" %}</dt>
         <dd>{% if resource.is_approved %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
+        {% endblock is_approved %}
 
+        {% block is_published %}
         <dt>{% trans "Published" %}</dt>
         <dd>{% if resource.is_published %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
+        {% endblock is_published %}
 
+        {% block featured %}
         <dt>{% trans "Featured" %}</dt>
         <dd>{% if resource.featured %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
+        {% endblock featured %}
 
+        {% block group %}
         {% if resource.group %}
         <dt>{% trans "Group" %}</dt>
         <dd><a href="/groups/group/{{ resource.group.name }}/activity/">{{ group }}</a> </dd>
         {% endif %}
+        {% endblock group %}
 
+        {% block doi %}
         <dt>{% trans "DOI" %}</dt>
         <dd>{{ resource.doi }}</dd>
+        {% endblock doi %}
 
+        {% block attribution %}
         <dt>{% trans "Attribution" %}</dt>
         <dd>{{ resource.attribution }}</dd>
+        {% endblock attribution %}
 
+        {% block extra_tag %}{% endblock extra_tag %}
     </dl>
 
 
@@ -132,33 +179,49 @@
         {% if resource.owner %}
         {% with resource.owner as poc %}
 
+        {% block name_long %}
         <dt>{% trans "Name" %}</dt>
         <dd>{{ poc.name_long }}</dd>
+        {% endblock name_long %}
 
+        {% block email %}
         <dt>{% trans "email" %}</dt>
         <dd>{{ poc.email }}</dd>
+        {% endblock email %}
 
+        {% block position %}
         <dt>{% trans "Position" %}</dt>
         <dd>{{ poc.position }}</dd>
+        {% endblock position %}
 
+        {% block organization %}
         <dt>{% trans "Organization" %}</dt>
         <dd>{{ poc.organization }}</dd>
+        {% endblock organization %}
 
+        {% block location %}
         <dt>{% trans "Location" %}</dt>
         <dd>{{ poc.location }}</dd>
+        {% endblock location %}
 
+        {% block voice %}
         <dt>{% trans "Voice" %}</dt>
         <dd>{{ poc.voice }}</dd>
+        {% endblock voice %}
 
+        {% block fax %}
         <dt>{% trans "Fax" %}</dt>
         <dd>{{ poc.fax }}</dd>
+        {% endblock fax %}
 
+        {% block poc_keyword_list %}
         {% if poc.keyword_list %}
         <dt>{% trans "Keywords" %}</dt>
         <dd>{% for keyword in poc.keyword_list %}
             {{ keyword }}
             {% endfor %}</dd>
         {% endif %}
+        {% endblock poc_keyword_list %}
 
         {% endwith %}
         {% endif %}
@@ -179,24 +242,36 @@
 
     <dl class="dl-horizontal">
 
+        {% block scale %}
         <dt>{% trans "Spatial Extent" %}</dt>
         <dd>{% if resource.scale %} {{ resource.scale }} {% else %} --- {% endif %}</dd>
+        {% endblock scale %}
 
+        {% block srid %}
         <dt>{% trans "Projection System" %}</dt>
         <dd>{{ resource.srid }}</dd>
+        {% endblock srid %}
 
-        <dt>{% trans "Extension x0" %}</dt>
+                <dt>{% trans "Extension x0" %}</dt>
+
+        {% block bbox_x0 %}
         <dd>{{resource.bbox_x0}}</dd>
+        {% endblock bbox_x0 %}
 
         <dt>{% trans "Extension x1" %}</dt>
+        {% block bbox_x1 %}
         <dd>{{resource.bbox_x1}}</dd>
+        {% endblock bbox_x1 %}
 
         <dt>{% trans "Extension y0" %}</dt>
+        {% block bbox_y0 %}
         <dd>{{resource.bbox_y0}}</dd>
+        {% endblock bbox_y0 %}
 
         <dt>{% trans "Extension y1" %}</dt>
+        {% block bbox_y1 %}
         <dd>{{resource.bbox_y1}}</dd>
-
+        {% endblock bbox_y1 %}
     </dl>
 
     <span class="subtitle">{% trans "Features" %}</span>
@@ -204,6 +279,7 @@
 
     <dl class="dl-horizontal">
 
+        {% block license2 %}
         {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resource.license %}
         <dt>{% trans "License" %}</dt>
         <dd>{{ resource.license.name_long }} <a href="#license-more-below" data-toggle="collapse" data-target=".license-more-below"><i class="fa fa-info-circle"></i></a></dd>
@@ -216,12 +292,15 @@
             {% endif %}
         </dd>
         {% endif %}
-
+        {% endblock license2 %}
+        {% block maintenance_frequency %}
         {% if resource.maintenance_frequency %}
         <dt>{% trans "Maintenance Frequency" %}</dt>
         <dd>{{ resource.maintenance_frequency_title }}</dd>
         {% endif %}
+        {% endblock maintenance_frequency %}
 
+        {% block restriction_code_type %}
         {% if resource.restriction_code_type or resource.constraints_other %}
         <dt>{% trans "Restrictions" %}</dt>
         <dd>{% if resource.constraints_other %}
@@ -230,41 +309,56 @@
             {{ resource.restriction_code_type }}
             {% endif %}</dd>
         {% endif %}
+        {% endblock restriction_code_type %}
 
+        {% block edition %}
         {% if resource.edition %}
         <dt>{% trans "Edition" %}</dt>
         <dd>{{ resource.edition}}</dd>
         {% endif %}
+        {% endblock edition %}
 
+        {% block purpose %}
         {% if resource.purpose %}
         <dt>{% trans "Purpose" %}</dt>
         <dd>{{ resource.purpose|safe }}</dd>
         {% endif %}
+        {% endblock purpose %}
 
+        {% block language %}
         {% if resource.language %}
         <dt>{% trans "Language" %}</dt>
         <dd>{{ resource.language_title }}</dd>
         {% endif %}
+        {% endblock language %}
 
+        {% block temporal_extent_start %}
         {% if resource.temporal_extent_start and resource.temporal_extent_end %}
         <dt>{% trans "Temporal Extent" %}</dt>
         <dd>{{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}</dd>
         {% endif %}
+        {% endblock temporal_extent_start %}
 
+        {% block data_quality_statement %}
         {% if resource.data_quality_statement %}
         <dt>{% trans "Data Quality" %}</dt>
         <dd>{{ resource.data_quality_statement|safe }}</dd>
         {% endif %}
+        {% endblock data_quality_statement %}
 
+        {% block supplemental_information %}
         {% if resource.supplemental_information %}
         <dt>{% trans "Supplemental Information" %}</dt>
         <dd>{{ resource.supplemental_information|safe }}</dd>
         {% endif %}
+        {% endblock supplemental_information %}
 
+        {% block spatial_representation_type %}
         {% if resource.spatial_representation_type %}
         <dt>{% trans "Spatial Representation Type" %}</dt>
         <dd>{{ resource.spatial_representation_type }}</dd>
         {% endif %}
+        {% endblock spatial_representation_type %}
 
     </dl>
 
@@ -274,34 +368,49 @@
 
     <dl class="dl-horizontal">
 
+        {% block poc_name_long %}
         <dt>{% trans "Name" %}</dt>
         <dd>{{ resource.poc.name_long }}</dd>
+        {% endblock poc_name_long %}
 
+        {% block poc_email %}
         <dt>{% trans "email" %}</dt>
         <dd>{{ resource.poc.email }}</dd>
+        {% endblock poc_email %}
 
+        {% block poc_position %}
         <dt>{% trans "Position" %}</dt>
         <dd>{{ resource.poc.position }}</dd>
+        {% endblock poc_position %}
 
+        {% block poc_organization %}
         <dt>{% trans "Organization" %}</dt>
         <dd>{{ resource.poc.organization }}</dd>
+        {% endblock poc_organization %}
 
+        {% block poc_location %}
         <dt>{% trans "Location" %}</dt>
         <dd>{{ resource.poc.location }}</dd>
+        {% endblock poc_location %}
 
+        {% block poc_voice %}
         <dt>{% trans "Voice" %}</dt>
         <dd>{{ resource.poc.voice }}</dd>
+        {% endblock poc_voice %}
 
+        {% block poc_fax %}
         <dt>{% trans "Fax" %}</dt>
         <dd>{{ resource.poc.fax }}</dd>
+        {% endblock poc_fax %}
 
+        {% block poc_keyword %}
         {% if poc.keyword_list %}
         <dt>{% trans "Keywords" %}</dt>
         <dd>{% for keyword in resource.poc.keyword_list %}
             {{ keyword }}
             {% endfor %}</dd>
         {% endif %}
-
+        {% endblock poc_keyword %}
         <hr>
 
     </dl>
@@ -315,16 +424,22 @@
 
     <dl class="dl-horizontal">
 
+        {% block get_absolute_url %}
         <dt>{% trans "Link Online" %}</dt>
         <dd><a href="{{ resource.get_absolute_url }}">{{ resource.get_absolute_url }}</a></dd>
+        {% endblock get_absolute_url %}
 
+        {% block metaget_absolute_url %}
         <dt>{% trans "Metadata Page" %}</dt>
         <dd><a href="{{ resource.get_absolute_url }}/metadata_detail">{{ resource.get_absolute_url }}/metadata_detail</a></dd>
+        {% endblock metaget_absolute_url %}
 
+        {% block doc_file %}
         {% if resource.doc_file %}
         <dt>{% trans "Online Link" %}</dt>
         <dd><a href="{{ resource.get_absolute_url }}/download">{{ resource.get_absolute_url }}/download</a></dd>
         {% endif %}
+        {% endblock doc_file %}
 
         <hr>
 
@@ -355,34 +470,49 @@
 
         {% with resource.metadata_author as poc %}
 
+        {% block metadata_author_doc_file %}
         <dt>{% trans "Name" %}</dt>
         <dd>{{ poc.name_long }}</dd>
+        {% endblock metadata_author_doc_file %}
 
+        {% block metadata_author_email %}
         <dt>{% trans "email" %}</dt>
         <dd>{{ poc.email }}</dd>
+        {% endblock metadata_author_email %}
 
+        {% block metadata_author_position %}
         <dt>{% trans "Position" %}</dt>
         <dd>{{ poc.position }}</dd>
+        {% endblock metadata_author_position %}
 
+        {% block metadata_author_organization %}
         <dt>{% trans "Organization" %}</dt>
         <dd>{{ poc.organization }}</dd>
+        {% endblock metadata_author_organization %}
 
+        {% block metadata_author_location %}
         <dt>{% trans "Location" %}</dt>
         <dd>{{ poc.location }}</dd>
+        {% endblock metadata_author_location %}
 
+        {% block metadata_author_voice %}
         <dt>{% trans "Voice" %}</dt>
         <dd>{{ poc.voice }}</dd>
+        {% endblock metadata_author_voice %}
 
+        {% block metadata_author_fax %}
         <dt>{% trans "Fax" %}</dt>
         <dd>{{ poc.fax }}</dd>
+        {% endblock metadata_author_fax %}
 
+        {% block metadata_author_keyword_list %}
         {% if poc.keyword_list %}
         <dt>{% trans "Keywords" %}</dt>
         <dd>{% for keyword in poc.keyword_list %}
             {{ keyword }}
             {% endfor %}</dd>
         {% endif %}
-
+        {% endblock metadata_author_keyword_list %}
         {% endwith %}
 
     </dl>

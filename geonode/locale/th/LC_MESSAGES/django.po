@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:00+0200\n"
+"POT-Creation-Date: 2021-04-29 08:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Thai (http://www.transifex.com/geonode/geonode/language/th/)\n"
@@ -560,9 +560,6 @@ msgstr ""
 msgid "offline"
 msgstr ""
 
-msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr ""
-
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
@@ -586,9 +583,6 @@ msgstr "ดูแผนที่"
 msgid "Batch Edit"
 msgstr ""
 
-msgid "batch edit"
-msgstr ""
-
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -598,11 +592,6 @@ msgstr "ส่ง"
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Set Permissions"
-msgstr "ตั้งค่าสิทธิ์"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "set permissions"
 msgstr "ตั้งค่าสิทธิ์"
 
 msgid "Discover the available datasets."
@@ -756,6 +745,9 @@ msgid ""
 "elevation models, slope, derived products."
 msgstr ""
 
+msgid "Elevation"
+msgstr ""
+
 msgid ""
 "Environmental resources, protection and conservation. Examples: "
 "environmental pollution, waste storage and treatment, environmental impact "
@@ -827,6 +819,9 @@ msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+
+msgid "Location"
+msgstr "ตำแหน่ง"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
@@ -1005,11 +1000,6 @@ msgstr "URL ของเอกสาร ถ้าหากมาจากภา�
 msgid "URL"
 msgstr "URL"
 
-#, fuzzy
-#| msgid "Documents"
-msgid "documents"
-msgstr "เอกสาร"
-
 msgid "Your browser does not support the audio element."
 msgstr ""
 
@@ -1119,11 +1109,6 @@ msgstr "สำรวจเอกสาร"
 
 msgid "Upload Documents"
 msgstr "อัพโหลดเอกสาร"
-
-#, fuzzy
-#| msgid "dataset"
-msgid "data"
-msgstr "ชุดข้อมูล"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1489,11 +1474,6 @@ msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
 
 #, fuzzy
-#| msgid "GeoExplorer"
-msgid "apps explore"
-msgstr "GeoExplorer"
-
-#, fuzzy
 #| msgid "Create a New Map"
 msgid "Create New"
 msgstr "สร้างแผนที่ใหม่"
@@ -1811,11 +1791,6 @@ msgid "Explore Group Categories"
 msgstr "สำรวจกลุ่ม"
 
 #, fuzzy
-#| msgid "Categories"
-msgid "groups explore"
-msgstr "หมวด"
-
-#, fuzzy
 #| msgid "Create a Group"
 msgid "Create a New Group Category"
 msgstr "สร้างกลุ่ม"
@@ -1834,16 +1809,6 @@ msgstr "ลบกลุ่ม"
 
 msgid "Create Group"
 msgstr "สร้างกลุ่ม"
-
-#, fuzzy
-#| msgid "A Map was created"
-msgid "groups create"
-msgstr "สร้างแผนที่เสร็จแล้ว"
-
-#, fuzzy
-#| msgid "group"
-msgid "groups"
-msgstr "กลุ่ม"
 
 #, fuzzy
 #| msgid "last modified"
@@ -1922,9 +1887,6 @@ msgstr "เพิ่มสมาชิก"
 msgid "Add Group Members"
 msgstr "จัดการสมาชิกในกลุ่ม"
 
-msgid "groups remove"
-msgstr ""
-
 #, python-format
 msgid ""
 "\n"
@@ -1939,11 +1901,6 @@ msgstr "ลบแผนที่/ข้อมูลจากกลุ่ม"
 
 msgid "Remove selected maps/data"
 msgstr "ลบแผนที่/ข้อมูลที่เลือก"
-
-#, fuzzy
-#| msgid "A Map was updated"
-msgid "groups update"
-msgstr "แผนที่ได้รับการปรับปรุงแล้ว"
 
 #, fuzzy
 #| msgid "Edit Group Details"
@@ -2249,11 +2206,6 @@ msgstr "วันที่สถิติเกี่ยวกับแอตท
 msgid "Append to Layer"
 msgstr "แก้ไขชั้นข้อมูล"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers append"
-msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
-
 msgid "Return to Layer"
 msgstr ""
 
@@ -2274,11 +2226,6 @@ msgstr "เปลี่ยนที่อยู่สำหรับติดต
 msgid "Assign a new point of contact to the layers below:"
 msgstr "เพิ่มที่อยู่ที่ติดต่อได้ให้กับชั้นข้อมูลด้านล่างนี้:"
 
-#, fuzzy
-#| msgid "Layers"
-msgid "layers"
-msgstr "ชั้นข้อมูล"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
@@ -2295,9 +2242,6 @@ msgid "Bounding Box"
 msgstr ""
 
 msgid "Time"
-msgstr ""
-
-msgid "Elevation"
 msgstr ""
 
 msgid "Actions"
@@ -2563,11 +2507,6 @@ msgstr "การกระทำนี้ส่งผลต่อแผนที
 msgid "No maps are using this layer"
 msgstr "ไม่มีแผนที่ใดใช้ชั้นข้อมูลนี้"
 
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers explore"
-msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
-
 msgid "Upload Layers"
 msgstr "อัพโหลดชั้นข้อมูล"
 
@@ -2627,11 +2566,6 @@ msgstr ""
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
 msgstr "อัพโหลดชั้นข้อมูล"
-
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "layers upload"
-msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
@@ -2712,17 +2646,28 @@ msgstr "แอตทริบิวต์"
 msgid "Upload Layer"
 msgstr "อัพโหลดชั้นข้อมูล"
 
-msgid "Incomplete Uploads"
-msgstr "อัพโหลดไม่สมบูรณ์"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload status"
+msgstr "ดาวน์โหลดคำอธิบายข้อมูล"
 
-msgid "You have the following incomplete uploads"
-msgstr "คุณมีไฟล์ที่อัพโหลดไม่เสร็จดังต่อไปนี้"
-
-msgid "Resume"
-msgstr "ประวัติย่อ"
+msgid ""
+"This file needs additional configuration to complete the upload process. "
+"Please click on the button to fill the required configuration"
+msgstr ""
 
 msgid "Delete"
 msgstr "ลบ"
+
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload process completed"
+msgstr "อัพโหลดเอกสาร"
+
+msgid ""
+"The upload process cannot be completed because the original file is no more "
+"available"
+msgstr ""
 
 #, fuzzy
 #| msgid "Create"
@@ -3426,9 +3371,6 @@ msgstr "layer params"
 msgid "source params"
 msgstr "source params"
 
-msgid "maps"
-msgstr ""
-
 msgid "Map layers WMS GetCapabilities document"
 msgstr ""
 
@@ -3526,11 +3468,6 @@ msgstr "แก้ไขแผนที่"
 
 msgid "Explore Maps"
 msgstr "สำรวจแผนที่"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "maps explore"
-msgstr "GeoExplorer"
 
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
@@ -4070,11 +4007,6 @@ msgstr "สร้างโปรไฟล์"
 msgid "Profile of "
 msgstr "โปรไฟล์ของ"
 
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "people explore"
-msgstr "GeoExplorer"
-
 msgid "Not provided."
 msgstr "ไม่มีการระบุ"
 
@@ -4083,9 +4015,6 @@ msgstr "ตำแหน่ง"
 
 msgid "Organization"
 msgstr "องค์กร"
-
-msgid "Location"
-msgstr "ตำแหน่ง"
 
 msgid "Not provided"
 msgstr "ไม่มีการระบุ"
@@ -4148,11 +4077,6 @@ msgstr "กิจกรรมของผู้ใช้"
 
 msgid "Resources"
 msgstr "แหล่งข้อมูล"
-
-#, fuzzy
-#| msgid "Invite people"
-msgid "edit people"
-msgstr "เชิญคนอื่น"
 
 msgid "Edit Your Profile"
 msgstr "แก้ไขโปรไฟล์ของคุณ"
@@ -6614,6 +6538,9 @@ msgstr ""
 msgid "Expected to find layer named '{name}' in geoserver"
 msgstr ""
 
+msgid "Exception occurred while parsing the provided Metadata file."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6694,6 +6621,90 @@ msgstr "ระดับการอนุญาตไม่ถูกต้อง
 
 msgid "Permission Denied"
 msgstr "ไม่ได้รับอนุญาต"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "set permissions"
+#~ msgstr "ตั้งค่าสิทธิ์"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "documents"
+#~ msgstr "เอกสาร"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "data"
+#~ msgstr "ชุดข้อมูล"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "apps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Categories"
+#~ msgid "groups explore"
+#~ msgstr "หมวด"
+
+#, fuzzy
+#~| msgid "A Map was created"
+#~ msgid "groups create"
+#~ msgstr "สร้างแผนที่เสร็จแล้ว"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "groups"
+#~ msgstr "กลุ่ม"
+
+#, fuzzy
+#~| msgid "A Map was updated"
+#~ msgid "groups update"
+#~ msgstr "แผนที่ได้รับการปรับปรุงแล้ว"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers append"
+#~ msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
+
+#, fuzzy
+#~| msgid "Layers"
+#~ msgid "layers"
+#~ msgstr "ชั้นข้อมูล"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers explore"
+#~ msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "layers upload"
+#~ msgstr "อัพโหลดชั้นข้อมูลเสร็จแล้ว"
+
+#~ msgid "Incomplete Uploads"
+#~ msgstr "อัพโหลดไม่สมบูรณ์"
+
+#~ msgid "You have the following incomplete uploads"
+#~ msgstr "คุณมีไฟล์ที่อัพโหลดไม่เสร็จดังต่อไปนี้"
+
+#~ msgid "Resume"
+#~ msgstr "ประวัติย่อ"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "maps explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "GeoExplorer"
+#~ msgid "people explore"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Invite people"
+#~ msgid "edit people"
+#~ msgstr "เชิญคนอื่น"
 
 #~ msgid "last updated on"
 #~ msgstr "แก้ไขครั้งสุดท้ายเมื่อ"

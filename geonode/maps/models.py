@@ -32,7 +32,7 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.core.cache import cache
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Style
 from geonode.compat import ensure_string
 from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
@@ -584,19 +584,19 @@ class MapLayer(models.Model, GXPLayerBase):
             layer_params = json.loads(self.layer_params)
 
             capability = layer_params.get('capability', {})
-            style_name = capability.get('style')
-            if style_name:
-                if ':' in style_name:
-                    style_name = style_name.split(':')[1]
-                href = Layer.objects.filter(title=self.layer_title).first().get_legend_url(style_name=style_name)
-                return {style_name: href}
-            else:
-                # use the default style on layer
-                layer_obj = Layer.objects.filter(alternate=self.name).first()
-                if layer_obj:
-                    default_style_name = layer_obj.default_style.name
-                    legend_url = layer_obj.get_legend_url(style_name=default_style_name)
-                    return {default_style_name: legend_url}
+            # Use '' to represent default layer style
+            style_name = capability.get('style', '')
+            layer_obj = Layer.objects.filter(alternate=self.name).first()
+            if ':' in style_name:
+                style_name = style_name.split(':')[1]
+            elif layer_obj.default_style:
+                style_name = layer_obj.default_style.name
+            href = layer_obj.get_legend_url(style_name=style_name)
+            style = Style.objects.filter(name=style_name).first()
+            if style:
+                # replace map-legend display name if style has a title
+                style_name = style.sld_title or style_name
+            return {style_name: href}
         except Exception as e:
             logger.exception(e)
             return None
