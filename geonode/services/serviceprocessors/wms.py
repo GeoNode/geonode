@@ -191,6 +191,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             method=self.indexing_method,
             owner=owner,
             parent=parent,
+            metadata_only=True,
             version=self.parsed_service.identification.version,
             name=self.name,
             title=self.parsed_service.identification.title or self.name,
@@ -198,6 +199,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 "Not provided"),
             online_resource=self.parsed_service.provider.url,
         )
+        instance.save()
         return instance
 
     def get_keywords(self):
