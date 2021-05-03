@@ -1,6 +1,6 @@
 # Change Log
 
-## [3.2.0](https://github.com/GeoNode/geonode/tree/3.2.0) (2021-04)
+## [3.2.0](https://github.com/GeoNode/geonode/tree/3.2.0) (2021-04-29)
 ### Breaking Changes
 
  - Bump to postgresql-13; *do not upgrade the docker image or be prepared to do a dump/restore of the DB*
@@ -117,6 +117,7 @@
  - **[Full list of Fixed Minor Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Aminor)**
  - **[Full list of Updated Translations](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.2+label%3Atranslations)**
  - **[All Closed Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2)**
+
 ### Full Changelog
 
 [https://github.com/GeoNode/geonode/compare/3.1...3.2.0](https://github.com/GeoNode/geonode/compare/3.1...3.2.x)

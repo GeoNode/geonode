@@ -603,7 +603,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     VALID_DATE_TYPES = [(x.lower(), _(x))
                         for x in ['Creation', 'Publication', 'Revision']]
-    
+
     abstract_help_text = _(
         'brief narrative summary of the content of the resource(s)')
     date_help_text = _('reference date for the cited resource')
