@@ -147,12 +147,12 @@ class Command(BaseCommand):
                 # recalculate the layer statistics
                 if set_attrib:
                     set_attributes(layer, overwrite=True)
-                
+
                 if set_uuid and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
                     from geonode.layers.utils import get_uuid_handler
                     uuid = get_uuid_handler()(layer).create_uuid()
-                    l = Layer.objects.filter(resourcebase_ptr=layer.resourcebase_ptr)
-                    l.update(uuid=uuid)
+                    la = Layer.objects.filter(resourcebase_ptr=layer.resourcebase_ptr)
+                    la.update(uuid=uuid)
                     layer.refresh_from_db()
                 # refresh metadata links
 
