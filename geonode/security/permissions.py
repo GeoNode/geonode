@@ -1,11 +1,11 @@
 # Permissions mapping
 PERMISSIONS = {
-    'base_addresourcebase': 'ADD_RESOURCE',
+    'base_addresourcebase': 'add_resource',
     }
 
 # The following permissions will be filtered out when READ_ONLY mode is active
 READ_ONLY_AFFECTED_PERMISSIONS = [
-    'ADD_RESOURCE',
+    'add_resource',
 ]
 
 # Permissions on resources

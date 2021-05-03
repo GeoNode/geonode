@@ -172,7 +172,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         # anonymous users are not in contributors group
         url = reverse('users-detail', kwargs={'pk': -1})
         response = self.client.get(url, format='json')
-        self.assertNotIn('ADD_RESOURCE', response.data['user']['perms'])
+        self.assertNotIn('add_resource', response.data['user']['perms'])
 
         # Bobby
         self.assertTrue(self.client.login(username='bobby', password='bob'))
@@ -198,7 +198,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.data['user']['username'], 'bobby')
         self.assertIsNotNone(response.data['user']['avatar'])
         # default contributor group_perm is returned in perms
-        self.assertIn('ADD_RESOURCE', response.data['user']['perms'])
+        self.assertIn('add_resource', response.data['user']['perms'])
 
     def test_register_users(self):
         """
@@ -211,7 +211,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.post(url, data=user_data, format='json')
         self.assertEqual(response.status_code, 201)
         # default contributor group_perm is returned in perms
-        self.assertIn('ADD_RESOURCE', response.data['user']['perms'])
+        self.assertIn('add_resource', response.data['user']['perms'])
 
     def test_base_resources(self):
         """
