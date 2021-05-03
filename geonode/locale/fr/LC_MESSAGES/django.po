@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2021-03-24 11:11-0400\n"
 "Last-Translator: Sylvain POULAIN <sylvain.poulain@giscan.com>\n"
 "Language-Team: French\n"
@@ -237,6 +237,9 @@ msgstr "Bref raisonnement des motifs de la demande"
 msgid "function performed by the responsible party"
 msgstr "fonction remplie par l'équipe responsable"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "synthèse courte du contenu de la (des) ressource(s)"
+
 msgid "reference date for the cited resource"
 msgstr "date de référence de la ressource citée"
 
@@ -246,8 +249,15 @@ msgstr "identification du moment où un événement donné s'est réalisé"
 msgid "version of the cited resource"
 msgstr "version de la ressource citée"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "synthèse courte du contenu de la (des) ressource(s)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+"autorité ou fonction assignée, comme à un dirigeant, une assemblée "
+"législative, un délégué, etc."
+
+msgid "a DOI will be added by Admin before publication."
+msgstr "un DOI sera ajouté par l'Admin avant la publication."
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr ""
@@ -319,27 +329,17 @@ msgstr ""
 "explication générale de la connaissance du producteur de données sur la "
 "lignée d'un jeu de données"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr "un DOI sera ajouté par l'Admin avant la publication."
-
-msgid "DOI"
-msgstr "DOI"
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-"autorité ou fonction assignée, comme à un dirigeant, une assemblée "
-"législative, un délégué, etc."
-
-msgid "Attribution"
-msgstr "Attribution"
-
 msgid "title"
 msgstr "titre"
 
 msgid "name by which the cited resource is known"
 msgstr "nom usuel de la ressource citée"
+
+msgid "abstract"
+msgstr "résumé"
+
+msgid "purpose"
+msgstr "but"
 
 msgid "date"
 msgstr "date"
@@ -350,11 +350,11 @@ msgstr "type de date"
 msgid "edition"
 msgstr "édition"
 
-msgid "abstract"
-msgstr "résumé"
+msgid "Attribution"
+msgstr "Attribution"
 
-msgid "purpose"
-msgstr "but"
+msgid "DOI"
+msgstr "DOI"
 
 msgid "maintenance frequency"
 msgstr "fréquence des mises à jour"
@@ -1213,6 +1213,9 @@ msgstr "Métadonnées de base"
 msgid "Location and Licenses"
 msgstr "Localisation et licences"
 
+msgid "Required Metadata"
+msgstr "Métadonnées requises"
+
 msgid "Optional Metadata"
 msgstr "Métadonnées facultatives"
 
@@ -1477,6 +1480,17 @@ msgstr "Evaluation de la couche"
 msgid "A rating was given to a layer"
 msgstr "Une note a été attribuée à la couche"
 
+#, fuzzy
+#| msgid "Contact Points"
+msgid "Points"
+msgstr "Points de contact"
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 msgid "Layer name"
 msgstr "Nom de la couche"
 
@@ -1500,6 +1514,17 @@ msgstr "Ajouter un attribut"
 
 msgid "Create"
 msgstr "Créer"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Intervalles"
+
+msgid "Float"
+msgstr ""
 
 msgid "No title provided"
 msgstr "Aucun titre fourni"
@@ -2458,9 +2483,6 @@ msgstr "Cela écrasera très probablement le style actuel par défaut !"
 
 msgid "Preview"
 msgstr "Prévisualiser"
-
-msgid "Required Metadata"
-msgstr "Métadonnées requises"
 
 msgid "Dataset Attributes"
 msgstr "Attributs d'ensemble de données"

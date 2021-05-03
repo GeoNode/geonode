@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Sinhala (http://www.transifex.com/geonode/geonode/language/"
@@ -259,6 +259,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "වගකිවයුතු පාර්ශවය විසින් සිදු කෙරෙන කාර්යය භාරය"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "මූලාශ්‍රයේ (මූලාශ්‍ර වල) අන්තර්ගතය පිළිබඳ කෙටි සාරාංශගත විස්තරයක්"
+
 msgid "reference date for the cited resource"
 msgstr "උපුටාගත් මූලාශ්‍රය පරිශීලනය කල දිනය"
 
@@ -268,8 +271,13 @@ msgstr "යම් සිද්ධියක් සිදු වූ අවස්�
 msgid "version of the cited resource"
 msgstr "උපුටාගත් මූලාශ්‍රය කී වෙනි සංස්කරණයද යන වග"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "මූලාශ්‍රයේ (මූලාශ්‍ර වල) අන්තර්ගතය පිළිබඳ කෙටි සාරාංශගත විස්තරයක්"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "මූලාශ්‍රයේ (මූලාශ්‍ර වල) පරමාර්ථය පිළිබඳ සාරාංශයක්"
@@ -341,27 +349,17 @@ msgid ""
 "dataset"
 msgstr "දත්ත කට්ටලයක ආර පිළිබඳව දත්ත නිෂ්පාදකගේ දැනීම ගැන සාමාන්‍ය පැහැදිලි කිරීමක්"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "ගුණාංග"
-
 msgid "title"
 msgstr "මාතෘකාව"
 
 msgid "name by which the cited resource is known"
 msgstr "උපුටාගත් මූලාශ්‍රය හඳුන්වන නාමය"
+
+msgid "abstract"
+msgstr "සාරාංශය"
+
+msgid "purpose"
+msgstr "අරමුණ"
 
 msgid "date"
 msgstr "දිනය"
@@ -372,11 +370,13 @@ msgstr "දින මාදිළිය"
 msgid "edition"
 msgstr "සංස්කරණය"
 
-msgid "abstract"
-msgstr "සාරාංශය"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "ගුණාංග"
 
-msgid "purpose"
-msgstr "අරමුණ"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "නඩත්තු වාර ගණන"
@@ -1266,6 +1266,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "සංස්කරණය කරන්න සේවා පාරදත්ත"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "මෙටාදත්ත බාගත කරන්න"
@@ -1608,6 +1613,15 @@ msgstr "ස්ථරය පිළිබඳ ප්‍රමාණනය"
 msgid "A rating was given to a layer"
 msgstr "ස්ථරයක් සඳහා ප්‍රමාණනයක් දෙන ලදී"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1643,6 +1657,17 @@ msgstr "ගුණාංග"
 
 msgid "Create"
 msgstr "නිර්මාණය කරන්න"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "කාල ප්‍රාන්තර"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2655,11 +2680,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "පූර්වදර්ශනය"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "සංස්කරණය කරන්න සේවා පාරදත්ත"
 
 #, fuzzy
 #| msgid "Attributes"

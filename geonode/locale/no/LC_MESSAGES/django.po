@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Norwegian (http://www.transifex.com/geonode/geonode/language/"
@@ -251,6 +251,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr ""
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr ""
+
 msgid "reference date for the cited resource"
 msgstr ""
 
@@ -260,7 +263,12 @@ msgstr ""
 msgid "version of the cited resource"
 msgstr ""
 
-msgid "brief narrative summary of the content of the resource(s)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
 msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
@@ -317,27 +325,17 @@ msgid ""
 "dataset"
 msgstr ""
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "attributt"
-
 msgid "title"
 msgstr "tittel"
 
 msgid "name by which the cited resource is known"
 msgstr ""
+
+msgid "abstract"
+msgstr "sammendrag"
+
+msgid "purpose"
+msgstr "formål"
 
 msgid "date"
 msgstr "dato"
@@ -348,11 +346,13 @@ msgstr "dato type"
 msgid "edition"
 msgstr "utgave"
 
-msgid "abstract"
-msgstr "sammendrag"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "attributt"
 
-msgid "purpose"
-msgstr "formål"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "vedlikeholds-yppighet"
@@ -1244,6 +1244,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Ende tjeneste metadata"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "Lat ned metadata"
@@ -1591,6 +1596,15 @@ msgstr "Tilbake til"
 msgid "A rating was given to a layer"
 msgstr "Det ble kommentert på kartet"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1626,6 +1640,17 @@ msgstr "attributt"
 
 msgid "Create"
 msgstr "Opprett"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Intervaller"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2631,11 +2656,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Forhåndsvisning"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "Ende tjeneste metadata"
 
 #, fuzzy
 #| msgid "Attributes"
