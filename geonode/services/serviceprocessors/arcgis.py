@@ -110,6 +110,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             method=self.indexing_method,
             owner=owner,
             parent=parent,
+            metadata_only=True,
             version=self.parsed_service._json_struct.get("currentVersion", 0.0),
             name=self.name,
             title=self.title,
@@ -117,6 +118,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 "Not provided"),
             online_resource=self.parsed_service.url,
         )
+        instance.save()
         return instance
 
     def get_keywords(self):
