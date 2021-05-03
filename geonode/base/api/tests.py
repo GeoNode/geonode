@@ -526,7 +526,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertTrue('layer' in response.data['resource_types'])
         self.assertTrue('map' in response.data['resource_types'])
         self.assertTrue('document' in response.data['resource_types'])
-        self.assertTrue('service' in response.data['resource_types'])
+        self.assertFalse('service' in response.data['resource_types'])
 
     @patch('PIL.Image.open', return_value=test_image)
     def test_thumbnail_urls(self, img):
