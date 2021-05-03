@@ -1,6 +1,8 @@
 
+from contextlib import contextmanager
 import faulthandler
 import io
+import os
 import sys
 import time
 import logging
@@ -8,6 +10,7 @@ import multiprocessing
 
 from multiprocessing import Process, Queue, Event
 from queue import Empty
+from typing import Collection
 
 from twisted.scripts.trial import Options, _getSuite
 from twisted.trial.runner import TrialRunner
@@ -19,9 +22,7 @@ from django.db import connections, DEFAULT_DB_ALIAS
 from django.core.exceptions import ImproperlyConfigured
 
 from .base import setup_test_db
-from django.test.utils import (
-    NullTimeKeeper, TimeKeeper
-)
+
 # "auto" - one worker per Django application
 # "cpu" - one worker per process core
 WORKER_MAX = getattr(settings, 'TEST_RUNNER_WORKER_MAX', 3)
@@ -598,3 +599,33 @@ class TestResult(object):
             klass, message = failure
             formatted.append((str(klass), message))
         return formatted
+
+
+class NullTimeKeeper:
+    @contextmanager
+    def timed(self, name):
+        yield
+
+    def print_results(self):
+        pass
+
+
+class TimeKeeper:
+    def __init__(self):
+        self.records = Collection.defaultdict(list)
+
+    @contextmanager
+    def timed(self, name):
+        self.records[name]
+        start_time = time.perf_counter()
+        try:
+            yield
+        finally:
+            end_time = time.perf_counter() - start_time
+            self.records[name].append(end_time)
+
+    def print_results(self):
+        for name, end_times in self.records.items():
+            for record_time in end_times:
+                record = '%s took %.3fs' % (name, record_time)
+                sys.stderr.write(record + os.linesep)
