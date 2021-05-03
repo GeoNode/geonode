@@ -1,14 +1,11 @@
 version: '3.4'
 services:
 
-# Common Django template for Geonode, Celery services below
+# Common Django template for GeoNode and Celery services below
 x-common-django:
   &default-common-django
   image: geonode/geonode:latest
   restart: on-failure
-  build:
-    context: ./
-    dockerfile: Dockerfile
   env_file:
     - .env
   volumes:
@@ -24,6 +21,9 @@ services:
   # Our custom django application. It includes Geonode.
   django:
     << : *default-common-django
+    build:
+      context: ./
+      dockerfile: Dockerfile
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8001/"
@@ -39,11 +39,14 @@ services:
   # Celery worker that executes celery tasks created by Django.
   celery:
     << : *default-common-django
+    image: geonode/geonode:latest
     container_name: celery4${COMPOSE_PROJECT_NAME}
+    depends_on:
+      - django
     environment:
       - IS_CELERY=True
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
-    command: "celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E --statedb=/mnt/volumes/statics/worker.state -s /mnt/volumes/statics/celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h -f /var/log/celery.log"
+    command: "celery-cmd"
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
