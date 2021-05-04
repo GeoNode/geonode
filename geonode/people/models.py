@@ -30,13 +30,15 @@ from django.db.models import signals
 from django.urls import reverse
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser, Permission, UserManager
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
+from geonode.base.models import Configuration
 from geonode.groups.models import GroupProfile
+from geonode.security.permissions import PERMISSIONS, READ_ONLY_AFFECTED_PERMISSIONS
 
 from allauth.account.signals import user_signed_up
 from allauth.socialaccount.signals import social_account_added
@@ -196,7 +198,23 @@ class Profile(AbstractUser):
 
     @property
     def perms(self):
-        return []
+        if self.is_superuser or self.is_staff:
+            # return all permissions for admins
+            perms = PERMISSIONS.values()
+        else:
+            user_groups = self.groups.values_list('name', flat=True)
+            group_perms = Permission.objects.filter(
+                group__name__in=user_groups
+            ).distinct().values_list('codename', flat=True)
+            # return constant names defined by GeoNode
+            perms = [PERMISSIONS[db_perm] for db_perm in group_perms]
+
+        # check READ_ONLY mode
+        config = Configuration.load()
+        if config.read_only:
+            # exclude permissions affected by readonly
+            perms = [perm for perm in perms if perm not in READ_ONLY_AFFECTED_PERMISSIONS]
+        return perms
 
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)

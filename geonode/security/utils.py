@@ -112,7 +112,7 @@ def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
     """
-    from .models import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
+    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
     PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
@@ -667,7 +667,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
 
 def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
-    from .models import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
+    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
         admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
