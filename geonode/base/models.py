@@ -558,6 +558,7 @@ def generate_thesaurus_reference(instance, *args, **kwargs):
     instance.save()
     return instance.about
 
+
 signals.post_save.connect(generate_thesaurus_reference, sender=ThesaurusKeyword)
 
 
