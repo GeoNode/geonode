@@ -36,7 +36,7 @@ from geonode.base.models import (
     TopicCategory,
     SpatialRepresentationType
 )
-from geonode.base.utils import build_absolute_uri
+from geonode.base.utils import build_absolute_uri, get_resources
 from geonode.groups.models import GroupCategory, GroupProfile
 
 import logging
@@ -86,7 +86,7 @@ class GroupProfileSerializer(DynamicModelSerializer):
         many=True, slug_field='slug', queryset=GroupCategory.objects.all())
 
 
-class HierarchicalKeywordSerializer(DynamicModelSerializer):
+class SimpleHierarchicalKeywordSerializer(DynamicModelSerializer):
 
     class Meta:
         model = HierarchicalKeyword
@@ -97,7 +97,7 @@ class HierarchicalKeywordSerializer(DynamicModelSerializer):
         return {'name': value.name, 'slug': value.slug}
 
 
-class RegionSerializer(DynamicModelSerializer):
+class SimpleRegionSerializer(DynamicModelSerializer):
 
     class Meta:
         model = Region
@@ -105,7 +105,7 @@ class RegionSerializer(DynamicModelSerializer):
         fields = ('code', 'name')
 
 
-class TopicCategorySerializer(DynamicModelSerializer):
+class SimpleTopicCategorySerializer(DynamicModelSerializer):
 
     class Meta:
         model = TopicCategory
@@ -269,11 +269,11 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['embed_url'] = EmbedUrlField()
         self.fields['thumbnail_url'] = ThumbnailUrlField()
         self.fields['keywords'] = DynamicRelationField(
-            HierarchicalKeywordSerializer, embed=False, many=True)
+            SimpleHierarchicalKeywordSerializer, embed=False, many=True)
         self.fields['regions'] = DynamicRelationField(
-            RegionSerializer, embed=True, many=True, read_only=True)
+            SimpleRegionSerializer, embed=True, many=True, read_only=True)
         self.fields['category'] = DynamicRelationField(
-            TopicCategorySerializer, embed=True, many=False)
+            SimpleTopicCategorySerializer, embed=True, many=False)
         self.fields['restriction_code_type'] = DynamicRelationField(
             RestrictionCodeTypeSerializer, embed=True, many=False)
         self.fields['license'] = DynamicRelationField(
@@ -310,4 +310,55 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             data['perms'] = instance.get_user_perms(request.user).union(
                 instance.get_self_resource().get_user_perms(request.user)
             )
+        return data
+
+
+class HierarchicalKeywordSerializer(DynamicModelSerializer):
+
+    class Meta(SimpleHierarchicalKeywordSerializer.Meta):
+        name = 'keywords'
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        data = super(HierarchicalKeywordSerializer, self).to_representation(instance)
+        data['count'] = get_resources(request.user).filter(keywords__in=[instance]).count()
+        return data
+
+
+class RegionSerializer(DynamicModelSerializer):
+
+    class Meta(SimpleRegionSerializer.Meta):
+        name = 'regions'
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        data = super(RegionSerializer, self).to_representation(instance)
+        data['count'] = get_resources(request.user).filter(regions__in=[instance]).count()
+        return data
+
+
+class TopicCategorySerializer(DynamicModelSerializer):
+
+    class Meta(SimpleTopicCategorySerializer.Meta):
+        name = 'categories'
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        data = super(TopicCategorySerializer, self).to_representation(instance)
+        data['count'] = get_resources(request.user).filter(category=instance).count()
+        return data
+
+
+class OwnerSerializer(UserSerializer):
+
+    class Meta(UserSerializer.Meta):
+        name = 'owners'
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        data = super(OwnerSerializer, self).to_representation(instance)
+        data['count'] = get_resources(request.user).filter(owner=instance).count()
         return data

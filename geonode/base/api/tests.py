@@ -35,8 +35,14 @@ from rest_framework.test import APITestCase, URLPatternsTestCase
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.api.urls import router
-from geonode.base.models import ResourceBase
-from geonode.base.models import CuratedThumbnail
+from geonode.base.models import (
+    CuratedThumbnail,
+    HierarchicalKeyword,
+    Region,
+    ResourceBase,
+    TopicCategory
+    )
+from geonode.base.utils import build_absolute_uri
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -601,3 +607,91 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
                         self.assertEqual(build_absolute_uri(instance.embed_url), embed_url)
                     else:
                         self.assertEqual("", embed_url)
+
+    def test_owners_list(self):
+        """
+        Ensure we can access the list of owners.
+        """
+        url = reverse('owners-list')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], get_user_model().objects.exclude(pk=-1).count())
+
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], get_user_model().objects.exclude(pk=-1).count())
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], get_user_model().objects.exclude(pk=-1).count())
+
+    def test_categories_list(self):
+        """
+        Ensure we can access the list of categories.
+        """
+        url = reverse('categories-list')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], TopicCategory.objects.count())
+
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], TopicCategory.objects.count())
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], TopicCategory.objects.count())
+
+    def test_regions_list(self):
+        """
+        Ensure we can access the list of regions.
+        """
+        url = reverse('regions-list')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], Region.objects.count())
+
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], Region.objects.count())
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], Region.objects.count())
+
+    def test_keywords_list(self):
+        """
+        Ensure we can access the list of keywords.
+        """
+        url = reverse('keywords-list')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())

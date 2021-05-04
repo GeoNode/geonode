@@ -34,13 +34,14 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 # Geonode functionality
-from guardian.shortcuts import get_perms, remove_perm, assign_perm
+from guardian.shortcuts import get_perms, remove_perm, assign_perm, get_objects_for_user
 
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.maps.models import Map
+from geonode.security.utils import get_visible_resources
 from geonode.services.models import Service
 from geonode.base.thumb_utils import (
     get_thumbs,
@@ -139,6 +140,24 @@ def build_absolute_uri(url):
     if url and 'http' not in url:
         url = urljoin(settings.SITEURL, url)
     return url
+
+
+def get_resources(user):
+    """
+    Returns resources a user has access to.
+    """
+    resources = get_objects_for_user(
+        user,
+        'base.view_resourcebase'
+        )
+
+    resources = get_visible_resources(
+        resources,
+        user,
+        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+    return resources
 
 
 class OwnerRightsRequestViewUtils:
