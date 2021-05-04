@@ -122,7 +122,7 @@ def document_detail(request, docid):
     perms_list = list(
         document.get_self_resource().get_user_perms(request.user)
         .union(document.get_user_perms(request.user))
-        )
+    )
 
     group = None
     if document.group:

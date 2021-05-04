@@ -32,10 +32,11 @@ from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.db.models import Q
 
-from geonode.base.auth import (get_or_create_token,
-                               delete_old_tokens,
-                               set_session_token,
-                               remove_session_token)
+from geonode.base.auth import (
+    get_or_create_token,
+    delete_old_tokens,
+    set_session_token,
+    remove_session_token)
 
 from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
@@ -125,15 +126,23 @@ def notify_admins_new_signup(sender, **kwargs):
 
 def profile_post_save(instance, sender, **kwargs):
     """
-    Make sure the user belongs by default to the anonymous group.
-    This will make sure that anonymous permissions will be granted to the new users.
+    Make sure the user belongs by default to the anonymous and contributors groups.
+    This will make sure that anonymous and contributors permissions will be granted to the new users.
     """
     from django.contrib.auth.models import Group
-    anon_group, created = Group.objects.get_or_create(name='anonymous')
-    instance.groups.add(anon_group)
+
+    created = kwargs.get('created', False)
+
+    if created:
+        anon_group, _ = Group.objects.get_or_create(name='anonymous')
+        instance.groups.add(anon_group)
+        is_anonymous = instance.username == 'AnonymousUser'
+
+        if Group.objects.filter(name='contributors').count() and not (instance.is_staff or instance.is_superuser or is_anonymous):
+            cont_group = Group.objects.get(name='contributors')
+            instance.groups.add(cont_group)
 
     if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT == 'activation':
-        created = kwargs.get('created', False)
         became_active = instance.is_active and (not instance._previous_active_state or created)
         if became_active:
             _add_user_to_registered_members(instance)
