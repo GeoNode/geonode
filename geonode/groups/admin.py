@@ -19,7 +19,6 @@
 #########################################################################
 
 from django.contrib import admin
-from django.contrib.auth.models import Group
 from modeltranslation.admin import TranslationAdmin
 from geonode.base.admin import set_user_and_group_layer_permission
 
@@ -44,5 +43,4 @@ class GroupProfileAdmin(admin.ModelAdmin):
     actions = [set_user_and_group_layer_permission]
 
 
-admin.site.unregister(Group)
 admin.site.register(models.GroupProfile, GroupProfileAdmin)

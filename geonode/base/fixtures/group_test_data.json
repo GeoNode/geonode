@@ -8,7 +8,7 @@
       }
     },
     {
-      "pk": 2,
+      "pk": 3,
       "model": "auth.group",
       "fields": {
         "name": "registered-members",
@@ -22,7 +22,7 @@
             "slug": "registered-members",
             "last_modified": "2019-09-09 15:45:34",
             "created": "2019-09-09 15:45:34",
-            "group": 2,
+            "group": 3,
             "title": "Registered Members"
         },
         "model": "groups.groupprofile",
