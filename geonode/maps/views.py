@@ -24,8 +24,6 @@ from urllib.parse import quote, urlsplit, urljoin
 from itertools import chain
 import warnings
 
-from guardian.shortcuts import get_perms
-
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
@@ -156,9 +154,10 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(map_obj)
 
-    perms_list = get_perms(
-        request.user,
-        map_obj.get_self_resource()) + get_perms(request.user, map_obj)
+    perms_list = list(
+        map_obj.get_self_resource().get_user_perms(request.user)
+        .union(map_obj.get_user_perms(request.user))
+        )
 
     group = None
     if map_obj.group:
@@ -552,6 +551,10 @@ def map_view(request, mapid, layer_name=None,
         raise Http404(_("Not found"))
 
     config = map_obj.viewer_json(request)
+    perms_list = list(
+        map_obj.get_self_resource().get_user_perms(request.user)
+        .union(map_obj.get_user_perms(request.user))
+        )
     if layer_name:
         config = add_layers_to_map_config(
             request, map_obj, (layer_name, ), False)
@@ -560,6 +563,7 @@ def map_view(request, mapid, layer_name=None,
     return render(request, template, context={
         'config': json.dumps(config),
         'map': map_obj,
+        'perms_list': perms_list,
         'preview': getattr(
             settings,
             'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
@@ -664,11 +668,15 @@ def map_edit(request, mapid, template='maps/map_edit.html'):
         raise Http404(_("Not found"))
 
     config = map_obj.viewer_json(request)
-
+    perms_list = list(
+        map_obj.get_self_resource().get_user_perms(request.user)
+        .union(map_obj.get_user_perms(request.user))
+        )
     return render(request, template, context={
         'mapId': mapid,
         'config': json.dumps(config),
         'map': map_obj,
+        'perms_list': perms_list,
         'preview': getattr(
             settings,
             'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
@@ -703,9 +711,29 @@ def clean_config(conf):
 
 def new_map(request, template='maps/map_new.html'):
     map_obj, config = new_map_config(request)
+    perms_list = []
+    layer_name = request.GET.get('layer')
+    if layer_name and request.GET.get('view'):
+        # Get permissions a user has on a layer when they click view layer.
+        try:
+            if ':' in layer_name:
+                layer_name = layer_name.split(':')[1]
+            layer_obj = Layer.objects.get(name=layer_name)
+            perms_list = list(
+                layer_obj.get_self_resource().get_user_perms(request.user)
+                .union(layer_obj.get_user_perms(request.user))
+                )
+        except Exception:
+            pass
+    elif map_obj:
+        perms_list = list(
+            map_obj.get_self_resource().get_user_perms(request.user)
+            .union(map_obj.get_user_perms(request.user))
+            )
     context_dict = {
         'config': config,
-        'map': map_obj
+        'map': map_obj,
+        'perms_list': perms_list
     }
     context_dict["preview"] = getattr(
         settings,
