@@ -161,7 +161,7 @@ def create_models(type=None, integration=False):
             codename='base_addresourcebase',
             name='Can add resources',
             content_type=ctype
-            )
+        )
         cont_group.permissions.add(perm)
         logger.debug("[SetUp] Get or create user admin")
         u, created = get_user_model().objects.get_or_create(username='admin')

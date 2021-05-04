@@ -413,7 +413,7 @@ class PermissionLevelMixin(object):
 
             resource_perms = user_resource_perms.union(
                 user_model.objects.filter(permission__codename__in=implicit_perms)
-                ).values_list('permission__codename', flat=True)
+            ).values_list('permission__codename', flat=True)
 
         # filter out permissions for edit, change or publish if readonly mode is active
         perm_prefixes = ['change', 'delete', 'publish']

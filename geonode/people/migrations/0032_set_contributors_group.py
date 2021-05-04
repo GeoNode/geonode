@@ -9,9 +9,9 @@ from django.db.migrations.operations import RunPython
 
 def forwards_func(apps, schema_editor):
     # assign contributors group to users
-    cont_group, created = Group.objects.get_or_create(name='contributors')
+    cont_group, _ = Group.objects.get_or_create(name='contributors')
     ctype = ContentType.objects.get_for_model(cont_group)
-    perm, created = Permission.objects.get_or_create(
+    perm, _ = Permission.objects.get_or_create(
         codename='base_addresourcebase',
         name='Can add resources',
         content_type=ctype,
