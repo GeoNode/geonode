@@ -220,10 +220,6 @@ msgstr "Licenza"
 msgid "Language"
 msgstr "Lingua"
 
-msgid "User"
-msgid_plural "Users"
-msgstr[0] "Utente"
-msgstr[1] "Utenti"
 
 msgid "Permission Type"
 msgstr "Tipo di autorizzazione"
@@ -1028,10 +1024,6 @@ msgstr "Procedura guidata"
 msgid "Advanced Edit"
 msgstr "Modifica avanzata"
 
-msgid "Document"
-msgid_plural "Documents"
-msgstr[0] "Documento"
-msgstr[1] "Documenti"
 
 msgid "Replace"
 msgstr "Sostituisci"
@@ -1664,6 +1656,9 @@ msgstr "Mappe"
 msgid "Documents"
 msgstr "Documenti"
 
+msgid "Document"
+msgstr "Documento"
+
 msgid "Comments"
 msgstr "Commenti"
 
@@ -2201,10 +2196,6 @@ msgstr "Stili"
 msgid "Manage"
 msgstr "Gestisci"
 
-msgid "Layer"
-msgid_plural "Layers"
-msgstr[0] "Livello"
-msgstr[1] "Livelli"
 
 msgid "Append Data"
 msgstr "Accoda dati"
@@ -3264,10 +3255,6 @@ msgstr "Valuta questa mappa"
 msgid "Download Map"
 msgstr "Scarica la mappa"
 
-msgid "Map"
-msgid_plural "Maps"
-msgstr[0] "Mappa"
-msgstr[1] "Mappe"
 
 msgid "Map Layers"
 msgstr "Livelli della mappa"
