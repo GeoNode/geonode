@@ -29,6 +29,21 @@
             "facet": true,
             "order": 0
         }
+      },{
+        "model": "base.thesaurus",
+        "pk": 3,
+        "fields": {
+            "identifier": "no-about-thesauro",
+            "title": "Thesauro without the about",
+            "date": "2021-05-23T10:25:56",
+            "description": "Thesauro without the about",
+            "slug": "",
+            "about": "",
+            "card_min": 0,
+            "card_max": -1,
+            "facet": true,
+            "order": 2
+        }
       },
       {
         "model": "base.thesauruskeyword",
@@ -334,6 +349,42 @@
             "about": "http://inspire.ec.europa.eu/theme/mf",
             "alt_label": "mf",
             "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 36,
+        "fields": {
+            "about": "",
+            "alt_label": "foo_keyword",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 37,
+        "fields": {
+            "about": "",
+            "alt_label": "",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 38,
+        "fields": {
+            "about": "",
+            "alt_label": "",
+            "thesaurus": 3
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 39,
+        "fields": {
+            "about": "",
+            "alt_label": "bar_keyword",
+            "thesaurus": 3
         }
     },
     {

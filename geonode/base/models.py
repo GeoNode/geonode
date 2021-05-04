@@ -542,6 +542,25 @@ class ThesaurusKeyword(models.Model):
         unique_together = (("thesaurus", "alt_label"),)
 
 
+def generate_thesaurus_reference(instance, *args, **kwargs):
+    if instance.about:
+        return instance.about
+
+    if instance.thesaurus.about and instance.alt_label:
+        instance.about = f'{instance.thesaurus.about}#{instance.alt_label}'
+    elif instance.thesaurus.about and not instance.alt_label:
+        instance.about = f'{instance.thesaurus.about}#{instance.id}'
+    elif not instance.thesaurus.about and instance.alt_label:
+        instance.about = f'{settings.SITEURL}/thesaurus/{instance.thesaurus.identifier}#{instance.alt_label}'
+    else:
+        instance.about = f'{settings.SITEURL}/thesaurus/{instance.thesaurus.identifier}#{instance.id}'
+
+    instance.save()
+    return instance.about
+
+signals.post_save.connect(generate_thesaurus_reference, sender=ThesaurusKeyword)
+
+
 class ThesaurusLabel(models.Model):
     """
     Contains localized version of the thesaurus title
