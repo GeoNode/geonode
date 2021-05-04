@@ -323,6 +323,7 @@ class GroupCategoryResource(TypeFilteredResource):
         include_resource_uri = False
         filtering = {'slug': ALL,
                      'name': ALL}
+        ordering = ['name']
         authorization = ApiLockdownAuthorization()
 
     def apply_filters(self, request, applicable_filters):
