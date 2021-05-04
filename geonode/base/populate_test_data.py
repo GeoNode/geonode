@@ -30,9 +30,10 @@ from datetime import datetime, timedelta
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.gis.geos import Polygon
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission, Group
 from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from geonode import geoserver  # noqa
@@ -154,6 +155,14 @@ def create_models(type=None, integration=False):
     with transaction.atomic():
         map_data, user_data, people_data, layer_data, document_data = create_fixtures()
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+        cont_group, created = Group.objects.get_or_create(name='contributors')
+        ctype = ContentType.objects.get_for_model(cont_group)
+        perm, created = Permission.objects.get_or_create(
+            codename='base_addresourcebase',
+            name='Can add resources',
+            content_type=ctype
+        )
+        cont_group.permissions.add(perm)
         logger.debug("[SetUp] Get or create user admin")
         u, created = get_user_model().objects.get_or_create(username='admin')
         u.set_password('admin')
@@ -172,6 +181,9 @@ def create_models(type=None, integration=False):
             u.last_name = last_name
             u.save()
             u.groups.add(anonymous_group)
+
+            if not (u.is_superuser or u.is_staff or u.is_anonymous):
+                u.groups.add(cont_group)
             users.append(u)
 
         logger.debug(f"[SetUp] Add group {anonymous_group}")
