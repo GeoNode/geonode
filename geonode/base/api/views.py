@@ -212,6 +212,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 resource_types = [_m.__name__.lower() for _m in _model.__subclasses__()]
         if "geoapp" in resource_types:
             resource_types.remove("geoapp")
+        if "service" in resource_types:
+            resource_types.remove("service")
         if settings.GEONODE_APPS_ENABLE:
             from geonode.geoapps.models import GeoApp
             for label, app in apps.app_configs.items():

@@ -57,7 +57,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from guardian.shortcuts import get_perms, get_objects_for_user
+from guardian.shortcuts import get_objects_for_user
 
 from geonode import geoserver
 from geonode.thumbs.thumbnails import create_thumbnail
@@ -620,9 +620,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(layer)
 
-    perms_list = get_perms(
-        request.user,
-        layer.get_self_resource()) + get_perms(request.user, layer)
+    perms_list = list(
+        layer.get_self_resource().get_user_perms(request.user)
+        .union(layer.get_user_perms(request.user))
+        )
 
     group = None
     if layer.group:
@@ -1665,12 +1666,14 @@ def layer_metadata_detail(
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
 
     register_event(request, 'view_metadata', layer)
+    perms_list = list(
+        layer.get_self_resource().get_user_perms(request.user)
+        .union(layer.get_user_perms(request.user))
+        )
 
     return render(request, template, context={
         "resource": layer,
-        "perms_list": get_perms(
-            request.user,
-            layer.get_self_resource()) + get_perms(request.user, layer),
+        "perms_list": perms_list,
         "group": group,
         'SITEURL': site_url
     })
