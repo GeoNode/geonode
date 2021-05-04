@@ -330,6 +330,20 @@ community."
         layer = Layer.objects.all().first()
         self.client.get(f"{reverse('new_map')}?layer={layer.alternate}")
 
+    def test_new_map_with_layer_view(self):
+        layer = Layer.objects.all().first()
+        # anonymous user
+        response = self.client.get(f"{reverse('new_map')}?layer={layer.alternate}&view=True")
+        self.assertIn('view_resourcebase', response.context.get('perms_list', []))
+        self.assertFalse('change_resourcebase' in response.context.get('perms_list', []))
+        # admin
+        self.client.login(username=self.user, password=self.passwd)
+        response = self.client.get(f"{reverse('new_map')}?layer={layer.alternate}&view=True")
+        self.assertIn('publish_resourcebase', response.context.get('perms_list', []))
+        # Test with invalid layer name
+        response = self.client.get(f"{reverse('new_map')}?layer=invalid_name&view=True")
+        self.assertListEqual([], response.context.get('perms_list', []))
+
     def test_new_map_with_empty_bbox_layer(self):
         layer = Layer.objects.all().first()
         self.client.get(f"{reverse('new_map')}?layer={layer.alternate}")
