@@ -546,14 +546,9 @@ def generate_thesaurus_reference(instance, *args, **kwargs):
     if instance.about:
         return instance.about
 
-    if instance.thesaurus.about and instance.alt_label:
-        instance.about = f'{instance.thesaurus.about}#{instance.alt_label}'
-    elif instance.thesaurus.about and not instance.alt_label:
-        instance.about = f'{instance.thesaurus.about}#{instance.id}'
-    elif not instance.thesaurus.about and instance.alt_label:
-        instance.about = f'{settings.SITEURL}/thesaurus/{instance.thesaurus.identifier}#{instance.alt_label}'
-    else:
-        instance.about = f'{settings.SITEURL}/thesaurus/{instance.thesaurus.identifier}#{instance.id}'
+    prefix = instance.thesaurus.about or f'{settings.SITEURL}/thesaurus/{instance.thesaurus.identifier}'
+    suffix = instance.alt_label or instance.id
+    instance.about = f'{prefix}#{suffix}'
 
     instance.save()
     return instance.about
