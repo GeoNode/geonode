@@ -590,7 +590,7 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSuppor
         url = f"{self.list_url}?thesaurus=inspire-theme"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 34)
+        self.assertEqual(resp.json()["meta"]["total_count"], 36)
 
     def test_will_return_empty_if_the_alt_label_does_not_exists(self):
         url = f"{self.list_url}?alt_label=invalid-alt_label"
@@ -618,8 +618,8 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSuppor
         resp = self.api_client.get(url)
         # the german translations exists, for the other labels, the alt_label will be used
         expected_labels = [
-            "ac", "Adressen", "af", "am", "au", "br", "bu",
-            "cp", "ef", "el", "er", "ge", "gg", "gn", "hb", "hh",
+            "", "ac", "Adressen", "af", "am", "au", "br", "bu",
+            "cp", "ef", "el", "er", "foo_keyword", "ge", "gg", "gn", "hb", "hh",
             "hy", "lc", "lu", "mf", "mr", "nz", "of", "oi", "pd",
             "pf", "ps", "rs", "sd", "so", "sr", "su", "tn", "us"
         ]
@@ -634,10 +634,10 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSuppor
         resp = self.api_client.get(url)
         # no translations exists, the alt_label will be used for all keywords
         expected_labels = [
-            "ac", "ad", "af", "am", "au", "br", "bu",
-            "cp", "ef", "el", "er", "ge", "gg", "gn", "hb", "hh",
+            "", "ac", "ad", "af", "am", "au", "br", "bu",
+            "cp", "ef", "el", "er", "foo_keyword", "ge", "gg", "gn", "hb", "hh",
             "hy", "lc", "lu", "mf", "mr", "nz", "of", "oi", "pd",
-            "pf", "ps", "rs", "sd", "so", "sr", "su", "tn", "us"
+            "pf", "ps", "rs", "sd", "so", "sr", "su", "tn", "us",
         ]
         actual_labels = [x["alt_label"] for x in self.deserialize(resp)["objects"]]
         self.assertValidJSONResponse(resp)
