@@ -23,7 +23,7 @@ import traceback
 from itertools import chain
 import warnings
 
-from guardian.shortcuts import get_perms, get_objects_for_user
+from guardian.shortcuts import get_objects_for_user
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -119,9 +119,10 @@ def document_detail(request, docid):
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(document)
 
-    perms_list = get_perms(
-        request.user,
-        document.get_self_resource()) + get_perms(request.user, document)
+    perms_list = list(
+        document.get_self_resource().get_user_perms(request.user)
+        .union(document.get_user_perms(request.user))
+        )
 
     group = None
     if document.group:
