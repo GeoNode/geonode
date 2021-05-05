@@ -46,11 +46,11 @@ logger = logging.getLogger(__name__)
 
 
 class ResourceBaseTypesSerializer(DynamicEphemeralSerializer):
+    name = serializers.CharField()
+    count = serializers.IntegerField()
 
     class Meta:
-        name = 'resource-type'
-
-    resource_types = serializers.ListField()
+        name = 'resource-types'
 
 
 class PermSpecSerialiazer(DynamicEphemeralSerializer):

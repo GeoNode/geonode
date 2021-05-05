@@ -548,12 +548,13 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         """
         url = urljoin(f"{reverse('base-resources-list')}/", 'resource_types/')
         response = self.client.get(url, format='json')
+        r_type_names = [item['name'] for item in response.data['resource_types']]
         self.assertEqual(response.status_code, 200)
         self.assertTrue('resource_types' in response.data)
-        self.assertTrue('layer' in response.data['resource_types'])
-        self.assertTrue('map' in response.data['resource_types'])
-        self.assertTrue('document' in response.data['resource_types'])
-        self.assertFalse('service' in response.data['resource_types'])
+        self.assertTrue('layer' in r_type_names)
+        self.assertTrue('map' in r_type_names)
+        self.assertTrue('document' in r_type_names)
+        self.assertFalse('service' in r_type_names)
 
     @patch('PIL.Image.open', return_value=test_image)
     def test_thumbnail_urls(self, img):

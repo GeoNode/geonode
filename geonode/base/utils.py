@@ -175,19 +175,31 @@ def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
                 _type_filter = filter_options.get('type_filter')
                 if _type_filter:
                     type_filters.append(_type_filter)
-                for label, app in apps.app_configs.items():
-                    if hasattr(app, 'type') and app.type == 'GEONODE_APP':
-                        if hasattr(app, 'default_model'):
-                            _model = apps.get_model(label, app.default_model)
-                            # get subtypes for geoapps
-                            if _type_filter == 'geoapp' and issubclass(_model, GeoApp):
-                                type_filters.append(_model.__name__.lower())
+                # get subtypes for geoapps
+                if _type_filter == 'geoapp':
+                    type_filters.extend(get_geoapp_subtypes())
+
             if type_filters:
                 resources_with_perms = resources_with_perms.filter(
                     polymorphic_ctype__model__in=type_filters
                     )
 
     return resources_with_perms
+
+
+def get_geoapp_subtypes():
+    """
+    Returns a list of geoapp subtypes.
+    eg ['geostory']
+    """
+    subtypes = []
+    for label, app in apps.app_configs.items():
+        if hasattr(app, 'type') and app.type == 'GEONODE_APP':
+            if hasattr(app, 'default_model'):
+                _model = apps.get_model(label, app.default_model)
+                if issubclass(_model, GeoApp):
+                    subtypes.append(_model.__name__.lower())
+    return subtypes
 
 
 class OwnerRightsRequestViewUtils:
