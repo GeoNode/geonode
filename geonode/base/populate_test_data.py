@@ -347,11 +347,72 @@ def create_single_layer(name):
         temporal_extent_end=test_datetime,
         date=start,
         storeType="dataStore",
+        resource_type="layer"
     )
     layer.save()
     layer.set_default_permissions()
     layer.clear_dirty_state()
     return layer
+
+
+def create_single_map(name):
+    admin, created = get_user_model().objects.get_or_create(username='admin')
+    if created:
+        admin.is_superuser = True
+        admin.first_name = 'admin'
+        admin.set_password('admin')
+        admin.save()
+    test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
+    user = get_user_model().objects.get(username='AnonymousUser')
+    ll = (name, 'lorem ipsum', name, f'{name}', [
+        0, 22, 0, 22], test_datetime, ('populartag',))
+    title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = ll
+    m = Map(
+        title=title,
+        abstract=abstract,
+        zoom=4,
+        projection='EPSG:4326',
+        center_x=42,
+        center_y=-73,
+        owner=user,
+        bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+        ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+        srid='EPSG:4326',
+        resource_type="map"
+    )
+    m.save()
+    m.set_default_permissions()
+    m.clear_dirty_state()
+    return m
+
+
+def create_single_doc(name):
+    admin, created = get_user_model().objects.get_or_create(username='admin')
+    if created:
+        admin.is_superuser = True
+        admin.first_name = 'admin'
+        admin.set_password('admin')
+        admin.save()
+    test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
+    user = get_user_model().objects.get(username='AnonymousUser')
+    dd = (name, 'lorem ipsum', name, f'{name}', [
+        0, 22, 0, 22], test_datetime, ('populartag',))
+    title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = dd
+    logger.debug(f"[SetUp] Add document {title}")
+    m = Document(
+        title=title,
+        abstract=abstract,
+        owner=user,
+        bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+        ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+        srid='EPSG:4326',
+        doc_file=f,
+        resource_type="document"
+    )
+    m.save()
+    m.set_default_permissions()
+    m.clear_dirty_state()
+    return m
 
 
 if __name__ == '__main__':
