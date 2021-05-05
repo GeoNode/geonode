@@ -487,6 +487,7 @@ INSTALLED_APPS = (
     'storages',
     'floppyforms',
     'tinymce',
+    'widget_tweaks',
 
     # REST APIs
     'rest_framework',
