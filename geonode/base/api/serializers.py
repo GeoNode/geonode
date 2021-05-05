@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
@@ -26,7 +25,6 @@ from rest_framework_gis import fields
 from dynamic_rest.serializers import DynamicEphemeralSerializer, DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
-from urllib.parse import urljoin
 from avatar.templatetags.avatar_tags import avatar_url
 
 from geonode.base.models import (
@@ -38,6 +36,7 @@ from geonode.base.models import (
     TopicCategory,
     SpatialRepresentationType
 )
+from geonode.base.utils import build_absolute_uri
 
 from geonode.groups.models import GroupCategory, GroupProfile
 
@@ -146,7 +145,7 @@ class AvatarUrlField(DynamicComputedField):
         super(AvatarUrlField, self).__init__(**kwargs)
 
     def get_attribute(self, instance):
-        return avatar_url(instance, self.avatar_size)
+        return build_absolute_uri(avatar_url(instance, self.avatar_size))
 
 
 class EmbedUrlField(DynamicComputedField):
@@ -157,9 +156,18 @@ class EmbedUrlField(DynamicComputedField):
     def get_attribute(self, instance):
         _instance = instance.get_real_instance()
         if hasattr(_instance, 'embed_url') and _instance.embed_url != NotImplemented:
-            return _instance.embed_url
+            return build_absolute_uri(_instance.embed_url)
         else:
             return ""
+
+
+class DetailUrlField(DynamicComputedField):
+
+    def __init__(self, **kwargs):
+        super(DetailUrlField, self).__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        return build_absolute_uri(instance.detail_url)
 
 
 class ThumbnailUrlField(DynamicComputedField):
@@ -176,9 +184,7 @@ class ThumbnailUrlField(DynamicComputedField):
             except Exception as e:
                 logger.exception(e)
 
-        if thumbnail_url and 'http' not in thumbnail_url:
-            thumbnail_url = urljoin(settings.SITEURL, thumbnail_url)
-        return thumbnail_url
+        return build_absolute_uri(thumbnail_url)
 
 
 class UserSerializer(DynamicModelSerializer):
@@ -250,7 +256,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['featured'] = serializers.BooleanField()
         self.fields['is_published'] = serializers.BooleanField()
         self.fields['is_approved'] = serializers.BooleanField()
-        self.fields['detail_url'] = serializers.CharField(read_only=True)
+        self.fields['detail_url'] = DetailUrlField(read_only=True)
         self.fields['created'] = serializers.DateTimeField(read_only=True)
         self.fields['last_updated'] = serializers.DateTimeField(read_only=True)
         self.fields['raw_abstract'] = serializers.CharField(read_only=True)
@@ -302,5 +308,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         request = self.context.get('request')
         data = super(ResourceBaseSerializer, self).to_representation(instance)
         if request:
-            data['perms'] = instance.get_user_perms(request.user)
+            data['perms'] = instance.get_user_perms(request.user).union(
+                instance.get_self_resource().get_user_perms(request.user)
+                )
         return data

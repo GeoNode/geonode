@@ -24,6 +24,8 @@
 # Standard Modules
 import re
 import logging
+from urllib.parse import urljoin
+
 from dateutil.parser import isoparse
 from datetime import datetime, timedelta
 
@@ -131,6 +133,12 @@ def configuration_session_cache(session):
             cached_config['configuration'][field_name] = getattr(config, field_name)
 
         session['config'] = cached_config
+
+
+def build_absolute_uri(url):
+    if url and 'http' not in url:
+        url = urljoin(settings.SITEURL, url)
+    return url
 
 
 class OwnerRightsRequestViewUtils:
