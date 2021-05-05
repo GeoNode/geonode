@@ -46,7 +46,8 @@ from geonode.base.models import (
     Configuration,
     TopicCategory,
     Thesaurus,
-    ThesaurusKeyword
+    ThesaurusKeyword,
+    generate_thesaurus_reference
 )
 from django.conf import settings
 from django.template import Template, Context
@@ -873,9 +874,8 @@ class TestTagThesaurus(TestCase):
         self.tkeywords = ThesaurusKeyword.objects.all()
 
     def test_get_unique_thesaurus_list(self):
-        tid = self.__get_last_thesaurus().id
         actual = get_unique_thesaurus_set(self.tkeywords)
-        self.assertSetEqual({tid}, actual)
+        self.assertSetEqual({1, 3}, actual)
 
     def test_get_thesaurus_title(self):
         tid = self.__get_last_thesaurus().id
@@ -1029,3 +1029,78 @@ class TestFacets(TestCase):
         results = facets({'request': self.request_mock})
         self.assertEqual(results['vector'], 3)
         self.assertEqual(results['raster'], 4)
+
+
+class TestGenerateThesaurusReference(TestCase):
+    fixtures = [
+        "test_thesaurus.json"
+    ]
+
+    def setUp(self):
+        self.site_url = settings.SITEURL if hasattr(settings, "SITEURL") else "http://localhost"
+
+    '''
+    If the keyword.about does not exists, the url created will have a prefix and a specifier:
+    as prefix:
+        - use the Keyword's thesaurus.about URI if it exists,
+        - otherwise use as prefix the geonode site URL composed with some thesaurus info: f'{settings.SITEURL}/thesaurus/{thesaurus.identifier}'
+    as specifier:
+        - we may use the ThesaurusKeyword.alt_label if it exists, otherwise its id
+
+    So the final about field value will be composed as f'{prefix}#{specifier}'
+    '''
+
+    def test_should_return_keyword_url(self):
+        expected = "http://inspire.ec.europa.eu/theme/ad"
+        keyword = ThesaurusKeyword.objects.get(id=1)
+        actual = generate_thesaurus_reference(keyword)
+        keyword.refresh_from_db()
+        '''
+        Check if the expected about has been created and that the instance is correctly updated
+        '''
+        self.assertEqual(expected, actual)
+        self.assertEqual(expected, keyword.about)
+
+    def test_should_return_as_url_thesaurus_about_and_keyword_alt_label(self):
+        expected = "http://inspire.ec.europa.eu/theme#foo_keyword"
+        keyword = ThesaurusKeyword.objects.get(alt_label='foo_keyword')
+        actual = generate_thesaurus_reference(keyword)
+        keyword.refresh_from_db()
+        '''
+        Check if the expected about has been created and that the instance is correctly updated
+        '''
+        self.assertEqual(expected, actual)
+        self.assertEqual(expected, keyword.about)
+
+    def test_should_return_as_url_thesaurus_about_and_keyword_id(self):
+        expected = "http://inspire.ec.europa.eu/theme#37"
+        keyword = ThesaurusKeyword.objects.get(id=37)
+        actual = generate_thesaurus_reference(keyword)
+        keyword.refresh_from_db()
+        '''
+        Check if the expected about has been created and that the instance is correctly updated
+        '''
+        self.assertEqual(expected, actual)
+        self.assertEqual(expected, keyword.about)
+
+    def test_should_return_as_url_site_url_and_keyword_label(self):
+        expected = f"{self.site_url}/thesaurus/no-about-thesauro#bar_keyword"
+        keyword = ThesaurusKeyword.objects.get(id=39)
+        actual = generate_thesaurus_reference(keyword)
+        keyword.refresh_from_db()
+        '''
+        Check if the expected about has been created and that the instance is correctly updated
+        '''
+        self.assertEqual(expected, actual)
+        self.assertEqual(expected, keyword.about)
+
+    def test_should_return_as_url_site_url_and_keyword_id(self):
+        expected = f"{self.site_url}/thesaurus/no-about-thesauro#38"
+        keyword = ThesaurusKeyword.objects.get(id=38)
+        actual = generate_thesaurus_reference(keyword)
+        keyword.refresh_from_db()
+        '''
+        Check if the expected about has been created and that the instance is correctly updated
+        '''
+        self.assertEqual(expected, actual)
+        self.assertEqual(expected, keyword.about)
