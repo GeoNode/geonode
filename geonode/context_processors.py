@@ -200,5 +200,6 @@ def resource_urls(request):
             if (x.card_max == -1 and x.card_min == 1) or (x.card_max == 1 and x.card_min == 1)
         ],
         ADVANCED_EDIT_EXCLUDE_FIELD=getattr(settings, "ADVANCED_EDIT_EXCLUDE_FIELD", []),
+        PROFILE_EDIT_EXCLUDE_FIELD=getattr(settings, "PROFILE_EDIT_EXCLUDE_FIELD", []),
     )
     return defaults

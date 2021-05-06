@@ -1752,7 +1752,9 @@ class TestalidateInputSource(TestCase):
         )
         self.assertEqual(expected, e.exception.args[0])
 
-    def test_will_raise_exception_for_not_existing_layer_in_the_catalog(self):
+    @patch("geonode.layers.utils.gs_catalog")
+    def test_will_raise_exception_for_not_existing_layer_in_the_catalog(self, catalog):
+        catalog.get_layer.return_value = None
         layer = Layer.objects.filter(name="single_point")[0]
         file_path = gisdata.VECTOR_DATA
         filename = os.path.join(file_path, "single_point.shp")
