@@ -1,4 +1,5 @@
 {% extends "people/profile_base.html" %}
+{% load widget_tweaks %}
 {% load i18n avatar_tags %}
 {% load bootstrap_tags %}
 
@@ -24,7 +25,17 @@
   <form action="" method="post">
     {% csrf_token %}
     <div class="form-controls">
-      {{ form|as_bootstrap }}
+      {# form|as_bootstrap #}
+      {% for field in form %}
+        {% if field.name not in PROFILE_EDIT_EXCLUDE_FIELD  %}
+        <div id="div_{{ field.auto_id }}" class="form-group">
+            <label for="{{ field.auto_id }}" class="control-label">{{ field.label }}</label>
+            <div class="">
+                {% render_field field class="form-control" %}
+            </div>
+        </div>
+        {% endif %}
+      {% endfor %}
     </div>
     <div class="form-actions">
       <input type="submit" class="btn btn-primary" value="{% trans "Update profile" %}" />
