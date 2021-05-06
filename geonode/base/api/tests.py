@@ -44,6 +44,7 @@ from geonode.services.views import services
 from geonode.maps.views import map_embed
 from geonode.layers.views import layer_embed
 from geonode.geoapps.views import geoapp_edit
+from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
@@ -597,6 +598,6 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
                 instance = resource.get_real_instance()
                 if hasattr(instance, 'embed_url'):
                     if instance.embed_url != NotImplemented:
-                        self.assertEqual(instance.embed_url, embed_url)
+                        self.assertEqual(build_absolute_uri(instance.embed_url), embed_url)
                     else:
                         self.assertEqual("", embed_url)

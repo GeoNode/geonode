@@ -37,7 +37,6 @@ from geonode.base.models import (
     SpatialRepresentationType
 )
 from geonode.base.utils import build_absolute_uri
-
 from geonode.groups.models import GroupCategory, GroupProfile
 
 import logging
@@ -310,5 +309,5 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         if request:
             data['perms'] = instance.get_user_perms(request.user).union(
                 instance.get_self_resource().get_user_perms(request.user)
-                )
+            )
         return data
