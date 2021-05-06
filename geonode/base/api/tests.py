@@ -40,9 +40,9 @@ from geonode.base.models import (
     HierarchicalKeyword,
     Region,
     ResourceBase,
-    TopicCategory
+    TopicCategory,
+    ThesaurusKeyword,
     )
-from geonode.base.utils import build_absolute_uri
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -695,3 +695,25 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+
+    def test_tkeywords_list(self):
+        """
+        Ensure we can access the list of thasaurus keywords.
+        """
+        url = reverse('tkeywords-list')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())
+
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())

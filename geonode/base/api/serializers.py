@@ -34,9 +34,10 @@ from geonode.base.models import (
     RestrictionCodeType,
     License,
     TopicCategory,
-    SpatialRepresentationType
+    SpatialRepresentationType,
+    ThesaurusKeyword,
 )
-from geonode.base.utils import build_absolute_uri, get_resources
+from geonode.base.utils import build_absolute_uri, get_resources_with_perms
 from geonode.groups.models import GroupCategory, GroupProfile
 
 import logging
@@ -313,52 +314,58 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         return data
 
 
-class HierarchicalKeywordSerializer(DynamicModelSerializer):
+class BaseResourceCountSerializer(DynamicModelSerializer):
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        filter_options = {}
+        if request.query_params:
+            filter_options = {
+                'type_filter': request.query_params.get('type'),
+                'title_filter': request.query_params.get('title__icontains')
+                }
+        data = super(BaseResourceCountSerializer, self).to_representation(instance)
+        count_filter = {self.Meta.count_type: instance}
+        data['count'] = get_resources_with_perms(
+            request.user, filter_options).filter(**count_filter).count()
+        return data
+
+
+class HierarchicalKeywordSerializer(BaseResourceCountSerializer):
 
     class Meta(SimpleHierarchicalKeywordSerializer.Meta):
         name = 'keywords'
+        count_type = 'keywords'
         fields = '__all__'
 
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        data = super(HierarchicalKeywordSerializer, self).to_representation(instance)
-        data['count'] = get_resources(request.user).filter(keywords__in=[instance]).count()
-        return data
+
+class ThesaurusKeywordSerializer(BaseResourceCountSerializer):
+
+    class Meta:
+        model = ThesaurusKeyword
+        name = 'tkeywords'
+        count_type = 'tkeywords'
+        fields = '__all__'
 
 
-class RegionSerializer(DynamicModelSerializer):
+class RegionSerializer(BaseResourceCountSerializer):
 
     class Meta(SimpleRegionSerializer.Meta):
         name = 'regions'
+        count_type = 'regions'
         fields = '__all__'
 
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        data = super(RegionSerializer, self).to_representation(instance)
-        data['count'] = get_resources(request.user).filter(regions__in=[instance]).count()
-        return data
 
-
-class TopicCategorySerializer(DynamicModelSerializer):
+class TopicCategorySerializer(BaseResourceCountSerializer):
 
     class Meta(SimpleTopicCategorySerializer.Meta):
         name = 'categories'
+        count_type = 'category'
         fields = '__all__'
 
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        data = super(TopicCategorySerializer, self).to_representation(instance)
-        data['count'] = get_resources(request.user).filter(category=instance).count()
-        return data
 
-
-class OwnerSerializer(UserSerializer):
+class OwnerSerializer(BaseResourceCountSerializer, UserSerializer):
 
     class Meta(UserSerializer.Meta):
         name = 'owners'
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        data = super(OwnerSerializer, self).to_representation(instance)
-        data['count'] = get_resources(request.user).filter(owner=instance).count()
-        return data
+        count_type = 'owner'

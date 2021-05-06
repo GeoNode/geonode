@@ -33,7 +33,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticate
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
-from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory
+from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.security.utils import get_visible_resources
@@ -55,7 +55,8 @@ from .serializers import (
     OwnerSerializer,
     HierarchicalKeywordSerializer,
     TopicCategorySerializer,
-    RegionSerializer
+    RegionSerializer,
+    ThesaurusKeywordSerializer,
 )
 from .pagination import GeoNodeApiPagination
 
@@ -165,6 +166,16 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Generi
     permission_classes = [AllowAny, ]
     queryset = HierarchicalKeyword.objects.all()
     serializer_class = HierarchicalKeywordSerializer
+    pagination_class = GeoNodeApiPagination
+
+
+class ThesaurusKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+    """
+    API endpoint that lists Thesaurus keywords.
+    """
+    permission_classes = [AllowAny, ]
+    queryset = ThesaurusKeyword.objects.all()
+    serializer_class = ThesaurusKeywordSerializer
     pagination_class = GeoNodeApiPagination
 
 
