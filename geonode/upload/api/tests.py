@@ -390,6 +390,12 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             if upload_data['state'] == Upload.STATE_PROCESSED and upload_data['detail_url']:
                 break
 
+        for _cnt in range(1, 10):
+            logger.error(f"[{_cnt}] Wait a bit until GeoNode finalizes the Layer configuration...")
+            if upload_data['state'] == Upload.STATE_PROCESSED:
+                break
+            time.sleep(10.0)
+
         self.assertEqual(upload_data['state'], Upload.STATE_PROCESSED)
         self.assertGreaterEqual(upload_data['progress'], 80.0)
 
