@@ -44,6 +44,7 @@ from geonode.services.views import services
 from geonode.maps.views import map_embed
 from geonode.layers.views import layer_embed
 from geonode.geoapps.views import geoapp_edit
+from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
@@ -169,6 +170,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.data['user']['username'], 'admin')
         self.assertIsNotNone(response.data['user']['avatar'])
 
+        # anonymous users are not in contributors group
+        url = reverse('users-detail', kwargs={'pk': -1})
+        response = self.client.get(url, format='json')
+        self.assertNotIn('add_resource', response.data['user']['perms'])
+
         # Bobby
         self.assertTrue(self.client.login(username='bobby', password='bob'))
         # Bobby cannot access other users' details
@@ -192,6 +198,21 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         logger.debug(response.data)
         self.assertEqual(response.data['user']['username'], 'bobby')
         self.assertIsNotNone(response.data['user']['avatar'])
+        # default contributor group_perm is returned in perms
+        self.assertIn('add_resource', response.data['user']['perms'])
+
+    def test_register_users(self):
+        """
+        Ensure users are created with default groups.
+        """
+        url = reverse('users-list')
+        user_data = {
+            'username': 'new_user',
+        }
+        response = self.client.post(url, data=user_data, format='json')
+        self.assertEqual(response.status_code, 201)
+        # default contributor group_perm is returned in perms
+        self.assertIn('add_resource', response.data['user']['perms'])
 
     def test_base_resources(self):
         """
@@ -577,6 +598,6 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
                 instance = resource.get_real_instance()
                 if hasattr(instance, 'embed_url'):
                     if instance.embed_url != NotImplemented:
-                        self.assertEqual(instance.embed_url, embed_url)
+                        self.assertEqual(build_absolute_uri(instance.embed_url), embed_url)
                     else:
                         self.assertEqual("", embed_url)

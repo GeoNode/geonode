@@ -30,9 +30,10 @@ from datetime import datetime, timedelta
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.gis.geos import Polygon
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission, Group
 from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from geonode import geoserver  # noqa
@@ -154,6 +155,14 @@ def create_models(type=None, integration=False):
     with transaction.atomic():
         map_data, user_data, people_data, layer_data, document_data = create_fixtures()
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+        cont_group, created = Group.objects.get_or_create(name='contributors')
+        ctype = ContentType.objects.get_for_model(cont_group)
+        perm, created = Permission.objects.get_or_create(
+            codename='base_addresourcebase',
+            name='Can add resources',
+            content_type=ctype
+        )
+        cont_group.permissions.add(perm)
         logger.debug("[SetUp] Get or create user admin")
         u, created = get_user_model().objects.get_or_create(username='admin')
         u.set_password('admin')
@@ -172,6 +181,9 @@ def create_models(type=None, integration=False):
             u.last_name = last_name
             u.save()
             u.groups.add(anonymous_group)
+
+            if not (u.is_superuser or u.is_staff or u.is_anonymous):
+                u.groups.add(cont_group)
             users.append(u)
 
         logger.debug(f"[SetUp] Add group {anonymous_group}")
@@ -335,11 +347,72 @@ def create_single_layer(name):
         temporal_extent_end=test_datetime,
         date=start,
         storeType="dataStore",
+        resource_type="layer"
     )
     layer.save()
     layer.set_default_permissions()
     layer.clear_dirty_state()
     return layer
+
+
+def create_single_map(name):
+    admin, created = get_user_model().objects.get_or_create(username='admin')
+    if created:
+        admin.is_superuser = True
+        admin.first_name = 'admin'
+        admin.set_password('admin')
+        admin.save()
+    test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
+    user = get_user_model().objects.get(username='AnonymousUser')
+    ll = (name, 'lorem ipsum', name, f'{name}', [
+        0, 22, 0, 22], test_datetime, ('populartag',))
+    title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = ll
+    m = Map(
+        title=title,
+        abstract=abstract,
+        zoom=4,
+        projection='EPSG:4326',
+        center_x=42,
+        center_y=-73,
+        owner=user,
+        bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+        ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+        srid='EPSG:4326',
+        resource_type="map"
+    )
+    m.save()
+    m.set_default_permissions()
+    m.clear_dirty_state()
+    return m
+
+
+def create_single_doc(name):
+    admin, created = get_user_model().objects.get_or_create(username='admin')
+    if created:
+        admin.is_superuser = True
+        admin.first_name = 'admin'
+        admin.set_password('admin')
+        admin.save()
+    test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
+    user = get_user_model().objects.get(username='AnonymousUser')
+    dd = (name, 'lorem ipsum', name, f'{name}', [
+        0, 22, 0, 22], test_datetime, ('populartag',))
+    title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = dd
+    logger.debug(f"[SetUp] Add document {title}")
+    m = Document(
+        title=title,
+        abstract=abstract,
+        owner=user,
+        bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+        ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+        srid='EPSG:4326',
+        doc_file=f,
+        resource_type="document"
+    )
+    m.save()
+    m.set_default_permissions()
+    m.clear_dirty_state()
+    return m
 
 
 if __name__ == '__main__':
