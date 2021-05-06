@@ -20,12 +20,13 @@
 from rest_framework import serializers
 
 from dynamic_rest.serializers import DynamicModelSerializer
+from rest_framework.fields import JSONField
 
 from geonode.maps.models import Map, MapLayer
 from geonode.base.api.serializers import ResourceBaseSerializer
 
 import logging
-
+import six
 logger = logging.getLogger(__name__)
 
 
@@ -50,6 +51,7 @@ class MapSerializer(ResourceBaseSerializer):
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
         super(MapSerializer, self).__init__(*args, **kwargs)
+        self.fields['data'] = JSONSerializerField(read_only=False)
 
     class Meta:
         model = Map
@@ -57,5 +59,19 @@ class MapSerializer(ResourceBaseSerializer):
         fields = (
             'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
-            'urlsuffix', 'featuredurl'
+            'urlsuffix', 'featuredurl', 'data'
         )
+
+
+class JSONSerializerField(serializers.Field):
+    """ Serializer for JSONField -- required to make field writable"""
+    id = serializers.ReadOnlyField()
+
+    def to_internal_value(self, data):
+        return data
+
+    def to_representation(self, value):
+        data = value.blob if value and hasattr(value, 'blob') else value
+        if isinstance(data, six.string_types):
+            return JSONField.loads(data)
+        return data

@@ -49,6 +49,7 @@ from geonode.utils import check_ogc_backend
 from deprecated import deprecated
 from pinax.ratings.models import OverallRating
 
+from jsonfield import JSONField
 logger = logging.getLogger("geonode.maps.models")
 
 
@@ -88,6 +89,14 @@ class Map(ResourceBase, GXPMapBase):
         max_length=255,
         blank=True)
     # Full URL for featured map view, ie http://domain/someview
+
+    data = models.OneToOneField(
+        "MapData",
+        related_name="data",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
+
 
     def __str__(self):
         return f'{self.title} by {(self.owner.username if self.owner else "<Anonymous>")}'
@@ -421,6 +430,17 @@ class Map(ResourceBase, GXPMapBase):
 
     class Meta(ResourceBase.Meta):
         pass
+
+
+class MapData(models.Model):
+    blob = JSONField(
+        null=False,
+        default={})
+    resource = models.ForeignKey(
+        Map,
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
 
 
 class MapLayer(models.Model, GXPLayerBase):
