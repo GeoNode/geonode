@@ -30,20 +30,17 @@ from dateutil.parser import isoparse
 from datetime import datetime, timedelta
 
 # Django functionality
-from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
 # Geonode functionality
-from guardian.shortcuts import get_perms, remove_perm, assign_perm, get_objects_for_user
+from guardian.shortcuts import get_perms, remove_perm, assign_perm
 
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.geoapps.models import GeoApp
 from geonode.maps.models import Map
-from geonode.security.utils import get_visible_resources
 from geonode.services.models import Service
 from geonode.base.thumb_utils import (
     get_thumbs,
@@ -142,64 +139,6 @@ def build_absolute_uri(url):
     if url and 'http' not in url:
         url = urljoin(settings.SITEURL, url)
     return url
-
-
-def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
-    """
-    Returns resources a user has access to.
-    """
-    if settings.SKIP_PERMS_FILTER:
-        resources = ResourceBase.objects.all()
-    else:
-        resources = get_objects_for_user(
-            user,
-            'base.view_resourcebase',
-            **shortcut_kwargs
-        )
-
-    resources_with_perms = get_visible_resources(
-        resources,
-        user,
-        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
-
-    if filter_options:
-        if resources_with_perms and resources_with_perms.count() > 0:
-            if filter_options.get('title_filter'):
-                resources_with_perms = resources_with_perms.filter(
-                    title__icontains=filter_options.get('title_filter')
-                    )
-            type_filters = []
-            if filter_options.get('type_filter'):
-                _type_filter = filter_options.get('type_filter')
-                if _type_filter:
-                    type_filters.append(_type_filter)
-                # get subtypes for geoapps
-                if _type_filter == 'geoapp':
-                    type_filters.extend(get_geoapp_subtypes())
-
-            if type_filters:
-                resources_with_perms = resources_with_perms.filter(
-                    polymorphic_ctype__model__in=type_filters
-                    )
-
-    return resources_with_perms
-
-
-def get_geoapp_subtypes():
-    """
-    Returns a list of geoapp subtypes.
-    eg ['geostory']
-    """
-    subtypes = []
-    for label, app in apps.app_configs.items():
-        if hasattr(app, 'type') and app.type == 'GEONODE_APP':
-            if hasattr(app, 'default_model'):
-                _model = apps.get_model(label, app.default_model)
-                if issubclass(_model, GeoApp):
-                    subtypes.append(_model.__name__.lower())
-    return subtypes
 
 
 class OwnerRightsRequestViewUtils:

@@ -23,7 +23,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
 
-from geonode.base.utils import get_resources_with_perms
+from geonode.security.utils import get_resources_with_perms
 
 logger = logging.getLogger(__name__)
 

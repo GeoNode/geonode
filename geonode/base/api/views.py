@@ -35,9 +35,11 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.utils import get_geoapp_subtypes, get_resources_with_perms
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.security.utils import get_visible_resources
+from geonode.security.utils import (
+    get_geoapp_subtypes,
+    get_visible_resources,
+    get_resources_with_perms)
 
 from guardian.shortcuts import get_objects_for_user
 
