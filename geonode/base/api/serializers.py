@@ -34,9 +34,10 @@ from geonode.base.models import (
     RestrictionCodeType,
     License,
     TopicCategory,
-    SpatialRepresentationType
+    SpatialRepresentationType,
+    ThesaurusKeyword,
 )
-from geonode.base.utils import build_absolute_uri
+from geonode.base.utils import build_absolute_uri, get_resources_with_perms
 from geonode.groups.models import GroupCategory, GroupProfile
 
 import logging
@@ -86,7 +87,7 @@ class GroupProfileSerializer(DynamicModelSerializer):
         many=True, slug_field='slug', queryset=GroupCategory.objects.all())
 
 
-class HierarchicalKeywordSerializer(DynamicModelSerializer):
+class SimpleHierarchicalKeywordSerializer(DynamicModelSerializer):
 
     class Meta:
         model = HierarchicalKeyword
@@ -97,7 +98,7 @@ class HierarchicalKeywordSerializer(DynamicModelSerializer):
         return {'name': value.name, 'slug': value.slug}
 
 
-class RegionSerializer(DynamicModelSerializer):
+class SimpleRegionSerializer(DynamicModelSerializer):
 
     class Meta:
         model = Region
@@ -105,7 +106,7 @@ class RegionSerializer(DynamicModelSerializer):
         fields = ('code', 'name')
 
 
-class TopicCategorySerializer(DynamicModelSerializer):
+class SimpleTopicCategorySerializer(DynamicModelSerializer):
 
     class Meta:
         model = TopicCategory
@@ -269,11 +270,11 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['embed_url'] = EmbedUrlField()
         self.fields['thumbnail_url'] = ThumbnailUrlField()
         self.fields['keywords'] = DynamicRelationField(
-            HierarchicalKeywordSerializer, embed=False, many=True)
+            SimpleHierarchicalKeywordSerializer, embed=False, many=True)
         self.fields['regions'] = DynamicRelationField(
-            RegionSerializer, embed=True, many=True, read_only=True)
+            SimpleRegionSerializer, embed=True, many=True, read_only=True)
         self.fields['category'] = DynamicRelationField(
-            TopicCategorySerializer, embed=True, many=False)
+            SimpleTopicCategorySerializer, embed=True, many=False)
         self.fields['restriction_code_type'] = DynamicRelationField(
             RestrictionCodeTypeSerializer, embed=True, many=False)
         self.fields['license'] = DynamicRelationField(
@@ -311,3 +312,60 @@ class ResourceBaseSerializer(DynamicModelSerializer):
                 instance.get_self_resource().get_user_perms(request.user)
             )
         return data
+
+
+class BaseResourceCountSerializer(DynamicModelSerializer):
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        filter_options = {}
+        if request.query_params:
+            filter_options = {
+                'type_filter': request.query_params.get('type'),
+                'title_filter': request.query_params.get('title__icontains')
+                }
+        data = super(BaseResourceCountSerializer, self).to_representation(instance)
+        count_filter = {self.Meta.count_type: instance}
+        data['count'] = get_resources_with_perms(
+            request.user, filter_options).filter(**count_filter).count()
+        return data
+
+
+class HierarchicalKeywordSerializer(BaseResourceCountSerializer):
+
+    class Meta(SimpleHierarchicalKeywordSerializer.Meta):
+        name = 'keywords'
+        count_type = 'keywords'
+        fields = '__all__'
+
+
+class ThesaurusKeywordSerializer(BaseResourceCountSerializer):
+
+    class Meta:
+        model = ThesaurusKeyword
+        name = 'tkeywords'
+        count_type = 'tkeywords'
+        fields = '__all__'
+
+
+class RegionSerializer(BaseResourceCountSerializer):
+
+    class Meta(SimpleRegionSerializer.Meta):
+        name = 'regions'
+        count_type = 'regions'
+        fields = '__all__'
+
+
+class TopicCategorySerializer(BaseResourceCountSerializer):
+
+    class Meta(SimpleTopicCategorySerializer.Meta):
+        name = 'categories'
+        count_type = 'category'
+        fields = '__all__'
+
+
+class OwnerSerializer(BaseResourceCountSerializer, UserSerializer):
+
+    class Meta(UserSerializer.Meta):
+        name = 'owners'
+        count_type = 'owner'
