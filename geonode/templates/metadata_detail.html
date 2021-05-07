@@ -96,8 +96,8 @@
                 <ul>
                     {% for keyword in resource.keywords.all %}
                     <li>
-                        <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?keywords__slug__in={{ keyword.slug }}" >
-                        {{ keyword.name }}
+                        <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?keywords__slug__in={{ keyword.slug|safe }}" >
+                        {{ keyword.name| safe }}
                         </a>
                     </li>
                     {% endfor %}
