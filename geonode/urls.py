@@ -43,7 +43,7 @@ from geonode.utils import check_ogc_backend
 from geonode.monitoring import register_url_event
 from geonode.messaging.urls import urlpatterns as msg_urls
 from .people.views import CustomSignupView
-from oauth2_provider.urls import app_name, base_urlpatterns, management_urlpatterns
+from oauth2_provider.urls import app_name, base_urlpatterns
 
 admin.autodiscover()
 
