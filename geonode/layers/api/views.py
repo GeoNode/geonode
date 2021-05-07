@@ -47,6 +47,6 @@ class LayerViewSet(DynamicModelViewSet):
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, LayerPermissionsFilter
     ]
-    queryset = Layer.objects.all()
+    queryset = Layer.objects.all().order_by('-date')
     serializer_class = LayerSerializer
     pagination_class = GeoNodeApiPagination

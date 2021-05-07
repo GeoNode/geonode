@@ -52,7 +52,7 @@ class MapViewSet(DynamicModelViewSet):
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, MapPermissionsFilter
     ]
-    queryset = Map.objects.all()
+    queryset = Map.objects.all().order_by('-date')
     serializer_class = MapSerializer
     pagination_class = GeoNodeApiPagination
 
