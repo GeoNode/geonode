@@ -25,7 +25,7 @@ from dynamic_rest.serializers import DynamicModelSerializer
 from rest_framework.fields import CharField
 
 from geonode.maps.models import Map, MapData, MapLayer
-from geonode.base.api.serializers import ResourceBaseSerializer
+from geonode.base.api.serializers import OwnerSerializer, ResourceBaseSerializer
 
 import logging
 logger = logging.getLogger(__name__)
@@ -70,7 +70,6 @@ class MapAppDataSerializer(DynamicModelSerializer):
         return data.blob if data else {}
 
 class MapSerializer(ResourceBaseSerializer):
-    resource = serializers.CharField(source="resource_ptr")
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
@@ -80,7 +79,7 @@ class MapSerializer(ResourceBaseSerializer):
         model = Map
         name = 'map'
         fields = (
-            'pk', 'uuid', 'resource',
+            'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
             'urlsuffix', 'featuredurl', 'data'
         )
