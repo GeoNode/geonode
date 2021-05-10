@@ -22,19 +22,24 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from drf_spectacular.utils import extend_schema
-from dynamic_rest.viewsets import DynamicModelViewSet
+from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
+from rest_framework.mixins import ListModelMixin
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
-from geonode.base.models import ResourceBase
+from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.security.utils import get_visible_resources
+from geonode.security.utils import (
+    get_geoapp_subtypes,
+    get_visible_resources,
+    get_resources_with_perms)
 
 from guardian.shortcuts import get_objects_for_user
 
@@ -49,7 +54,12 @@ from .serializers import (
     PermSpecSerialiazer,
     GroupProfileSerializer,
     ResourceBaseSerializer,
-    ResourceBaseTypesSerializer
+    ResourceBaseTypesSerializer,
+    OwnerSerializer,
+    HierarchicalKeywordSerializer,
+    TopicCategorySerializer,
+    RegionSerializer,
+    ThesaurusKeywordSerializer,
 )
 from .pagination import GeoNodeApiPagination
 
@@ -142,6 +152,57 @@ class GroupViewSet(DynamicModelViewSet):
         return Response(ResourceBaseSerializer(embed=True, many=True).to_representation(resources))
 
 
+class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+    """
+    API endpoint that lists regions.
+    """
+    permission_classes = [AllowAny, ]
+    queryset = Region.objects.all()
+    serializer_class = RegionSerializer
+    pagination_class = GeoNodeApiPagination
+
+
+class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+    """
+    API endpoint that lists hierarchical keywords.
+    """
+    permission_classes = [AllowAny, ]
+    queryset = HierarchicalKeyword.objects.all()
+    serializer_class = HierarchicalKeywordSerializer
+    pagination_class = GeoNodeApiPagination
+
+
+class ThesaurusKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+    """
+    API endpoint that lists Thesaurus keywords.
+    """
+    permission_classes = [AllowAny, ]
+    queryset = ThesaurusKeyword.objects.all()
+    serializer_class = ThesaurusKeywordSerializer
+    pagination_class = GeoNodeApiPagination
+
+
+class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+    """
+    API endpoint that lists categories.
+    """
+    permission_classes = [AllowAny, ]
+    queryset = TopicCategory.objects.all()
+    serializer_class = TopicCategorySerializer
+    pagination_class = GeoNodeApiPagination
+
+
+class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+    """
+    API endpoint that lists all possible owners.
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [AllowAny, ]
+    queryset = get_user_model().objects.all().exclude(pk=-1)
+    serializer_class = OwnerSerializer
+    pagination_class = GeoNodeApiPagination
+
+
 class ResourceBaseViewSet(DynamicModelViewSet):
     """
     API endpoint that allows base resources to be viewed or edited.
@@ -195,11 +256,23 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         the mapping looks like:
         ```
         {
-            "resource_types": [
-                "layer",
-                "map",
-                "document",
-                "service"
+            "resource_types":[
+                {
+                    "name": "layer",
+                    "count": <number of layers>
+                },
+                {
+                    "name": "map",
+                    "count": <number of maps>
+                },
+                {
+                    "name": "document",
+                    "count": <number of documents>
+                },
+                {
+                    "name": "geostory",
+                    "count": <number of geostories>
+                }
             ]
         }
         ```
@@ -207,21 +280,21 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     @action(detail=False, methods=['get'])
     def resource_types(self, request):
         resource_types = []
+        _types = []
         for _model in apps.get_models():
             if _model.__name__ == "ResourceBase":
-                resource_types = [_m.__name__.lower() for _m in _model.__subclasses__()]
-        if "geoapp" in resource_types:
-            resource_types.remove("geoapp")
-        if "service" in resource_types:
-            resource_types.remove("service")
+                for _m in _model.__subclasses__():
+                    if _m.__name__.lower() not in ['geoapp', 'service']:
+                        _types.append(_m.__name__.lower())
+
         if settings.GEONODE_APPS_ENABLE:
-            from geonode.geoapps.models import GeoApp
-            for label, app in apps.app_configs.items():
-                if hasattr(app, 'type') and app.type == 'GEONODE_APP':
-                    if hasattr(app, 'default_model'):
-                        _model = apps.get_model(label, app.default_model)
-                        if issubclass(_model, GeoApp):
-                            resource_types.append(_model.__name__.lower())
+            _types.extend(get_geoapp_subtypes())
+
+        for _type in _types:
+            resource_types.append({
+                "name": _type,
+                "count": get_resources_with_perms(request.user).filter(resource_type=_type).count()
+                })
         return Response({"resource_types": resource_types})
 
     @extend_schema(methods=['get'], responses={200: PermSpecSerialiazer()},
