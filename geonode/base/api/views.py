@@ -36,7 +36,10 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.security.utils import get_visible_resources
+from geonode.security.utils import (
+    get_geoapp_subtypes,
+    get_visible_resources,
+    get_resources_with_perms)
 
 from guardian.shortcuts import get_objects_for_user
 
@@ -253,11 +256,23 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         the mapping looks like:
         ```
         {
-            "resource_types": [
-                "layer",
-                "map",
-                "document",
-                "service"
+            "resource_types":[
+                {
+                    "name": "layer",
+                    "count": <number of layers>
+                },
+                {
+                    "name": "map",
+                    "count": <number of maps>
+                },
+                {
+                    "name": "document",
+                    "count": <number of documents>
+                },
+                {
+                    "name": "geostory",
+                    "count": <number of geostories>
+                }
             ]
         }
         ```
@@ -265,21 +280,21 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     @action(detail=False, methods=['get'])
     def resource_types(self, request):
         resource_types = []
+        _types = []
         for _model in apps.get_models():
             if _model.__name__ == "ResourceBase":
-                resource_types = [_m.__name__.lower() for _m in _model.__subclasses__()]
-        if "geoapp" in resource_types:
-            resource_types.remove("geoapp")
-        if "service" in resource_types:
-            resource_types.remove("service")
+                for _m in _model.__subclasses__():
+                    if _m.__name__.lower() not in ['geoapp', 'service']:
+                        _types.append(_m.__name__.lower())
+
         if settings.GEONODE_APPS_ENABLE:
-            from geonode.geoapps.models import GeoApp
-            for label, app in apps.app_configs.items():
-                if hasattr(app, 'type') and app.type == 'GEONODE_APP':
-                    if hasattr(app, 'default_model'):
-                        _model = apps.get_model(label, app.default_model)
-                        if issubclass(_model, GeoApp):
-                            resource_types.append(_model.__name__.lower())
+            _types.extend(get_geoapp_subtypes())
+
+        for _type in _types:
+            resource_types.append({
+                "name": _type,
+                "count": get_resources_with_perms(request.user).filter(resource_type=_type).count()
+                })
         return Response({"resource_types": resource_types})
 
     @extend_schema(methods=['get'], responses={200: PermSpecSerialiazer()},

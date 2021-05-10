@@ -37,8 +37,12 @@ from geonode.base.models import (
     SpatialRepresentationType,
     ThesaurusKeyword,
 )
-from geonode.base.utils import build_absolute_uri, get_resources_with_perms
-from geonode.groups.models import GroupCategory, GroupProfile
+from geonode.groups.models import (
+    GroupCategory,
+    GroupProfile)
+
+from geonode.base.utils import build_absolute_uri
+from geonode.security.utils import get_resources_with_perms
 
 import logging
 
@@ -46,11 +50,11 @@ logger = logging.getLogger(__name__)
 
 
 class ResourceBaseTypesSerializer(DynamicEphemeralSerializer):
+    name = serializers.CharField()
+    count = serializers.IntegerField()
 
     class Meta:
-        name = 'resource-type'
-
-    resource_types = serializers.ListField()
+        name = 'resource-types'
 
 
 class PermSpecSerialiazer(DynamicEphemeralSerializer):
