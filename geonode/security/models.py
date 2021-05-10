@@ -22,12 +22,13 @@ import traceback
 import operator
 
 from functools import reduce
-from django.conf import settings
-from django.contrib.auth.models import Group, Permission
-from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.conf import settings
+from django.db import transaction
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 
 from geonode.groups.conf import settings as groups_settings
 
@@ -141,6 +142,7 @@ class PermissionLevelMixin(object):
             pass
         return self
 
+    @transaction.atomic
     def set_default_permissions(self, owner=None):
         """
         Remove all the permissions except for the owner and assign the
@@ -236,6 +238,7 @@ class PermissionLevelMixin(object):
                 if anonymous_can_download:
                     sync_geofence_with_guardian(self.layer, perms, user=None, group=None)
 
+    @transaction.atomic
     def set_permissions(self, perm_spec, created=False):
         """
         Sets an object's the permission levels based on the perm_spec JSON.
@@ -342,6 +345,7 @@ class PermissionLevelMixin(object):
                     if self.polymorphic_ctype.name == 'layer':
                         sync_geofence_with_guardian(self.layer, perms)
 
+    @transaction.atomic
     def set_workflow_perms(self, approved=False, published=False):
         """
                           |  N/PUBLISHED   | PUBLISHED
