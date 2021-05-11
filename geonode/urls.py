@@ -43,6 +43,10 @@ from geonode.utils import check_ogc_backend
 from geonode.monitoring import register_url_event
 from geonode.messaging.urls import urlpatterns as msg_urls
 from .people.views import CustomSignupView
+from oauth2_provider.urls import (
+    app_name as oauth2_app_name,
+    base_urlpatterns,
+    oidc_urlpatterns)
 
 admin.autodiscover()
 
@@ -154,17 +158,15 @@ urlpatterns += [
         geonode.views.moderator_contacted,
         name='moderator_contacted'),
 
-    # OAuth Provider
+    # OAuth2/OIDC Provider
     url(r'^o/',
-        include('oauth2_provider.urls',
-                namespace='oauth2_provider')),
-
-    # Api Views
-
+        include((base_urlpatterns + oidc_urlpatterns, oauth2_app_name), namespace='oauth2_provider')),
     url(r'^api/o/v4/tokeninfo',
         verify_token, name='tokeninfo'),
     url(r'^api/o/v4/userinfo',
         user_info, name='userinfo'),
+
+    # Api Views
     url(r'^api/roles', roles, name='roles'),
     url(r'^api/adminRole', admin_role, name='adminRole'),
     url(r'^api/users', users, name='users'),
