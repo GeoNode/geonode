@@ -20,6 +20,7 @@
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db.models import Subquery
 
 from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
@@ -198,9 +199,24 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [AllowAny, ]
-    queryset = get_user_model().objects.all().exclude(pk=-1)
     serializer_class = OwnerSerializer
     pagination_class = GeoNodeApiPagination
+
+    def get_queryset(self):
+        """
+        Filter users with atleast a resource
+        """
+        queryset = get_user_model().objects.all().exclude(pk=-1)
+        filter_options = {}
+        if self.request.query_params:
+            filter_options = {
+                'type_filter': self.request.query_params.get('type'),
+                'title_filter': self.request.query_params.get('title__icontains')
+                }
+        queryset = queryset.filter(id__in=Subquery(
+            get_resources_with_perms(self.request.user, filter_options).values('owner'))
+            )
+        return queryset
 
 
 class ResourceBaseViewSet(DynamicModelViewSet):
