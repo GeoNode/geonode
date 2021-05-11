@@ -31,7 +31,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bengali (http://www.transifex.com/geonode/geonode/language/"
@@ -258,6 +258,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "দায়ী পক্ষের দ্বারা সঞ্চালিত ফাংশন"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "সম্পদ এর বিষয়বস্তুর সংক্ষিপ্ত আখ্যান সারসংক্ষেপ (গুলি)"
+
 msgid "reference date for the cited resource"
 msgstr "উদাহৃত সম্পদ জন্য রেফারেন্স তারিখ"
 
@@ -267,8 +270,13 @@ msgstr "একটি প্রদত্ত ঘটনা ঘটেছে যখ�
 msgid "version of the cited resource"
 msgstr "উদাহৃত সম্পদ সংস্করণ"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "সম্পদ এর বিষয়বস্তুর সংক্ষিপ্ত আখ্যান সারসংক্ষেপ (গুলি)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "সম্পদ (গুলি) উন্নত ছিল যা দিয়ে করতেও সারসংক্ষেপ"
@@ -340,27 +348,17 @@ msgid ""
 "dataset"
 msgstr "একটি ডেটা সেটটি এর বংশ সম্পর্কে তথ্য প্রযোজক এর জ্ঞান সাধারণ ব্যাখ্যা"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "গুণ"
-
 msgid "title"
 msgstr "খেতাব"
 
 msgid "name by which the cited resource is known"
 msgstr "উদাহৃত সম্পদ পরিচিত যা দ্বারা নাম"
+
+msgid "abstract"
+msgstr "বিমূর্ত"
+
+msgid "purpose"
+msgstr "উদ্দেশ্য"
 
 msgid "date"
 msgstr "তারিখ"
@@ -371,11 +369,13 @@ msgstr "তারিখ ধরন"
 msgid "edition"
 msgstr "সংস্করণ"
 
-msgid "abstract"
-msgstr "বিমূর্ত"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "গুণ"
 
-msgid "purpose"
-msgstr "উদ্দেশ্য"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "রক্ষণাবেক্ষণ ফ্রিকোয়েন্সি"
@@ -1267,6 +1267,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "সম্পাদনা পরিষেবা মেটাডাটা"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "ডাউনলোড মেটাডাটা"
@@ -1608,6 +1613,15 @@ msgstr "লেয়ার জন্য নির্ধারণ"
 msgid "A rating was given to a layer"
 msgstr "একটি রেটিং একটি স্তর দেওয়া হয়"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1643,6 +1657,17 @@ msgstr "গুণ"
 
 msgid "Create"
 msgstr "তৈরি করুন"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "অন্তর"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2647,11 +2672,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "প্রিভিউ"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "সম্পাদনা পরিষেবা মেটাডাটা"
 
 #, fuzzy
 #| msgid "Attributes"

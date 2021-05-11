@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Hungarian (http://www.transifex.com/geonode/geonode/language/"
@@ -257,6 +257,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "funkciója a felelős fél"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "rövid szöveges tartalmának összefoglalása a forrás (ok)"
+
 msgid "reference date for the cited resource"
 msgstr "viszonyítási időpont az idézett forrás"
 
@@ -266,8 +269,13 @@ msgstr "azonosítását, amikor egy adott esemény"
 msgid "version of the cited resource"
 msgstr "változata az idézett forrás"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "rövid szöveges tartalmának összefoglalása a forrás (ok)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "összefoglaló a szándék, amellyel a forrás (ok) fejlesztették"
@@ -344,27 +352,17 @@ msgid ""
 msgstr ""
 "általános magyarázata az adatok termelő ismereteit a vonal egy adatbázisba"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "Képesség"
-
 msgid "title"
 msgstr "cím"
 
 msgid "name by which the cited resource is known"
 msgstr "nevet, amellyel a hivatkozott erőforrás ismert"
+
+msgid "abstract"
+msgstr "absztrakt"
+
+msgid "purpose"
+msgstr "cél"
 
 msgid "date"
 msgstr "dátum"
@@ -375,11 +373,13 @@ msgstr "dátum típus"
 msgid "edition"
 msgstr "kiadás"
 
-msgid "abstract"
-msgstr "absztrakt"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "Képesség"
 
-msgid "purpose"
-msgstr "cél"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "karbantartási gyakoriság"
@@ -1286,6 +1286,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Szerkesztés Service Metadata"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "Download Metadata"
@@ -1630,6 +1635,15 @@ msgstr "Értékelés Layer"
 msgid "A rating was given to a layer"
 msgstr "A hitelminősítő kapott egy réteg"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1665,6 +1679,17 @@ msgstr "Képesség"
 
 msgid "Create"
 msgstr "Teremt"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Intervallumok"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2690,11 +2715,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Preview"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "Szerkesztés Service Metadata"
 
 #, fuzzy
 #| msgid "Attributes"

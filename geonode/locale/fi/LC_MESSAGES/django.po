@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Finnish (http://www.transifex.com/geonode/geonode/language/"
@@ -252,6 +252,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "vastuullisen osapuolen suorittama toiminto "
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "lyhyt kertova yhteenveto resurssin(ien) sisällöstä"
+
 msgid "reference date for the cited resource"
 msgstr "viitatun resurssin viitepäivä"
 
@@ -261,8 +264,13 @@ msgstr "tunnistaminen, kun tietty tapahtuma sattui"
 msgid "version of the cited resource"
 msgstr "viitatun resurssin versio"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "lyhyt kertova yhteenveto resurssin(ien) sisällöstä"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "Yhteenveto tarkoituksista joihin resurssi(t) kehitettiin"
@@ -336,27 +344,17 @@ msgid ""
 "dataset"
 msgstr "yleinen selitys tiedon tuottajan käsityksestä aineiston alkuperästä"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "Ominaisuus"
-
 msgid "title"
 msgstr "otsikko"
 
 msgid "name by which the cited resource is known"
 msgstr "nimi, jolla viitattu resurssi tunnetaan"
+
+msgid "abstract"
+msgstr "abstrakti"
+
+msgid "purpose"
+msgstr "tarkoitus"
 
 msgid "date"
 msgstr "päivämäärä"
@@ -367,11 +365,13 @@ msgstr "päivämäärän tyyppi"
 msgid "edition"
 msgstr "painos"
 
-msgid "abstract"
-msgstr "abstrakti"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "Ominaisuus"
 
-msgid "purpose"
-msgstr "tarkoitus"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "ylläpidon tiheys"
@@ -1275,6 +1275,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Edit Service Metadata"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "Lataa Metadata"
@@ -1618,6 +1623,15 @@ msgstr "Luokitus Layer"
 msgid "A rating was given to a layer"
 msgstr "Arvosana annettiin kerros"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1653,6 +1667,17 @@ msgstr "Ominaisuus"
 
 msgid "Create"
 msgstr "Luoda"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Väliajoin"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2673,11 +2698,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Esikatselu"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "Edit Service Metadata"
 
 #, fuzzy
 #| msgid "Attributes"
