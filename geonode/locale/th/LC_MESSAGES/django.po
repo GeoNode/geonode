@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Thai (http://www.transifex.com/geonode/geonode/language/th/)\n"
@@ -249,6 +249,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "ฟังก์ชั่นดำเนินการโดยบุคคลที่รับผิดชอบ"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "คำบรรยายสั้นๆเกี่ยวกับเนื้อหาของแหล่งข้อมูล"
+
 msgid "reference date for the cited resource"
 msgstr "วันที่อ้างอิงสำหรับแหล่งที่มา"
 
@@ -258,8 +261,13 @@ msgstr "ระบุเมื่อมีเหตุการณ์ที่เ
 msgid "version of the cited resource"
 msgstr "รุ่นของแหล่งที่มา"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "คำบรรยายสั้นๆเกี่ยวกับเนื้อหาของแหล่งข้อมูล"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "วัตถุประสงค์ในการสร้างแหล่งข้อมูลโดยสรุป"
@@ -323,27 +331,17 @@ msgid ""
 "dataset"
 msgstr "คำอธิบายทั่วไปของความรู้ผลิตข้อมูลเกี่ยวกับเชื้อสายของชุดข้อมูล"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "แอตทริบิวต์"
-
 msgid "title"
 msgstr "ชื่อเรื่อง"
 
 msgid "name by which the cited resource is known"
 msgstr "ชื่อของแหล่งข้อมูลที่เป็นที่รู้จักกัน"
+
+msgid "abstract"
+msgstr "บทคัดย่อ"
+
+msgid "purpose"
+msgstr "วัตถุประสงค์"
 
 msgid "date"
 msgstr "วันที่"
@@ -354,11 +352,13 @@ msgstr "ชนิดของวันที่"
 msgid "edition"
 msgstr "รุ่น"
 
-msgid "abstract"
-msgstr "บทคัดย่อ"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "แอตทริบิวต์"
 
-msgid "purpose"
-msgstr "วัตถุประสงค์"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "ความถี่ในการดูแลรักษา"
@@ -1252,6 +1252,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "แก้ไขคำอธิบายข้อมูลของเซอร์วิส"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "ดาวน์โหลดคำอธิบายข้อมูล"
@@ -1593,6 +1598,15 @@ msgstr "ให้คะแนนชั้นข้อมูล"
 msgid "A rating was given to a layer"
 msgstr "ชั้นข้อมูลได้รับการให้คะแนนแล้ว"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1628,6 +1642,17 @@ msgstr "แอตทริบิวต์"
 
 msgid "Create"
 msgstr "สร้าง"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "ช่วงเวลา"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2632,11 +2657,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "ดูตัวอย่าง"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "แก้ไขคำอธิบายข้อมูลของเซอร์วิส"
 
 #, fuzzy
 #| msgid "Attributes"

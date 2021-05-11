@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -207,6 +207,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr ""
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr ""
+
 msgid "reference date for the cited resource"
 msgstr ""
 
@@ -216,7 +219,12 @@ msgstr ""
 msgid "version of the cited resource"
 msgstr ""
 
-msgid "brief narrative summary of the content of the resource(s)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
 msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
@@ -273,24 +281,16 @@ msgid ""
 "dataset"
 msgstr ""
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-msgid "Attribution"
-msgstr ""
-
 msgid "title"
 msgstr ""
 
 msgid "name by which the cited resource is known"
+msgstr ""
+
+msgid "abstract"
+msgstr ""
+
+msgid "purpose"
 msgstr ""
 
 msgid "date"
@@ -302,10 +302,10 @@ msgstr ""
 msgid "edition"
 msgstr ""
 
-msgid "abstract"
+msgid "Attribution"
 msgstr ""
 
-msgid "purpose"
+msgid "DOI"
 msgstr ""
 
 msgid "maintenance frequency"
@@ -1085,6 +1085,9 @@ msgstr ""
 msgid "Location and Licenses"
 msgstr ""
 
+msgid "Required Metadata"
+msgstr ""
+
 msgid "Optional Metadata"
 msgstr ""
 
@@ -1332,6 +1335,15 @@ msgstr ""
 msgid "A rating was given to a layer"
 msgstr ""
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 msgid "Layer name"
 msgstr ""
 
@@ -1354,6 +1366,15 @@ msgid "Add Attribute"
 msgstr ""
 
 msgid "Create"
+msgstr ""
+
+msgid "String"
+msgstr ""
+
+msgid "Integer"
+msgstr ""
+
+msgid "Float"
 msgstr ""
 
 msgid "No title provided"
@@ -2235,9 +2256,6 @@ msgid "This will most probably overwrite the current default style!"
 msgstr ""
 
 msgid "Preview"
-msgstr ""
-
-msgid "Required Metadata"
 msgstr ""
 
 msgid "Dataset Attributes"

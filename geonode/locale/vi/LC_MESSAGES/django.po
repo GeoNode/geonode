@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/geonode/geonode/language/"
@@ -258,6 +258,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "chức năng thực hiện bởi các bên chịu trách nhiệm"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "ngắn gọn tóm tắt diễn giải nội dung của tài nguyên (s)"
+
 msgid "reference date for the cited resource"
 msgstr "ngày tham chiếu cho các tài nguyên trích dẫn"
 
@@ -267,8 +270,13 @@ msgstr "xác định khi một sự kiện được xảy ra"
 msgid "version of the cited resource"
 msgstr "phiên bản của tài nguyên trích dẫn"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "ngắn gọn tóm tắt diễn giải nội dung của tài nguyên (s)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "tóm tắt những ý định mà các nguồn tài nguyên (s) đã được phát triển"
@@ -345,27 +353,17 @@ msgstr ""
 "giải thích chung về kiến ​​thức sản xuất dữ liệu về dòng dõi của một tập dữ "
 "liệu"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "Đặc tính"
-
 msgid "title"
 msgstr "tiêu đề"
 
 msgid "name by which the cited resource is known"
 msgstr "tên mà nguồn trích dẫn là được biết đến"
+
+msgid "abstract"
+msgstr "trừu tượng"
+
+msgid "purpose"
+msgstr "mục đích"
 
 msgid "date"
 msgstr "ngày"
@@ -376,11 +374,13 @@ msgstr "loại ngày"
 msgid "edition"
 msgstr "phiên bản"
 
-msgid "abstract"
-msgstr "trừu tượng"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "Đặc tính"
 
-msgid "purpose"
-msgstr "mục đích"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "tần số bảo trì"
@@ -1283,6 +1283,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Edit Service Metadata"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "Tải về Metadata"
@@ -1627,6 +1632,15 @@ msgstr "Đánh giá cho lớp"
 msgid "A rating was given to a layer"
 msgstr "Một đánh giá đã được trao cho một lớp"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1662,6 +1676,17 @@ msgstr "Đặc tính"
 
 msgid "Create"
 msgstr "Sáng tạo"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Khoảng thời gian"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2685,11 +2710,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Xem trước"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "Edit Service Metadata"
 
 #, fuzzy
 #| msgid "Attributes"
