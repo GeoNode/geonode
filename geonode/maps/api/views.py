@@ -21,7 +21,7 @@ from drf_spectacular.utils import extend_schema
 
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
-
+from mapstore2_adapter.hooks import hookset
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -71,3 +71,14 @@ class MapViewSet(DynamicModelViewSet):
         map = self.get_object()
         resources = map.local_layers
         return Response(LayerSerializer(embed=True, many=True).to_representation(resources))
+
+    def perform_create(self, serializer):
+        if serializer.is_valid():
+            hookset.perform_create(self, serializer)
+            return serializer
+
+    def perform_update(self, serializer):
+        """ Associate current user as task owner """
+        if serializer.is_valid():
+            hookset.perform_update(self, serializer)
+            return serializer
