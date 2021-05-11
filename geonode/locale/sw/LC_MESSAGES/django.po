@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swahili (http://www.transifex.com/geonode/geonode/language/"
@@ -261,6 +261,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "kazi iliyofanywa na chama kuwajibika"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "kifupi maelezo muhtasari wa maudhui ya rasilimali (s)"
+
 msgid "reference date for the cited resource"
 msgstr "tarehe rejea kwa ajili ya rasilimali alitoa"
 
@@ -270,8 +273,13 @@ msgstr "utambulisho wa wakati tukio kupewa ilitokea"
 msgid "version of the cited resource"
 msgstr "toleo la rasilimali alitoa"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "kifupi maelezo muhtasari wa maudhui ya rasilimali (s)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "muhtasari wa nia na ambayo rasilimali (s) ilitengenezwa"
@@ -346,27 +354,17 @@ msgid ""
 "dataset"
 msgstr "maelezo ya jumla ya maarifa data uzalishaji kuhusu ukoo wa CCD"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "Sifa"
-
 msgid "title"
 msgstr "kichwa"
 
 msgid "name by which the cited resource is known"
 msgstr "jina la rasilimali tajwa"
+
+msgid "abstract"
+msgstr "muhtasari"
+
+msgid "purpose"
+msgstr "kusudi"
 
 msgid "date"
 msgstr "tarehe"
@@ -377,11 +375,13 @@ msgstr "aina ya tarehe"
 msgid "edition"
 msgstr "toleo"
 
-msgid "abstract"
-msgstr "muhtasari"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "Sifa"
 
-msgid "purpose"
-msgstr "kusudi"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "wastani wa mzunguko wa matengenezo"
@@ -1289,6 +1289,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Hariri Metadata za Huduma"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "Pakua Metadata"
@@ -1634,6 +1639,15 @@ msgstr "Uthaminishaji wa Tabaka"
 msgid "A rating was given to a layer"
 msgstr "Tabaka limethaminishwa"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1669,6 +1683,17 @@ msgstr "Sifa"
 
 msgid "Create"
 msgstr "Unda"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Vipindi"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2688,11 +2713,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Hakiki"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "Hariri Metadata za Huduma"
 
 #, fuzzy
 #| msgid "Attributes"

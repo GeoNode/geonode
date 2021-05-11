@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bulgarian (Bulgaria) (http://www.transifex.com/geonode/"
@@ -251,6 +251,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "функцията се изпълнява от отговорния екип"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "кратко описателно обобщение на съдържанието на ресурса(и)"
+
 msgid "reference date for the cited resource"
 msgstr "референтни данни за цитирания ресурс"
 
@@ -260,8 +263,13 @@ msgstr "идентификация за това кога се е случило
 msgid "version of the cited resource"
 msgstr "версия на цитирания ресурс"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "кратко описателно обобщение на съдържанието на ресурса(и)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "обобщение на намеренията, с които е разработен ресурса(и)"
@@ -337,27 +345,17 @@ msgstr ""
 "общо описание на знанията на създателя на данни относно произхода на набора "
 "данни"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "Атрибут "
-
 msgid "title"
 msgstr "заглавие"
 
 msgid "name by which the cited resource is known"
 msgstr "име, с което е познат цитирания ресурс"
+
+msgid "abstract"
+msgstr "резюме"
+
+msgid "purpose"
+msgstr "предназначение"
 
 msgid "date"
 msgstr "дата"
@@ -368,11 +366,13 @@ msgstr "тип дата"
 msgid "edition"
 msgstr "издание"
 
-msgid "abstract"
-msgstr "резюме"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "Атрибут "
 
-msgid "purpose"
-msgstr "предназначение"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "честота на поддръжката"
@@ -1267,6 +1267,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Редактирай метаданни за услуга "
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "Сваляне на метаданни"
@@ -1611,6 +1616,15 @@ msgstr "Оценка за слой"
 msgid "A rating was given to a layer"
 msgstr "Беше дадена оценка на слой"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1646,6 +1660,17 @@ msgstr "Атрибут "
 
 msgid "Create"
 msgstr "Създай"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "интервали"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2667,11 +2692,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Преглед"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "Редактирай метаданни за услуга "
 
 #, fuzzy
 #| msgid "Attributes"

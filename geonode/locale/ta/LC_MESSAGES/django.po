@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/geonode/geonode/language/"
@@ -253,6 +253,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "பொறுப்புடைய தரப்பினரால் மேற்கொள்ளப்பட்ட செயற்பாடு"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "மூலவளத்தின் (வளங்களின்) உள்ளடக்கம் தொடர்பான குறுகிய சராம்சம் "
+
 msgid "reference date for the cited resource"
 msgstr "குறிப்பிடப்பட்டுள்ள மூலவளத்தின் தொடர்புத் திகதி "
 
@@ -262,8 +265,13 @@ msgstr "குறித்த நிகழ்வு இடம்பெற்ற�
 msgid "version of the cited resource"
 msgstr "குறிப்பிடப்பட்டுள்ள மூலவளத்தின் பதிப்பு"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "மூலவளத்தின் (வளங்களின்) உள்ளடக்கம் தொடர்பான குறுகிய சராம்சம் "
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "மூலவளத்தின் (வளங்களின்) காணப்பட்ட நோக்கங்களின் சாராம்சம்"
@@ -338,27 +346,17 @@ msgid ""
 msgstr ""
 "தரவுத் தொகுதியின் வழிமரபு தொடர்பாக தரவு உருவாக்குனரின் அறிவு பற்றிய பொது விளக்கம் "
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr " பண்பியல்பு "
-
 msgid "title"
 msgstr "தலைப்பு "
 
 msgid "name by which the cited resource is known"
 msgstr "குறிப்பிடப்பட்டுள்ள மூலவளம் அறியப்படும் பெயர்  "
+
+msgid "abstract"
+msgstr "சுருக்கம்"
+
+msgid "purpose"
+msgstr "நோக்கம்"
 
 msgid "date"
 msgstr "திகதி"
@@ -369,11 +367,13 @@ msgstr "திகதி வகை"
 msgid "edition"
 msgstr "பதிப்பு"
 
-msgid "abstract"
-msgstr "சுருக்கம்"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr " பண்பியல்பு "
 
-msgid "purpose"
-msgstr "நோக்கம்"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr " பராமரித்தல் இடைவெளி "
@@ -1266,6 +1266,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "திருத்த சேவை மெட்டாடேட்டா"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "நுண் தரவகளை பதிவிரக்கம் செய்க "
@@ -1608,6 +1613,17 @@ msgid "A rating was given to a layer"
 msgstr "படுகை ஒன்று தரப்படுத்தப்பட்டுள்ளது  "
 
 #, fuzzy
+#| msgid "Contact Points"
+msgid "Points"
+msgstr "தொடர்பு முனை"
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
+#, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
 msgstr "அடுக்கு பெயர்"
@@ -1642,6 +1658,17 @@ msgstr " பண்பியல்பு "
 
 msgid "Create"
 msgstr "உருவாக்கவும்"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "இடைவெளிகள்"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2660,11 +2687,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "முன்காட்சி  "
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "திருத்த சேவை மெட்டாடேட்டா"
 
 #, fuzzy
 #| msgid "Attributes"

@@ -38,7 +38,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 13:37+0200\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2021-04-29 13:43+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
@@ -220,10 +220,6 @@ msgstr "Licenza"
 msgid "Language"
 msgstr "Lingua"
 
-msgid "User"
-msgid_plural "Users"
-msgstr[0] "Utente"
-msgstr[1] "Utenti"
 
 msgid "Permission Type"
 msgstr "Tipo di autorizzazione"
@@ -243,6 +239,9 @@ msgstr "Breve descrizione del motivo della richiesta"
 msgid "function performed by the responsible party"
 msgstr "funzione svolta dalla parte responsabile"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "sintesi del contenuto della risorsa (o delle risorse)"
+
 msgid "reference date for the cited resource"
 msgstr "data di riferimento della risorsa citata"
 
@@ -252,8 +251,15 @@ msgstr "identificazione di quando un dato evento si è verificato"
 msgid "version of the cited resource"
 msgstr "versione della risorsa citata"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "sintesi del contenuto della risorsa (o delle risorse)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+"autorità o funzione assegnata, ad esempio un regolatore, un'assemblea "
+"legislativa, un delegato o simili."
+
+msgid "a DOI will be added by Admin before publication."
+msgstr "un DOI verrà aggiunto dall'amministratore prima della pubblicazione."
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr ""
@@ -324,27 +330,17 @@ msgstr ""
 "spiegazione generale della conoscenza del produttore dei dati riguardo il "
 "lignaggio di un dataset"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr "un DOI verrà aggiunto dall'amministratore prima della pubblicazione."
-
-msgid "DOI"
-msgstr "DOI"
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-"autorità o funzione assegnata, ad esempio un regolatore, un'assemblea "
-"legislativa, un delegato o simili."
-
-msgid "Attribution"
-msgstr "Attribuzione"
-
 msgid "title"
 msgstr "titolo"
 
 msgid "name by which the cited resource is known"
 msgstr "nome attraverso cui la risorsa citata è conosciuta"
+
+msgid "abstract"
+msgstr "abstract"
+
+msgid "purpose"
+msgstr "finalità"
 
 msgid "date"
 msgstr "data"
@@ -355,11 +351,11 @@ msgstr "tipo di data"
 msgid "edition"
 msgstr "edizione"
 
-msgid "abstract"
-msgstr "abstract"
+msgid "Attribution"
+msgstr "Attribuzione"
 
-msgid "purpose"
-msgstr "finalità"
+msgid "DOI"
+msgstr "DOI"
 
 msgid "maintenance frequency"
 msgstr "frequenza di revisione"
@@ -1028,10 +1024,6 @@ msgstr "Procedura guidata"
 msgid "Advanced Edit"
 msgstr "Modifica avanzata"
 
-msgid "Document"
-msgid_plural "Documents"
-msgstr[0] "Documento"
-msgstr[1] "Documenti"
 
 msgid "Replace"
 msgstr "Sostituisci"
@@ -1207,6 +1199,9 @@ msgstr "Metadati di Base"
 
 msgid "Location and Licenses"
 msgstr "Posizione Geografica e Licenze"
+
+msgid "Required Metadata"
+msgstr "Metadati obbligatori"
 
 msgid "Optional Metadata"
 msgstr "Metadati Opzionali"
@@ -1470,6 +1465,15 @@ msgstr "Valuta livello"
 msgid "A rating was given to a layer"
 msgstr "Una valutazione è stata data ad un livello"
 
+msgid "Points"
+msgstr "Punti"
+
+msgid "Lines"
+msgstr "Linee"
+
+msgid "Polygons"
+msgstr "Poligoni"
+
 msgid "Layer name"
 msgstr "Nome livello"
 
@@ -1493,6 +1497,15 @@ msgstr "Aggiungere attributo"
 
 msgid "Create"
 msgstr "Creare"
+
+msgid "String"
+msgstr "Stringa"
+
+msgid "Integer"
+msgstr "Numero intero"
+
+msgid "Float"
+msgstr "Numero decimale"
 
 msgid "No title provided"
 msgstr "Nessun titolo fornito"
@@ -1642,6 +1655,9 @@ msgstr "Mappe"
 
 msgid "Documents"
 msgstr "Documenti"
+
+msgid "Document"
+msgstr "Documento"
 
 msgid "Comments"
 msgstr "Commenti"
@@ -2180,10 +2196,6 @@ msgstr "Stili"
 msgid "Manage"
 msgstr "Gestisci"
 
-msgid "Layer"
-msgid_plural "Layers"
-msgstr[0] "Livello"
-msgstr[1] "Livelli"
 
 msgid "Append Data"
 msgstr "Accoda dati"
@@ -2442,9 +2454,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Anteprima"
-
-msgid "Required Metadata"
-msgstr "Metadati obbligatori"
 
 msgid "Dataset Attributes"
 msgstr "Attributi del dataset"
@@ -3246,10 +3255,6 @@ msgstr "Valuta questa mappa"
 msgid "Download Map"
 msgstr "Scarica la mappa"
 
-msgid "Map"
-msgid_plural "Maps"
-msgstr[0] "Mappa"
-msgstr[1] "Mappe"
 
 msgid "Map Layers"
 msgstr "Livelli della mappa"
@@ -4091,7 +4096,7 @@ msgid "Connecting to service..."
 msgstr "Connessione al servizio..."
 
 msgid "Edit Service Metadata"
-msgstr "Edit Service Metadata"
+msgstr "Modifica i metadata del servizio"
 
 msgid "Import Service Resources"
 msgstr "Importa risorse del servizio"
@@ -6297,6 +6302,12 @@ msgstr "Livello di permessi non valido."
 
 msgid "Permission Denied"
 msgstr "Permesso negato"
+
+#~ msgid "Point"
+#~ msgstr "Punto"
+
+#~ msgid "Polygon"
+#~ msgstr "Poligono"
 
 #~ msgid "Layer not ready yet. Still finalizing layer ingestion..."
 #~ msgstr "Livello non ancora pronto. Ingestione/pubblicazione in corso..."
