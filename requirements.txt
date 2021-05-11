@@ -141,7 +141,7 @@ invoke==1.5.0
 coverage==5.5
 parse-type==0.5.2
 requests-toolbelt==0.9.1
-flake8==3.9.1
+flake8==3.9.2
 pytest==6.2.3
 pytest-bdd==4.0.2
 splinter==0.14.0
