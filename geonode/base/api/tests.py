@@ -617,19 +617,25 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         # Anonymous
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], get_user_model().objects.exclude(pk=-1).count())
+        self.assertEqual(response.data['total'], 8)
 
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], get_user_model().objects.exclude(pk=-1).count())
+        self.assertEqual(response.data['total'], 8)
+        response = self.client.get(url + '?type=geoapp', format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 0)
+        response = self.client.get(url + '?type=layer&title__icontains=CA', format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
 
         # Authenticated user
         self.assertTrue(self.client.login(username='bobby', password='bob'))
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], get_user_model().objects.exclude(pk=-1).count())
+        self.assertEqual(response.data['total'], 8)
 
     def test_categories_list(self):
         """
