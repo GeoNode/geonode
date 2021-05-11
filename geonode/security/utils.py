@@ -17,18 +17,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode import geoserver
-from geonode.decorators import on_ogc_backend
+import json
+import logging
+import requests
+import traceback
 from lxml import etree
 import xml.etree.ElementTree as ET
 from defusedxml import lxml as dlxml
 
-import json
-import logging
-import traceback
-import requests
-
 from requests.auth import HTTPBasicAuth
+
+from django.apps import apps
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth import get_user_model
@@ -41,7 +40,9 @@ from guardian.shortcuts import (
     get_anonymous_user,
     get_objects_for_user)
 
+from geonode import geoserver
 from geonode.utils import get_layer_workspace
+from geonode.decorators import on_ogc_backend
 from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger("geonode.security.utils")
@@ -112,7 +113,7 @@ def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
     """
-    from .models import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
+    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
     PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
@@ -667,7 +668,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
 
 def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
-    from .models import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
+    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
         admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
@@ -856,3 +857,67 @@ def spec_perms_is_empty(perm_spec):
                 _group_empty = False
 
     return (_user_empty and _group_empty)
+
+
+def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
+    """
+    Returns resources a user has access to.
+    """
+
+    from geonode.base.models import ResourceBase
+
+    if settings.SKIP_PERMS_FILTER:
+        resources = ResourceBase.objects.all()
+    else:
+        resources = get_objects_for_user(
+            user,
+            'base.view_resourcebase',
+            **shortcut_kwargs
+        )
+
+    resources_with_perms = get_visible_resources(
+        resources,
+        user,
+        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+
+    if filter_options:
+        if resources_with_perms and resources_with_perms.count() > 0:
+            if filter_options.get('title_filter'):
+                resources_with_perms = resources_with_perms.filter(
+                    title__icontains=filter_options.get('title_filter')
+                )
+            type_filters = []
+            if filter_options.get('type_filter'):
+                _type_filter = filter_options.get('type_filter')
+                if _type_filter:
+                    type_filters.append(_type_filter)
+                # get subtypes for geoapps
+                if _type_filter == 'geoapp':
+                    type_filters.extend(get_geoapp_subtypes())
+
+            if type_filters:
+                resources_with_perms = resources_with_perms.filter(
+                    polymorphic_ctype__model__in=type_filters
+                )
+
+    return resources_with_perms
+
+
+def get_geoapp_subtypes():
+    """
+    Returns a list of geoapp subtypes.
+    eg ['geostory']
+    """
+
+    from geonode.geoapps.models import GeoApp
+
+    subtypes = []
+    for label, app in apps.app_configs.items():
+        if hasattr(app, 'type') and app.type == 'GEONODE_APP':
+            if hasattr(app, 'default_model'):
+                _model = apps.get_model(label, app.default_model)
+                if issubclass(_model, GeoApp):
+                    subtypes.append(_model.__name__.lower())
+    return subtypes

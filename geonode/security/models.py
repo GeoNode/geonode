@@ -19,12 +19,16 @@
 #########################################################################
 import logging
 import traceback
+import operator
 
+from functools import reduce
+from django.db.models import Q
 from django.conf import settings
-from django.contrib.auth.models import Group, Permission
+from django.db import transaction
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 
 from geonode.groups.conf import settings as groups_settings
 
@@ -37,6 +41,12 @@ from guardian.shortcuts import (
 
 from geonode.groups.models import GroupProfile
 
+from .permissions import (
+    ADMIN_PERMISSIONS,
+    LAYER_ADMIN_PERMISSIONS,
+    VIEW_PERMISSIONS,
+)
+
 from .utils import (
     get_users_with_perms,
     set_owner_permissions,
@@ -47,24 +57,6 @@ from .utils import (
 )
 
 logger = logging.getLogger("geonode.security.models")
-
-VIEW_PERMISSIONS = [
-    'view_resourcebase',
-    'download_resourcebase',
-]
-
-ADMIN_PERMISSIONS = [
-    'change_resourcebase_metadata',
-    'change_resourcebase',
-    'delete_resourcebase',
-    'change_resourcebase_permissions',
-    'publish_resourcebase',
-]
-
-LAYER_ADMIN_PERMISSIONS = [
-    'change_layer_data',
-    'change_layer_style'
-]
 
 
 class PermissionLevelError(Exception):
@@ -150,6 +142,7 @@ class PermissionLevelMixin(object):
             pass
         return self
 
+    @transaction.atomic
     def set_default_permissions(self, owner=None):
         """
         Remove all the permissions except for the owner and assign the
@@ -245,6 +238,7 @@ class PermissionLevelMixin(object):
                 if anonymous_can_download:
                     sync_geofence_with_guardian(self.layer, perms, user=None, group=None)
 
+    @transaction.atomic
     def set_permissions(self, perm_spec, created=False):
         """
         Sets an object's the permission levels based on the perm_spec JSON.
@@ -351,6 +345,7 @@ class PermissionLevelMixin(object):
                     if self.polymorphic_ctype.name == 'layer':
                         sync_geofence_with_guardian(self.layer, perms)
 
+    @transaction.atomic
     def set_workflow_perms(self, approved=False, published=False):
         """
                           |  N/PUBLISHED   | PUBLISHED
@@ -396,6 +391,10 @@ class PermissionLevelMixin(object):
         """
         Returns a list of permissions a user has on a given resource
         """
+        # To avoid circular import
+        from geonode.base.models import Configuration
+
+        config = Configuration.load()
         ctype = ContentType.objects.get_for_model(self)
         PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
 
@@ -405,48 +404,44 @@ class PermissionLevelMixin(object):
         ).values_list('codename', flat=True)
 
         # Don't filter for admin users
-        if user.is_superuser or user.is_staff:
-            return resource_perms
+        if not (user.is_superuser or user.is_staff):
+            user_model = get_user_obj_perms_model(self)
+            user_resource_perms = user_model.objects.filter(
+                object_pk=self.pk,
+                content_type_id=ctype.id,
+                user__username=str(user),
+                permission__codename__in=resource_perms
+            )
+            # get user's implicit perms for anyone flag
+            implicit_perms = get_perms(user, self)
 
-        user_model = get_user_obj_perms_model(self)
-        user_resource_perms = user_model.objects.filter(
-            object_pk=self.pk,
-            content_type_id=ctype.id,
-            user__username=str(user),
-            permission__codename__in=resource_perms
-        )
+            resource_perms = user_resource_perms.union(
+                user_model.objects.filter(permission__codename__in=implicit_perms)
+            ).values_list('permission__codename', flat=True)
 
-        # get user's implicit perms for anyone flag
-        implicit_perms = get_perms(user, self)
+        # filter out permissions for edit, change or publish if readonly mode is active
+        perm_prefixes = ['change', 'delete', 'publish']
+        if config.read_only:
+            clauses = (Q(codename__contains=prefix) for prefix in perm_prefixes)
+            query = reduce(operator.or_, clauses)
+            if (user.is_superuser or user.is_staff):
+                resource_perms = resource_perms.exclude(query)
+            else:
+                perm_objects = Permission.objects.filter(codename__in=resource_perms)
+                resource_perms = perm_objects.exclude(query).values_list('codename', flat=True)
 
-        return user_resource_perms.union(
-            user_model.objects.filter(permission__codename__in=implicit_perms)
-        ).values_list('permission__codename', flat=True)
+        return resource_perms
 
     def user_can(self, user, permission):
         """
         Checks if a has a given permission to the resource
         """
-        # To avoid circular import
-        from geonode.base.models import Configuration
-
-        config = Configuration.load()
-        # Check read-only status if given permission is for edit, change or publish
-        perm_prefixes = ['change', 'delete', 'publish']
-        if any(prefix in permission for prefix in perm_prefixes):
-            if config.read_only:
-                return False
         resource = self.get_self_resource()
         user_perms = self.get_user_perms(user).union(resource.get_user_perms(user))
-        is_admin = user.is_superuser
-        is_staff = user.is_staff
-        is_owner = user == self.owner
-        try:
-            is_manager = user.groupmember_set.all().filter(
-                role='manager').exists()
-        except Exception:
-            is_manager = False
-        has_access = is_admin or is_staff or is_owner or is_manager or user.has_perm(permission, obj=self)
-        if permission in user_perms or has_access:
-            return True
-        return False
+
+        if permission not in user_perms:
+            # TODO cater for permissions with syntax base.permission_codename
+            # eg 'base.change_resourcebase'
+            return False
+
+        return True
