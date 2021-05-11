@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Indonesian (http://www.transifex.com/geonode/geonode/language/"
@@ -256,6 +256,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "fungsi yang dilaksanakan oleh kelompok yang bertanggungjawab"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "jelaskan rimgkasan isi sumber(s)"
+
 msgid "reference date for the cited resource"
 msgstr "tanggal referensi sumber"
 
@@ -265,8 +268,13 @@ msgstr "identifikasi ketika kejadian berlangsung"
 msgid "version of the cited resource"
 msgstr "versi sumber"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "jelaskan rimgkasan isi sumber(s)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "ringkasan niat dengan yang sumber daya (s) dikembangkan"
@@ -340,27 +348,17 @@ msgid ""
 "dataset"
 msgstr "penjelasan umum dari produser data mengenai sejarah dataset"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "Atribut"
-
 msgid "title"
 msgstr "Judul "
 
 msgid "name by which the cited resource is known"
 msgstr "nama sumber diketahui"
+
+msgid "abstract"
+msgstr "abstrak"
+
+msgid "purpose"
+msgstr "tujuan"
 
 msgid "date"
 msgstr "tanggal"
@@ -371,11 +369,13 @@ msgstr "tipe tanggal"
 msgid "edition"
 msgstr "edisi"
 
-msgid "abstract"
-msgstr "abstrak"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "Atribut"
 
-msgid "purpose"
-msgstr "tujuan"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "frekuensi pemeliharaan"
@@ -1276,6 +1276,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Sunting Layanan Metadata"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "Mengunduh Metadata"
@@ -1619,6 +1624,15 @@ msgstr "Rating Layer"
 msgid "A rating was given to a layer"
 msgstr "nilai telah diberikan pada layer"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1654,6 +1668,17 @@ msgstr "Atribut"
 
 msgid "Create"
 msgstr "Membuat"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Interval"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2676,11 +2701,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Tampilan Cetak"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "Sunting Layanan Metadata"
 
 #, fuzzy
 #| msgid "Attributes"

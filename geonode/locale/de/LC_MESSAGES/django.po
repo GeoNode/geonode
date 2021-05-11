@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2021-04-29 08:50+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
@@ -232,6 +232,9 @@ msgstr "Kurze Begründung der Anfrage"
 msgid "function performed by the responsible party"
 msgstr "Funktion ausgeführt von verantwortlicher Person"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "Kurze Beschreibung des Inhalts der Quelle(n)"
+
 msgid "reference date for the cited resource"
 msgstr "Referenzdatum der Quelle"
 
@@ -241,8 +244,13 @@ msgstr "Erkennung wann ein bestimmtes Ereignis eingetreten ist"
 msgid "version of the cited resource"
 msgstr "Version der Quelle"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "Kurze Beschreibung des Inhalts der Quelle(n)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr "Zitationsweise, wie durch Gesetz, oder Urheber bestimmt."
+
+msgid "a DOI will be added by Admin before publication."
+msgstr "Eine DOI wird vor der Veröffentlichung vom Administrator vergeben."
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "Zusammenfassung der Absicht, mit der die Quelle(n) entwickelt wurde(n)"
@@ -312,25 +320,17 @@ msgstr ""
 "Allgemeine Erklärung über den Wissensstand des Datenproduzenten über die "
 "Herkunft des Datensatzes"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr "Eine DOI wird vor der Veröffentlichung vom Administrator vergeben."
-
-msgid "DOI"
-msgstr "DOI"
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr "Zitationsweise, wie durch Gesetz, oder Urheber bestimmt."
-
-msgid "Attribution"
-msgstr "Zitation"
-
 msgid "title"
 msgstr "Titel"
 
 msgid "name by which the cited resource is known"
 msgstr "Name der Quelle"
+
+msgid "abstract"
+msgstr "Kurzbeschreibung"
+
+msgid "purpose"
+msgstr "Zweck"
 
 msgid "date"
 msgstr "Datum"
@@ -341,11 +341,11 @@ msgstr "Datum Typ"
 msgid "edition"
 msgstr "Ausgabe"
 
-msgid "abstract"
-msgstr "Kurzbeschreibung"
+msgid "Attribution"
+msgstr "Zitation"
 
-msgid "purpose"
-msgstr "Zweck"
+msgid "DOI"
+msgstr "DOI"
 
 msgid "maintenance frequency"
 msgstr "Wartungshäufigkeit"
@@ -1194,6 +1194,9 @@ msgstr "Grundlegende Metadaten"
 msgid "Location and Licenses"
 msgstr "Ort und Lizenzen"
 
+msgid "Required Metadata"
+msgstr "benötigte Metadaten"
+
 msgid "Optional Metadata"
 msgstr "Optionale Metadaten"
 
@@ -1456,6 +1459,17 @@ msgstr "Bewertung der Ebene"
 msgid "A rating was given to a layer"
 msgstr "Eine Bewertung wurde für die Ebene abgegeben"
 
+#, fuzzy
+#| msgid "Contact Points"
+msgid "Points"
+msgstr "Kontaktstellen"
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 msgid "Layer name"
 msgstr "Ebenen Name"
 
@@ -1479,6 +1493,17 @@ msgstr "Eigenschaft hinzufügen"
 
 msgid "Create"
 msgstr "Erzeugen"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Intervalle"
+
+msgid "Float"
+msgstr ""
 
 msgid "No title provided"
 msgstr "Kein Titel übergeben"
@@ -2426,9 +2451,6 @@ msgstr "Dies wird wahrscheinlich den Standarstil überschreiben!"
 
 msgid "Preview"
 msgstr "Voransicht"
-
-msgid "Required Metadata"
-msgstr "benötigte Metadaten"
 
 msgid "Dataset Attributes"
 msgstr "Datensatz Attribute"

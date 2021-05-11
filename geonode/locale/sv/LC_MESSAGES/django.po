@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swedish (http://www.transifex.com/geonode/geonode/language/"
@@ -255,6 +255,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "funktion som utförs av verksamhetsutövaren"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "kortfattad beskrivande sammanfattning av innehållet i den resurs (er)"
+
 msgid "reference date for the cited resource"
 msgstr "referensdatum för den citerade resursen"
 
@@ -264,8 +267,13 @@ msgstr "identifiering av när en viss händelse inträffade"
 msgid "version of the cited resource"
 msgstr "version av den citerade resurs"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "kortfattad beskrivande sammanfattning av innehållet i den resurs (er)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "sammanfattning av de intentioner som resursen (s) har utvecklats"
@@ -339,27 +347,17 @@ msgid ""
 msgstr ""
 "allmän förklaring av data producentens kännedom om linjen av en datamängd"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "Attribut"
-
 msgid "title"
 msgstr "Titel"
 
 msgid "name by which the cited resource is known"
 msgstr "namn som citeras resursen är känd"
+
+msgid "abstract"
+msgstr "abstrakt"
+
+msgid "purpose"
+msgstr "ändamål"
 
 msgid "date"
 msgstr "datum"
@@ -370,11 +368,13 @@ msgstr "datum typ"
 msgid "edition"
 msgstr "utgåva"
 
-msgid "abstract"
-msgstr "abstrakt"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "Attribut"
 
-msgid "purpose"
-msgstr "ändamål"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "underhållsfrekvens"
@@ -1279,6 +1279,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "Redigera Tjänst Metadata"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "Hämta Metadata"
@@ -1623,6 +1628,15 @@ msgstr "Betyg för Layer"
 msgid "A rating was given to a layer"
 msgstr "En rating gavs till ett lager"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1658,6 +1672,17 @@ msgstr "Attribut"
 
 msgid "Create"
 msgstr "Skapa"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Intervall"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2679,11 +2704,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Förhandsgranska"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "Redigera Tjänst Metadata"
 
 #, fuzzy
 #| msgid "Attributes"

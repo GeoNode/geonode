@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2020-06-10 09:21+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Arabic (http://www.transifex.com/geonode/geonode/language/"
@@ -244,6 +244,9 @@ msgstr "منطق مختصر وراء الطلب"
 msgid "function performed by the responsible party"
 msgstr "الوظيفة التي تؤديها الجهة المسؤولة"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "ملخص سردي موجز لمحتوى المورد (الموارد)"
+
 msgid "reference date for the cited resource"
 msgstr "تاريخ مرجعي للمورد المذكور"
 
@@ -253,8 +256,13 @@ msgstr "تحديد عند وقوع حدث معين"
 msgid "version of the cited resource"
 msgstr "نسخة من الموارد المذكورة"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "ملخص سردي موجز لمحتوى المورد (الموارد)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr "سيتم إضافة DOI من قبل المسؤول قبل النشر."
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "ملخص النوايا التي تم بها تطوير المصدر(المصادر)"
@@ -326,27 +334,17 @@ msgid ""
 "dataset"
 msgstr "شرح عام لمعرف منتجي البيانات حول نسب مجموعة البيانات"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr "سيتم إضافة DOI من قبل المسؤول قبل النشر."
-
-msgid "DOI"
-msgstr "‫DOI"
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "سمة"
-
 msgid "title"
 msgstr "عنوان"
 
 msgid "name by which the cited resource is known"
 msgstr "الاسم الذي يعرف به المورد المذكور"
+
+msgid "abstract"
+msgstr "ملخص"
+
+msgid "purpose"
+msgstr "هدف"
 
 msgid "date"
 msgstr "تاريخ"
@@ -357,11 +355,13 @@ msgstr "نوع التاريخ"
 msgid "edition"
 msgstr "الإصدار"
 
-msgid "abstract"
-msgstr "ملخص"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "سمة"
 
-msgid "purpose"
-msgstr "هدف"
+msgid "DOI"
+msgstr "‫DOI"
 
 msgid "maintenance frequency"
 msgstr "تردد الصيانة"
@@ -1248,6 +1248,11 @@ msgstr "البيانات الوصفية الأساسية"
 msgid "Location and Licenses"
 msgstr "الموقع والتراخيص"
 
+#, fuzzy
+#| msgid "Resource Metadata"
+msgid "Required Metadata"
+msgstr "بيانات تعريف المورد"
+
 msgid "Optional Metadata"
 msgstr "بيانات وصفية اختيارية"
 
@@ -1578,6 +1583,17 @@ msgstr "تصنيف لطبقة"
 msgid "A rating was given to a layer"
 msgstr "أعطي تصنيف لطبقة"
 
+#, fuzzy
+#| msgid "Contact Points"
+msgid "Points"
+msgstr "نقاط الإتصال"
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 msgid "Layer name"
 msgstr "اسم الطبقة"
 
@@ -1601,6 +1617,17 @@ msgstr "إضافة سمة"
 
 msgid "Create"
 msgstr "إنشاء"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "فترات"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2547,11 +2574,6 @@ msgstr "سيؤدي هذا على الأرجح إلى الكتابة فوق ال�
 
 msgid "Preview"
 msgstr "معاينة"
-
-#, fuzzy
-#| msgid "Resource Metadata"
-msgid "Required Metadata"
-msgstr "بيانات تعريف المورد"
 
 msgid "Dataset Attributes"
 msgstr "سمات مجموعة البيانات"

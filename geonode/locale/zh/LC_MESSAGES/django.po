@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -249,6 +249,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "责任方履行职务"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "资料简介"
+
 msgid "reference date for the cited resource"
 msgstr "资料引用日期"
 
@@ -258,8 +261,13 @@ msgstr "特定事件发生的标识码"
 msgid "version of the cited resource"
 msgstr "引用文献的版本"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "资料简介"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "总结生成资源的动机"
@@ -323,27 +331,17 @@ msgid ""
 "dataset"
 msgstr "数据生产者对于数据集沿袭知识的基本解释"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "属性"
-
 msgid "title"
 msgstr "标题"
 
 msgid "name by which the cited resource is known"
 msgstr "用已知资源命名"
+
+msgid "abstract"
+msgstr "摘要"
+
+msgid "purpose"
+msgstr "目标"
 
 msgid "date"
 msgstr "日期"
@@ -354,11 +352,13 @@ msgstr "日期类型"
 msgid "edition"
 msgstr "版本"
 
-msgid "abstract"
-msgstr "摘要"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "属性"
 
-msgid "purpose"
-msgstr "目标"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "维护频率"
@@ -1236,6 +1236,11 @@ msgstr "基础元数据"
 msgid "Location and Licenses"
 msgstr "位置和许可"
 
+#, fuzzy
+#| msgid "Basic Metadata"
+msgid "Required Metadata"
+msgstr "基础元数据"
+
 msgid "Optional Metadata"
 msgstr "可选元数据"
 
@@ -1569,6 +1574,17 @@ msgstr "图层评分"
 msgid "A rating was given to a layer"
 msgstr "一个图层被评分"
 
+#, fuzzy
+#| msgid "Contact Points"
+msgid "Points"
+msgstr "联系点"
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 msgid "Layer name"
 msgstr "图层名"
 
@@ -1598,6 +1614,17 @@ msgstr "属性"
 
 msgid "Create"
 msgstr "创建地图"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "间隔"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2577,11 +2604,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "预览"
-
-#, fuzzy
-#| msgid "Basic Metadata"
-msgid "Required Metadata"
-msgstr "基础元数据"
 
 msgid "Dataset Attributes"
 msgstr "数据集属性"

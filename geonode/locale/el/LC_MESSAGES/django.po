@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2019-07-19 12:46+0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/geonode/geonode/language/"
@@ -247,6 +247,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "λειτουργία που εκτελείται από τον υπεύθυνο"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "σύντομη συνοπτική περιγραφή του περιεχομένου του πόρου"
+
 msgid "reference date for the cited resource"
 msgstr "ημερομηνία αναφοράς του πόρου που αναφέρεται"
 
@@ -256,8 +259,13 @@ msgstr "αναγνώριση του χρόνου που συνέβη ένα δε
 msgid "version of the cited resource"
 msgstr "έκδοση του αναφερόμενου πόρου"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "σύντομη συνοπτική περιγραφή του περιεχομένου του πόρου"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "περίληψη των προθέσεων με την οποία αναπτύχθηκε ο πόρος"
@@ -340,27 +348,17 @@ msgstr ""
 "γενική εξήγηση της γνώσης του παραγωγού των δεδομένων σχετικά με την "
 "καταγωγή τους"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "Ιδιότητα"
-
 msgid "title"
 msgstr "τίτλος"
 
 msgid "name by which the cited resource is known"
 msgstr "όνομα με το οποίο η αναφερόμενη πηγή είναι γνωστή"
+
+msgid "abstract"
+msgstr "περίληψη"
+
+msgid "purpose"
+msgstr "σκοπός"
 
 msgid "date"
 msgstr "ημερομηνία"
@@ -371,11 +369,13 @@ msgstr "τύπος ημερομηνίας"
 msgid "edition"
 msgstr "έκδοση"
 
-msgid "abstract"
-msgstr "περίληψη"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "Ιδιότητα"
 
-msgid "purpose"
-msgstr "σκοπός"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "συχνότητα συντήρησης"
@@ -1200,6 +1200,11 @@ msgstr "Βασικά Μεταδεδομένα"
 msgid "Location and Licenses"
 msgstr "Τοποθεσία και Άδειες"
 
+#, fuzzy
+#| msgid "Resource Metadata"
+msgid "Required Metadata"
+msgstr "Μεταδεδομένα Πόρου"
+
 msgid "Optional Metadata"
 msgstr "Προαιρετικά Μεταδεδομένα"
 
@@ -1527,6 +1532,15 @@ msgstr "Βαθμολογία ενός Επιπέδου"
 msgid "A rating was given to a layer"
 msgstr "Βαθμολογήθηκε ένα επίπεδο"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 msgid "Layer name"
 msgstr "Όνομα Επιπέδου"
 
@@ -1550,6 +1564,17 @@ msgstr "Προσθήκη Ιδιότητας"
 
 msgid "Create"
 msgstr "Δημιουργία"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Διαστήματα"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2501,11 +2526,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Προεπισκόπηση"
-
-#, fuzzy
-#| msgid "Resource Metadata"
-msgid "Required Metadata"
-msgstr "Μεταδεδομένα Πόρου"
 
 msgid "Dataset Attributes"
 msgstr "Χαρακτηριστικά"

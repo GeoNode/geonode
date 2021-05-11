@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (Iran) (http://www.transifex.com/geonode/geonode/"
@@ -256,6 +256,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "تابع انجام شده توسط مسئول"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "خلاصه مختصری از محتوای منابع"
+
 msgid "reference date for the cited resource"
 msgstr "تاریخ مرجع برای منابع ذکر شده"
 
@@ -265,8 +268,13 @@ msgstr "احراز هویت زمانی که یک رویداد رخ داده اس
 msgid "version of the cited resource"
 msgstr "ویرایش منبع ذکر شده"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "خلاصه مختصری از محتوای منابع"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "خلاصه روایت مختصری از محتوای منبع (منابع)"
@@ -336,27 +344,17 @@ msgid ""
 "dataset"
 msgstr "توضیح کلی از دانش تولید داده در مورد اصل و نسب از مجموعه داده"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "اطلاعات توصیفی"
-
 msgid "title"
 msgstr "عنوان"
 
 msgid "name by which the cited resource is known"
 msgstr "نام ذکر شده در منبع ناشناش می باشد."
+
+msgid "abstract"
+msgstr "چکیده"
+
+msgid "purpose"
+msgstr "منظور"
 
 msgid "date"
 msgstr "تاریخ"
@@ -367,11 +365,13 @@ msgstr "نوع تاریخ"
 msgid "edition"
 msgstr "ویرایش"
 
-msgid "abstract"
-msgstr "چکیده"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "اطلاعات توصیفی"
 
-msgid "purpose"
-msgstr "منظور"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "روند نگهداری"
@@ -1274,6 +1274,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "ویرایش خدمات متاداده"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "دانلود متادیتا"
@@ -1617,6 +1622,15 @@ msgstr "امتیاز لایه"
 msgid "A rating was given to a layer"
 msgstr "امتیاز داده شده به این لایه"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1652,6 +1666,17 @@ msgstr "اطلاعات توصیفی"
 
 msgid "Create"
 msgstr "ساختن"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "بازه"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2667,11 +2692,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "پیش نمایش"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "ویرایش خدمات متاداده"
 
 #, fuzzy
 #| msgid "Attributes"

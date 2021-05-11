@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tagalog (http://www.transifex.com/geonode/geonode/language/"
@@ -232,6 +232,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr ""
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr ""
+
 msgid "reference date for the cited resource"
 msgstr ""
 
@@ -241,7 +244,12 @@ msgstr ""
 msgid "version of the cited resource"
 msgstr ""
 
-msgid "brief narrative summary of the content of the resource(s)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
 msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
@@ -298,28 +306,18 @@ msgid ""
 "dataset"
 msgstr ""
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "distribution URL"
-msgid "Attribution"
-msgstr "distribution URL"
-
 #, fuzzy
 #| msgid "Edit Map Metadata"
 msgid "title"
 msgstr "Edit Map Metadata"
 
 msgid "name by which the cited resource is known"
+msgstr ""
+
+msgid "abstract"
+msgstr ""
+
+msgid "purpose"
 msgstr ""
 
 msgid "date"
@@ -331,10 +329,12 @@ msgstr ""
 msgid "edition"
 msgstr ""
 
-msgid "abstract"
-msgstr ""
+#, fuzzy
+#| msgid "distribution URL"
+msgid "Attribution"
+msgstr "distribution URL"
 
-msgid "purpose"
+msgid "DOI"
 msgstr ""
 
 msgid "maintenance frequency"
@@ -1152,6 +1152,11 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Edit Map Metadata"
+msgid "Required Metadata"
+msgstr "Edit Map Metadata"
+
+#, fuzzy
+#| msgid "Edit Map Metadata"
 msgid "Optional Metadata"
 msgstr "Edit Map Metadata"
 
@@ -1456,6 +1461,15 @@ msgstr ""
 msgid "A rating was given to a layer"
 msgstr ""
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Edit Map Metadata"
 msgid "Layer name"
@@ -1486,6 +1500,15 @@ msgid "Add Attribute"
 msgstr "Add to Favorites"
 
 msgid "Create"
+msgstr ""
+
+msgid "String"
+msgstr ""
+
+msgid "Integer"
+msgstr ""
+
+msgid "Float"
 msgstr ""
 
 msgid "No title provided"
@@ -2404,11 +2427,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr ""
-
-#, fuzzy
-#| msgid "Edit Map Metadata"
-msgid "Required Metadata"
-msgstr "Edit Map Metadata"
 
 msgid "Dataset Attributes"
 msgstr ""
