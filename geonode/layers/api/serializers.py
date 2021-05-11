@@ -36,7 +36,7 @@ class StyleSerializer(DynamicModelSerializer):
         model = Style
         name = 'style'
         fields = (
-            'pk', 'name', 'workspace', 'sld_title', 'sld_body', 'sld_version', 'sld_url'
+            'pk', 'name', 'workspace', 'sld_title', 'sld_url'
         )
 
     name = serializers.CharField(read_only=True)
