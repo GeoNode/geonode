@@ -70,9 +70,6 @@ class MapAppDataSerializer(DynamicModelSerializer):
         return data.blob if data else {}
 
 class MapSerializer(ResourceBaseSerializer):
-
-    layers = MapLayersJSONArraySerializerField(source='id',
-                                               read_only=True)
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
         super(MapSerializer, self).__init__(*args, **kwargs)
@@ -83,7 +80,7 @@ class MapSerializer(ResourceBaseSerializer):
         fields = (
             'pk', 'uuid', 
             'zoom', 'projection', 'center_x', 'center_y',
-            'urlsuffix', 'featuredurl', 'data', 'layers',
+            'urlsuffix', 'featuredurl', 'data',
         )
 
     def to_internal_value(self, data):
