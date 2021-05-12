@@ -150,8 +150,8 @@ class MapsApiTests(APITestCase, URLPatternsTestCase):
             url = reverse('resources-list')
             self.assertEqual(url, '/mapstore/rest/resources/')
 
-            from mapstore2_adapter import fixup_map
-            fixup_map(resource.id)
+            #from mapstore2_adapter import fixup_map
+            #fixup_map(resource.id)
             # Anonymous
             response = self.client.get(url, format='json')
             self.assertEqual(response.status_code, 200)
