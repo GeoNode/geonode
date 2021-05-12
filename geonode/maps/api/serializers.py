@@ -25,7 +25,6 @@ from dynamic_rest.serializers import DynamicModelSerializer
 
 from geonode.maps.models import Map, MapData, MapLayer
 from geonode.base.api.serializers import ResourceBaseSerializer
-from mapstore2_adapter.api.serializers import MapLayersJSONArraySerializerField
 
 import logging
 logger = logging.getLogger(__name__)
@@ -69,7 +68,9 @@ class MapAppDataSerializer(DynamicModelSerializer):
         data = MapData.objects.filter(resource__id=value).first()
         return data.blob if data else {}
 
+
 class MapSerializer(ResourceBaseSerializer):
+
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
         super(MapSerializer, self).__init__(*args, **kwargs)
@@ -78,7 +79,7 @@ class MapSerializer(ResourceBaseSerializer):
         model = Map
         name = 'map'
         fields = (
-            'pk', 'uuid', 
+            'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
             'urlsuffix', 'featuredurl', 'data',
         )
