@@ -28,7 +28,7 @@ WHERE NOT EXISTS (SELECT resource_id FROM public.maps_map )
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('maps', '0032_auto_20190404_0820'),
+        ('maps', '0030_auto_20210506_0836')
     ]
 
     operations = [
