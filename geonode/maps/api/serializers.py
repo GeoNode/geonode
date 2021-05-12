@@ -22,10 +22,10 @@ from dynamic_rest.fields.fields import DynamicRelationField
 from rest_framework import serializers
 
 from dynamic_rest.serializers import DynamicModelSerializer
-from rest_framework.fields import CharField
 
 from geonode.maps.models import Map, MapData, MapLayer
-from geonode.base.api.serializers import OwnerSerializer, ResourceBaseSerializer
+from geonode.base.api.serializers import ResourceBaseSerializer
+from mapstore2_adapter.api.serializers import MapLayersJSONArraySerializerField
 
 import logging
 logger = logging.getLogger(__name__)
@@ -71,6 +71,8 @@ class MapAppDataSerializer(DynamicModelSerializer):
 
 class MapSerializer(ResourceBaseSerializer):
 
+    layers = MapLayersJSONArraySerializerField(source='id',
+                                               read_only=True)
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
         super(MapSerializer, self).__init__(*args, **kwargs)
@@ -79,9 +81,9 @@ class MapSerializer(ResourceBaseSerializer):
         model = Map
         name = 'map'
         fields = (
-            'pk', 'uuid',
+            'pk', 'uuid', 
             'zoom', 'projection', 'center_x', 'center_y',
-            'urlsuffix', 'featuredurl', 'data'
+            'urlsuffix', 'featuredurl', 'data', 'layers',
         )
 
     def to_internal_value(self, data):
