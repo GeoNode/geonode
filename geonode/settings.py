@@ -438,6 +438,9 @@ GEONODE_INTERNAL_APPS = (
     'geonode.groups',
     'geonode.services',
 
+    'geonode.resource',
+    'geonode.storage',
+
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
