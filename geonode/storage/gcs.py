@@ -43,7 +43,7 @@ class GoogleStorageManager(StorageManagerInterface):
         return self._drx._open(name, mode=mode)
 
     def path(self, name):
-        return self._drx._full_path(name)
+        raise NotImplementedError
 
     def save(self, name, content):
         return self._drx._save(name, content)

@@ -37,13 +37,13 @@ class AwsStorageManager(StorageManagerInterface):
         return self._aws.exists(name)
 
     def listdir(self, path):
-        return self._drx.listdir(path)
+        return self._aws.listdir(path)
 
     def open(self, name, mode='rb'):
         return self._aws._open(name, mode=mode)
 
     def path(self, name):
-        return self._aws._full_path(name)
+        return self._aws._normalize_name(name)
 
     def save(self, name, content):
         return self._aws._save(name, content)
