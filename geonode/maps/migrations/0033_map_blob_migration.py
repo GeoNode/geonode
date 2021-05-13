@@ -22,7 +22,7 @@ SELECT
 	mb.resource_id,
 	mb.blob
 FROM mapstore_blob mb
-WHERE NOT EXISTS (SELECT resource_id FROM public.maps_mapdata )
+WHERE mb.resource_id NOT IN (SELECT resource_id FROM public.maps_mapdata )
 '''
 
 class Migration(migrations.Migration):
