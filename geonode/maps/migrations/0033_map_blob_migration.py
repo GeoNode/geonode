@@ -12,8 +12,8 @@ SQL_MIGRATION = '''WITH mapstore_blob AS (
 		msd.resource_id, msd.blob
 	FROM
 		public.mapstore2_adapter_mapstoredata msd
-	LEFT JOIN public.maps_mapdata md 
-	ON msd.resource_id =md.resource_id WHERE md.resource_id IS NOT NULL)
+	JOIN public.maps_map md 
+	ON msd.resource_id =md.resourcebase_ptr_id)
 INSERT
 	into
 	public.maps_mapdata(resource_id,
@@ -22,7 +22,7 @@ SELECT
 	mb.resource_id,
 	mb.blob
 FROM mapstore_blob mb
-WHERE NOT EXISTS (SELECT resource_id FROM public.maps_map )
+WHERE NOT EXISTS (SELECT resource_id FROM public.maps_mapdata )
 '''
 
 class Migration(migrations.Migration):
