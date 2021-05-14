@@ -487,6 +487,7 @@ INSTALLED_APPS = (
     'storages',
     'floppyforms',
     'tinymce',
+    'widget_tweaks',
 
     # REST APIs
     'rest_framework',
@@ -809,9 +810,10 @@ OAUTH2_PROVIDER = {
 
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
     'OAUTH2_SERVER_CLASS': 'geonode.security.oauth2_servers.OIDCServer',
-    'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
+    # 'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
 
     # OpenID Connect
+    "OIDC_ENABLED": True,
     "OIDC_ISS_ENDPOINT": SITEURL,
     "OIDC_USERINFO_ENDPOINT": f"{SITEURL}api/o/v4/tokeninfo/",
     "OIDC_RSA_PRIVATE_KEY": """-----BEGIN RSA PRIVATE KEY-----

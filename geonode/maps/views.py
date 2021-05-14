@@ -157,7 +157,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
     perms_list = list(
         map_obj.get_self_resource().get_user_perms(request.user)
         .union(map_obj.get_user_perms(request.user))
-        )
+    )
 
     group = None
     if map_obj.group:
@@ -554,7 +554,7 @@ def map_view(request, mapid, layer_name=None,
     perms_list = list(
         map_obj.get_self_resource().get_user_perms(request.user)
         .union(map_obj.get_user_perms(request.user))
-        )
+    )
     if layer_name:
         config = add_layers_to_map_config(
             request, map_obj, (layer_name, ), False)
@@ -671,7 +671,7 @@ def map_edit(request, mapid, template='maps/map_edit.html'):
     perms_list = list(
         map_obj.get_self_resource().get_user_perms(request.user)
         .union(map_obj.get_user_perms(request.user))
-        )
+    )
     return render(request, template, context={
         'mapId': mapid,
         'config': json.dumps(config),
@@ -722,14 +722,14 @@ def new_map(request, template='maps/map_new.html'):
             perms_list = list(
                 layer_obj.get_self_resource().get_user_perms(request.user)
                 .union(layer_obj.get_user_perms(request.user))
-                )
+            )
         except Exception:
             pass
     elif map_obj:
         perms_list = list(
             map_obj.get_self_resource().get_user_perms(request.user)
             .union(map_obj.get_user_perms(request.user))
-            )
+        )
     context_dict = {
         'config': config,
         'map': map_obj,

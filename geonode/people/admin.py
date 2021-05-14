@@ -79,7 +79,7 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = (
         'username', 'organization', 'profile',
         'first_name', 'last_name', 'email')
-    readonly_fields = ("groups", )
+    # readonly_fields = ("groups", )
     ordering = ('username',)
     filter_horizontal = ('groups', 'user_permissions',)
     actions = [set_user_and_group_layer_permission]

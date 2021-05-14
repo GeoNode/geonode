@@ -141,7 +141,7 @@ def geoapp_detail(request, geoappid, template='apps/app_detail.html'):
     perms_list = list(
         geoapp_obj.get_self_resource().get_user_perms(request.user)
         .union(geoapp_obj.get_user_perms(request.user))
-        )
+    )
     group = None
     if geoapp_obj.group:
         try:
@@ -210,7 +210,7 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
     perms_list = list(
         geoapp_obj.get_self_resource().get_user_perms(request.user)
         .union(geoapp_obj.get_user_perms(request.user))
-        )
+    )
 
     group = None
     if geoapp_obj.group:

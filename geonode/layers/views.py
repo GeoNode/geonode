@@ -623,7 +623,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     perms_list = list(
         layer.get_self_resource().get_user_perms(request.user)
         .union(layer.get_user_perms(request.user))
-        )
+    )
 
     group = None
     if layer.group:
@@ -1669,7 +1669,7 @@ def layer_metadata_detail(
     perms_list = list(
         layer.get_self_resource().get_user_perms(request.user)
         .union(layer.get_user_perms(request.user))
-        )
+    )
 
     return render(request, template, context={
         "resource": layer,

@@ -270,7 +270,7 @@ class GroupMember(models.Model):
     def promote(self, *args, **kwargs):
         self.role = "manager"
         if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
-            from geonode.security.models import ADMIN_PERMISSIONS
+            from geonode.security.permissions import ADMIN_PERMISSIONS
             queryset = get_objects_for_user(
                 self.user, 'base.view_resourcebase').filter(group=self.group.group)
             for _r in queryset.exclude(owner=self.user):
@@ -281,7 +281,7 @@ class GroupMember(models.Model):
     def demote(self, *args, **kwargs):
         self.role = "member"
         if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
-            from geonode.security.models import ADMIN_PERMISSIONS
+            from geonode.security.permissions import ADMIN_PERMISSIONS
             queryset = get_objects_for_user(
                 self.user, 'base.view_resourcebase').filter(group=self.group.group)
             for _r in queryset.exclude(owner=self.user):
