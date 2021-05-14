@@ -42,7 +42,7 @@ from geonode.base.models import (
     ResourceBase,
     TopicCategory,
     ThesaurusKeyword,
-    )
+)
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -624,10 +624,10 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 8)
-        response = self.client.get(url + '?type=geoapp', format='json')
+        response = self.client.get(f"{url}?type=geoapp", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 0)
-        response = self.client.get(url + '?type=layer&title__icontains=CA', format='json')
+        response = self.client.get(f"{url}?type=layer&title__icontains=CA", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 1)
 

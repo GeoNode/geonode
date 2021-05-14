@@ -327,7 +327,7 @@ class BaseResourceCountSerializer(DynamicModelSerializer):
             filter_options = {
                 'type_filter': request.query_params.get('type'),
                 'title_filter': request.query_params.get('title__icontains')
-                }
+            }
         data = super(BaseResourceCountSerializer, self).to_representation(instance)
         count_filter = {self.Meta.count_type: instance}
         data['count'] = get_resources_with_perms(
