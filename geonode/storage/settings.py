@@ -17,5 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 
-STORAGE_MANAGER_CONCRETE_CLASS = 'geonode.storage.manager.DefaultStorageManager'
+STORAGE_MANAGER_CONCRETE_CLASS = os.environ.get('STORAGE_MANAGER_CONCRETE_CLASS', 'geonode.storage.manager.DefaultStorageManager')

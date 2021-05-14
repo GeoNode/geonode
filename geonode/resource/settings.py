@@ -17,5 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 
-RESOURCE_SERVICE_DESCRIPTOR_MODEL = "geonode.resource.ResourceDescriptor"
+RESOURCE_SERVICE_DESCRIPTOR_MODEL = os.environ.get('RESOURCE_SERVICE_DESCRIPTOR_MODEL', 'geonode.resource.ResourceDescriptor')
