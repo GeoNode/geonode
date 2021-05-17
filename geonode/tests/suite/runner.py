@@ -77,7 +77,7 @@ class GeoNodeBaseSuiteDiscoverRunner(DiscoverRunner):
             # unittest does not export the _convert_select_pattern function
             # that converts command-line arguments to patterns.
             self.test_name_patterns = {
-                pattern if '*' in pattern else '*%s*' % pattern
+                pattern if '*' in pattern else f'*{pattern}*'
                 for pattern in test_name_patterns
             }
 
@@ -627,5 +627,5 @@ class TimeKeeper:
     def print_results(self):
         for name, end_times in self.records.items():
             for record_time in end_times:
-                record = '%s took %.3fs' % (name, record_time)
+                record = f'{name} took {record_time:.3f}s'
                 sys.stderr.write(record + os.linesep)

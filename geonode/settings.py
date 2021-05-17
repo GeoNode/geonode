@@ -528,9 +528,9 @@ markdown_white_listed_tags = [
 ]
 
 MARKDOWNIFY = {
-   "default": {
-      "WHITELIST_TAGS": os.getenv('MARKDOWNIFY_WHITELIST_TAGS', markdown_white_listed_tags)
-   }
+    "default": {
+        "WHITELIST_TAGS": os.getenv('MARKDOWNIFY_WHITELIST_TAGS', markdown_white_listed_tags)
+    }
 }
 
 MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
