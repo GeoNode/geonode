@@ -36,7 +36,8 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
-from django.contrib.staticfiles.templatetags import staticfiles
+from django.templatetags.static import static
+
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -55,7 +56,7 @@ from geonode.thumbs.background import (
 
 logger = logging.getLogger(__name__)
 
-missing_thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
+missing_thumbnail_url = static(settings.MISSING_THUMBNAIL)
 
 LOCAL_TIMEOUT = 300
 EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"

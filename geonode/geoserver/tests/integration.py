@@ -27,7 +27,7 @@ import time
 import gisdata
 import logging
 from lxml import etree
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from urllib.request import urlopen, Request
 from urllib.parse import urljoin
 

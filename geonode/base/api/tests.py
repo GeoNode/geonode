@@ -42,7 +42,7 @@ from geonode.base.models import (
     ResourceBase,
     TopicCategory,
     ThesaurusKeyword,
-    )
+)
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend

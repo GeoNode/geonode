@@ -26,7 +26,8 @@ from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.staticfiles.templatetags import staticfiles
+from django.templatetags.static import static
+
 
 from celery.utils.log import get_task_logger
 
@@ -485,7 +486,7 @@ def geoserver_post_save_layers(
                 }
 
                 if is_monochromatic_image(instance.thumbnail_url):
-                    to_update['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
+                    to_update['thumbnail_url'] = static(settings.MISSING_THUMBNAIL)
 
                 # Save all the modified information in the instance without triggering signals.
                 try:

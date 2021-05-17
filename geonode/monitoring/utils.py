@@ -33,7 +33,7 @@ from urllib.parse import urlsplit
 from bs4 import BeautifulSoup as bs
 from dateutil.tz import tzlocal
 from datetime import datetime, timedelta
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 
 from django.conf import settings
 from django.db.models.fields.related import RelatedField

@@ -23,7 +23,7 @@ import logging
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
-from django.contrib.staticfiles.templatetags import staticfiles
+from django.templatetags.static import static
 from tastypie.authentication import MultiAuthentication, SessionAuthentication
 from tastypie.bundle import Bundle
 
@@ -574,7 +574,7 @@ class CommonModelApi(ModelResource):
                 formatted_obj['site_url'] = settings.SITEURL
 
             if formatted_obj['thumbnail_url'] and len(formatted_obj['thumbnail_url']) == 0:
-                formatted_obj['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
+                formatted_obj['thumbnail_url'] = static(settings.MISSING_THUMBNAIL)
 
             formatted_obj['owner__username'] = obj.owner.username
             formatted_obj['owner_name'] = obj.owner.get_full_name() or obj.owner.username
