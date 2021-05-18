@@ -93,6 +93,11 @@ jobs:
           command: docker logs django4geonode --tail 500
           when: on_fail
 
+      - run:
+          name: Invoke logs (debug)
+          command: docker exec -it django4geonode sh -c 'tail -1000 /usr/src/geonode/invoke.log'
+          when: on_fail
+
       - when:
           condition: <<parameters.test_suite>>
           steps:
