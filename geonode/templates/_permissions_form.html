@@ -1,6 +1,6 @@
 {% load i18n %}
 {% load avatar_tags %}
-{% load static from staticfiles %}
+{% load static %}
 
 {% if is_layer and storeType != "remoteStore" and GEONODE_SECURITY_ENABLED and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
 <script src="{% static "geonode/js/proj4js/proj4.js" %}" type="text/javascript"></script>

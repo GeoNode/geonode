@@ -21,7 +21,7 @@
 
 import logging
 
-from django.utils.datastructures import OrderedDict
+from collections import OrderedDict
 
 from .. import enumerations
 from .arcgis import ArcMapServiceHandler, ArcImageServiceHandler

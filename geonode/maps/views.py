@@ -986,7 +986,7 @@ def add_layers_to_map_config(
                 if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
                     wms_capabilities = wms_capabilities_resp.getvalue()
                     if wms_capabilities:
-                        from defusedxml import lxml as dlxml
+                        from owslib.etree import etree as dlxml
                         namespaces = {'wms': 'http://www.opengis.net/wms',
                                       'xlink': 'http://www.w3.org/1999/xlink',
                                       'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}

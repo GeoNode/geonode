@@ -26,7 +26,7 @@ from django.conf import settings
 from django.template.loader import get_template
 from owslib.csw import CatalogueServiceWeb, namespaces
 from owslib.util import http_post
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from geonode.catalogue.backends.base import BaseCatalogueBackend
 
 logger = logging.getLogger(__name__)

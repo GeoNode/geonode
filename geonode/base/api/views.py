@@ -212,10 +212,10 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
             filter_options = {
                 'type_filter': self.request.query_params.get('type'),
                 'title_filter': self.request.query_params.get('title__icontains')
-                }
+            }
         queryset = queryset.filter(id__in=Subquery(
             get_resources_with_perms(self.request.user, filter_options).values('owner'))
-            )
+        )
         return queryset
 
 
@@ -310,7 +310,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             resource_types.append({
                 "name": _type,
                 "count": get_resources_with_perms(request.user).filter(resource_type=_type).count()
-                })
+            })
         return Response({"resource_types": resource_types})
 
     @extend_schema(methods=['get'], responses={200: PermSpecSerialiazer()},
