@@ -17,6 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.upload.utils import next_step_response
+from geonode.upload.models import Upload
+from geonode.upload.views import save_step_view, view
 import re
 import os
 import sys
@@ -94,6 +97,7 @@ from geonode.people.forms import ProfileForm, PocForm
 from geonode.documents.models import get_related_documents
 from geonode.security.utils import get_visible_resources, set_geowebcache_invalidate_cache
 from geonode.utils import (
+    HttpClient,
     resolve_object,
     default_map_config,
     check_ogc_backend,
@@ -1340,31 +1344,34 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                         out['ogc_backend'] = geoserver.BACKEND_PACKAGE
 
-                    saved_layer = file_upload(
-                        base_file,
-                        layer=layer,
-                        title=layer.title,
-                        abstract=layer.abstract,
-                        is_approved=layer.is_approved,
-                        is_published=layer.is_published,
-                        name=layer.name,
-                        user=layer.owner,
-                        license=layer.license.name if layer.license else None,
-                        category=layer.category,
-                        keywords=list(layer.keywords.all()),
-                        regions=list(layer.regions.values_list('name', flat=True)),
-                        overwrite=True,
-                        charset=form.cleaned_data["charset"],
-                    )
+                    #calling first view to prepare upload session
+                    request.GET = request.META.copy()
+                    resp = view(request, None)
+                    upload_id = json.loads(resp.content).get('id')
+                    upload = Upload.objects.filter(import_id=upload_id)
+                    if upload.exists():
+                        # getting upload object
+                        upload_obj = upload.first()
+                        #put the object in waiting
+                        upload_obj.get_resume_url()
 
-                    upload_session = saved_layer.upload_session
-                    if upload_session:
-                        upload_session.processed = True
-                        upload_session.save()
-                    out['success'] = True
+                        # making fake request to run the final step
+                        request.method = 'GET'
+                        request.GET = request.META.copy()
+                        request.GET['id'] = upload_obj.import_id
+                        request.GET['layer_id'] = layer.id
+                        resp = view(request, 'final')
+
+                        # return successfuly page
+                        out['success'] = True
+
+                        upload_obj.processed = True
+                        upload_obj.save()
+
                     out['url'] = reverse(
                         'layer_detail', args=[
-                            saved_layer.service_typename])
+                            layer.service_typename])
+
             except Exception as e:
                 logger.exception(e)
                 out['success'] = False
