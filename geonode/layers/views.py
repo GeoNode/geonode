@@ -17,9 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.upload.utils import next_step_response
-from geonode.upload.models import Upload
-from geonode.upload.views import save_step_view, view
+from enum import Enum
 import re
 import os
 import sys
@@ -83,9 +81,7 @@ from geonode.layers.models import (
     Attribute,
     UploadSession)
 from geonode.layers.utils import (
-    file_upload, get_files, gs_append_data_to_layer,
-    is_raster,
-    is_vector,
+    file_upload, get_files, gs_handle_layer,
     surrogate_escape_string, validate_input_source)
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -1328,49 +1324,34 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
         form = LayerUploadForm(request.POST, request.FILES)
         tempdir = None
         out = {}
-
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                if layer.is_vector() and is_raster(base_file):
-                    out['success'] = False
-                    out['errors'] = _(
-                        "You are attempting to replace a vector layer with a raster.")
-                elif (not layer.is_vector()) and is_vector(base_file):
-                    out['success'] = False
-                    out['errors'] = _(
-                        "You are attempting to replace a raster layer with a vector.")
-                else:
-                    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                        out['ogc_backend'] = geoserver.BACKEND_PACKAGE
-
-                    #calling first view to prepare upload session
-                    request.GET = request.META.copy()
-                    resp = view(request, None)
-                    upload_id = json.loads(resp.content).get('id')
-                    upload = Upload.objects.filter(import_id=upload_id)
-                    if upload.exists():
-                        # getting upload object
-                        upload_obj = upload.first()
-                        #put the object in waiting
-                        upload_obj.get_resume_url()
-
-                        # making fake request to run the final step
-                        request.method = 'GET'
-                        request.GET = request.META.copy()
-                        request.GET['id'] = upload_obj.import_id
-                        request.GET['layer_id'] = layer.id
-                        resp = view(request, 'final')
-
-                        # return successfuly page
-                        out['success'] = True
-
-                        upload_obj.processed = True
-                        upload_obj.save()
-
+                files = get_files(base_file)
+                #  validate input source
+                resource_is_valid = validate_input_source(
+                    layer=layer, filename=base_file, files=files, action_type="replace"
+                )
+                out = {}
+                if (
+                    os.getenv("DEFAULT_BACKEND_DATASTORE", None) == "datastore"
+                    and os.getenv("DEFAULT_BACKEND_UPLOADER", None) == "geonode.importer"
+                    and resource_is_valid
+                ):
+                    upload_session = gs_handle_layer(layer, list(files.values()), request.user, action_type="replace")
+                    upload_session.processed = True
+                    upload_session.save()
+                    out['success'] = True
                     out['url'] = reverse(
                         'layer_detail', args=[
                             layer.service_typename])
+                    #  invalidating resource chache
+                    set_geowebcache_invalidate_cache(layer.typename)
+                    #  updating layer
+                    layer.save()
+                else:
+                    out['success'] = False
+                    out['errors'] = str("Please select a valid Geoserver backend")
 
             except Exception as e:
                 logger.exception(e)
@@ -1437,7 +1418,7 @@ def layer_append(request, layername, template='layers/layer_append.html'):
                     and os.getenv("DEFAULT_BACKEND_UPLOADER", None) == "geonode.importer"
                     and resource_is_valid
                 ):
-                    upload_session = gs_append_data_to_layer(layer, list(files.values()), request.user)
+                    upload_session = gs_handle_layer(layer, list(files.values()), request.user)
                     upload_session.processed = True
                     upload_session.save()
                     out['success'] = True
