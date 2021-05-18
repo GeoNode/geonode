@@ -831,7 +831,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         check_layer(saved_layer)
 
         from lxml import etree
-        from defusedxml import lxml as dlxml
+        from owslib.etree import etree as dlxml
         from geonode.geoserver.helpers import get_store
         from geonode.geoserver.signals import gs_catalog
 

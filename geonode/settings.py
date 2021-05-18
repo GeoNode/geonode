@@ -362,7 +362,7 @@ CACHES = {
 
     # MEMCACHED EXAMPLE
     # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+    #     'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
     #     'LOCATION': '127.0.0.1:11211',
     # },
 
@@ -398,7 +398,7 @@ CACHES = {
 }
 
 MEMCACHED_ENABLED = ast.literal_eval(os.getenv('MEMCACHED_ENABLED', 'False'))
-MEMCACHED_BACKEND = os.getenv('MEMCACHED_BACKEND', 'django.core.cache.backends.memcached.MemcachedCache')
+MEMCACHED_BACKEND = os.getenv('MEMCACHED_BACKEND', 'django.core.cache.backends.memcached.PyMemcacheCache')
 MEMCACHED_LOCATION = os.getenv('MEMCACHED_LOCATION', '127.0.0.1:11211')
 MEMCACHED_LOCK_EXPIRE = int(os.getenv('MEMCACHED_LOCK_EXPIRE', 3600))
 MEMCACHED_LOCK_TIMEOUT = int(os.getenv('MEMCACHED_LOCK_TIMEOUT', 10))
@@ -525,11 +525,18 @@ INSTALLED_APPS = (
 )
 
 INSTALLED_APPS += ('markdownify',)
-MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
-markdown_white_listed_tags = {
+
+markdown_white_listed_tags = [
     'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'ul', 'li', 'span', 'blockquote', 'strong', 'code'
+]
+
+MARKDOWNIFY = {
+    "default": {
+        "WHITELIST_TAGS": os.getenv('MARKDOWNIFY_WHITELIST_TAGS', markdown_white_listed_tags)
+    }
 }
-MARKDOWNIFY_WHITELIST_TAGS = os.getenv('MARKDOWNIFY_WHITELIST_TAGS', markdown_white_listed_tags)
+
+MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
 
 INSTALLED_APPS += GEONODE_APPS
 
@@ -2034,6 +2041,8 @@ SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'Tr
 # -- END Settings for MONITORING plugin
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 UI_DEFAULT_MANDATORY_FIELDS = [
     'id_resource-title',
     'id_resource-abstract',

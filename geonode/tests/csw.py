@@ -27,7 +27,7 @@ import logging
 from lxml import etree
 from owslib import fes
 from urllib.parse import urljoin
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 
 from django.conf import settings
 

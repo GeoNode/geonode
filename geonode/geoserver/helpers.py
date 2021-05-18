@@ -54,7 +54,7 @@ from geoserver.support import DimensionInfo
 from geoserver.workspace import Workspace
 from gsimporter import Client
 from lxml import etree
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
 from geonode import GeoNodeException

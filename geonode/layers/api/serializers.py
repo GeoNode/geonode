@@ -19,6 +19,10 @@
 #########################################################################
 from rest_framework import serializers
 
+from urllib.parse import urlparse
+
+from django.conf import settings
+
 from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField
 
@@ -41,6 +45,15 @@ class StyleSerializer(DynamicModelSerializer):
 
     name = serializers.CharField(read_only=True)
     workspace = serializers.CharField(read_only=True)
+    sld_url = serializers.SerializerMethodField()
+
+    def get_sld_url(self, instance):
+        if bool(urlparse(instance.sld_url).netloc):
+            return instance.sld_url.replace(
+                settings.OGC_SERVER['default']['LOCATION'],
+                settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+            )
+        return instance.sld_url
 
 
 class AttributeSerializer(DynamicModelSerializer):
