@@ -30,6 +30,44 @@ from requests.auth import HTTPBasicAuth
 parser = argparse.ArgumentParser()
 
 
+class Command(BaseCommand):
+    help = (
+        "Brings a data file or a directory full of data files into a"
+        " GeoNode site.  Layers are added to the Django database, the"
+        " GeoServer configuration, and the pycsw metadata index."
+    )
+
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument("path", nargs="*", help="path [path...]")
+
+        parser.add_argument("-hh", "--host", dest="host", help="Geonode host url")
+
+        parser.add_argument("-u", "--username", dest="username", help="Geonode username")
+
+        parser.add_argument("-p", "--password", dest="password", help="Geonode password")
+
+    def handle(self, *args, **options):
+        host = options.get("host") or "http://localhost:8000"
+        username = options.get("username") or "admin"
+        password = options.get("password") or "admin"
+
+        start = datetime.datetime.now(timezone.get_current_timezone())
+
+        success, errors = GeoNodeUploader(
+            host=host, username=username, password=password, folder_path=options["path"][0]
+        ).execute()
+
+        finish = datetime.datetime.now(timezone.get_current_timezone())
+        td = finish - start
+        duration = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
+
+        print(f"{(duration * 1.0 / len(os.listdir(options['path'][0])))} seconds per layer")
+
+        output = {"success": success, "errors": errors}
+        print(f"Output data: {output}")
+
+
 class GeoNodeUploader:
     def __init__(
         self,
@@ -127,41 +165,3 @@ class GeoNodeUploader:
         for item in upload_response.json()["uploads"]:
             if item.get("import_id", None) == import_id:
                 return item.get("id", None)
-
-
-class Command(BaseCommand):
-    help = (
-        "Brings a data file or a directory full of data files into a"
-        " GeoNode site.  Layers are added to the Django database, the"
-        " GeoServer configuration, and the pycsw metadata index."
-    )
-
-    def add_arguments(self, parser):
-        # Positional arguments
-        parser.add_argument("path", nargs="*", help="path [path...]")
-
-        parser.add_argument("-hh", "--host", dest="host", help="Geonode host url")
-
-        parser.add_argument("-u", "--username", dest="username", help="Geonode username")
-
-        parser.add_argument("-p", "--password", dest="password", help="Geonode password")
-
-    def handle(self, *args, **options):
-        host = options.get("host") or "http://localhost:8000"
-        username = options.get("username") or "admin"
-        password = options.get("password") or "admin"
-
-        start = datetime.datetime.now(timezone.get_current_timezone())
-
-        success, errors = GeoNodeUploader(
-            host=host, username=username, password=password, folder_path=options["path"][0]
-        ).execute()
-
-        finish = datetime.datetime.now(timezone.get_current_timezone())
-        td = finish - start
-        duration = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
-
-        print(f"{(duration * 1.0 / len(os.listdir(options['path'][0])))} seconds per layer")
-
-        output = {"success": success, "errors": errors}
-        print(f"Output data: {output}")
