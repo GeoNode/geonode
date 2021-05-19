@@ -33,7 +33,7 @@ import dj_database_url
 
 from decimal import Decimal  # noqa
 from importlib import import_module
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 
 from django.core import mail
 from django.conf import settings

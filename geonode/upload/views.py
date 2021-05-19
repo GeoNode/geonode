@@ -673,7 +673,7 @@ _steps = {
 
 @login_required
 @logged_in_or_basicauth(realm="GeoNode")
-def view(req, step):
+def view(req, step=None):
     """Main uploader view"""
     if not auth.get_user(req).is_authenticated:
         return error_response(req, errors=["Not Authorized"])

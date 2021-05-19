@@ -24,7 +24,7 @@
 import uuid
 import logging
 import datetime
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from django.conf import settings
 
 # Geonode functionality

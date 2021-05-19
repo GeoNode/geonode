@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='metricnotificationcheck',
             name='definition',
-            field=models.OneToOneField(null=True, on_delete='CASCASE', related_name='metric_check', to='monitoring.NotificationMetricDefinition'),
+            field=models.OneToOneField(null=True, on_delete=models.CASCADE, related_name='metric_check', to='monitoring.NotificationMetricDefinition'),
         ),
     ]

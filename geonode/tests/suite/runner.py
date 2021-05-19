@@ -1,4 +1,8 @@
 
+from contextlib import contextmanager
+import faulthandler
+import io
+import os
 import sys
 import time
 import logging
@@ -6,6 +10,7 @@ import multiprocessing
 
 from multiprocessing import Process, Queue, Event
 from queue import Empty
+from typing import Collection
 
 from twisted.scripts.trial import Options, _getSuite
 from twisted.trial.runner import TrialRunner
@@ -37,7 +42,9 @@ class GeoNodeBaseSuiteDiscoverRunner(DiscoverRunner):
     def __init__(self, pattern=None, top_level=None, verbosity=1,
                  interactive=True, failfast=True, keepdb=False,
                  reverse=False, debug_mode=False, debug_sql=False, parallel=0,
-                 tags=None, exclude_tags=None, **kwargs):
+                 tags=None, exclude_tags=None, test_name_patterns=None,
+                 pdb=False, buffer=False, enable_faulthandler=True,
+                 timing=False, **kwargs):
         self.pattern = pattern
         self.top_level = top_level
         self.verbosity = verbosity
@@ -50,6 +57,29 @@ class GeoNodeBaseSuiteDiscoverRunner(DiscoverRunner):
         self.parallel = parallel
         self.tags = set(tags or [])
         self.exclude_tags = set(exclude_tags or [])
+        if not faulthandler.is_enabled() and enable_faulthandler:
+            try:
+                faulthandler.enable(file=sys.stderr.fileno())
+            except (AttributeError, io.UnsupportedOperation):
+                faulthandler.enable(file=sys.__stderr__.fileno())
+        self.pdb = pdb
+        if self.pdb and self.parallel > 1:
+            raise ValueError('You cannot use --pdb with parallel tests; pass --parallel=1 to use it.')
+        self.buffer = buffer
+        if self.buffer and self.parallel > 1:
+            raise ValueError(
+                'You cannot use -b/--buffer with parallel tests; pass '
+                '--parallel=1 to use it.'
+            )
+        self.test_name_patterns = None
+        self.time_keeper = TimeKeeper() if timing else NullTimeKeeper()
+        if test_name_patterns:
+            # unittest does not export the _convert_select_pattern function
+            # that converts command-line arguments to patterns.
+            self.test_name_patterns = {
+                pattern if '*' in pattern else f'*{pattern}*'
+                for pattern in test_name_patterns
+            }
 
 
 class BufferWritesDevice(object):
@@ -569,3 +599,33 @@ class TestResult(object):
             klass, message = failure
             formatted.append((str(klass), message))
         return formatted
+
+
+class NullTimeKeeper:
+    @contextmanager
+    def timed(self, name):
+        yield
+
+    def print_results(self):
+        pass
+
+
+class TimeKeeper:
+    def __init__(self):
+        self.records = Collection.defaultdict(list)
+
+    @contextmanager
+    def timed(self, name):
+        self.records[name]
+        start_time = time.perf_counter()
+        try:
+            yield
+        finally:
+            end_time = time.perf_counter() - start_time
+            self.records[name].append(end_time)
+
+    def print_results(self):
+        for name, end_times in self.records.items():
+            for record_time in end_times:
+                record = f'{name} took {record_time:.3f}s'
+                sys.stderr.write(record + os.linesep)
