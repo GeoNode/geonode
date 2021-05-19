@@ -20,20 +20,13 @@
 
 from io import BufferedReader
 import os
-from re import X
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 import requests
-from requests.auth import HTTPBasicAuth
-from geonode.layers.utils import upload
-from geonode.people.utils import get_valid_user
-import traceback
 import datetime
 from io import BufferedReader, IOBase
 import os
-import time
 import requests
-from requests.models import HTTPBasicAuth
 import argparse
 
 parser=argparse.ArgumentParser()
@@ -110,7 +103,7 @@ class GeoNodeUploader():
                     f"Sending PUT request to geonode: {self.host}/api/v2/uploads/upload/"
                 )
 
-                headers = {"Authorization": "Bearer g2ywFNf0pnBP4K0dS80DopNEMylG2N"}
+                headers = {"Authorization": "Bearer token"}
 
                 response = client.put(
                     f"{self.host}/api/v2/uploads/upload/",
