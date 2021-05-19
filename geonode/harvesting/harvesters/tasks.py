@@ -68,9 +68,26 @@ def harvest_csw_records(
     ignore_result=False,
 )
 def finalize_harvesting_session(self, harvesting_session_id: int):
+    logger.info("Inside the finalize_harvesting_session task +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
     harvesting_session = models.HarvestingSession.objects.get(pk=harvesting_session_id)
     harvester = harvesting_session.harvester
     worker = harvester.get_harvester_worker()
     worker.set_harvesting_session_id(harvesting_session_id)
     worker.finish_harvesting_session()
 
+
+@app.task(
+    bind=True,
+    name='geonode.harvesting.harvesters.tasks.handle_harvesting_error',
+    queue='geonode',
+    acks_late=True,
+    ignore_result=False,
+)
+def handle_harvesting_error(*args, **kwargs):
+# def handle_harvesting_error(request, ext, traceback):
+    logger.debug("************************************************************************************************Inside the handle_harvesting_error task *********************************************************************************************")
+    logger.info("************************************************************************************************Inside the handle_harvesting_error task *********************************************************************************************")
+    logger.warning("************************************************************************************************Inside the handle_harvesting_error task *********************************************************************************************")
+    logger.error("************************************************************************************************Inside the handle_harvesting_error task *********************************************************************************************")
+    print("************************************************************************************************Inside the handle_harvesting_error task *********************************************************************************************")
+    print(f"locals: {locals()}")

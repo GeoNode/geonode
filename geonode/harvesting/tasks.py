@@ -28,12 +28,34 @@ logger = logging.getLogger(__name__)
 
 @app.task(
     bind=True,
-    name='geonode.harvesting.tasks.harvesting_session_dispatcher',
+    #name='geonode.harvesting.tasks.harvesting_session_dispatcher',
     queue='geonode',
     acks_late=False,
 )
 def harvesting_session_dispatcher(self, harvester_id: int):
     harvester = models.Harvester.objects.get(pk=harvester_id)
     worker = harvester.get_harvester_worker()
-    logger.debug(f"harvester running every {harvester.update_frequency!r} minutes")
-    worker.perform_metadata_harvesting()
+    remote_available = worker.update_availability()
+    if remote_available:
+        worker.perform_metadata_harvesting()
+    else:
+        logger.warning(
+            f"Skipping harvesting session for harvester {harvester.name!r} because the "
+            f"remote {harvester.remote_url!r} seems to be unavailable"
+        )
+
+
+@app.task(
+    bind=True,
+    #name='geonode.harvesting.tasks.check_harvester_available',
+    queue='geonode',
+    acks_late=False,
+)
+def check_harvester_available(self, harvester_id: int):
+    harvester = models.Harvester.objects.get(pk=harvester_id)
+    worker = harvester.get_harvester_worker()
+    available = worker.update_availability()
+    logger.info(
+        f"Harvester {harvester!r}: remote server is "
+        f"{'' if available else 'not'} available"
+    )

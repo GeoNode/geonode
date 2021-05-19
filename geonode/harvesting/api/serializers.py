@@ -18,10 +18,16 @@
 #########################################################################
 
 import logging
+import typing
 
-from dynamic_rest.serializers import DynamicModelSerializer
+from dynamic_rest.serializers import (
+    DynamicEphemeralSerializer,
+    DynamicModelSerializer,
+)
+from rest_framework import serializers
 
 from .. import models
+from ..harvesters.base import BriefRemoteResource
 
 logger = logging.getLogger(__name__)
 
@@ -64,3 +70,39 @@ class BriefHarvestingSessionSerializer(DynamicModelSerializer):
             "ended",
             "records_harvested",
         )
+
+
+# class HarvestableResourceSerializer(DynamicEphemeralSerializer):
+class HarvestableResourceSerializer(serializers.Serializer):
+    """
+    Works with a mixed set of models.HarvestableResource and just resources retrieved
+    on the fly from the remote
+    """
+
+    unique_identifier = serializers.CharField(max_length=255)
+    title = serializers.CharField(max_length=255, read_only=True)
+    should_be_harvested = serializers.BooleanField(default=False)
+
+    def to_representation(self, resource: BriefRemoteResource):
+        representation = super().to_representation(resource)
+        representation["should_be_harvested"] = False
+        return representation
+
+    def create(self, validated_data):
+        logger.debug("inside serializer update method for instance")
+        logger.debug(f"validated_data: {validated_data}")
+
+
+# class HarvestableResourceListSerializer(DynamicEphemeralSerializer):
+class HarvestableResourceListSerializer(serializers.Serializer):
+    resources = HarvestableResourceSerializer(many=True)
+
+    def create(self, validated_data):
+        logger.debug("inside serializer create method for list")
+        logger.debug(f"validated_data: {validated_data}")
+        logger.debug(f"validated unique_identifier: {validated_data['resources'][0]['unique_identifier']}")
+        for raw_resource in validated_data["resources"]:
+            serialized = HarvestableResourceSerializer(data=raw_resource)
+            serialized.is_valid(raise_exception=True)
+            serialized.save()
+        return {}

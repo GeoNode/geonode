@@ -19,11 +19,17 @@
 
 import logging
 import typing
+from urllib3.exceptions import (
+    MaxRetryError,
+    NewConnectionError,
+)
 
 import requests
+from django.utils import timezone
 from lxml import etree
 
 from ..utils import XML_PARSER
+from .. import models
 from .base import BaseHarvester
 
 logger = logging.getLogger(__name__)
@@ -72,6 +78,21 @@ class OgcWmsHarvester(BaseHarvester):
             },
             "additionalProperties": False,
         }
+
+    def update_availability(self) -> bool:
+        """Check whether the remote WMS service is online."""
+        try:
+            response = self.http_session.get(f"{self.remote_url}")
+            response.raise_for_status()
+        except (requests.HTTPError, requests.ConnectionError):
+            result = False
+        else:
+            result = True
+        harvester = models.Harvester.objects.get(pk=self.harvester_id)
+        harvester.remote_available = result
+        harvester.last_checked_availability = timezone.now()
+        harvester.save()
+        return result
 
     def perform_metadata_harvesting(self) -> None:
         self.create_harvesting_session()

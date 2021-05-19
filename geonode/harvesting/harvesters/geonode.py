@@ -22,23 +22,31 @@ import logging
 import math
 import typing
 import uuid
+from urllib3.exceptions import (
+    MaxRetryError,
+    NewConnectionError,
+)
 
 import dateutil.parser
 import requests
 from celery import chord
 from django.contrib.gis import geos
 from django.template.loader import render_to_string
+from django.utils import timezone
 from lxml import etree
 
-from .. import resourcedescriptor
+from .. import (
+    models,
+    resourcedescriptor,
+)
 from ..utils import XML_PARSER
-from .base import BaseHarvester
+from . import base
 from . import tasks
 
 logger = logging.getLogger(__name__)
 
 
-class GeonodeLegacyHarvester(BaseHarvester):
+class GeonodeLegacyHarvester(base.BaseHarvester):
     harvest_documents: bool
     harvest_layers: bool
     harvest_maps: bool
@@ -122,25 +130,117 @@ class GeonodeLegacyHarvester(BaseHarvester):
             "additionalProperties": False,
         }
 
+    def get_num_available_resources(self) -> int:
+        result = 0
+        for resource_type_suffix in ("documents", "layers", "maps"):
+            result += self._get_total_records(resource_type_suffix)
+        return result
+
+    def _get_num_available_resources_by_type(self) -> typing.Dict[str, int]:
+        result = {
+            "documents": 0,
+            "layers": 0,
+            "maps": 0,
+        }
+        for resource_type_suffix in result.keys():
+            result[resource_type_suffix] = self._get_total_records(resource_type_suffix)
+        return result
+
+    def _list_resources_by_type(
+            self,
+            resource_type: str, offset: int
+    ) -> typing.List[base.BriefRemoteResource]:
+        response = self.http_session.get(
+            f"{self.base_api_url}/{resource_type}/",
+            params=self._get_resource_list_params(offset)
+        )
+        response.raise_for_status()
+        resources = response.json().get("objects", [])
+        result = []
+        for resource in response.json().get("objects", []):
+            brief_resource = base.BriefRemoteResource(
+                unique_identifier=resource["uuid"],
+                title=resource["title"],
+                resource_type=resource_type,
+            )
+            result.append(brief_resource)
+        return result
+
+    def list_resources(
+            self,
+            offset: typing.Optional[int] = 0
+    ) -> typing.List[base.BriefRemoteResource]:
+        total_resources = self._get_num_available_resources_by_type()
+        if offset < total_resources["documents"]:
+            document_list = self._list_resources_by_type("documents", offset)
+            if len(document_list) < self.page_size:
+                layer_list = self._list_resources_by_type("layers", 0)
+                added = document_list + layer_list
+                if len(added) < self.page_size:
+                    map_list = self._list_resources_by_type("maps", 0)
+                    result = (added + map_list)[:self.page_size]
+                else:
+                    result = added[:self.page_size]
+            else:
+                result = document_list
+        elif offset < (total_resources["documents"] + total_resources["layers"]):
+            layer_offset = offset - total_resources["documents"]
+            layer_list = self._list_resources_by_type("layers", layer_offset)
+            if len(layer_list) < self.page_size:
+                map_list = self._list_resources_by_type("maps", 0)
+                result = (layer_list + map_list)[:self.page_size]
+            else:
+                result = layer_list
+        else:
+            map_offset = offset - (
+                    total_resources["documents"] + total_resources["layers"])
+            result = self._list_resources_by_type("maps", map_offset)
+        return result
+
+    def update_availability(self) -> bool:
+        """Check whether the remote GeoNode is online."""
+        try:
+            response = self.http_session.get(f"{self.base_api_url}/")
+            response.raise_for_status()
+        except (requests.HTTPError, requests.ConnectionError):
+            result = False
+        else:
+            result = True
+        harvester = models.Harvester.objects.get(pk=self.harvester_id)
+        harvester.remote_available = result
+        harvester.last_checked_availability = timezone.now()
+        harvester.save()
+        return result
+
     def perform_metadata_harvesting(self) -> None:
         harvesting_session_id = self.create_harvesting_session()
         total_resources = 0
         harvesting_batches = []
         for resource_type_suffix in ("documents", "layers", "maps"):
             total_records = self._get_total_records(resource_type_suffix)
-            num_pages = math.ceil(total_records / self.page_size)
             total_resources += total_records
-            harvesting_batches.extend(
-                self._generate_harvest_batches(
-                    num_pages, harvesting_session_id, resource_type_suffix)
-            )
+            num_pages = math.ceil(total_records / self.page_size)
+            for page in range(num_pages):
+                logger.debug(
+                    f"Creating batch for {resource_type_suffix!r}, page "
+                    f"({page + 1!r}/{num_pages})..."
+                )
+                pagination_offset = page * self.page_size
+                harvesting_batches.append(
+                    tasks.harvest_record_batch.signature(
+                        args=(harvesting_session_id, pagination_offset),
+                        kwargs={"endpoint_suffix": resource_type_suffix}
+                    )
+                )
         logger.debug(
             f"There are {total_resources!r} resources that match the current "
             f"configuration on the remote"
         )
         self.update_harvesting_session(total_records_found=total_resources)
         harvesting_finalizer = tasks.finalize_harvesting_session.signature(
-            args=(harvesting_session_id,), immutable=True)
+            args=(harvesting_session_id,),
+            immutable=True
+        ).on_error(tasks.handle_harvesting_error.signature())
         harvesting_workflow = chord(harvesting_batches, body=harvesting_finalizer)
         harvesting_workflow.apply_async()
 
@@ -151,52 +251,47 @@ class GeonodeLegacyHarvester(BaseHarvester):
             f"{self.base_api_url}/{endpoint_suffix}/",
             params=request_params
         )
-        response.raise_for_status()
-        brief_record_list = response.json().get("objects", [])
-        record_descriptions = []
-        for index, brief_record in enumerate(brief_record_list):
-            logger.debug(
-                f"Harvesting {endpoint_suffix!r} batch "
-                f"{index + 1}/{len(brief_record_list)}..."
-            )
-            detail_url = f"{self.base_api_url}{brief_record['detail_url']}"
-            # we get the full record representation because that contains more
-            # information, including embedded CSW GetRecord too
-            full_record_response = self.http_session.get(detail_url)
-            full_record_response.raise_for_status()
-            full_record = full_record_response.json()
-            record_description = self._get_resource_descriptor(full_record)
-            logger.debug(
-                f"Found details for record {record_description.uuid!r} - "
-                f"{record_description.identification.title!r}"
-            )
-            record_descriptions.append(record_description)
-            self.update_harvesting_session(additional_harvested_records=1)
-
-    def _generate_harvest_batches(
-            self,
-            num_pages: int,
-            session_id: int,
-            endpoint_suffix: str
-    ) -> typing.List[typing.Callable]:
-        batches = []
-        for page in range(num_pages):
-            logger.debug(
-                f"Creating batch for {endpoint_suffix!r}, page "
-                f"({page + 1!r}/{num_pages})..."
-            )
-            pagination_offset = page * self.page_size
-            batches.append(
-                tasks.harvest_record_batch.signature(
-                    args=(session_id, pagination_offset),
-                    kwargs={"endpoint_suffix": endpoint_suffix}
+        if response.status_code == requests.codes.ok:
+            brief_record_list = response.json().get("objects", [])
+            record_descriptions = []
+            for index, brief_record in enumerate(brief_record_list):
+                logger.debug(
+                    f"Harvesting {endpoint_suffix!r} batch "
+                    f"{index + 1}/{len(brief_record_list)}..."
                 )
-            )
-        return batches
+                detail_url = f"{self.base_api_url}{brief_record['detail_url']}"
+                # we get the full record representation because that contains more
+                # information, including embedded CSW GetRecord too
+                full_record_response = self.http_session.get(detail_url)
+                if full_record_response.status_code == requests.codes.ok:
+                    full_record = full_record_response.json()
+                    xml_root = etree.fromstring(
+                        full_record["metadata_xml"], parser=XML_PARSER)
+                    try:
+                        record_description = get_resource_descriptor(xml_root)
+                    except TypeError:
+                        logger.warning(
+                            f"Could not retrieve metadata details to generate "
+                            f"resource descriptor, skipping..."
+                        )
+                    else:
+                        logger.debug(
+                            f"Found details for record {record_description.uuid!r} - "
+                            f"{record_description.identification.title!r}"
+                        )
+                        record_descriptions.append(record_description)
+                        self.update_harvesting_session(additional_harvested_records=1)
+                else:
+                    logger.warning(
+                        f"Got invalid response from {full_record_response.request.url}")
+        else:
+            logger.warning(f"Got invalid response from {response.request.url}")
 
-    def _get_resource_list_params(self) -> typing.Dict:
+    def _get_resource_list_params(
+            self, offset: typing.Optional[int] = 0) -> typing.Dict:
         result = {
-            "limit": self.page_size
+            "limit": self.page_size,
+            "offset": offset,
         }
         if self.resource_title_filter is not None:
             result["title__icontains"] = self.resource_title_filter
@@ -216,10 +311,15 @@ class GeonodeLegacyHarvester(BaseHarvester):
     def _get_resource_descriptor(
             self, record: typing.Dict) -> resourcedescriptor.RecordDescription:
         xml_root = etree.fromstring(record["metadata_xml"], parser=XML_PARSER)
-        return get_resource_descriptor(xml_root)
+        try:
+            result = get_resource_descriptor(xml_root)
+        except TypeError:
+            logger.debug(f"metadata_xml: {record['metadata_xml']}")
+            raise
+        return result
 
 
-class GeonodeCswHarvester(BaseHarvester):
+class GeonodeCswHarvester(base.BaseHarvester):
     http_session: requests.Session
     max_records: int = 10
     typename: str = "gmd:MD_Metadata"

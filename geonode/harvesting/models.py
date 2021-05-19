@@ -56,6 +56,23 @@ class Harvester(models.Model):
         ),
         default=60
     )
+    remote_available = models.BooleanField(
+        help_text=_("Whether the remote service is known to be available or not"),
+        editable=False,
+        default=False
+    )
+    check_availability_frequency = models.PositiveIntegerField(
+        help_text=_(
+            "How often (in minutes) should the remote service be checked for "
+            "availability?"
+        ),
+        default=30
+    )
+    last_checked_availability = models.DateTimeField(
+        help_text=_("Last time the remote server was checked for availability"),
+        blank=True,
+        null=True
+    )
     default_owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -63,6 +80,28 @@ class Harvester(models.Model):
     )
     default_access_permissions = JSONField(
         help_text=_("Default access permissions of harvested resources"))
+    harvest_new_resources_by_default = models.BooleanField(
+        help_text=_(
+            "Should new resources be harvested automatically without "
+            "explicit selection?"
+        ),
+        default=False,
+    )
+    delete_orphan_resources_automatically = models.BooleanField(
+        help_text=_(
+            "Orphan resources are those that have previously been created by means of "
+            "a harvesting operation but that GeoNode can no longer find on the remote "
+            "service being harvested. Should these resources be deleted from GeoNode "
+            "automatically? This also applies to when a harvester configuration is "
+            "deleted, in which case all of the resources that originated from that "
+            "harvester are now considered to be orphan."
+        ),
+        default=False,
+    )
+    last_updated = models.DateTimeField(
+        help_text=_("Date of last update to the harvester configuration."),
+        auto_now=True
+    )
     harvester_type = models.CharField(
         max_length=255,
         help_text=_(
@@ -83,6 +122,15 @@ class Harvester(models.Model):
         PeriodicTask,
         on_delete=models.CASCADE,
         help_text=_("Periodic task used to configure harvest scheduling"),
+        null=True,
+        blank=True,
+        editable=False,
+    )
+    availability_check_task = models.OneToOneField(
+        PeriodicTask,
+        on_delete=models.CASCADE,
+        related_name="checked_harvester",
+        help_text=_("Periodic task used to check availability of the remote"),
         null=True,
         blank=True,
         editable=False,
@@ -109,25 +157,41 @@ class Harvester(models.Model):
             except jsonschema.exceptions.SchemaError as exc:
                 raise RuntimeError(f"Invalid schema: {exc}")
 
-    def setup_periodic_task(self) -> None:
-        """Setup the related `periodic_task` for the instance.
+    def setup_periodic_tasks(self) -> None:
+        """Setup the related periodic tasks for the instance.
+
+        Periodic tasks are:
+
+        - perform harvesting
+        - check availability of the remote server
 
         This function is automatically called by the
-        `signals.create_or_update_periodic_task` signal handler whenever a new
+        `signals.create_or_update_periodic_tasks` signal handler whenever a new
         instance is saved (handler is listening to the `post_save` signal). It creates
-        the related `PeriodicTask` object in order to allow the harvester to be
+        the related `PeriodicTask` objects in order to allow the harvester to be
         scheduled by celery beat.
 
         """
 
-        schedule_interval, created = IntervalSchedule.objects.get_or_create(
+        update_interval, update_created = IntervalSchedule.objects.get_or_create(
             every=self.update_frequency,
             period="minutes"
         )
         self.periodic_task = PeriodicTask.objects.create(
             name=_(self.name),
             task="geonode.harvesting.tasks.harvesting_session_dispatcher",
-            interval=schedule_interval,
+            interval=update_interval,
+            args=json.dumps([self.id]),
+            start_time=timezone.now()
+        )
+        check_interval, check_created = IntervalSchedule.objects.get_or_create(
+            every=self.check_availability_frequency,
+            period="minutes"
+        )
+        self.availability_check_task = PeriodicTask.objects.create(
+            name=_("Check availability of %(name)s" % {"name": self.name}),
+            task="geonode.harvesting.tasks.check_harvester_available",
+            interval=check_interval,
             args=json.dumps([self.id]),
             start_time=timezone.now()
         )
@@ -149,3 +213,32 @@ class HarvestingSession(models.Model):
         on_delete=models.CASCADE,
         related_name="harvesting_sessions"
     )
+
+
+class HarvestableResource(models.Model):
+    unique_identifier = models.CharField(
+        max_length=255,
+        help_text=_(
+            "Identifier that allows referencing the resource on its remote service in "
+            "a unique fashion. This is usually automatically filled by the harvester "
+            "worker. The harvester worker needs to know how to either read "
+            "or generate this from each remote resource in order to be able to compare "
+            "the availability of resources between consecutive harvesting sessions."
+        ),
+    )
+    title = models.CharField(max_length=255)
+    harvester = models.ForeignKey(
+        Harvester,
+        on_delete=models.CASCADE,
+        related_name="harvestable_resources"
+    )
+    geonode_resource = models.ForeignKey(
+        "base.ResourceBase", null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("harvester", "unique_identifier"),
+                name="unique_id_for_harvester"
+            ),
+        ]

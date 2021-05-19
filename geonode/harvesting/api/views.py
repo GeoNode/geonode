@@ -26,11 +26,15 @@ from rest_framework.authentication import (
     BasicAuthentication,
     SessionAuthentication
 )
+from rest_framework.decorators import action
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode.base.api.pagination import GeoNodeApiPagination
 
 from .. import models
+from ..harvesters.base import BriefRemoteResource
 from . import serializers
 
 import logging
@@ -69,6 +73,43 @@ class HarvesterViewSet(DynamicModelViewSet):
         else:
             result = serializers.HarvesterSerializer
         return result
+
+    @action(
+        detail=True,
+        methods=["get",],
+        url_name="harvestable-resources",
+        url_path="harvestable-resources"
+    )
+    def harvestable_resources(self, request: Request, pk=None):
+        """List harvestable resources for this harvester"""
+        limit=request.query_params.get("limit")
+        harvester = self.get_object()
+        tracked_resources = harvester.harvestable_resources.values_list(
+            "unique_identifier", flat=True)
+        worker = harvester.get_harvester_worker()
+        remote_resources = worker.list_resources()
+        for resource in remote_resources:
+            if resource.unique_identifier in tracked_resources:
+                resource.should_be_harvested = True
+        serializer = serializers.HarvestableResourceListSerializer(
+            {"resources": remote_resources}, context=self.get_serializer_context())
+        # serializer = serializers.HarvestableResourceSerializer(
+        #     remote_resources, many=True, context=self.get_serializer_context())
+        return Response(serializer.data)
+
+    @harvestable_resources.mapping.patch
+    def modify_harvestable_resources(self, request: Request, pk=None):
+        """Update the list of harvestable resources for this harvester"""
+        harvester = self.get_object()
+        logger.debug(f"request.data: {request.data}")
+        serializer = serializers.HarvestableResourceListSerializer(
+            data=request.data,
+            context=self.get_serializer_context()
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
 
 
 class HarvestingSessionViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):

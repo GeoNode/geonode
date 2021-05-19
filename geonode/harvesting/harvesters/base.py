@@ -17,12 +17,21 @@
 #
 #########################################################################
 
+import dataclasses
 import typing
 
 from django.db.models import F
 from django.utils import timezone
 
 from .. import models
+
+
+@dataclasses.dataclass()
+class BriefRemoteResource:
+    unique_identifier: str
+    title: str
+    resource_type: str
+    should_be_harvested: bool = False
 
 
 class BaseHarvester:
@@ -48,6 +57,12 @@ class BaseHarvester:
         """
 
         return None
+
+    def list_resources(
+            self, offset: typing.Optional[int] = 0) -> typing.List[BriefRemoteResource]:
+        """Return a list of resources from the remote service"""
+
+        return []
 
     def create_harvesting_session(self) -> int:
         session = models.HarvestingSession.objects.create(
@@ -84,6 +99,10 @@ class BaseHarvester:
                     F("records_harvested") + additional_harvested_records)
         models.HarvestingSession.objects.filter(
             id=self._harvesting_session_id).update(**update_kwargs)
+
+    def update_availability(self) -> bool:
+        """Check whether the remote url is online"""
+        raise NotImplementedError
 
     def perform_metadata_harvesting(self) -> None:
         """Harvest resources from the remote service"""

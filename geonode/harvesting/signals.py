@@ -32,33 +32,38 @@ from . import models
 
 
 @receiver(
-    post_save, sender=models.Harvester, dispatch_uid="create_or_update_periodic_task")
-def create_or_update_periodic_task(
+    post_save, sender=models.Harvester, dispatch_uid="create_or_update_periodic_tasks")
+def create_or_update_periodic_tasks(
         sender: typing.Type[models.Harvester],
         instance: models.Harvester,
         created: bool,
         **kwargs
 ):
     if created:
-        instance.setup_periodic_task()
-    elif instance.periodic_task is not None:
-        instance.periodic_task.enabled = instance.scheduling_enabled
-        instance.periodic_task.name = instance.name
-        interval, interval_created = IntervalSchedule.objects.get_or_create(
-            every=instance.update_frequency,
-            period="minutes"
-        )
-        if interval_created:
-            instance.periodic_task.interval = interval
-        instance.periodic_task.save()
+        instance.setup_periodic_tasks()
+    else:
+        if instance.periodic_task is not None:
+            instance.periodic_task.enabled = instance.scheduling_enabled
+            instance.periodic_task.name = instance.name
+            update_interval, _ = IntervalSchedule.objects.get_or_create(
+                every=instance.update_frequency, period="minutes")
+            instance.periodic_task.interval = update_interval
+            instance.periodic_task.save()
+        if instance.availability_check_task is not None:
+            check_interval, _ = IntervalSchedule.objects.get_or_create(
+                every=instance.check_availability_frequency, period="minutes")
+            instance.availability_check_task.interval = check_interval
+            instance.availability_check_task.save()
 
 
 @receiver(
-    post_delete, sender=models.Harvester, dispatch_uid="delete_periodic_task")
-def delete_periodic_task(
+    post_delete, sender=models.Harvester, dispatch_uid="delete_periodic_tasks")
+def delete_periodic_tasks(
         sender: typing.Type[models.Harvester],
         instance: models.Harvester,
         **kwargs
 ):
     if instance.periodic_task is not None:
         instance.periodic_task.delete()
+    if instance.availability_check_task is not None:
+        instance.availability_check_task.delete()

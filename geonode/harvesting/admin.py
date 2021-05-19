@@ -29,13 +29,31 @@ class HarvesterAdmin(admin.ModelAdmin):
         "name",
         "scheduling_enabled",
         "remote_url",
+        "remote_available",
         "update_frequency",
         "harvester_type",
+    )
+    readonly_fields = (
+        "remote_available",
+        "last_checked_availability",
     )
 
     list_editable = (
         "scheduling_enabled",
     )
+
+    actions = ["update_harvester_availability"]
+
+    def update_harvester_availability(self, request, queryset):
+        updated_harvesters = []
+        for harvester in queryset:
+            worker = harvester.get_harvester_worker()
+            worker.update_availability()
+            updated_harvesters.append(harvester)
+        self.message_user(
+            request, f"Updated availability for harvesters: {updated_harvesters}")
+    update_harvester_availability.short_description = (
+        "Update availability of selected harvesters")
 
 
 @admin.register(models.HarvestingSession)
@@ -49,3 +67,8 @@ class HarvestingSessionAdmin(admin.ModelAdmin):
         "records_harvested",
         "harvester",
     )
+
+
+@admin.register(models.HarvestableResource)
+class HarvestableResourceAdmin(admin.ModelAdmin):
+    list_filter = ("harvester",)
