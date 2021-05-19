@@ -20,13 +20,20 @@
 
 from io import BufferedReader
 import os
+from re import X
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 import requests
+from requests.auth import HTTPBasicAuth
+from geonode.layers.utils import upload
+from geonode.people.utils import get_valid_user
+import traceback
 import datetime
 from io import BufferedReader, IOBase
 import os
+import time
 import requests
+from requests.models import HTTPBasicAuth
 import argparse
 
 parser=argparse.ArgumentParser()
@@ -49,7 +56,8 @@ class GeoNodeUploader():
         self.call_delay = call_delay
 
     def execute(self):
-
+        success = []
+        errors = []
         for file in os.listdir(self.folder_path):
             if not os.path.exists(f"{self.folder_path}/{file}"):
                 print(f"The selected file path does not exist: {file}")
@@ -81,17 +89,11 @@ class GeoNodeUploader():
                 params["tif_file"] = open(file_path, "rb")
             else:
                 continue
-            print(f"Starting upload for file: {self.folder_path}/{file}")
-
-            print(f"Generating params dict: {params}")
 
             files = {}
 
-            print("Opening client session")
-
             client = requests.session()
 
-            print("Opening Files")
             with open(_file, "rb") as base_file:
                 params["base_file"] = base_file
                 for name, value in params.items():
@@ -99,46 +101,34 @@ class GeoNodeUploader():
                         files[name] = (os.path.basename(value.name), value)
                         params[name] = os.path.basename(value.name)
 
-                print(
-                    f"Sending PUT request to geonode: {self.host}/api/v2/uploads/upload/"
-                )
-
-                headers = {"Authorization": "Bearer token"}
-
                 response = client.put(
                     f"{self.host}/api/v2/uploads/upload/",
-                    headers=headers,
+                    auth=HTTPBasicAuth(self.username, self.password),
                     data=params,
                     files=files,
                 )
 
-                print(f"Geonode response with status code {response.status_code}")
+                print(f"{file}: {response.status_code}")
 
-            print("Closing spatial files")
+                if response.status_code == 201:
+                    success.append(file)
+                else:
+                    errors.append(file)
 
             if isinstance(params.get("tif_file"), IOBase):
                 params["tif_file"].close()
 
-            print("Getting import_id")
             import_id = int(response.json()["redirect_to"].split("?id=")[1].split("&")[0])
-            print(f"ImportID found with ID: {import_id}")
 
-            print(f"Getting upload_list")
             upload_response = client.get(f"{self.host}/api/v2/uploads/")
-
-            print(f"Extraction of upload_id")
 
             upload_id = self._get_upload_id(upload_response, import_id)
 
-            print(f"UploadID found {upload_id}")
-
-            print(f"Calling upload detail page")
             client.get(f"{self.host}/api/v2/uploads/{upload_id}")
 
-            print(f"Calling final upload page")
             client.get(f"{self.host}/upload/final?id={import_id}")
 
-            print(f"Layer added in GeoNode")
+        return success, errors
 
     @staticmethod
     def _get_upload_id(upload_response, import_id):
@@ -180,7 +170,7 @@ class Command(BaseCommand):
 
         start = datetime.datetime.now(timezone.get_current_timezone())
 
-        GeoNodeUploader(
+        success, errors = GeoNodeUploader(
             host=host,
             username=username,
             password=password,
@@ -190,6 +180,8 @@ class Command(BaseCommand):
         finish = datetime.datetime.now(timezone.get_current_timezone())
         td = finish - start
         duration = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
-        duration_rounded = round(duration, 2)
 
-        print(f"{(duration * 1.0 / len(os.listdir(options['path'])))} seconds per layer")
+        print(f"{(duration * 1.0 / len(os.listdir(options['path'][0])))} seconds per layer")
+
+        output = {"success": success, "errors": errors}
+        print(f"Output data: {output}")
