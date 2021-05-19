@@ -1104,7 +1104,7 @@ def gs_handle_layer(layer, base_files, user, action_type="append"):
         task.set_target(store_name=gs_layer.resource.store.name, workspace=gs_layer.resource.workspace.name)
         #  Starting import process
         import_session.commit()
-        return upload_session
+        return upload_session, import_session
 
 
 def validate_input_source(layer, filename, files, gtype=None, action_type='replace'):
