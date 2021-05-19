@@ -28,6 +28,20 @@ RUN apt-get update && apt-get install -y \
     firefox-esr \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
+# Prepraing dependencies
+RUN apt-get update && apt-get install -y devscripts build-essential debhelper pkg-kde-tools sharutils
+# RUN git clone https://salsa.debian.org/debian-gis-team/proj.git /tmp/proj
+# RUN cd /tmp/proj && debuild -i -us -uc -b && dpkg -i ../*.deb
+
+# Install pip packages
+RUN pip install pip --upgrade \
+    && pip install pygdal==$(gdal-config --version).* \
+        flower==0.9.4
+
+# Activate "memcached"
+RUN apt install -y memcached
+RUN pip install pylibmc \
+    && pip install sherlock
 
 # add bower and grunt command
 COPY . /usr/src/geonode/
@@ -50,33 +64,17 @@ RUN chmod +x /usr/bin/celery-commands
 COPY celery-cmd /usr/bin/celery-cmd
 RUN chmod +x /usr/bin/celery-cmd
 
-# Prepraing dependencies
-RUN apt-get update && apt-get install -y devscripts build-essential debhelper pkg-kde-tools sharutils
-# RUN git clone https://salsa.debian.org/debian-gis-team/proj.git /tmp/proj
-# RUN cd /tmp/proj && debuild -i -us -uc -b && dpkg -i ../*.deb
-
-# Install pip packages
-RUN pip install pip --upgrade
-RUN pip install --upgrade --no-cache-dir  --src /usr/src -r requirements.txt \
-    && pip install pygdal==$(gdal-config --version).* \
-    && pip install flower==0.9.4
-
-# Activate "memcached"
-RUN apt install -y memcached
-RUN pip install pylibmc \
-    && pip install sherlock
-
 # Install "geonode-contribs" apps
 RUN cd /usr/src; git clone https://github.com/GeoNode/geonode-contribs.git -b master
 # Install logstash and centralized dashboard dependencies
 RUN cd /usr/src/geonode-contribs/geonode-logstash; pip install --upgrade  -e . \
     cd /usr/src/geonode-contribs/ldap; pip install --upgrade  -e .
 
-RUN pip install --upgrade -r requirements.txt
-RUN pip install --upgrade -e .
+RUN pip install --upgrade --no-cache-dir  --src /usr/src -r requirements.txt
+RUN pip install --upgrade  -e .
 
 # Export ports
 EXPOSE 8000
 
 # We provide no command or entrypoint as this image can be used to serve the django project or run celery tasks
-# ENTRYPOINT service cron restart && service memcached restart && /usr/src/geonode/entrypoint.sh
+# ENTRYPOINT /usr/src/geonode/entrypoint.sh
