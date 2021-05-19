@@ -61,8 +61,6 @@ RUN pip install --upgrade --no-cache-dir  --src /usr/src -r requirements.txt \
     && pip install pygdal==$(gdal-config --version).* \
     && pip install flower==0.9.4
 
-RUN pip install --upgrade  -e .
-
 # Activate "memcached"
 RUN apt install -y memcached
 RUN pip install pylibmc \
@@ -73,6 +71,9 @@ RUN cd /usr/src; git clone https://github.com/GeoNode/geonode-contribs.git -b ma
 # Install logstash and centralized dashboard dependencies
 RUN cd /usr/src/geonode-contribs/geonode-logstash; pip install --upgrade  -e . \
     cd /usr/src/geonode-contribs/ldap; pip install --upgrade  -e .
+
+RUN pip install --upgrade -r requirements.txt
+RUN pip install --upgrade -e .
 
 # Export ports
 EXPOSE 8000
