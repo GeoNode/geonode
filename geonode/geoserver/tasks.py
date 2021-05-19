@@ -293,7 +293,7 @@ def geoserver_finalize_upload(
             logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
             instance.handle_moderated_uploads()
 
-            if permissions is not None and not spec_perms_is_empty(permissions):
+            if permissions is not None:
                 logger.debug(f'Setting permissions {permissions} for {instance.name}')
                 instance.set_permissions(permissions, created=created)
 
