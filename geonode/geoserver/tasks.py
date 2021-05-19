@@ -45,7 +45,6 @@ from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
 from geonode.geoserver.upload import geoserver_upload
-from geonode.security.utils import spec_perms_is_empty
 from geonode.catalogue.models import catalogue_post_save
 
 from .helpers import (
