@@ -81,6 +81,7 @@ class LayerSerializer(ResourceBaseSerializer):
     class Meta:
         model = Layer
         name = 'layer'
+        view_name = 'layers-list'
         fields = (
             'pk', 'uuid', 'name', 'workspace', 'store', 'storeType', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',

@@ -54,6 +54,7 @@ class MapSerializer(ResourceBaseSerializer):
     class Meta:
         model = Map
         name = 'map'
+        view_name = 'maps-list'
         fields = (
             'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',

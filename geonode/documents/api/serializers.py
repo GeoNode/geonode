@@ -34,6 +34,7 @@ class DocumentSerializer(ResourceBaseSerializer):
     class Meta:
         model = Document
         name = 'document'
+        view_name = 'documents-list'
         fields = (
             'pk', 'uuid', 'name', 'href',
             'doc_type', 'extension', 'mime_type'
