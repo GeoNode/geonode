@@ -44,7 +44,6 @@ from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
 from geonode.geoserver.upload import geoserver_upload
-from geonode.security.utils import spec_perms_is_empty
 from geonode.catalogue.models import catalogue_post_save
 
 from .helpers import (
@@ -292,7 +291,7 @@ def geoserver_finalize_upload(
             logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
             instance.handle_moderated_uploads()
 
-            if permissions is not None and not spec_perms_is_empty(permissions):
+            if permissions is not None:
                 logger.debug(f'Setting permissions {permissions} for {instance.name}')
                 instance.set_permissions(permissions, created=created)
 
