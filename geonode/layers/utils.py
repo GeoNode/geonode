@@ -1082,7 +1082,7 @@ def gs_handle_layer(layer, base_files, user, action_type="append"):
     elif gs_layer and action_type == "replace":
         is_valid_layer = True
     else:
-        is_valid_layer=False
+        is_valid_layer = False
 
     if is_valid_layer:
         #  opening upload session for the selected layer

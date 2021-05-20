@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from enum import Enum
 import re
 import os
 import sys
@@ -93,7 +92,6 @@ from geonode.people.forms import ProfileForm, PocForm
 from geonode.documents.models import get_related_documents
 from geonode.security.utils import get_visible_resources, set_geowebcache_invalidate_cache
 from geonode.utils import (
-    HttpClient,
     resolve_object,
     default_map_config,
     check_ogc_backend,

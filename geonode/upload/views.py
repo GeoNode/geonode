@@ -56,7 +56,6 @@ from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView, DeleteView
 from django.contrib.auth.decorators import login_required
-import requests
 
 from geonode.upload import UploadException
 from geonode.base.models import Configuration
@@ -197,10 +196,10 @@ def save_step_view(req, session):
         logger.debug(f"spatial_files: {spatial_files}")
 
         if overwrite:
-            l = Layer.objects.filter(id=req.GET['layer_id'])
-            if l.exists():
-                name = l.first().name
-                target_store = l.first().store
+            layer = Layer.objects.filter(id=req.GET['layer_id'])
+            if layer.exists():
+                name = layer.first().name
+                target_store = layer.first().store
 
         import_session, upload = save_step(
             req.user,
@@ -598,11 +597,11 @@ def final_step_view(req, upload_session):
             return _json_response
         else:
             try:
-                layer_id=None
+                layer_id = None
                 if 'layer_id' in req.GET:
-                    l = Layer.objects.filter(id=req.GET['layer_id'])
-                    if l.exists():
-                        layer_id = l.first().resourcebase_ptr_id
+                    layer = Layer.objects.filter(id=req.GET['layer_id'])
+                    if layer.exists():
+                        layer_id = layer.first().resourcebase_ptr_id
 
                 saved_layer = final_step(upload_session, upload_session.user, layer_id)
 

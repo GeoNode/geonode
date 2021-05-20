@@ -21,7 +21,6 @@ from collections import namedtuple
 from geonode.geoserver.upload import geoserver_upload
 
 import requests
-from geonode.geoserver.createlayer.utils import create_layer
 from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
 
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -1992,7 +1991,6 @@ def dummy_metadata_parser(exml, uuid, vals, regions, keywords, custom):
     return uuid, vals, regions, keywords, custom
 
 
-
 class TestGsHandleLayer(GeoNodeBaseTestSupport):
 
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
@@ -2014,27 +2012,24 @@ class TestGsHandleLayer(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_gs_handle_layer_in_append_should_add_expected_rows_in_the_catalog(self):
-        l = Layer.objects.get(name=self.sut.name)
-        _, import_session = gs_handle_layer(l, list(self.files_as_dict.values()), self.user, action_type="append")
+        layer = Layer.objects.get(name=self.sut.name)
+        _, import_session = gs_handle_layer(layer, list(self.files_as_dict.values()), self.user, action_type="append")
         result = requests.get(f'{self.geoserver_url}/rest/imports/{import_session.id}')
         self.assertEqual(result.status_code, 200)
         actual = result.json().get('import').get('state')
         self.assertEqual('COMPLETE', actual)
-
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_gs_handle_layer_in_replace_should_add_expected_rows_in_the_catalog(self):
-        l = Layer.objects.get(name=self.sut.name)
-        _, import_session = gs_handle_layer(l, list(self.files_as_dict.values()), self.user, action_type="replace")
+        layer = Layer.objects.get(name=self.sut.name)
+        _, import_session = gs_handle_layer(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
         result = requests.get(f'{self.geoserver_url}/rest/imports/{import_session.id}')
         self.assertEqual(result.status_code, 200)
         actual = result.json().get('import').get('state')
         self.assertEqual('COMPLETE', actual)
 
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_gs_handle_layer_in_replace_should_return_none_for_not_existing_layer(self):
-        l = create_single_layer('fake_layer')
-        actual = gs_handle_layer(l, list(self.files_as_dict.values()), self.user, action_type="replace")
+        layer = create_single_layer('fake_layer')
+        actual = gs_handle_layer(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
         self.assertIsNone(actual)
-        
