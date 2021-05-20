@@ -17,6 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.upload.upload import _update_layer_with_xml_info
+from geonode.upload.files import SpatialFiles, scan_file
+import tempfile
+from geonode.upload.models import Upload
 import re
 import os
 import sys
@@ -107,7 +111,7 @@ from geonode.geoserver.helpers import (
     set_layer_style)
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
-from geonode.upload.views import view
+from geonode.upload.views import _select_relevant_files, _write_uploaded_files_to_disk, final_step_view, view
 
 from celery.utils.log import get_logger
 
@@ -215,7 +219,57 @@ def layer_upload_handle_get(request, template):
     return render(request, template, context=ctx)
 
 def layer_upload_handle_post(request, template):
-    return view(request, 'final')
+    out = []
+    errormsgs = []
+    form = NewLayerUploadForm(request.POST, request.FILES)
+    if form.is_valid():
+
+        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+
+        relevant_files = _select_relevant_files(
+            ['xml'],
+            iter(request.FILES.values())
+        )
+        logger.debug(f"relevant_files: {relevant_files}")
+        _write_uploaded_files_to_disk(tempdir, relevant_files)
+        base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
+
+        name = form.cleaned_data['layer_title']
+        layer = Layer.objects.filter(typename=name)
+        if layer.exists():
+            updated_layer = _update_layer_with_xml_info(layer.first(), base_file, [], [], {})
+            updated_layer.save()
+            out['status'] = ['finished']
+            out['url'] = updated_layer.get_absolute_url()
+            out['bbox'] = updated_layer.bbox_string
+            out['crs'] = {
+                'type': 'name',
+                'properties': updated_layer.srid
+            }
+            out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
+            upload_session = updated_layer.upload_session
+            if upload_session:
+                upload_session.processed = True
+                upload_session.save()
+            status_code = 200
+            register_event(request, 'upload', updated_layer)
+        else:
+            out['success'] = False
+            out['errors'] = "Layer selected does not exists"
+            status_code = 404
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=status_code)
+    else:
+        for e in form.errors.values():
+            errormsgs.extend([escape(v) for v in e])
+        out['errors'] = form.errors
+        out['errormsgs'] = errormsgs
+    return HttpResponse(
+        json.dumps(out),
+        content_type='application/json',
+        status=500)
 
     #name = None
     #form = NewLayerUploadForm(request.POST, request.FILES)
