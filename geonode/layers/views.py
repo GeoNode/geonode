@@ -80,8 +80,10 @@ from geonode.layers.models import (
     Attribute,
     UploadSession)
 from geonode.layers.utils import (
-    file_upload, get_files, gs_handle_layer,
-    surrogate_escape_string, validate_input_source)
+    file_upload, get_files,
+    gs_handle_layer,
+    surrogate_escape_string,
+    validate_input_source)
 from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.monitoring import register_event
@@ -119,19 +121,16 @@ celery_logger = get_logger(__name__)
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
-GENERIC_UPLOAD_ERROR = _(
-    "There was an error while attempting to upload your data. \
+GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
 METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this layer's orginal metadata was \
-populated and preserved by importing a metadata XML file. This metadata cannot be edited."
-                                     )
+populated and preserved by importing a metadata XML file. This metadata cannot be edited.")
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
-_PERMISSION_MSG_METADATA = _(
-    "You are not permitted to modify this layer's metadata")
+_PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metadata")
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
@@ -1315,11 +1314,11 @@ def layer_append_replace_view(request, layername, template, action_type):
             'base.change_resourcebase',
             _PERMISSION_MSG_MODIFY)
     except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
+        return HttpResponse("Not allowed", status=403)
     except Exception:
-        raise Http404(_("Not found"))
+        raise Http404("Not found")
     if not layer:
-        raise Http404(_("Not found"))
+        raise Http404("Not found")
 
     if request.method == 'GET':
         ctx = {
