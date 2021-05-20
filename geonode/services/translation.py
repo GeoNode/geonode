@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2020 OSGeo
+# Copyright (C) 2021 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,25 +17,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.documents.models import Document
-from geonode.base.api.serializers import ResourceBaseSerializer
 
-import logging
-
-logger = logging.getLogger(__name__)
+from modeltranslation.translator import translator, TranslationOptions
+from .models import Service
 
 
-class DocumentSerializer(ResourceBaseSerializer):
+class ServiceTranslationOptions(TranslationOptions):
+    fields = (
+        'name',
+        'description',
+    )
 
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super(DocumentSerializer, self).__init__(*args, **kwargs)
 
-    class Meta:
-        model = Document
-        name = 'document'
-        view_name = 'documents-list'
-        fields = (
-            'pk', 'uuid', 'name', 'href',
-            'doc_type', 'extension', 'mime_type'
-        )
+translator.register(Service, ServiceTranslationOptions)

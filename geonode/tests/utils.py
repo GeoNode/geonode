@@ -205,7 +205,7 @@ class Client(DjangoTestClient):
         self.csrf_token = self.get_csrf_token()
         self.response_cookies = response.headers.get('Set-Cookie')
 
-    def upload_file(self, _file):
+    def upload_file(self, _file, perms=None):
         """ function that uploads a file, or a collection of files, to
         the GeoNode"""
         if not self.csrf_token:
@@ -213,8 +213,8 @@ class Client(DjangoTestClient):
         spatial_files = ("dbf_file", "shx_file", "prj_file")
         base, ext = os.path.splitext(_file)
         params = {
-            # make public since wms client doesn't do authentication
-            'permissions': '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            # make public if perms not provided since wms client doesn't do authentication
+            'permissions': perms or '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
             'csrfmiddlewaretoken': self.csrf_token,
             'time': 'true',
             'charset': 'UTF-8'
