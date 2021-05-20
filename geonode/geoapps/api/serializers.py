@@ -75,6 +75,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
     class Meta:
         model = GeoApp
         name = 'geoapp'
+        view_name = 'geoapps-list'
         fields = (
             'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
