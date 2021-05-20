@@ -33,6 +33,7 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
+from geonode.layers.models import Layer
 import os
 import re
 import json
@@ -170,6 +171,9 @@ def save_step_view(req, session):
             }
         )
     form = LayerUploadForm(req.POST, req.FILES)
+
+    overwrite = req.path_info.endswith('/replace')
+    target_store = None
     if form.is_valid():
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         logger.debug(f"valid_extensions: {form.cleaned_data['valid_extensions']}")
@@ -190,11 +194,18 @@ def save_step_view(req, session):
             charset=form.cleaned_data["charset"]
         )
         logger.debug(f"spatial_files: {spatial_files}")
+
+        if overwrite:
+            layer = Layer.objects.filter(id=req.GET['layer_id'])
+            if layer.exists():
+                name = layer.first().name
+                target_store = layer.first().store
+
         import_session, upload = save_step(
             req.user,
             name,
             spatial_files,
-            overwrite=False,
+            overwrite=overwrite,
             mosaic=form.cleaned_data['mosaic'] or scan_hint == 'zip-mosaic',
             append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
             append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
@@ -204,7 +215,8 @@ def save_step_view(req, session):
             time_presentation_res=form.cleaned_data['time_presentation_res'],
             time_presentation_default_value=form.cleaned_data['time_presentation_default_value'],
             time_presentation_reference_value=form.cleaned_data['time_presentation_reference_value'],
-            charset_encoding=form.cleaned_data["charset"]
+            charset_encoding=form.cleaned_data["charset"],
+            target_store=target_store
         )
         import_session.tasks[0].set_charset(form.cleaned_data["charset"])
         sld = None
@@ -585,7 +597,13 @@ def final_step_view(req, upload_session):
             return _json_response
         else:
             try:
-                saved_layer = final_step(upload_session, upload_session.user)
+                layer_id = None
+                if 'layer_id' in req.GET:
+                    layer = Layer.objects.filter(id=req.GET['layer_id'])
+                    if layer.exists():
+                        layer_id = layer.first().resourcebase_ptr_id
+
+                saved_layer = final_step(upload_session, upload_session.user, layer_id)
 
                 # this response is different then all of the other views in the
                 # upload as it does not return a response as a json object
