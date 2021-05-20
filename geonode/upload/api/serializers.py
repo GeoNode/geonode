@@ -24,6 +24,7 @@ from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedFiel
 
 from geonode.upload.models import Upload, UploadFile
 from geonode.layers.api.serializers import LayerSerializer
+from geonode.base.api.serializers import BaseDynamicModelSerializer
 
 import logging
 
@@ -187,7 +188,7 @@ class ProgressUrlField(DynamicComputedField):
             return None
 
 
-class UploadSerializer(DynamicModelSerializer):
+class UploadSerializer(BaseDynamicModelSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
@@ -207,6 +208,7 @@ class UploadSerializer(DynamicModelSerializer):
     class Meta:
         model = Upload
         name = 'upload'
+        view_name = 'uploads-list'
         fields = (
             'id', 'name', 'date', 'create_date', 'user',
             'state', 'progress', 'complete', 'import_id',

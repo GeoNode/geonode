@@ -17,11 +17,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from urllib.parse import urljoin
+
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 from rest_framework_gis import fields
+from rest_framework.reverse import reverse, NoReverseMatch
+
 from dynamic_rest.serializers import DynamicEphemeralSerializer, DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
@@ -47,6 +51,21 @@ from geonode.security.utils import get_resources_with_perms
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class BaseDynamicModelSerializer(DynamicModelSerializer):
+
+    def to_representation(self, instance):
+        data = super(BaseDynamicModelSerializer, self).to_representation(instance)
+        try:
+            path = reverse(self.Meta.view_name)
+            if not path.endswith('/'):
+                path = f"{path}/"
+            url = urljoin(path, str(instance.pk))
+            data['link'] = build_absolute_uri(url)
+        except NoReverseMatch as e:
+            logger.exception(e)
+        return data
 
 
 class ResourceBaseTypesSerializer(DynamicEphemeralSerializer):
@@ -77,11 +96,12 @@ class GroupSerializer(DynamicModelSerializer):
         fields = ('pk', 'name')
 
 
-class GroupProfileSerializer(DynamicModelSerializer):
+class GroupProfileSerializer(BaseDynamicModelSerializer):
 
     class Meta:
         model = GroupProfile
         name = 'group_profile'
+        view_name = 'group-profiles-list'
         fields = ('pk', 'title', 'group', 'slug', 'logo', 'description',
                   'email', 'keywords', 'access', 'categories')
 
@@ -191,12 +211,13 @@ class ThumbnailUrlField(DynamicComputedField):
         return build_absolute_uri(thumbnail_url)
 
 
-class UserSerializer(DynamicModelSerializer):
+class UserSerializer(BaseDynamicModelSerializer):
 
     class Meta:
         ref_name = 'UserProfile'
         model = get_user_model()
         name = 'user'
+        view_name = 'users-list'
         fields = ('pk', 'username', 'first_name', 'last_name', 'avatar', 'perms')
 
     @classmethod
@@ -221,7 +242,7 @@ class ContactRoleField(DynamicComputedField):
         return UserSerializer(embed=True, many=False).to_representation(value)
 
 
-class ResourceBaseSerializer(DynamicModelSerializer):
+class ResourceBaseSerializer(BaseDynamicModelSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
@@ -289,6 +310,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
     class Meta:
         model = ResourceBase
         name = 'resource'
+        view_name = 'base-resources-list'
         fields = (
             'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id', 'perms',
             'owner', 'poc', 'metadata_author',
@@ -318,7 +340,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         return data
 
 
-class BaseResourceCountSerializer(DynamicModelSerializer):
+class BaseResourceCountSerializer(BaseDynamicModelSerializer):
 
     def to_representation(self, instance):
         request = self.context.get('request')
@@ -340,6 +362,7 @@ class HierarchicalKeywordSerializer(BaseResourceCountSerializer):
     class Meta(SimpleHierarchicalKeywordSerializer.Meta):
         name = 'keywords'
         count_type = 'keywords'
+        view_name = 'keywords-list'
         fields = '__all__'
 
 
@@ -348,6 +371,7 @@ class ThesaurusKeywordSerializer(BaseResourceCountSerializer):
     class Meta:
         model = ThesaurusKeyword
         name = 'tkeywords'
+        view_name = 'tkeywords-list'
         count_type = 'tkeywords'
         fields = '__all__'
 
@@ -357,6 +381,7 @@ class RegionSerializer(BaseResourceCountSerializer):
     class Meta(SimpleRegionSerializer.Meta):
         name = 'regions'
         count_type = 'regions'
+        view_name = 'regions-list'
         fields = '__all__'
 
 
@@ -365,6 +390,7 @@ class TopicCategorySerializer(BaseResourceCountSerializer):
     class Meta(SimpleTopicCategorySerializer.Meta):
         name = 'categories'
         count_type = 'category'
+        view_name = 'categories-list'
         fields = '__all__'
 
 
@@ -373,3 +399,4 @@ class OwnerSerializer(BaseResourceCountSerializer, UserSerializer):
     class Meta(UserSerializer.Meta):
         name = 'owners'
         count_type = 'owner'
+        view_name = 'owners-list'
