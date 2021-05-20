@@ -22,6 +22,7 @@ from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
+from geonode.base.utils import build_absolute_uri
 from geonode.upload.models import Upload, UploadFile
 from geonode.layers.api.serializers import LayerSerializer
 from geonode.base.api.serializers import BaseDynamicModelSerializer
@@ -182,7 +183,7 @@ class ProgressUrlField(DynamicComputedField):
     def get_attribute(self, instance):
         try:
             func = getattr(instance, f"get_{self.type}_url")
-            return func()
+            return build_absolute_uri(func())
         except AttributeError as e:
             logger.exception(e)
             return None

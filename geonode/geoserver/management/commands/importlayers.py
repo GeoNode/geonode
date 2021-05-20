@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2021 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -135,35 +135,33 @@ class GeoNodeUploader:
                         files[name] = (os.path.basename(value.name), value)
                         params[name] = os.path.basename(value.name)
 
-                response = client.put(
+                response = client.post(
                     f"{self.host}/api/v2/uploads/upload/",
                     auth=HTTPBasicAuth(self.username, self.password),
                     data=params,
                     files=files,
                 )
-
                 print(f"{file}: {response.status_code}")
-
-                if response.status_code == 201:
-                    success.append(file)
-                else:
-                    errors.append(file)
 
             if isinstance(params.get("tif_file"), IOBase):
                 params["tif_file"].close()
 
-            import_id = int(response.json()["redirect_to"].split("?id=")[1].split("&")[0])
-
-            upload_response = client.get(f"{self.host}/api/v2/uploads/")
-
-            upload_id = self._get_upload_id(upload_response, import_id)
-
-            client.get(f"{self.host}/api/v2/uploads/{upload_id}")
-
-            client.get(f"{self.host}/upload/final?id={import_id}")
-
-            client.get(f"{self.host}/api/v2/uploads/{upload_id}")
-
+            data = response.json()
+            if data['status'] == 'finished':
+                if data['success']:
+                    success.append(file)
+                else:
+                    errors.append(file)
+            elif 'redirect_to' in data:
+                import_id = int(data["redirect_to"].split("?id=")[1].split("&")[0])
+                upload_response = client.get(f"{self.host}/api/v2/uploads/")
+                upload_id = self._get_upload_id(upload_response, import_id)
+                client.get(f"{self.host}/api/v2/uploads/{upload_id}")
+                client.get(f"{self.host}/upload/check?id={import_id}")
+                client.get(f"{self.host}/upload/final?id={import_id}")
+                success.append(file)
+            else:
+                errors.append(file)
         return success, errors
 
     @staticmethod
