@@ -843,22 +843,6 @@ def sync_resources_with_guardian(resource=None):
                     logger.warn(f"!WARNING! - Failure Synching-up Security Rules for Resource [{r}]")
 
 
-def spec_perms_is_empty(perm_spec):
-    _user_empty = True
-    if 'users' in perm_spec and len(perm_spec['users']) > 0:
-        for user, perms in perm_spec['users'].items():
-            if perms and len(perms) > 0:
-                _user_empty = False
-
-    _group_empty = True
-    if 'groups' in perm_spec and len(perm_spec['groups']) > 0:
-        for group, perms in perm_spec['groups'].items():
-            if perms and len(perms) > 0:
-                _group_empty = False
-
-    return (_user_empty and _group_empty)
-
-
 def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
     """
     Returns resources a user has access to.

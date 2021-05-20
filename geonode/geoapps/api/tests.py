@@ -150,7 +150,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(len(response.data['geoapps']), 1)
         self.assertTrue('data' in response.data['geoapps'][0])
         self.assertEqual(
-            response.data['geoapps'][0]['data'],
+            json.loads(response.data['geoapps'][0]['data']),
             {
                 "test_data": {
                     "test": [

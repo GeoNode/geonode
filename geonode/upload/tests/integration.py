@@ -723,7 +723,13 @@ class TestUploadDBDataStore(UploaderBase):
         thefile = os.path.join(
             GOOD_DATA, 'time', f'{layer_name}.shp'
         )
-        resp, data = self.client.upload_file(thefile)
+        # Test upload with custom permissions
+        resp, data = self.client.upload_file(
+            thefile, perms='{"users": {"AnonymousUser": []}, "groups":{}}'
+            )
+        _layer = Layer.objects.get(name=layer_name)
+        _user = get_user_model().objects.get(username='AnonymousUser')
+        self.assertEqual(_layer.get_user_perms(_user).count(), 0)
 
         # initial state is no positions or info
         self.assertTrue(get_wms_timepositions() is None)
