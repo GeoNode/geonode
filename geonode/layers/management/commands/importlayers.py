@@ -48,24 +48,28 @@ class Command(BaseCommand):
         parser.add_argument("-p", "--password", dest="password", help="Geonode password")
 
     def handle(self, *args, **options):
+        if not len(options["path"]) > 0:
+            self.print_help('manage.py', 'importlayers')
+            return
+
         host = options.get("host") or "http://localhost:8000"
         username = options.get("username") or "admin"
         password = options.get("password") or "admin"
 
         start = datetime.datetime.now(timezone.get_current_timezone())
+        for path in options["path"]:
+            success, errors = GeoNodeUploader(
+                host=host, username=username, password=password, folder_path=path
+            ).execute()
 
-        success, errors = GeoNodeUploader(
-            host=host, username=username, password=password, folder_path=options["path"][0]
-        ).execute()
+            finish = datetime.datetime.now(timezone.get_current_timezone())
+            td = finish - start
+            duration = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
 
-        finish = datetime.datetime.now(timezone.get_current_timezone())
-        td = finish - start
-        duration = td.microseconds / 1000000 + td.seconds + td.days * 24 * 3600
+            print(f"{(duration * 1.0 / len(os.listdir(options['path'][0])))} seconds per layer")
 
-        print(f"{(duration * 1.0 / len(os.listdir(options['path'][0])))} seconds per layer")
-
-        output = {"success": success, "errors": errors}
-        print(f"Output data: {output}")
+            output = {"success": success, "errors": errors}
+            print(f"Output data: {output}")
 
 
 class GeoNodeUploader:
@@ -157,6 +161,8 @@ class GeoNodeUploader:
             client.get(f"{self.host}/api/v2/uploads/{upload_id}")
 
             client.get(f"{self.host}/upload/final?id={import_id}")
+
+            client.get(f"{self.host}/api/v2/uploads/{upload_id}")
 
         return success, errors
 
