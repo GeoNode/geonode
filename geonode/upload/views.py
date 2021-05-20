@@ -33,6 +33,7 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
+from geonode.layers.forms import NewLayerUploadForm
 from geonode.layers.models import Layer
 import os
 import re
@@ -93,7 +94,7 @@ from .utils import (
     layer_eligible_for_time_dimension,
     next_step_response,
 )
-from .upload import (save_step, srs_step, time_step, csv_step, final_step,
+from .upload import (_update_layer_with_xml_info, save_step, srs_step, time_step, csv_step, final_step,
                      LayerNotReady, UploaderSession)
 
 logger = logging.getLogger(__name__)
@@ -656,7 +657,6 @@ def final_step_view(req, upload_session):
         )
         return _json_response
 
-
 """
     Workflow Views Definition
 """
@@ -666,7 +666,7 @@ _steps = {
     'csv': csv_step_view,
     'check': check_step_view,
     'time': time_step_view,
-    'final': final_step_view,
+    'final': final_step_view
 }
 
 
