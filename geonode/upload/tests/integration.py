@@ -726,7 +726,7 @@ class TestUploadDBDataStore(UploaderBase):
         # Test upload with custom permissions
         resp, data = self.client.upload_file(
             thefile, perms='{"users": {"AnonymousUser": []}, "groups":{}}'
-            )
+        )
         _layer = Layer.objects.get(name=layer_name)
         _user = get_user_model().objects.get(username='AnonymousUser')
         self.assertEqual(_layer.get_user_perms(_user).count(), 0)
