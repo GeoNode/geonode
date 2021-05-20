@@ -58,6 +58,9 @@ class BaseHarvester:
 
         return None
 
+    def get_num_available_resources(self) -> int:
+        return 0
+
     def list_resources(
             self, offset: typing.Optional[int] = 0) -> typing.List[BriefRemoteResource]:
         """Return a list of resources from the remote service"""

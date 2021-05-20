@@ -91,8 +91,11 @@ class HarvesterViewSet(DynamicModelViewSet):
         for resource in remote_resources:
             if resource.unique_identifier in tracked_resources:
                 resource.should_be_harvested = True
+        context = self.get_serializer_context()
+        context["harvester"] = harvester
+        logger.debug(f"Context before entering serializers: {context}")
         serializer = serializers.HarvestableResourceListSerializer(
-            {"resources": remote_resources}, context=self.get_serializer_context())
+            {"resources": remote_resources}, context=context)
         # serializer = serializers.HarvestableResourceSerializer(
         #     remote_resources, many=True, context=self.get_serializer_context())
         return Response(serializer.data)
@@ -102,9 +105,12 @@ class HarvesterViewSet(DynamicModelViewSet):
         """Update the list of harvestable resources for this harvester"""
         harvester = self.get_object()
         logger.debug(f"request.data: {request.data}")
+        context = self.get_serializer_context()
+        context["harvester"] = harvester
+        logger.debug(f"Context before entering serializers: {context}")
         serializer = serializers.HarvestableResourceListSerializer(
             data=request.data,
-            context=self.get_serializer_context()
+            context=context
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()

@@ -18,6 +18,8 @@
 #########################################################################
 
 import json
+import logging
+import math
 
 import jsonschema.exceptions
 from django.conf import settings
@@ -36,9 +38,22 @@ from jsonfield import JSONField
 from .config import HARVESTER_CLASSES
 from .harvesters.base import BaseHarvester
 
+logger = logging.getLogger(__name__)
+
 
 class Harvester(models.Model):
+    STATUS_READY = "ready"
+    STATUS_UPDATING_HARVESTABLE_RESOURCES = "updating"
+    STATUS_PERFORMING_HARVESTING = "harvesting"
+    STATUS_CHOICES = [
+        (STATUS_READY, _("ready")),
+        (STATUS_UPDATING_HARVESTABLE_RESOURCES, _("updating")),
+        (STATUS_PERFORMING_HARVESTING, _("harvesting")),
+    ]
+
     name = models.CharField(max_length=100, help_text=_("Harvester name"))
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default=STATUS_READY)
     remote_url = models.URLField(
         help_text=_("Base URL of the remote service that is to be harvested"))
     scheduling_enabled = models.BooleanField(
@@ -73,6 +88,13 @@ class Harvester(models.Model):
         blank=True,
         null=True
     )
+    last_checked_harvestable_resources = models.DateTimeField(
+        help_text=_(
+            "Last time the remote server was checked for harvestable resources"),
+        blank=True,
+        null=True,
+    )
+    last_check_harvestable_resources_message = models.TextField(blank=True)
     default_owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -234,6 +256,9 @@ class HarvestableResource(models.Model):
     )
     geonode_resource = models.ForeignKey(
         "base.ResourceBase", null=True, on_delete=models.SET_NULL)
+    should_be_harvested = models.BooleanField(default=False)
+    last_updated = models.DateTimeField(auto_now=True)
+    available = models.BooleanField(default=False)
 
     class Meta:
         constraints = [

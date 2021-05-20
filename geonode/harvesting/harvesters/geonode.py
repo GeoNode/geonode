@@ -159,12 +159,16 @@ class GeonodeLegacyHarvester(base.BaseHarvester):
         result = []
         for resource in response.json().get("objects", []):
             brief_resource = base.BriefRemoteResource(
-                unique_identifier=resource["uuid"],
+                unique_identifier=self._extract_unique_identifier(resource),
                 title=resource["title"],
                 resource_type=resource_type,
             )
             result.append(brief_resource)
         return result
+
+    def _extract_unique_identifier(self, raw_remote_resource: typing.Dict) -> str:
+        # return raw_remote_resource["id"]
+        return raw_remote_resource["uuid"]
 
     def list_resources(
             self,

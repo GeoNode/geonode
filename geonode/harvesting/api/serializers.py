@@ -91,6 +91,31 @@ class HarvestableResourceSerializer(serializers.Serializer):
     def create(self, validated_data):
         logger.debug("inside serializer update method for instance")
         logger.debug(f"validated_data: {validated_data}")
+        logger.debug(f"context of the instance serializer: {self.context}")
+        unique_id = None  # TODO: harvester worker needs to generate this from validated_data
+        resource_exists = models.HarvestableResource.objects.filter(
+            harvester=self.context["harvester"], unique_identifier=unique_id).exists()
+        if resource_exists and validated_data["should_be_harvested"]:
+            pass  # nothing to do, resource already marked for harvesting
+        elif resource_exists:  # need to delete the resource
+            num_deleted, deleted_types = models.HarvestableResource.objects.filter(
+                harvester=self.context["harvester"],
+                unique_identifier=unique_id
+            ).delete()
+        elif not resource_exists and validated_data["should_be_harvested"]:
+            # create the resource
+            resource = models.HarvestableResource.objects.create(
+                unique_identifier=unique_id, harvester=self.context["harvester"])
+        else:
+            pass  # nothing to do, the resource does not exist and the user doesn't want it to be harvested
+
+        harvestable_resource, created = models.HarvestableResource.objects.get_or_create(
+            unique_identifier=validated_data["unique_identifier"],
+            harvester=self.context["harvester"],
+            defaults={
+                "should_be_harvested": self.context["should_be_harvested"]
+            }
+        )
 
 
 # class HarvestableResourceListSerializer(DynamicEphemeralSerializer):
@@ -101,8 +126,10 @@ class HarvestableResourceListSerializer(serializers.Serializer):
         logger.debug("inside serializer create method for list")
         logger.debug(f"validated_data: {validated_data}")
         logger.debug(f"validated unique_identifier: {validated_data['resources'][0]['unique_identifier']}")
+        logger.debug(f"context of the list serializer: {self.context}")
         for raw_resource in validated_data["resources"]:
-            serialized = HarvestableResourceSerializer(data=raw_resource)
+            serialized = HarvestableResourceSerializer(
+                data=raw_resource, context=self.context)
             serialized.is_valid(raise_exception=True)
             serialized.save()
         return {}
