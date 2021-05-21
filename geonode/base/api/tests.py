@@ -45,13 +45,16 @@ from geonode.base.models import (
 )
 
 from geonode import geoserver
+from geonode.favorite.models import Favorite
 from geonode.utils import check_ogc_backend
 from geonode.services.views import services
 from geonode.maps.views import map_embed
+from geonode.layers.models import Layer
 from geonode.layers.views import layer_embed
 from geonode.geoapps.views import geoapp_edit
 from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
+from geonode.security.utils import get_resources_with_perms
 
 logger = logging.getLogger(__name__)
 
@@ -528,7 +531,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
-        resources = ResourceBase.objects.filter(owner__username='bobby')
+        resources = ResourceBase.objects.filter(owner__username='bobby', metadata_only=False)
 
         url = urljoin(f"{reverse('base-resources-list')}/", 'featured/')
         response = self.client.get(url, format='json')
@@ -543,9 +546,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 2)
+        self.assertEqual(response.data['total'], resources.filter(resource_type='map').count())
         # Pagination
-        self.assertEqual(len(response.data['resources']), 2)
+        self.assertEqual(len(response.data['resources']), resources.filter(resource_type='map').count())
 
     def test_resource_types(self):
         """
@@ -560,6 +563,52 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertTrue('map' in r_type_names)
         self.assertTrue('document' in r_type_names)
         self.assertFalse('service' in r_type_names)
+
+    def test_get_favorites(self):
+        """
+        Ensure we get user's favorite resources.
+        """
+        layer = Layer.objects.first()
+        url = urljoin(f"{reverse('base-resources-list')}/", 'favorites/')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 403)
+        # Authenticated user
+        bobby = get_user_model().objects.get(username='bobby')
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        favorite = Favorite.objects.create_favorite(layer, bobby)
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['total'], 1)
+        self.assertEqual(response.status_code, 200)
+        # clean up
+        favorite.delete()
+
+    def test_create_and_delete_favorites(self):
+        """
+        Ensure we can add and remove resources to user's favorite.
+        """
+        layer = get_resources_with_perms(get_user_model().objects.get(pk=-1)).first()
+        url = urljoin(f"{reverse('base-resources-list')}/", f"{layer.pk}/favorite/")
+        # Anonymous
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, 403)
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.post(url, format="json")
+        self.assertEqual(response.data["message"], "Successfuly added resource to favorites")
+        self.assertEqual(response.status_code, 201)
+        # add resource to favorite again
+        response = self.client.post(url, format="json")
+        self.assertEqual(response.data["message"], "Resource is already in favorites")
+        self.assertEqual(response.status_code, 400)
+        # remove resource from favorites
+        response = self.client.delete(url, format="json")
+        self.assertEqual(response.data["message"], "Successfuly removed resource from favorites")
+        self.assertEqual(response.status_code, 200)
+        # remove resource to favorite again
+        response = self.client.delete(url, format="json")
+        self.assertEqual(response.data["message"], "Resource not in favorites")
+        self.assertEqual(response.status_code, 404)
 
     @patch('PIL.Image.open', return_value=test_image)
     def test_thumbnail_urls(self, img):
