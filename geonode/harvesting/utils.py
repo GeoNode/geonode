@@ -17,8 +17,18 @@
 #
 #########################################################################
 
+from django.utils.timezone import now
 from lxml import etree
 
 
 # explicitly disable resolving XML entities in order to prevent malicious attacks
 XML_PARSER = etree.XMLParser(resolve_entities=False)
+
+
+def update_harvester_availability(harvester: "Harvester") -> bool:
+    worker = harvester.get_harvester_worker()
+    harvester.last_checked_availability = now()
+    available = worker.check_availability()
+    harvester.remote_available = available
+    harvester.save()
+    return available

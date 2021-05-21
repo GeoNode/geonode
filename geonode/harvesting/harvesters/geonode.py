@@ -167,8 +167,7 @@ class GeonodeLegacyHarvester(base.BaseHarvester):
         return result
 
     def _extract_unique_identifier(self, raw_remote_resource: typing.Dict) -> str:
-        # return raw_remote_resource["id"]
-        return raw_remote_resource["uuid"]
+        return raw_remote_resource["id"]
 
     def list_resources(
             self,
@@ -201,7 +200,7 @@ class GeonodeLegacyHarvester(base.BaseHarvester):
             result = self._list_resources_by_type("maps", map_offset)
         return result
 
-    def update_availability(self) -> bool:
+    def check_availability(self) -> bool:
         """Check whether the remote GeoNode is online."""
         try:
             response = self.http_session.get(f"{self.base_api_url}/")
@@ -210,37 +209,43 @@ class GeonodeLegacyHarvester(base.BaseHarvester):
             result = False
         else:
             result = True
-        harvester = models.Harvester.objects.get(pk=self.harvester_id)
-        harvester.remote_available = result
-        harvester.last_checked_availability = timezone.now()
-        harvester.save()
         return result
 
     def perform_metadata_harvesting(self) -> None:
+        """
+        Perform harvesting of all remote resources that are configured as harvestable.
+
+        This method will contact the remote GeoNode, check each remote resource and,
+        if configured to do so, perform harvesting of the resource.
+
+        """
+
         harvesting_session_id = self.create_harvesting_session()
-        total_resources = 0
         harvesting_batches = []
-        for resource_type_suffix in ("documents", "layers", "maps"):
-            total_records = self._get_total_records(resource_type_suffix)
-            total_resources += total_records
-            num_pages = math.ceil(total_records / self.page_size)
+        num_resources_by_type = self._get_num_available_resources_by_type()
+
+        # FIXME: This is not 100% correct, as not all of the remote resources are probably marked for harvesting by the harvester config
+        total_resources = sum(num_resources_by_type.values())
+        logger.debug(
+            f"There are {total_resources} resources that match the current "
+            f"configuration on the remote"
+        )
+        self.update_harvesting_session(total_records_found=total_resources)
+
+        for resource_type, num_resources in num_resources_by_type:
+            num_pages = math.ceil(num_resources / self.page_size)
             for page in range(num_pages):
                 logger.debug(
-                    f"Creating batch for {resource_type_suffix!r}, page "
+                    f"Creating batch for {resource_type!r}, page "
                     f"({page + 1!r}/{num_pages})..."
                 )
                 pagination_offset = page * self.page_size
                 harvesting_batches.append(
                     tasks.harvest_record_batch.signature(
                         args=(harvesting_session_id, pagination_offset),
-                        kwargs={"endpoint_suffix": resource_type_suffix}
+                        kwargs={"endpoint_suffix": resource_type}
                     )
                 )
-        logger.debug(
-            f"There are {total_resources!r} resources that match the current "
-            f"configuration on the remote"
-        )
-        self.update_harvesting_session(total_records_found=total_resources)
         harvesting_finalizer = tasks.finalize_harvesting_session.signature(
             args=(harvesting_session_id,),
             immutable=True
@@ -249,47 +254,79 @@ class GeonodeLegacyHarvester(base.BaseHarvester):
         harvesting_workflow.apply_async()
 
     def harvest_record_batch(self, endpoint_suffix: str, offset: int):
-        request_params = self._get_resource_list_params()
-        request_params["offset"] = offset
+        """Harvest a batch of records"""
+        harvester = models.Harvester.objects.get(self.harvester_id)
         response = self.http_session.get(
             f"{self.base_api_url}/{endpoint_suffix}/",
-            params=request_params
+            params=self._get_resource_list_params(offset=offset)
         )
         if response.status_code == requests.codes.ok:
-            brief_record_list = response.json().get("objects", [])
-            record_descriptions = []
-            for index, brief_record in enumerate(brief_record_list):
+            raw_brief_resources = response.json().get("objects", [])
+            resource_descriptors = []
+            for index, raw_brief_resource in enumerate(raw_brief_resources):
                 logger.debug(
                     f"Harvesting {endpoint_suffix!r} batch "
-                    f"{index + 1}/{len(brief_record_list)}..."
+                    f"{index + 1}/{len(raw_brief_resources)}..."
                 )
-                detail_url = f"{self.base_api_url}{brief_record['detail_url']}"
-                # we get the full record representation because that contains more
-                # information, including embedded CSW GetRecord too
-                full_record_response = self.http_session.get(detail_url)
-                if full_record_response.status_code == requests.codes.ok:
-                    full_record = full_record_response.json()
-                    xml_root = etree.fromstring(
-                        full_record["metadata_xml"], parser=XML_PARSER)
-                    try:
-                        record_description = get_resource_descriptor(xml_root)
-                    except TypeError:
-                        logger.warning(
-                            f"Could not retrieve metadata details to generate "
-                            f"resource descriptor, skipping..."
-                        )
-                    else:
-                        logger.debug(
-                            f"Found details for record {record_description.uuid!r} - "
-                            f"{record_description.identification.title!r}"
-                        )
-                        record_descriptions.append(record_description)
-                        self.update_harvesting_session(additional_harvested_records=1)
-                else:
-                    logger.warning(
-                        f"Got invalid response from {full_record_response.request.url}")
+                unique_identifier = self._extract_unique_identifier(raw_brief_resource)
+                harvestable_resource, created = (
+                    models.HarvestableResource.objects.get_or_create(
+                        harvester=harvester,
+                        unique_identifier=unique_identifier,
+                        defaults={
+                            "should_be_harvested": (
+                                harvester.harvest_new_resources_by_default)
+                        }
+                    )
+                )
+                if created:
+                    logger.debug(
+                        f"Created a new HarvestableResource instance for "
+                        f"resource {raw_brief_resource}"
+                    )
+                if not harvestable_resource.should_be_harvested:
+                    logger.debug(
+                        f"Resource {harvestable_resource.title!r} is not marked as "
+                        f"being harvestable in the current configuration for the "
+                        f"{harvester!r} harvester. Skipping..."
+                    )
+                    continue
+                resource_descriptor = self._get_resource_details(raw_brief_resource)
+                if resource_descriptor is not None:
+                    resource_descriptors.append(resource_descriptor)
+                    self.update_harvesting_session(additional_harvested_records=1)
         else:
             logger.warning(f"Got invalid response from {response.request.url}")
+
+    def _get_resource_details(
+            self,
+            raw_brief_resource: typing.Dict
+    ) -> typing.Optional[resourcedescriptor.RecordDescription]:
+        detail_url = f"{self.base_api_url}{raw_brief_resource['detail_url']}"
+        result = None
+        # we get the full record representation because that contains more
+        # information, including embedded CSW GetRecord too
+        full_resource_response = self.http_session.get(detail_url)
+        if full_resource_response.status_code == requests.codes.ok:
+            raw_resource = full_resource_response.json()
+            xml_root = etree.fromstring(
+                raw_resource["metadata_xml"], parser=XML_PARSER)
+            try:
+                result = get_resource_descriptor(xml_root)
+            except TypeError:
+                logger.warning(
+                    f"Could not retrieve metadata details to generate "
+                    f"resource descriptor, skipping..."
+                )
+            else:
+                logger.debug(
+                    f"Found details for resource {result.uuid!r} - "
+                    f"{result.identification.title!r}"
+                )
+        else:
+            logger.warning(
+                f"Got invalid response from {full_resource_response.request.url}")
+        return result
 
     def _get_resource_list_params(
             self, offset: typing.Optional[int] = 0) -> typing.Dict:
@@ -460,7 +497,8 @@ class GeonodeCswHarvester(base.BaseHarvester):
         return total_records, page_size
 
 
-def get_resource_descriptor(record: etree.Element):
+def get_resource_descriptor(
+        record: etree.Element) -> resourcedescriptor.RecordDescription:
     crs_epsg_code = ''.join(
         record.xpath(
             'gmd:referenceSystemInfo//code//text()', namespaces=record.nsmap)

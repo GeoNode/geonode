@@ -21,9 +21,13 @@ import logging
 import math
 
 from celery import chord
+from django.utils.timezone import now
 from geonode.celery_app import app
 
-from . import models
+from . import (
+    models,
+    utils,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +39,11 @@ logger = logging.getLogger(__name__)
     acks_late=False,
 )
 def harvesting_session_dispatcher(self, harvester_id: int):
+    """Kick-off a new harvesting session"""
     harvester = models.Harvester.objects.get(pk=harvester_id)
     worker = harvester.get_harvester_worker()
-    remote_available = worker.update_availability()
-    if remote_available:
+    available = utils.update_harvester_availability(harvester)
+    if available:
         worker.perform_metadata_harvesting()
     else:
         logger.warning(
@@ -129,6 +134,10 @@ def _update_harvestable_resources_batch(
 def _finish_harvestable_resources_update(self, harvester_id: int):
     harvester = models.Harvester.objects.get(pk=harvester_id)
     harvester.status = harvester.STATUS_READY
+    now_ = now()
+    harvester.last_checked_harvestable_resources = now_
+    harvester.last_check_harvestable_resources_message = (
+        f"{now_} - Harvestable resources successfully checked")
     harvester.save()
 
 
@@ -139,11 +148,7 @@ def _finish_harvestable_resources_update(self, harvester_id: int):
     ignore_result=False,
 )
 def _handle_harvestable_resources_update_error(self, task_id, *args, **kwargs):
-    logger.debug("------------------------------------------------------------------------------------------------Inside the handle_harvestable_resources_update_error task ---------------------------------------------------------------------------------------------")
-    logger.info("------------------------------------------------------------------------------------------------Inside the handle_harvestable_resources_update_error task ---------------------------------------------------------------------------------------------")
-    logger.warning("------------------------------------------------------------------------------------------------Inside the handle_harvestable_resources_update_error task ---------------------------------------------------------------------------------------------")
-    logger.error("------------------------------------------------------------------------------------------------Inside the handle_harvestable_resources_update_error task ---------------------------------------------------------------------------------------------")
-    print("------------------------------------------------------------------------------------------------Inside the handle_harvestable_resources_update_error task ---------------------------------------------------------------------------------------------")
+    logger.debug("Inside the handle_harvestable_resources_update_error task ---------------------------------------------------------------------------------------------")
     result = self.app.AsyncResult(str(task_id))
     print(f"locals: {locals()}")
     print(f"state: {result.state}")
@@ -151,4 +156,10 @@ def _handle_harvestable_resources_update_error(self, task_id, *args, **kwargs):
     print(f"traceback: {result.traceback}")
     harvester = models.Harvester.objects.get(pk=kwargs["harvester_id"])
     harvester.status = harvester.STATUS_READY
+    now_ = now()
+    harvester.last_checked_harvestable_resources = now_
+    harvester.last_check_harvestable_resources_message = (
+        f"{now_} - There was an error retrieving information on available resources. "
+        f"Please check the logs"
+    )
     harvester.save()

@@ -30,13 +30,14 @@ logger = logging.getLogger(__name__)
 
 @app.task(
     bind=True,
-    name='geonode.harvesting.harvesters.tasks.harvest_records',
+    #name='geonode.harvesting.harvesters.tasks.harvest_records',
     queue='geonode',
     acks_late=True,
     ignore_result=False,
 )
 def harvest_record_batch(
         self, harvesting_session_id: int, offset: int, endpoint_suffix: str = None):
+    """Harvest a batch of GeoNode records"""
     harvesting_session = models.HarvestingSession.objects.get(pk=harvesting_session_id)
     harvester = harvesting_session.harvester
     worker = harvester.get_harvester_worker()

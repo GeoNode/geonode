@@ -17,11 +17,15 @@
 #
 #########################################################################
 
-from django.contrib import admin
+from django.contrib import (
+    admin,
+    messages,
+)
 
 from . import (
     models,
     tasks,
+    utils,
 )
 
 
@@ -40,6 +44,8 @@ class HarvesterAdmin(admin.ModelAdmin):
     readonly_fields = (
         "remote_available",
         "last_checked_availability",
+        "last_checked_harvestable_resources",
+        "last_check_harvestable_resources_message",
     )
 
     list_editable = (
@@ -51,22 +57,65 @@ class HarvesterAdmin(admin.ModelAdmin):
         "update_harvestable_resources",
     ]
 
+    def save_model(self, request, obj: models.Harvester, form, change):
+        super().save_model(request, obj, form, change)
+        available = utils.update_harvester_availability(obj)
+        self.message_user(
+            request,
+            f"Harvester {obj} is{'' if available else ' not'} available",
+            messages.INFO if available else messages.WARNING
+        )
+
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        form = super().get_form(request, obj, change, **kwargs)
+        form.base_fields["default_owner"].initial = request.user
+        return form
+
     def update_harvester_availability(self, request, queryset):
         updated_harvesters = []
+        non_available_harvesters = []
         for harvester in queryset:
-            worker = harvester.get_harvester_worker()
-            worker.update_availability()
+            available = utils.update_harvester_availability(harvester)
             updated_harvesters.append(harvester)
+            if not available:
+                non_available_harvesters.append(harvester)
         self.message_user(
             request, f"Updated availability for harvesters: {updated_harvesters}")
+        if len(non_available_harvesters) > 0:
+            self.message_user(
+                request,
+                (
+                    f"The following harvesters are not "
+                    f"available: {non_available_harvesters}"
+                ),
+                messages.WARNING
+            )
     update_harvester_availability.short_description = (
-        "Update availability of selected harvesters")
+        "Check availability of selected harvesters")
 
     def update_harvestable_resources(self, request, queryset):
+        being_updated = []
         for harvester in queryset:
+            available = utils.update_harvester_availability(harvester)
+            if not available:
+                self.message_user(
+                    request,
+                    (
+                        f"harvester {harvester} is not available, skipping "
+                        f"check of harvestable resources for it..."
+                    ),
+                    messages.ERROR
+                )
+                continue
             tasks.update_harvestable_resources.apply_async(args=(harvester.pk,))
-        self.message_user(request, f"Updating harvestable resources asynchronously...")
-    update_harvestable_resources.short_description = "Update harvestable resources"
+            being_updated.append(harvester)
+        if len(being_updated) > 0:
+            self.message_user(
+                request,
+                f"Updating harvestable resources asynchronously for {being_updated}..."
+            )
+    update_harvestable_resources.short_description = (
+            "Update harvestable resources from selected harvesters")
 
 
 @admin.register(models.HarvestingSession)
@@ -87,6 +136,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "available",
+        "last_updated",
         "unique_identifier",
         "title",
         "harvester",
@@ -103,6 +153,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "harvester",
         "should_be_harvested",
         "available",
+        "last_updated",
     )
     list_editable = (
         "should_be_harvested",

@@ -103,7 +103,7 @@ class BaseHarvester:
         models.HarvestingSession.objects.filter(
             id=self._harvesting_session_id).update(**update_kwargs)
 
-    def update_availability(self) -> bool:
+    def check_availability(self) -> bool:
         """Check whether the remote url is online"""
         raise NotImplementedError
 
