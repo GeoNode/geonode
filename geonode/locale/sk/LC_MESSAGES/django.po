@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2021-03-11 16:40+0100\n"
 "Last-Translator: \n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -263,6 +263,10 @@ msgid "function performed by the responsible party"
 msgstr "funkcia vykonávaná zodpovednou stranou"
 
 #, fuzzy
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "krátke naratívne zhrnutie obsahu zdrojov"
+
+#, fuzzy
 msgid "reference date for the cited resource"
 msgstr "referenčný dátum pre citovaný zdroj"
 
@@ -275,8 +279,16 @@ msgid "version of the cited resource"
 msgstr "verzia citovaného zdroja"
 
 #, fuzzy
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "krátke naratívne zhrnutie obsahu zdrojov"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+"orgán alebo funkcia, ktorá je im pridelená, pokiaľ ide o vládcu, zákonodarné "
+"zhromaždenie, delegáta alebo podobne."
+
+#, fuzzy
+msgid "a DOI will be added by Admin before publication."
+msgstr "DOI pridá administrátor pred zverejnením."
 
 #, fuzzy
 msgid "summary of the intentions with which the resource(s) was developed"
@@ -356,31 +368,20 @@ msgid ""
 "dataset"
 msgstr "všeobecné vysvetlenie znalostí výrobcu údajov o pôvode súboru údajov"
 
-#, fuzzy
-msgid "a DOI will be added by Admin before publication."
-msgstr "DOI pridá administrátor pred zverejnením."
-
-#, fuzzy
-msgid "DOI"
-msgstr "DOI"
-
-#, fuzzy
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-"orgán alebo funkcia, ktorá je im pridelená, pokiaľ ide o vládcu, zákonodarné "
-"zhromaždenie, delegáta alebo podobne."
-
-msgid "Attribution"
-msgstr "Priznanie"
-
 msgid "title"
 msgstr "názov"
 
 #, fuzzy
 msgid "name by which the cited resource is known"
 msgstr "názov, pod ktorým je citovaný zdroj známy"
+
+#, fuzzy
+msgid "abstract"
+msgstr "abstraktné"
+
+#, fuzzy
+msgid "purpose"
+msgstr "účel"
 
 msgid "date"
 msgstr "dátum"
@@ -393,13 +394,12 @@ msgstr "typ dátumu"
 msgid "edition"
 msgstr "vydanie"
 
-#, fuzzy
-msgid "abstract"
-msgstr "abstraktné"
+msgid "Attribution"
+msgstr "Priznanie"
 
 #, fuzzy
-msgid "purpose"
-msgstr "účel"
+msgid "DOI"
+msgstr "DOI"
 
 #, fuzzy
 msgid "maintenance frequency"
@@ -1404,6 +1404,10 @@ msgid "Location and Licenses"
 msgstr "Umiestnenie a licencie"
 
 #, fuzzy
+msgid "Required Metadata"
+msgstr "Metadáta zdrojov"
+
+#, fuzzy
 msgid "Optional Metadata"
 msgstr "Nepovinné metadáta"
 
@@ -1720,6 +1724,16 @@ msgid "A rating was given to a layer"
 msgstr "Vrstve bolo pridelené hodnotenie"
 
 #, fuzzy
+msgid "Points"
+msgstr "Kontaktné miesta"
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
+#, fuzzy
 msgid "Layer name"
 msgstr "Názov vrstvy"
 
@@ -1748,6 +1762,16 @@ msgstr "Pridať vlastnosť"
 
 msgid "Create"
 msgstr "Vytvoriť"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+msgid "Integer"
+msgstr "Intervaly"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 msgid "No title provided"
@@ -2866,10 +2890,6 @@ msgstr "Týmto sa pravdepodobne prepíše aktuálny predvolený štýl!"
 
 msgid "Preview"
 msgstr "Náhľad"
-
-#, fuzzy
-msgid "Required Metadata"
-msgstr "Metadáta zdrojov"
 
 #, fuzzy
 msgid "Dataset Attributes"

@@ -278,7 +278,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
               time_presentation=None, time_presentation_res=None,
               time_presentation_default_value=None,
               time_presentation_reference_value=None,
-              charset_encoding="UTF-8"):
+              charset_encoding="UTF-8", target_store=None):
     logger.debug(
         f'Uploading layer: {layer}, files {spatial_files}')
     if len(spatial_files) > 1:
@@ -364,7 +364,8 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
                 use_url=False,
                 import_id=next_id,
                 mosaic=False,
-                target_store=None,
+                target_store=target_store,
+                name=name,
                 charset_encoding=charset_encoding
             )
         upload.import_id = import_session.id
@@ -564,7 +565,7 @@ def srs_step(upload_session, source, target):
     Upload.objects.update_from_session(upload_session)
 
 
-def final_step(upload_session, user, charset="UTF-8"):
+def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     import_session = upload_session.import_session
     _log('Reloading session %s to check validity', import_session.id)
     try:
@@ -589,6 +590,9 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     # @todo see above in save_step, regarding computed unique name
     name = task.layer.name
+
+    if layer_id:
+        name = Layer.objects.get(resourcebase_ptr_id=layer_id).name
 
     _log('Getting from catalog [%s]', name)
     publishing = cat.get_layer(name)

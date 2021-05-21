@@ -362,7 +362,7 @@ CACHES = {
 
     # MEMCACHED EXAMPLE
     # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+    #     'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
     #     'LOCATION': '127.0.0.1:11211',
     # },
 
@@ -398,7 +398,7 @@ CACHES = {
 }
 
 MEMCACHED_ENABLED = ast.literal_eval(os.getenv('MEMCACHED_ENABLED', 'False'))
-MEMCACHED_BACKEND = os.getenv('MEMCACHED_BACKEND', 'django.core.cache.backends.memcached.MemcachedCache')
+MEMCACHED_BACKEND = os.getenv('MEMCACHED_BACKEND', 'django.core.cache.backends.memcached.PyMemcacheCache')
 MEMCACHED_LOCATION = os.getenv('MEMCACHED_LOCATION', '127.0.0.1:11211')
 MEMCACHED_LOCK_EXPIRE = int(os.getenv('MEMCACHED_LOCK_EXPIRE', 3600))
 MEMCACHED_LOCK_TIMEOUT = int(os.getenv('MEMCACHED_LOCK_TIMEOUT', 10))
@@ -437,6 +437,9 @@ GEONODE_INTERNAL_APPS = (
     'geonode.social',
     'geonode.groups',
     'geonode.services',
+
+    'geonode.resource',
+    'geonode.storage',
 
     # GeoServer Apps
     # Geoserver needs to come last because
@@ -522,11 +525,18 @@ INSTALLED_APPS = (
 )
 
 INSTALLED_APPS += ('markdownify',)
-MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
-markdown_white_listed_tags = {
+
+markdown_white_listed_tags = [
     'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'ul', 'li', 'span', 'blockquote', 'strong', 'code'
+]
+
+MARKDOWNIFY = {
+    "default": {
+        "WHITELIST_TAGS": os.getenv('MARKDOWNIFY_WHITELIST_TAGS', markdown_white_listed_tags)
+    }
 }
-MARKDOWNIFY_WHITELIST_TAGS = os.getenv('MARKDOWNIFY_WHITELIST_TAGS', markdown_white_listed_tags)
+
+MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
 
 INSTALLED_APPS += GEONODE_APPS
 
@@ -782,7 +792,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = ast.literal_eval(os.environ.get('SECURE_HSTS_IN
 # Replacement of the default authentication backend in order to support
 # permissions per object.
 AUTHENTICATION_BACKENDS = (
-    'oauth2_provider.backends.OAuth2Backend',
+    # 'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -803,9 +813,10 @@ OAUTH2_PROVIDER = {
 
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
     'OAUTH2_SERVER_CLASS': 'geonode.security.oauth2_servers.OIDCServer',
-    'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
+    # 'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
 
     # OpenID Connect
+    "OIDC_ENABLED": True,
     "OIDC_ISS_ENDPOINT": SITEURL,
     "OIDC_USERINFO_ENDPOINT": f"{SITEURL}api/o/v4/tokeninfo/",
     "OIDC_RSA_PRIVATE_KEY": """-----BEGIN RSA PRIVATE KEY-----
@@ -2030,6 +2041,8 @@ SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'Tr
 # -- END Settings for MONITORING plugin
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 UI_DEFAULT_MANDATORY_FIELDS = [
     'id_resource-title',
     'id_resource-abstract',

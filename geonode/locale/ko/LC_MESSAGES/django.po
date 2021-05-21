@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-24 07:02+0000\n"
 "Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/geonode/geonode/language/"
@@ -255,6 +255,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "책임 집단이 수행하는 기능"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "자원(들)의 내용에 대한 간단한 요약"
+
 msgid "reference date for the cited resource"
 msgstr "인용된 자원에 대한 참조 날짜"
 
@@ -264,8 +267,13 @@ msgstr "지정된 이벤트가 발생했을 때의 식별자"
 msgid "version of the cited resource"
 msgstr "인용된 자원의 버전"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "자원(들)의 내용에 대한 간단한 요약"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "자원(들)을 개발하는데 사용된 목적 요약"
@@ -337,27 +345,17 @@ msgid ""
 "dataset"
 msgstr "데이터 연혁에 대한 데이터 생산자의 일반적인 설명"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "속성"
-
 msgid "title"
 msgstr "제목"
 
 msgid "name by which the cited resource is known"
 msgstr "인용된 리소스를 식별하는 이름"
+
+msgid "abstract"
+msgstr "요약"
+
+msgid "purpose"
+msgstr "목적"
 
 msgid "date"
 msgstr "날짜"
@@ -368,11 +366,13 @@ msgstr "날짜 유형"
 msgid "edition"
 msgstr "판"
 
-msgid "abstract"
-msgstr "요약"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "속성"
 
-msgid "purpose"
-msgstr "목적"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "갱신 주기"
@@ -1266,6 +1266,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "서비스 메타데이터 편집"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "메타데이터 다운로드"
@@ -1606,6 +1611,17 @@ msgid "A rating was given to a layer"
 msgstr "레이어에 대한 평점이 주어짐"
 
 #, fuzzy
+#| msgid "Contact Points"
+msgid "Points"
+msgstr "연락처"
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
+#, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
 msgstr "레이어 이름"
@@ -1640,6 +1656,17 @@ msgstr "속성"
 
 msgid "Create"
 msgstr "생성"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "간격"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2659,11 +2686,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "미리보기"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "서비스 메타데이터 편집"
 
 #, fuzzy
 #| msgid "Attributes"

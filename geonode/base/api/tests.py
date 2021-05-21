@@ -42,7 +42,7 @@ from geonode.base.models import (
     ResourceBase,
     TopicCategory,
     ThesaurusKeyword,
-    )
+)
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -63,7 +63,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
     fixtures = [
         'initial_data.json',
         'group_test_data.json',
-        'default_oauth_apps.json'
+        'default_oauth_apps.json',
+        "test_thesaurus.json"
     ]
 
     urlpatterns = [
@@ -168,6 +169,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         logger.debug(response.data)
         self.assertEqual(response.data['total'], 10)
         self.assertEqual(len(response.data['users']), 10)
+        # response has link to the response
+        self.assertTrue('link' in response.data['users'][0].keys())
 
         url = reverse('users-detail', kwargs={'pk': 1})
         response = self.client.get(url, format='json')
@@ -256,6 +259,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 18)
+        # response has link to the response
+        self.assertTrue('link' in response.data['resources'][0].keys())
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
         logger.debug(response.data)
@@ -617,19 +622,27 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         # Anonymous
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], get_user_model().objects.exclude(pk=-1).count())
+        self.assertEqual(response.data['total'], 8)
 
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], get_user_model().objects.exclude(pk=-1).count())
+        self.assertEqual(response.data['total'], 8)
+        response = self.client.get(f"{url}?type=geoapp", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 0)
+        response = self.client.get(f"{url}?type=layer&title__icontains=CA", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
+        # response has link to the response
+        self.assertTrue('link' in response.data['owners'][0].keys())
 
         # Authenticated user
         self.assertTrue(self.client.login(username='bobby', password='bob'))
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], get_user_model().objects.exclude(pk=-1).count())
+        self.assertEqual(response.data['total'], 8)
 
     def test_categories_list(self):
         """
@@ -646,6 +659,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], TopicCategory.objects.count())
+        # response has link to the response
+        self.assertTrue('link' in response.data['categories'][0].keys())
 
         # Authenticated user
         self.assertTrue(self.client.login(username='bobby', password='bob'))
@@ -668,6 +683,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], Region.objects.count())
+        # response has link to the response
+        self.assertTrue('link' in response.data['regions'][0].keys())
 
         # Authenticated user
         self.assertTrue(self.client.login(username='bobby', password='bob'))
@@ -690,6 +707,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+        # response has link to the response
+        self.assertTrue('link' in response.data['keywords'][0].keys())
 
         # Authenticated user
         self.assertTrue(self.client.login(username='bobby', password='bob'))
@@ -712,6 +731,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())
+        # response has link to the response
+        self.assertTrue('link' in response.data['tkeywords'][0].keys())
 
         # Authenticated user
         self.assertTrue(self.client.login(username='bobby', password='bob'))

@@ -19,7 +19,7 @@
 #########################################################################
 
 import os
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from django.conf import settings
 from owslib.iso import MD_Metadata
 from pycsw import server

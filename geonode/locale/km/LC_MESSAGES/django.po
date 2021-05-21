@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/geonode/geonode/language/"
@@ -254,6 +254,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "មុខងារ​បាន​អនុវត្ត​ដោយ​ភាគី​ទទួល​ខុស​ត្រូវ"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "សេចក្តី​សង្ខេប​រៀប​រាប់​សង្ខេប​នៃ​មាតិកា​នៃ​ធនធាន (s​)"
+
 msgid "reference date for the cited resource"
 msgstr "កាលបរិច្ឆេទ​សេចក្ដី​យោង​សម្រាប់​ធនធាន​ដែល​បាន​លើក​ឡើង​នោះ"
 
@@ -263,8 +266,13 @@ msgstr "កំណត់​ពេល​ព្រឹត្តិការណ៍​
 msgid "version of the cited resource"
 msgstr "កំណែ​របស់​ធនធាន​បាន​លើក​ឡើង​នោះ"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "សេចក្តី​សង្ខេប​រៀប​រាប់​សង្ខេប​នៃ​មាតិកា​នៃ​ធនធាន (s​)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "សេចក្តី​សង្ខេប​នៃ​ចេតនា​មួយ​ដែល​ធនធាន (s បាន​) ត្រូវ​បាន​បង្កើត​ឡើង"
@@ -335,27 +343,17 @@ msgid ""
 "dataset"
 msgstr "ការ​ពន្យល់​ទូទៅ​នៃ​ចំណេះដឹង​អ្នក​ផលិត​ទិន្នន័យ​អំពី​ពូជពង្ស​នៃ​សំណុំ​ទិន្នន័យ​មួយ"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "គុណលក្ខណៈ"
-
 msgid "title"
 msgstr "ចំណង​ជើង"
 
 msgid "name by which the cited resource is known"
 msgstr "ឈ្មោះ​ដែល​ធនធាន​បាន​លើក​ឡើង​ត្រូវ​បាន​គេ​ស្គាល់"
+
+msgid "abstract"
+msgstr "អរូបី"
+
+msgid "purpose"
+msgstr "គោលបំណង"
 
 msgid "date"
 msgstr "កាល​បរិ​ច្ឆេ​ត"
@@ -366,11 +364,13 @@ msgstr "ប្រភេទ​កាលបរិច្ឆេទ"
 msgid "edition"
 msgstr "ការ​បោះពុម្ពផ្សាយ"
 
-msgid "abstract"
-msgstr "អរូបី"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "គុណលក្ខណៈ"
 
-msgid "purpose"
-msgstr "គោលបំណង"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "ប្រេកង់​ថែទាំ"
@@ -1271,6 +1271,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "កែសម្រួល​សេវា​ទិន្នន័យ​មេតា"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "ទិន្នន័យ​មេតា​ទាញ​យក"
@@ -1614,6 +1619,15 @@ msgstr "ការ​វាយ​តម្លៃ​សម្រាប់​ស្
 msgid "A rating was given to a layer"
 msgstr "ចំណាត់​ថ្នាក់​មួយ​ត្រូវ​បាន​ផ្តល់​ទៅ​ឱ្យ​ស្រទាប់​មួយ"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1649,6 +1663,17 @@ msgstr "គុណលក្ខណៈ"
 
 msgid "Create"
 msgstr "បង្កើត"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "ចន្លោះ​ពេល"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2664,11 +2689,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "មើល​ជា​មុន"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "កែសម្រួល​សេវា​ទិន្នន័យ​មេតា"
 
 #, fuzzy
 #| msgid "Attributes"

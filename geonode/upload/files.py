@@ -211,13 +211,14 @@ def _rename_files(file_names):
     files = []
     for f in file_names:
         dirname, base_name = os.path.split(f)
-        safe = _clean_string(base_name)
-        if safe != base_name:
-            safe = os.path.join(dirname, safe)
-            os.rename(f, safe)
-            files.append(safe)
-        else:
-            files.append(f)
+        if dirname and base_name:
+            safe = _clean_string(base_name)
+            if safe != base_name:
+                safe = os.path.join(dirname, safe)
+                os.rename(f, safe)
+                files.append(safe)
+            else:
+                files.append(f)
     return files
 
 

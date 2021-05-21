@@ -1,7 +1,7 @@
 {% extends "geonode_base.html" %}
 {% load i18n %}
 {% load base_tags %}
-{% load staticfiles %}
+{% load static %}
 {% load bootstrap_tags %}
 
 {% block title %} {% trans "Create Layer"  %} - {{ block.super }}  {% endblock %}
@@ -75,10 +75,10 @@
 
     var attr_type_select = '<select class="form-control"" \
                                   name="attr-type" style="margin-top:15px"> \
-                                <option value="string">String</option> \
-                                <option value="integer">Integer</option> \
-                                <option value="float">Float</option> \
-                                <option value="date">Date</option> \
+                                <option value="string">{% trans "String" %}</option> \
+                                <option value="integer">{% trans "Integer" %}</option> \
+                                <option value="float">{% trans "Float" %}</option> \
+                                <option value="date">{% trans "Date" %}</option> \
                             </select>'
 
     var x = 1;

@@ -39,7 +39,9 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test.utils import override_settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.staticfiles.templatetags import staticfiles
+
+from django.templatetags.static import static
+
 
 from geonode.layers.utils import (
     upload,
@@ -1067,7 +1069,7 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
         try:
             self.client.login(username='norman', password='norman')
             thumbnail_url = saved_layer.get_thumbnail_url()
-            self.assertNotEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+            self.assertNotEqual(thumbnail_url, static(settings.MISSING_THUMBNAIL))
         finally:
             # Cleanup
             saved_layer.delete()
@@ -1094,7 +1096,7 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
                           center_x=0, center_y=0)
             map_obj.create_from_layer_list(norman, [saved_layer], 'title', '')
             thumbnail_url = map_obj.get_thumbnail_url()
-            self.assertEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+            self.assertEqual(thumbnail_url, static(settings.MISSING_THUMBNAIL))
         finally:
             # Cleanup
             saved_layer.delete()

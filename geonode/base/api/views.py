@@ -20,12 +20,13 @@
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db.models import Subquery
 
 from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
-from rest_framework.mixins import ListModelMixin
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -152,7 +153,7 @@ class GroupViewSet(DynamicModelViewSet):
         return Response(ResourceBaseSerializer(embed=True, many=True).to_representation(resources))
 
 
-class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """
     API endpoint that lists regions.
     """
@@ -162,7 +163,7 @@ class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
     pagination_class = GeoNodeApiPagination
 
 
-class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """
     API endpoint that lists hierarchical keywords.
     """
@@ -172,7 +173,7 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Generi
     pagination_class = GeoNodeApiPagination
 
 
-class ThesaurusKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+class ThesaurusKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """
     API endpoint that lists Thesaurus keywords.
     """
@@ -182,7 +183,7 @@ class ThesaurusKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericVi
     pagination_class = GeoNodeApiPagination
 
 
-class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """
     API endpoint that lists categories.
     """
@@ -192,15 +193,30 @@ class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewS
     pagination_class = GeoNodeApiPagination
 
 
-class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, GenericViewSet):
+class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """
     API endpoint that lists all possible owners.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [AllowAny, ]
-    queryset = get_user_model().objects.all().exclude(pk=-1)
     serializer_class = OwnerSerializer
     pagination_class = GeoNodeApiPagination
+
+    def get_queryset(self):
+        """
+        Filter users with atleast a resource
+        """
+        queryset = get_user_model().objects.all().exclude(pk=-1)
+        filter_options = {}
+        if self.request.query_params:
+            filter_options = {
+                'type_filter': self.request.query_params.get('type'),
+                'title_filter': self.request.query_params.get('title__icontains')
+            }
+        queryset = queryset.filter(id__in=Subquery(
+            get_resources_with_perms(self.request.user, filter_options).values('owner'))
+        )
+        return queryset
 
 
 class ResourceBaseViewSet(DynamicModelViewSet):
@@ -294,7 +310,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             resource_types.append({
                 "name": _type,
                 "count": get_resources_with_perms(request.user).filter(resource_type=_type).count()
-                })
+            })
         return Response({"resource_types": resource_types})
 
     @extend_schema(methods=['get'], responses={200: PermSpecSerialiazer()},

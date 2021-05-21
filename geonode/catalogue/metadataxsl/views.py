@@ -22,7 +22,7 @@ import traceback
 import logging
 
 from lxml import etree
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse

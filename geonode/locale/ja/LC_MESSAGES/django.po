@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Japanese (http://www.transifex.com/geonode/geonode/language/"
@@ -260,6 +260,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "責任者によって実行される機能"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "(複数) リソースのコンテンツに関する基本的な要約"
+
 msgid "reference date for the cited resource"
 msgstr "引用されたリソースを参照した日付"
 
@@ -269,8 +272,13 @@ msgstr "イベントが起こった際に同定"
 msgid "version of the cited resource"
 msgstr "引用されたリソースのバージョン"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "(複数) リソースのコンテンツに関する基本的な要約"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "(複数の)リソースが開発された要因の要約"
@@ -342,27 +350,17 @@ msgid ""
 "dataset"
 msgstr "データセットの系統に関するデータ作成者の知識の一般的な説明"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "属性"
-
 msgid "title"
 msgstr "タイトル"
 
 msgid "name by which the cited resource is known"
 msgstr "引用したリソースが知られている名前"
+
+msgid "abstract"
+msgstr "要約"
+
+msgid "purpose"
+msgstr "目的"
 
 msgid "date"
 msgstr "日"
@@ -373,11 +371,13 @@ msgstr "日付タイプ"
 msgid "edition"
 msgstr "版"
 
-msgid "abstract"
-msgstr "要約"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "属性"
 
-msgid "purpose"
-msgstr "目的"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "更新頻度"
@@ -1281,6 +1281,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "編集サービスメタデータ"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "メタデータのダウンロード"
@@ -1625,6 +1630,15 @@ msgstr "レイヤーの評価"
 msgid "A rating was given to a layer"
 msgstr "レイヤが評価されました"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1660,6 +1674,17 @@ msgstr "属性"
 
 msgid "Create"
 msgstr "作る"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "間隔"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2679,11 +2704,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "プレビュー"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "編集サービスメタデータ"
 
 #, fuzzy
 #| msgid "Attributes"
