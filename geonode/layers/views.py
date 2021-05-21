@@ -80,6 +80,7 @@ from geonode.layers.models import (
 from geonode.layers.utils import (
     get_files,
     gs_handle_layer,
+    is_xml_upload_only,
     validate_input_source)
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -211,7 +212,7 @@ def layer_upload_handle_get(request, template):
     return render(request, template, context=ctx)
 
 
-def layer_upload_handle_post(request, _):
+def layer_upload_metadata(request):
     out = {}
     errormsgs = []
 
@@ -282,9 +283,13 @@ def layer_upload_handle_post(request, _):
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
         return layer_upload_handle_get(request, template)
-    elif request.method == 'POST':
-        return layer_upload_handle_post(request, template)
-
+    elif request.method == 'POST' and is_xml_upload_only(request):
+        return layer_upload_metadata(request)
+    out = {"errormsgs": "Please, upload a valid XML file"}
+    return HttpResponse(
+        json.dumps(out),
+        content_type='application/json',
+        status=500)
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     try:
