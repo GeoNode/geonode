@@ -408,14 +408,14 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                     self.assertEqual(
-                        len(uploaded.keyword_list()), 5,
+                        len(uploaded.keyword_list()), 0,
                         'Expected specific number of keywords from uploaded layer XML metadata')
 
                 self.assertTrue(
                     'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
                     'Expected CSV of keywords from uploaded layer XML metadata')
 
-                self.assertTrue(
+                self.assertFalse(
                     'Landing Strips' in uploaded.keyword_list(),
                     'Expected specific keyword from uploaded layer XML metadata')
 
@@ -499,14 +499,14 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                         self.assertEqual(
-                            len(uploaded.keyword_list()), 5,
+                            len(uploaded.keyword_list()), 0,
                             'Expected specific number of keywords from uploaded layer XML metadata')
 
                     self.assertTrue(
                         'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
                         'Expected CSV of keywords from uploaded layer XML metadata')
 
-                    self.assertTrue(
+                    self.assertFalse(
                         'Landing Strips' in uploaded.keyword_list(),
                         'Expected specific keyword from uploaded layer XML metadata')
 
@@ -614,7 +614,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 if os.path.exists(thelayer_zip):
                     uploaded = file_upload(thelayer_zip, overwrite=True, charset='UTF-8')
                     self.assertEqual(uploaded.title, 'Unesco Global Geoparks')
-                    self.assertEqual(len(uploaded.keyword_list()), 2)
+                    self.assertEqual(len(uploaded.keyword_list()), 0)
                     self.assertEqual(uploaded.constraints_other, None)
         finally:
             # Clean up and completely delete the layer

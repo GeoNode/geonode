@@ -431,16 +431,9 @@ def geoserver_post_save_layers(
                         if instance.is_published != gs_resource.advertised:
                             gs_resource.advertised = 'true'
 
-                    if not settings.FREETEXT_KEYWORDS_READONLY:
-                        # AF: Warning - this won't allow people to have empty keywords on GeoNode
-                        if len(instance.keyword_list()) == 0 and gs_resource.keywords:
-                            for keyword in gs_resource.keywords:
-                                if keyword not in instance.keyword_list():
-                                    instance.keywords.add(keyword)
-
                     if any(instance.keyword_list()):
-                        keywords = instance.keyword_list()
-                        gs_resource.keywords = [kw for kw in list(set(keywords))]
+                        keywords = gs_resource.keywords + instance.keyword_list()
+                        gs_resource.keywords = list(set(keywords))
 
                     # gs_resource should only be called if
                     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
