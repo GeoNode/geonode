@@ -308,7 +308,7 @@ def layer_style_upload(request):
             json.dumps(body),
             content_type='application/json',
             status=500)
-    
+
     status_code = 200
     try:
         data = form.cleaned_data
