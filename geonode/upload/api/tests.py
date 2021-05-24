@@ -288,7 +288,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                 f"{reverse('uploads-list')}/",
                 'upload/')
             logger.error(f" ---- UPLOAD URL: {url}")
-            response = self.client.put(url, data=params)
+            response = self.client.post(url, data=params)
 
         # Closes the files
         for spatial_file in spatial_files:

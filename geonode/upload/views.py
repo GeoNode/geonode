@@ -599,7 +599,7 @@ def final_step_view(req, upload_session):
         else:
             try:
                 layer_id = None
-                if 'layer_id' in req.GET:
+                if req and 'layer_id' in req.GET:
                     layer = Layer.objects.filter(id=req.GET['layer_id'])
                     if layer.exists():
                         layer_id = layer.first().resourcebase_ptr_id

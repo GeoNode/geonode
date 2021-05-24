@@ -83,7 +83,7 @@ class UploadViewSet(DynamicModelViewSet):
             'tif_file': tif_file
         ```
         """)
-    @action(detail=False, methods=['put'])
+    @action(detail=False, methods=['post'])
     def upload(self, request, format=None):
         if not getattr(request, 'FILES', None):
             raise ParseError(_("Empty content"))
@@ -94,6 +94,22 @@ class UploadViewSet(DynamicModelViewSet):
 
         response = upload_view(request, None)
         if response.status_code == 200:
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            data = json.loads(content)
+
+            import_id = int(data["redirect_to"].split("?id=")[1].split("&")[0])
+            request.method = 'GET'
+            request.GET['id'] = import_id
+
+            response = upload_view(request, 'check')
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            data = json.loads(content)
+
+            response = upload_view(request, 'final')
             content = response.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')

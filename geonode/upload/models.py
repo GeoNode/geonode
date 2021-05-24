@@ -195,7 +195,7 @@ class Upload(models.Model):
     def get_resume_url(self):
         if self.state == Upload.STATE_WAITING and self.import_id:
             return f"{reverse('data_upload')}?id={self.import_id}"
-        else:
+        elif self.state not in (Upload.STATE_RUNNING, Upload.STATE_PROCESSED):
             session = None
             try:
                 if not self.import_id:
@@ -223,12 +223,13 @@ class Upload(models.Model):
                                     return f"{reverse('data_upload')}?id={self.import_id}"
                                 else:
                                     next = get_next_step(self.get_session)
-                                    if next == 'final' and session.state == Upload.STATE_COMPLETE and self.state == Upload.STATE_PENDING:
-                                        if not self.layer or not self.layer.processed:
+                                    if not self.layer and session.state == Upload.STATE_COMPLETE:
+                                        if next == 'check' or (next == 'final' and self.state == Upload.STATE_PENDING):
                                             from .views import final_step_view
                                             final_step_view(None, self.get_session)
-                                        self.state = Upload.STATE_RUNNING
-                                        Upload.objects.filter(id=self.id).update(state=Upload.STATE_RUNNING)
+                                            self.refresh_from_db()
+                                            self.state = Upload.STATE_RUNNING
+                                            Upload.objects.filter(id=self.id).update(state=Upload.STATE_RUNNING)
                         except (NotFound, Exception) as e:
                             logger.exception(e)
                             if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
