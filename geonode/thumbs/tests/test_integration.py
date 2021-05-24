@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.geoserver.tasks import geoserver_update_layers
 import os
 import json
 import gisdata
@@ -41,7 +42,6 @@ from django.templatetags.static import static
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
-from geonode.layers.utils import file_upload
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map
 from geonode.utils import http_client, DisableDjangoSignals
@@ -53,6 +53,8 @@ from geonode.thumbs.background import (
     GenericXYZBackground,
     GenericWMSBackground,
 )
+from geonode.base.populate_test_data import create_single_layer
+from geonode.geoserver.upload import geoserver_upload
 
 logger = logging.getLogger(__name__)
 
@@ -302,7 +304,12 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
             shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
-            cls.layer_coast_line = file_upload(shp_file, overwrite=True)
+            cls.layer_coast_line = create_layer(
+                name="san_andres_y_providencia_coastline",
+                title="san_andres_y_providencia_coastline",
+                owner=get_user_model().objects.get_or_create("admin"),
+                geometry_type="Point"
+            )
 
     @classmethod
     def tearDownClass(cls):
@@ -454,13 +461,14 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
     def setUpClass(cls):
         super().setUpClass()
 
+        admin, _ = get_user_model().objects.get_or_create(username="admin")
+
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
-            shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
-            cls.layer_coast_line = file_upload(shp_file, overwrite=True)
 
-            shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_highway.shp")
-            cls.layer_highway = file_upload(shp_file, overwrite=True)
+            cls.layer_coast_line = create_single_layer("san_andres_y_providencia_coastline")
+
+            cls.layer_highway = create_single_layer("san_andres_y_providencia_highway")
 
             # create a map from loaded layers
             cls.map_composition = Map()

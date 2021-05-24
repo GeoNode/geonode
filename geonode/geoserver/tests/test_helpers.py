@@ -19,9 +19,7 @@
 #########################################################################
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import os
 import re
-import gisdata
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -29,8 +27,6 @@ from django.conf import settings
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 
-from geonode.layers.models import Layer
-from geonode.layers.utils import file_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
 from geonode.geoserver.views import _response_callback
@@ -48,39 +44,6 @@ class HelperTest(GeoNodeBaseTestSupport):
         self.user = 'admin'
         self.passwd = 'admin'
         create_layer_data()
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_replace_layer(self):
-        """
-        Ensures the layer_style_manage route returns a 200.
-        """
-        layer = Layer.objects.all()[0]
-        logger.debug(Layer.objects.all())
-        self.assertIsNotNone(layer)
-
-        logger.debug("Attempting to replace a vector layer with a raster.")
-        filename = filename = os.path.join(
-            gisdata.GOOD_DATA,
-            'vector/san_andres_y_providencia_administrative.shp')
-        vector_layer = file_upload(filename)
-        self.assertTrue(vector_layer.is_vector())
-        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
-        with self.assertRaisesRegex(Exception, "You are attempting to replace a vector layer with a raster."):
-            file_upload(filename, layer=vector_layer, overwrite=True)
-
-        logger.debug("Attempting to replace a raster layer with a vector.")
-        raster_layer = file_upload(filename)
-        self.assertFalse(raster_layer.is_vector())
-        filename = filename = os.path.join(
-            gisdata.GOOD_DATA,
-            'vector/san_andres_y_providencia_administrative.shp')
-        with self.assertRaisesRegex(Exception, "You are attempting to replace a raster layer with a vector."):
-            file_upload(filename, layer=raster_layer, overwrite=True)
-
-        logger.debug("Attempting to replace a vector layer.")
-        replaced = file_upload(filename, layer=vector_layer, overwrite=True, gtype='LineString')
-        self.assertIsNotNone(replaced)
-        self.assertTrue(replaced.is_vector())
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_replace_callback(self):

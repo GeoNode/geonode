@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.base.populate_test_data import create_single_layer
 from geonode.tests.base import GeoNodeLiveTestSupport
 
 from datetime import datetime, timedelta
@@ -64,9 +65,7 @@ from geonode.geoserver.helpers import ogc_server_settings
 
 from django.test.client import FakePayload, Client as DjangoTestClient
 
-import gisdata
 from geoserver.catalog import Catalog
-from geonode.layers.utils import file_upload
 
 GEONODE_USER = 'admin'
 GEONODE_PASSWD = 'admin'
@@ -291,14 +290,7 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_poi.shp"),
-            name="san_andres_y_providencia_poi",
-            user=self.u,
-            overwrite=True,
-        )
+        _l = create_single_layer('san_andres_y_providencia_poi')
 
         self.client.get(
             reverse('layer_detail',
@@ -320,14 +312,8 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_poi.shp"),
-            name="san_andres_y_providencia_poi",
-            user=self.u,
-            overwrite=True,
-        )
+        _l = create_single_layer('san_andres_y_providencia_poi')
+
         self.assertIsNotNone(_l)
         self.client.get(
             reverse('layer_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
@@ -342,14 +328,7 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_poi.shp"),
-            name="san_andres_y_providencia_poi",
-            user=self.u,
-            overwrite=True,
-        )
+        _l = create_single_layer('san_andres_y_providencia_poi')
 
         for idx, _l in enumerate(Layer.objects.all()):
             for inum in range(0, idx + 1):
