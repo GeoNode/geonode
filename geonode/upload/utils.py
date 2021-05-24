@@ -305,46 +305,47 @@ def next_step_response(req, upload_session, force_ajax=True):
         )
 
     if next == 'check':
-        # @TODO we skip time steps for coverages currently
         store_type = import_session.tasks[0].target.store_type
         if store_type == 'coverageStore' or _force_ajax:
+            # @TODO we skip time steps for coverages currently
             upload_session.completed_step = 'check'
             return next_step_response(req, upload_session, force_ajax=True)
-    if next == 'check' and force_ajax:
-        url = f"{reverse('data_upload')}?id={import_session.id}"
-        return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
-             }
-        )
+        if force_ajax:
+            url = f"{reverse('data_upload')}?id={import_session.id}"
+            return json_response(
+                {'url': url,
+                'status': 'incomplete',
+                'success': True,
+                'id': import_session.id,
+                'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
+                }
+            )
 
     if next == 'time':
-        # @TODO we skip time steps for coverages currently
         store_type = import_session.tasks[0].target.store_type
         layer = import_session.tasks[0].layer
-        (has_time_dim, layer_values) = layer_eligible_for_time_dimension(req,
-                                                                         layer,
-                                                                         upload_session=upload_session)
+        (has_time_dim, layer_values) = layer_eligible_for_time_dimension(
+            req,
+            layer,
+            upload_session=upload_session)
         if store_type == 'coverageStore' or not has_time_dim:
+            # @TODO we skip time steps for coverages currently
             upload_session.completed_step = 'time'
             return next_step_response(req, upload_session, False)
-    if next == 'time' and (
-            upload_session.time is None or not upload_session.time):
-        upload_session.completed_step = 'time'
-        return next_step_response(req, upload_session, force_ajax)
-    if next == 'time' and force_ajax:
-        url = f"{reverse('data_upload')}?id={import_session.id}"
-        return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
-             }
-        )
+        if upload_session.time is None or not upload_session.time:
+            upload_session.completed_step = 'time'
+        if force_ajax:
+            url = f"{reverse('data_upload')}?id={import_session.id}"
+            return json_response(
+                {'url': url,
+                'status': 'incomplete',
+                'success': True,
+                'id': import_session.id,
+                'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
+                }
+            )
+        else:
+            return next_step_response(req, upload_session, force_ajax)
 
     if next == 'mosaic' and force_ajax:
         url = f"{reverse('data_upload')}?id={import_session.id}"

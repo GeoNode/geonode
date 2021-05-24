@@ -212,7 +212,6 @@ def geoserver_finalize_upload(
         instance_id,
         permissions,
         created,
-        xml_file,
         sld_file,
         sld_uploaded,
         tempdir):
@@ -231,59 +230,6 @@ def geoserver_finalize_upload(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            from geonode.upload.models import Upload
-            upload = Upload.objects.get(import_id=import_id)
-            upload.layer = instance
-            upload.save()
-
-            try:
-                # Update the upload sessions
-                geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
-                geonode_upload_sessions.update(processed=False)
-                instance.upload_session = geonode_upload_sessions.first()
-            except Exception as e:
-                logger.exception(e)
-
-            # Sanity checks
-            if isinstance(xml_file, list):
-                if len(xml_file) > 0:
-                    xml_file = xml_file[0]
-                else:
-                    xml_file = None
-            elif not isinstance(xml_file, str):
-                xml_file = None
-
-            if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
-                instance.metadata_uploaded = True
-
-            try:
-                gs_resource = gs_catalog.get_resource(
-                    name=instance.name,
-                    store=instance.store,
-                    workspace=instance.workspace)
-            except Exception:
-                try:
-                    gs_resource = gs_catalog.get_resource(
-                        name=instance.alternate,
-                        store=instance.store,
-                        workspace=instance.workspace)
-                except Exception:
-                    try:
-                        gs_resource = gs_catalog.get_resource(
-                            name=instance.alternate or instance.typename)
-                    except Exception:
-                        gs_resource = None
-
-            if gs_resource:
-                # Updating GeoServer resource
-                gs_resource.title = instance.title
-                gs_resource.abstract = instance.abstract
-                gs_catalog.save(gs_resource)
-                if gs_resource.store:
-                    instance.storeType = gs_resource.store.resource_type
-                    if not instance.alternate:
-                        instance.alternate = f"{gs_resource.store.workspace.name}:{gs_resource.name}"
-
             if sld_uploaded:
                 geoserver_set_style(instance.id, sld_file)
             else:
@@ -305,8 +251,8 @@ def geoserver_finalize_upload(
             except Exception as e:
                 logger.warning(e)
             finally:
-                upload.complete = True
-                upload.save()
+                from geonode.upload.models import Upload
+                Upload.objects.filter(import_id=import_id).update(complete=True)
 
             signals.upload_complete.send(sender=geoserver_finalize_upload, layer=instance)
 

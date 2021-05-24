@@ -448,8 +448,9 @@ def check_step_view(request, upload_session):
                 upload_session.error_msg = 'Could not access/read the uploaded file!'
             else:
                 (has_time_dim, layer_values) = \
-                    layer_eligible_for_time_dimension(request,
-                                                      import_session.tasks[0].layer, upload_session=upload_session)
+                    layer_eligible_for_time_dimension(
+                        request,
+                        import_session.tasks[0].layer, upload_session=upload_session)
                 if has_time_dim:
                     upload_session.completed_step = 'check'
                 else:

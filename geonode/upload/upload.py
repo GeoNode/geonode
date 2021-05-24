@@ -595,19 +595,18 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         name = Layer.objects.get(resourcebase_ptr_id=layer_id).name
 
     _log('Getting from catalog [%s]', name)
-    publishing = cat.get_layer(name)
+    try:
+        gs_resource = cat.get_layer(name)
+    except Exception:
+        Upload.objects.invalidate_from_session(upload_session)
+        raise LayerNotReady(
+            _(f"Expected to find layer named '{name}' in geoserver"))
 
-    if import_session.state == 'INCOMPLETE':
-        if task.state != 'ERROR':
-            Upload.objects.invalidate_from_session(upload_session)
-            raise Exception(f'unknown item state: {task.state}')
-    elif import_session.state == 'READY':
+    if import_session.state == 'READY' or (import_session.state == 'PENDING' and task.state == 'READY'):
         import_session.commit()
-    elif import_session.state == 'PENDING':
-        if task.state == 'READY':
-            # if not task.data.format or task.data.format != 'Shapefile':
-            import_session.commit()
-
+    elif import_session.state == 'INCOMPLETE' and task.state != 'ERROR':
+        Upload.objects.invalidate_from_session(upload_session)
+        raise Exception(f'unknown item state: {task.state}')
     try:
         import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
@@ -616,11 +615,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
     Upload.objects.update_from_session(upload_session)
-
-    if not publishing:
-        Upload.objects.invalidate_from_session(upload_session)
-        raise LayerNotReady(
-            _(f"Expected to find layer named '{name}' in geoserver"))
 
     _log('Creating Django record for [%s]', name)
     target = task.target
@@ -680,7 +674,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         import datetime
         from geonode.layers.models import TIME_REGEX_FORMAT
 
-        # llbbox = publishing.resource.latlon_bbox
         start = None
         end = None
         if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
@@ -772,17 +765,12 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             )
             geonode_upload_session.processed = False
             geonode_upload_session.save()
-            Upload.objects.update_from_session(
-                upload_session, layer=saved_layer)
     except IntegrityError as e:
         Upload.objects.invalidate_from_session(upload_session)
         raise UploadException.from_exc(_('Error configuring Layer'), e)
 
     # Add them to the upload session (new file fields are created).
     assigned_name = None
-
-    # Update Layer with information coming from XML File if available
-    saved_layer = _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals)
 
     def _store_file(saved_layer,
                     geonode_upload_session,
@@ -800,7 +788,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             if not assigned_name:
                 the_file = geonode_upload_session.layerfile_set.all()[0].file.name
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
-
             return assigned_name
 
     if upload_session.base_file:
@@ -835,12 +822,16 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         _f,
                         assigned_name)
 
+    saved_layer.upload_session = geonode_upload_session
+
     # @todo if layer was not created, need to ensure upload target is
     # same as existing target
     # Create the points of contact records for the layer
     _log(f'Creating points of contact records for {name}')
-    saved_layer.poc = user
-    saved_layer.metadata_author = user
+    if not saved_layer.poc:
+        saved_layer.poc = user
+    if not saved_layer.metadata_author:
+        saved_layer.metadata_author = user
     saved_layer.metadata_uploaded = metadata_uploaded
 
     _log('Creating style for [%s]', name)
@@ -857,7 +848,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
         sld_file = sld_file[0]
         sld_uploaded = True
-        # geoserver_set_style.apply_async((saved_layer.id, sld_file))
     else:
         # get_files will not find the sld if it doesn't match the base name
         # so we've worked around that in the view - if provided, it will be here
@@ -873,11 +863,33 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions
+
+    # Updating GeoServer resource
+    try:
+        gs_resource.title = saved_layer.title
+        gs_resource.abstract = saved_layer.abstract
+        gs_catalog.save(gs_resource)
+        gs_store = gs_resource.resource.store
+        if gs_store:
+            saved_layer.storeType = gs_store.resource_type
+            if not saved_layer.alternate:
+                saved_layer.alternate = f"{gs_store.workspace.name}:{gs_resource.name}"
+    except Exception as e:
+        saved_layer.delete()
+        Upload.objects.invalidate_from_session(upload_session)
+        raise UploadException.from_exc(_('Error configuring Layer'), e)
+
+    # Update Layer with information coming from XML File if available
+    saved_layer = utils.metadata_storers(saved_layer, custom)
+    saved_layer.save(notify=False)
+    saved_layer = _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals)
+
+    # Upload the session here, the order is important. Do not change this line!
+    Upload.objects.update_from_session(upload_session, layer=saved_layer)
+
     geoserver_finalize_upload.apply_async(
         (import_session.id, saved_layer.id, permissions, created,
-         xml_file, sld_file, sld_uploaded, upload_session.tempdir))
-
-    saved_layer = utils.metadata_storers(saved_layer, custom)
+         sld_file, sld_uploaded, upload_session.tempdir))
 
     return saved_layer
 
