@@ -33,7 +33,7 @@ from geonode.services.views import services
 from geonode.documents.models import Document
 from geonode.maps.views import map_embed
 from geonode.geoapps.views import geoapp_edit
-from geonode.layers.views import layer_upload, layer_embed
+from geonode.layers.views import layer_embed
 from geonode.documents.views import document_download
 
 from geonode import geoserver
@@ -64,7 +64,6 @@ class DocumentsApiTests(APITestCase, URLPatternsTestCase):
         url(r'^api/v2/', include('geonode.api.urls')),
         url(r'^api/v2/api-auth/', include('rest_framework.urls', namespace='geonode_rest_framework')),
         url(r'^(?P<docid>\d+)/download/?$', document_download, name='document_download'),
-        url(r'^upload$', layer_upload, name='layer_upload'),
         url(r'^$',
             TemplateView.as_view(template_name='layers/layer_list.html'),
             {'facet_type': 'layers', 'is_layer': True},

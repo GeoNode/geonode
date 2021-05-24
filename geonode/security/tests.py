@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.test import TestCase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
@@ -25,7 +26,6 @@ import base64
 import logging
 import gisdata
 import importlib
-import contextlib
 
 from urllib.request import urlopen, Request
 from tastypie.test import ResourceTestCaseMixin
@@ -48,7 +48,7 @@ from geonode.base.models import (
     UserGeoLimit,
     GroupGeoLimit
 )
-from geonode.base.populate_test_data import all_public
+from geonode.base.populate_test_data import all_public, create_single_layer
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
 from geonode.groups.models import Group, GroupProfile
@@ -1627,45 +1627,14 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             cleanup(test_perm_layer.name, test_perm_layer.uuid)
 
 
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+class SecurityRulesTest(TestCase):
     """
     Test resources synchronization with Guardian and dirty states cleaning
     """
 
     def setUp(self):
-        super(SecurityRulesTest, self).setUp()
-        # Layer upload
-        layer_upload_url = reverse('layer_upload')
-        self.client.login(username="admin", password="admin")
-        input_paths, suffixes = self._get_input_paths()
-        input_files = [open(fp, 'rb') for fp in input_paths]
-        with contextlib.ExitStack() as stack:
-            input_files = [
-                stack.enter_context(_fp) for _fp in input_files]
-            files = dict(zip([f'{s}_file' for s in suffixes], input_files))
-            files['base_file'] = files.pop('shp_file')
-            files['permissions'] = '{}'
-            files['charset'] = 'utf-8'
-            files['layer_title'] = 'test layer'
-            resp = self.client.post(layer_upload_url, data=files)
-        # Check the response is OK
-        self.assertEqual(resp.status_code, 200)
-        content = resp.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        data = json.loads(content)
-        lname = data['url'].split(':')[-1]
-        self._l = Layer.objects.get(name=lname)
+        self._l = create_single_layer("test_layer")
 
-    def _get_input_paths(self):
-        base_name = 'single_point'
-        suffixes = 'shp shx dbf prj'.split(' ')
-        base_path = gisdata.GOOD_DATA
-        paths = [os.path.join(base_path, 'vector', f'{base_name}.{suffix}') for suffix in suffixes]
-        return paths, suffixes,
-
-    @dump_func_name
     def test_sync_resources_with_guardian_delay_false(self):
         with self.settings(DELAYED_SECURITY_SIGNALS=False):
             # Set geofence (and so the dirty state)
@@ -1680,7 +1649,6 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check dirty state
             self.assertFalse(clean_layer.dirty_state)
 
-    @dump_func_name
     def test_sync_resources_with_guardian_delay_true(self):
         with self.settings(DELAYED_SECURITY_SIGNALS=True):
             # Set geofence (and so the dirty state)

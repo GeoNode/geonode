@@ -17,15 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.layers.metadata import parse_metadata
 from geonode.upload.upload import _update_layer_with_xml_info
-from geonode.upload.files import SpatialFiles, scan_file
 import tempfile
-from geonode.upload.models import Upload
 import re
 import os
-import sys
 import json
-import pickle
 import shutil
 import decimal
 import logging
@@ -36,7 +33,6 @@ from itertools import chain
 from dal import autocomplete
 from requests import Request
 from urllib.parse import quote
-from types import TracebackType
 from owslib.wfs import WebFeatureService
 
 from django.conf import settings
@@ -52,7 +48,6 @@ from django.forms.utils import ErrorList
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.db import IntegrityError, transaction
-from django.template.defaultfilters import slugify
 from django.core.exceptions import PermissionDenied
 from django.forms.models import inlineformset_factory
 from django.template.response import TemplateResponse
@@ -69,7 +64,6 @@ from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
 from geonode.base.models import (
-    Configuration,
     Thesaurus,
     TopicCategory)
 from geonode.base.enumerations import CHARSETS
@@ -84,9 +78,9 @@ from geonode.layers.models import (
     Attribute,
     UploadSession)
 from geonode.layers.utils import (
-    file_upload, get_files,
+    get_files,
     gs_handle_layer,
-    surrogate_escape_string,
+    is_xml_upload_only,
     validate_input_source)
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -107,11 +101,10 @@ from geonode.utils import (
     GXPLayer,
     GXPMap)
 from geonode.geoserver.helpers import (
-    ogc_server_settings,
-    set_layer_style)
+    ogc_server_settings)
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
-from geonode.upload.views import _select_relevant_files, _write_uploaded_files_to_disk, final_step_view, view
+from geonode.upload.views import _select_relevant_files, _write_uploaded_files_to_disk
 
 from celery.utils.log import get_logger
 
@@ -218,10 +211,13 @@ def layer_upload_handle_get(request, template):
             request.user)
     return render(request, template, context=ctx)
 
-def layer_upload_handle_post(request, template):
-    out = []
+
+def layer_upload_metadata(request):
+    out = {}
     errormsgs = []
+
     form = NewLayerUploadForm(request.POST, request.FILES)
+
     if form.is_valid():
 
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
@@ -230,14 +226,21 @@ def layer_upload_handle_post(request, template):
             ['xml'],
             iter(request.FILES.values())
         )
+
         logger.debug(f"relevant_files: {relevant_files}")
+
         _write_uploaded_files_to_disk(tempdir, relevant_files)
+
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
 
         name = form.cleaned_data['layer_title']
         layer = Layer.objects.filter(typename=name)
         if layer.exists():
-            updated_layer = _update_layer_with_xml_info(layer.first(), base_file, [], [], {})
+            layer_uuid, vals, regions, keywords, _ = parse_metadata(
+                    open(base_file).read())
+            if layer_uuid:
+                layer.uuid = layer_uuid
+            updated_layer = _update_layer_with_xml_info(layer.first(), base_file, regions, keywords, vals)
             updated_layer.save()
             out['status'] = ['finished']
             out['url'] = updated_layer.get_absolute_url()
@@ -252,7 +255,11 @@ def layer_upload_handle_post(request, template):
                 upload_session.processed = True
                 upload_session.save()
             status_code = 200
-            register_event(request, 'upload', updated_layer)
+            out['success'] = True
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=status_code)
         else:
             out['success'] = False
             out['errors'] = "Layer selected does not exists"
@@ -276,9 +283,13 @@ def layer_upload_handle_post(request, template):
 def layer_upload(request, template='upload/layer_upload.html'):
     if request.method == 'GET':
         return layer_upload_handle_get(request, template)
-    elif request.method == 'POST':
-        return layer_upload_handle_post(request, template)
-
+    elif request.method == 'POST' and is_xml_upload_only(request):
+        return layer_upload_metadata(request)
+    out = {"errormsgs": "Please, upload a valid XML file"}
+    return HttpResponse(
+        json.dumps(out),
+        content_type='application/json',
+        status=500)
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     try:
