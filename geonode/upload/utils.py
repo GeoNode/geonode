@@ -314,11 +314,11 @@ def next_step_response(req, upload_session, force_ajax=True):
             url = f"{reverse('data_upload')}?id={import_session.id}"
             return json_response(
                 {'url': url,
-                'status': 'incomplete',
-                'success': True,
-                'id': import_session.id,
-                'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
-                }
+                 'status': 'incomplete',
+                 'success': True,
+                 'id': import_session.id,
+                 'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
+                 }
             )
 
     if next == 'time':
@@ -338,11 +338,11 @@ def next_step_response(req, upload_session, force_ajax=True):
             url = f"{reverse('data_upload')}?id={import_session.id}"
             return json_response(
                 {'url': url,
-                'status': 'incomplete',
-                'success': True,
-                'id': import_session.id,
-                'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
-                }
+                 'status': 'incomplete',
+                 'success': True,
+                 'id': import_session.id,
+                 'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
+                 }
             )
         else:
             return next_step_response(req, upload_session, force_ajax)
