@@ -40,7 +40,6 @@ import json
 import logging
 import zipfile
 import tempfile
-import traceback
 import gsimporter
 
 from http.client import BadStatusLine
@@ -72,10 +71,12 @@ from .forms import (
     TimeForm,
     UploadFileForm,
 )
-from .models import Upload, UploadFile
-from .files import (get_scan_hint,
-                    scan_file
-                    )
+from .models import (
+    Upload,
+    UploadFile)
+from .files import (
+    get_scan_hint,
+    scan_file)
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
@@ -91,10 +92,15 @@ from .utils import (
     json_response,
     get_previous_step,
     layer_eligible_for_time_dimension,
-    next_step_response,
-)
-from .upload import (save_step, srs_step, time_step, csv_step, final_step,
-                     LayerNotReady, UploaderSession)
+    next_step_response)
+from .upload import (
+    save_step,
+    srs_step,
+    time_step,
+    csv_step,
+    final_step,
+    LayerNotReady,
+    UploaderSession)
 
 logger = logging.getLogger(__name__)
 
