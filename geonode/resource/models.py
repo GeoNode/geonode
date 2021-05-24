@@ -17,29 +17,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import uuid
-
-from django.db import models
-
-
-class AbstractResourceDescriptor(models.Model):
-
-    id = models.BigAutoField(
-        primary_key=True,
-        editable=False)
-    uuid = models.UUIDField(
-        default=uuid.uuid4,
-        editable=False,
-        unique=True)
-
-    def __str__(self):
-        return self.uuid
-
-    class Meta:
-        abstract = True
-
-
-class ResourceDescriptor(AbstractResourceDescriptor):
-
-    class Meta(AbstractResourceDescriptor.Meta):
-        swappable = "RESOURCE_SERVICE_DESCRIPTOR_MODEL"
