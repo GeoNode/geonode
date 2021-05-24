@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from genericpath import isfile
 from geonode.layers.metadata import parse_metadata
 from geonode.upload.upload import _update_layer_with_xml_info
 import tempfile
@@ -71,7 +70,6 @@ from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import (
     LayerForm,
-    LayerStyleUploadForm,
     LayerUploadForm,
     NewLayerUploadForm,
     LayerAttributeForm)
@@ -104,7 +102,6 @@ from geonode.utils import (
     GXPLayer,
     GXPMap)
 from geonode.geoserver.helpers import (
-    extract_name_from_sld,
     ogc_server_settings,
     set_layer_style)
 from geonode.base.utils import ManageResourceOwnerPermissions
@@ -312,10 +309,11 @@ def layer_style_upload(request):
     status_code = 200
     try:
         data = form.cleaned_data
-        body={
+        body = {
             'success': True,
             'style': data.get('layer_title'),
         }
+
         layer = _resolve_layer(
             request,
             data.get('layer_title'),
@@ -323,7 +321,7 @@ def layer_style_upload(request):
             _PERMISSION_MSG_MODIFY)
 
         sld = request.FILES['sld_file'].read()
-        
+
         set_layer_style(layer, data.get('layer_title'), sld)
         body['url'] = layer.get_absolute_url()
         body['bbox'] = layer.bbox_string

@@ -21,23 +21,20 @@ from collections import namedtuple
 from geonode.geoserver.createlayer.utils import create_layer
 
 from django.test.client import RequestFactory
-from requests.sessions import Request
 from geonode.geoserver.upload import geoserver_upload
 
 import requests
 from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
 
-from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport
 from django.test import TestCase
 import io
 import os
-import json
 import shutil
 import gisdata
 import logging
 import zipfile
 import tempfile
-import contextlib
 
 from mock import patch
 from pinax.ratings.models import OverallRating
@@ -1730,7 +1727,7 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
         self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
         self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
         self.sut = create_single_layer("single_point")
-    
+
     def test_xml_form_without_files_should_raise_500(self):
         files = dict()
         files['permissions'] = '{}'
@@ -1738,7 +1735,6 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
         resp = self.client.post(reverse('layer_upload'), data=files)
         self.assertEqual(500, resp.status_code)
-
 
     def test_xml_should_return_404_if_the_layer_does_not_exists(self):
         params = {
@@ -1754,7 +1750,6 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
         resp = self.client.post(reverse('layer_upload'), params)
         self.assertEqual(404, resp.status_code)
-
 
     def test_xml_should_update_the_layer_with_the_expected_values(self):
         params = {
@@ -1831,6 +1826,7 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
         # just checking some values if are updated
         self.assertEqual(1, updated_layer.styles.all().count())
         self.assertEqual("SLD Cook Book: Simple Point", updated_layer.styles.first().sld_title)
+
 
 class TestIsSldUploadOnly(TestCase):
     '''
