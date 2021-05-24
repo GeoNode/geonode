@@ -61,6 +61,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer, Style, Attribute
 from geonode.layers.utils import (
     gs_handle_layer,
+    is_sld_upload_only,
     is_xml_upload_only,
     layer_type,
     get_files,
@@ -76,7 +77,7 @@ from geonode.layers import LayersAppConfig
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.layers import utils
-from geonode.layers.views import _resolve_layer, layer_upload_metadata
+from geonode.layers.views import _resolve_layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import DisableDjangoSignals
 from geonode.maps.tests_populate_maplayers import maplayers as ml
@@ -1721,11 +1722,13 @@ class TestIsXmlUploadOnly(TestCase):
 
 
 class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
+
     def setUp(self):
         self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
         self.sut = create_single_layer('single_layer')
     
-    def test_form_without_files_should_raise_500(self):
+    def test_xml_form_without_files_should_raise_500(self):
         SimpleUploadedFile("filename.xml", open(f"{self.exml_path}", mode='rb').read())
         files = dict(xml_file=SimpleUploadedFile, base_file=SimpleUploadedFile)
         files['permissions'] = '{}'
@@ -1735,7 +1738,7 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
         self.assertEqual(500, resp.status_code)
 
 
-    def test_should_return_404_if_the_layer_does_not_exists(self):
+    def test_xml_should_return_404_if_the_layer_does_not_exists(self):
         params = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
             "base_file": open(self.exml_path, 'r'),
@@ -1751,7 +1754,7 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
         self.assertEqual(404, resp.status_code)
 
 
-    def test_should_update_the_layer_with_the_expected_values(self):
+    def test_xml_should_update_the_layer_with_the_expected_values(self):
         params = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
             "base_file": open(self.exml_path, 'r'),
@@ -1770,3 +1773,26 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
         updated_layer = Layer.objects.get(typename="geonode:single_layer")
         # just checking some values if are updated
         self.assertEqual(5, updated_layer.keywords.all().count())
+
+class TestIsSldUploadOnly(TestCase):
+    '''
+    This function will check if the files uploaded is a metadata file
+    '''
+    def setUp(self):
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
+        self.request = RequestFactory()
+
+    def test_give_single_file_should_return_True(self):
+        with open(self.exml_path, 'rb') as f:
+            request = self.request.post('/random/url')
+            request.FILES['base_file'] = f
+        actual = is_sld_upload_only(request)
+        self.assertTrue(actual)
+
+    def test_give_single_file_should_return_False(self):
+        base_path = gisdata.GOOD_DATA
+        with open(f'{base_path}/vector/single_point.shp', 'rb') as f:
+            request = self.request.post('/random/url')
+            request.FILES['base_file'] = f
+        actual = is_sld_upload_only(request)
+        self.assertFalse(actual)

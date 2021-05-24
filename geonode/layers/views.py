@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from genericpath import isfile
 from geonode.layers.metadata import parse_metadata
 from geonode.upload.upload import _update_layer_with_xml_info
 import tempfile
@@ -70,6 +71,7 @@ from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import (
     LayerForm,
+    LayerStyleUploadForm,
     LayerUploadForm,
     NewLayerUploadForm,
     LayerAttributeForm)
@@ -80,6 +82,7 @@ from geonode.layers.models import (
 from geonode.layers.utils import (
     get_files,
     gs_handle_layer,
+    is_sld_upload_only,
     is_xml_upload_only,
     validate_input_source)
 from geonode.maps.models import Map
@@ -101,7 +104,9 @@ from geonode.utils import (
     GXPLayer,
     GXPMap)
 from geonode.geoserver.helpers import (
-    ogc_server_settings)
+    extract_name_from_sld,
+    ogc_server_settings,
+    set_layer_style)
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
 from geonode.upload.views import _select_relevant_files, _write_uploaded_files_to_disk
@@ -195,6 +200,20 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
 
 # Basic Layer Views #
 
+@login_required
+def layer_upload(request, template='upload/layer_upload.html'):
+    if request.method == 'GET':
+        return layer_upload_handle_get(request, template)
+    elif request.method == 'POST' and is_xml_upload_only(request):
+        return layer_upload_metadata(request)
+    elif request.method == 'POST' and is_sld_upload_only(request):
+        return layer_style_upload(request)
+    out = {"errormsgs": "Please, upload a valid XML file"}
+    return HttpResponse(
+        json.dumps(out),
+        content_type='application/json',
+        status=500)
+
 
 def layer_upload_handle_get(request, template):
     mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
@@ -279,17 +298,51 @@ def layer_upload_metadata(request):
         status=500)
 
 
-@login_required
-def layer_upload(request, template='upload/layer_upload.html'):
-    if request.method == 'GET':
-        return layer_upload_handle_get(request, template)
-    elif request.method == 'POST' and is_xml_upload_only(request):
-        return layer_upload_metadata(request)
-    out = {"errormsgs": "Please, upload a valid XML file"}
+def layer_style_upload(request):
+    form = NewLayerUploadForm(request.POST, request.FILES)
+    body = {}
+    if not form.is_valid():
+        body['success'] = False
+        body['errors'] = form.errors
+        return HttpResponse(
+            json.dumps(body),
+            content_type='application/json',
+            status=500)
+    
+    status_code = 200
+    try:
+        data = form.cleaned_data
+        body={
+            'success': True,
+            'style': data.get('layer_title'),
+        }
+        layer = _resolve_layer(
+            request,
+            data.get('layer_title'),
+            'base.change_resourcebase',
+            _PERMISSION_MSG_MODIFY)
+
+        sld = request.FILES['sld_file'].read()
+        
+        set_layer_style(layer, data.get('layer_title'), sld)
+        body['url'] = layer.get_absolute_url()
+        body['bbox'] = layer.bbox_string
+        body['crs'] = {
+            'type': 'name',
+            'properties': layer.srid
+        }
+        body['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
+        body['status'] = ['finished']
+    except Exception as e:
+        status_code = 500
+        body['success'] = False
+        body['errors'] = e.args[0]
+
     return HttpResponse(
-        json.dumps(out),
+        json.dumps(body),
         content_type='application/json',
-        status=500)
+        status=status_code)
+
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     try:
