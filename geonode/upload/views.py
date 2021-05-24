@@ -716,16 +716,22 @@ def view(req, step=None):
                 upload_session = session
             else:
                 upload_session = _get_upload_session(req)
-        except Exception:
-            traceback.print_exc()
+        except Exception as e:
+            logger.exception(e)
     try:
         if req.method == 'GET' and upload_session:
             # set the current step to match the requested page - this
             # could happen if the form is ajax w/ progress monitoring as
             # the advance would have already happened @hacky
-            upload_session.completed_step = get_previous_step(
-                upload_session,
-                step)
+            _completed_step = upload_session.completed_step
+            try:
+                _completed_step = get_previous_step(
+                    upload_session,
+                    step)
+                upload_session.completed_step = _completed_step
+            except Exception as e:
+                logger.warning(e)
+                return error_response(req, errors=e.args)
 
         resp = _steps[step](req, upload_session)
         # must be put back to update object in session

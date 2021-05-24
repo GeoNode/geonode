@@ -33,13 +33,20 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
-
-from geonode.base.models import ResourceBase, SpatialRepresentationType, TopicCategory
+import pytz
 import uuid
-import logging
 import os.path
+import logging
 import zipfile
+import datetime
+import geoserver
+import gsimporter
+
 import traceback
+
+from geoserver.resource import (
+    Coverage,
+    FeatureType)
 
 from django.conf import settings
 from django.db.models import Max
@@ -48,12 +55,12 @@ from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
 from django.utils.translation import ugettext_lazy as _
 
-import geoserver
-import gsimporter
-
 from geonode import GeoNodeException
-from geoserver.resource import Coverage
-from geoserver.resource import FeatureType
+from geonode.base.models import (
+    ResourceBase,
+    TopicCategory,
+    SpatialRepresentationType)
+from geonode.layers.models import TIME_REGEX_FORMAT
 from geonode.upload import UploadException, LayerNotReady
 
 from ..people.utils import get_default_user
@@ -567,7 +574,15 @@ def srs_step(upload_session, source, target):
 
 def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     import_session = upload_session.import_session
-    _log('Reloading session %s to check validity', import_session.id)
+    import_id = import_session.id
+
+    if Upload.objects.filter(import_id=import_id).count():
+        Upload.objects.filter(import_id=import_id).update(complete=False)
+        upload = Upload.objects.filter(import_id=import_id).get()
+        if upload.state == Upload.STATE_RUNNING:
+            return
+
+    _log('Reloading session %s to check validity', import_id)
     try:
         import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
@@ -669,73 +684,40 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     # Is it a regular file or an ImageMosaic?
     # if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
     saved_layer = None
-    if upload_session.mosaic:
-        import pytz
-        import datetime
-        from geonode.layers.models import TIME_REGEX_FORMAT
-
-        start = None
-        end = None
-        if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
-            has_time = True
-            start = datetime.datetime.strptime(upload_session.mosaic_time_value,
-                                               TIME_REGEX_FORMAT[upload_session.mosaic_time_regex])
-            start = pytz.utc.localize(start, is_dst=False)
-            end = start
-        else:
-            has_time = False
-
-        if not upload_session.append_to_mosaic_opts:
-            try:
-                with transaction.atomic():
-                    saved_layer, created = Layer.objects.get_or_create(
-                        uuid=layer_uuid,
-                        defaults=dict(
-                            store=target.name,
-                            storeType=target.store_type,
-                            alternate=alternate,
-                            workspace=target.workspace_name,
-                            title=title,
-                            name=task.layer.name,
-                            abstract=abstract or '',
-                            owner=user,
-                            temporal_extent_start=start,
-                            temporal_extent_end=end,
-                            is_mosaic=True,
-                            has_time=has_time,
-                            has_elevation=False,
-                            time_regex=upload_session.mosaic_time_regex)
-                    )
-            except IntegrityError as e:
-                Upload.objects.invalidate_from_session(upload_session)
-                raise UploadException.from_exc(_('Error configuring Layer'), e)
-            assert saved_layer
-        else:
-            # saved_layer = Layer.objects.filter(name=upload_session.append_to_mosaic_name)
-            # created = False
-            saved_layer, created = Layer.objects.get_or_create(
-                name=upload_session.append_to_mosaic_name)
-            assert saved_layer
-            try:
-                if saved_layer.temporal_extent_start and end:
-                    if pytz.utc.localize(
-                            saved_layer.temporal_extent_start,
-                            is_dst=False) < end:
-                        saved_layer.temporal_extent_end = end
-                        Layer.objects.filter(
-                            name=upload_session.append_to_mosaic_name).update(
-                            temporal_extent_end=end)
-                    else:
-                        saved_layer.temporal_extent_start = end
-                        Layer.objects.filter(
-                            name=upload_session.append_to_mosaic_name).update(
-                            temporal_extent_start=end)
-            except Exception as e:
-                _log(
-                    f"There was an error updating the mosaic temporal extent: {str(e)}")
+    start = end = None
+    if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
+        has_time = True
+        start = datetime.datetime.strptime(upload_session.mosaic_time_value,
+                                           TIME_REGEX_FORMAT[upload_session.mosaic_time_regex])
+        start = pytz.utc.localize(start, is_dst=False)
+        end = start
+    elif upload_session.time and upload_session.time_info and upload_session.time_transforms:
+        has_time = True
     else:
-        _has_time = (True if upload_session.time and upload_session.time_info and
-                     upload_session.time_transforms else False)
+        has_time = False
+
+    if upload_session.append_to_mosaic_opts:
+        saved_layer, created = Layer.objects.get_or_create(
+            name=upload_session.append_to_mosaic_name)
+        assert saved_layer
+        try:
+            if saved_layer.temporal_extent_start and end:
+                if pytz.utc.localize(
+                        saved_layer.temporal_extent_start,
+                        is_dst=False) < end:
+                    saved_layer.temporal_extent_end = end
+                    Layer.objects.filter(
+                        name=upload_session.append_to_mosaic_name).update(
+                        temporal_extent_end=end)
+                else:
+                    saved_layer.temporal_extent_start = end
+                    Layer.objects.filter(
+                        name=upload_session.append_to_mosaic_name).update(
+                        temporal_extent_start=end)
+        except Exception as e:
+            _log(
+                f"There was an error updating the mosaic temporal extent: {str(e)}")
+    else:
         try:
             with transaction.atomic():
                 saved_layer, created = Layer.objects.get_or_create(
@@ -747,15 +729,22 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         workspace=target.workspace_name,
                         title=title,
                         name=task.layer.name,
-                        abstract=abstract or '',
+                        abstract=abstract or _('No abstract provided'),
                         owner=user,
-                        has_time=_has_time)
+                        temporal_extent_start=start,
+                        temporal_extent_end=end,
+                        is_mosaic=True,
+                        has_time=has_time,
+                        has_elevation=False,
+                        time_regex=upload_session.mosaic_time_regex)
                 )
-
         except IntegrityError as e:
             Upload.objects.invalidate_from_session(upload_session)
             raise UploadException.from_exc(_('Error configuring Layer'), e)
+
         assert saved_layer
+
+        Upload.objects.update_from_session(upload_session, layer=saved_layer)
 
     # Create a new upload session
     try:
@@ -777,18 +766,22 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     base_file,
                     assigned_name,
                     base=False):
-        with open(base_file, 'rb') as f:
-            file_name, type_name = os.path.splitext(os.path.basename(base_file))
-            geonode_upload_session.layerfile_set.create(
-                name=file_name,
-                base=base,
-                file=File(
-                    f, name=f'{assigned_name or saved_layer.name}{type_name}'))
-            # save the system assigned name for the remaining files
-            if not assigned_name:
-                the_file = geonode_upload_session.layerfile_set.all()[0].file.name
-                assigned_name = os.path.splitext(os.path.basename(the_file))[0]
-            return assigned_name
+        try:
+            with open(base_file, 'rb') as f:
+                file_name, type_name = os.path.splitext(os.path.basename(base_file))
+                geonode_upload_session.layerfile_set.create(
+                    name=file_name,
+                    base=base,
+                    file=File(
+                        f, name=f'{assigned_name or saved_layer.name}{type_name}'))
+                # save the system assigned name for the remaining files
+                if not assigned_name:
+                    the_file = geonode_upload_session.layerfile_set.all()[0].file.name
+                    assigned_name = os.path.splitext(os.path.basename(the_file))[0]
+                return assigned_name
+        except Exception as e:
+            logger.exception(e)
+            return None
 
     if upload_session.base_file:
         uploaded_files = upload_session.base_file[0]
@@ -804,23 +797,24 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             assigned_name,
             base=True)
 
-        for _f in aux_files:
-            _store_file(saved_layer,
-                        geonode_upload_session,
-                        _f,
-                        assigned_name)
+        if assigned_name:
+            for _f in aux_files:
+                _store_file(saved_layer,
+                            geonode_upload_session,
+                            _f,
+                            assigned_name)
 
-        for _f in sld_files:
-            _store_file(saved_layer,
-                        geonode_upload_session,
-                        _f,
-                        assigned_name)
+            for _f in sld_files:
+                _store_file(saved_layer,
+                            geonode_upload_session,
+                            _f,
+                            assigned_name)
 
-        for _f in xml_files:
-            _store_file(saved_layer,
-                        geonode_upload_session,
-                        _f,
-                        assigned_name)
+            for _f in xml_files:
+                _store_file(saved_layer,
+                            geonode_upload_session,
+                            _f,
+                            assigned_name)
 
     saved_layer.upload_session = geonode_upload_session
 
@@ -884,11 +878,8 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     saved_layer.save(notify=False)
     saved_layer = _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals)
 
-    # Upload the session here, the order is important. Do not change this line!
-    Upload.objects.update_from_session(upload_session, layer=saved_layer)
-
     geoserver_finalize_upload.apply_async(
-        (import_session.id, saved_layer.id, permissions, created,
+        (import_id, saved_layer.id, permissions, created,
          sld_file, sld_uploaded, upload_session.tempdir))
 
     return saved_layer
