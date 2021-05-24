@@ -117,7 +117,6 @@ class HarvesterViewSet(DynamicModelViewSet):
         return Response(serializer.data)
 
 
-
 class HarvestingSessionViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
     queryset = models.HarvestingSession.objects.all()
     serializer_class = serializers.BriefHarvestingSessionSerializer

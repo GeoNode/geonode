@@ -60,11 +60,19 @@ class HarvesterAdmin(admin.ModelAdmin):
     def save_model(self, request, obj: models.Harvester, form, change):
         super().save_model(request, obj, form, change)
         available = utils.update_harvester_availability(obj)
-        self.message_user(
-            request,
-            f"Harvester {obj} is{'' if available else ' not'} available",
-            messages.INFO if available else messages.WARNING
-        )
+        if available:
+            if not change:
+                tasks.update_harvestable_resources.apply_async(args=(obj.pk,))
+                self.message_user(
+                    request,
+                    f"Updating harvestable resources asynchronously for {obj}..."
+                )
+        else:
+            self.message_user(
+                request,
+                f"Harvester {obj} is{'' if available else ' not'} available",
+                messages.INFO if available else messages.WARNING
+            )
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)

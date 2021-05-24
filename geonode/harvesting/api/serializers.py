@@ -26,7 +26,11 @@ from dynamic_rest.serializers import (
 )
 from rest_framework import serializers
 
-from .. import models
+from .. import (
+    models,
+    tasks,
+    utils,
+)
 from ..harvesters.base import BriefRemoteResource
 
 logger = logging.getLogger(__name__)
@@ -38,9 +42,12 @@ class BriefHarvesterSerializer(DynamicModelSerializer):
         fields = (
             "id",
             "name",
+            "status",
             "remote_url",
+            "remote_available",
             "scheduling_enabled",
             "update_frequency",
+            "default_owner",
         )
 
 
@@ -50,14 +57,31 @@ class HarvesterSerializer(DynamicModelSerializer):
         fields = (
             "id",
             "name",
+            "status",
             "remote_url",
+            "remote_available",
             "scheduling_enabled",
             "update_frequency",
             "default_owner",
             "default_access_permissions",
             "harvester_type",
             "harvester_type_specific_configuration",
+            "update_frequency",
+            "check_availability_frequency",
+            "last_checked_availability",
+            "last_checked_harvestable_resources",
+            "last_check_harvestable_resources_message",
+            "harvest_new_resources_by_default",
+            "delete_orphan_resources_automatically",
+            "last_updated",
         )
+
+    def create(self, validated_data):
+        harvester = super().create(validated_data)
+        available = utils.update_harvester_availability(harvester)
+        if available:
+            tasks.update_harvestable_resources.apply_async(args=(harvester.pk,))
+        return harvester
 
 
 class BriefHarvestingSessionSerializer(DynamicModelSerializer):
