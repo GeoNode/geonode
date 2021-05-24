@@ -18,9 +18,9 @@
 #
 #########################################################################
 from collections import namedtuple
+from geonode.geoserver.createlayer.utils import create_layer
 
 from django.test.client import RequestFactory
-from requests.sessions import Request
 from geonode.geoserver.upload import geoserver_upload
 
 import requests
@@ -30,13 +30,11 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from django.test import TestCase
 import io
 import os
-import json
 import shutil
 import gisdata
 import logging
 import zipfile
 import tempfile
-import contextlib
 
 from mock import patch
 from pinax.ratings.models import OverallRating
@@ -61,6 +59,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer, Style, Attribute
 from geonode.layers.utils import (
     gs_handle_layer,
+    is_sld_upload_only,
     is_xml_upload_only,
     layer_type,
     get_files,
@@ -76,7 +75,7 @@ from geonode.layers import LayersAppConfig
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.layers import utils
-from geonode.layers.views import _resolve_layer, layer_upload_metadata
+from geonode.layers.views import _resolve_layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import DisableDjangoSignals
 from geonode.maps.tests_populate_maplayers import maplayers as ml
@@ -1721,21 +1720,23 @@ class TestIsXmlUploadOnly(TestCase):
 
 
 class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
+
+    fixtures = ["group_test_data.json", "default_oauth_apps.json"]
+
     def setUp(self):
         self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
-        self.sut = create_single_layer('single_layer')
-    
-    def test_form_without_files_should_raise_500(self):
-        SimpleUploadedFile("filename.xml", open(f"{self.exml_path}", mode='rb').read())
-        files = dict(xml_file=SimpleUploadedFile, base_file=SimpleUploadedFile)
+        self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
+        self.sut = create_single_layer("single_point")
+
+    def test_xml_form_without_files_should_raise_500(self):
+        files = dict()
         files['permissions'] = '{}'
         files['charset'] = 'utf-8'
         self.client.login(username="admin", password="admin")
         resp = self.client.post(reverse('layer_upload'), data=files)
         self.assertEqual(500, resp.status_code)
 
-
-    def test_should_return_404_if_the_layer_does_not_exists(self):
+    def test_xml_should_return_404_if_the_layer_does_not_exists(self):
         params = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
             "base_file": open(self.exml_path, 'r'),
@@ -1750,23 +1751,102 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
         resp = self.client.post(reverse('layer_upload'), params)
         self.assertEqual(404, resp.status_code)
 
-
-    def test_should_update_the_layer_with_the_expected_values(self):
+    def test_xml_should_update_the_layer_with_the_expected_values(self):
         params = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
             "base_file": open(self.exml_path, 'r'),
             "xml_file": open(self.exml_path, 'r'),
-            "layer_title": "geonode:single_layer",
+            "layer_title": "geonode:single_point",
             "metadata_upload_form": True,
             "time": False,
             "charset": "UTF-8"
         }
 
         self.client.login(username="admin", password="admin")
-        prev_layer = Layer.objects.get(typename="geonode:single_layer")
+        prev_layer = Layer.objects.get(typename="geonode:single_point")
         self.assertEqual(0, prev_layer.keywords.count())
         resp = self.client.post(reverse('layer_upload'), params)
         self.assertEqual(200, resp.status_code)
-        updated_layer = Layer.objects.get(typename="geonode:single_layer")
+        updated_layer = Layer.objects.get(typename="geonode:single_point")
         # just checking some values if are updated
-        self.assertEqual(5, updated_layer.keywords.all().count())
+        self.assertEqual(6, updated_layer.keywords.all().count())
+
+    def test_sld_should_raise_500_if_is_invalid(self):
+        user = get_user_model().objects.get(username="admin")
+        layer = create_layer(
+                "single_point",
+                "single_point",
+                user,
+                'Point'
+            )
+
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.sld_path, 'r'),
+            "sld_file": open(self.sld_path, 'r'),
+            "layer_title": "random",
+            "metadata_upload_form": False,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        self.assertEqual(1, layer.styles.count())
+        self.assertEqual("Default Point", layer.styles.first().sld_title)
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(500, resp.status_code)
+        self.assertFalse(resp.json().get('success'))
+        self.assertEqual('No Layer matches the given query.', resp.json().get('errors'))
+
+    def test_sld_should_update_the_layer_with_the_expected_values(self):
+        user = get_user_model().objects.get(username="admin")
+        layer = create_layer(
+                "single_point",
+                "single_point",
+                user,
+                'Point'
+            )
+
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.sld_path, 'r'),
+            "sld_file": open(self.sld_path, 'r'),
+            "layer_title": f"geonode:{layer.name}",
+            "metadata_upload_form": False,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        self.assertEqual(1, layer.styles.count())
+        self.assertEqual("Default Point", layer.styles.first().sld_title)
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(200, resp.status_code)
+        updated_layer = Layer.objects.get(alternate=f"geonode:{layer.name}")
+        # just checking some values if are updated
+        self.assertEqual(1, updated_layer.styles.all().count())
+        self.assertEqual("SLD Cook Book: Simple Point", updated_layer.styles.first().sld_title)
+
+
+class TestIsSldUploadOnly(TestCase):
+    '''
+    This function will check if the files uploaded is a metadata file
+    '''
+    def setUp(self):
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
+        self.request = RequestFactory()
+
+    def test_give_single_file_should_return_True(self):
+        with open(self.exml_path, 'rb') as f:
+            request = self.request.post('/random/url')
+            request.FILES['base_file'] = f
+        actual = is_sld_upload_only(request)
+        self.assertTrue(actual)
+
+    def test_give_single_file_should_return_False(self):
+        base_path = gisdata.GOOD_DATA
+        with open(f'{base_path}/vector/single_point.shp', 'rb') as f:
+            request = self.request.post('/random/url')
+            request.FILES['base_file'] = f
+        actual = is_sld_upload_only(request)
+        self.assertFalse(actual)
