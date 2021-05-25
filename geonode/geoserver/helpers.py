@@ -58,7 +58,7 @@ from owslib.etree import etree as dlxml
 from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
 from geonode import GeoNodeException
-from geonode.utils import http_client
+from geonode.utils import get_legend_url, http_client
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json
@@ -1107,10 +1107,7 @@ def set_styles(layer, gs_catalog):
             if style:
                 style_name = os.path.basename(
                     urlparse(style.sld_url).path).split('.')[0]
-                legend_url = ogc_server_settings.PUBLIC_LOCATION + \
-                    'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-                    layer.alternate + '&STYLE=' + style_name + \
-                    '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+                legend_url = get_legend_url(layer, style_name)
                 if layer_legends.filter(resource=layer.resourcebase_ptr,
                                         name='Legend',
                                         url=legend_url).count() < 2:
