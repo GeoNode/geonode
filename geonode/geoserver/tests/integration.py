@@ -18,13 +18,13 @@
 #
 #########################################################################
 
+from geonode.layers.populate_layers_data import create_layer_data
+from geonode.geoserver.createlayer.utils import create_layer
 from geonode.tests.base import GeoNodeLiveTestSupport
 
 import timeout_decorator
 
-import os
 import time
-import gisdata
 import logging
 from lxml import etree
 from owslib.etree import etree as dlxml
@@ -40,7 +40,6 @@ from geonode import geoserver
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
 from geonode.tests.utils import check_layer
-from geonode.layers.utils import file_upload
 from geonode.decorators import on_ogc_backend
 from geonode.base.models import TopicCategory, Link
 from geonode.geoserver.helpers import set_attributes_from_geoserver
@@ -73,21 +72,14 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
     def test_set_attributes_from_geoserver(self):
         """Test attributes syncronization
         """
-
-        # upload a shapefile
-        shp_file = os.path.join(
-            gisdata.VECTOR_DATA,
-            'san_andres_y_providencia_poi.shp')
-        layer = file_upload(shp_file)
+        layer = Layer.objects.all().first()
+        create_layer_data(layer.resourcebase_ptr_id)
         try:
             # set attributes for resource
             for attribute in layer.attribute_set.all():
                 attribute.attribute_label = f'{attribute.attribute}_label'
                 attribute.description = f'{attribute.attribute}_description'
                 attribute.save()
-
-            # sync the attributes with GeoServer
-            set_attributes_from_geoserver(layer)
 
             # tests if everything is synced properly
             for attribute in layer.attribute_set.all():
@@ -100,15 +92,18 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
                     f'{attribute.attribute}_description'
                 )
 
+            # sync the attributes with GeoServer
+            # since on geoserver are empty, we expect that now the layer
+            # does not have any attribute
+            set_attributes_from_geoserver(layer)
+
             links = Link.objects.filter(resource=layer.resourcebase_ptr)
             self.assertIsNotNone(links)
-            self.assertTrue(len(links) > 7)
+            self.assertTrue(len(links) >= 7)
 
             original_data_links = [ll for ll in links if 'original' == ll.link_type]
-            self.assertEqual(len(original_data_links), 1)
+            self.assertEqual(len(original_data_links), 0)
 
-            resp = self.client.get(original_data_links[0].url)
-            self.assertEqual(resp.status_code, 200)
         finally:
             # Clean up and completely delete the layers
             layer.delete()
@@ -140,32 +135,28 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
         admin = get_user_model().objects.get(username="admin")
 
         # create 3 layers, 2 with norman as an owner an 2 with category as a category
-        layer1 = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_poi.shp"),
+        layer1 = create_layer(
             name='layer1',
-            user=norman,
-            category=category,
-            overwrite=True,
+            title="san_andres_y_providencia_poi",
+            owner_name=norman,
+            geometry_type="Point"
         )
-        layer2 = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "single_point.shp"),
+        layer2 = create_layer(
             name='layer2',
-            user=norman,
-            overwrite=True,
+            title="single_point",
+            owner_name=norman,
+            geometry_type="Point"
         )
-        layer3 = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_administrative.shp"),
+        layer2.category = category
+        layer2.save()
+        layer3 = create_layer(
             name='layer3',
-            user=admin,
-            category=category,
-            overwrite=True,
+            title="san_andres_y_providencia_administrative",
+            owner_name=admin,
+            geometry_type="Point"
         )
+        layer3.category = category
+        layer3.save()
         try:
             namespaces = {'wms': 'http://www.opengis.net/wms',
                           'xlink': 'http://www.w3.org/1999/xlink',
@@ -246,15 +237,13 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     def test_unpublished(self):
         """Test permissions on an unpublished layer
         """
-        thefile = os.path.join(
-            gisdata.VECTOR_DATA,
-            'san_andres_y_providencia_highway.shp')
-        layer = file_upload(thefile, overwrite=True)
+        layer = Layer.objects.first()
+
         layer.set_default_permissions()
         check_layer(layer)
 
         # we need some time to have the service up and running
-        time.sleep(20)
+        # time.sleep(20)
 
         try:
             # request getCapabilities: layer must be there as it is published and
@@ -264,12 +253,12 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
             get_capabilities_url = 'ows?' \
                 'service=wms&version=1.3.0&request=GetCapabilities'
             url = urljoin(geoserver_base_url, get_capabilities_url)
-            str_to_check = '<Name>geonode:san_andres_y_providencia_highway</Name>'
+            str_to_check = f'<Name>geonode:{layer.name}</Name>'
             request = Request(url)
             response = urlopen(request)
 
             # by default the uploaded layer is published
-            self.assertTrue(layer.is_published, True)
+            self.assertTrue(layer.is_published)
             self.assertTrue(any(str_to_check in ensure_string(s) for s in response.readlines()))
         finally:
             # Clean up and completely delete the layer
@@ -277,10 +266,11 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
 
         # with settings disabled
         with self.settings(RESOURCE_PUBLISHING=True):
-            layer = file_upload(thefile,
-                                overwrite=True,
-                                is_approved=False,
-                                is_published=False)
+
+            layer = Layer.objects.first()
+            layer.is_approved = False
+            layer.is_published = False
+            layer.save()
             layer.set_default_permissions()
             check_layer(layer)
 
@@ -319,14 +309,14 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                                DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False):
             self.client.login(username='norman', password='norman')
             norman = get_user_model().objects.get(username="norman")
-            saved_layer = file_upload(
-                os.path.join(
-                    gisdata.VECTOR_DATA,
-                    "san_andres_y_providencia_poi.shp"),
-                name="san_andres_y_providencia_poi_by_norman",
-                user=norman,
-                overwrite=True,
+
+            saved_layer = create_layer(
+                name='san_andres_y_providencia_poi_by_norman',
+                title='san_andres_y_providencia_poi',
+                owner_name=norman,
+                geometry_type='Point'
             )
+
             try:
                 namespaces = {'wms': 'http://www.opengis.net/wms',
                               'xlink': 'http://www.w3.org/1999/xlink',

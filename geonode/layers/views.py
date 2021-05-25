@@ -17,8 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.upload.upload import UploaderSession
 from geonode.layers.metadata import parse_metadata
-from geonode.upload.upload import _update_layer_with_xml_info
+from geonode.upload.utils import update_layer_with_xml_info
+from geonode.geoserver.helpers import set_layer_style
 import tempfile
 import re
 import os
@@ -71,8 +73,8 @@ from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import (
     LayerForm,
     LayerUploadForm,
-    NewLayerUploadForm,
-    LayerAttributeForm)
+    LayerAttributeForm,
+    NewLayerUploadForm)
 from geonode.layers.models import (
     Layer,
     Attribute)
@@ -101,8 +103,7 @@ from geonode.utils import (
     GXPLayer,
     GXPMap)
 from geonode.geoserver.helpers import (
-    ogc_server_settings,
-    set_layer_style)
+    ogc_server_settings)
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
 from geonode.upload.views import _select_relevant_files, _write_uploaded_files_to_disk
@@ -255,7 +256,7 @@ def layer_upload_metadata(request):
                     open(base_file).read())
             if layer_uuid:
                 layer.uuid = layer_uuid
-            updated_layer = _update_layer_with_xml_info(layer.first(), base_file, regions, keywords, vals)
+            updated_layer = update_layer_with_xml_info(layer.first(), base_file, regions, keywords, vals)
             updated_layer.save()
             out['status'] = ['finished']
             out['url'] = updated_layer.get_absolute_url()
@@ -338,7 +339,7 @@ def layer_style_upload(request):
     return HttpResponse(
         json.dumps(body),
         content_type='application/json',
-        status=status_code)
+        status=500)
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
@@ -1072,7 +1073,7 @@ def layer_metadata(
             layer.regions.add(*new_regions)
         layer.category = new_category
 
-        up_sessions = UploadSession.objects.filter(layer=layer)
+        up_sessions = UploaderSession.objects.filter(layer=layer)
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
             up_sessions.update(user=layer.owner)
 
