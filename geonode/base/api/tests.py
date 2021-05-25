@@ -18,6 +18,7 @@
 #
 #########################################################################
 import logging
+from uuid import uuid4
 from PIL import Image
 from io import BytesIO
 from unittest.mock import patch
@@ -48,7 +49,8 @@ from geonode import geoserver
 from geonode.utils import check_ogc_backend
 from geonode.services.views import services
 from geonode.maps.views import map_embed
-from geonode.layers.views import layer_embed
+from geonode.layers.models import Layer
+from geonode.layers.views import layer_embed, layer_detail
 from geonode.geoapps.views import geoapp_edit
 from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
@@ -105,6 +107,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         url(r'^(?P<mapid>[^/]+)/embed$', map_embed, name='map_embed'),
         url(r'^(?P<layername>[^/]+)/embed$', layer_embed, name='layer_embed'),
         url(r'^(?P<geoappid>[^/]+)/embed$', geoapp_edit, {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
+        url(r'^(?P<layername>[^/]*)$', layer_detail, name="layer_detail"),
     ]
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -313,6 +316,25 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertTrue(self.client.login(username='norman', password='norman'))
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
+
+    def test_delete_user_with_resource(self):
+        owner, created = get_user_model().objects.get_or_create(username='delet-owner')
+        Layer(
+            title='Test Remove User',
+            abstract='abstract',
+            name='Test Remove User',
+            alternate='Test Remove User',
+            uuid=str(uuid4()),
+            owner=owner,
+            storeType='coverageStore',
+            category=TopicCategory.objects.get(identifier='elevation')
+        ).save()
+        # Delete user and check if default user is updated
+        owner.delete()
+        self.assertEqual(
+            ResourceBase.objects.get(title='Test Remove User').owner,
+            get_user_model().objects.get(username='admin')
+        )
 
     def test_search_resources(self):
         """

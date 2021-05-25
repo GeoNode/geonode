@@ -298,11 +298,12 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.user_admin = get_user_model().objects.get(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
             shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
-            cls.layer_coast_line = file_upload(shp_file, overwrite=True)
+            cls.layer_coast_line = file_upload(shp_file, overwrite=True, user=cls.user_admin)
 
     @classmethod
     def tearDownClass(cls):
@@ -453,14 +454,15 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.user_admin = get_user_model().objects.get(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
             shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
-            cls.layer_coast_line = file_upload(shp_file, overwrite=True)
+            cls.layer_coast_line = file_upload(shp_file, overwrite=True, user=cls.user_admin)
 
             shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_highway.shp")
-            cls.layer_highway = file_upload(shp_file, overwrite=True)
+            cls.layer_highway = file_upload(shp_file, overwrite=True, user=cls.user_admin)
 
             # create a map from loaded layers
             cls.map_composition = Map()
