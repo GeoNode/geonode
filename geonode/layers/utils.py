@@ -47,7 +47,6 @@ from django.core.files.storage import default_storage as storage
 from geonode.base.models import Region
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
-from geonode.upload.upload import UploaderSession
 from geonode.geoserver.helpers import gs_catalog, gs_uploader
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
 

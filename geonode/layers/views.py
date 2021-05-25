@@ -57,7 +57,6 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from guardian.shortcuts import get_objects_for_user
 
 from geonode import geoserver
-from geonode.upload.upload import UploaderSession
 from geonode.layers.metadata import parse_metadata
 from geonode.upload.utils import update_layer_with_xml_info
 from geonode.geoserver.helpers import set_layer_style
@@ -293,6 +292,7 @@ def layer_upload_metadata(request):
             errormsgs.extend([escape(v) for v in e])
         out['errors'] = form.errors
         out['errormsgs'] = errormsgs
+
     return HttpResponse(
         json.dumps(out),
         content_type='application/json',
@@ -310,6 +310,7 @@ def layer_style_upload(request):
             content_type='application/json',
             status=500)
 
+    status_code = 200
     try:
         data = form.cleaned_data
         body = {
@@ -335,6 +336,7 @@ def layer_style_upload(request):
         body['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
         body['status'] = ['finished']
     except Exception as e:
+        status_code = 500
         body['success'] = False
         body['errors'] = e.args[0]
 
