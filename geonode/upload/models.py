@@ -34,6 +34,7 @@ from django.core.files import File
 from django.utils.timezone import now
 from django.core.files.storage import FileSystemStorage
 
+from geonode.base import enumerations
 from geonode.layers.models import Layer
 from geonode.tasks.tasks import AcquireLock
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
@@ -52,7 +53,7 @@ class UploadManager(models.Manager):
         return self.filter(
             user=upload_session.user,
             import_id=upload_session.import_session.id
-        ).update(state=Upload.STATE_INVALID)
+        ).update(state=enumerations.STATE_INVALID)
 
     def update_from_session(self, upload_session, layer=None):
         self.get(
@@ -70,7 +71,7 @@ class UploadManager(models.Manager):
 
     def get_incomplete_uploads(self, user):
         return self.filter(user=user).exclude(
-            state=Upload.STATE_PROCESSED)
+            state=enumerations.STATE_PROCESSED)
 
 
 class Upload(models.Model):
@@ -79,7 +80,6 @@ class Upload(models.Model):
 
     import_id = models.BigIntegerField(null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
-    # hold importer state or internal state (STATE_)
     state = models.CharField(max_length=16)
     create_date = models.DateTimeField('create_date', default=now)
     date = models.DateTimeField('date', default=now)
@@ -104,15 +104,6 @@ class Upload(models.Model):
 
     class Meta:
         ordering = ['-date']
-
-    STATE_READY = "READY"
-    STATE_RUNNING = "RUNNING"
-    STATE_PENDING = "PENDING"
-    STATE_WAITING = "WAITING"
-    STATE_INCOMPLETE = "INCOMPLETE"
-    STATE_COMPLETE = "COMPLETE"
-    STATE_INVALID = "INVALID"
-    STATE_PROCESSED = "PROCESSED"
 
     @property
     def get_session(self):
@@ -175,38 +166,36 @@ class Upload(models.Model):
     @property
     def progress(self):
         if self.state in \
-                (Upload.STATE_READY, Upload.STATE_INVALID, Upload.STATE_INCOMPLETE):
+                (enumerations.STATE_READY, enumerations.STATE_INVALID, enumerations.STATE_INCOMPLETE):
             return 0.0
-        elif self.state == Upload.STATE_PENDING:
+        elif self.state == enumerations.STATE_PENDING:
             return 33.0
-        elif self.state == Upload.STATE_WAITING:
+        elif self.state == enumerations.STATE_WAITING:
             return 50.0
-        elif self.state == Upload.STATE_PROCESSED:
+        elif self.state == enumerations.STATE_PROCESSED:
             return 100.0
-        elif self.complete or self.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
+        elif self.complete or self.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING):
             if self.layer and self.layer.processed:
-                self.state = Upload.STATE_PROCESSED
-                Upload.objects.filter(id=self.id).update(state=Upload.STATE_PROCESSED)
+                self.set_processing_state(enumerations.STATE_PROCESSED)
                 return 100.0
-            elif self.state == Upload.STATE_RUNNING:
+            elif self.state == enumerations.STATE_RUNNING:
                 return 66.0
             return 80.0
 
     def get_resume_url(self):
-        if self.state == Upload.STATE_WAITING and self.import_id:
+        if self.state == enumerations.STATE_WAITING and self.import_id:
             return f"{reverse('data_upload')}?id={self.import_id}"
-        elif self.state not in (Upload.STATE_RUNNING, Upload.STATE_PROCESSED):
+        elif self.state not in (enumerations.STATE_RUNNING, enumerations.STATE_PROCESSED):
             session = None
             try:
                 if not self.import_id:
                     raise NotFound
                 session = self.get_session.import_session
-                if not session or session.state != Upload.STATE_COMPLETE:
+                if not session or session.state != enumerations.STATE_COMPLETE:
                     session = gs_uploader.get_session(self.import_id)
             except (NotFound, Exception):
-                if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
-                    self.state = Upload.STATE_INVALID
-                    Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
+                if self.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
+                    self.set_processing_state(enumerations.STATE_INVALID)
             if session:
                 lock_id = f'{self.import_id}'
                 with AcquireLock(lock_id) as lock:
@@ -218,27 +207,23 @@ class Upload(models.Model):
                             response_json = json.loads(content)
                             if response_json['success'] and 'redirect_to' in response_json:
                                 if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
-                                    self.state = Upload.STATE_WAITING
-                                    Upload.objects.filter(id=self.id).update(state=Upload.STATE_WAITING)
+                                    self.set_processing_state(enumerations.STATE_WAITING)
                                     return f"{reverse('data_upload')}?id={self.import_id}"
                                 else:
                                     next = get_next_step(self.get_session)
-                                    if not self.layer and session.state == Upload.STATE_COMPLETE:
-                                        if next == 'check' or (next == 'final' and self.state == Upload.STATE_PENDING):
+                                    if not self.layer and session.state == enumerations.STATE_COMPLETE:
+                                        if next == 'check' or (next == 'final' and self.state == enumerations.STATE_PENDING):
                                             from .views import final_step_view
                                             final_step_view(None, self.get_session)
-                                            self.refresh_from_db()
-                                            self.state = Upload.STATE_RUNNING
-                                            Upload.objects.filter(id=self.id).update(state=Upload.STATE_RUNNING)
+                                            self.set_processing_state(enumerations.STATE_RUNNING)
                         except (NotFound, Exception) as e:
                             logger.exception(e)
-                            if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
-                                self.state = Upload.STATE_INVALID
-                                Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
+                            if self.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
+                                self.set_processing_state(enumerations.STATE_INVALID)
         return None
 
     def get_delete_url(self):
-        if self.state != Upload.STATE_PROCESSED:
+        if self.state != enumerations.STATE_PROCESSED:
             return reverse('data_upload_delete', args=[self.id])
         return None
 
@@ -248,19 +233,18 @@ class Upload(models.Model):
             if not self.import_id:
                 raise NotFound
             session = self.get_session.import_session
-            if not session or session.state != Upload.STATE_COMPLETE:
+            if not session or session.state != enumerations.STATE_COMPLETE:
                 session = gs_uploader.get_session(self.import_id)
         except (NotFound, Exception):
-            if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
-                self.state = Upload.STATE_INVALID
-                Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
-        if session and self.state != Upload.STATE_INVALID:
+            if self.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
+                self.set_processing_state(enumerations.STATE_INVALID)
+        if session and self.state != enumerations.STATE_INVALID:
             return f"{ogc_server_settings.LOCATION}rest/imports/{session.id}"
         else:
             return None
 
     def get_detail_url(self):
-        if self.layer and self.state == Upload.STATE_PROCESSED:
+        if self.layer and self.state == enumerations.STATE_PROCESSED:
             return getattr(self.layer, 'detail_url', None)
         else:
             return None
@@ -298,6 +282,12 @@ class Upload(models.Model):
                 shutil.rmtree(self.upload_dir)
             except Exception as e:
                 logger.warning(e)
+
+    def set_processing_state(self, state):
+        self.state = True
+        Upload.objects.filter(id=self.id).update(state=state)
+        if self.layer:
+            self.layer.set_processing_state(state)
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'

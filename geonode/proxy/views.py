@@ -22,14 +22,12 @@ import io
 import os
 import re
 import gzip
-import json
 import shutil
 import logging
 import tempfile
 import traceback
 
 from hyperlink import URL
-from slugify import slugify
 from urllib.parse import urlparse, urlsplit, urljoin
 
 from django.conf import settings
@@ -38,13 +36,12 @@ from django.http import HttpResponse
 from django.views.generic import View
 from distutils.version import StrictVersion
 from django.http.request import validate_host
-from django.forms.models import model_to_dict
 from django.utils.translation import ugettext as _
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import requires_csrf_token
 
-from geonode.base.models import Link
-from geonode.layers.models import Layer, LayerFile
+from geonode.layers.models import Layer
+from geonode.upload.models import Upload
 from geonode.utils import (
     resolve_object,
     check_ogc_backend,
@@ -52,8 +49,7 @@ from geonode.utils import (
     zip_dir,
     get_headers,
     http_client,
-    json_response,
-    json_serializer_producer)
+    json_response)
 from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver  # noqa
@@ -282,25 +278,22 @@ def download(request, resourceid, sender=Layer):
 
         layer_files = []
         try:
-            upload_session = instance.get_upload_session()
-            if upload_session:
-                layer_files = [
-                    item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
-                if layer_files:
-                    # Copy all Layer related files into a temporary folder
-                    for lyr in layer_files:
-                        if storage.exists(str(lyr.file)):
-                            geonode_layer_path = storage.path(str(lyr.file))
-                            shutil.copy2(geonode_layer_path, target_folder)
-                        else:
-                            return HttpResponse(
-                                loader.render_to_string(
-                                    '401.html',
-                                    context={
-                                        'error_title': _("No files found."),
-                                        'error_message': _no_files_found
-                                    },
-                                    request=request), status=404)
+            upload_session = Upload.objects.get(layer=instance)
+            # Copy all Layer related files into a temporary folder
+            for lyr in upload_session.uploadfile_set.all():
+                if storage.exists(str(lyr.file)):
+                    layer_files.append(lyr)
+                    geonode_layer_path = storage.path(str(lyr.file))
+                    shutil.copy2(geonode_layer_path, target_folder)
+                else:
+                    return HttpResponse(
+                        loader.render_to_string(
+                            '401.html',
+                            context={
+                                'error_title': _("No files found."),
+                                'error_message': _no_files_found
+                            },
+                            request=request), status=404)
 
             # Check we can access the original files
             if not layer_files:
@@ -312,80 +305,6 @@ def download(request, resourceid, sender=Layer):
                             'error_message': _no_files_found
                         },
                         request=request), status=404)
-
-            # Let's check for associated SLD files (if any)
-            try:
-                for s in instance.styles.all():
-                    sld_file_path = os.path.join(target_folder, "".join([s.name, ".sld"]))
-                    with open(sld_file_path, "w") as sld_file:
-                        sld_file.write(s.sld_body.strip())
-                    try:
-                        # Collecting headers and cookies
-                        headers, access_token = get_headers(request, urlsplit(s.sld_url), s.sld_url)
-
-                        response, content = http_client.get(
-                            s.sld_url,
-                            headers=headers,
-                            timeout=TIMEOUT,
-                            user=request.user)
-                        sld_remote_content = response.text
-                        sld_file_path = os.path.join(target_folder, "".join([s.name, "_remote.sld"]))
-                        with open(sld_file_path, "w") as sld_file:
-                            sld_file.write(sld_remote_content.strip())
-                    except Exception:
-                        traceback.print_exc()
-                        tb = traceback.format_exc()
-                        logger.debug(tb)
-            except Exception:
-                traceback.print_exc()
-                tb = traceback.format_exc()
-                logger.debug(tb)
-
-            # Let's dump metadata
-            target_md_folder = os.path.join(target_folder, ".metadata")
-            if not os.path.exists(target_md_folder):
-                os.makedirs(target_md_folder)
-
-            try:
-                dump_file = os.path.join(target_md_folder, "".join([instance.name, ".dump"]))
-                with open(dump_file, 'w') as outfile:
-                    serialized_obj = json_serializer_producer(model_to_dict(instance))
-                    json.dump(serialized_obj, outfile)
-
-                links = Link.objects.filter(resource=instance.resourcebase_ptr)
-                for link in links:
-                    link_name = slugify(link.name)
-                    link_file = os.path.join(target_md_folder, "".join([link_name, f".{link.extension}"]))
-                    if link.link_type in ('data'):
-                        # Skipping 'data' download links
-                        continue
-                    elif link.link_type in ('metadata', 'image'):
-                        # Dumping metadata files and images
-                        with open(link_file, "wb"):
-                            try:
-                                # Collecting headers and cookies
-                                headers, access_token = get_headers(request, urlsplit(link.url), link.url)
-
-                                response, raw = http_client.get(
-                                    link.url,
-                                    stream=True,
-                                    headers=headers,
-                                    timeout=TIMEOUT,
-                                    user=request.user)
-                                raw.decode_content = True
-                                shutil.copyfileobj(raw, link_file)
-                            except Exception:
-                                traceback.print_exc()
-                                tb = traceback.format_exc()
-                                logger.debug(tb)
-                    elif link.link_type.startswith('OGC'):
-                        # Dumping OGC/OWS links
-                        with open(link_file, "w") as link_file:
-                            link_file.write(link.url.strip())
-            except Exception:
-                traceback.print_exc()
-                tb = traceback.format_exc()
-                logger.debug(tb)
 
             # ZIP everything and return
             target_file_name = "".join([instance.name, ".zip"])

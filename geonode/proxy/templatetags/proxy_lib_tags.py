@@ -28,8 +28,9 @@ from django.core.files.storage import FileSystemStorage
 
 from urllib.parse import urlsplit, urljoin
 
+from geonode.layers.models import Layer
+from geonode.upload.models import Upload
 from geonode.utils import resolve_object
-from geonode.layers.models import Layer, LayerFile
 
 register = template.Library()
 
@@ -55,14 +56,11 @@ def original_link_available(context, resourceid, url):
     layer_files = []
     if isinstance(instance, Layer):
         try:
-            upload_session = instance.get_upload_session()
-            if upload_session:
-                layer_files = [
-                    item for item in LayerFile.objects.filter(upload_session=upload_session)]
-                if layer_files:
-                    for lyr in layer_files:
-                        if not storage.exists(str(lyr.file)):
-                            return False
+            upload_session = Upload.objects.get(layer=instance)
+            for lyr in upload_session.uploadfile_set.all():
+                layer_files.append(lyr)
+                if not storage.exists(str(lyr.file)):
+                    return False
         except Exception:
             traceback.print_exc()
             return False

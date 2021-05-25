@@ -50,18 +50,18 @@ from geoserver.resource import (
 
 from django.conf import settings
 from django.db.models import Max
-from django.core.files import File
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
 from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
+from geonode.base import enumerations
 from geonode.layers.models import TIME_REGEX_FORMAT
 from geonode.upload import UploadException, LayerNotReady
 
+from ..layers.models import Layer
 from ..people.utils import get_default_user
 from ..layers.utils import get_valid_layer_name
-from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
     gs_catalog,
@@ -313,7 +313,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
         upload, _ = Upload.objects.get_or_create(
             user=user,
             name=name,
-            state=Upload.STATE_READY,
+            state=enumerations.STATE_READY,
             upload_dir=spatial_files.dirname
         )
 
@@ -399,8 +399,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
                         "Please ensure your files contain the correct formats.")
 
         if error_msg:
-            upload.state = upload.STATE_INVALID
-            upload.save()
+            upload.set_processing_state(enumerations.STATE_INVALID)
 
         # @todo once the random tmp9723481758915 type of name is not
         # around, need to track the name computed above, for now, the
@@ -570,12 +569,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     import_session = upload_session.import_session
     import_id = import_session.id
 
-    if Upload.objects.filter(import_id=import_id).count():
-        Upload.objects.filter(import_id=import_id).update(complete=False)
-        upload = Upload.objects.filter(import_id=import_id).get()
-        if upload.state == Upload.STATE_RUNNING:
-            return
-
     _log(f'Reloading session {import_id} to check validity')
     try:
         import_session = import_session.reload()
@@ -583,6 +576,13 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         Upload.objects.invalidate_from_session(upload_session)
         raise UploadException.from_exc(
             _("The GeoServer Import Session is no more available"), e)
+
+    if Upload.objects.filter(import_id=import_id).count():
+        Upload.objects.filter(import_id=import_id).update(complete=False)
+        upload = Upload.objects.filter(import_id=import_id).get()
+        if upload.state == enumerations.STATE_RUNNING:
+            return
+
     upload_session.import_session = import_session
     Upload.objects.update_from_session(upload_session)
 
@@ -700,78 +700,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         assert saved_layer
 
         Upload.objects.update_from_session(upload_session, layer=saved_layer)
-
-    # Create a new upload session
-    try:
-        with transaction.atomic():
-            geonode_upload_session, created = UploadSession.objects.get_or_create(
-                resource=saved_layer, user=user
-            )
-            geonode_upload_session.processed = False
-            geonode_upload_session.save()
-    except IntegrityError as e:
-        Upload.objects.invalidate_from_session(upload_session)
-        raise UploadException.from_exc(_('Error configuring Layer'), e)
-
-    # Add them to the upload session (new file fields are created).
-    assigned_name = None
-
-    def _store_file(saved_layer,
-                    geonode_upload_session,
-                    base_file,
-                    assigned_name,
-                    base=False):
-        try:
-            with open(base_file, 'rb') as f:
-                file_name, type_name = os.path.splitext(os.path.basename(base_file))
-                geonode_upload_session.layerfile_set.create(
-                    name=file_name,
-                    base=base,
-                    file=File(
-                        f, name=f'{assigned_name or saved_layer.name}{type_name}'))
-                # save the system assigned name for the remaining files
-                if not assigned_name:
-                    the_file = geonode_upload_session.layerfile_set.all()[0].file.name
-                    assigned_name = os.path.splitext(os.path.basename(the_file))[0]
-                return assigned_name
-        except Exception as e:
-            logger.exception(e)
-            return None
-
-    if upload_session.base_file:
-        uploaded_files = upload_session.base_file[0]
-        base_file = uploaded_files.base_file
-        aux_files = uploaded_files.auxillary_files
-        sld_files = uploaded_files.sld_files
-        xml_files = uploaded_files.xml_files
-
-        assigned_name = _store_file(
-            saved_layer,
-            geonode_upload_session,
-            base_file,
-            assigned_name,
-            base=True)
-
-        if assigned_name:
-            for _f in aux_files:
-                _store_file(saved_layer,
-                            geonode_upload_session,
-                            _f,
-                            assigned_name)
-
-            for _f in sld_files:
-                _store_file(saved_layer,
-                            geonode_upload_session,
-                            _f,
-                            assigned_name)
-
-            for _f in xml_files:
-                _store_file(saved_layer,
-                            geonode_upload_session,
-                            _f,
-                            assigned_name)
-
-    saved_layer.upload_session = geonode_upload_session
 
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions

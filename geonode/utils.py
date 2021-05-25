@@ -1986,7 +1986,6 @@ json_serializer_k_map = {
     'spatial_representation_type': 'base.SpatialRepresentationType',
     'group': 'auth.Group',
     'default_style': 'layers.Style',
-    'upload_session': 'layers.UploadSession'
 }
 
 

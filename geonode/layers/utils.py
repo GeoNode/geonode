@@ -53,9 +53,12 @@ from django.utils.translation import ugettext as _
 from geonode.base.bbox_utils import BBOXHelper
 from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
-from geonode.layers.models import UploadSession, LayerFile
-from geonode.base.models import SpatialRepresentationType,  \
-    TopicCategory, Region, License, ResourceBase
+from geonode.base.models import (
+    Region,
+    License,
+    ResourceBase,
+    TopicCategory,
+    SpatialRepresentationType)
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
 from geonode.layers.metadata import convert_keyword, parse_metadata
 from geonode.utils import (check_ogc_backend,

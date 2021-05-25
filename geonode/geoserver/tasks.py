@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.base import enumerations
 import os
 import re
 import shutil
@@ -40,9 +41,7 @@ from geonode.upload import signals
 from geonode.upload.utils import (
     metadata_storers,
     update_layer_with_xml_info)
-from geonode.layers.models import (
-    Layer,
-    UploadSession)
+from geonode.layers.models import Layer
 from geonode.layers.metadata import parse_metadata
 from geonode.base.models import ResourceBase
 from geonode.utils import (
@@ -343,8 +342,7 @@ def geoserver_post_save_layers(
                 else:
                     return
 
-            geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
-            geonode_upload_sessions.update(processed=False)
+            instance.set_processing_state(enumerations.STATE_RUNNING)
             instance.set_dirty_state()
 
             gs_resource = None
@@ -545,13 +543,9 @@ def geoserver_post_save_layers(
                 # Creating Layer Thumbnail by sending a signal
                 geoserver_post_save_complete.send(
                     sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
-            try:
-                geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
-                geonode_upload_sessions.update(processed=True)
-            except Exception as e:
-                logger.exception(e)
-            finally:
-                instance.clear_dirty_state()
+
+            instance.set_processing_state(enumerations.STATE_PROCESSED)
+            instance.clear_dirty_state()
 
             # Updating HAYSTACK Indexes if needed
             if settings.HAYSTACK_SEARCH:
