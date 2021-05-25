@@ -1701,6 +1701,7 @@ class TestIsXmlUploadOnly(TestCase):
     '''
     This function will check if the files uploaded is a metadata file
     '''
+
     def setUp(self):
         self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
         self.request = RequestFactory()
@@ -1776,11 +1777,11 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
     def test_sld_should_raise_500_if_is_invalid(self):
         user = get_user_model().objects.get(username="admin")
         layer = create_layer(
-                "single_point",
-                "single_point",
-                user,
-                'Point'
-            )
+            "single_point",
+            "single_point",
+            user,
+            'Point'
+        )
 
         params = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
@@ -1803,11 +1804,11 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
     def test_sld_should_update_the_layer_with_the_expected_values(self):
         user = get_user_model().objects.get(username="admin")
         layer = create_layer(
-                "single_point",
-                "single_point",
-                user,
-                'Point'
-            )
+            "single_point",
+            "single_point",
+            user,
+            'Point'
+        )
 
         params = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
@@ -1834,6 +1835,7 @@ class TestIsSldUploadOnly(TestCase):
     '''
     This function will check if the files uploaded is a metadata file
     '''
+
     def setUp(self):
         self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
         self.request = RequestFactory()

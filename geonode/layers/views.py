@@ -17,17 +17,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.upload.upload import UploaderSession
-from geonode.layers.metadata import parse_metadata
-from geonode.upload.utils import update_layer_with_xml_info
-from geonode.geoserver.helpers import set_layer_style
-import tempfile
 import re
 import os
 import json
 import shutil
 import decimal
 import logging
+import tempfile
 import warnings
 import traceback
 
@@ -61,9 +57,17 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from guardian.shortcuts import get_objects_for_user
 
 from geonode import geoserver
+from geonode.upload.upload import UploaderSession
+from geonode.layers.metadata import parse_metadata
+from geonode.upload.utils import update_layer_with_xml_info
+from geonode.geoserver.helpers import set_layer_style
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
+from geonode.base.forms import (
+    CategoryForm,
+    TKeywordForm,
+    BatchPermissionsForm,
+    ThesaurusAvailableForm)
 from geonode.base.views import batch_modify
 from geonode.base.models import (
     Thesaurus,
@@ -253,7 +257,7 @@ def layer_upload_metadata(request):
         layer = Layer.objects.filter(typename=name)
         if layer.exists():
             layer_uuid, vals, regions, keywords, _ = parse_metadata(
-                    open(base_file).read())
+                open(base_file).read())
             if layer_uuid:
                 layer.uuid = layer_uuid
             updated_layer = update_layer_with_xml_info(layer.first(), base_file, regions, keywords, vals)
@@ -306,7 +310,6 @@ def layer_style_upload(request):
             content_type='application/json',
             status=500)
 
-    status_code = 200
     try:
         data = form.cleaned_data
         body = {
@@ -332,7 +335,6 @@ def layer_style_upload(request):
         body['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
         body['status'] = ['finished']
     except Exception as e:
-        status_code = 500
         body['success'] = False
         body['errors'] = e.args[0]
 

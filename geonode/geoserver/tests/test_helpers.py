@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.contrib.auth import get_user_model
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import re

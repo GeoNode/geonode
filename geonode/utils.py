@@ -1622,7 +1622,7 @@ def get_legend_url(instance, style_name):
            "service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&"
            f"LAYER={instance.alternate}&STYLE={style_name}&version=1.3.0&"
            "sld_version=1.1.0&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on"
-        )
+           )
 
 
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
