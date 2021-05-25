@@ -570,12 +570,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     import_session = upload_session.import_session
     import_id = import_session.id
 
-    if Upload.objects.filter(import_id=import_id).count():
-        Upload.objects.filter(import_id=import_id).update(complete=False)
-        upload = Upload.objects.filter(import_id=import_id).get()
-        if upload.state == Upload.STATE_RUNNING:
-            return
-
     _log(f'Reloading session {import_id} to check validity')
     try:
         import_session = import_session.reload()
@@ -583,6 +577,13 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         Upload.objects.invalidate_from_session(upload_session)
         raise UploadException.from_exc(
             _("The GeoServer Import Session is no more available"), e)
+
+    if Upload.objects.filter(import_id=import_id).count():
+        Upload.objects.filter(import_id=import_id).update(complete=False)
+        upload = Upload.objects.filter(import_id=import_id).get()
+        if upload.state == Upload.STATE_RUNNING:
+            return
+
     upload_session.import_session = import_session
     Upload.objects.update_from_session(upload_session)
 
