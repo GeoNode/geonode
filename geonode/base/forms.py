@@ -546,7 +546,8 @@ class ResourceBaseForm(TranslationModelForm):
             'tkeywords',
             'users_geolimits',
             'groups_geolimits',
-            'dirty_state'
+            'dirty_state',
+            'state'
         )
 
 

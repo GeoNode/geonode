@@ -623,7 +623,9 @@ def gs_handle_layer(layer, base_files, user, action_type="append"):
 
     if is_valid_layer:
         #  opening upload session for the selected layer
-        upload_session, _ = UploaderSession.objects.get_or_create(resource=layer, user=user)
+        from geonode.upload.models import Upload
+
+        upload_session, _ = Upload.objects.get_or_create(layer=layer, user=user)
         upload_session.resource = layer
         upload_session.processed = False
         upload_session.save()
