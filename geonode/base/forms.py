@@ -416,7 +416,7 @@ class ResourceBaseForm(TranslationModelForm):
     owner = forms.ModelChoiceField(
         empty_label=_("Owner"),
         label=_("Owner"),
-        required=False,
+        required=True,
         queryset=get_user_model().objects.exclude(username='AnonymousUser'),
         widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
 
@@ -546,7 +546,8 @@ class ResourceBaseForm(TranslationModelForm):
             'tkeywords',
             'users_geolimits',
             'groups_geolimits',
-            'dirty_state'
+            'dirty_state',
+            'state'
         )
 
 

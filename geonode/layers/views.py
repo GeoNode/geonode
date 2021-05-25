@@ -17,17 +17,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.upload.upload import UploaderSession
-from geonode.layers.metadata import parse_metadata
-from geonode.upload.utils import update_layer_with_xml_info
-from geonode.geoserver.helpers import set_layer_style
-import tempfile
 import re
 import os
 import json
 import shutil
 import decimal
 import logging
+import tempfile
 import warnings
 import traceback
 
@@ -61,9 +57,16 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from guardian.shortcuts import get_objects_for_user
 
 from geonode import geoserver
+from geonode.layers.metadata import parse_metadata
+from geonode.upload.utils import update_layer_with_xml_info
+from geonode.geoserver.helpers import set_layer_style
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
+from geonode.base.forms import (
+    CategoryForm,
+    TKeywordForm,
+    BatchPermissionsForm,
+    ThesaurusAvailableForm)
 from geonode.base.views import batch_modify
 from geonode.base.models import (
     Thesaurus,
@@ -253,7 +256,7 @@ def layer_upload_metadata(request):
         layer = Layer.objects.filter(typename=name)
         if layer.exists():
             layer_uuid, vals, regions, keywords, _ = parse_metadata(
-                    open(base_file).read())
+                open(base_file).read())
             if layer_uuid:
                 layer.uuid = layer_uuid
             updated_layer = update_layer_with_xml_info(layer.first(), base_file, regions, keywords, vals)
@@ -266,8 +269,8 @@ def layer_upload_metadata(request):
                 'properties': updated_layer.srid
             }
             out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
-            upload_session = updated_layer.upload_session
-            if upload_session:
+            if hasattr(updated_layer, 'upload_session'):
+                upload_session = updated_layer.upload_session
                 upload_session.processed = True
                 upload_session.save()
             status_code = 200
@@ -289,6 +292,7 @@ def layer_upload_metadata(request):
             errormsgs.extend([escape(v) for v in e])
         out['errors'] = form.errors
         out['errormsgs'] = errormsgs
+
     return HttpResponse(
         json.dumps(out),
         content_type='application/json',
@@ -339,7 +343,7 @@ def layer_style_upload(request):
     return HttpResponse(
         json.dumps(body),
         content_type='application/json',
-        status=500)
+        status=status_code)
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
@@ -1073,7 +1077,9 @@ def layer_metadata(
             layer.regions.add(*new_regions)
         layer.category = new_category
 
-        up_sessions = UploaderSession.objects.filter(layer=layer)
+        from geonode.upload.models import Upload
+
+        up_sessions = Upload.objects.filter(layer=layer)
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
             up_sessions.update(user=layer.owner)
 
@@ -1267,7 +1273,7 @@ def layer_append_replace_view(request, layername, template, action_type):
                     and os.getenv("DEFAULT_BACKEND_UPLOADER", None) == "geonode.importer"
                     and resource_is_valid
                 ):
-                    upload_session, _ = gs_handle_layer(layer, list(files.values()), request.user)
+                    upload_session, _ = gs_handle_layer(layer, list(files.values()), request.user, action_type=action_type)
                     upload_session.processed = True
                     upload_session.save()
                     out['success'] = True

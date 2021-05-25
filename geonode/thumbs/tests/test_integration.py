@@ -297,6 +297,7 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.user_admin = get_user_model().objects.get(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
@@ -456,14 +457,13 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.user_admin = get_user_model().objects.get(username="admin")
 
         admin, _ = get_user_model().objects.get_or_create(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
-
             cls.layer_coast_line = create_single_layer("san_andres_y_providencia_coastline")
-
             cls.layer_highway = create_single_layer("san_andres_y_providencia_highway")
 
             # create a map from loaded layers

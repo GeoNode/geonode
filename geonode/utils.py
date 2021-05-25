@@ -1615,6 +1615,16 @@ def slugify_zh(text, separator='_'):
     return text
 
 
+def get_legend_url(instance, style_name):
+    from geonode.geoserver.helpers import ogc_server_settings
+
+    return(f"{ogc_server_settings.PUBLIC_LOCATION}ows?"
+           "service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&"
+           f"LAYER={instance.alternate}&STYLE={style_name}&version=1.3.0&"
+           "sld_version=1.1.0&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on"
+           )
+
+
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
     from geonode.base.models import Link
@@ -1841,10 +1851,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 if style:
                     style_name = os.path.basename(
                         urlparse(style.sld_url).path).split('.')[0]
-                    legend_url = (f"{ogc_server_settings.PUBLIC_LOCATION}ows?"
-                                  "service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&"
-                                  f"LAYER={instance.alternate}&STYLE={style_name}&"
-                                  "legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on")
+                    legend_url = get_legend_url(instance, style_name)
 
                     if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
                         Link.objects.update_or_create(

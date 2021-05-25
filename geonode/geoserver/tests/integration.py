@@ -32,9 +32,9 @@ from urllib.request import urlopen, Request
 from urllib.parse import urljoin
 
 from django.conf import settings
-from django.test.utils import override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.test.utils import override_settings
 
 from geonode import geoserver
 from geonode.layers.models import Layer
@@ -238,7 +238,6 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
         """Test permissions on an unpublished layer
         """
         layer = Layer.objects.first()
-
         layer.set_default_permissions()
         check_layer(layer)
 
@@ -266,7 +265,6 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
 
         # with settings disabled
         with self.settings(RESOURCE_PUBLISHING=True):
-
             layer = Layer.objects.first()
             layer.is_approved = False
             layer.is_published = False

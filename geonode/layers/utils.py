@@ -25,8 +25,8 @@
 import re
 import os
 import glob
-import string
 import json
+import string
 import logging
 import tarfile
 
@@ -39,16 +39,16 @@ from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import default_storage as storage
-from django.utils.translation import ugettext as _
 
 # Geonode functionality
-from geonode import GeoNodeException, geoserver
 from geonode.base.models import Region
-from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
 from geonode.utils import check_ogc_backend
+from geonode import GeoNodeException, geoserver
 from geonode.geoserver.helpers import gs_catalog, gs_uploader
+from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
 
 READ_PERMISSIONS = [
     'view_resourcebase'
@@ -622,7 +622,9 @@ def gs_handle_layer(layer, base_files, user, action_type="append"):
 
     if is_valid_layer:
         #  opening upload session for the selected layer
-        upload_session, _ = UploaderSession.objects.get_or_create(resource=layer, user=user)
+        from geonode.upload.models import Upload
+
+        upload_session, _ = Upload.objects.get_or_create(layer=layer, user=user)
         upload_session.resource = layer
         upload_session.processed = False
         upload_session.save()

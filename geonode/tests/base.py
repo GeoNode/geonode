@@ -17,6 +17,7 @@
 # along with this profgram. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.contrib.auth import get_user_model
 from django.test.testcases import SimpleTestCase, TestCase, LiveServerTestCase
 
 try:
@@ -97,6 +98,7 @@ class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,
         super(GeoNodeLiveTestSupport, self).setUp()
         logging.debug(" Test setUp. Creating models.")
         self.get_obj_ids = create_models(type=self.get_type, integration=self.get_integration)
+        self.user_admin = get_user_model().objects.get(username="admin")
 
     def tearDown(self):
         super(GeoNodeLiveTestSupport, self).tearDown()
