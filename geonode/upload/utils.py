@@ -32,21 +32,33 @@ from owslib.etree import etree as dlxml
 
 from django.conf import settings
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.db import IntegrityError, transaction
 from django.utils.translation import ugettext as _
+from django.http import HttpResponse, HttpResponseRedirect
 
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 
 from geonode.upload import UploadException
 from geonode.utils import json_response as do_json_response, unzip_file
-from geonode.geoserver.helpers import (gs_catalog,
-                                       gs_uploader,
-                                       ogc_server_settings,
-                                       get_store,
-                                       set_time_dimension,
-                                       create_geoserver_db_featurestore)  # mosaic_delete_first_granule
-from geonode.base.models import HierarchicalKeyword, ThesaurusKeyword
+from geonode.geoserver.helpers import (
+    gs_catalog,
+    gs_uploader,
+    ogc_server_settings,
+    get_store,
+    set_time_dimension,
+    create_geoserver_db_featurestore)  # mosaic_delete_first_granule
+from geonode.base.models import (
+    ResourceBase,
+    TopicCategory,
+    ThesaurusKeyword,
+    HierarchicalKeyword,
+    SpatialRepresentationType)
+from geonode.layers.models import Layer
+
+from ..layers.utils import resolve_regions
+from ..layers.metadata import convert_keyword
+
 ogr.UseExceptions()
 
 logger = logging.getLogger(__name__)
@@ -634,6 +646,70 @@ def run_response(req, upload_session):
         return progress_redirect(next, upload_session.import_session.id)
 
     return next_step_response(req, upload_session)
+
+
+def update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
+    # Updating layer with information coming from the XML file
+    if xml_file:
+        saved_layer.metadata_xml = open(xml_file).read()
+        regions_resolved, regions_unresolved = resolve_regions(regions)
+        keywords.extend(convert_keyword(regions_unresolved))
+
+        # Assign the regions (needs to be done after saving)
+        regions_resolved = list(set(regions_resolved))
+        if regions_resolved:
+            if len(regions_resolved) > 0:
+                if not saved_layer.regions:
+                    saved_layer.regions = regions_resolved
+                else:
+                    saved_layer.regions.clear()
+                    saved_layer.regions.add(*regions_resolved)
+
+        # Assign the keywords (needs to be done after saving)
+        saved_layer = KeywordHandler(saved_layer, keywords).set_keywords()
+
+        # set model properties
+        defaults = {}
+        for key, value in vals.items():
+            if key == 'spatial_representation_type':
+                value = SpatialRepresentationType(identifier=value)
+            elif key == 'topic_category':
+                value, created = TopicCategory.objects.get_or_create(
+                    identifier=value,
+                    defaults={'description': '', 'gn_description': value})
+                key = 'category'
+                defaults[key] = value
+            else:
+                defaults[key] = value
+
+        # Save all the modified information in the instance without triggering signals.
+        try:
+            if not defaults.get('title', saved_layer.title):
+                defaults['title'] = saved_layer.title or saved_layer.name
+            if not defaults.get('abstract', saved_layer.abstract):
+                defaults['abstract'] = saved_layer.abstract or ''
+
+            to_update = {}
+            to_update['charset'] = defaults.pop('charset', saved_layer.charset)
+            to_update['storeType'] = defaults.pop('storeType', saved_layer.storeType)
+            for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
+                if _key in defaults:
+                    to_update[_key] = defaults.pop(_key)
+                else:
+                    to_update[_key] = getattr(saved_layer, _key)
+            to_update.update(defaults)
+
+            with transaction.atomic():
+                ResourceBase.objects.filter(
+                    id=saved_layer.resourcebase_ptr.id).update(
+                    **defaults)
+                Layer.objects.filter(id=saved_layer.id).update(**to_update)
+
+                # Refresh from DB
+                saved_layer.refresh_from_db()
+        except IntegrityError:
+            raise
+    return saved_layer
 
 
 """

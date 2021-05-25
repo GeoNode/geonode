@@ -40,7 +40,6 @@ import json
 import logging
 import zipfile
 import tempfile
-import traceback
 import gsimporter
 
 from http.client import BadStatusLine
@@ -72,10 +71,12 @@ from .forms import (
     TimeForm,
     UploadFileForm,
 )
-from .models import Upload, UploadFile
-from .files import (get_scan_hint,
-                    scan_file
-                    )
+from .models import (
+    Upload,
+    UploadFile)
+from .files import (
+    get_scan_hint,
+    scan_file)
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
@@ -91,10 +92,15 @@ from .utils import (
     json_response,
     get_previous_step,
     layer_eligible_for_time_dimension,
-    next_step_response,
-)
-from .upload import (save_step, srs_step, time_step, csv_step, final_step,
-                     LayerNotReady, UploaderSession)
+    next_step_response)
+from .upload import (
+    save_step,
+    srs_step,
+    time_step,
+    csv_step,
+    final_step,
+    LayerNotReady,
+    UploaderSession)
 
 logger = logging.getLogger(__name__)
 
@@ -716,16 +722,22 @@ def view(req, step=None):
                 upload_session = session
             else:
                 upload_session = _get_upload_session(req)
-        except Exception:
-            traceback.print_exc()
+        except Exception as e:
+            logger.exception(e)
     try:
         if req.method == 'GET' and upload_session:
             # set the current step to match the requested page - this
             # could happen if the form is ajax w/ progress monitoring as
             # the advance would have already happened @hacky
-            upload_session.completed_step = get_previous_step(
-                upload_session,
-                step)
+            _completed_step = upload_session.completed_step
+            try:
+                _completed_step = get_previous_step(
+                    upload_session,
+                    step)
+                upload_session.completed_step = _completed_step
+            except Exception as e:
+                logger.warning(e)
+                return error_response(req, errors=e.args)
 
         resp = _steps[step](req, upload_session)
         # must be put back to update object in session

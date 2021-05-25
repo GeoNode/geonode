@@ -37,26 +37,31 @@ from geonode.tasks.tasks import (
     FaultTolerantTask)
 from geonode import GeoNodeException
 from geonode.upload import signals
+from geonode.upload.utils import (
+    metadata_storers,
+    update_layer_with_xml_info)
 from geonode.layers.models import (
-    Layer, UploadSession)
-from geonode.base.models import (
-    ResourceBase)
+    Layer,
+    UploadSession)
+from geonode.layers.metadata import parse_metadata
+from geonode.base.models import ResourceBase
 from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
+from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.upload import geoserver_upload
 from geonode.catalogue.models import catalogue_post_save
 
 from .helpers import (
-    gs_catalog,
-    ogc_server_settings,
     gs_slurp,
+    gs_catalog,
     set_styles,
     get_sld_for,
     set_layer_style,
     cascading_delete,
     fetch_gs_resource,
     create_gs_thumbnail,
+    ogc_server_settings,
     set_attributes_from_geoserver,
     _invalidate_geowebcache_layer,
     _stylefilterparams_geowebcache_layer)
@@ -202,7 +207,7 @@ def geoserver_create_style(
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 0, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -212,14 +217,17 @@ def geoserver_finalize_upload(
         instance_id,
         permissions,
         created,
-        sld_file,
-        sld_uploaded,
+        metadata_uploaded, xml_file,
+        sld_uploaded, sld_file,
+        time_info,
         tempdir):
     """
     Finalize Layer and GeoServer configuration:
      - Sets Layer Metadata from XML and updates GeoServer Layer accordingly.
      - Sets Default Permissions
     """
+    from geonode.upload.models import Upload
+
     instance = None
     try:
         instance = Layer.objects.get(id=instance_id)
@@ -230,10 +238,37 @@ def geoserver_finalize_upload(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
+            # @todo if layer was not created, need to ensure upload target is
+            # same as existing target
+            # Create the points of contact records for the layer
+            logger.debug(f'Creating points of contact records for {instance}')
+            if not instance.poc:
+                instance.poc = instance.owner
+            if not instance.metadata_author:
+                instance.metadata_author = instance.owner
+
+            logger.debug(f'Look for xml and finalize Layer metadata {instance}')
+            regions = []
+            keywords = []
+            vals = {}
+            custom = {}
+            instance.metadata_uploaded = metadata_uploaded
+            if metadata_uploaded:
+                layer_uuid, vals, regions, keywords, custom = parse_metadata(
+                    open(xml_file).read())
+
+            logger.debug(f'Update Layer with information coming from XML File if available {instance}')
+            instance = metadata_storers(instance, custom)
+            instance = update_layer_with_xml_info(instance, xml_file, regions, keywords, vals)
+
+            logger.debug(f'Creating style for Layer {instance}')
             if sld_uploaded:
                 geoserver_set_style(instance.id, sld_file)
             else:
                 geoserver_create_style(instance.id, instance.name, sld_file, tempdir)
+
+            if time_info:
+                set_time_info(instance, **time_info)
 
             logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
             instance.handle_moderated_uploads()
@@ -242,7 +277,7 @@ def geoserver_finalize_upload(
                 logger.debug(f'Setting permissions {permissions} for {instance.name}')
                 instance.set_permissions(permissions, created=created)
 
-            instance.save(notify=not created)
+            instance.save(notify=created)
 
             try:
                 logger.debug(f"... Cleaning up the temporary folders {tempdir}")
@@ -251,7 +286,6 @@ def geoserver_finalize_upload(
             except Exception as e:
                 logger.warning(e)
             finally:
-                from geonode.upload.models import Upload
                 Upload.objects.filter(import_id=import_id).update(complete=True)
 
             signals.upload_complete.send(sender=geoserver_finalize_upload, layer=instance)

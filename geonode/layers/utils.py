@@ -58,7 +58,6 @@ from geonode.base.models import SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
 from geonode.layers.metadata import convert_keyword, parse_metadata
-from geonode.upload.utils import KeywordHandler, _fixup_base_file
 from geonode.utils import (check_ogc_backend,
                            unzip_file,
                            extract_tarfile)
@@ -666,6 +665,7 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
             f"You are attempting to {action_type} a raster layer with a vector."))
 
     if layer.is_vector():
+        from geonode.upload.utils import _fixup_base_file
         absolute_base_file = None
         try:
             if 'shp' in files and os.path.exists(files['shp']):
