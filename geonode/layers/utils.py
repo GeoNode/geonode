@@ -600,13 +600,14 @@ def file_upload(filename,
                     if not layer:
                         layer = Layer.objects.create(
                             name=valid_name,
+                            owner=user,
                             workspace=settings.DEFAULT_WORKSPACE
                         )
                         created = True
                 elif identifier:
                     layer = Layer.objects.filter(uuid=identifier).first()
                     if not layer:
-                        layer = Layer.objects.create(uuid=identifier)
+                        layer = Layer.objects.create(uuid=identifier, owner=user)
                         created = True
     except IntegrityError:
         raise
@@ -617,6 +618,7 @@ def file_upload(filename,
     # doing a layer.save()
     if not created and overwrite:
         # update with new information
+        defaults['owner'] = defaults.get('owner', None) or layer.owner
         defaults['title'] = defaults.get('title', None) or layer.title
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
         defaults['bbox_polygon'] = defaults.get('bbox_polygon', None) or layer.bbox_polygon
