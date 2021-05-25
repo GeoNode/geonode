@@ -24,9 +24,8 @@ from django.db.models import Prefetch
 from modeltranslation.admin import TabbedTranslationAdmin
 
 from geonode.base.admin import ResourceBaseAdminForm
-from geonode.base.admin import metadata_batch_edit, set_batch_permissions
 from geonode.layers.models import Layer, Attribute, Style
-from geonode.layers.models import LayerFile, UploadSession
+from geonode.base.admin import metadata_batch_edit, set_batch_permissions
 
 from geonode.base.fields import MultiThesauriField
 from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
@@ -106,17 +105,6 @@ class StyleAdmin(admin.ModelAdmin):
     search_fields = ('name', 'workspace',)
 
 
-class LayerFileInline(admin.TabularInline):
-    model = LayerFile
-
-
-class UploadSessionAdmin(admin.ModelAdmin):
-    model = UploadSession
-    list_display = ('resource', 'date', 'user', 'processed')
-    inlines = [LayerFileInline]
-
-
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Style, StyleAdmin)
-admin.site.register(UploadSession, UploadSessionAdmin)

@@ -17,27 +17,30 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.base import enumerations
 import re
 import uuid
 import logging
 
-from django.db import models
-from django.db.models import signals
-from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.db import models
+from django.urls import reverse
+from django.db.models import signals
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from django.urls import reverse
-from django.core.files.storage import FileSystemStorage
+from django.contrib.contenttypes.models import ContentType
 
-from pinax.ratings.models import OverallRating
 from tinymce.models import HTMLField
+from pinax.ratings.models import OverallRating
 
-from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import remove_object_permissions
+from geonode.base.models import (
+    ResourceBase,
+    ResourceBaseManager,
+    resourcebase_post_save)
 from geonode.notifications_helper import (
     send_notification,
     get_notification_recipients)
@@ -122,33 +125,6 @@ class LayerManager(ResourceBaseManager):
         models.Manager.__init__(self)
 
 
-class UploadSession(models.Model):
-
-    """Helper class to keep track of uploads.
-    """
-    resource = models.ForeignKey(ResourceBase, blank=True, null=True, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    processed = models.BooleanField(default=False)
-    error = models.TextField(blank=True, null=True)
-    traceback = models.TextField(blank=True, null=True)
-    context = models.TextField(blank=True, null=True)
-
-    def successful(self):
-        return self.processed and self.errors is None
-
-    def __str__(self):
-        _s = f"[Upload session-id: {self.id}]"
-        try:
-            _s += f" - {self.resource.title}"
-        except Exception:
-            pass
-        return str(_s)
-
-    def __unicode__(self):
-        return str(self.__str__())
-
-
 class Layer(ResourceBase):
 
     """
@@ -192,8 +168,6 @@ class Layer(ResourceBase):
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
-    upload_session = models.ForeignKey(UploadSession, blank=True, null=True, on_delete=models.CASCADE)
-
     use_featureinfo_custom_template = models.BooleanField(
         _('use featureinfo custom template?'),
         help_text=_('specifies wether or not use a custom GetFeatureInfo template.'),
@@ -209,19 +183,12 @@ class Layer(ResourceBase):
     def is_vector(self):
         return self.storeType == 'dataStore'
 
-    def get_upload_session(self):
-        return self.upload_session
-
     @property
     def processed(self):
-        self.upload_session = UploadSession.objects.filter(resource=self).first()
-        if self.upload_session:
-            if self.upload_session.processed:
-                self.clear_dirty_state()
-            else:
-                self.set_dirty_state()
-        else:
+        if self.state == enumerations.STATE_PROCESSED:
             self.clear_dirty_state()
+        else:
+            self.set_dirty_state()
         return not self.dirty_state
 
     @property
@@ -398,20 +365,6 @@ class Layer(ResourceBase):
         else:
             Layer.objects.filter(id=self.id)\
                          .update(popular_count=models.F('popular_count') + 1)
-
-
-class LayerFile(models.Model):
-
-    """Helper class to store original files.
-    """
-    upload_session = models.ForeignKey(UploadSession, on_delete=models.CASCADE)
-    name = models.CharField(max_length=4096)
-    base = models.BooleanField(default=False)
-    file = models.FileField(
-        upload_to='layers/%Y/%m/%d',
-        storage=FileSystemStorage(
-            base_url=settings.LOCAL_MEDIA_URL),
-        max_length=4096)
 
 
 class AttributeManager(models.Manager):
@@ -733,26 +686,8 @@ def post_delete_layer(instance, sender, **kwargs):
             default_style__id=instance.default_style.id).count() == 0:
         instance.default_style.delete()
 
-    try:
-        if instance.upload_session:
-            for lf in instance.upload_session.layerfile_set.all():
-                lf.file.delete()
-            instance.upload_session.delete()
-    except UploadSession.DoesNotExist:
-        pass
-
-
-def post_delete_layer_file(instance, sender, **kwargs):
-    """Delete associated file.
-
-    :param instance: LayerFile instance
-    :type instance: LayerFile
-    """
-    instance.file.delete(save=False)
-
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.post_save.connect(resourcebase_post_save, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
-signals.post_delete.connect(post_delete_layer_file, sender=LayerFile)

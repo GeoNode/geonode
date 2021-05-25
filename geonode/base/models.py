@@ -61,13 +61,8 @@ from taggit.managers import TaggableManager, _TaggableManager
 from guardian.shortcuts import get_anonymous_user, get_objects_for_user
 from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 
+from geonode.base import enumerations
 from geonode.singleton import SingletonModel
-from geonode.base.enumerations import (
-    LINK_TYPES,
-    ALL_LANGUAGES,
-    HIERARCHY_LEVELS,
-    UPDATE_FREQUENCIES,
-    DEFAULT_SUPPLEMENTAL_INFORMATION)
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
 from geonode.utils import (
     is_monochromatic_image,
@@ -716,7 +711,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     maintenance_frequency = models.CharField(
         _('maintenance frequency'),
         max_length=255,
-        choices=UPDATE_FREQUENCIES,
+        choices=enumerations.UPDATE_FREQUENCIES,
         blank=True,
         null=True,
         help_text=maintenance_frequency_help_text)
@@ -761,7 +756,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     language = models.CharField(
         _('language'),
         max_length=3,
-        choices=ALL_LANGUAGES,
+        choices=enumerations.ALL_LANGUAGES,
         default='eng',
         help_text=language_help_text)
     category = models.ForeignKey(
@@ -794,7 +789,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     supplemental_information = models.TextField(
         _('supplemental information'),
         max_length=2000,
-        default=DEFAULT_SUPPLEMENTAL_INFORMATION,
+        default=enumerations.DEFAULT_SUPPLEMENTAL_INFORMATION,
         help_text=_('any other descriptive information about the dataset'))
 
     # Section 8
@@ -848,7 +843,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         max_length=32,
         default='dataset',
         null=False,
-        choices=HIERARCHY_LEVELS)
+        choices=enumerations.HIERARCHY_LEVELS)
     csw_anytext = models.TextField(_('CSW anytext'), null=True, blank=True)
     csw_wkt_geometry = models.TextField(
         _('CSW WKT geometry'),
@@ -864,8 +859,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True)
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
-    featured = models.BooleanField(_("Featured"), default=False, help_text=_(
-        'Should this resource be advertised in home page?'))
+    featured = models.BooleanField(
+        _("Featured"),
+        default=False,
+        help_text=_('Should this resource be advertised in home page?'))
     is_published = models.BooleanField(
         _("Is Published"),
         default=True,
@@ -881,6 +878,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     rating = models.IntegerField(default=0, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    state = models.CharField(
+        _("State"),
+        max_length=16,
+        null=False,
+        blank=False,
+        default=enumerations.STATE_READY,
+        choices=enumerations.PROCESSING_STATES,
+        help_text=_('Hold the resource processing state.'))
 
     # fields controlling security state
     dirty_state = models.BooleanField(
@@ -1260,6 +1266,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.dirty_state = False
         ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
 
+    def set_processing_state(self, state):
+        self.state = True
+        ResourceBase.objects.filter(id=self.id).update(state=state)
+
     @property
     def processed(self):
         return not self.dirty_state
@@ -1637,10 +1647,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.set_default_permissions(owner=user)
 
     def maintenance_frequency_title(self):
-        return [v for v in UPDATE_FREQUENCIES if v[0] == self.maintenance_frequency][0][1].title()
+        return [v for v in enumerations.UPDATE_FREQUENCIES if v[0] == self.maintenance_frequency][0][1].title()
 
     def language_title(self):
-        return [v for v in ALL_LANGUAGES if v[0] == self.language][0][1].title()
+        return [v for v in enumerations.ALL_LANGUAGES if v[0] == self.language][0][1].title()
 
     def _set_poc(self, poc):
         # reset any poc assignation to this resource
@@ -1747,7 +1757,7 @@ class Link(models.Model):
         help_text=_('For example "kml"'))
     link_type = models.CharField(
         max_length=255, choices=[
-            (x, x) for x in LINK_TYPES])
+            (x, x) for x in enumerations.LINK_TYPES])
     name = models.CharField(max_length=255, help_text=_(
         'For example "View in Google Earth"'))
     mime = models.CharField(max_length=255,

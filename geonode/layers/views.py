@@ -77,8 +77,7 @@ from geonode.layers.forms import (
     LayerAttributeForm)
 from geonode.layers.models import (
     Layer,
-    Attribute,
-    UploadSession)
+    Attribute)
 from geonode.layers.utils import (
     file_upload, get_files,
     gs_handle_layer,

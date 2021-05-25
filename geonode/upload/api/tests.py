@@ -46,10 +46,9 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 from webdriver_manager.firefox import GeckoDriverManager
 
+from geonode.base import enumerations
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
-
-from ..models import Upload
 
 GEONODE_USER = 'admin'
 GEONODE_PASSWD = 'admin'
@@ -354,7 +353,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertIsNotNone(upload_data)
         self.assertIn('relief_san_andres', upload_data['name'])
 
-        self.assertEqual(upload_data['state'], Upload.STATE_PENDING)
+        self.assertEqual(upload_data['state'], enumerations.STATE_PENDING)
         self.assertEqual(upload_data['progress'], 33.0)
 
         self.assertIsNone(upload_data['detail_url'])
@@ -387,16 +386,16 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             response = self.selenium.request('GET', url, headers=headers)
             self.assertEqual(response.status_code, 200)
             upload_data = response.json()['upload']
-            if upload_data['state'] == Upload.STATE_PROCESSED and upload_data['detail_url']:
+            if upload_data['state'] == enumerations.STATE_PROCESSED and upload_data['detail_url']:
                 break
 
         for _cnt in range(1, 10):
             logger.error(f"[{_cnt}] Wait a bit until GeoNode finalizes the Layer configuration...")
-            if upload_data['state'] == Upload.STATE_PROCESSED:
+            if upload_data['state'] == enumerations.STATE_PROCESSED:
                 break
             time.sleep(10.0)
 
-        self.assertEqual(upload_data['state'], Upload.STATE_PROCESSED)
+        self.assertEqual(upload_data['state'], enumerations.STATE_PROCESSED)
         self.assertGreaterEqual(upload_data['progress'], 80.0)
 
         self.assertIsNotNone(upload_data['detail_url'])
@@ -458,7 +457,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertIsNotNone(upload_data)
         self.assertEqual(upload_data['name'], 'relief_san_andres')
 
-        if upload_data['state'] != Upload.STATE_PROCESSED:
+        if upload_data['state'] != enumerations.STATE_PROCESSED:
             self.assertLess(upload_data['progress'], 100.0)
             self.assertIsNone(upload_data['detail_url'])
             self.assertIsNone(upload_data['resume_url'])
