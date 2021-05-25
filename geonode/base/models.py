@@ -671,11 +671,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=purpose_help_text)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
         related_name='owned_resource',
         verbose_name=_("Owner"),
-        on_delete=models.CASCADE)
+        on_delete=models.PROTECT)
     contacts = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='ContactRole')
