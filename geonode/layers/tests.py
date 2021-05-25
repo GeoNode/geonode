@@ -136,12 +136,14 @@ class LayersTest(GeoNodeBaseTestSupport):
 
     def test_layer_name_clash(self):
         _ll_1 = Layer.objects.create(
+            owner=get_user_model().objects.get(username=self.user),
             name='states',
             store='geonode_data',
             storeType="dataStore",
             alternate="geonode:states"
         )
         _ll_2 = Layer.objects.create(
+            owner=get_user_model().objects.get(username=self.user),
             name='geonode:states',
             store='httpfooremoteservce',
             storeType="remoteStore",
