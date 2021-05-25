@@ -18,6 +18,9 @@
 #
 #########################################################################
 from collections import namedtuple
+from geonode.geoserver.createlayer.utils import create_layer
+
+from django.test.client import RequestFactory
 from geonode.geoserver.upload import geoserver_upload
 
 import requests
@@ -27,13 +30,11 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from django.test import TestCase
 import io
 import os
-import json
 import shutil
 import gisdata
 import logging
 import zipfile
 import tempfile
-import contextlib
 
 from mock import patch
 from pinax.ratings.models import OverallRating
@@ -58,6 +59,8 @@ from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer, Style, Attribute
 from geonode.layers.utils import (
     gs_handle_layer,
+    is_sld_upload_only,
+    is_xml_upload_only,
     layer_type,
     get_files,
     get_valid_name,
@@ -1108,99 +1111,6 @@ class UnpublishedObjectTests(GeoNodeBaseTestSupport):
         layer.save()
 
 
-class LayerModerationTestCase(GeoNodeBaseTestSupport):
-
-    type = 'layer'
-
-    def setUp(self):
-        super(LayerModerationTestCase, self).setUp()
-        self.user = 'admin'
-        self.passwd = 'admin'
-        create_layer_data()
-        self.anonymous_user = get_anonymous_user()
-        self.u = get_user_model().objects.get(username=self.user)
-        self.u.email = 'test@email.com'
-        self.u.is_active = True
-        self.u.save()
-
-    def _get_input_paths(self):
-        base_name = 'single_point'
-        suffixes = 'shp shx dbf prj'.split(' ')
-        base_path = gisdata.GOOD_DATA
-        paths = [os.path.join(base_path, 'vector', f'{base_name}.{suffix}') for suffix in suffixes]
-        return paths, suffixes,
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    @patch('geonode.thumbs.thumbnails.create_thumbnail')
-    def test_moderated_upload(self, thumbnail_mock):
-        """
-        Test if moderation flag works
-        """
-        with self.settings(ADMIN_MODERATE_UPLOADS=False):
-            layer_upload_url = reverse('layer_upload')
-            self.client.login(username=self.user, password=self.passwd)
-
-            # we get list of paths to shp files and list of suffixes
-            input_paths, suffixes = self._get_input_paths()
-
-            # we need file objects from above..
-            input_files = [open(fp, 'rb') for fp in input_paths]
-
-            with contextlib.ExitStack() as stack:
-                input_files = [
-                    stack.enter_context(_fp) for _fp in input_files]
-                files = dict(zip([f'{s}_file' for s in suffixes], input_files))
-                files['base_file'] = files.pop('shp_file')
-                files['permissions'] = '{}'
-                files['charset'] = 'utf-8'
-                files['layer_title'] = 'test layer'
-                resp = self.client.post(layer_upload_url, data=files)
-                self.assertEqual(resp.status_code, 200)
-            content = resp.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            data = json.loads(content)
-            if 'success' in data and data['success']:
-                lname = data['url'].split(':')[-1]
-                _l = Layer.objects.get(name=lname)
-                self.assertTrue(_l.is_approved)
-                self.assertTrue(_l.is_published)
-            else:
-                logger.warning(data)
-
-        with self.settings(ADMIN_MODERATE_UPLOADS=True):
-            layer_upload_url = reverse('layer_upload')
-            self.client.login(username=self.user, password=self.passwd)
-
-            # we get list of paths to shp files and list of suffixes
-            input_paths, suffixes = self._get_input_paths()
-
-            # we need file objects from above..
-            input_files = [open(fp, 'rb') for fp in input_paths]
-
-            with contextlib.ExitStack() as stack:
-                input_files = [
-                    stack.enter_context(_fp) for _fp in input_files]
-                files = dict(zip([f'{s}_file' for s in suffixes], input_files))
-                files['base_file'] = files.pop('shp_file')
-                files['permissions'] = '{}'
-                files['charset'] = 'utf-8'
-                files['layer_title'] = 'test layer'
-                resp = self.client.post(layer_upload_url, data=files)
-                self.assertEqual(resp.status_code, 200)
-            content = resp.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            data = json.loads(content)
-            if 'success' in data and data['success']:
-                lname = data['url'].split(':')[-1]
-                _l = Layer.objects.get(name=lname)
-                self.assertFalse(_l.is_approved)
-                self.assertTrue(_l.is_published)
-            else:
-                logger.warning(data)
-
-
 class LayerNotificationsTestCase(NotificationsTestsHelper):
 
     type = 'layer'
@@ -1307,256 +1217,6 @@ class SetLayersPermissions(GeoNodeBaseTestSupport):
         for perm in utils.WRITE_PERMISSIONS:
             if self.user in perm_spec["users"]:
                 self.assertNotIn(perm, perm_spec["users"][self.user])
-
-
-class LayersUploaderTests(GeoNodeBaseTestSupport):
-
-    GEONODE_REST_UPLOADER = {
-        'BACKEND': 'geonode.rest',
-        'OPTIONS': {
-            'TIME_ENABLED': True,
-            'MOSAIC_ENABLED': False,
-            'GEOGIG_ENABLED': False,
-        },
-        'SUPPORTED_CRS': [
-            'EPSG:4326',
-            'EPSG:3785',
-            'EPSG:3857',
-            'EPSG:32647',
-            'EPSG:32736'
-        ],
-        'SUPPORTED_EXT': [
-            '.shp',
-            '.csv',
-            '.kml',
-            '.kmz',
-            '.json',
-            '.geojson',
-            '.tif',
-            '.tiff',
-            '.geotiff',
-            '.gml',
-            '.xml'
-        ]
-    }
-
-    def setUp(self):
-        super(LayersUploaderTests, self).setUp()
-        create_layer_data()
-        self.user = 'admin'
-        self.passwd = 'admin'
-        self.anonymous_user = get_anonymous_user()
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
-    def test_geonode_upload_kml_and_import_isocategory(self):
-        """
-        Ensure a KML-File can be uploaded and the category is imported correctly from accompanying ISO-XML
-        """
-
-        filename_suffix_list = [
-            'structure',         # lower case default category
-            'planningCadastre',  # mixed case default category
-            'NewCategory',       # new category; created during import
-            'NoCategory']        # no category (gmd:topicCategory gco:nilReason="missing"); maps to None
-
-        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-        layer_upload_url = reverse('layer_upload')
-        self.client.login(username=self.user, password=self.passwd)
-
-        thelayer_basename = 'Thuenen_BD_BT1'
-        thelayer_path = os.path.join(PROJECT_ROOT, '../tests/data/kml/')
-
-        for fnsuffix in filename_suffix_list:
-            files = dict(
-                base_file=SimpleUploadedFile(
-                    f"{thelayer_basename}_{fnsuffix}.kml",
-                    open(f"{thelayer_path + thelayer_basename}_{fnsuffix}.kml", mode='rb').read()),
-                xml_file=SimpleUploadedFile(
-                    f"{thelayer_basename}_{fnsuffix}.xml",
-                    open(f"{thelayer_path + thelayer_basename}_{fnsuffix}.xml", mode='rb').read())
-            )
-            files['permissions'] = '{}'
-            files['charset'] = 'utf-8'
-            files['layer_title'] = 'Thuenen_BD_BT1'
-            resp = self.client.post(layer_upload_url, data=files)
-            # Check response status code
-            self.assertEqual(resp.status_code, 200)
-
-            # Check response status code
-            if resp.status_code == 200:
-                content = resp.content
-                if isinstance(content, bytes):
-                    content = content.decode('UTF-8')
-                data = json.loads(content)
-
-                # Check success
-                self.assertTrue(data['success'])
-
-                # Retrieve the layer from DB
-                # the name may have changed (lowercase/suffix, ... e.g. 'url': '/layers/:geonode:thuenen_bd_bt1_dgyy')
-                _lname = data['url'].split(':')[-1]
-                _l = Layer.objects.get(name=_lname)
-
-                # except for NoCategory
-                # each layer must have a geonode category object with exactly same identifier
-                if fnsuffix == 'NoCategory':
-                    category_object = None
-                else:
-                    category_object = TopicCategory.objects.get(identifier=fnsuffix)
-
-                self.assertEqual(_l.category, category_object)
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
-    def test_geonode_rest_layer_uploader(self):
-        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-        layer_upload_url = reverse('layer_upload')
-        self.client.login(username=self.user, password=self.passwd)
-        # Check upload for each charset
-        thelayer_name = 'ming_female_1'
-        thelayer_path = os.path.join(
-            PROJECT_ROOT,
-            f'../tests/data/{thelayer_name}')
-        files = dict(
-            base_file=SimpleUploadedFile(
-                f'{thelayer_name}.shp',
-                open(os.path.join(thelayer_path,
-                                  f'{thelayer_name}.shp'), mode='rb').read()),
-            shx_file=SimpleUploadedFile(
-                f'{thelayer_name}.shx',
-                open(os.path.join(thelayer_path,
-                                  f'{thelayer_name}.shx'), mode='rb').read()),
-            dbf_file=SimpleUploadedFile(
-                f'{thelayer_name}.dbf',
-                open(os.path.join(thelayer_path,
-                                  f'{thelayer_name}.dbf'), mode='rb').read()),
-            prj_file=SimpleUploadedFile(
-                f'{thelayer_name}.prj',
-                open(os.path.join(thelayer_path,
-                                  f'{thelayer_name}.prj'), mode='rb').read())
-        )
-        files['permissions'] = '{}'
-        files['charset'] = 'windows-1258'
-        files['layer_title'] = 'test layer_windows-1258'
-        resp = self.client.post(layer_upload_url, data=files)
-        # Check response status code
-        if resp.status_code == 200:
-            # Retrieve the layer from DB
-            content = resp.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            data = json.loads(content)
-            # Check success
-            self.assertTrue(data['success'])
-            _lname = data['url'].split(':')[-1]
-            _l = Layer.objects.get(name=_lname)
-            # Check the layer has been published
-            self.assertTrue(_l.is_published)
-            # Check errors
-            self.assertNotIn('errors', data)
-            self.assertNotIn('errormsgs', data)
-            self.assertNotIn('traceback', data)
-            self.assertNotIn('context', data)
-            self.assertNotIn('upload_session', data)
-            self.assertEqual(data['bbox'], _l.bbox_string)
-            self.assertEqual(
-                data['crs'],
-                {
-                    'type': 'name',
-                    'properties': _l.srid
-                }
-            )
-            self.assertEqual(
-                data['ogc_backend'],
-                settings.OGC_SERVER['default']['BACKEND']
-            )
-            _l.delete()
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
-    @patch('geonode.thumbs.thumbnails.create_thumbnail')
-    def test_geonode_same_UUID_error(self, thumbnail_mock):
-        """
-        Ensure a new layer with same UUID metadata cannot be uploaded
-        """
-        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-        layer_upload_url = reverse('layer_upload')
-        self.client.login(username=self.user, password=self.passwd)
-        # Check upload for each charset
-        thelayer_name = 'hydrodata'
-        thelayer_path = os.path.join(
-            PROJECT_ROOT,
-            f'../tests/data/{thelayer_name}')
-        # Uploading the first one should be OK
-        same_uuid_root_file = 'same_uuid_a'
-        files = dict(
-            base_file=SimpleUploadedFile(
-                f'{same_uuid_root_file}.shp',
-                open(os.path.join(thelayer_path,
-                                  f'{same_uuid_root_file}.shp'), mode='rb').read()),
-            shx_file=SimpleUploadedFile(
-                f'{same_uuid_root_file}.shx',
-                open(os.path.join(thelayer_path,
-                                  f'{same_uuid_root_file}.shx'), mode='rb').read()),
-            dbf_file=SimpleUploadedFile(
-                f'{same_uuid_root_file}.dbf',
-                open(os.path.join(thelayer_path,
-                                  f'{same_uuid_root_file}.dbf'), mode='rb').read()),
-            prj_file=SimpleUploadedFile(
-                f'{same_uuid_root_file}.prj',
-                open(os.path.join(thelayer_path,
-                                  f'{same_uuid_root_file}.prj'), mode='rb').read()),
-            xml_file=SimpleUploadedFile(
-                f'{same_uuid_root_file}.xml',
-                open(os.path.join(thelayer_path,
-                                  f'{same_uuid_root_file}.xml'), mode='rb').read())
-        )
-        files['permissions'] = '{}'
-        files['charset'] = 'utf-8'
-        files['layer_title'] = f'test layer_{same_uuid_root_file}'
-        resp = self.client.post(layer_upload_url, data=files)
-        # Check response status code
-        self.assertEqual(resp.status_code, 200)
-
-        # Uploading the second one should give an ERROR
-        same_uuid_root_file = 'same_uuid_b'
-        files = dict(
-            base_file=SimpleUploadedFile(
-                f'{same_uuid_root_file}.shp',
-                open(os.path.join(thelayer_path,
-                                  f'{same_uuid_root_file}.shp'), mode='rb').read()),
-            shx_file=SimpleUploadedFile(
-                f'{same_uuid_root_file}.shx',
-                open(os.path.join(thelayer_path,
-                                  f'{same_uuid_root_file}.shx'), mode='rb').read()),
-            dbf_file=SimpleUploadedFile(
-                f'{same_uuid_root_file}.dbf',
-                open(os.path.join(thelayer_path,
-                                  f'{same_uuid_root_file}.dbf'), mode='rb').read()),
-            prj_file=SimpleUploadedFile(
-                f'{same_uuid_root_file}.prj',
-                open(os.path.join(thelayer_path,
-                                  f'{same_uuid_root_file}.prj'), mode='rb').read()),
-            xml_file=SimpleUploadedFile(
-                f'{same_uuid_root_file}.xml',
-                open(os.path.join(thelayer_path,
-                                  f'{same_uuid_root_file}.xml'), mode='rb').read())
-        )
-        files['permissions'] = '{}'
-        files['charset'] = 'utf-8'
-        files['layer_title'] = f'test layer_{same_uuid_root_file}'
-        resp = self.client.post(layer_upload_url, data=files)
-        # Check response status code
-        self.assertEqual(resp.status_code, 400)
-        content = resp.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        data = json.loads(content)
-        # Check errors
-        self.assertFalse(data['success'])
-        self.assertEqual(data['errormsgs'], 'Failed to upload the layer')
-        self.assertEqual(data['errors'], 'The UUID identifier from the XML Metadata is already in use in this system.')
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
@@ -2033,3 +1693,160 @@ class TestGsHandleLayer(GeoNodeBaseTestSupport):
         layer = create_single_layer('fake_layer')
         actual = gs_handle_layer(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
         self.assertIsNone(actual)
+
+
+class TestIsXmlUploadOnly(TestCase):
+    '''
+    This function will check if the files uploaded is a metadata file
+    '''
+    def setUp(self):
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.request = RequestFactory()
+
+    def test_give_single_file_should_return_True(self):
+        with open(self.exml_path, 'rb') as f:
+            request = self.request.post('/random/url')
+            request.FILES['base_file'] = f
+        actual = is_xml_upload_only(request)
+        self.assertTrue(actual)
+
+    def test_give_single_file_should_return_False(self):
+        base_path = gisdata.GOOD_DATA
+        with open(f'{base_path}/vector/single_point.shp', 'rb') as f:
+            request = self.request.post('/random/url')
+            request.FILES['base_file'] = f
+        actual = is_xml_upload_only(request)
+        self.assertFalse(actual)
+
+
+class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
+
+    fixtures = ["group_test_data.json", "default_oauth_apps.json"]
+
+    def setUp(self):
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
+        self.sut = create_single_layer("single_point")
+
+    def test_xml_form_without_files_should_raise_500(self):
+        files = dict()
+        files['permissions'] = '{}'
+        files['charset'] = 'utf-8'
+        self.client.login(username="admin", password="admin")
+        resp = self.client.post(reverse('layer_upload'), data=files)
+        self.assertEqual(500, resp.status_code)
+
+    def test_xml_should_return_404_if_the_layer_does_not_exists(self):
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.exml_path, 'r'),
+            "xml_file": open(self.exml_path, 'r'),
+            "layer_title": "Fake layer title",
+            "metadata_upload_form": True,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(404, resp.status_code)
+
+    def test_xml_should_update_the_layer_with_the_expected_values(self):
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.exml_path, 'r'),
+            "xml_file": open(self.exml_path, 'r'),
+            "layer_title": "geonode:single_point",
+            "metadata_upload_form": True,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        prev_layer = Layer.objects.get(typename="geonode:single_point")
+        self.assertEqual(0, prev_layer.keywords.count())
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(200, resp.status_code)
+        updated_layer = Layer.objects.get(typename="geonode:single_point")
+        # just checking some values if are updated
+        self.assertEqual(6, updated_layer.keywords.all().count())
+
+    def test_sld_should_raise_500_if_is_invalid(self):
+        user = get_user_model().objects.get(username="admin")
+        layer = create_layer(
+                "single_point",
+                "single_point",
+                user,
+                'Point'
+            )
+
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.sld_path, 'r'),
+            "sld_file": open(self.sld_path, 'r'),
+            "layer_title": "random",
+            "metadata_upload_form": False,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        self.assertEqual(1, layer.styles.count())
+        self.assertEqual("Default Point", layer.styles.first().sld_title)
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(500, resp.status_code)
+        self.assertFalse(resp.json().get('success'))
+        self.assertEqual('No Layer matches the given query.', resp.json().get('errors'))
+
+    def test_sld_should_update_the_layer_with_the_expected_values(self):
+        user = get_user_model().objects.get(username="admin")
+        layer = create_layer(
+                "single_point",
+                "single_point",
+                user,
+                'Point'
+            )
+
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.sld_path, 'r'),
+            "sld_file": open(self.sld_path, 'r'),
+            "layer_title": f"geonode:{layer.name}",
+            "metadata_upload_form": False,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        self.assertEqual(1, layer.styles.count())
+        self.assertEqual("Default Point", layer.styles.first().sld_title)
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(200, resp.status_code)
+        updated_layer = Layer.objects.get(alternate=f"geonode:{layer.name}")
+        # just checking some values if are updated
+        self.assertEqual(1, updated_layer.styles.all().count())
+        self.assertEqual("SLD Cook Book: Simple Point", updated_layer.styles.first().sld_title)
+
+
+class TestIsSldUploadOnly(TestCase):
+    '''
+    This function will check if the files uploaded is a metadata file
+    '''
+    def setUp(self):
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
+        self.request = RequestFactory()
+
+    def test_give_single_file_should_return_True(self):
+        with open(self.exml_path, 'rb') as f:
+            request = self.request.post('/random/url')
+            request.FILES['base_file'] = f
+        actual = is_sld_upload_only(request)
+        self.assertTrue(actual)
+
+    def test_give_single_file_should_return_False(self):
+        base_path = gisdata.GOOD_DATA
+        with open(f'{base_path}/vector/single_point.shp', 'rb') as f:
+            request = self.request.post('/random/url')
+            request.FILES['base_file'] = f
+        actual = is_sld_upload_only(request)
+        self.assertFalse(actual)
