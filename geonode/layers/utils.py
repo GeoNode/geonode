@@ -22,7 +22,6 @@
 """
 
 # Standard Modules
-from geonode.upload.upload import UploaderSession
 import re
 import os
 import glob

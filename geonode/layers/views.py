@@ -19,7 +19,7 @@
 #########################################################################
 from geonode.upload.upload import UploaderSession
 from geonode.layers.metadata import parse_metadata
-from geonode.upload.upload import _update_layer_with_xml_info
+from geonode.upload.utils import update_layer_with_xml_info
 from geonode.geoserver.helpers import set_layer_style
 import tempfile
 import re
@@ -256,7 +256,7 @@ def layer_upload_metadata(request):
                     open(base_file).read())
             if layer_uuid:
                 layer.uuid = layer_uuid
-            updated_layer = _update_layer_with_xml_info(layer.first(), base_file, regions, keywords, vals)
+            updated_layer = update_layer_with_xml_info(layer.first(), base_file, regions, keywords, vals)
             updated_layer.save()
             out['status'] = ['finished']
             out['url'] = updated_layer.get_absolute_url()
