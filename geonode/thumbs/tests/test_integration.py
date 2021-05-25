@@ -18,10 +18,8 @@
 #
 #########################################################################
 
-from geonode.geoserver.tasks import geoserver_update_layers
-import os
+from geonode.geoserver.createlayer.utils import create_layer
 import json
-import gisdata
 import logging
 import tempfile
 import timeout_decorator
@@ -54,7 +52,6 @@ from geonode.thumbs.background import (
     GenericWMSBackground,
 )
 from geonode.base.populate_test_data import create_single_layer
-from geonode.geoserver.upload import geoserver_upload
 
 logger = logging.getLogger(__name__)
 
@@ -303,7 +300,6 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
-            shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
             cls.layer_coast_line = create_layer(
                 name="san_andres_y_providencia_coastline",
                 title="san_andres_y_providencia_coastline",

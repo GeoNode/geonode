@@ -20,7 +20,6 @@
 
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.geoserver.createlayer.utils import create_layer
-from geonode.base.populate_test_data import create_single_layer
 from geonode.tests.base import GeoNodeLiveTestSupport
 
 import timeout_decorator
@@ -148,7 +147,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             owner_name=norman,
             geometry_type="Point"
         )
-        layer2.category=category
+        layer2.category = category
         layer2.save()
         layer3 = create_layer(
             name='layer3',
@@ -156,7 +155,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             owner_name=admin,
             geometry_type="Point"
         )
-        layer3.category=category
+        layer3.category = category
         layer3.save()
         try:
             namespaces = {'wms': 'http://www.opengis.net/wms',
@@ -244,7 +243,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
         check_layer(layer)
 
         # we need some time to have the service up and running
-        #time.sleep(20)
+        # time.sleep(20)
 
         try:
             # request getCapabilities: layer must be there as it is published and

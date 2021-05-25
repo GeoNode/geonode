@@ -17,11 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.upload.upload import UploaderSession
 import re
 import os
-import sys
 import json
-import pickle
 import shutil
 import decimal
 import logging
@@ -32,7 +31,6 @@ from itertools import chain
 from dal import autocomplete
 from requests import Request
 from urllib.parse import quote
-from types import TracebackType
 from owslib.wfs import WebFeatureService
 
 from django.conf import settings
@@ -48,7 +46,6 @@ from django.forms.utils import ErrorList
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.db import IntegrityError, transaction
-from django.template.defaultfilters import slugify
 from django.core.exceptions import PermissionDenied
 from django.forms.models import inlineformset_factory
 from django.template.response import TemplateResponse
@@ -65,7 +62,6 @@ from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
 from geonode.base.models import (
-    Configuration,
     Thesaurus,
     TopicCategory)
 from geonode.base.enumerations import CHARSETS
@@ -73,7 +69,6 @@ from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import (
     LayerForm,
     LayerUploadForm,
-    NewLayerUploadForm,
     LayerAttributeForm)
 from geonode.layers.models import (
     Layer,
@@ -81,7 +76,6 @@ from geonode.layers.models import (
 from geonode.layers.utils import (
     get_files,
     gs_handle_layer,
-    surrogate_escape_string,
     validate_input_source)
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -102,8 +96,7 @@ from geonode.utils import (
     GXPLayer,
     GXPMap)
 from geonode.geoserver.helpers import (
-    ogc_server_settings,
-    set_layer_style)
+    ogc_server_settings)
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
 
@@ -959,7 +952,7 @@ def layer_metadata(
             layer.regions.add(*new_regions)
         layer.category = new_category
 
-        up_sessions = UploadSession.objects.filter(layer=layer)
+        up_sessions = UploaderSession.objects.filter(layer=layer)
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
             up_sessions.update(user=layer.owner)
 

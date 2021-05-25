@@ -22,16 +22,14 @@
 """
 
 # Standard Modules
+from geonode.upload.upload import UploaderSession
 import re
 import os
 import glob
 import string
-import sys
 import json
 import logging
 import tarfile
-
-from datetime import datetime
 
 from osgeo import gdal, osr, ogr
 from zipfile import ZipFile, is_zipfile
@@ -40,30 +38,17 @@ from random import choice
 # Django functionality
 from django.conf import settings
 from django.db.models import Q
-from django.db import IntegrityError, transaction
-from django.core.files import File
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import default_storage as storage
 from django.utils.translation import ugettext as _
 
 # Geonode functionality
-from geonode.base.bbox_utils import BBOXHelper
 from geonode import GeoNodeException, geoserver
-from geonode.people.utils import get_valid_user
-from geonode.base.models import (
-    Region,
-    License,
-    ResourceBase,
-    TopicCategory,
-    SpatialRepresentationType)
+from geonode.base.models import Region
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
-from geonode.layers.metadata import convert_keyword, parse_metadata
-from geonode.utils import (check_ogc_backend,
-                           unzip_file,
-                           extract_tarfile)
+from geonode.utils import check_ogc_backend
 from geonode.geoserver.helpers import gs_catalog, gs_uploader
 
 READ_PERMISSIONS = [
@@ -412,7 +397,7 @@ def delete_orphaned_layers():
     _, files = storage.listdir("layers")
 
     for filename in files:
-        if LayerFile.objects.filter(file__icontains=filename).count() == 0:
+        if Layer.objects.filter(file__icontains=filename).count() == 0:
             logger.debug(f"Deleting orphaned layer file {filename}")
             try:
                 storage.delete(os.path.join("layers", filename))
@@ -638,7 +623,7 @@ def gs_handle_layer(layer, base_files, user, action_type="append"):
 
     if is_valid_layer:
         #  opening upload session for the selected layer
-        upload_session, _ = UploadSession.objects.get_or_create(resource=layer, user=user)
+        upload_session, _ = UploaderSession.objects.get_or_create(resource=layer, user=user)
         upload_session.resource = layer
         upload_session.processed = False
         upload_session.save()
