@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import abc
 import dataclasses
 import typing
 
@@ -34,7 +35,90 @@ class BriefRemoteResource:
     should_be_harvested: bool = False
 
 
-class BaseHarvester:
+class BaseHarvesterWorker(abc.ABC):
+    remote_url: str
+    harvester_id: int
+    _harvesting_session_id: typing.Optional[int]
+
+    def __init__(self, remote_url: str, harvester_id: int):
+        self.remote_url = remote_url
+        self.harvester_id = harvester_id
+        self._harvesting_session_id = None
+
+    @classmethod
+    @abc.abstractmethod
+    def from_django_record(cls, harvester: "Harvester"):
+        """Return a new instance of the worker from the django harvester"""
+
+    @abc.abstractmethod
+    def get_num_available_resources(self) -> int:
+        """Return the number of available resources on the remote service"""
+
+    @abc.abstractmethod
+    def list_resources(
+            self, offset: typing.Optional[int] = 0) -> typing.List[BriefRemoteResource]:
+        """Return a list of resources from the remote service"""
+
+    @abc.abstractmethod
+    def check_availability(self) -> bool:
+        """Check whether the remote url is online"""
+
+    @abc.abstractmethod
+    def perform_metadata_harvesting(self) -> None:
+        """Harvest resources from the remote service"""
+
+    @property
+    @abc.abstractmethod
+    def allows_copying_resources(self) -> bool:
+        """
+        Whether copying remote resources to local GeoNode is implemented by this worker.
+        """
+
+    def get_extra_config_schema(self) -> typing.Optional[typing.Dict]:
+        """
+        Return a jsonschema schema that is used to validate models.Harvester objects.
+        """
+
+        return None
+
+    def create_harvesting_session(self) -> int:
+        session = models.HarvestingSession.objects.create(
+            harvester_id=self.harvester_id)
+        self._harvesting_session_id = session.id
+        return self._harvesting_session_id
+
+    def set_harvesting_session_id(self, id_: int) -> None:
+        self._harvesting_session_id = id_
+
+    def finish_harvesting_session(
+            self, additional_harvested_records: typing.Optional[int] = None) -> None:
+
+        update_kwargs = {
+            "ended": timezone.now()
+        }
+        if additional_harvested_records is not None:
+            update_kwargs["records_harvested"] = (
+                    F("records_harvested") + additional_harvested_records)
+        models.HarvestingSession.objects.filter(
+            id=self._harvesting_session_id).update(**update_kwargs)
+
+    def update_harvesting_session(
+            self,
+            total_records_found: typing.Optional[int] = None,
+            additional_harvested_records: typing.Optional[int] = None
+    ) -> None:
+
+        update_kwargs = {}
+        if total_records_found is not None:
+            update_kwargs["total_records_found"] = total_records_found
+        if additional_harvested_records is not None:
+            update_kwargs["records_harvested"] = (
+                    F("records_harvested") + additional_harvested_records)
+        models.HarvestingSession.objects.filter(
+            id=self._harvesting_session_id).update(**update_kwargs)
+
+
+class OldBaseHarvester:
     remote_url: str
     harvester_id: int
     _harvesting_session_id: typing.Optional[int]

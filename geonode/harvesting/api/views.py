@@ -26,16 +26,15 @@ from rest_framework.authentication import (
     BasicAuthentication,
     SessionAuthentication
 )
-from rest_framework.decorators import action
-from rest_framework.request import Request
-from rest_framework.response import Response
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework import mixins
+from rest_framework import viewsets
+from rest_framework_extensions.mixins import NestedViewSetMixin
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode.base.api.pagination import GeoNodeApiPagination
 
 from .. import models
-from ..harvesters.base import BriefRemoteResource
 from . import serializers
+from .mixins import UpdateListModelMixin
 
 import logging
 
@@ -54,7 +53,7 @@ class IsAdminOrListOnly(rest_framework.permissions.BasePermission):
         return result
 
 
-class HarvesterViewSet(DynamicModelViewSet):
+class HarvesterViewSet(NestedViewSetMixin, DynamicModelViewSet):
     authentication_classes = [
         BasicAuthentication,
         SessionAuthentication,
@@ -74,50 +73,28 @@ class HarvesterViewSet(DynamicModelViewSet):
             result = serializers.HarvesterSerializer
         return result
 
-    @action(
-        detail=True,
-        methods=["get",],
-        url_name="harvestable-resources",
-        url_path="harvestable-resources"
-    )
-    def harvestable_resources(self, request: Request, pk=None):
-        """List harvestable resources for this harvester"""
-        limit=request.query_params.get("limit")
-        harvester = self.get_object()
-        tracked_resources = harvester.harvestable_resources.values_list(
-            "unique_identifier", flat=True)
-        worker = harvester.get_harvester_worker()
-        remote_resources = worker.list_resources()
-        for resource in remote_resources:
-            if resource.unique_identifier in tracked_resources:
-                resource.should_be_harvested = True
-        context = self.get_serializer_context()
+
+class HarvestableResourceViewSet(
+    UpdateListModelMixin,
+    NestedViewSetMixin,
+    WithDynamicViewSetMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = models.HarvestableResource.objects.all()
+    pagination_class = GeoNodeApiPagination
+    serializer_class = serializers.HarvestableResourceSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        logger.debug(f"serializer_context: {context}")
+        logger.debug(f"self.request: {self.request}")
+        harvester = models.Harvester.objects.get(pk=self.kwargs["harvester_id"])
         context["harvester"] = harvester
-        logger.debug(f"Context before entering serializers: {context}")
-        serializer = serializers.HarvestableResourceListSerializer(
-            {"resources": remote_resources}, context=context)
-        # serializer = serializers.HarvestableResourceSerializer(
-        #     remote_resources, many=True, context=self.get_serializer_context())
-        return Response(serializer.data)
-
-    @harvestable_resources.mapping.patch
-    def modify_harvestable_resources(self, request: Request, pk=None):
-        """Update the list of harvestable resources for this harvester"""
-        harvester = self.get_object()
-        logger.debug(f"request.data: {request.data}")
-        context = self.get_serializer_context()
-        context["harvester"] = harvester
-        logger.debug(f"Context before entering serializers: {context}")
-        serializer = serializers.HarvestableResourceListSerializer(
-            data=request.data,
-            context=context
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        return context
 
 
-class HarvestingSessionViewSet(WithDynamicViewSetMixin, ReadOnlyModelViewSet):
+class HarvestingSessionViewSet(WithDynamicViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.HarvestingSession.objects.all()
     serializer_class = serializers.BriefHarvestingSessionSerializer
     pagination_class = GeoNodeApiPagination

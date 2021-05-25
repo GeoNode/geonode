@@ -36,7 +36,7 @@ from jsonschema import validate
 from jsonfield import JSONField
 
 from .config import HARVESTER_CLASSES
-from .harvesters.base import BaseHarvester
+from .harvesters.base import BaseHarvesterWorker
 
 logger = logging.getLogger(__name__)
 
@@ -219,7 +219,7 @@ class Harvester(models.Model):
         )
         self.save()
 
-    def get_harvester_worker(self) -> BaseHarvester:
+    def get_harvester_worker(self) -> BaseHarvesterWorker:
         worker_class = import_string(self.harvester_type)
         return worker_class.from_django_record(self)
 

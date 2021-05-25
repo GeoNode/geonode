@@ -46,10 +46,11 @@ from . import tasks
 logger = logging.getLogger(__name__)
 
 
-class GeonodeLegacyHarvester(base.BaseHarvester):
+class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     harvest_documents: bool
     harvest_layers: bool
     harvest_maps: bool
+    copy_documents: bool
     resource_title_filter: typing.Optional[str]
     http_session: requests.Session
     page_size: int = 10
@@ -60,6 +61,7 @@ class GeonodeLegacyHarvester(base.BaseHarvester):
             harvest_documents: typing.Optional[bool] = True,
             harvest_layers: typing.Optional[bool] = True,
             harvest_maps: typing.Optional[bool] = True,
+            copy_documents: typing.Optional[bool] = False,
             resource_title_filter: typing.Optional[str] = None,
             **kwargs
     ):
@@ -70,11 +72,16 @@ class GeonodeLegacyHarvester(base.BaseHarvester):
             harvest_documents if harvest_documents is not None else True)
         self.harvest_layers = harvest_layers if harvest_layers is not None else True
         self.harvest_maps = harvest_maps if harvest_maps is not None else True
+        self.copy_documents = copy_documents
         self.resource_title_filter = resource_title_filter
 
     @property
     def base_api_url(self):
         return f"{self.remote_url}/api"
+
+    @property
+    def allows_copying_resources(self) -> bool:
+        return True
 
     @classmethod
     def from_django_record(cls, record: "Harvester"):
@@ -360,141 +367,141 @@ class GeonodeLegacyHarvester(base.BaseHarvester):
         return result
 
 
-class GeonodeCswHarvester(base.BaseHarvester):
-    http_session: requests.Session
-    max_records: int = 10
-    typename: str = "gmd:MD_Metadata"
-
-    @property
-    def catalogue_url(self):
-        return f"{self.remote_url}/catalogue/csw"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.http_session = requests.Session()
-        self.http_session.headers = {
-            "Content-Type": "application/xml"
-        }
-
-    def perform_metadata_harvesting(self):
-        """Main harvesting entrypoint
-
-        This method dispatches batches of async tasks to perform the actual harvesting.
-        Implementation roughly follows this workflow:
-
-        1. Create a new harvesting session
-        2. Find out how many records exist on the remote service
-        3. Create batches of records to be harvested, whereby each batch processes as
-           much records as the GeoNode CSW API returns on each page of GetRecords
-           results
-        4. Send each batch into the task queue in order to be processed later
-
-        """
-
-        harvesting_session_id = self.create_harvesting_session()
-        try:
-            total_records, page_size = self.find_number_of_records()
-            self.update_harvesting_session(total_records_found=total_records)
-            num_pages = math.ceil(total_records / page_size)
-            logger.info(
-                f"total_records: {total_records} - page_size: {page_size!r} - "
-                f"num_pages: {num_pages!r}"
-            )
-            harvesting_finalizer = tasks.finalize_harvesting_session.signature(
-                args=(harvesting_session_id,), immutable=True)
-            harvesting_batches = []
-            for current_page in range(num_pages):
-                start_index = current_page * page_size
-                logger.debug(f"Creating batch with start_index {start_index!r}...")
-                harvesting_batches.append(
-                    tasks.harvest_csw_records.signature(
-                        args=(harvesting_session_id, start_index, page_size))
-                )
-            harvesting_workflow = chord(harvesting_batches, body=harvesting_finalizer)
-            harvesting_workflow.apply_async()
-        except requests.HTTPError as exc:
-            logger.exception(f"Could not contact {self.remote_url!r}")
-        except AttributeError as exc:
-            logger.exception(f"Could not extract total number of records")
-        except ZeroDivisionError:
-            logger.exception("Received invalid page_size from server")
-
-    def harvest_record_batch(self, start_index: int, page_size: int):
-        """Harvest a batch of records.
-
-        This method is usually called by the
-        `geonode.harvesting.harvesters.tasks.harvest_records` task. It is used to
-        perform a CSW GetRecords request to the remote GeoNode service. The response
-        is then parsed into a list of `RecordDescription` instances, making them
-        ready for being ingested into this instance of GeoNode.
-
-        """
-
-        logger.debug(
-            f"Inside harvest_record_batch. start_index: {start_index} - "
-            f"page_size: {page_size}"
-        )
-        get_records_response = self.http_session.post(
-            self.catalogue_url,
-            data=render_to_string(
-                "harvesting/harvesters_geonode_get_records.xml",
-                {
-                    "start_position": start_index,
-                    "max_records": page_size,
-                    "typename": self.typename,
-                    "result_type": "results",
-                }
-            )
-        )
-        logger.debug(
-            f"get_records_response.status_code: {get_records_response.status_code}")
-        get_records_response.raise_for_status()
-        root = etree.fromstring(get_records_response.content, parser=XML_PARSER)
-        # logger.debug(etree.tostring(root, pretty_print=True))
-        records = root.xpath(
-            f"csw:SearchResults/{self.typename}", namespaces=root.nsmap)
-        logger.debug(f"records: {records}")
-        record_descriptions = []
-        for index, record in enumerate(records):
-            logger.debug(
-                f"Harvesting metadata from record {index + 1}/{len(records)}...")
-            if len(record) == 0:  # skip empty records
-                continue
-            record_description = get_resource_descriptor(record)
-            logger.debug(
-                f"Found details for record {record_description.uuid!r} - "
-                f"{record_description.identification.title!r}"
-            )
-            record_descriptions.append(record_description)
-        self.update_harvesting_session(
-            additional_harvested_records=len(record_descriptions))
-
-    def find_number_of_records(self) -> typing.Tuple[int, int]:
-        payload = render_to_string(
-            "harvesting/harvesters_geonode_get_records.xml",
-            {
-                "result_type": "hits",
-                "start_position": 1,
-                "max_records": self.max_records,
-                "typename": self.typename,
-            }
-        )
-        get_records_response = self.http_session.post(
-            self.catalogue_url,
-            data=payload
-        )
-        get_records_response.raise_for_status()
-        root = etree.fromstring(get_records_response.content, parser=XML_PARSER)
-        # logger.debug(etree.tostring(root, pretty_print=True))
-        total_records = int(
-            root.xpath(
-                "csw:SearchResults/@numberOfRecordsMatched", namespaces=root.nsmap)[0]
-        )
-        page_size = int(
-            root.xpath(
-                "csw:SearchResults/@numberOfRecordsReturned", namespaces=root.nsmap)[0]
-        )
-        return total_records, page_size
+# class GeonodeCswHarvester(base.BaseHarvesterWorker):
+#     http_session: requests.Session
+#     max_records: int = 10
+#     typename: str = "gmd:MD_Metadata"
+#
+#     @property
+#     def catalogue_url(self):
+#         return f"{self.remote_url}/catalogue/csw"
+#
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.http_session = requests.Session()
+#         self.http_session.headers = {
+#             "Content-Type": "application/xml"
+#         }
+#
+#     def perform_metadata_harvesting(self):
+#         """Main harvesting entrypoint
+#
+#         This method dispatches batches of async tasks to perform the actual harvesting.
+#         Implementation roughly follows this workflow:
+#
+#         1. Create a new harvesting session
+#         2. Find out how many records exist on the remote service
+#         3. Create batches of records to be harvested, whereby each batch processes as
+#            much records as the GeoNode CSW API returns on each page of GetRecords
+#            results
+#         4. Send each batch into the task queue in order to be processed later
+#
+#         """
+#
+#         harvesting_session_id = self.create_harvesting_session()
+#         try:
+#             total_records, page_size = self.find_number_of_records()
+#             self.update_harvesting_session(total_records_found=total_records)
+#             num_pages = math.ceil(total_records / page_size)
+#             logger.info(
+#                 f"total_records: {total_records} - page_size: {page_size!r} - "
+#                 f"num_pages: {num_pages!r}"
+#             )
+#             harvesting_finalizer = tasks.finalize_harvesting_session.signature(
+#                 args=(harvesting_session_id,), immutable=True)
+#             harvesting_batches = []
+#             for current_page in range(num_pages):
+#                 start_index = current_page * page_size
+#                 logger.debug(f"Creating batch with start_index {start_index!r}...")
+#                 harvesting_batches.append(
+#                     tasks.harvest_csw_records.signature(
+#                         args=(harvesting_session_id, start_index, page_size))
+#                 )
+#             harvesting_workflow = chord(harvesting_batches, body=harvesting_finalizer)
+#             harvesting_workflow.apply_async()
+#         except requests.HTTPError as exc:
+#             logger.exception(f"Could not contact {self.remote_url!r}")
+#         except AttributeError as exc:
+#             logger.exception(f"Could not extract total number of records")
+#         except ZeroDivisionError:
+#             logger.exception("Received invalid page_size from server")
+#
+#     def harvest_record_batch(self, start_index: int, page_size: int):
+#         """Harvest a batch of records.
+#
+#         This method is usually called by the
+#         `geonode.harvesting.harvesters.tasks.harvest_records` task. It is used to
+#         perform a CSW GetRecords request to the remote GeoNode service. The response
+#         is then parsed into a list of `RecordDescription` instances, making them
+#         ready for being ingested into this instance of GeoNode.
+#
+#         """
+#
+#         logger.debug(
+#             f"Inside harvest_record_batch. start_index: {start_index} - "
+#             f"page_size: {page_size}"
+#         )
+#         get_records_response = self.http_session.post(
+#             self.catalogue_url,
+#             data=render_to_string(
+#                 "harvesting/harvesters_geonode_get_records.xml",
+#                 {
+#                     "start_position": start_index,
+#                     "max_records": page_size,
+#                     "typename": self.typename,
+#                     "result_type": "results",
+#                 }
+#             )
+#         )
+#         logger.debug(
+#             f"get_records_response.status_code: {get_records_response.status_code}")
+#         get_records_response.raise_for_status()
+#         root = etree.fromstring(get_records_response.content, parser=XML_PARSER)
+#         # logger.debug(etree.tostring(root, pretty_print=True))
+#         records = root.xpath(
+#             f"csw:SearchResults/{self.typename}", namespaces=root.nsmap)
+#         logger.debug(f"records: {records}")
+#         record_descriptions = []
+#         for index, record in enumerate(records):
+#             logger.debug(
+#                 f"Harvesting metadata from record {index + 1}/{len(records)}...")
+#             if len(record) == 0:  # skip empty records
+#                 continue
+#             record_description = get_resource_descriptor(record)
+#             logger.debug(
+#                 f"Found details for record {record_description.uuid!r} - "
+#                 f"{record_description.identification.title!r}"
+#             )
+#             record_descriptions.append(record_description)
+#         self.update_harvesting_session(
+#             additional_harvested_records=len(record_descriptions))
+#
+#     def find_number_of_records(self) -> typing.Tuple[int, int]:
+#         payload = render_to_string(
+#             "harvesting/harvesters_geonode_get_records.xml",
+#             {
+#                 "result_type": "hits",
+#                 "start_position": 1,
+#                 "max_records": self.max_records,
+#                 "typename": self.typename,
+#             }
+#         )
+#         get_records_response = self.http_session.post(
+#             self.catalogue_url,
+#             data=payload
+#         )
+#         get_records_response.raise_for_status()
+#         root = etree.fromstring(get_records_response.content, parser=XML_PARSER)
+#         # logger.debug(etree.tostring(root, pretty_print=True))
+#         total_records = int(
+#             root.xpath(
+#                 "csw:SearchResults/@numberOfRecordsMatched", namespaces=root.nsmap)[0]
+#         )
+#         page_size = int(
+#             root.xpath(
+#                 "csw:SearchResults/@numberOfRecordsReturned", namespaces=root.nsmap)[0]
+#         )
+#         return total_records, page_size
 
 
 def get_resource_descriptor(

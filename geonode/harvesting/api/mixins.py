@@ -17,20 +17,26 @@
 #
 #########################################################################
 
-from . import (
-    routers,
-    views,
-)
+import logging
 
-router = routers.ListPatchRouter()
+from rest_framework.request import Request
+from rest_framework.response import Response
 
-harvesters_node = router.register('harvesters', views.HarvesterViewSet)
-harvesters_node.register(
-    'harvestable-resources',
-    views.HarvestableResourceViewSet,
-    basename='harvestable-resources',
-    parents_query_lookups=['harvester_id']
-)
-router.register('harvesting-sessions', views.HarvestingSessionViewSet)
+logger = logging.getLogger(__name__)
 
-urlpatterns = router.urls
+
+class UpdateListModelMixin:
+    """Adds the `update_list` method to a viewset
+
+    `update_list` is used by `api.routers.ListPatchRouter` in order to allow
+    performing PATCH requests against a viewset's `list` endpoint
+    """
+
+    def update_list(self, request: Request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, partial=True, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        serializer.save()

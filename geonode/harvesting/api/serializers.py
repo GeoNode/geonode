@@ -17,14 +17,19 @@
 #
 #########################################################################
 
+import collections
 import logging
 import typing
 
-from dynamic_rest.serializers import (
-    DynamicEphemeralSerializer,
-    DynamicModelSerializer,
+from django.core.exceptions import ValidationError as DjangoValidationError
+from dynamic_rest.serializers import DynamicModelSerializer
+from rest_framework import exceptions
+from rest_framework.settings import api_settings
+from rest_framework.fields import (
+    get_error_detail,
+    set_value,
+    SkipField,
 )
-from rest_framework import serializers
 
 from .. import (
     models,
@@ -96,64 +101,71 @@ class BriefHarvestingSessionSerializer(DynamicModelSerializer):
         )
 
 
-# class HarvestableResourceSerializer(DynamicEphemeralSerializer):
-class HarvestableResourceSerializer(serializers.Serializer):
-    """
-    Works with a mixed set of models.HarvestableResource and just resources retrieved
-    on the fly from the remote
-    """
+class HarvestableResourceSerializer(DynamicModelSerializer):
 
-    unique_identifier = serializers.CharField(max_length=255)
-    title = serializers.CharField(max_length=255, read_only=True)
-    should_be_harvested = serializers.BooleanField(default=False)
-
-    def to_representation(self, resource: BriefRemoteResource):
-        representation = super().to_representation(resource)
-        representation["should_be_harvested"] = False
-        return representation
+    class Meta:
+        model = models.HarvestableResource
+        fields = [
+            "unique_identifier",
+            "title",
+            "should_be_harvested",
+            "available",
+            "last_updated",
+        ]
 
     def create(self, validated_data):
-        logger.debug("inside serializer update method for instance")
-        logger.debug(f"validated_data: {validated_data}")
-        logger.debug(f"context of the instance serializer: {self.context}")
-        unique_id = None  # TODO: harvester worker needs to generate this from validated_data
-        resource_exists = models.HarvestableResource.objects.filter(
-            harvester=self.context["harvester"], unique_identifier=unique_id).exists()
-        if resource_exists and validated_data["should_be_harvested"]:
-            pass  # nothing to do, resource already marked for harvesting
-        elif resource_exists:  # need to delete the resource
-            num_deleted, deleted_types = models.HarvestableResource.objects.filter(
-                harvester=self.context["harvester"],
-                unique_identifier=unique_id
-            ).delete()
-        elif not resource_exists and validated_data["should_be_harvested"]:
-            # create the resource
-            resource = models.HarvestableResource.objects.create(
-                unique_identifier=unique_id, harvester=self.context["harvester"])
-        else:
-            pass  # nothing to do, the resource does not exist and the user doesn't want it to be harvested
-
-        harvestable_resource, created = models.HarvestableResource.objects.get_or_create(
-            unique_identifier=validated_data["unique_identifier"],
+        harvestable_resource = models.HarvestableResource.objects.get(
             harvester=self.context["harvester"],
-            defaults={
-                "should_be_harvested": self.context["should_be_harvested"]
-            }
+            unique_identifier=validated_data["unique_identifier"]
         )
+        harvestable_resource.should_be_harvested = (
+            validated_data["should_be_harvested"])
+        harvestable_resource.save()
+        return harvestable_resource
 
+    def to_internal_value(self, data):
+        """Verbatim copy of the original drf `to_internal_value()` method.
 
-# class HarvestableResourceListSerializer(DynamicEphemeralSerializer):
-class HarvestableResourceListSerializer(serializers.Serializer):
-    resources = HarvestableResourceSerializer(many=True)
+        This method replicates the implementation found on
+        `restframework.serializers.Serializer.to_internal_value` method because the
+        dynamic-rest package (which we are using, and which overrides the base
+        implementation) adds some custom stuff on top of it which depends on the input
+        data containing the instance's `id` property, which we are not requiring.
 
-    def create(self, validated_data):
-        logger.debug("inside serializer create method for list")
-        logger.debug(f"validated_data: {validated_data}")
-        logger.debug(f"validated unique_identifier: {validated_data['resources'][0]['unique_identifier']}")
-        logger.debug(f"context of the list serializer: {self.context}")
-        for raw_resource in validated_data["resources"]:
-            serialized = HarvestableResourceSerializer(
-                data=raw_resource, context=self.context)
-            serialized.is_valid(raise_exception=True)
-            serialized.save()
-        return {}
+        A HarvestableResource's `id` is an implementation detail that is not exposed
+        publicly. We rely on the instance's `unique_identifier` instead.
+
+        """
+
+        if not isinstance(data, typing.Mapping):
+            message = self.error_messages['invalid'].format(
+                datatype=type(data).__name__
+            )
+            raise exceptions.ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='invalid')
+
+        ret = collections.OrderedDict()
+        errors = collections.OrderedDict()
+        fields = self._writable_fields
+
+        for field in fields:
+            validate_method = getattr(self, 'validate_' + field.field_name, None)
+            primitive_value = field.get_value(data)
+            try:
+                validated_value = field.run_validation(primitive_value)
+                if validate_method is not None:
+                    validated_value = validate_method(validated_value)
+            except exceptions.ValidationError as exc:
+                errors[field.field_name] = exc.detail
+            except DjangoValidationError as exc:
+                errors[field.field_name] = get_error_detail(exc)
+            except SkipField:
+                pass
+            else:
+                set_value(ret, field.source_attrs, validated_value)
+
+        if errors:
+            raise exceptions.ValidationError(errors)
+
+        return ret
