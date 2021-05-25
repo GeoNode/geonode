@@ -34,7 +34,7 @@ from geonode.services.views import services
 from geonode.maps.models import Map
 from geonode.maps.views import map_embed
 from geonode.geoapps.views import geoapp_edit
-from geonode.layers.views import layer_upload, layer_embed
+from geonode.layers.views import layer_embed
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -63,7 +63,6 @@ class MapsApiTests(APITestCase, URLPatternsTestCase):
         url(r'^api/v2/', include(router.urls)),
         url(r'^api/v2/', include('geonode.api.urls')),
         url(r'^api/v2/api-auth/', include('rest_framework.urls', namespace='geonode_rest_framework')),
-        url(r'^upload$', layer_upload, name='layer_upload'),
         url(r'^$',
             TemplateView.as_view(template_name='layers/layer_list.html'),
             {'facet_type': 'layers', 'is_layer': True},

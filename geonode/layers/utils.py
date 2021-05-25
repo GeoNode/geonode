@@ -708,3 +708,17 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
             except Exception as e:
                 raise Exception(
                     _(f"Some error occurred while trying to access the uploaded schema: {str(e)}"))
+
+
+def is_xml_upload_only(request):
+    # will check if only the XML file is provided
+    return mdata_search_by_type(request, 'xml')
+
+
+def is_sld_upload_only(request):
+    return mdata_search_by_type(request, 'sld')
+
+
+def mdata_search_by_type(request, filetype):
+    files = list(set([v.name for k, v in request.FILES.items()]))
+    return len(files) == 1 and all([filetype in f for f in files])

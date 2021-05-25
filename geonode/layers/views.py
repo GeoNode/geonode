@@ -18,6 +18,10 @@
 #
 #########################################################################
 from geonode.upload.upload import UploaderSession
+from geonode.layers.metadata import parse_metadata
+from geonode.upload.upload import _update_layer_with_xml_info
+from geonode.geoserver.helpers import set_layer_style
+import tempfile
 import re
 import os
 import json
@@ -69,13 +73,16 @@ from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import (
     LayerForm,
     LayerUploadForm,
-    LayerAttributeForm)
+    LayerAttributeForm,
+    NewLayerUploadForm)
 from geonode.layers.models import (
     Layer,
     Attribute)
 from geonode.layers.utils import (
     get_files,
     gs_handle_layer,
+    is_sld_upload_only,
+    is_xml_upload_only,
     validate_input_source)
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -99,6 +106,7 @@ from geonode.geoserver.helpers import (
     ogc_server_settings)
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
+from geonode.upload.views import _select_relevant_files, _write_uploaded_files_to_disk
 
 from celery.utils.log import get_logger
 
@@ -189,6 +197,20 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
 
 # Basic Layer Views #
 
+@login_required
+def layer_upload(request, template='upload/layer_upload.html'):
+    if request.method == 'GET':
+        return layer_upload_handle_get(request, template)
+    elif request.method == 'POST' and is_xml_upload_only(request):
+        return layer_upload_metadata(request)
+    elif request.method == 'POST' and is_sld_upload_only(request):
+        return layer_style_upload(request)
+    out = {"errormsgs": "Please, upload a valid XML file"}
+    return HttpResponse(
+        json.dumps(out),
+        content_type='application/json',
+        status=500)
+
 
 def layer_upload_handle_get(request, template):
     mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
@@ -206,19 +228,118 @@ def layer_upload_handle_get(request, template):
     return render(request, template, context=ctx)
 
 
-def layer_upload_handle_post(request, template):
+def layer_upload_metadata(request):
+    out = {}
+    errormsgs = []
+
+    form = NewLayerUploadForm(request.POST, request.FILES)
+
+    if form.is_valid():
+
+        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+
+        relevant_files = _select_relevant_files(
+            ['xml'],
+            iter(request.FILES.values())
+        )
+
+        logger.debug(f"relevant_files: {relevant_files}")
+
+        _write_uploaded_files_to_disk(tempdir, relevant_files)
+
+        base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
+
+        name = form.cleaned_data['layer_title']
+        layer = Layer.objects.filter(typename=name)
+        if layer.exists():
+            layer_uuid, vals, regions, keywords, _ = parse_metadata(
+                    open(base_file).read())
+            if layer_uuid:
+                layer.uuid = layer_uuid
+            updated_layer = _update_layer_with_xml_info(layer.first(), base_file, regions, keywords, vals)
+            updated_layer.save()
+            out['status'] = ['finished']
+            out['url'] = updated_layer.get_absolute_url()
+            out['bbox'] = updated_layer.bbox_string
+            out['crs'] = {
+                'type': 'name',
+                'properties': updated_layer.srid
+            }
+            out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
+            upload_session = updated_layer.upload_session
+            if upload_session:
+                upload_session.processed = True
+                upload_session.save()
+            status_code = 200
+            out['success'] = True
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=status_code)
+        else:
+            out['success'] = False
+            out['errors'] = "Layer selected does not exists"
+            status_code = 404
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=status_code)
+    else:
+        for e in form.errors.values():
+            errormsgs.extend([escape(v) for v in e])
+        out['errors'] = form.errors
+        out['errormsgs'] = errormsgs
     return HttpResponse(
-        json.dumps({}),
+        json.dumps(out),
         content_type='application/json',
         status=500)
 
 
-@login_required
-def layer_upload(request, template='upload/layer_upload.html'):
-    if request.method == 'GET':
-        return layer_upload_handle_get(request, template)
-    elif request.method == 'POST':
-        return layer_upload_handle_post(request, template)
+def layer_style_upload(request):
+    form = NewLayerUploadForm(request.POST, request.FILES)
+    body = {}
+    if not form.is_valid():
+        body['success'] = False
+        body['errors'] = form.errors
+        return HttpResponse(
+            json.dumps(body),
+            content_type='application/json',
+            status=500)
+
+    status_code = 200
+    try:
+        data = form.cleaned_data
+        body = {
+            'success': True,
+            'style': data.get('layer_title'),
+        }
+
+        layer = _resolve_layer(
+            request,
+            data.get('layer_title'),
+            'base.change_resourcebase',
+            _PERMISSION_MSG_MODIFY)
+
+        sld = request.FILES['sld_file'].read()
+
+        set_layer_style(layer, data.get('layer_title'), sld)
+        body['url'] = layer.get_absolute_url()
+        body['bbox'] = layer.bbox_string
+        body['crs'] = {
+            'type': 'name',
+            'properties': layer.srid
+        }
+        body['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
+        body['status'] = ['finished']
+    except Exception as e:
+        status_code = 500
+        body['success'] = False
+        body['errors'] = e.args[0]
+
+    return HttpResponse(
+        json.dumps(body),
+        content_type='application/json',
+        status=500)
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):

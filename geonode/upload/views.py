@@ -673,7 +673,7 @@ _steps = {
     'csv': csv_step_view,
     'check': check_step_view,
     'time': time_step_view,
-    'final': final_step_view,
+    'final': final_step_view
 }
 
 
