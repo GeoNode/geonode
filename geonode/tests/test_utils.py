@@ -28,6 +28,7 @@ from unittest.mock import patch
 from datetime import datetime, timedelta
 
 from django.db.models import signals
+from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Polygon
 from django.core.management import call_command
 
@@ -146,6 +147,7 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         super(TestSetAttributes, self).setUp()
         # Load users to log in as
         call_command('loaddata', 'people_data', verbosity=0)
+        self.user = get_user_model().objects.get(username='admin')
 
     def test_set_attributes_creates_attributes(self):
         """ Test utility function set_attributes() which creates Attribute instances attached
@@ -161,6 +163,7 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
 
         # Create dummy layer to attach attributes to
         _l = Layer.objects.create(
+            owner=self.user,
             name='dummy_layer',
             bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
             srid='EPSG:4326')

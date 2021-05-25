@@ -18,6 +18,8 @@
 #
 #########################################################################
 from django.conf import settings
+from django.contrib.auth import get_user_model
+
 from geonode.layers.models import Style, Attribute, Layer
 
 ogc_location = settings.OGC_SERVER['default']['LOCATION']
@@ -105,9 +107,11 @@ attributes = [
 ]
 
 
-def create_layer_data(object_id=None):
+def create_layer_data(object_id=None, owner=None):
     layer = Layer.objects.get(pk=object_id) if object_id else\
         Layer.objects.all().first()
+    if not owner:
+        owner = get_user_model().objects.get(username="admin")
     for style in styles:
         new_style = Style.objects.create(
             name=style['name'],
@@ -115,13 +119,15 @@ def create_layer_data(object_id=None):
             sld_body=style['sld_body'])
         layer.styles.add(new_style)
         layer.default_style = new_style
+    layer.owner = owner
     layer.save()
 
     for attr in attributes:
-        Attribute.objects.create(layer=layer,
-                                 attribute=attr['attribute'],
-                                 attribute_label=attr['attribute_label'],
-                                 attribute_type=attr['attribute_type'],
-                                 visible=attr['visible'],
-                                 display_order=attr['display_order']
-                                 )
+        Attribute.objects.create(
+            layer=layer,
+            attribute=attr['attribute'],
+            attribute_label=attr['attribute_label'],
+            attribute_type=attr['attribute_type'],
+            visible=attr['visible'],
+            display_order=attr['display_order']
+        )

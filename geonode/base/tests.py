@@ -81,7 +81,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(ThumbnailTests, self).setUp()
-        self.rb = ResourceBase.objects.create()
+        self.rb = ResourceBase.objects.create(owner=get_user_model().objects.get(username='admin'))
 
     def tearDown(self):
         super().tearDown()
@@ -142,7 +142,7 @@ class TestThumbnailUrl(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(TestThumbnailUrl, self).setUp()
-        rb = ResourceBase.objects.create()
+        rb = ResourceBase.objects.create(owner=get_user_model().objects.get(username='admin'))
         f = BytesIO(test_image.tobytes())
         f.name = 'test_image.jpeg'
         self.curated_thumbnail = CuratedThumbnail.objects.create(resource=rb, img=File(f))
@@ -791,7 +791,7 @@ class TestGetVisibleResource(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create(username='mikel_arteta')
         self.category = TopicCategory.objects.create(identifier='biota')
-        self.rb = ResourceBase.objects.create(category=self.category)
+        self.rb = ResourceBase.objects.create(category=self.category, owner=self.user)
 
     def test_category_data_not_shown_for_missing_resourcebase_permissions(self):
         """

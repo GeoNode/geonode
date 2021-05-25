@@ -39,12 +39,12 @@ from guardian.shortcuts import get_perms, remove_perm, assign_perm
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Link, Configuration
-from geonode.geoserver.helpers import ogc_server_settings
 from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.base.thumb_utils import (
     get_thumbs,
     remove_thumb)
+from geonode.utils import get_legend_url
 
 logger = logging.getLogger('geonode.base.utils')
 
@@ -100,17 +100,12 @@ def remove_duplicate_links(resource):
     if isinstance(resource, Layer):
         # fixup Legend links
         layer = resource
-        legend_url_template = (f"{ogc_server_settings.PUBLIC_LOCATION}ows?"
-                               "service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&"
-                               f"LAYER={{alternate}}&STYLE={{style_name}}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on")
         if layer.default_style and not layer.get_legend_url(style_name=layer.default_style.name):
             Link.objects.update_or_create(
                 resource=layer.resourcebase_ptr,
                 name='Legend',
                 extension='png',
-                url=legend_url_template.format(
-                    alternate=layer.alternate,
-                    style_name=layer.default_style.name),
+                url=get_legend_url(layer, layer.default_style.name),
                 mime='image/png',
                 link_type='image')
 
