@@ -338,7 +338,7 @@ def layer_style_upload(request):
     except Exception as e:
         status_code = 500
         body['success'] = False
-        body['errors'] = e.args[0]
+        body['errors'] = str(e.args[0])
 
     return HttpResponse(
         json.dumps(body),
