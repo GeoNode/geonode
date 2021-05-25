@@ -26,6 +26,7 @@ from django.conf import settings
 
 from django.db import models
 from django.db.models import signals
+from django.db.models.deletion import ProtectedError
 
 from django.urls import reverse
 from django.contrib.sites.models import Site
@@ -36,7 +37,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
-from geonode.base.models import Configuration
+from geonode.base.models import Configuration, ResourceBase
 from geonode.groups.models import GroupProfile
 from geonode.security.permissions import PERMISSIONS, READ_ONLY_AFFECTED_PERMISSIONS
 
@@ -220,6 +221,19 @@ class Profile(AbstractUser):
         super(Profile, self).save(*args, **kwargs)
         self._notify_account_activated()
         self._previous_active_state = self.is_active
+
+    def delete(self, using=None, keep_parents=False):
+        resources = ResourceBase.objects.filter(owner=self)
+        if resources:
+            default_owner = (
+                Profile.objects.filter(username='admin').first() or
+                Profile.objects.filter(is_superuser=True).first()
+            )
+            if default_owner:
+                resources.update(owner=default_owner)
+            else:
+                raise ProtectedError
+        return super().delete(using=using, keep_parents=keep_parents)
 
     def _notify_account_activated(self):
         """Notify user that its account has been activated by a staff member"""

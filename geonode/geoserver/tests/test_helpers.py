@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.contrib.auth import get_user_model
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
@@ -54,6 +55,7 @@ class HelperTest(GeoNodeBaseTestSupport):
         """
         Ensures the layer_style_manage route returns a 200.
         """
+        admin = get_user_model().objects.get(username="admin")
         layer = Layer.objects.all()[0]
         logger.debug(Layer.objects.all())
         self.assertIsNotNone(layer)
@@ -62,14 +64,14 @@ class HelperTest(GeoNodeBaseTestSupport):
         filename = filename = os.path.join(
             gisdata.GOOD_DATA,
             'vector/san_andres_y_providencia_administrative.shp')
-        vector_layer = file_upload(filename)
+        vector_layer = file_upload(filename, user=admin)
         self.assertTrue(vector_layer.is_vector())
         filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
         with self.assertRaisesRegex(Exception, "You are attempting to replace a vector layer with a raster."):
             file_upload(filename, layer=vector_layer, overwrite=True)
 
         logger.debug("Attempting to replace a raster layer with a vector.")
-        raster_layer = file_upload(filename)
+        raster_layer = file_upload(filename, user=admin)
         self.assertFalse(raster_layer.is_vector())
         filename = filename = os.path.join(
             gisdata.GOOD_DATA,
