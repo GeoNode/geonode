@@ -17,3 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
+
+RESOURCE_MANAGER_CONCRETE_CLASS = os.environ.get('RESOURCE_MANAGER_CONCRETE_CLASS', 'geonode.resource.geoserver.GeoServerResourceManager')

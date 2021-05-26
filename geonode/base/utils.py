@@ -36,11 +36,8 @@ from django.contrib.auth import get_user_model
 # Geonode functionality
 from guardian.shortcuts import get_perms, remove_perm, assign_perm
 
-from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Link, Configuration
-from geonode.maps.models import Map
-from geonode.services.models import Service
 from geonode.base.thumb_utils import (
     get_thumbs,
     remove_thumb)
@@ -165,14 +162,7 @@ class OwnerRightsRequestViewUtils:
 
     @staticmethod
     def get_resource(resource_base):
-        if resource_base.polymorphic_ctype.name == 'layer':
-            return Layer.objects.get(pk=resource_base.pk)
-        elif resource_base.polymorphic_ctype.name == 'document':
-            return Document.objects.get(pk=resource_base.pk)
-        elif resource_base.polymorphic_ctype.name == 'map':
-            return Map.objects.get(pk=resource_base.pk)
-        else:
-            return Service.objects.get(pk=resource_base.pk)
+        return resource_base.get_real_instance()
 
     @staticmethod
     def is_admin_publish_mode():

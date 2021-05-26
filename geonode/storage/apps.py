@@ -17,3 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.apps import AppConfig
+
+
+class GeoNodeStorageConfig(AppConfig):
+    name = "geonode.storage"
+    verbose_name = "GeoNode Storage Service and Manager"

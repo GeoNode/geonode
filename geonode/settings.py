@@ -656,21 +656,21 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'ERROR',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
         'mail_admins': {
-            'level': 'ERROR',
+            'level': 'INFO',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
     "loggers": {
         "django": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"], "level": "INFO", },
         "geonode": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"], "level": "INFO", },
         "geoserver-restconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
         "owslib": {
@@ -678,7 +678,7 @@ LOGGING = {
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
         "celery": {
-            'handlers': ["console"], 'level': 'ERROR', },
+            'handlers': ["console"], 'level': 'INFO', },
     },
 }
 
