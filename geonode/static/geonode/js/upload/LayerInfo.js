@@ -695,8 +695,14 @@ define(function (require, exports) {
             },
             error: function (jqXHR) {
                 self.polling = false;
-                if(jqXHR.status === 500 || jqXHR.status === 0 || jqXHR.readyState === 0){
-                  self.markError('Server Error: ' + jqXHR.statusText + gettext('<br>Please check your network connection. In case of Layer Upload make sure GeoServer is running and accepting connections.'));
+                if (jqXHR.status === 500 || jqXHR.status === 0 || jqXHR.readyState === 0) {
+                  var error = 'Server Error: ' + jqXHR.statusText + gettext('<br>Please check your network connection. In case of Layer Upload make sure GeoServer is running and accepting connections.');
+                  if (jqXHR.responseJSON !== undefined && jqXHR.responseJSON !== null) {
+                      if (jqXHR.responseJSON.errors !== undefined || jqXHR.responseJSON.error_msg !== undefined) {
+                          error = jqXHR.responseJSON.errors !== undefined ? jqXHR.responseJSON.errors : jqXHR.responseJSON.error_msg;
+                      }
+                  }
+                  self.markError(error);
                 } else if (jqXHR.status === 400 || jqXHR.status === 404) {
                   if (jqXHR.responseJSON !== undefined && jqXHR.responseJSON !== null) {
                       if (jqXHR.responseJSON.errors !== undefined) {

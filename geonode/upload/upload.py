@@ -60,6 +60,7 @@ from geonode.layers.models import TIME_REGEX_FORMAT
 from geonode.upload import UploadException, LayerNotReady
 
 from ..layers.models import Layer
+from ..layers.metadata import parse_metadata
 from ..people.utils import get_default_user
 from ..layers.utils import get_valid_layer_name
 from ..geoserver.tasks import geoserver_finalize_upload
@@ -630,6 +631,60 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     title = upload_session.layer_title
     abstract = upload_session.layer_abstract
 
+    metadata_uploaded = False
+    xml_file = upload_session.base_file[0].xml_files
+    if xml_file:
+        try:
+            # get model properties from XML
+            # If it's contained within a zip, need to extract it
+            if upload_session.base_file.archive:
+                archive = upload_session.base_file.archive
+                zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
+                zf.extract(xml_file[0], os.path.dirname(archive))
+                # Assign the absolute path to this file
+                xml_file = f"{os.path.dirname(archive)}/{xml_file[0]}"
+
+            # Sanity checks
+            if isinstance(xml_file, list):
+                if len(xml_file) > 0:
+                    xml_file = xml_file[0]
+                else:
+                    xml_file = None
+            elif not isinstance(xml_file, str):
+                xml_file = None
+
+            if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
+                layer_uuid, vals, regions, keywords, custom = parse_metadata(
+                    open(xml_file).read())
+                metadata_uploaded = True
+        except Exception as e:
+            Upload.objects.invalidate_from_session(upload_session)
+            logger.error(e)
+            raise GeoNodeException(
+                _("Exception occurred while parsing the provided Metadata file."), e)
+
+    # look for SLD
+    sld_file = upload_session.base_file[0].sld_files
+    sld_uploaded = False
+    if sld_file:
+        # If it's contained within a zip, need to extract it
+        if upload_session.base_file.archive:
+            archive = upload_session.base_file.archive
+            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
+            zf.extract(sld_file[0], os.path.dirname(archive))
+            # Assign the absolute path to this file
+            sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
+        sld_file = sld_file[0]
+        sld_uploaded = True
+    else:
+        # get_files will not find the sld if it doesn't match the base name
+        # so we've worked around that in the view - if provided, it will be here
+        if upload_session.import_sld_file:
+            logger.debug('using provided sld file')
+            base_file = upload_session.base_file
+            sld_file = base_file[0].sld_files[0]
+        sld_uploaded = False
+
     # Make sure the layer does not exists already
     if Layer.objects.filter(uuid=layer_uuid).count():
         Upload.objects.invalidate_from_session(upload_session)
@@ -703,58 +758,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions
-
-    metadata_uploaded = False
-    xml_file = upload_session.base_file[0].xml_files
-    if xml_file:
-        try:
-            # get model properties from XML
-            # If it's contained within a zip, need to extract it
-            if upload_session.base_file.archive:
-                archive = upload_session.base_file.archive
-                zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-                zf.extract(xml_file[0], os.path.dirname(archive))
-                # Assign the absolute path to this file
-                xml_file = f"{os.path.dirname(archive)}/{xml_file[0]}"
-
-            # Sanity checks
-            if isinstance(xml_file, list):
-                if len(xml_file) > 0:
-                    xml_file = xml_file[0]
-                else:
-                    xml_file = None
-            elif not isinstance(xml_file, str):
-                xml_file = None
-
-            if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
-                metadata_uploaded = True
-        except Exception as e:
-            Upload.objects.invalidate_from_session(upload_session)
-            logger.error(e)
-            raise GeoNodeException(
-                _("Exception occurred while parsing the provided Metadata file."), e)
-
-    # look for SLD
-    sld_file = upload_session.base_file[0].sld_files
-    sld_uploaded = False
-    if sld_file:
-        # If it's contained within a zip, need to extract it
-        if upload_session.base_file.archive:
-            archive = upload_session.base_file.archive
-            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-            zf.extract(sld_file[0], os.path.dirname(archive))
-            # Assign the absolute path to this file
-            sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
-        sld_file = sld_file[0]
-        sld_uploaded = True
-    else:
-        # get_files will not find the sld if it doesn't match the base name
-        # so we've worked around that in the view - if provided, it will be here
-        if upload_session.import_sld_file:
-            logger.debug('using provided sld file')
-            base_file = upload_session.base_file
-            sld_file = base_file[0].sld_files[0]
-        sld_uploaded = False
 
     geoserver_finalize_upload.apply_async(
         (import_id, saved_layer.id,
