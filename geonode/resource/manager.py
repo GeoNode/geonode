@@ -21,6 +21,8 @@ import importlib
 from . import settings as rm_settings
 
 from django.db import transaction
+from django.db.models.query import QuerySet
+
 from abc import ABCMeta, abstractmethod
 from geonode.base.models import ResourceBase
 
@@ -28,7 +30,7 @@ from geonode.base.models import ResourceBase
 class ResourceManagerInterface(metaclass=ABCMeta):
 
     @abstractmethod
-    def search(self, filter: dict, /, type: object = None) -> list:
+    def search(self, filter: dict, /, type: object = None) -> QuerySet:
         pass
 
     @abstractmethod
@@ -67,13 +69,13 @@ class ResourceManager(ResourceManagerInterface):
             return _resources.get()
         return None
 
-    def search(self, filter: dict, /, type: object = None) -> list:
+    def search(self, filter: dict, /, type: object = None) -> QuerySet:
         _class = type or ResourceBase
-        _resources = _class.objects.filter(**filter)
-        _filter = self._resource_manager.search(filter, type=type)
+        _resources_queryset = _class.objects.filter(**filter)
+        _filter = self._resource_manager.search(filter, type=_class)
         if _filter:
-            _resources.filter(_filter)
-        return _resources.all()
+            _resources_queryset.filter(_filter)
+        return _resources_queryset
 
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         instance = instance or ResourceManager._get_instance(uuid)

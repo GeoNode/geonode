@@ -18,7 +18,10 @@
 #
 #########################################################################
 import logging
+
 from .manager import ResourceManagerInterface
+
+from django.db.models.query import QuerySet
 
 from geonode.base.models import ResourceBase
 from geonode.services.enumerations import CASCADED
@@ -32,8 +35,8 @@ logger = logging.getLogger(__name__)
 
 class GeoServerResourceManager(ResourceManagerInterface):
 
-    def search(self, filter: dict, /, type: object = None) -> list:
-        return None
+    def search(self, filter: dict, /, type: object = None) -> QuerySet:
+        return type.objects.none()
 
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         if uuid and instance:
