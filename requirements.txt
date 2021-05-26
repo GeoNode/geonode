@@ -36,7 +36,7 @@ django-markdownify==0.9.0
 django-mptt==0.12.0
 django-modeltranslation>=0.11,<0.18.0
 django-treebeard==4.5.1
-django-guardian<2.3.1
+django-guardian<2.4.1
 django-downloadview==2.1.1
 django-polymorphic==3.0.0
 django-tastypie<0.15.0
@@ -143,12 +143,12 @@ pytest-bdd==4.0.2
 splinter==0.14.0
 pytest-splinter==3.3.1
 pytest-django==4.3.0
-setuptools==56.2.0
-pip==21.1.1
+setuptools==57.0.0
+pip==21.1.2
 Twisted==21.2.0
 pixelmatch==0.2.3
 factory-boy==3.2.0
 flaky==3.7.0
 selenium==3.141.0
 selenium-requests==1.3
-webdriver_manager==3.4.1
+webdriver_manager==3.4.2
