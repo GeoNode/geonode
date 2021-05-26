@@ -68,12 +68,6 @@ def geoserver_pre_delete(instance, sender, **kwargs):
 
 
 @on_ogc_backend(BACKEND_PACKAGE)
-def geoserver_pre_save(*args, **kwargs):
-    # nothing to do here, processing is pushed to post-save
-    pass
-
-
-@on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_post_save(instance, sender, created, **kwargs):
     from geonode.messaging import producer
     # this is attached to various models, (ResourceBase, Document)

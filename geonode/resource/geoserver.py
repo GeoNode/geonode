@@ -21,15 +21,19 @@ import logging
 from .manager import ResourceManagerInterface
 
 from geonode.base.models import ResourceBase
-from geonode.geoserver.helpers import gs_catalog
+from geonode.services.enumerations import CASCADED
+from geonode.geoserver.tasks import geoserver_cascading_delete
+from geonode.geoserver.helpers import (
+    gs_catalog,
+    ogc_server_settings)
 
 logger = logging.getLogger(__name__)
 
 
 class GeoServerResourceManager(ResourceManagerInterface):
 
-    def search(self, filter: dict) -> list:
-        pass
+    def search(self, filter: dict, /, type: object = None) -> list:
+        return None
 
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         if uuid and instance:
@@ -44,8 +48,19 @@ class GeoServerResourceManager(ResourceManagerInterface):
             return True
         return False
 
-    def delete(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+    def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
+        """Removes the layer from GeoServer
+        """
+        # cascading_delete should only be called if
+        # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+        if instance and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+            _real_instance = instance.get_real_instance()
+            if _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
+                if _real_instance.alternate:
+                    geoserver_cascading_delete.apply_async((_real_instance.alternate,))
+
+    def create(self, uuid: str, /, instance: ResourceBase = None) -> int:
         pass
 
-    def create(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+    def update(self, uuid: str, /, instance: ResourceBase = None) -> int:
         pass

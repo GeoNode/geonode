@@ -20,6 +20,7 @@
 import importlib
 from . import settings as rm_settings
 
+from django.db import transaction
 from abc import ABCMeta, abstractmethod
 from geonode.base.models import ResourceBase
 
@@ -27,7 +28,7 @@ from geonode.base.models import ResourceBase
 class ResourceManagerInterface(metaclass=ABCMeta):
 
     @abstractmethod
-    def search(self, filter: dict) -> list:
+    def search(self, filter: dict, /, type: object = None) -> list:
         pass
 
     @abstractmethod
@@ -35,11 +36,15 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def delete(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+    def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
         pass
 
     @abstractmethod
-    def create(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+    def create(self, uuid: str, /, instance: ResourceBase = None) -> int:
+        pass
+
+    @abstractmethod
+    def update(self, uuid: str, /, instance: ResourceBase = None) -> int:
         pass
 
 
@@ -54,21 +59,40 @@ class ResourceManager(ResourceManagerInterface):
         class_ = getattr(module, class_name)
         return class_()
 
-    def search(self, filter: dict) -> list:
-        pass
-
-    def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+    @classmethod
+    def _get_instance(cls, uuid: str) -> ResourceBase:
         _resources = ResourceBase.objects.filter(uuid=uuid)
         _exists = _resources.count() == 1
         if _exists:
-            instance = _resources.get()
-        _exists = self._resource_manager.exists(uuid, instance=instance)
-        return _exists
+            return _resources.get()
+        return None
 
-    def delete(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+    def search(self, filter: dict, /, type: object = None) -> list:
+        _class = type or ResourceBase
+        _resources = _class.objects.filter(**filter)
+        _filter = self._resource_manager.search(filter, type=type)
+        if _filter:
+            _resources.filter(_filter)
+        return _resources.all()
+
+    def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+        instance = instance or ResourceManager._get_instance(uuid)
+        if instance:
+            return self._resource_manager.exists(uuid, instance=instance)
+        return False
+
+    @transaction.atomic
+    def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
+        instance = instance or ResourceManager._get_instance(uuid)
+        if instance:
+            self._resource_manager.delete(uuid, instance=instance)
+            return instance.delete()
+        return 0
+
+    def create(self, uuid: str, /, instance: ResourceBase = None) -> int:
         pass
 
-    def create(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+    def update(self, uuid: str, /, instance: ResourceBase = None) -> int:
         pass
 
 
