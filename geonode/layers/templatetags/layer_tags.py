@@ -18,11 +18,15 @@
 #
 #########################################################################
 import os
+import logging
+
 from django import template
 from django.conf import settings
-from urllib.parse import urlparse
+
+from urllib.parse import urlparse, parse_qs
 from inflection import camelize as do_camelize
 
+logger = logging.getLogger(__name__)
 register = template.Library()
 
 
@@ -64,3 +68,13 @@ def get_sld_name_from_url(sld_url):
             urlparse(sld_url).path).split('.')[0]
     else:
         return sld_url
+
+
+@register.simple_tag
+def get_style_name_from_legend_url(legend_url):
+    try:
+        parsed = urlparse(legend_url)
+        return parse_qs(parsed.query)['STYLE'][0]
+    except Exception as e:
+        logger.error(e)
+        return None
