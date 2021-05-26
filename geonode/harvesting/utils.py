@@ -26,9 +26,12 @@ XML_PARSER = etree.XMLParser(resolve_entities=False)
 
 
 def update_harvester_availability(harvester: "Harvester") -> bool:
+    harvester.status = harvester.STATUS_CHECKING_AVAILABILITY
+    harvester.save()
     worker = harvester.get_harvester_worker()
     harvester.last_checked_availability = now()
     available = worker.check_availability()
     harvester.remote_available = available
+    harvester.status = harvester.STATUS_READY
     harvester.save()
     return available

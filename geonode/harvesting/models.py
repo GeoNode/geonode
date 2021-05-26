@@ -43,17 +43,19 @@ logger = logging.getLogger(__name__)
 
 class Harvester(models.Model):
     STATUS_READY = "ready"
-    STATUS_UPDATING_HARVESTABLE_RESOURCES = "updating"
-    STATUS_PERFORMING_HARVESTING = "harvesting"
+    STATUS_UPDATING_HARVESTABLE_RESOURCES = "updating-harvestable-resources"
+    STATUS_PERFORMING_HARVESTING = "harvesting-resources"
+    STATUS_CHECKING_AVAILABILITY = "checking-availability"
     STATUS_CHOICES = [
         (STATUS_READY, _("ready")),
-        (STATUS_UPDATING_HARVESTABLE_RESOURCES, _("updating")),
-        (STATUS_PERFORMING_HARVESTING, _("harvesting")),
+        (STATUS_UPDATING_HARVESTABLE_RESOURCES, _("updating-harvestable-resources")),
+        (STATUS_PERFORMING_HARVESTING, _("harvesting-resources")),
+        (STATUS_CHECKING_AVAILABILITY, _("checking-availability")),
     ]
 
     name = models.CharField(max_length=100, help_text=_("Harvester name"))
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default=STATUS_READY)
+        max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
     remote_url = models.URLField(
         help_text=_("Base URL of the remote service that is to be harvested"))
     scheduling_enabled = models.BooleanField(
@@ -238,6 +240,15 @@ class HarvestingSession(models.Model):
 
 
 class HarvestableResource(models.Model):
+    STATUS_READY = "ready"
+    STATUS_UPDATING_HARVESTABLE_RESOURCE = "updating-harvestable-resource"
+    STATUS_PERFORMING_HARVESTING = "harvesting-resource"
+    STATUS_CHOICES = [
+        (STATUS_READY, _("ready")),
+        (STATUS_UPDATING_HARVESTABLE_RESOURCE, _("updating-harvestable-resource")),
+        (STATUS_PERFORMING_HARVESTING, _("harvesting-resource")),
+    ]
+
     unique_identifier = models.CharField(
         max_length=255,
         help_text=_(
@@ -248,6 +259,8 @@ class HarvestableResource(models.Model):
             "the availability of resources between consecutive harvesting sessions."
         ),
     )
+    status = models.CharField(
+        max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
     title = models.CharField(max_length=255)
     harvester = models.ForeignKey(
         Harvester,

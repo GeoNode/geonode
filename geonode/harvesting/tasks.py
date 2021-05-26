@@ -60,8 +60,7 @@ def harvesting_session_dispatcher(self, harvester_id: int):
 )
 def check_harvester_available(self, harvester_id: int):
     harvester = models.Harvester.objects.get(pk=harvester_id)
-    worker = harvester.get_harvester_worker()
-    available = worker.update_availability()
+    available = utils.update_harvester_availability(harvester)
     logger.info(
         f"Harvester {harvester!r}: remote server is "
         f"{'' if available else 'not'} available"
