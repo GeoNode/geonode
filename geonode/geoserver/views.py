@@ -343,36 +343,6 @@ def layer_style_manage(request, layername):
             )
 
 
-def feature_edit_check(request, layername, permission='change_layer_data'):
-    """
-    If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
-    Otherwise, return a status of 401 (unauthorized).
-    """
-    try:
-        layer = _resolve_layer(request, layername)
-    except Exception:
-        # Intercept and handle correctly resource not found exception
-        return HttpResponse(
-            json.dumps({'authorized': False}), content_type="application/json")
-    datastore = ogc_server_settings.DATASTORE
-    authorized = False
-    if layer.user_can(request.user, permission):
-        authorized = True
-        if permission == 'change_layer_data':
-            if not (layer.storeType == 'dataStore' and datastore):
-                authorized = False
-    return HttpResponse(
-        json.dumps({'authorized': authorized}), content_type="application/json")
-
-
-def style_edit_check(request, layername):
-    """
-    If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
-    Otherwise, return a status of 401 (unauthorized).
-    """
-    return feature_edit_check(request, layername, permission='change_layer_style')
-
-
 def style_change_check(request, path):
     """
     If the layer has not change_layer_style permission, return a status of
