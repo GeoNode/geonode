@@ -31,6 +31,7 @@ from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedFiel
 
 from avatar.templatetags.avatar_tags import avatar_url
 
+from geonode.favorite.models import Favorite
 from geonode.base.models import (
     ResourceBase,
     HierarchicalKeyword,
@@ -337,7 +338,27 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             data['perms'] = instance.get_user_perms(request.user).union(
                 instance.get_self_resource().get_user_perms(request.user)
             )
+            if not request.user.is_anonymous:
+                favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
+                data['favourite'] = favorite > 0
         return data
+
+
+class FavoriteSerializer(DynamicModelSerializer):
+    resource = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Favorite
+        name = 'favorites'
+        fields = 'resource',
+
+    def to_representation(self, value):
+        data = super(FavoriteSerializer, self).to_representation(value)
+        return data['resource']
+
+    def get_resource(self, instance):
+        resource = ResourceBase.objects.get(pk=instance.object_id)
+        return ResourceBaseSerializer(resource).data
 
 
 class BaseResourceCountSerializer(BaseDynamicModelSerializer):
