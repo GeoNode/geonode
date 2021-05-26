@@ -400,6 +400,11 @@
           beforeSend: function(){
                // Handle the beforeSend event
                try {
+                    $(".lmask").modal("show");
+               } catch(err) {
+                   console.log(err);
+               }
+               try {
                    $("#_perms_processing").modal("show");
                } catch(err) {
                    console.log(err);
@@ -407,6 +412,11 @@
           },
           complete: function(){
                // Handle the complete event
+               try {
+                    $(".lmask").modal("hide");
+               } catch(err) {
+                   console.log(err);
+               }
                try {
                    $("#_perms_processing").modal("hide");
                } catch(err) {
@@ -462,6 +472,11 @@
             beforeSend: function(){
                  // Handle the beforeSend event
                  try {
+                    $(".lmask").modal("show");
+                 } catch (err) {
+                    console.log(err);
+                 }
+                 try {
                      $("#_perms_processing").modal("show");
                  } catch(err) {
                      console.log(err);
@@ -469,6 +484,11 @@
             },
             complete: function(){
                  // Handle the complete event
+                 try {
+                    $(".lmask").modal("hide");
+                 } catch (err) {
+                    console.log(err);
+                 }
                  try {
                      $("#_perms_processing").modal("hide");
                  } catch(err) {
@@ -532,6 +552,22 @@
             url: "{% url 'attributes_sats_refresh' %}",
             dataType: 'json',
             data: { uuid: "{{ resource.uuid }}" },
+            beforeSend: function(){
+                 // Handle the beforeSend event
+                 try {
+                    $(".lmask").modal("show");
+                 } catch (err) {
+                    console.log(err);
+                 }
+            },
+            complete: function(){
+                 // Handle the complete event
+                 try {
+                    $(".lmask").modal("hide");
+                 } catch (err) {
+                    console.log(err);
+                 }
+            },
             success: function(data) {
               $("#modal_perms").modal("hide");
               message = data;
@@ -570,6 +606,22 @@
             url: "{% url 'invalidate_tiledlayer_cache' %}",
             dataType: 'json',
             data: { uuid: "{{ resource.uuid }}" },
+            beforeSend: function(){
+                 // Handle the beforeSend event
+                 try {
+                    $(".lmask").modal("show");
+                 } catch (err) {
+                    console.log(err);
+                 }
+            },
+            complete: function(){
+                 // Handle the complete event
+                 try {
+                    $(".lmask").modal("hide");
+                 } catch (err) {
+                    console.log(err);
+                 }
+            },
             success: function(data) {
               $("#modal_perms").modal("hide");
               message = data;

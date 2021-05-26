@@ -19,12 +19,12 @@
 #########################################################################
 
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 GEOMETRY_TYPES = (
-    ('Point', 'Points'),
-    ('LineString', 'Lines'),
-    ('Polygon', 'Polygons'),
+    ('Point', _('Points')),
+    ('LineString', _('Lines')),
+    ('Polygon', _('Polygons')),
 )
 
 

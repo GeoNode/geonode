@@ -783,7 +783,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = ast.literal_eval(os.environ.get('SECURE_HSTS_IN
 # Replacement of the default authentication backend in order to support
 # permissions per object.
 AUTHENTICATION_BACKENDS = (
-    'oauth2_provider.backends.OAuth2Backend',
+    # 'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -804,9 +804,10 @@ OAUTH2_PROVIDER = {
 
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
     'OAUTH2_SERVER_CLASS': 'geonode.security.oauth2_servers.OIDCServer',
-    'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
+    # 'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
 
     # OpenID Connect
+    "OIDC_ENABLED": True,
     "OIDC_ISS_ENDPOINT": SITEURL,
     "OIDC_USERINFO_ENDPOINT": f"{SITEURL}api/o/v4/tokeninfo/",
     "OIDC_RSA_PRIVATE_KEY": """-----BEGIN RSA PRIVATE KEY-----

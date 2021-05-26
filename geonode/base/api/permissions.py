@@ -18,11 +18,12 @@
 #
 #########################################################################
 import logging
-from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
+
+from geonode.security.utils import get_resources_with_perms
 
 logger = logging.getLogger(__name__)
 
@@ -151,9 +152,6 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
         # We want to defer this import until runtime, rather than import-time.
         # See https://github.com/encode/django-rest-framework/issues/4608
         # (Also see #1624 for why we need to make this import explicitly)
-        from guardian.shortcuts import get_objects_for_user
-        from geonode.base.models import ResourceBase
-        from geonode.security.utils import get_visible_resources
 
         user = request.user
         # perm_format = '%(app_label)s.view_%(model_name)s'
@@ -162,22 +160,7 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
         #     'model_name': queryset.model._meta.model_name,
         # }
 
-        if settings.SKIP_PERMS_FILTER:
-            resources = ResourceBase.objects.all()
-        else:
-            resources = get_objects_for_user(
-                user,
-                'base.view_resourcebase',
-                **self.shortcut_kwargs
-            )
-        logger.debug(f" user: {user} -- resources: {resources}")
-
-        obj_with_perms = get_visible_resources(
-            resources,
-            user,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+        obj_with_perms = get_resources_with_perms(user, shortcut_kwargs=self.shortcut_kwargs)
         logger.debug(f" user: {user} -- obj_with_perms: {obj_with_perms}")
 
         return queryset.filter(id__in=obj_with_perms.values('id'))

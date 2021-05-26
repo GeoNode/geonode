@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/geonode/geonode/"
@@ -259,6 +259,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr ""
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "korte samenvatting van de inhoud van de bron(nen)"
+
 #, fuzzy
 #| msgid "version of the cited resource"
 msgid "reference date for the cited resource"
@@ -270,8 +273,13 @@ msgstr ""
 msgid "version of the cited resource"
 msgstr "versie van de geciteerde bron"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "korte samenvatting van de inhoud van de bron(nen)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr ""
@@ -333,22 +341,6 @@ msgid ""
 "dataset"
 msgstr ""
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Information of Layer"
-msgid "Attribution"
-msgstr "Informatie over de laag"
-
 msgid "title"
 msgstr "titel"
 
@@ -356,6 +348,12 @@ msgstr "titel"
 #| msgid "version of the cited resource"
 msgid "name by which the cited resource is known"
 msgstr "versie van de geciteerde bron"
+
+msgid "abstract"
+msgstr "abstract"
+
+msgid "purpose"
+msgstr "doel"
 
 msgid "date"
 msgstr "datum"
@@ -366,11 +364,13 @@ msgstr "datum type"
 msgid "edition"
 msgstr "editie"
 
-msgid "abstract"
-msgstr "abstract"
+#, fuzzy
+#| msgid "Information of Layer"
+msgid "Attribution"
+msgstr "Informatie over de laag"
 
-msgid "purpose"
-msgstr "doel"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "onderhoudsfrequentie"
@@ -1246,6 +1246,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Metadata"
+msgid "Required Metadata"
+msgstr "Metadata"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "Download Metadata"
@@ -1580,6 +1585,17 @@ msgid "A rating was given to a layer"
 msgstr "Er werd een waardering toegekend aan een document"
 
 #, fuzzy
+#| msgid "Contact Points"
+msgid "Points"
+msgstr "Contactpunten"
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
+#, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
 msgstr "Layer naam"
@@ -1613,6 +1629,15 @@ msgid "Add Attribute"
 msgstr "Voeg toe aan favorieten"
 
 msgid "Create"
+msgstr ""
+
+msgid "String"
+msgstr ""
+
+msgid "Integer"
+msgstr ""
+
+msgid "Float"
 msgstr ""
 
 #, fuzzy
@@ -2608,11 +2633,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "Bekijk preview"
-
-#, fuzzy
-#| msgid "Metadata"
-msgid "Required Metadata"
-msgstr "Metadata"
 
 msgid "Dataset Attributes"
 msgstr ""

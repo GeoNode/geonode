@@ -44,7 +44,6 @@ from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
 from geonode.geoserver.upload import geoserver_upload
-from geonode.security.utils import spec_perms_is_empty
 from geonode.catalogue.models import catalogue_post_save
 
 from .helpers import (
@@ -292,7 +291,7 @@ def geoserver_finalize_upload(
             logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
             instance.handle_moderated_uploads()
 
-            if permissions is not None and not spec_perms_is_empty(permissions):
+            if permissions is not None:
                 logger.debug(f'Setting permissions {permissions} for {instance.name}')
                 instance.set_permissions(permissions, created=created)
 
@@ -431,16 +430,9 @@ def geoserver_post_save_layers(
                         if instance.is_published != gs_resource.advertised:
                             gs_resource.advertised = 'true'
 
-                    if not settings.FREETEXT_KEYWORDS_READONLY:
-                        # AF: Warning - this won't allow people to have empty keywords on GeoNode
-                        if len(instance.keyword_list()) == 0 and gs_resource.keywords:
-                            for keyword in gs_resource.keywords:
-                                if keyword not in instance.keyword_list():
-                                    instance.keywords.add(keyword)
-
                     if any(instance.keyword_list()):
-                        keywords = instance.keyword_list()
-                        gs_resource.keywords = [kw for kw in list(set(keywords))]
+                        keywords = gs_resource.keywords + instance.keyword_list()
+                        gs_resource.keywords = list(set(keywords))
 
                     # gs_resource should only be called if
                     # ogc_server_settings.BACKEND_WRITE_ENABLED == True

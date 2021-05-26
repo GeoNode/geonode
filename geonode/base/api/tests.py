@@ -18,6 +18,7 @@
 #
 #########################################################################
 import logging
+from uuid import uuid4
 from PIL import Image
 from io import BytesIO
 from unittest.mock import patch
@@ -35,17 +36,26 @@ from rest_framework.test import APITestCase, URLPatternsTestCase
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.api.urls import router
-from geonode.base.models import ResourceBase
-from geonode.base.models import CuratedThumbnail
+from geonode.base.models import (
+    CuratedThumbnail,
+    HierarchicalKeyword,
+    Region,
+    ResourceBase,
+    TopicCategory,
+    ThesaurusKeyword,
+    )
 
 from geonode import geoserver
+from geonode.favorite.models import Favorite
 from geonode.utils import check_ogc_backend
 from geonode.services.views import services
 from geonode.maps.views import map_embed
-from geonode.layers.views import layer_embed
+from geonode.layers.models import Layer
+from geonode.layers.views import layer_embed, layer_detail
 from geonode.geoapps.views import geoapp_edit
 from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
+from geonode.security.utils import get_resources_with_perms
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +67,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
     fixtures = [
         'initial_data.json',
         'group_test_data.json',
-        'default_oauth_apps.json'
+        'default_oauth_apps.json',
+        "test_thesaurus.json"
     ]
 
     urlpatterns = [
@@ -98,6 +109,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         url(r'^(?P<mapid>[^/]+)/embed$', map_embed, name='map_embed'),
         url(r'^(?P<layername>[^/]+)/embed$', layer_embed, name='layer_embed'),
         url(r'^(?P<geoappid>[^/]+)/embed$', geoapp_edit, {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
+        url(r'^(?P<layername>[^/]*)$', layer_detail, name="layer_detail"),
     ]
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -162,6 +174,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         logger.debug(response.data)
         self.assertEqual(response.data['total'], 10)
         self.assertEqual(len(response.data['users']), 10)
+        # response has link to the response
+        self.assertTrue('link' in response.data['users'][0].keys())
 
         url = reverse('users-detail', kwargs={'pk': 1})
         response = self.client.get(url, format='json')
@@ -250,6 +264,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 18)
+        # response has link to the response
+        self.assertTrue('link' in response.data['resources'][0].keys())
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
         logger.debug(response.data)
@@ -302,6 +318,25 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertTrue(self.client.login(username='norman', password='norman'))
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
+
+    def test_delete_user_with_resource(self):
+        owner, created = get_user_model().objects.get_or_create(username='delet-owner')
+        Layer(
+            title='Test Remove User',
+            abstract='abstract',
+            name='Test Remove User',
+            alternate='Test Remove User',
+            uuid=str(uuid4()),
+            owner=owner,
+            storeType='coverageStore',
+            category=TopicCategory.objects.get(identifier='elevation')
+        ).save()
+        # Delete user and check if default user is updated
+        owner.delete()
+        self.assertEqual(
+            ResourceBase.objects.get(title='Test Remove User').owner,
+            get_user_model().objects.get(username='admin')
+        )
 
     def test_search_resources(self):
         """
@@ -517,7 +552,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
-        resources = ResourceBase.objects.filter(owner__username='bobby')
+        resources = ResourceBase.objects.filter(owner__username='bobby', metadata_only=False)
 
         url = urljoin(f"{reverse('base-resources-list')}/", 'featured/')
         response = self.client.get(url, format='json')
@@ -532,9 +567,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 2)
+        self.assertEqual(response.data['total'], resources.filter(resource_type='map').count())
         # Pagination
-        self.assertEqual(len(response.data['resources']), 2)
+        self.assertEqual(len(response.data['resources']), resources.filter(resource_type='map').count())
 
     def test_resource_types(self):
         """
@@ -542,12 +577,59 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         """
         url = urljoin(f"{reverse('base-resources-list')}/", 'resource_types/')
         response = self.client.get(url, format='json')
+        r_type_names = [item['name'] for item in response.data['resource_types']]
         self.assertEqual(response.status_code, 200)
         self.assertTrue('resource_types' in response.data)
-        self.assertTrue('layer' in response.data['resource_types'])
-        self.assertTrue('map' in response.data['resource_types'])
-        self.assertTrue('document' in response.data['resource_types'])
-        self.assertFalse('service' in response.data['resource_types'])
+        self.assertTrue('layer' in r_type_names)
+        self.assertTrue('map' in r_type_names)
+        self.assertTrue('document' in r_type_names)
+        self.assertFalse('service' in r_type_names)
+
+    def test_get_favorites(self):
+        """
+        Ensure we get user's favorite resources.
+        """
+        layer = Layer.objects.first()
+        url = urljoin(f"{reverse('base-resources-list')}/", 'favorites/')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 403)
+        # Authenticated user
+        bobby = get_user_model().objects.get(username='bobby')
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        favorite = Favorite.objects.create_favorite(layer, bobby)
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['total'], 1)
+        self.assertEqual(response.status_code, 200)
+        # clean up
+        favorite.delete()
+
+    def test_create_and_delete_favorites(self):
+        """
+        Ensure we can add and remove resources to user's favorite.
+        """
+        layer = get_resources_with_perms(get_user_model().objects.get(pk=-1)).first()
+        url = urljoin(f"{reverse('base-resources-list')}/", f"{layer.pk}/favorite/")
+        # Anonymous
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, 403)
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.post(url, format="json")
+        self.assertEqual(response.data["message"], "Successfuly added resource to favorites")
+        self.assertEqual(response.status_code, 201)
+        # add resource to favorite again
+        response = self.client.post(url, format="json")
+        self.assertEqual(response.data["message"], "Resource is already in favorites")
+        self.assertEqual(response.status_code, 400)
+        # remove resource from favorites
+        response = self.client.delete(url, format="json")
+        self.assertEqual(response.data["message"], "Successfuly removed resource from favorites")
+        self.assertEqual(response.status_code, 200)
+        # remove resource to favorite again
+        response = self.client.delete(url, format="json")
+        self.assertEqual(response.data["message"], "Resource not in favorites")
+        self.assertEqual(response.status_code, 404)
 
     @patch('PIL.Image.open', return_value=test_image)
     def test_thumbnail_urls(self, img):
@@ -601,3 +683,129 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
                         self.assertEqual(build_absolute_uri(instance.embed_url), embed_url)
                     else:
                         self.assertEqual("", embed_url)
+
+    def test_owners_list(self):
+        """
+        Ensure we can access the list of owners.
+        """
+        url = reverse('owners-list')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 8)
+
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 8)
+        response = self.client.get(f"{url}?type=geoapp", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 0)
+        response = self.client.get(f"{url}?type=layer&title__icontains=CA", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
+        # response has link to the response
+        self.assertTrue('link' in response.data['owners'][0].keys())
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 8)
+
+    def test_categories_list(self):
+        """
+        Ensure we can access the list of categories.
+        """
+        url = reverse('categories-list')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], TopicCategory.objects.count())
+
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], TopicCategory.objects.count())
+        # response has link to the response
+        self.assertTrue('link' in response.data['categories'][0].keys())
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], TopicCategory.objects.count())
+
+    def test_regions_list(self):
+        """
+        Ensure we can access the list of regions.
+        """
+        url = reverse('regions-list')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], Region.objects.count())
+
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], Region.objects.count())
+        # response has link to the response
+        self.assertTrue('link' in response.data['regions'][0].keys())
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], Region.objects.count())
+
+    def test_keywords_list(self):
+        """
+        Ensure we can access the list of keywords.
+        """
+        url = reverse('keywords-list')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+        # response has link to the response
+        self.assertTrue('link' in response.data['keywords'][0].keys())
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+
+    def test_tkeywords_list(self):
+        """
+        Ensure we can access the list of thasaurus keywords.
+        """
+        url = reverse('tkeywords-list')
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())
+
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())
+        # response has link to the response
+        self.assertTrue('link' in response.data['tkeywords'][0].keys())
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())

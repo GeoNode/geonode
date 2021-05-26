@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (http://www.transifex.com/geonode/geonode/language/"
@@ -256,6 +256,9 @@ msgstr ""
 msgid "function performed by the responsible party"
 msgstr "تابع انجام شده توسط مسئول"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "خلاصه روایت مختصری از محتوای منابع (بازدید کنندگان)"
+
 msgid "reference date for the cited resource"
 msgstr "تاریخ مرجع برای منابع ذکر شده"
 
@@ -265,8 +268,13 @@ msgstr "شناسایی زمانی که یک رویداد رخ داده است ب
 msgid "version of the cited resource"
 msgstr "نسخه از منابع ذکر شده"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "خلاصه روایت مختصری از محتوای منابع (بازدید کنندگان)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "خلاصه ای از اهداف است که با منابع (بازدید کنندگان) توسعه داده شد"
@@ -339,27 +347,17 @@ msgid ""
 "dataset"
 msgstr "توضیح کلی از دانش تولید اطلاعات در مورد اصل و نسب از مجموعه داده"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-msgid "DOI"
-msgstr ""
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-
-#, fuzzy
-#| msgid "Attribute"
-msgid "Attribution"
-msgstr "صفت"
-
 msgid "title"
 msgstr "عنوان"
 
 msgid "name by which the cited resource is known"
 msgstr "نام های که از منابع ذکر شده شناخته شده است"
+
+msgid "abstract"
+msgstr "انتزاعی"
+
+msgid "purpose"
+msgstr "هدف"
 
 msgid "date"
 msgstr "تاریخ"
@@ -370,11 +368,13 @@ msgstr "نوع تاريخ"
 msgid "edition"
 msgstr "چاپ"
 
-msgid "abstract"
-msgstr "انتزاعی"
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "صفت"
 
-msgid "purpose"
-msgstr "هدف"
+msgid "DOI"
+msgstr ""
 
 msgid "maintenance frequency"
 msgstr "فرکانس تعمیر و نگهداری"
@@ -1277,6 +1277,11 @@ msgid "Location and Licenses"
 msgstr ""
 
 #, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "ویرایش خدمات فراداده"
+
+#, fuzzy
 #| msgid "Download Metadata"
 msgid "Optional Metadata"
 msgstr "دانلود فراداده"
@@ -1620,6 +1625,15 @@ msgstr "امتیاز برای لایه"
 msgid "A rating was given to a layer"
 msgstr "امتیاز به لایه داده شد"
 
+msgid "Points"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 #, fuzzy
 #| msgid "Layer Name"
 msgid "Layer name"
@@ -1655,6 +1669,17 @@ msgstr "صفت"
 
 msgid "Create"
 msgstr "ساختن"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "فاصله"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2671,11 +2696,6 @@ msgstr ""
 
 msgid "Preview"
 msgstr "پیش دید"
-
-#, fuzzy
-#| msgid "Edit Service Metadata"
-msgid "Required Metadata"
-msgstr "ویرایش خدمات فراداده"
 
 #, fuzzy
 #| msgid "Attributes"

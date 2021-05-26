@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-29 08:35+0000\n"
+"POT-Creation-Date: 2021-05-03 14:51+0000\n"
 "PO-Revision-Date: 2020-12-23 16:21+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -210,6 +210,9 @@ msgstr "Short reasoning behind the request"
 msgid "function performed by the responsible party"
 msgstr "function performed by the responsible party"
 
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "brief narrative summary of the content of the resource(s)"
+
 msgid "reference date for the cited resource"
 msgstr "reference date for the cited resource"
 
@@ -219,8 +222,15 @@ msgstr "identification of when a given event occurred"
 msgid "version of the cited resource"
 msgstr "version of the cited resource"
 
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "brief narrative summary of the content of the resource(s)"
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+
+msgid "a DOI will be added by Admin before publication."
+msgstr "a DOI will be added by Admin before publication."
 
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "summary of the intentions with which the resource(s) was developed"
@@ -288,27 +298,17 @@ msgstr ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 
-msgid "a DOI will be added by Admin before publication."
-msgstr "a DOI will be added by Admin before publication."
-
-msgid "DOI"
-msgstr "DOI"
-
-msgid ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-msgstr ""
-"authority or function assigned, as to a ruler, legislative assembly, "
-"delegate, or the like."
-
-msgid "Attribution"
-msgstr "Attribution"
-
 msgid "title"
 msgstr "title"
 
 msgid "name by which the cited resource is known"
 msgstr "name by which the cited resource is known"
+
+msgid "abstract"
+msgstr "abstract"
+
+msgid "purpose"
+msgstr "purpose"
 
 msgid "date"
 msgstr "date"
@@ -319,11 +319,11 @@ msgstr "date type"
 msgid "edition"
 msgstr "edition"
 
-msgid "abstract"
-msgstr "abstract"
+msgid "Attribution"
+msgstr "Attribution"
 
-msgid "purpose"
-msgstr "purpose"
+msgid "DOI"
+msgstr "DOI"
 
 msgid "maintenance frequency"
 msgstr "maintenance frequency"
@@ -1177,6 +1177,11 @@ msgstr "Basic Metadata"
 msgid "Location and Licenses"
 msgstr "Location and Licenses"
 
+#, fuzzy
+#| msgid "Resource Metadata"
+msgid "Required Metadata"
+msgstr "Resource Metadata"
+
 msgid "Optional Metadata"
 msgstr "Optional Metadata"
 
@@ -1438,6 +1443,17 @@ msgstr "Rating for Layer"
 msgid "A rating was given to a layer"
 msgstr "A rating was given to a layer"
 
+#, fuzzy
+#| msgid "Contact Points"
+msgid "Points"
+msgstr "Contact Points"
+
+msgid "Lines"
+msgstr ""
+
+msgid "Polygons"
+msgstr ""
+
 msgid "Layer name"
 msgstr "Layer name"
 
@@ -1461,6 +1477,17 @@ msgstr "Add Attribute"
 
 msgid "Create"
 msgstr "Create"
+
+msgid "String"
+msgstr ""
+
+#, fuzzy
+#| msgid "Intervals"
+msgid "Integer"
+msgstr "Intervals"
+
+msgid "Float"
+msgstr ""
 
 #, fuzzy
 #| msgid "Not provided"
@@ -2402,11 +2429,6 @@ msgstr "This will most probably overwrite the current default style!"
 
 msgid "Preview"
 msgstr "Preview"
-
-#, fuzzy
-#| msgid "Resource Metadata"
-msgid "Required Metadata"
-msgstr "Resource Metadata"
 
 msgid "Dataset Attributes"
 msgstr "Dataset Attributes"

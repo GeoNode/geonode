@@ -136,12 +136,14 @@ class LayersTest(GeoNodeBaseTestSupport):
 
     def test_layer_name_clash(self):
         _ll_1 = Layer.objects.create(
+            owner=get_user_model().objects.get(username=self.user),
             name='states',
             store='geonode_data',
             storeType="dataStore",
             alternate="geonode:states"
         )
         _ll_2 = Layer.objects.create(
+            owner=get_user_model().objects.get(username=self.user),
             name='geonode:states',
             store='httpfooremoteservce',
             storeType="remoteStore",
@@ -314,7 +316,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(
             set(lyr.keyword_list()), {
-                '&lt;IMG SRC=&#39;javascript:true;&#39;&gt;Science', 'Europe&lt;script&gt;true;&lt;/script&gt;',
+                '&lt;IMG SRC=&#x27;javascript:true;&#x27;&gt;Science', 'Europe&lt;script&gt;true;&lt;/script&gt;',
                 'here', 'keywords', 'land_&lt;script&gt;true;&lt;/script&gt;covering', 'populartag', 'saving',
                 'ß', 'ä', 'ö', 'ü', '論語'})
 
