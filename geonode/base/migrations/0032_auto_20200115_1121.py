@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='curatedthumbnail',
             name='resource',
-            field=models.OneToOneField(on_delete='CASCASE', to='base.ResourceBase'),
+            field=models.OneToOneField(on_delete=models.CASCADE, to='base.ResourceBase'),
         ),
         migrations.AlterField(
             model_name='resourcebase',

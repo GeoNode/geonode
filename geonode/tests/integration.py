@@ -39,7 +39,9 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test.utils import override_settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.staticfiles.templatetags import staticfiles
+
+from django.templatetags.static import static
+
 
 from geonode.layers.utils import (
     upload,
@@ -222,7 +224,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
     def test_raster_upload(self):
         """Test that the wcs links are correctly created for a raster"""
         filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
-        uploaded = file_upload(filename)
+        uploaded = file_upload(filename, user=self.user_admin)
         try:
             wcs_link = False
             for link in uploaded.link_set.all():
@@ -241,7 +243,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         properties correctly.
         """
         filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
-        uploaded = file_upload(filename)
+        uploaded = file_upload(filename, user=self.user_admin)
         try:
             # Check bbox value
             bbox_x0 = Decimal('96.956000000000000')
@@ -381,7 +383,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                         'Expected layer XML metadata to exist')
         try:
             if os.path.exists(thelayer):
-                uploaded = file_upload(thelayer, overwrite=True)
+                uploaded = file_upload(thelayer, overwrite=True, user=self.user_admin)
 
                 self.assertEqual(
                     uploaded.title,
@@ -406,14 +408,14 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                     self.assertEqual(
-                        len(uploaded.keyword_list()), 5,
+                        len(uploaded.keyword_list()), 0,
                         'Expected specific number of keywords from uploaded layer XML metadata')
 
                 self.assertTrue(
                     'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
                     'Expected CSV of keywords from uploaded layer XML metadata')
 
-                self.assertTrue(
+                self.assertFalse(
                     'Landing Strips' in uploaded.keyword_list(),
                     'Expected specific keyword from uploaded layer XML metadata')
 
@@ -472,7 +474,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
                 zip_dir(thelayer_path, thelayer_zip)
                 if os.path.exists(thelayer_zip):
-                    uploaded = file_upload(thelayer_zip, overwrite=True)
+                    uploaded = file_upload(thelayer_zip, overwrite=True, user=self.user_admin)
 
                     self.assertEqual(
                         uploaded.title,
@@ -497,14 +499,14 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                         self.assertEqual(
-                            len(uploaded.keyword_list()), 5,
+                            len(uploaded.keyword_list()), 0,
                             'Expected specific number of keywords from uploaded layer XML metadata')
 
                     self.assertTrue(
                         'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
                         'Expected CSV of keywords from uploaded layer XML metadata')
 
-                    self.assertTrue(
+                    self.assertFalse(
                         'Landing Strips' in uploaded.keyword_list(),
                         'Expected specific keyword from uploaded layer XML metadata')
 
@@ -559,7 +561,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
                 zip_dir(thelayer_path, thelayer_zip)
                 if os.path.exists(thelayer_zip):
-                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
+                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258', user=self.user_admin)
                     self.assertEqual(uploaded.title, 'Zhejiang Yangcan Yanyu')
                     # self.assertEqual(len(uploaded.keyword_list()), 2)
                     self.assertEqual(uploaded.constraints_other, None)
@@ -582,7 +584,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
                 zip_dir(thelayer_path, thelayer_zip)
                 if os.path.exists(thelayer_zip):
-                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258')
+                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='windows-1258', user=self.user_admin)
                     self.assertEqual(uploaded.title, 'Ming Female 1')
                     # self.assertEqual(len(uploaded.keyword_list()), 2)
                     self.assertEqual(uploaded.constraints_other, None)
@@ -610,9 +612,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             if os.path.exists(thelayer_path) and not os.path.exists(thelayer_zip):
                 zip_dir(thelayer_path, thelayer_zip)
                 if os.path.exists(thelayer_zip):
-                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='UTF-8')
+                    uploaded = file_upload(thelayer_zip, overwrite=True, charset='UTF-8', user=self.user_admin)
                     self.assertEqual(uploaded.title, 'Unesco Global Geoparks')
-                    self.assertEqual(len(uploaded.keyword_list()), 2)
+                    self.assertEqual(len(uploaded.keyword_list()), 0)
                     self.assertEqual(uploaded.constraints_other, None)
         finally:
             # Clean up and completely delete the layer
@@ -626,7 +628,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         thefile = os.path.join(
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
-        uploaded = file_upload(thefile, overwrite=True)
+        uploaded = file_upload(thefile, overwrite=True, user=self.user_admin)
         try:
             check_layer(uploaded)
         finally:
@@ -640,7 +642,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         thefile = os.path.join(gisdata.BAD_DATA, 'points_epsg2249_no_prj.shp')
         try:
             # with self.assertRaises(GeoNodeException):
-            thefile = file_upload(thefile, overwrite=True)
+            thefile = file_upload(thefile, overwrite=True, user=self.user_admin)
         except GeoNodeException as e:
             self.assertEqual(str(e), "Invalid Projection. Layer is missing CRS!")
         finally:
@@ -655,7 +657,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         """Uploading a good .tiff
         """
         thefile = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
-        uploaded = file_upload(thefile, overwrite=True)
+        uploaded = file_upload(thefile, overwrite=True, user=self.user_admin)
         try:
             check_layer(uploaded)
         finally:
@@ -667,11 +669,11 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         """Upload the same file more than once
         """
         thefile = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
-        uploaded1 = file_upload(thefile, overwrite=True)
+        uploaded1 = file_upload(thefile, overwrite=True, user=self.user_admin)
         check_layer(uploaded1)
-        uploaded2 = file_upload(thefile, overwrite=True)
+        uploaded2 = file_upload(thefile, overwrite=True, user=self.user_admin)
         check_layer(uploaded2)
-        uploaded3 = file_upload(thefile, overwrite=False)
+        uploaded3 = file_upload(thefile, overwrite=False, user=self.user_admin)
         check_layer(uploaded3)
         try:
             msg = (f'Expected {uploaded1.name} but got {uploaded2.name}')
@@ -703,7 +705,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         shp_file = os.path.join(
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
-        shp_layer = file_upload(shp_file, overwrite=True)
+        shp_layer = file_upload(shp_file, overwrite=True, user=self.user_admin)
         # we need some time to have the service up and running
         time.sleep(20)
 
@@ -718,7 +720,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
         # Test Uploading then Deleting a TIFF file from GeoServer
         tif_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
-        tif_layer = file_upload(tif_file)
+        tif_layer = file_upload(tif_file, user=self.user_admin)
         ws = gs_cat.get_workspace(tif_layer.workspace)
         tif_store = gs_cat.get_store(tif_layer.store, ws)
         tif_layer.delete()
@@ -740,7 +742,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         shp_file = os.path.join(
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
-        shp_layer = file_upload(shp_file)
+        shp_layer = file_upload(shp_file, user=self.user_admin)
 
         # we need some time to have the service up and running
         time.sleep(20)
@@ -789,7 +791,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         shp_file = os.path.join(
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
-        shp_layer = file_upload(shp_file)
+        shp_layer = file_upload(shp_file, user=self.user_admin)
         try:
             # Save the names of the Resource/Store/Styles
             resource_name = shp_layer.name
@@ -825,6 +827,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             'san_andres_y_providencia_poi.shp')
         uploaded = file_upload(
             thefile,
+            user=self.user_admin,
             keywords=[
                 'foo',
                 'bar'],
@@ -845,7 +848,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
     def test_empty_bbox(self):
         """Regression-test for failures caused by zero-width bounding boxes"""
         thefile = os.path.join(gisdata.VECTOR_DATA, 'single_point.shp')
-        uploaded = file_upload(thefile, overwrite=True)
+        uploaded = file_upload(thefile, overwrite=True, user=self.user_admin)
         try:
             uploaded.set_default_permissions()
             self.client.login(username='norman', password='norman')
@@ -862,10 +865,10 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         vector_file = os.path.join(
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_administrative.shp')
-        vector_layer = file_upload(vector_file, overwrite=True)
+        vector_layer = file_upload(vector_file, overwrite=True, user=self.user_admin)
 
         raster_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
-        raster_layer = file_upload(raster_file, overwrite=True)
+        raster_layer = file_upload(raster_file, overwrite=True, user=self.user_admin)
 
         # we need some time to have the service up and running
         time.sleep(20)
@@ -1067,7 +1070,7 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
         try:
             self.client.login(username='norman', password='norman')
             thumbnail_url = saved_layer.get_thumbnail_url()
-            self.assertNotEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+            self.assertNotEqual(thumbnail_url, static(settings.MISSING_THUMBNAIL))
         finally:
             # Cleanup
             saved_layer.delete()
@@ -1094,7 +1097,7 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
                           center_x=0, center_y=0)
             map_obj.create_from_layer_list(norman, [saved_layer], 'title', '')
             thumbnail_url = map_obj.get_thumbnail_url()
-            self.assertEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+            self.assertEqual(thumbnail_url, static(settings.MISSING_THUMBNAIL))
         finally:
             # Cleanup
             saved_layer.delete()
@@ -1121,7 +1124,7 @@ class LayersStylesApiInteractionTests(
                 'api_name': 'api',
                 'resource_name': 'styles'})
         filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
-        self.layer = file_upload(filename)
+        self.layer = file_upload(filename, user=self.user_admin)
         all_public()
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)

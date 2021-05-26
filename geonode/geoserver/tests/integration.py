@@ -27,7 +27,7 @@ import time
 import gisdata
 import logging
 from lxml import etree
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from urllib.request import urlopen, Request
 from urllib.parse import urljoin
 
@@ -73,12 +73,12 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
     def test_set_attributes_from_geoserver(self):
         """Test attributes syncronization
         """
-
+        admin = get_user_model().objects.get(username="admin")
         # upload a shapefile
         shp_file = os.path.join(
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
-        layer = file_upload(shp_file)
+        layer = file_upload(shp_file, user=admin)
         try:
             # set attributes for resource
             for attribute in layer.attribute_set.all():
@@ -246,10 +246,11 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     def test_unpublished(self):
         """Test permissions on an unpublished layer
         """
+        admin = get_user_model().objects.get(username="admin")
         thefile = os.path.join(
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_highway.shp')
-        layer = file_upload(thefile, overwrite=True)
+        layer = file_upload(thefile, overwrite=True, user=admin)
         layer.set_default_permissions()
         check_layer(layer)
 
@@ -279,6 +280,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
         with self.settings(RESOURCE_PUBLISHING=True):
             layer = file_upload(thefile,
                                 overwrite=True,
+                                user=admin,
                                 is_approved=False,
                                 is_published=False)
             layer.set_default_permissions()

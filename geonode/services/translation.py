@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2021 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,14 +18,15 @@
 #
 #########################################################################
 
-from django.utils.translation import ugettext_noop as _
-from geonode.notifications_helper import NotificationsAppConfigBase
+from modeltranslation.translator import translator, TranslationOptions
+from .models import Service
 
 
-class BaseAppConfig(NotificationsAppConfigBase):
-    name = 'geonode.base'
-    NOTIFICATIONS = (("request_download_resourcebase", _("Request to download a resource"),
-                      _("A request for downloading a resource was sent")),
-                     ("request_resource_edit", _("Request resource change"),
-                      _("Owner has requested permissions to modify a resource")),
-                     )
+class ServiceTranslationOptions(TranslationOptions):
+    fields = (
+        'name',
+        'description',
+    )
+
+
+translator.register(Service, ServiceTranslationOptions)

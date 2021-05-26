@@ -36,7 +36,8 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
-from django.contrib.staticfiles.templatetags import staticfiles
+from django.templatetags.static import static
+
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -55,7 +56,7 @@ from geonode.thumbs.background import (
 
 logger = logging.getLogger(__name__)
 
-missing_thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
+missing_thumbnail_url = static(settings.MISSING_THUMBNAIL)
 
 LOCAL_TIMEOUT = 300
 EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
@@ -297,11 +298,12 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.user_admin = get_user_model().objects.get(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
             shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
-            cls.layer_coast_line = file_upload(shp_file, overwrite=True)
+            cls.layer_coast_line = file_upload(shp_file, overwrite=True, user=cls.user_admin)
 
     @classmethod
     def tearDownClass(cls):
@@ -452,14 +454,15 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.user_admin = get_user_model().objects.get(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
             shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
-            cls.layer_coast_line = file_upload(shp_file, overwrite=True)
+            cls.layer_coast_line = file_upload(shp_file, overwrite=True, user=cls.user_admin)
 
             shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_highway.shp")
-            cls.layer_highway = file_upload(shp_file, overwrite=True)
+            cls.layer_highway = file_upload(shp_file, overwrite=True, user=cls.user_admin)
 
             # create a map from loaded layers
             cls.map_composition = Map()
