@@ -588,8 +588,8 @@
           {% if resource.default_style == style or resource.default_style.name == style.name or style.sld_title and resource.default_style.sld_title == style.sld_title %}
               {% for legend in resource.get_legend %}
                   {% get_sld_name_from_url style.sld_url as sld_name %}
-                  {% with "STYLE="|add:sld_name as style_name %}
-                  {% if legend.link_type == 'image' and style_name in legend.url %}
+                  {% get_style_name_from_legend_url legend.url as legend_style_name %}
+                  {% if legend.link_type == 'image' and sld_name == legend_style_name %}
                     <p id="legend_sld_title" style="font-size:10px">{{ style.sld_title|default:style.name }}</p>
                     {% if request.user.is_authenticated and access_token %}
                         <p><img id="legend_icon" src="{{ legend.url }}&access_token={{access_token}}"></p>
@@ -599,7 +599,6 @@
                   {% else %}
                   <div id='legend_placeholder'></div>
                   {% endif %}
-                  {% endwith %}
               {% endfor %}
           {% endif %}
         {% endif %}
