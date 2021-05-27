@@ -74,6 +74,7 @@ def check_harvester_available(self, harvester_id: int):
     ignore_result=False,
 )
 def update_harvestable_resources(self, harvester_id: int):
+    # TODO: implement removal of harvestable_resources that are not available anymore
     harvester = models.Harvester.objects.get(pk=harvester_id)
     harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
     harvester.save()

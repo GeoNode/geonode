@@ -17,20 +17,28 @@
 #
 #########################################################################
 
+import json
+import logging
+
 from django.contrib import (
     admin,
     messages,
 )
 
 from . import (
+    forms,
     models,
     tasks,
     utils,
 )
 
+logger = logging.getLogger(__name__)
+
 
 @admin.register(models.Harvester)
 class HarvesterAdmin(admin.ModelAdmin):
+    form = forms.HarvesterForm
+
     list_display = (
         "id",
         "status",
@@ -41,6 +49,7 @@ class HarvesterAdmin(admin.ModelAdmin):
         "update_frequency",
         "harvester_type",
     )
+
     readonly_fields = (
         "remote_available",
         "last_checked_availability",
@@ -62,11 +71,25 @@ class HarvesterAdmin(admin.ModelAdmin):
         available = utils.update_harvester_availability(obj)
         if available:
             if not change:
+                # when creating the object we want to also create its
+                # harvestable resources
                 tasks.update_harvestable_resources.apply_async(args=(obj.pk,))
                 self.message_user(
                     request,
                     f"Updating harvestable resources asynchronously for {obj}..."
                 )
+            elif _worker_config_changed(form):
+                self.message_user(
+                    request,
+                    (
+                        "Harvester worker specific configuration has been changed. "
+                        "Regenerating list of this harvester's harvestable resources "
+                        "asynchronously... "
+                    ),
+                    level=messages.WARNING
+                )
+                models.HarvestableResource.objects.filter(harvester=obj).delete()
+                tasks.update_harvestable_resources.apply_async(args=(obj.pk,))
         else:
             self.message_user(
                 request,
@@ -166,3 +189,10 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
     list_editable = (
         "should_be_harvested",
     )
+
+
+def _worker_config_changed(form) -> bool:
+    field_name = "harvester_type_specific_configuration"
+    original = eval(form.data[f"initial-{field_name}"], {})
+    cleaned = form.cleaned_data.get(field_name)
+    return original != cleaned

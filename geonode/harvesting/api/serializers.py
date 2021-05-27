@@ -121,6 +121,16 @@ class HarvesterSerializer(BriefHarvesterSerializer):
             "links",
         )
 
+    def validate(self, data):
+        field_name = "harvester_type_specific_configuration"
+        if data.get("status") and data.get(field_name):
+            raise serializers.ValidationError(
+                f"Cannot update a harvester's 'status' and {field_name!r} at the "
+                f"same time"
+            )
+        return data
+
+    # FIXME: ensure supplied worker-specific config validates our json-schema
     def create(self, validated_data):
         desired_status = validated_data.get("status", models.Harvester.STATUS_READY)
         if desired_status != models.Harvester.STATUS_READY:
@@ -138,44 +148,72 @@ class HarvesterSerializer(BriefHarvesterSerializer):
         return harvester
 
     def update(self, instance: models.Harvester, validated_data):
-        """Update the harvester instance and perform any required business logic as a side-effect.
+        """Update harvester and perform any required business logic as a side-effect.
 
         Updating the harvester's `status` attribute triggers additional work:
 
         - If `status` is set to
-          `models.Harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES, then we
+          `models.Harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES`, then we
           proceed to refresh all harvestable resources related to the harvester
 
-        - If `status` is set to `models.Harvester.STATUS_PERFORM_HARVESTING
+        - If `status` is set to `models.Harvester.STATUS_PERFORM_HARVESTING`
           then we proceed by starting a new harvesting session
 
-        - If `status` is set to `models.Harvester.STATUS_CHECKING_AVAILABILITY
+        - If `status` is set to `models.Harvester.STATUS_CHECKING_AVAILABILITY`
           then we proceed to check the availability of the remote service
 
-        Note that all of these additional work items are carried out
+        Note that it is not possible for an API client to set a status of
+        `models.Harvester.STATUS_READY`. This status is set internally.
+
+        Additional work can also be triggered when a change to the harvester worker
+        configuration is requested. In that case GeoNode must regenerate the list of
+        harvestable resources.
+
+        Also note that all of these additional work items are carried out
         asynchronously via celery tasks.
 
         """
 
         desired_status = validated_data.get("status")
-        ready = instance.status == models.Harvester.STATUS_READY
-        if not ready:
+        if not instance.status == models.Harvester.STATUS_READY:
             raise serializers.ValidationError(
                 f"Harvester is currently busy. Please wait until current "
                 f"status becomes {models.Harvester.STATUS_READY!r}"
             )
+        elif desired_status == models.Harvester.STATUS_READY:
+            raise serializers.ValidationError(
+                f"Cannot set a status of {models.Harvester.STATUS_READY!r} explicitly. "
+                f"This status can only be set by the server, when appropriate."
+            )
         elif desired_status == models.Harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES:
-            post_update_task = tasks.update_harvestable_resources.signature(args=(instance.id,))
+            post_update_task = tasks.update_harvestable_resources.signature(
+                args=(instance.id,))
         elif desired_status == models.Harvester.STATUS_PERFORMING_HARVESTING:
-            post_update_task = tasks.harvesting_session_dispatcher.signature(args=(instance.id,))
+            post_update_task = tasks.harvesting_session_dispatcher.signature(
+                args=(instance.id,))
         elif desired_status == models.Harvester.STATUS_CHECKING_AVAILABILITY:
-            post_update_task = tasks.check_harvester_available.signature(args=(instance.id,))
+            post_update_task = tasks.check_harvester_available.signature(
+                args=(instance.id,))
+        elif desired_status is None:
+            current_worker_config = instance.harvester_type_specific_configuration
+            desired_worker_config = validated_data.get(
+                "harvester_type_specific_configuration", current_worker_config)
+            if desired_worker_config != current_worker_config:
+                logger.debug(
+                    f"Regenerating harvestable resource list for harvester "
+                    f"{instance!r} asynchronously..."
+                )
+                models.HarvestableResource.objects.filter(harvester=instance).delete()
+                post_update_task = tasks.update_harvestable_resources.signature(
+                    args=(instance.id,))
+            else:
+                post_update_task = None
         else:
             post_update_task = None
-        update_result = super().update(instance, validated_data)
+        updated_instance = super().update(instance, validated_data)
         if post_update_task is not None:
             post_update_task.apply_async()
-        return update_result
+        return updated_instance
 
 
 class BriefHarvestingSessionSerializer(DynamicModelSerializer):
@@ -213,6 +251,9 @@ class HarvestableResourceSerializer(DynamicModelSerializer):
             validated_data["should_be_harvested"])
         harvestable_resource.save()
         return harvestable_resource
+
+    # TODO: need to check whether any worker-specific configuration has changed when the harvester is updated
+    # if so, then we need to discard existing harvestable_resources and check them again
 
     def to_internal_value(self, data):
         """Verbatim copy of the original drf `to_internal_value()` method.
