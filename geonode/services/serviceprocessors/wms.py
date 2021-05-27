@@ -41,12 +41,15 @@ from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 
-from geonode.base.models import Link, TopicCategory
+from geonode.base.models import (
+    Link,
+    ResourceBase,
+    TopicCategory)
 from geonode.layers.models import Layer
 from geonode.layers.utils import resolve_regions
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.geoserver.helpers import set_attributes_from_geoserver
-from geonode.utils import http_client
+from geonode.utils import http_client, get_legend_url
 from geonode.base.bbox_utils import BBOXHelper
 
 from owslib.map import wms111, wms130
@@ -322,34 +325,32 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         creating the legend by making a request directly to the original
         service.
         """
+        cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
         _p_url = urlparse(self.url)
-        _q_separator = "&" if _p_url.query else "?"
-        params = {
-            "service": "WMS",
-            "version": self.parsed_service.version,
-            "request": "GetLegendGraphic",
-            "format": "image/png",
-            "width": 20,
-            "height": 20,
-            "layer": geonode_layer.name,
-            "legend_options": (
-                "fontAntiAliasing:true;fontSize:12;forceLabels:on")
-        }
-        kvp = "&".join("{}={}".format(*item) for item in params.items())
-        legend_url = f"{geonode_layer.remote_service.service_url}{_q_separator}{kvp}"
-        logger.debug(f"legend_url: {legend_url}")
-        Link.objects.get_or_create(
-            resource=geonode_layer.resourcebase_ptr,
-            url=legend_url,
-            name='Legend',
-            defaults={
-                "extension": 'png',
-                "name": 'Legend',
-                "url": legend_url,
-                "mime": 'image/png',
-                "link_type": 'image',
-            }
+        legend_url = get_legend_url(
+            geonode_layer, "",
+            service_url=f"{_p_url.scheme}://{_p_url.netloc}{_p_url.path}",
+            layer_name=geonode_layer.name,
+            version=version,
+            params=_p_url.query
         )
+        logger.debug(f"legend_url: {legend_url}")
+        try:
+            Link.objects.get_or_create(
+                resource=geonode_layer.resourcebase_ptr,
+                url=legend_url,
+                name='Legend',
+                defaults={
+                    "extension": 'png',
+                    "name": 'Legend',
+                    "url": legend_url,
+                    "mime": 'image/png',
+                    "link_type": 'image',
+                }
+            )
+        except ResourceBase.DoesNotExist as e:
+            logger.exception(e)
+        return legend_url
 
     def _create_layer_service_link(self, geonode_layer):
         ogc_wms_url = geonode_layer.ows_url

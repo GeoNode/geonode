@@ -1615,14 +1615,24 @@ def slugify_zh(text, separator='_'):
     return text
 
 
-def get_legend_url(instance, style_name):
+def get_legend_url(
+        instance, style_name, /,
+        service_url=None,
+        layer_name=None,
+        version='1.3.0',
+        sld_version='1.1.0',
+        width=20,
+        height=20,
+        params=None):
     from geonode.geoserver.helpers import ogc_server_settings
 
-    return(f"{ogc_server_settings.PUBLIC_LOCATION}ows?"
-           "service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&"
-           f"LAYER={instance.alternate}&STYLE={style_name}&version=1.3.0&"
-           "sld_version=1.1.0&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on"
-        )
+    _service_url = service_url or f"{ogc_server_settings.PUBLIC_LOCATION}ows"
+    _layer_name = layer_name or instance.alternate
+    _params = f"&{params}" if params else ""
+    return(f"{_service_url}?"
+           f"service=WMS&request=GetLegendGraphic&format=image/png&WIDTH={width}&HEIGHT={height}&"
+           f"LAYER={_layer_name}&STYLE={style_name}&version={version}&"
+           f"sld_version={sld_version}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on{_params}")
 
 
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
@@ -1847,24 +1857,31 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
         try:
-            for style in set(list(instance.styles.all()) + [instance.default_style, ]):
-                if style:
-                    style_name = os.path.basename(
-                        urlparse(style.sld_url).path).split('.')[0]
-                    legend_url = get_legend_url(instance, style_name)
-
-                    if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
-                        Link.objects.update_or_create(
-                            resource=instance.resourcebase_ptr,
-                            name='Legend',
-                            url=legend_url,
-                            defaults=dict(
-                                extension='png',
+            if instance.storeType != 'remoteStore':
+                for style in set(list(instance.styles.all()) + [instance.default_style, ]):
+                    if style:
+                        style_name = os.path.basename(
+                            urlparse(style.sld_url).path).split('.')[0]
+                        legend_url = get_legend_url(instance, style_name)
+                        if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
+                            Link.objects.update_or_create(
+                                resource=instance.resourcebase_ptr,
+                                name='Legend',
                                 url=legend_url,
-                                mime='image/png',
-                                link_type='image',
+                                defaults=dict(
+                                    extension='png',
+                                    url=legend_url,
+                                    mime='image/png',
+                                    link_type='image',
+                                )
                             )
-                        )
+            else:
+                from geonode.services.serviceprocessors.handler import get_service_handler
+                handler = get_service_handler(
+                    instance.remote_service.base_url, service_type=instance.remote_service.type)
+                if hasattr(handler, '_create_layer_legend_link'):
+                    handler._create_layer_legend_link(instance)
+
             logger.debug(" -- Resource Links[Legend link]...done!")
         except Exception as e:
             logger.debug(f" -- Resource Links[Legend link]...error: {e}")
