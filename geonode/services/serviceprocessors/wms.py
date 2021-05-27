@@ -41,7 +41,10 @@ from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 
-from geonode.base.models import Link, TopicCategory
+from geonode.base.models import (
+    Link,
+    ResourceBase,
+    TopicCategory)
 from geonode.layers.models import Layer
 from geonode.layers.utils import resolve_regions
 from geonode.thumbs.thumbnails import create_thumbnail
@@ -332,18 +335,21 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             params=_p_url.query
         )
         logger.debug(f"legend_url: {legend_url}")
-        Link.objects.get_or_create(
-            resource=geonode_layer.resourcebase_ptr,
-            url=legend_url,
-            name='Legend',
-            defaults={
-                "extension": 'png',
-                "name": 'Legend',
-                "url": legend_url,
-                "mime": 'image/png',
-                "link_type": 'image',
-            }
-        )
+        try:
+            Link.objects.get_or_create(
+                resource=geonode_layer.resourcebase_ptr,
+                url=legend_url,
+                name='Legend',
+                defaults={
+                    "extension": 'png',
+                    "name": 'Legend',
+                    "url": legend_url,
+                    "mime": 'image/png',
+                    "link_type": 'image',
+                }
+            )
+        except ResourceBase.DoesNotExist as e:
+            logger.exception(e)
         return legend_url
 
     def _create_layer_service_link(self, geonode_layer):

@@ -6,7 +6,7 @@
 {% block body_outer %}
 <div class="page-header">
   {% if user.is_authenticated and not READ_ONLY_MODE %}
-    <a href="{% url "register_service" %}" class="btn btn-primary pull-right">{% trans "Register a new Service" %}</a>
+    <a href="{% url "register_service" %}" class="btn btn-primary pull-right">{% trans "Add Remote Service" %}</a>
   {% endif %}
   <h2>{% trans "Remote Services" %}</h2>
 </div>
