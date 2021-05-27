@@ -45,8 +45,6 @@ from .tasks import geoserver_cascading_delete, geoserver_post_save_layers
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
-geoserver_post_save_complete = Signal(providing_args=['instance'])
-
 
 def geoserver_delete(typename):
     # cascading_delete should only be called if
@@ -132,13 +130,11 @@ def geoserver_post_save_map(instance, sender, created, **kwargs):
             geoserver_create_thumbnail.apply_async(((instance.id, False, True, )))
 
 
-@receiver(geoserver_post_save_complete)
-def geoserver_post_save_thumbnail(sender, instance, **kwargs):
+def geoserver_set_thumbnail(instance, **kwargs):
     # Creating Layer Thumbnail
     # some thumbnail generators will update thumbnail_url.  If so, don't
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     try:
-        instance.refresh_from_db()
         logger.debug(f"... Creating Thumbnail for Layer {instance.title}")
         _recreate_thumbnail = False
         if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \

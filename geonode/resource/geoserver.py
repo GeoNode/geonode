@@ -58,12 +58,18 @@ class GeoServerResourceManager(ResourceManagerInterface):
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if instance and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             _real_instance = instance.get_real_instance()
-            if _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
-                if _real_instance.alternate:
+            if hasattr(_real_instance, 'alternate') and _real_instance.alternate:
+                if _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
                     geoserver_cascading_delete.apply_async((_real_instance.alternate,))
 
-    def create(self, uuid: str, /, instance: ResourceBase = None) -> int:
+    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> int:
         pass
 
-    def update(self, uuid: str, /, instance: ResourceBase = None) -> int:
+    def update(self, uuid: str, /, instance: ResourceBase = None, vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> int:
+        pass
+
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> bool:
+        pass
+
+    def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         pass

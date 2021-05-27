@@ -17,7 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 import importlib
+
+from django.core.exceptions import ValidationError
 from . import settings as rm_settings
 
 from django.db import transaction
@@ -25,6 +28,8 @@ from django.db.models.query import QuerySet
 
 from abc import ABCMeta, abstractmethod
 from geonode.base.models import ResourceBase
+
+logger = logging.getLogger(__name__)
 
 
 class ResourceManagerInterface(metaclass=ABCMeta):
@@ -42,11 +47,19 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def create(self, uuid: str, /, instance: ResourceBase = None) -> int:
+    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> int:
         pass
 
     @abstractmethod
-    def update(self, uuid: str, /, instance: ResourceBase = None) -> int:
+    def update(self, uuid: str, /, instance: ResourceBase = None, vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> int:
+        pass
+
+    @abstractmethod
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> bool:
+        pass
+
+    @abstractmethod
+    def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         pass
 
 
@@ -87,14 +100,49 @@ class ResourceManager(ResourceManagerInterface):
     def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
         instance = instance or ResourceManager._get_instance(uuid)
         if instance:
-            self._resource_manager.delete(uuid, instance=instance)
-            return instance.delete()
+            try:
+                self._resource_manager.delete(uuid, instance=instance)
+                instance.get_real_instance().delete()
+                return 1
+            except Exception as e:
+                logger.exception(e)
         return 0
 
-    def create(self, uuid: str, /, instance: ResourceBase = None) -> int:
+    @transaction.atomic
+    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> int:
+        if type.objects.filter(uuid=uuid).exists():
+            raise ValidationError(f'Object of type {type} with uuid [{uuid}] already exists.')
+        _resource, _created = type.objects.get_or_create(
+            uuid=uuid,
+            defaults=defaults)
+        if _resource and _created:
+            try:
+                self._resource_manager.create(uuid, type=type, defaults=defaults)
+                return 1
+            except Exception as e:
+                logger.exception(e)
+                _resource.delete()
+        return 0
+
+    @transaction.atomic
+    def update(self, uuid: str, /, instance: ResourceBase = None, vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> int:
         pass
 
-    def update(self, uuid: str, /, instance: ResourceBase = None) -> int:
+    @transaction.atomic
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> bool:
+        instance = instance or ResourceManager._get_instance(uuid)
+        if instance and permissions is not None:
+            try:
+                logger.debug(f'Setting permissions {permissions} for {instance.name}')
+                instance.get_real_instance().set_permissions(permissions, created=False)
+                self._resource_manager.set_permissions(uuid, instance=instance, permissions=permissions)
+                return True
+            except Exception as e:
+                logger.exception(e)
+        return False
+
+    @transaction.atomic
+    def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         pass
 
 

@@ -309,8 +309,6 @@ def geoserver_post_save_layers(
     """
     Runs update layers.
     """
-    from geonode.geoserver.signals import geoserver_post_save_complete
-
     instance = None
     try:
         instance = Layer.objects.get(id=instance_id)
