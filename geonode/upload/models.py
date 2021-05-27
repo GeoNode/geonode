@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.storage.manager import StorageManager
 import os
 import json
 import base64
@@ -335,9 +336,8 @@ class UploadFile(models.Model):
     base = models.BooleanField(default=False)
     file = models.FileField(
         upload_to='layers/%Y/%m/%d',
-        storage=FileSystemStorage(
-            base_url=settings.LOCAL_MEDIA_URL),
-        max_length=4096)
+        storage=StorageManager()
+    )
 
     def __str__(self):
         return str(self.slug)

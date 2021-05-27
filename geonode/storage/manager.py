@@ -87,6 +87,9 @@ class StorageManager(StorageManagerInterface):
     def size(self, name):
         return self._storage_manager.size(name)
 
+    def generate_filename(self, filename):
+        return self._storage_manager.generate_filename(filename)
+
 
 class DefaultStorageManager(StorageManagerInterface):
 
@@ -116,3 +119,6 @@ class DefaultStorageManager(StorageManagerInterface):
 
     def size(self, name):
         return self._fsm.size(name)
+
+    def generate_filename(self, filename):
+        return self._fsm.generate_filename(filename)
