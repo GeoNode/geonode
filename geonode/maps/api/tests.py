@@ -160,7 +160,8 @@ class MapsApiTests(APITestCase, URLPatternsTestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertTrue(len(response.data) > 0)
                 self.assertTrue('data' in response.data['map'])
-                self.assertTrue(len(response.data['map']['data']['map']['layers']) == 7)
+                import json
+                self.assertTrue(len(json.loads(response.data['map']['data'])['map']['layers']) == 7)
 
 
 DUMMY_MAPDATA = {
