@@ -752,7 +752,7 @@ class LayerResource(CommonModelApi):
             formatted_obj['online'] = True
             if hasattr(obj, 'storeType'):
                 formatted_obj['store_type'] = obj.storeType
-                if obj.storeType == 'remoteStore' and hasattr(obj, 'remote_service'):
+                if obj.storeType in ['tileStore', 'remoteStore'] and hasattr(obj, 'remote_service'):
                     if obj.remote_service:
                         formatted_obj['online'] = (obj.remote_service.probe == 200)
                     else:

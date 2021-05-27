@@ -1857,7 +1857,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
         try:
-            if instance.storeType != 'remoteStore':
+            if instance.storeType not in ['tileStore', 'remoteStore']:
                 for style in set(list(instance.styles.all()) + [instance.default_style, ]):
                     if style:
                         style_name = os.path.basename(
@@ -1879,7 +1879,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 from geonode.services.serviceprocessors.handler import get_service_handler
                 handler = get_service_handler(
                     instance.remote_service.base_url, service_type=instance.remote_service.type)
-                if hasattr(handler, '_create_layer_legend_link'):
+                if handler and hasattr(handler, '_create_layer_legend_link'):
                     handler._create_layer_legend_link(instance)
 
             logger.debug(" -- Resource Links[Legend link]...done!")

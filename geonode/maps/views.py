@@ -1015,7 +1015,7 @@ def add_layers_to_map_config(
                         }
                     }
 
-        if layer.storeType == "remoteStore":
+        if layer.storeType in ['tileStore', 'remoteStore']:
             service = layer.remote_service
             source_params = {}
             if service.type in ('REST_MAP', 'REST_IMG'):
