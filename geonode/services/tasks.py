@@ -31,6 +31,11 @@ from .serviceprocessors import base, get_service_handler
 from geonode.celery_app import app
 from geonode.layers.models import Layer
 from geonode.tasks.tasks import AcquireLock
+from geonode.base.enumerations import (
+    STATE_RUNNING,
+    STATE_INVALID,
+    STATE_PROCESSED
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +57,7 @@ def harvest_resource(self, harvest_job_id):
         status=enumerations.IN_PROCESS, details="Harvesting resource...")
     result = False
     details = ""
+    layer = None
     try:
         handler = get_service_handler(
             base_url=harvest_job.service.base_url,
@@ -66,13 +72,13 @@ def harvest_resource(self, harvest_job_id):
         _cnt = 0
         while _cnt < 5 and not result:
             try:
-                layer = None
                 if Layer.objects.filter(alternate=f"{harvest_job.resource_id}").count():
                     layer = Layer.objects.get(
                         alternate=f"{harvest_job.resource_id}")
                 else:
                     layer = Layer.objects.get(
                         alternate=f"{workspace.name}:{harvest_job.resource_id}")
+                layer.set_processing_state(STATE_RUNNING)
                 layer.save(notify=True)
                 result = True
             except Exception as e:
@@ -82,6 +88,7 @@ def harvest_resource(self, harvest_job_id):
                 try:
                     layer = Layer.objects.get(
                         alternate=f"{slugify(harvest_job.service.base_url)}:{harvest_job.resource_id}")
+                    layer.set_processing_state(STATE_RUNNING)
                     layer.save(notify=True)
                     result = True
                 except Exception as e:
@@ -97,8 +104,11 @@ def harvest_resource(self, harvest_job_id):
     finally:
         if not details:
             result = True
+        _status = enumerations.PROCESSED if result else enumerations.FAILED
+        if layer:
+            layer.set_processing_state(STATE_PROCESSED if _status == enumerations.PROCESSED else STATE_INVALID)
         harvest_job.update_status(
-            status=enumerations.PROCESSED if result else enumerations.FAILED,
+            status=_status,
             details=details
         )
 
