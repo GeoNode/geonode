@@ -98,7 +98,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
                 return "vector"
         elif obj.storeType == "coverageStore":
             return "raster"
-        elif obj.storeType == "remoteStore":
+        elif obj.storeType in ['tileStore', 'remoteStore']:
             return "remote"
 
     def prepare_rating(self, obj):

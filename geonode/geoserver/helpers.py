@@ -945,8 +945,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     then store in GeoNode database using Attribute model
     """
     attribute_map = []
-    server_url = ogc_server_settings.LOCATION if layer.storeType != "remoteStore" else layer.remote_service.service_url
-    if layer.storeType == "remoteStore" and layer.remote_service.ptype == "gxp_arcrestsource":
+    server_url = ogc_server_settings.LOCATION if layer.storeType not in ['tileStore', 'remoteStore'] else layer.remote_service.service_url
+    if layer.storeType in ['tileStore', 'remoteStore'] and layer.remote_service.ptype == "gxp_arcrestsource":
         dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
         try:
             # The code below will fail if http_client cannot be imported
@@ -958,7 +958,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.storeType in {"dataStore", "remoteStore", "wmsStore"}:
+    elif layer.storeType in {"dataStore", "tileStore", "remoteStore", "wmsStore"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url = re.sub(r"\/wms\/?$",
                          "/",
