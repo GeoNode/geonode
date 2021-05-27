@@ -44,7 +44,7 @@ class UploadAdmin(admin.ModelAdmin):
 
 
 class UploadFileAdmin(admin.ModelAdmin):
-    list_display = ('id', 'upload', 'slug', 'base')
+    list_display = ('id', 'upload', 'slug')
     list_display_links = ('id',)
     list_filter = ('slug', )
     search_fields = ('slug', )

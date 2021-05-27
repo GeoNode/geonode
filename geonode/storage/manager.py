@@ -18,6 +18,7 @@
 #
 #########################################################################
 import importlib
+
 from . import settings as sm_settings
 
 from abc import ABCMeta, abstractmethod
@@ -122,3 +123,6 @@ class DefaultStorageManager(StorageManagerInterface):
 
     def generate_filename(self, filename):
         return self._fsm.generate_filename(filename)
+
+
+storage_manager = StorageManager()
