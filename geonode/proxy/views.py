@@ -22,7 +22,6 @@ import io
 import os
 import re
 import gzip
-import shutil
 import logging
 import tempfile
 import traceback
