@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.base.models import ResourceBase
 from geonode.storage.manager import storage_manager
 import os
 import json
@@ -53,12 +54,12 @@ class UploadManager(models.Manager):
             import_id=upload_session.import_session.id
         ).update(state=enumerations.STATE_INVALID)
 
-    def update_from_session(self, upload_session, layer=None):
+    def update_from_session(self, upload_session, resource=None):
         self.get(
             user=upload_session.user,
             name=upload_session.name,
             import_id=upload_session.import_session.id).update_from_session(
-            upload_session, layer=layer)
+            upload_session, resource=resource)
 
     def create_from_session(self, user, import_session):
         return self.create(
@@ -81,7 +82,7 @@ class Upload(models.Model):
     state = models.CharField(max_length=16)
     create_date = models.DateTimeField('create_date', default=now)
     date = models.DateTimeField('date', default=now)
-    layer = models.ForeignKey(Layer, null=True, on_delete=models.CASCADE)
+    resource = models.ForeignKey(ResourceBase, null=True, on_delete=models.CASCADE)
     upload_dir = models.TextField(null=True)
     name = models.CharField(max_length=64, null=True)
     complete = models.BooleanField(default=False)
@@ -109,7 +110,7 @@ class Upload(models.Model):
             return pickle.loads(
                 base64.decodebytes(self.session.encode('UTF-8')))
 
-    def update_from_session(self, upload_session, layer=None):
+    def update_from_session(self, upload_session, resource=None):
         self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
         self.state = upload_session.import_session.state
         self.name = upload_session.name
@@ -119,30 +120,19 @@ class Upload(models.Model):
         if not self.upload_dir:
             self.upload_dir = os.path.dirname(upload_session.base_file)
 
-        if layer and not self.layer:
-            self.layer = layer
+        if resource and not self.resource:
+            self.resource = resource
 
-        if upload_session.base_file and self.layer and self.layer.name:
+        if upload_session.base_file and self.resource and self.resource.title:
             uploaded_files = upload_session.base_file[0]
-            base_file = uploaded_files.base_file
             aux_files = uploaded_files.auxillary_files
             sld_files = uploaded_files.sld_files
             xml_files = uploaded_files.xml_files
 
-            file_name, _ = os.path.splitext(os.path.basename(base_file))
+            if self.resource and not self.resource.files:
+                files_to_upload = aux_files + sld_files + xml_files + [uploaded_files.base_file]
+                ResourceBase.objects.upload_files(resource=resource, files=files_to_upload)
 
-            if not UploadFile.objects.filter(upload=self, name=file_name).exists():
-                assigned_name = self.layer.name
-                uploaded_file = UploadFile.objects.create_from_upload(upload=self, name=assigned_name, base_file=base_file)
-
-                if uploaded_file and uploaded_file.name:
-                    additional_files = aux_files + sld_files + xml_files
-                    for _f in additional_files:
-                        UploadFile.objects.create_from_upload(
-                            upload=self,
-                            name=assigned_name,
-                            base_file=_f
-                        )
             # TODO: add delte temporary file on filesystem
 
         if "COMPLETE" == self.state:
@@ -162,7 +152,7 @@ class Upload(models.Model):
         elif self.state == enumerations.STATE_PROCESSED:
             return 100.0
         elif self.complete or self.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING):
-            if self.layer and self.layer.processed:
+            if self.resource and self.resource.processed:
                 self.set_processing_state(enumerations.STATE_PROCESSED)
                 return 100.0
             elif self.state == enumerations.STATE_RUNNING:
@@ -198,7 +188,7 @@ class Upload(models.Model):
                                     return f"{reverse('data_upload')}?id={self.import_id}"
                                 else:
                                     next = get_next_step(self.get_session)
-                                    if not self.layer and session.state == enumerations.STATE_COMPLETE:
+                                    if not self.resource and session.state == enumerations.STATE_COMPLETE:
                                         if next == 'check' or (next == 'final' and self.state == enumerations.STATE_PENDING):
                                             from .views import final_step_view
                                             final_step_view(None, self.get_session)
@@ -231,8 +221,8 @@ class Upload(models.Model):
             return None
 
     def get_detail_url(self):
-        if self.layer and self.state == enumerations.STATE_PROCESSED:
-            return getattr(self.layer, 'detail_url', None)
+        if self.resource and self.state == enumerations.STATE_PROCESSED:
+            return getattr(self.resource, 'detail_url', None)
         else:
             return None
 
@@ -273,8 +263,8 @@ class Upload(models.Model):
     def set_processing_state(self, state):
         self.state = True
         Upload.objects.filter(id=self.id).update(state=state)
-        if self.layer:
-            self.layer.set_processing_state(state)
+        if self.resource:
+            self.resource.set_processing_state(state)
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'

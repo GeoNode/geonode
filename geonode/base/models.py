@@ -29,6 +29,7 @@ import traceback
 from django.db import models
 from django.conf import settings
 from django.core import serializers
+from django.db.models.fields.json import JSONField
 from django.utils.functional import cached_property
 from django.utils.html import escape
 from django.utils.timezone import now
@@ -85,6 +86,7 @@ from pyproj import transform, Proj
 
 from urllib.parse import urlparse, urlsplit, urljoin
 from imagekit.cachefiles.backends import Simple
+from geonode.storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
 
@@ -590,6 +592,24 @@ class ResourceBaseManager(PolymorphicManager):
     def polymorphic_queryset(self):
         return super(ResourceBaseManager, self).get_queryset()
 
+    @staticmethod
+    def upload_files(resource, files):
+        try:
+            out = {}
+            for f in files:
+                _, ext = os.path.splitext(f)
+                if os.path.isfile(f) and os.path.exists(f):
+
+                    with open(f, 'rb') as ff:
+                        folder = os.path.basename(os.path.dirname(f))
+                        filename = os.path.basename(f)
+                        file_uploaded_path = storage_manager.save(f'{folder}/{filename}', ff)
+                        out[ext] = file_uploaded_path
+            resource.files = out
+            resource.save()
+        except Exception as e:
+            logger.exception(e)
+
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
@@ -914,6 +934,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("Metadata"),
         default=False,
         help_text=_('If true, will be excluded from search'))
+    
+    files = JSONField(null=False, default=dict)
 
     __is_approved = False
     __is_published = False
