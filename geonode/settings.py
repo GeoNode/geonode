@@ -1037,10 +1037,10 @@ USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS and OGC_SERVER['default'][
 # Uploader Settings
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 """
-    DEFAULT_BACKEND_UPLOADER = {'geonode.rest', 'geonode.importer'}
+    DEFAULT_BACKEND_UPLOADER = {'geonode.importer'}
 """
 UPLOADER = {
-    'BACKEND': os.getenv('DEFAULT_BACKEND_UPLOADER', 'geonode.rest'),
+    'BACKEND': os.getenv('DEFAULT_BACKEND_UPLOADER', 'geonode.importer'),
     'OPTIONS': {
         'TIME_ENABLED': ast.literal_eval(os.getenv('TIME_ENABLED', 'False')),
         'MOSAIC_ENABLED': ast.literal_eval(os.getenv('MOSAIC_ENABLED', 'False')),

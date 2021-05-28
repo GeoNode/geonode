@@ -29,12 +29,7 @@ def geoserver_urls(request):
         GEOSERVER_LOCAL_URL=ogc_server_settings.LOCATION,
         GEOSERVER_PUBLIC_LOCATION=ogc_server_settings.public_url,
         GEOSERVER_BASE_URL=ogc_server_settings.public_url,
-        UPLOADER_URL=reverse('data_upload') if getattr(
-            settings,
-            'UPLOADER',
-            dict()).get(
-            'BACKEND',
-            'geonode.rest') == 'geonode.importer' else reverse('layer_upload'),
+        UPLOADER_URL=reverse('data_upload'),
         LAYER_ANCILLARY_FILES_UPLOAD_URL=reverse('layer_upload'),
         MAPFISH_PRINT_ENABLED=getattr(ogc_server_settings, 'MAPFISH_PRINT_ENABLED', False),
         PRINT_NG_ENABLED=getattr(ogc_server_settings, 'PRINT_NG_ENABLED', False),
