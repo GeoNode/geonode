@@ -57,7 +57,7 @@ def original_link_available(context, resourceid, url):
             upload_session = Upload.objects.get(layer=instance)
             for lyr in upload_session.uploadfile_set.all():
                 layer_files.append(lyr)
-                if not storage_manager.exists(str(lyr.file)):
+                if not storage_manager.exists(lyr.file):
                     return False
         except Exception:
             traceback.print_exc()

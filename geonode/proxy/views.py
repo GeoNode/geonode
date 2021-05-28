@@ -316,7 +316,7 @@ def download(request, resourceid, sender=Layer):
                 content_type="application/zip")
             response['Content-Disposition'] = f'attachment; filename="{target_file_name}"'
             return response
-        except NotImplementedError:
+        except (NotImplementedError, Upload.DoesNotExist):
             traceback.print_exc()
             tb = traceback.format_exc()
             logger.debug(tb)
