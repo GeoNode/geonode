@@ -553,7 +553,6 @@ def gs_slurp(
         permissions=None,
         execute_signals=False):
     """Configure the layers available in GeoServer in GeoNode.
-
        It returns a list of dictionaries with the name of the layer,
        the result of the operation and the errors and traceback if it failed.
     """
@@ -1232,7 +1231,6 @@ GEOSERVER_LAYER_TYPES = {
 
 def cleanup(name, uuid):
     """Deletes GeoServer and Catalogue records for a given name.
-
        Useful to clean the mess when something goes terribly wrong.
        It also verifies if the Django record existed, in which case
        it performs no action.
@@ -1373,7 +1371,6 @@ def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspac
 
 def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     """Create a database store then use it to import a shapefile.
-
     If the import into the database fails then delete the store
     (and delete the PostGIS table for it).
     """
@@ -1852,7 +1849,6 @@ def style_update(request, url, workspace=None):
 def set_time_info(layer, attribute, end_attribute, presentation,
                   precision_value, precision_step, enabled=True):
     '''Configure the time dimension for a layer.
-
     :param layer: the layer to configure
     :param attribute: the attribute used to represent the instant or period
                       start
@@ -1893,9 +1889,7 @@ def set_time_info(layer, attribute, end_attribute, presentation,
 
 def get_time_info(layer):
     '''Get the configured time dimension metadata for the layer as a dict.
-
     The keys of the dict will be those of the parameters of `set_time_info`.
-
     :returns: dict of values or None if not configured
     '''
     layer = gs_catalog.get_layer(layer.name)
