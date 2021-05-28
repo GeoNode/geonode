@@ -24,7 +24,15 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
+from urllib.parse import urljoin
+
+from django.conf import settings
+from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
+from django.test.client import RequestFactory
+from mock import patch
+from geonode.upload.models import Upload, UploadFile
 import json
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 try:
     from unittest.mock import MagicMock
@@ -40,7 +48,7 @@ from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.base.populate_test_data import create_models
+from geonode.base.populate_test_data import create_models, create_single_layer
 
 TEST_DOMAIN = '.github.com'
 TEST_URL = f'https://help{TEST_DOMAIN}/'
@@ -127,7 +135,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         create_models(type='layer')
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_download_url(self):
+    def test_download_url_with_not_existing_file(self):
         layer = Layer.objects.all().first()
         self.client.login(username='admin', password='admin')
         # ... all should be good
@@ -140,6 +148,33 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         data = content
         self.assertTrue(
             "No files have been found for this resource. Please, contact a system administrator." in data)
+
+    @patch('geonode.storage.manager.storage_manager.exists')
+    @patch('geonode.storage.manager.storage_manager.open')
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_download_url_with_existing_files(self, fopen, fexists):
+        fexists.return_value = True
+        fopen.return_value = SimpleUploadedFile('file.shp', b'scc')
+        layer = Layer.objects.all().first()
+
+        upload = Upload.objects.create(
+            state='RUNNING',
+            layer=layer
+        )
+
+        _ = UploadFile.objects.create(
+            upload=upload,
+            file='/file.shp',
+            slug='foo_slug',
+            name="foo_name"
+        )
+        self.client.login(username='admin', password='admin')
+        # ... all should be good
+        response = self.client.get(reverse('download', args=(layer.id,)))
+        # Espected 404 since there are no files available for this layer
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual('application/zip', response.headers.get('Content-Type'))
+        self.assertEqual('attachment; filename="CA.zip"', response.headers.get('Content-Disposition'))
 
 
 class OWSApiTestCase(GeoNodeBaseTestSupport):
@@ -163,3 +198,45 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
             content = content.decode('UTF-8')
         data = json.loads(content)
         self.assertTrue(len(data['data']), q.count())
+
+
+@override_settings(SITEURL='http://localhost:8000')
+class TestProxyTags(GeoNodeBaseTestSupport):
+    def setUp(self):
+        self.resource = create_single_layer('foo_layer')
+        r = RequestFactory()
+        self.url = urljoin(settings.SITEURL, reverse("download", args={self.resource.id}))
+        r.get(self.url)
+        admin = get_user_model().objects.get(username='admin')
+        r.user = admin
+        self.context = {'request': r}
+
+    def test_tag_original_link_available_with_different_netlock_should_return_true(self):
+        actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, "http://url.com/")
+        self.assertTrue(actual)
+
+    def test_should_return_false_if_no_files_are_available(self):
+        _ = Upload.objects.create(
+            state='RUNNING',
+            layer=self.resource
+        )
+
+        actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, self.url)
+        self.assertFalse(actual)
+
+    @patch('geonode.storage.manager.storage_manager.exists', return_value=True)
+    def test_should_return_true_if_no_files_are_available(self, fexists):
+        upload = Upload.objects.create(
+            state='RUNNING',
+            layer=self.resource
+        )
+
+        _ = UploadFile.objects.create(
+            upload=upload,
+            file='/file.shp',
+            slug='foo_slug',
+            name="foo_name"
+        )
+
+        actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, self.url)
+        self.assertTrue(actual)
