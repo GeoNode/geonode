@@ -321,13 +321,6 @@ def geoserver_post_save_layers(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            # Don't run this signal if is a Layer from a remote service
-            if getattr(instance, "remote_service", None) is not None or instance.storeType == "remoteStore":
-                # Creating Layer Thumbnail by sending a signal
-                geoserver_post_save_complete.send(
-                    sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
-                return
-
             # Don't run this signal handler if it is a tile layer or a remote store (Service)
             #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
             if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
@@ -343,7 +336,6 @@ def geoserver_post_save_layers(
                     return
 
             instance.set_processing_state(enumerations.STATE_RUNNING)
-            instance.set_dirty_state()
 
             gs_resource = None
             values = None
@@ -545,7 +537,6 @@ def geoserver_post_save_layers(
                     sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
 
             instance.set_processing_state(enumerations.STATE_PROCESSED)
-            instance.clear_dirty_state()
 
             # Updating HAYSTACK Indexes if needed
             if settings.HAYSTACK_SEARCH:

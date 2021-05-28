@@ -790,7 +790,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         }
 
         self.UPLOADER_DEFAULT_SETTINGS = {
-            'BACKEND': 'geonode.rest',
+            'BACKEND': 'geonode.importer',
             'OPTIONS': {
                 'TIME_ENABLED': False,
                 'MOSAIC_ENABLED': False}}

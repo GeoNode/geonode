@@ -553,7 +553,6 @@ def gs_slurp(
         permissions=None,
         execute_signals=False):
     """Configure the layers available in GeoServer in GeoNode.
-
        It returns a list of dictionaries with the name of the layer,
        the result of the operation and the errors and traceback if it failed.
     """
@@ -933,8 +932,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     then store in GeoNode database using Attribute model
     """
     attribute_map = []
-    server_url = ogc_server_settings.LOCATION if layer.storeType != "remoteStore" else layer.remote_service.service_url
-    if layer.storeType == "remoteStore" and layer.remote_service.ptype == "gxp_arcrestsource":
+    server_url = ogc_server_settings.LOCATION if layer.storeType not in ['tileStore', 'remoteStore'] else layer.remote_service.service_url
+    if layer.storeType in ['tileStore', 'remoteStore'] and layer.remote_service.ptype == "gxp_arcrestsource":
         dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
         try:
             # The code below will fail if http_client cannot be imported
@@ -946,7 +945,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.storeType in {"dataStore", "remoteStore", "wmsStore"}:
+    elif layer.storeType in {"dataStore", "tileStore", "remoteStore", "wmsStore"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url = re.sub(r"\/wms\/?$",
                          "/",
@@ -1220,7 +1219,6 @@ GEOSERVER_LAYER_TYPES = {
 
 def cleanup(name, uuid):
     """Deletes GeoServer and Catalogue records for a given name.
-
        Useful to clean the mess when something goes terribly wrong.
        It also verifies if the Django record existed, in which case
        it performs no action.
@@ -1361,7 +1359,6 @@ def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspac
 
 def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     """Create a database store then use it to import a shapefile.
-
     If the import into the database fails then delete the store
     (and delete the PostGIS table for it).
     """
@@ -1840,7 +1837,6 @@ def style_update(request, url, workspace=None):
 def set_time_info(layer, attribute, end_attribute, presentation,
                   precision_value, precision_step, enabled=True):
     '''Configure the time dimension for a layer.
-
     :param layer: the layer to configure
     :param attribute: the attribute used to represent the instant or period
                       start
@@ -1881,9 +1877,7 @@ def set_time_info(layer, attribute, end_attribute, presentation,
 
 def get_time_info(layer):
     '''Get the configured time dimension metadata for the layer as a dict.
-
     The keys of the dict will be those of the parameters of `set_time_info`.
-
     :returns: dict of values or None if not configured
     '''
     layer = gs_catalog.get_layer(layer.name)

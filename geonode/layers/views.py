@@ -561,7 +561,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if 'show_popup' in request.GET and request.GET["show_popup"]:
         show_popup = True
 
-    if layer.storeType == "remoteStore":
+    if layer.storeType in ['tileStore', 'remoteStore']:
         service = layer.remote_service
         source_params = {}
         if service.type in ('REST_MAP', 'REST_IMG'):
@@ -623,7 +623,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "show_popup": show_popup,
         "filter": filter,
         "storeType": layer.storeType,
-        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True,
+        "online": (layer.remote_service.probe == 200) if layer.storeType in ['tileStore', 'remoteStore'] else True,
         "processed": layer.processed
     }
 
@@ -853,7 +853,7 @@ def layer_metadata(
     config["title"] = layer.title
     config["queryable"] = True
 
-    if layer.storeType == "remoteStore":
+    if layer.storeType in ['tileStore', 'remoteStore']:
         service = layer.remote_service
         source_params = {}
         if service.type in ('REST_MAP', 'REST_IMG'):
