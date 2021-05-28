@@ -24,7 +24,7 @@ from django import template
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-from django.core.files.storage import FileSystemStorage
+from geonode.storage.manager import storage_manager
 
 from urllib.parse import urlsplit, urljoin
 
@@ -33,8 +33,6 @@ from geonode.upload.models import Upload
 from geonode.utils import resolve_object
 
 register = template.Library()
-
-storage = FileSystemStorage()
 
 
 @register.simple_tag(takes_context=True)
@@ -59,7 +57,7 @@ def original_link_available(context, resourceid, url):
             upload_session = Upload.objects.get(layer=instance)
             for lyr in upload_session.uploadfile_set.all():
                 layer_files.append(lyr)
-                if not storage.exists(str(lyr.file)):
+                if not storage_manager.exists(str(lyr.file)):
                     return False
         except Exception:
             traceback.print_exc()

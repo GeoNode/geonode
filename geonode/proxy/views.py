@@ -37,7 +37,7 @@ from django.views.generic import View
 from distutils.version import StrictVersion
 from django.http.request import validate_host
 from django.utils.translation import ugettext as _
-from django.core.files.storage import FileSystemStorage
+from geonode.storage.manager import storage_manager
 from django.views.decorators.csrf import requires_csrf_token
 
 from geonode.layers.models import Layer
@@ -61,7 +61,6 @@ LINK_TYPES = [L for L in _LT if L.startswith("OGC:")]
 
 logger = logging.getLogger(__name__)
 
-storage = FileSystemStorage()
 
 ows_regexp = re.compile(
     r"^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
@@ -281,10 +280,11 @@ def download(request, resourceid, sender=Layer):
             upload_session = Upload.objects.get(layer=instance)
             # Copy all Layer related files into a temporary folder
             for lyr in upload_session.uploadfile_set.all():
-                if storage.exists(str(lyr.file)):
+                if storage_manager.exists(lyr.file):
                     layer_files.append(lyr)
-                    geonode_layer_path = storage.path(str(lyr.file))
-                    shutil.copy2(geonode_layer_path, target_folder)
+                    filename = os.path.basename(lyr.file)
+                    with open(f"{target_folder}/{filename}", 'wb+') as f:
+                        f.write(storage_manager.open(lyr.file).read())
                 else:
                     return HttpResponse(
                         loader.render_to_string(
