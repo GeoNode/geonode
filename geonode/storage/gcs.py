@@ -45,8 +45,8 @@ class GoogleStorageManager(StorageManagerInterface):
     def path(self, name):
         raise NotImplementedError
 
-    def save(self, name, content):
-        return self._drx._save(name, content)
+    def save(self, name, content, max_length=None):
+        return self._drx.save(name, content)
 
     def size(self, name):
         return self._drx.size(name)

@@ -45,8 +45,8 @@ class AwsStorageManager(StorageManagerInterface):
     def path(self, name):
         return self._aws._normalize_name(name)
 
-    def save(self, name, content):
-        return self._aws._save(name, content)
+    def save(self, name, content, max_length=None):
+        return self._aws.save(name, content)
 
     def size(self, name):
         return self._aws.size(name)
