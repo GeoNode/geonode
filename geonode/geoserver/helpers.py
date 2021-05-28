@@ -564,27 +564,39 @@ def gs_slurp(
 
     cat = gs_catalog
 
-    resources = []
-
-    if not workspace and not store:
+    if workspace is not None and workspace:
+        workspace = cat.get_workspace(workspace)
+        if workspace is None:
+            resources = []
+        else:
+            # obtain the store from within the workspace. if it exists, obtain resources
+            # directly from store, otherwise return an empty list:
+            if store is not None:
+                store = get_store(cat, store, workspace=workspace)
+                if store is None:
+                    resources = []
+                else:
+                    resources = cat.get_resources(stores=[store])
+            else:
+                resources = cat.get_resources(workspaces=[workspace])
+    elif store is not None:
+        store = get_store(cat, store)
+        resources = cat.get_resources(stores=[store])
+    else:
         resources = cat.get_resources()
-    elif workspace and not store:
-        ws = cat.get_workspace(workspace)
-        resources = cat.get_resources(workspaces=[ws])
-    elif store:
-        st = get_store(cat, store, workspace=workspace)
-        resources = cat.get_resources(stores=[st])
 
     if remove_deleted:
-        resources_for_delete_compare = resources.copy()
+        resources_for_delete_compare = resources[:]
         workspace_for_delete_compare = workspace
         # filter out layers for delete comparison with GeoNode layers by following criteria:
         # enabled = true, if --skip-unadvertised: advertised = true, but
         # disregard the filter parameter in the case of deleting layers
         try:
-            resources_for_delete_compare = [r for r in resources_for_delete_compare if r.enabled]
+            resources_for_delete_compare = [
+                k for k in resources_for_delete_compare if k.enabled in {"true", True}]
             if skip_unadvertised:
-                resources_for_delete_compare = [k for k in resources_for_delete_compare if k.advertised]
+                resources_for_delete_compare = [
+                    k for k in resources_for_delete_compare if k.advertised in {"true", True}]
         except Exception:
             if ignore_errors:
                 pass

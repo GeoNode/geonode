@@ -38,7 +38,7 @@ class UploadFileSerializer(DynamicModelSerializer):
         model = UploadFile
         name = 'upload_file'
         fields = (
-            'pk', 'name', 'slug', 'base', 'file'
+            'pk', 'name', 'slug', 'file'
         )
 
     name = serializers.CharField(read_only=True)
