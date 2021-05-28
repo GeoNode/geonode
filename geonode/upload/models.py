@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.storage.manager import storage_manager
 import os
 import json
 import base64
@@ -24,15 +25,12 @@ import pickle
 import shutil
 import logging
 
-from slugify import slugify
 from gsimporter.api import NotFound
 
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
-from django.core.files import File
 from django.utils.timezone import now
-from django.core.files.storage import FileSystemStorage
 
 from geonode.base import enumerations
 from geonode.layers.models import Layer
@@ -131,32 +129,21 @@ class Upload(models.Model):
             sld_files = uploaded_files.sld_files
             xml_files = uploaded_files.xml_files
 
-            if not UploadFile.objects.filter(upload=self, file=base_file).count():
-                uploaded_file = UploadFile.objects.create_from_upload(
-                    self,
-                    base_file,
-                    None,
-                    base=True)
+            file_name, _ = os.path.splitext(os.path.basename(base_file))
+
+            if not UploadFile.objects.filter(upload=self, name=file_name).exists():
+                assigned_name = self.layer.name
+                uploaded_file = UploadFile.objects.create_from_upload(upload=self, name=assigned_name, base_file=base_file)
 
                 if uploaded_file and uploaded_file.name:
-                    assigned_name = uploaded_file.name
-                    for _f in aux_files:
+                    additional_files = aux_files + sld_files + xml_files
+                    for _f in additional_files:
                         UploadFile.objects.create_from_upload(
-                            self,
-                            _f,
-                            assigned_name)
-
-                    for _f in sld_files:
-                        UploadFile.objects.create_from_upload(
-                            self,
-                            _f,
-                            assigned_name)
-
-                    for _f in xml_files:
-                        UploadFile.objects.create_from_upload(
-                            self,
-                            _f,
-                            assigned_name)
+                            upload=self,
+                            name=assigned_name,
+                            base_file=_f
+                        )
+            # TODO: add delte temporary file on filesystem
 
         if "COMPLETE" == self.state:
             self.complete = True
@@ -300,27 +287,23 @@ class UploadFileManager(models.Manager):
 
     def create_from_upload(self,
                            upload,
-                           base_file,
-                           assigned_name,
-                           base=False):
+                           name,
+                           base_file):
         try:
             if os.path.isfile(base_file) and os.path.exists(base_file):
-                with open(base_file, 'rb') as f:
-                    file_name, type_name = os.path.splitext(os.path.basename(base_file))
-                    file = File(
-                        f, name=f'{assigned_name or upload.layer.name}{type_name}')
+                slug = os.path.basename(base_file)
 
-                    # save the system assigned name for the remaining files
-                    if not assigned_name:
-                        the_file = file.name
-                        assigned_name = os.path.splitext(os.path.basename(the_file))[0]
+                with open(base_file, 'rb') as ff:
+                    filepath = f"{os.path.basename(os.path.dirname(base_file))}"
+                    file_uploaded_path = storage_manager.save(f'{filepath}/{slug}', ff)
 
-                    return self.create(
-                        upload=upload,
-                        file=file,
-                        name=assigned_name,
-                        slug=slugify(file_name),
-                        base=base)
+                return self.create(
+                    upload=upload,
+                    file=file_uploaded_path,
+                    name=name,
+                    slug=slug
+                )
+
         except Exception as e:
             logger.exception(e)
 
@@ -330,25 +313,12 @@ class UploadFile(models.Model):
     objects = UploadFileManager()
 
     upload = models.ForeignKey(Upload, null=True, blank=True, on_delete=models.CASCADE)
-    slug = models.SlugField(max_length=4096, blank=True)
     name = models.CharField(max_length=4096, blank=True)
-    base = models.BooleanField(default=False)
-    file = models.FileField(
-        upload_to='layers/%Y/%m/%d',
-        storage=FileSystemStorage(
-            base_url=settings.LOCAL_MEDIA_URL),
-        max_length=4096)
+    slug = models.SlugField(max_length=4096, blank=True)
+    file = models.CharField(max_length=4096, blank=True)
 
     def __str__(self):
         return str(self.slug)
 
     def get_absolute_url(self):
         return reverse('data_upload_new', args=[self.slug, ])
-
-    def save(self, *args, **kwargs):
-        self.slug = self.file.name
-        super(UploadFile, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        self.file.delete(False)
-        super(UploadFile, self).delete(*args, **kwargs)
