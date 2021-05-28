@@ -58,9 +58,10 @@ from guardian.shortcuts import get_objects_for_user
 
 from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
-from geonode.upload.utils import update_layer_with_xml_info
 from geonode.geoserver.helpers import set_layer_style
 from geonode.thumbs.thumbnails import create_thumbnail
+from geonode.resource.utils import update_layer_with_xml_info
+
 from geonode.base.auth import get_or_create_token
 from geonode.base.forms import (
     CategoryForm,

@@ -20,13 +20,12 @@
 import errno
 import logging
 
+from deprecated import deprecated
 from geoserver.layer import Layer as GsLayer
 
 from django.conf import settings
-from django.dispatch import receiver, Signal
 from django.forms.models import model_to_dict
 from django.templatetags.static import static
-
 
 # use different name to avoid module clash
 from geonode.utils import (
@@ -119,17 +118,17 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             raise e
 
 
-@on_ogc_backend(BACKEND_PACKAGE)
+@deprecated(version='3.2.1', reason="Use direct calls to the ReourceManager.")
 def geoserver_post_save_map(instance, sender, created, **kwargs):
     instance.set_missing_info()
     if not created:
         if not instance.thumbnail_url or \
                 instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
             logger.debug(f"... Creating Thumbnail for Map [{instance.title}]")
-            # create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
             geoserver_create_thumbnail.apply_async(((instance.id, False, True, )))
 
 
+@deprecated(version='3.2.1', reason="Use direct calls to the ReourceManager.")
 def geoserver_set_thumbnail(instance, **kwargs):
     # Creating Layer Thumbnail
     # some thumbnail generators will update thumbnail_url.  If so, don't

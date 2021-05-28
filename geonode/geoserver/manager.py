@@ -19,14 +19,18 @@
 #########################################################################
 import logging
 
-from .manager import ResourceManagerInterface
-
 from django.db.models.query import QuerySet
 
+from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
 from geonode.services.enumerations import CASCADED
-from geonode.geoserver.tasks import geoserver_cascading_delete
-from geonode.geoserver.helpers import (
+from geonode.resource.manager import ResourceManagerInterface
+
+from .tasks import (
+    geoserver_cascading_delete,
+    geoserver_create_thumbnail)
+from .signals import geoserver_post_save_local
+from .helpers import (
     gs_catalog,
     ogc_server_settings)
 
@@ -62,14 +66,23 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 if _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
                     geoserver_cascading_delete.apply_async((_real_instance.alternate,))
 
-    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> int:
-        pass
+    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> ResourceBase:
+        _resource = type.objects.get(uuid=uuid)
+        if type == Layer:
+            geoserver_post_save_local(_resource)
+        return _resource
 
-    def update(self, uuid: str, /, instance: ResourceBase = None, vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> int:
-        pass
+    def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
+               vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
+        _resource = type.objects.get(uuid=uuid)
+        if type == Layer:
+            geoserver_post_save_local(_resource)
+        return _resource
 
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}, created: bool = False) -> bool:
+        # TODO: move GeoFence set perms logic here
         pass
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
-        pass
+        # TODO: missing thumb for documents
+        geoserver_create_thumbnail.apply_async(((instance.id, overwrite, check_bbox, )))

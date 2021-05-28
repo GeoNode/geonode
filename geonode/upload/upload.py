@@ -51,12 +51,12 @@ from geoserver.resource import (
 from django.conf import settings
 from django.db.models import Max
 from django.contrib.auth import get_user_model
-from django.db import IntegrityError, transaction
 from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
 from geonode.base import enumerations
 from geonode.layers.models import TIME_REGEX_FORMAT
+from geonode.resource.manager import resource_manager
 from geonode.upload import UploadException, LayerNotReady
 
 from ..layers.models import Layer
@@ -729,30 +729,28 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 f"There was an error updating the mosaic temporal extent: {str(e)}")
     else:
         try:
-            with transaction.atomic():
-                saved_layer, created = Layer.objects.get_or_create(
-                    uuid=layer_uuid,
-                    defaults=dict(
-                        store=target.name,
-                        storeType=target.store_type,
-                        alternate=alternate,
-                        workspace=target.workspace_name,
-                        title=title,
-                        name=task.layer.name,
-                        abstract=abstract or _('No abstract provided'),
-                        owner=user,
-                        temporal_extent_start=start,
-                        temporal_extent_end=end,
-                        is_mosaic=has_elevation,
-                        has_time=has_time,
-                        has_elevation=has_elevation,
-                        time_regex=upload_session.mosaic_time_regex)
-                )
-        except IntegrityError as e:
+            saved_layer = resource_manager.create(
+                layer_uuid,
+                type=Layer,
+                defaults=dict(
+                    store=target.name,
+                    storeType=target.store_type,
+                    alternate=alternate,
+                    workspace=target.workspace_name,
+                    title=title,
+                    name=task.layer.name,
+                    abstract=abstract or _('No abstract provided'),
+                    owner=user,
+                    temporal_extent_start=start,
+                    temporal_extent_end=end,
+                    is_mosaic=has_elevation,
+                    has_time=has_time,
+                    has_elevation=has_elevation,
+                    time_regex=upload_session.mosaic_time_regex))
+            created = True
+        except Exception as e:
             Upload.objects.invalidate_from_session(upload_session)
             raise UploadException.from_exc(_('Error configuring Layer'), e)
-
-        assert saved_layer
 
         Upload.objects.update_from_session(upload_session, layer=saved_layer)
 

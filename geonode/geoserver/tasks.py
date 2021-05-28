@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.base import enumerations
 import os
 import re
 import shutil
@@ -37,12 +36,7 @@ from geonode.tasks.tasks import (
     AcquireLock,
     FaultTolerantTask)
 from geonode import GeoNodeException
-from geonode.upload import signals
-from geonode.upload.utils import (
-    metadata_storers,
-    update_layer_with_xml_info)
 from geonode.layers.models import Layer
-from geonode.layers.metadata import parse_metadata
 from geonode.base.models import ResourceBase
 from geonode.utils import (
     is_monochromatic_image,
@@ -240,25 +234,23 @@ def geoserver_finalize_upload(
             # @todo if layer was not created, need to ensure upload target is
             # same as existing target
             # Create the points of contact records for the layer
-            logger.debug(f'Creating points of contact records for {instance}')
-            if not instance.poc:
-                instance.poc = instance.owner
-            if not instance.metadata_author:
-                instance.metadata_author = instance.owner
+            # logger.debug(f'Creating points of contact records for {instance}')
+            # if not instance.poc:
+            #     instance.poc = instance.owner
+            # if not instance.metadata_author:
+            #     instance.metadata_author = instance.owner
 
-            logger.debug(f'Look for xml and finalize Layer metadata {instance}')
-            regions = []
-            keywords = []
-            vals = {}
-            custom = {}
-            instance.metadata_uploaded = metadata_uploaded
-            if metadata_uploaded:
-                layer_uuid, vals, regions, keywords, custom = parse_metadata(
-                    open(xml_file).read())
+            # logger.debug(f'Look for xml and finalize Layer metadata {instance}')
+            # regions = []
+            # keywords = []
+            # vals = {}
+            # custom = {}
+            # instance.metadata_uploaded = metadata_uploaded
+            # if metadata_uploaded:
+            #     layer_uuid, vals, regions, keywords, custom = parse_metadata(
+            #         open(xml_file).read())
 
-            logger.debug(f'Update Layer with information coming from XML File if available {instance}')
-            instance = metadata_storers(instance, custom)
-            instance = update_layer_with_xml_info(instance, xml_file, regions, keywords, vals)
+            # TODO: set metadata
 
             logger.debug(f'Creating style for Layer {instance}')
             if sld_uploaded:
@@ -269,14 +261,10 @@ def geoserver_finalize_upload(
             if time_info:
                 set_time_info(instance, **time_info)
 
-            logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
-            instance.handle_moderated_uploads()
-
-            if permissions is not None:
-                logger.debug(f'Setting permissions {permissions} for {instance.name}')
-                instance.set_permissions(permissions, created=created)
-
-            instance.save(notify=created)
+            # TODO: links
+            # TODO: permissions
+            # TODO: thumbnail
+            # TODO: save
 
             try:
                 logger.debug(f"... Cleaning up the temporary folders {tempdir}")
@@ -286,8 +274,6 @@ def geoserver_finalize_upload(
                 logger.warning(e)
             finally:
                 Upload.objects.filter(import_id=import_id).update(complete=True)
-
-            signals.upload_complete.send(sender=geoserver_finalize_upload, layer=instance)
 
 
 @app.task(
@@ -322,18 +308,16 @@ def geoserver_post_save_layers(
             # Don't run this signal handler if it is a tile layer or a remote store (Service)
             #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
             if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
-                # Creating Layer Thumbnail by sending a signal
-                geoserver_post_save_complete.send(
-                    sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
+                # # Creating Layer Thumbnail by sending a signal
+                # geoserver_post_save_complete.send(
+                #     sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
                 return instance
 
             if isinstance(instance, ResourceBase):
                 if hasattr(instance, 'layer'):
                     instance = instance.layer
                 else:
-                    return
-
-            instance.set_processing_state(enumerations.STATE_RUNNING)
+                    return instance
 
             gs_resource = None
             values = None
@@ -530,11 +514,9 @@ def geoserver_post_save_layers(
                 except Exception:
                     pass
 
-                # Creating Layer Thumbnail by sending a signal
-                geoserver_post_save_complete.send(
-                    sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
-
-            instance.set_processing_state(enumerations.STATE_PROCESSED)
+                # # Creating Layer Thumbnail by sending a signal
+                # geoserver_post_save_complete.send(
+                #     sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
 
             # Updating HAYSTACK Indexes if needed
             if settings.HAYSTACK_SEARCH:

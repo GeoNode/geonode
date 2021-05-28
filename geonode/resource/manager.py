@@ -20,14 +20,20 @@
 import logging
 import importlib
 
-from django.core.exceptions import ValidationError
-from . import settings as rm_settings
+from abc import ABCMeta, abstractmethod
 
 from django.db import transaction
 from django.db.models.query import QuerySet
+from django.core.exceptions import ValidationError
 
-from abc import ABCMeta, abstractmethod
-from geonode.base.models import ResourceBase
+from . import settings as rm_settings
+from .utils import metadata_storers, update_layer_with_xml_info
+
+from ..base import enumerations
+from ..base.models import ResourceBase
+from ..layers.metadata import parse_metadata
+
+from ..storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
 
@@ -47,15 +53,16 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> int:
+    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> ResourceBase:
         pass
 
     @abstractmethod
-    def update(self, uuid: str, /, instance: ResourceBase = None, vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> int:
+    def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
+               vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
         pass
 
     @abstractmethod
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}, created: bool = False) -> bool:
         pass
 
     @abstractmethod
@@ -91,25 +98,25 @@ class ResourceManager(ResourceManagerInterface):
         return _resources_queryset
 
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
-        instance = instance or ResourceManager._get_instance(uuid)
-        if instance:
-            return self._resource_manager.exists(uuid, instance=instance)
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            return self._resource_manager.exists(uuid, instance=_resource)
         return False
 
     @transaction.atomic
     def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
-        instance = instance or ResourceManager._get_instance(uuid)
-        if instance:
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
             try:
-                self._resource_manager.delete(uuid, instance=instance)
-                instance.get_real_instance().delete()
+                self._resource_manager.delete(uuid, instance=_resource)
+                _resource.get_real_instance().delete()
                 return 1
             except Exception as e:
                 logger.exception(e)
         return 0
 
     @transaction.atomic
-    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> int:
+    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> ResourceBase:
         if type.objects.filter(uuid=uuid).exists():
             raise ValidationError(f'Object of type {type} with uuid [{uuid}] already exists.')
         _resource, _created = type.objects.get_or_create(
@@ -117,25 +124,53 @@ class ResourceManager(ResourceManagerInterface):
             defaults=defaults)
         if _resource and _created:
             try:
-                self._resource_manager.create(uuid, type=type, defaults=defaults)
-                return 1
+                _resource.set_processing_state(enumerations.STATE_RUNNING)
+                _resource.set_missing_info()
+                _resource = self._resource_manager.create(uuid, type=type, defaults=defaults)
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+            except Exception as e:
+                _resource.delete()
+                raise e
+        return _resource
+
+    @transaction.atomic
+    def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
+               vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            _resource.set_processing_state(enumerations.STATE_RUNNING)
+            _resource.set_missing_info()
+            _resource.metadata_uploaded = metadata_uploaded
+            logger.debug(f'Look for xml and finalize Layer metadata {_resource}')
+            if metadata_uploaded:
+                _uuid, vals, regions, keywords, custom = parse_metadata(
+                    storage_manager.open(xml_file).read())
+                if uuid != _uuid:
+                    raise ValidationError("The UUID identifier from the XML Metadata is different from the {_resource} one.")
+            logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
+            _resource = metadata_storers(_resource.get_real_instance(), custom)
+            _resource = update_layer_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
+            try:
+                _resource = self._resource_manager.update(uuid, instance=_resource, vals=vals, regions=regions, keywords=keywords, custom=custom, notify=notify)
             except Exception as e:
                 logger.exception(e)
-                _resource.delete()
-        return 0
+            finally:
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                _resource.save(notify=notify)
+        return _resource
 
     @transaction.atomic
-    def update(self, uuid: str, /, instance: ResourceBase = None, vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> int:
-        pass
-
-    @transaction.atomic
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> bool:
-        instance = instance or ResourceManager._get_instance(uuid)
-        if instance and permissions is not None:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}, created: bool = False) -> bool:
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource and permissions is not None:
+            _resource.set_processing_state(enumerations.STATE_RUNNING)
+            logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
+            _resource.handle_moderated_uploads()
             try:
-                logger.debug(f'Setting permissions {permissions} for {instance.name}')
-                instance.get_real_instance().set_permissions(permissions, created=False)
-                self._resource_manager.set_permissions(uuid, instance=instance, permissions=permissions)
+                logger.debug(f'Setting permissions {permissions} for {_resource.name}')
+                _resource.get_real_instance().set_permissions(permissions, created=created)
+                self._resource_manager.set_permissions(uuid, instance=_resource, permissions=permissions, created=created)
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
                 logger.exception(e)
@@ -143,7 +178,16 @@ class ResourceManager(ResourceManagerInterface):
 
     @transaction.atomic
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
-        pass
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            _resource.set_processing_state(enumerations.STATE_RUNNING)
+            try:
+                self._resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                return True
+            except Exception as e:
+                logger.exception(e)
+        return False
 
 
 resource_manager = ResourceManager()
