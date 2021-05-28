@@ -295,7 +295,7 @@ class UploadFileManager(models.Manager):
 
                 with open(base_file, 'rb') as ff:
                     filepath = f"{os.path.basename(os.path.dirname(base_file))}"
-                    file_uploaded_path = storage_manager.save(f'/geonode/{filepath}/{slug}', ff)
+                    file_uploaded_path = storage_manager.save(f'{filepath}/{slug}', ff)
 
                 return self.create(
                     upload=upload,
