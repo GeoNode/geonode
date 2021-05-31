@@ -64,6 +64,7 @@ class UploadViewSet(DynamicModelViewSet):
     queryset = Upload.objects.all()
     serializer_class = UploadSerializer
     pagination_class = GeoNodeApiPagination
+    lookup_field = "resource_id"
 
     @extend_schema(methods=['put'],
                    responses={201: None},

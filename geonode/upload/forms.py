@@ -27,17 +27,9 @@ from .. import geoserver
 from ..utils import check_ogc_backend
 from ..layers.forms import JSONField
 
-from .models import UploadFile
 from .upload_validators import validate_uploaded_files
 
 logger = logging.getLogger(__name__)
-
-
-class UploadFileForm(forms.ModelForm):
-
-    class Meta:
-        model = UploadFile
-        fields = '__all__'
 
 
 class LayerUploadForm(forms.Form):

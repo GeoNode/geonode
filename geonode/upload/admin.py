@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from geonode.upload.models import Upload, UploadFile
+from geonode.upload.models import Upload
 
 from django.contrib import admin
 
@@ -43,12 +43,4 @@ class UploadAdmin(admin.ModelAdmin):
             obj.delete()
 
 
-class UploadFileAdmin(admin.ModelAdmin):
-    list_display = ('id', 'upload', 'slug')
-    list_display_links = ('id',)
-    list_filter = ('slug', )
-    search_fields = ('slug', )
-
-
 admin.site.register(Upload, UploadAdmin)
-admin.site.register(UploadFile, UploadFileAdmin)

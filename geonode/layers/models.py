@@ -647,7 +647,7 @@ def pre_delete_layer(instance, sender, **kwargs):
         from geonode.upload.models import Upload
         # Need to call delete one by one in ordee to invoke the
         #  'delete' overridden method
-        for upload in Upload.objects.filter(layer_id=instance.id):
+        for upload in Upload.objects.filter(resource_id=instance.id):
             upload.delete()
 
     # Delete object permissions

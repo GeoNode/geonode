@@ -593,7 +593,7 @@ class ResourceBaseManager(PolymorphicManager):
         return super(ResourceBaseManager, self).get_queryset()
 
     @staticmethod
-    def upload_files(resource, files):
+    def upload_files(resource_id, files):
         try:
             out = {}
             for f in files:
@@ -604,9 +604,11 @@ class ResourceBaseManager(PolymorphicManager):
                         folder = os.path.basename(os.path.dirname(f))
                         filename = os.path.basename(f)
                         file_uploaded_path = storage_manager.save(f'{folder}/{filename}', ff)
-                        out[ext] = file_uploaded_path
-            resource.files = out
-            resource.save()
+                        out[ext] = storage_manager.path(file_uploaded_path)
+
+            # making an update instead of save in order to avoid others
+            # signal like post_save and commiunication with geoserver
+            ResourceBase.objects.filter(id=resource_id).update(files=out)
         except Exception as e:
             logger.exception(e)
 
@@ -934,7 +936,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("Metadata"),
         default=False,
         help_text=_('If true, will be excluded from search'))
-    
+
     files = JSONField(null=False, default=dict)
 
     __is_approved = False

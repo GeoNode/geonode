@@ -34,7 +34,6 @@ from django.conf import settings
 from django.utils.timezone import now
 
 from geonode.base import enumerations
-from geonode.layers.models import Layer
 from geonode.tasks.tasks import AcquireLock
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
@@ -131,7 +130,7 @@ class Upload(models.Model):
 
             if self.resource and not self.resource.files:
                 files_to_upload = aux_files + sld_files + xml_files + [uploaded_files.base_file]
-                ResourceBase.objects.upload_files(resource=resource, files=files_to_upload)
+                ResourceBase.objects.upload_files(resource_id=resource.id, files=files_to_upload)
 
             # TODO: add delte temporary file on filesystem
 
@@ -228,7 +227,6 @@ class Upload(models.Model):
 
     def delete(self, *args, **kwargs):
         importer_locations = []
-        upload_files = [_file.file for _file in UploadFile.objects.filter(upload=self)]
         super(Upload, self).delete(*args, **kwargs)
         try:
             session = gs_uploader.get_session(self.import_id)
@@ -243,17 +241,27 @@ class Upload(models.Model):
                 session.delete()
             except Exception:
                 logging.warning('error deleting upload session')
-        for _file in upload_files:
+
+        # we delete directly the folder with the files of the resource
+        for _, _file in self.resource.files.items():
             try:
-                if os.path.isfile(_file.path):
-                    os.remove(_file.path)
+                dirname = os.path.dirname(_file)
+                if storage_manager.exists(dirname):
+                    storage_manager.delete(dirname)
+                    break
             except Exception as e:
                 logger.warning(e)
+
+        # Do we want to delete the files also from the resource?
+        ResourceBase.objects.filter(id=self.resource.id).update(files={})
+
         for _location in importer_locations:
             try:
                 shutil.rmtree(_location)
             except Exception as e:
                 logger.warning(e)
+
+        # here we are deleting the local that soon will be removed
         if self.upload_dir and os.path.exists(self.upload_dir):
             try:
                 shutil.rmtree(self.upload_dir)
@@ -268,47 +276,3 @@ class Upload(models.Model):
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'
-
-
-class UploadFileManager(models.Manager):
-
-    def __init__(self):
-        models.Manager.__init__(self)
-
-    def create_from_upload(self,
-                           upload,
-                           name,
-                           base_file):
-        try:
-            if os.path.isfile(base_file) and os.path.exists(base_file):
-                slug = os.path.basename(base_file)
-
-                with open(base_file, 'rb') as ff:
-                    filepath = f"{os.path.basename(os.path.dirname(base_file))}"
-                    file_uploaded_path = storage_manager.save(f'{filepath}/{slug}', ff)
-
-                return self.create(
-                    upload=upload,
-                    file=file_uploaded_path,
-                    name=name,
-                    slug=slug
-                )
-
-        except Exception as e:
-            logger.exception(e)
-
-
-class UploadFile(models.Model):
-
-    objects = UploadFileManager()
-
-    upload = models.ForeignKey(Upload, null=True, blank=True, on_delete=models.CASCADE)
-    name = models.CharField(max_length=4096, blank=True)
-    slug = models.SlugField(max_length=4096, blank=True)
-    file = models.CharField(max_length=4096, blank=True)
-
-    def __str__(self):
-        return str(self.slug)
-
-    def get_absolute_url(self):
-        return reverse('data_upload_new', args=[self.slug, ])
