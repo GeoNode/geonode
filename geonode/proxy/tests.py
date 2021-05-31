@@ -30,7 +30,7 @@ from django.conf import settings
 from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
 from django.test.client import RequestFactory
 from mock import patch
-from geonode.upload.models import Upload, UploadFile
+from geonode.upload.models import Upload
 import json
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -154,20 +154,25 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_download_url_with_existing_files(self, fopen, fexists):
         fexists.return_value = True
-        fopen.return_value = SimpleUploadedFile('file.shp', b'scc')
+        fopen.return_value = SimpleUploadedFile('foo_file.shp', b'scc')
         layer = Layer.objects.all().first()
+
+        layer.files = {
+            ".dbf": "/tmpe1exb9e9/foo_file.dbf",
+            ".prj": "/tmpe1exb9e9/foo_file.prj",
+            ".shp": "/tmpe1exb9e9/foo_file.shp",
+            ".shx": "/tmpe1exb9e9/foo_file.shx"
+        }
+
+        layer.save()
+
+        layer.refresh_from_db()
 
         upload = Upload.objects.create(
             state='RUNNING',
-            layer=layer
+            resource=layer
         )
 
-        _ = UploadFile.objects.create(
-            upload=upload,
-            file='/file.shp',
-            slug='foo_slug',
-            name="foo_name"
-        )
         self.client.login(username='admin', password='admin')
         # ... all should be good
         response = self.client.get(reverse('download', args=(layer.id,)))
@@ -218,25 +223,27 @@ class TestProxyTags(GeoNodeBaseTestSupport):
     def test_should_return_false_if_no_files_are_available(self):
         _ = Upload.objects.create(
             state='RUNNING',
-            layer=self.resource
+            resource=self.resource
         )
 
         actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, self.url)
         self.assertFalse(actual)
 
     @patch('geonode.storage.manager.storage_manager.exists', return_value=True)
-    def test_should_return_true_if_no_files_are_available(self, fexists):
+    def test_should_return_true_if_files_are_available(self, fexists):
         upload = Upload.objects.create(
             state='RUNNING',
-            layer=self.resource
+            resource=self.resource
         )
+        self.resource.files = {
+            ".dbf": "/tmpe1exb9e9/foo_file.dbf",
+            ".prj": "/tmpe1exb9e9/foo_file.prj",
+            ".shp": "/tmpe1exb9e9/foo_file.shp",
+            ".shx": "/tmpe1exb9e9/foo_file.shx"
+        }
+        self.resource.save()
 
-        _ = UploadFile.objects.create(
-            upload=upload,
-            file='/file.shp',
-            slug='foo_slug',
-            name="foo_name"
-        )
+        self.resource.refresh_from_db()
 
         actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, self.url)
         self.assertTrue(actual)

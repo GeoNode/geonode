@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.base.models import ResourceBase
 import io
 import os
 import re
@@ -266,7 +267,7 @@ def download(request, resourceid, sender=Layer):
                               permission='base.download_resourcebase',
                               permission_msg=_not_permitted)
 
-    if isinstance(instance, Layer):
+    if isinstance(instance, ResourceBase):
         # Create Target Folder
         dirpath = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         dir_time_suffix = get_dir_time_suffix()
