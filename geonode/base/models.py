@@ -609,6 +609,7 @@ class ResourceBaseManager(PolymorphicManager):
             # making an update instead of save in order to avoid others
             # signal like post_save and commiunication with geoserver
             ResourceBase.objects.filter(id=resource_id).update(files=out)
+            return out
         except Exception as e:
             logger.exception(e)
 

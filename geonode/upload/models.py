@@ -32,7 +32,7 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 from django.utils.timezone import now
-
+from geonode import GeoNodeException
 from geonode.base import enumerations
 from geonode.tasks.tasks import AcquireLock
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
@@ -81,7 +81,7 @@ class Upload(models.Model):
     state = models.CharField(max_length=16)
     create_date = models.DateTimeField('create_date', default=now)
     date = models.DateTimeField('date', default=now)
-    resource = models.ForeignKey(ResourceBase, null=True, on_delete=models.CASCADE)
+    resource = models.ForeignKey(ResourceBase, null=True, on_delete=models.SET_NULL)
     upload_dir = models.TextField(null=True)
     name = models.CharField(max_length=64, null=True)
     complete = models.BooleanField(default=False)
@@ -109,7 +109,7 @@ class Upload(models.Model):
             return pickle.loads(
                 base64.decodebytes(self.session.encode('UTF-8')))
 
-    def update_from_session(self, upload_session, resource=None):
+    def update_from_session(self, upload_session, resource: ResourceBase = None):
         self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
         self.state = upload_session.import_session.state
         self.name = upload_session.name
@@ -120,7 +120,12 @@ class Upload(models.Model):
             self.upload_dir = os.path.dirname(upload_session.base_file)
 
         if resource and not self.resource:
-            self.resource = resource
+            if not isinstance(resource, ResourceBase) and hasattr(resource, 'resourcebase_ptr'):
+                self.resource = resource.resourcebase_ptr
+            elif not isinstance(resource, ResourceBase):
+                raise GeoNodeException("Invalid resource uploaded, plase select one of the available")
+            else:
+                self.resource = resource
 
         if upload_session.base_file and self.resource and self.resource.title:
             uploaded_files = upload_session.base_file[0]
@@ -132,7 +137,11 @@ class Upload(models.Model):
                 files_to_upload = aux_files + sld_files + xml_files + [uploaded_files.base_file]
                 ResourceBase.objects.upload_files(resource_id=resource.id, files=files_to_upload)
 
-            # TODO: add delte temporary file on filesystem
+            # Now we delete the files from local file system
+            # only if it does not match with the default temporary path
+            if os.path.exists(self.upload_dir):
+                if settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.upload_dir)):
+                    shutil.rmtree(self.upload_dir)
 
         if "COMPLETE" == self.state:
             self.complete = True
@@ -243,17 +252,18 @@ class Upload(models.Model):
                 logging.warning('error deleting upload session')
 
         # we delete directly the folder with the files of the resource
-        for _, _file in self.resource.files.items():
-            try:
-                dirname = os.path.dirname(_file)
-                if storage_manager.exists(dirname):
-                    storage_manager.delete(dirname)
-                    break
-            except Exception as e:
-                logger.warning(e)
+        if self.resource:
+            for _, _file in self.resource.files.items():
+                try:
+                    dirname = os.path.dirname(_file)
+                    if storage_manager.exists(dirname):
+                        storage_manager.delete(dirname)
+                        break
+                except Exception as e:
+                    logger.warning(e)
 
-        # Do we want to delete the files also from the resource?
-        ResourceBase.objects.filter(id=self.resource.id).update(files={})
+            # Do we want to delete the files also from the resource?
+            ResourceBase.objects.filter(id=self.resource.id).update(files={})
 
         for _location in importer_locations:
             try:
