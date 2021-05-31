@@ -1541,7 +1541,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_path = thumb_path(filename)
-
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):

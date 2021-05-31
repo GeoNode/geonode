@@ -19,6 +19,7 @@
 #########################################################################
 import json
 import logging
+import os
 import traceback
 from itertools import chain
 import warnings
@@ -57,6 +58,8 @@ from geonode.base.views import batch_modify
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
 from geonode.security.utils import get_visible_resources
+from geonode.storage.manager import storage_manager
+import tempfile
 
 from dal import autocomplete
 
@@ -217,19 +220,31 @@ class DocumentUploadView(CreateView):
             form.doc_url = None
             return self.render_to_response(self.get_context_data(form=form))
 
-    def form_valid(self, form):
+    def form_valid(self, form):  
         """
         If the form is valid, save the associated model.
         """
-        self.object = form.save(commit=False)
+        doc_form = form.cleaned_data
+        self.object = Document()
+        
+        file = doc_form.pop('doc_file', None)
+        if file:
+            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+            dirname = os.path.basename(tempdir)
+            _, ext = os.path.splitext(file.name)
+            filepath = storage_manager.save(f"{dirname}/{file.name}", file)
+            self.object.title = file.name
+            self.object.files = {ext: storage_manager.path(filepath)}
+
         self.object.owner = self.request.user
 
         if settings.ADMIN_MODERATE_UPLOADS:
             self.object.is_approved = False
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
+
         self.object.save()
-        form.save_many2many()
+
         self.object.set_permissions(form.cleaned_data['permissions'])
 
         abstract = None
