@@ -187,14 +187,17 @@ class ResourceManager(ResourceManagerInterface):
     @transaction.atomic
     def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}, created: bool = False) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
-        if _resource and permissions is not None:
+        if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
-            _resource.handle_moderated_uploads()
             try:
                 logger.debug(f'Setting permissions {permissions} for {_resource.name}')
-                _resource.get_real_instance().set_permissions(permissions, created=created)
-                self._resource_manager.set_permissions(uuid, instance=_resource, permissions=permissions, created=created)
+                if permissions is not None:
+                    _resource.get_real_instance().set_permissions(permissions, created=created)
+                    self._resource_manager.set_permissions(uuid, instance=_resource, permissions=permissions, created=created)
+                else:
+                    _resource.get_real_instance().set_default_permissions()
+                _resource.handle_moderated_uploads()
                 return True
             except Exception as e:
                 logger.exception(e)

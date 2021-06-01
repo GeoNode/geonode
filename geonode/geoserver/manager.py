@@ -20,8 +20,11 @@
 import logging
 import tempfile
 
+from django.conf import settings
 from django.db.models.query import QuerySet
+from django.templatetags.static import static
 
+from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
 from geonode.services.enumerations import CASCADED
@@ -29,6 +32,7 @@ from geonode.resource.manager import ResourceManager, ResourceManagerInterface
 
 from .tasks import (
     geoserver_set_style,
+    geoserver_delete_map,
     geoserver_create_style,
     geoserver_cascading_delete,
     geoserver_create_thumbnail)
@@ -67,9 +71,11 @@ class GeoServerResourceManager(ResourceManagerInterface):
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if instance and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             _real_instance = instance.get_real_instance()
-            if hasattr(_real_instance, 'alternate') and _real_instance.alternate:
+            if isinstance(_real_instance, Layer) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
                 if _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
                     geoserver_cascading_delete.apply_async((_real_instance.alternate,))
+            elif isinstance(_real_instance, Map):
+                geoserver_delete_map.apply_async((_real_instance.id, ))
 
     def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
         if resource_type:
@@ -93,7 +99,8 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         if instance:
             # TODO: missing thumb for documents
-            geoserver_create_thumbnail.apply_async(((instance.id, overwrite, check_bbox, )))
+            if overwrite or instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
+                geoserver_create_thumbnail.apply_async(((instance.id, overwrite, check_bbox, )))
             return True
         return False
 

@@ -35,11 +35,11 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 from uuid_upload_path import upload_to
 
+from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Link
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.maps.signals import map_changed_signal
-from geonode.maps.models import Map
 from geonode.security.utils import remove_object_permissions
 
 logger = logging.getLogger(__name__)

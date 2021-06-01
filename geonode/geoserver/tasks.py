@@ -478,7 +478,7 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 1, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -490,3 +490,31 @@ def geoserver_cascading_delete(self, *args, **kwargs):
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
             return cascading_delete(*args, **kwargs)
+
+
+@app.task(
+    bind=True,
+    name='geonode.geoserver.tasks.geoserver_delete_map',
+    queue='cleanup',
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 1, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
+def geoserver_delete_map(self, object_id):
+    """
+    Deletes a map and the associated map layers.
+    """
+    from geonode.maps.models import Map
+    lock_id = f'{self.request.id}'
+    with AcquireLock(lock_id) as lock:
+        if lock.acquire() is True:
+            try:
+                map_obj = Map.objects.get(id=object_id)
+            except Map.DoesNotExist:
+                return
+
+            map_obj.layer_set.all().delete()
+            map_obj.delete()
