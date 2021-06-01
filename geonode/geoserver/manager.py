@@ -82,7 +82,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
                vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
         if instance:
-            if type(instance.get_real_instance()) == Layer:
+            if isinstance(instance.get_real_instance(), Layer):
                 geoserver_post_save_local(instance.get_real_instance())
         return instance
 
