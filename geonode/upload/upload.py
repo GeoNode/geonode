@@ -731,7 +731,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         try:
             saved_layer = resource_manager.create(
                 layer_uuid,
-                type=Layer,
+                resource_type=Layer,
                 defaults=dict(
                     store=target.name,
                     storeType=target.store_type,

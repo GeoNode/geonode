@@ -25,7 +25,7 @@ from django.db.models.query import QuerySet
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
 from geonode.services.enumerations import CASCADED
-from geonode.resource.manager import ResourceManagerInterface
+from geonode.resource.manager import ResourceManager, ResourceManagerInterface
 
 from .tasks import (
     geoserver_set_style,
@@ -47,11 +47,12 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return type.objects.none()
 
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
-        if uuid and instance:
-            if hasattr(instance.get_real_instance(), 'storeType') and instance.get_real_instance().storeType not in ['tileStore', 'remoteStore']:
+        if instance:
+            _real_instance = instance.get_real_instance()
+            if hasattr(_real_instance, 'storeType') and _real_instance.storeType not in ['tileStore', 'remoteStore']:
                 try:
-                    logger.debug(f"Searching GeoServer for layer '{instance.alternate}'")
-                    if gs_catalog.get_layer(instance.alternate):
+                    logger.debug(f"Searching GeoServer for layer '{_real_instance.alternate}'")
+                    if gs_catalog.get_layer(_real_instance.alternate):
                         return True
                 except Exception as e:
                     logger.debug(e)
@@ -70,10 +71,10 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 if _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
                     geoserver_cascading_delete.apply_async((_real_instance.alternate,))
 
-    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> ResourceBase:
-        if type:
-            _resource = type.objects.get(uuid=uuid)
-            if type == Layer:
+    def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
+        if resource_type:
+            _resource = resource_type.objects.get(uuid=uuid)
+            if resource_type == Layer:
                 geoserver_post_save_local(_resource)
             return _resource
         return None
@@ -100,18 +101,14 @@ class GeoServerResourceManager(ResourceManagerInterface):
         raise NotImplementedError
 
     def set_style(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
-        try:
-            instance = instance or Layer.objects.get(uuid=uuid)
-        except Exception as e:
-            logger.exception(e)
-            return None
+        instance = instance or ResourceManager._get_instance(uuid)
 
-        if instance and type(instance.get_real_instance()) == Layer:
+        if instance and isinstance(instance.get_real_instance(), Layer):
             try:
                 logger.info(f'Creating style for Layer {instance.get_real_instance()} / {kwargs}')
-                _sld_file = kwargs['sld_file'] if 'sld_file' in kwargs else None
-                _tempdir = kwargs['tempdir'] if 'tempdir' in kwargs else tempfile.gettempdir()
-                if _sld_file and 'sld_uploaded' in kwargs and kwargs['sld_uploaded'] is True:
+                _sld_file = kwargs.get('sld_file', None)
+                _tempdir = kwargs.get('tempdir', tempfile.gettempdir())
+                if _sld_file and kwargs.get('sld_uploaded', False):
                     geoserver_set_style(instance.get_real_instance().id, _sld_file)
                 else:
                     geoserver_create_style(instance.get_real_instance().id, instance.get_real_instance().name, _sld_file, _tempdir)
@@ -121,15 +118,11 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return instance
 
     def set_time_info(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
-        try:
-            instance = instance or Layer.objects.get(uuid=uuid)
-        except Exception as e:
-            logger.exception(e)
-            return None
+        instance = instance or ResourceManager._get_instance(uuid)
 
-        if instance and type(instance.get_real_instance()) == Layer:
+        if instance and isinstance(instance.get_real_instance(), Layer):
             try:
-                if 'time_info' in kwargs and kwargs['time_info']:
+                if kwargs.get('time_info', None):
                     set_time_info(instance.get_real_instance(), kwargs['time_info'])
             except Exception as e:
                 logger.exception(e)

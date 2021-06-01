@@ -56,7 +56,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> ResourceBase:
+    def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
         pass
 
     @abstractmethod
@@ -123,17 +123,17 @@ class ResourceManager(ResourceManagerInterface):
         return 0
 
     @transaction.atomic
-    def create(self, uuid: str, /, type: object = None, defaults: dict = {}) -> ResourceBase:
-        if type.objects.filter(uuid=uuid).exists():
-            raise ValidationError(f'Object of type {type} with uuid [{uuid}] already exists.')
-        _resource, _created = type.objects.get_or_create(
+    def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
+        if resource_type.objects.filter(uuid=uuid).exists():
+            raise ValidationError(f'Object of type {resource_type} with uuid [{uuid}] already exists.')
+        _resource, _created = resource_type.objects.get_or_create(
             uuid=uuid,
             defaults=defaults)
         if _resource and _created:
             try:
                 _resource.set_processing_state(enumerations.STATE_RUNNING)
                 _resource.set_missing_info()
-                _resource = self._resource_manager.create(uuid, type=type, defaults=defaults)
+                _resource = self._resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 _resource.delete()
@@ -164,9 +164,9 @@ class ResourceManager(ResourceManagerInterface):
                     else:
                         uuid = _uuid
                 logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
-                _resource = metadata_storers(_resource.get_real_instance(), custom)
                 _resource = update_layer_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
                 _resource = self._resource_manager.update(uuid, instance=_resource, vals=vals, regions=regions, keywords=keywords, custom=custom, notify=notify)
+                _resource = metadata_storers(_resource.get_real_instance(), custom)
             except Exception as e:
                 logger.exception(e)
             finally:
