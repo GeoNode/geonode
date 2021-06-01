@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.base.models import ResourceBase
 import io
 import os
 import re
@@ -266,7 +267,7 @@ def download(request, resourceid, sender=Layer):
                               permission='base.download_resourcebase',
                               permission_msg=_not_permitted)
 
-    if isinstance(instance, Layer):
+    if isinstance(instance, ResourceBase):
         # Create Target Folder
         dirpath = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         dir_time_suffix = get_dir_time_suffix()
@@ -276,14 +277,14 @@ def download(request, resourceid, sender=Layer):
 
         layer_files = []
         try:
-            upload_session = Upload.objects.get(layer=instance)
+            files = instance.resourcebase_ptr.files
             # Copy all Layer related files into a temporary folder
-            for lyr in upload_session.uploadfile_set.all():
-                if storage_manager.exists(lyr.file):
-                    layer_files.append(lyr)
-                    filename = os.path.basename(lyr.file)
+            for ext, file_path in files.items():
+                if storage_manager.exists(file_path):
+                    layer_files.append(file_path)
+                    filename = os.path.basename(file_path)
                     with open(f"{target_folder}/{filename}", 'wb+') as f:
-                        f.write(storage_manager.open(lyr.file).read())
+                        f.write(storage_manager.open(file_path).read())
                 else:
                     return HttpResponse(
                         loader.render_to_string(

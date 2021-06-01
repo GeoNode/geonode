@@ -752,7 +752,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             Upload.objects.invalidate_from_session(upload_session)
             raise UploadException.from_exc(_('Error configuring Layer'), e)
 
-        Upload.objects.update_from_session(upload_session, layer=saved_layer)
+        Upload.objects.update_from_session(upload_session, resource=saved_layer)
 
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions

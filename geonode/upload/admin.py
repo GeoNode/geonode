@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from geonode.upload.models import Upload, UploadFile
+from geonode.upload.models import Upload
 
 from django.contrib import admin
 
@@ -32,23 +32,15 @@ import_link.allow_tags = True
 
 
 class UploadAdmin(admin.ModelAdmin):
-    list_display = ('id', 'import_id', 'name', 'layer', 'user', 'date', 'state', import_link)
+    list_display = ('id', 'import_id', 'name', 'resource', 'user', 'date', 'state', import_link)
     list_display_links = ('id',)
     date_hierarchy = 'date'
-    list_filter = ('name', 'layer', 'user', 'date', 'state')
-    search_fields = ('name', 'layer', 'user', 'date', 'state')
+    list_filter = ('name', 'resource', 'user', 'date', 'state')
+    search_fields = ('name', 'resource', 'user', 'date', 'state')
 
     def delete_queryset(self, request, queryset):
         for obj in queryset:
             obj.delete()
 
 
-class UploadFileAdmin(admin.ModelAdmin):
-    list_display = ('id', 'upload', 'slug')
-    list_display_links = ('id',)
-    list_filter = ('slug', )
-    search_fields = ('slug', )
-
-
 admin.site.register(Upload, UploadAdmin)
-admin.site.register(UploadFile, UploadFileAdmin)

@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.base.models import ResourceBase
 from geonode.storage.manager import storage_manager
 import os
 import json
@@ -31,9 +32,8 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 from django.utils.timezone import now
-
+from geonode import GeoNodeException
 from geonode.base import enumerations
-from geonode.layers.models import Layer
 from geonode.tasks.tasks import AcquireLock
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
@@ -53,12 +53,12 @@ class UploadManager(models.Manager):
             import_id=upload_session.import_session.id
         ).update(state=enumerations.STATE_INVALID)
 
-    def update_from_session(self, upload_session, layer=None):
+    def update_from_session(self, upload_session, resource=None):
         self.get(
             user=upload_session.user,
             name=upload_session.name,
             import_id=upload_session.import_session.id).update_from_session(
-            upload_session, layer=layer)
+            upload_session, resource=resource)
 
     def create_from_session(self, user, import_session):
         return self.create(
@@ -81,7 +81,7 @@ class Upload(models.Model):
     state = models.CharField(max_length=16)
     create_date = models.DateTimeField('create_date', default=now)
     date = models.DateTimeField('date', default=now)
-    layer = models.ForeignKey(Layer, null=True, on_delete=models.CASCADE)
+    resource = models.ForeignKey(ResourceBase, null=True, on_delete=models.SET_NULL)
     upload_dir = models.TextField(null=True)
     name = models.CharField(max_length=64, null=True)
     complete = models.BooleanField(default=False)
@@ -109,7 +109,7 @@ class Upload(models.Model):
             return pickle.loads(
                 base64.decodebytes(self.session.encode('UTF-8')))
 
-    def update_from_session(self, upload_session, layer=None):
+    def update_from_session(self, upload_session, resource: ResourceBase = None):
         self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
         self.state = upload_session.import_session.state
         self.name = upload_session.name
@@ -119,31 +119,29 @@ class Upload(models.Model):
         if not self.upload_dir:
             self.upload_dir = os.path.dirname(upload_session.base_file)
 
-        if layer and not self.layer:
-            self.layer = layer
+        if resource and not self.resource:
+            if not isinstance(resource, ResourceBase) and hasattr(resource, 'resourcebase_ptr'):
+                self.resource = resource.resourcebase_ptr
+            elif not isinstance(resource, ResourceBase):
+                raise GeoNodeException("Invalid resource uploaded, plase select one of the available")
+            else:
+                self.resource = resource
 
-        if upload_session.base_file and self.layer and self.layer.name:
+        if upload_session.base_file and self.resource and self.resource.title:
             uploaded_files = upload_session.base_file[0]
-            base_file = uploaded_files.base_file
             aux_files = uploaded_files.auxillary_files
             sld_files = uploaded_files.sld_files
             xml_files = uploaded_files.xml_files
 
-            file_name, _ = os.path.splitext(os.path.basename(base_file))
+            if self.resource and not self.resource.files:
+                files_to_upload = aux_files + sld_files + xml_files + [uploaded_files.base_file]
+                ResourceBase.objects.upload_files(resource_id=resource.id, files=files_to_upload)
 
-            if not UploadFile.objects.filter(upload=self, name=file_name).exists():
-                assigned_name = self.layer.name
-                uploaded_file = UploadFile.objects.create_from_upload(upload=self, name=assigned_name, base_file=base_file)
-
-                if uploaded_file and uploaded_file.name:
-                    additional_files = aux_files + sld_files + xml_files
-                    for _f in additional_files:
-                        UploadFile.objects.create_from_upload(
-                            upload=self,
-                            name=assigned_name,
-                            base_file=_f
-                        )
-            # TODO: add delte temporary file on filesystem
+            # Now we delete the files from local file system
+            # only if it does not match with the default temporary path
+            if os.path.exists(self.upload_dir):
+                if settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.upload_dir)):
+                    shutil.rmtree(self.upload_dir)
 
         if "COMPLETE" == self.state:
             self.complete = True
@@ -162,7 +160,7 @@ class Upload(models.Model):
         elif self.state == enumerations.STATE_PROCESSED:
             return 100.0
         elif self.complete or self.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING):
-            if self.layer and self.layer.processed:
+            if self.resource and self.resource.processed:
                 self.set_processing_state(enumerations.STATE_PROCESSED)
                 return 100.0
             elif self.state == enumerations.STATE_RUNNING:
@@ -198,7 +196,7 @@ class Upload(models.Model):
                                     return f"{reverse('data_upload')}?id={self.import_id}"
                                 else:
                                     next = get_next_step(self.get_session)
-                                    if not self.layer and session.state == enumerations.STATE_COMPLETE:
+                                    if not self.resource and session.state == enumerations.STATE_COMPLETE:
                                         if next == 'check' or (next == 'final' and self.state == enumerations.STATE_PENDING):
                                             from .views import final_step_view
                                             final_step_view(None, self.get_session)
@@ -231,14 +229,13 @@ class Upload(models.Model):
             return None
 
     def get_detail_url(self):
-        if self.layer and self.state == enumerations.STATE_PROCESSED:
-            return getattr(self.layer, 'detail_url', None)
+        if self.resource and self.state == enumerations.STATE_PROCESSED:
+            return getattr(self.resource, 'detail_url', None)
         else:
             return None
 
     def delete(self, *args, **kwargs):
         importer_locations = []
-        upload_files = [_file.file for _file in UploadFile.objects.filter(upload=self)]
         super(Upload, self).delete(*args, **kwargs)
         try:
             session = gs_uploader.get_session(self.import_id)
@@ -253,17 +250,28 @@ class Upload(models.Model):
                 session.delete()
             except Exception:
                 logging.warning('error deleting upload session')
-        for _file in upload_files:
-            try:
-                if os.path.isfile(_file.path):
-                    os.remove(_file.path)
-            except Exception as e:
-                logger.warning(e)
+
+        # we delete directly the folder with the files of the resource
+        if self.resource:
+            for _, _file in self.resource.files.items():
+                try:
+                    dirname = os.path.dirname(_file)
+                    if storage_manager.exists(dirname):
+                        storage_manager.delete(dirname)
+                        break
+                except Exception as e:
+                    logger.warning(e)
+
+            # Do we want to delete the files also from the resource?
+            ResourceBase.objects.filter(id=self.resource.id).update(files={})
+
         for _location in importer_locations:
             try:
                 shutil.rmtree(_location)
             except Exception as e:
                 logger.warning(e)
+
+        # here we are deleting the local that soon will be removed
         if self.upload_dir and os.path.exists(self.upload_dir):
             try:
                 shutil.rmtree(self.upload_dir)
@@ -273,52 +281,8 @@ class Upload(models.Model):
     def set_processing_state(self, state):
         self.state = True
         Upload.objects.filter(id=self.id).update(state=state)
-        if self.layer:
-            self.layer.set_processing_state(state)
+        if self.resource:
+            self.resource.set_processing_state(state)
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'
-
-
-class UploadFileManager(models.Manager):
-
-    def __init__(self):
-        models.Manager.__init__(self)
-
-    def create_from_upload(self,
-                           upload,
-                           name,
-                           base_file):
-        try:
-            if os.path.isfile(base_file) and os.path.exists(base_file):
-                slug = os.path.basename(base_file)
-
-                with open(base_file, 'rb') as ff:
-                    filepath = f"{os.path.basename(os.path.dirname(base_file))}"
-                    file_uploaded_path = storage_manager.save(f'{filepath}/{slug}', ff)
-
-                return self.create(
-                    upload=upload,
-                    file=file_uploaded_path,
-                    name=name,
-                    slug=slug
-                )
-
-        except Exception as e:
-            logger.exception(e)
-
-
-class UploadFile(models.Model):
-
-    objects = UploadFileManager()
-
-    upload = models.ForeignKey(Upload, null=True, blank=True, on_delete=models.CASCADE)
-    name = models.CharField(max_length=4096, blank=True)
-    slug = models.SlugField(max_length=4096, blank=True)
-    file = models.CharField(max_length=4096, blank=True)
-
-    def __str__(self):
-        return str(self.slug)
-
-    def get_absolute_url(self):
-        return reverse('data_upload_new', args=[self.slug, ])
