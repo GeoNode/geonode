@@ -45,15 +45,12 @@ import gsimporter
 from http.client import BadStatusLine
 
 from django.contrib import auth
-from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render
 from django.utils.html import escape
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import CreateView, DeleteView
 from django.contrib.auth.decorators import login_required
 
 from geonode.upload import UploadException
@@ -68,12 +65,10 @@ from geonode.monitoring.models import EventType
 from .forms import (
     LayerUploadForm,
     SRSForm,
-    TimeForm,
-    UploadFileForm,
+    TimeForm
 )
 from .models import (
-    Upload,
-    UploadFile)
+    Upload)
 from .files import (
     get_scan_hint,
     scan_file)
@@ -88,7 +83,6 @@ from .utils import (
     is_async_step,
     is_latitude,
     is_longitude,
-    JSONResponse,
     json_response,
     get_previous_step,
     layer_eligible_for_time_dimension,
@@ -794,55 +788,8 @@ def delete(req, id):
     ))
 
 
-class UploadFileCreateView(CreateView):
-    form_class = UploadFileForm
-    model = UploadFile
-
-    def form_valid(self, form):
-        self.object = form.save()
-        f = self.request.FILES.get('file')
-        data = [
-            {
-                'name': f.name,
-                'url': f"{settings.MEDIA_URL}uploads/{f.name.replace(' ', '_')}",
-                'thumbnail_url': f"{settings.MEDIA_URL}pictures/{f.name.replace(' ', '_')}",
-                'delete_url': reverse(
-                    'data_upload_remove',
-                    args=[
-                        self.object.id]),
-                'delete_type': "DELETE"}]
-        response = JSONResponse(data, {}, response_content_type(self.request))
-        response['Content-Disposition'] = 'inline; filename=files.json'
-        return response
-
-    def form_invalid(self, form):
-        data = [{}]
-        response = JSONResponse(data, {}, response_content_type(self.request))
-        response['Content-Disposition'] = 'inline; filename=files.json'
-        return response
-
-
 def response_content_type(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
         return "application/json"
     else:
         return "text/plain"
-
-
-class UploadFileDeleteView(DeleteView):
-    model = UploadFile
-
-    def delete(self, request, *args, **kwargs):
-        """
-        This does not actually delete the file, only the database record.  But
-        that is easy to implement.
-        """
-        self.object = self.get_object()
-        self.object.delete()
-        if request.is_ajax():
-            response = JSONResponse(
-                True, {}, response_content_type(self.request))
-            response['Content-Disposition'] = 'inline; filename=files.json'
-            return response
-        else:
-            return HttpResponseRedirect(reverse('data_upload_new'))

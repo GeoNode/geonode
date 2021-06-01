@@ -17,13 +17,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
+from geonode.base.models import ResourceBase
 from rest_framework import serializers
 
-from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
 from geonode.base.utils import build_absolute_uri
-from geonode.upload.models import Upload, UploadFile
+from geonode.upload.models import Upload
 from geonode.layers.api.serializers import LayerSerializer
 from geonode.base.api.serializers import BaseDynamicModelSerializer
 
@@ -32,17 +33,26 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class UploadFileSerializer(DynamicModelSerializer):
-
+class UploadFileField(serializers.RelatedField):
     class Meta:
-        model = UploadFile
-        name = 'upload_file'
-        fields = (
-            'pk', 'name', 'slug', 'file'
-        )
+        model = ResourceBase
+        name = 'resource-files'
 
-    name = serializers.CharField(read_only=True)
-    slug = serializers.CharField(read_only=True)
+    def to_representation(self, obj):
+        files = []
+        for _, file in obj.files.items():
+            name, _ = os.path.splitext(os.path.basename(file))
+            files.append(
+                {
+                    "name": name,
+                    "slug": os.path.basename(file),
+                    "file": file
+                }
+            )
+        return {
+            'name': obj.title,
+            'files': files,
+        }
 
 
 class SessionSerializer(serializers.Field):
@@ -213,7 +223,7 @@ class UploadSerializer(BaseDynamicModelSerializer):
         fields = (
             'id', 'name', 'date', 'create_date', 'user',
             'state', 'progress', 'complete', 'import_id',
-            'uploadfile_set', 'resume_url', 'delete_url', 'import_url', 'detail_url'
+            'resume_url', 'delete_url', 'import_url', 'detail_url', "uploadfile_set"
         )
 
     progress = ProgressField(read_only=True)
@@ -221,4 +231,4 @@ class UploadSerializer(BaseDynamicModelSerializer):
     delete_url = ProgressUrlField('delete', read_only=True)
     import_url = ProgressUrlField('import', read_only=True)
     detail_url = ProgressUrlField('detail', read_only=True)
-    uploadfile_set = DynamicRelationField(UploadFileSerializer, embed=True, many=True, read_only=True)
+    uploadfile_set = UploadFileField(source='resource', read_only=True)
