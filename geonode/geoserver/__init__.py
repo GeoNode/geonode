@@ -28,23 +28,14 @@ logger = logging.getLogger(__name__)
 
 
 def run_setup_hooks(*args, **kwargs):
-
     from django.db.models import signals
-
-    from geonode.base.models import ResourceBase
     from geonode.layers.models import Layer
-    from geonode.maps.models import Map, MapLayer
-
+    from geonode.maps.models import MapLayer
     from geonode.geoserver.signals import geoserver_pre_delete
-    from geonode.geoserver.signals import geoserver_post_save
-    from geonode.geoserver.signals import geoserver_post_save_map
     from geonode.geoserver.signals import geoserver_pre_save_maplayer
 
-    signals.post_save.connect(geoserver_post_save, sender=ResourceBase)
     signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
-    signals.post_save.connect(geoserver_post_save, sender=Layer)
     signals.pre_save.connect(geoserver_pre_save_maplayer, sender=MapLayer)
-    signals.post_save.connect(geoserver_post_save_map, sender=Map)
 
 
 def set_resource_links(*args, **kwargs):

@@ -37,7 +37,7 @@ from django.db.models import Q, signals
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import GEOSGeometry, Polygon, Point
+from django.contrib.gis.geos import Polygon, Point
 from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
@@ -1962,75 +1962,6 @@ class GroupGeoLimit(models.Model):
     wkt = models.TextField(
         db_column='wkt',
         blank=True)
-
-
-def resourcebase_post_save(instance, *args, **kwargs):
-    """
-    Used to fill any additional fields after the save.
-    Has to be called by the children
-    """
-    try:
-        # set default License if no specified
-        if instance.license is None:
-            license = License.objects.filter(name="Not Specified")
-
-            if license and len(license) > 0:
-                instance.license = license[0]
-
-        ResourceBase.objects.filter(id=instance.id).update(
-            thumbnail_url=instance.get_thumbnail_url(),
-            detail_url=instance.get_absolute_url(),
-            csw_insert_date=now(),
-            license=instance.license)
-        instance.refresh_from_db()
-    except Exception:
-        tb = traceback.format_exc()
-        if tb:
-            logger.debug(tb)
-    finally:
-        instance.set_missing_info()
-
-    try:
-        if not instance.regions or instance.regions.count() == 0:
-            srid1, wkt1 = instance.geographic_bounding_box.split(";")
-            srid1 = re.findall(r'\d+', srid1)
-
-            poly1 = GEOSGeometry(wkt1, srid=int(srid1[0]))
-            poly1.transform(4326)
-
-            queryset = Region.objects.all().order_by('name')
-            global_regions = []
-            regions_to_add = []
-            for region in queryset:
-                try:
-                    srid2, wkt2 = region.geographic_bounding_box.split(";")
-                    srid2 = re.findall(r'\d+', srid2)
-
-                    poly2 = GEOSGeometry(wkt2, srid=int(srid2[0]))
-                    poly2.transform(4326)
-
-                    if poly2.intersection(poly1):
-                        regions_to_add.append(region)
-                    if region.level == 0 and region.parent is None:
-                        global_regions.append(region)
-                except Exception:
-                    tb = traceback.format_exc()
-                    if tb:
-                        logger.debug(tb)
-            if regions_to_add or global_regions:
-                if regions_to_add and len(
-                        regions_to_add) > 0 and len(regions_to_add) <= 30:
-                    instance.regions.add(*regions_to_add)
-                else:
-                    instance.regions.add(*global_regions)
-    except Exception:
-        tb = traceback.format_exc()
-        if tb:
-            logger.debug(tb)
-    finally:
-        # refresh catalogue metadata records
-        from geonode.catalogue.models import catalogue_post_save
-        catalogue_post_save(instance=instance, sender=instance.__class__)
 
 
 def rating_post_save(instance, *args, **kwargs):

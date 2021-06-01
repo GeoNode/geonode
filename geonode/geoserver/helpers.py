@@ -42,7 +42,6 @@ from dialogos.models import Comment
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -816,9 +815,6 @@ def gs_slurp(
                 status = "delete_succeeded"
             except Exception:
                 status = "delete_failed"
-            finally:
-                from .signals import geoserver_pre_delete
-                pre_delete.connect(geoserver_pre_delete, sender=Layer)
 
             msg = f"[{status}] Layer {layer.name} ({(i + 1)}/{number_deleted})"
             info = {'name': layer.name, 'status': status}

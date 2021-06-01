@@ -35,6 +35,7 @@ This needs to be made more stateful by adding a model.
 """
 import pytz
 import uuid
+import shutil
 import os.path
 import logging
 import zipfile
@@ -51,19 +52,18 @@ from geoserver.resource import (
 from django.conf import settings
 from django.db.models import Max
 from django.contrib.auth import get_user_model
-from django.db import IntegrityError, transaction
 from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
 from geonode.base import enumerations
 from geonode.layers.models import TIME_REGEX_FORMAT
+from geonode.resource.manager import resource_manager
 from geonode.upload import UploadException, LayerNotReady
 
 from ..layers.models import Layer
 from ..layers.metadata import parse_metadata
 from ..people.utils import get_default_user
 from ..layers.utils import get_valid_layer_name
-from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
     gs_catalog,
     gs_uploader
@@ -729,41 +729,48 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 f"There was an error updating the mosaic temporal extent: {str(e)}")
     else:
         try:
-            with transaction.atomic():
-                saved_layer, created = Layer.objects.get_or_create(
-                    uuid=layer_uuid,
-                    defaults=dict(
-                        store=target.name,
-                        storeType=target.store_type,
-                        alternate=alternate,
-                        workspace=target.workspace_name,
-                        title=title,
-                        name=task.layer.name,
-                        abstract=abstract or _('No abstract provided'),
-                        owner=user,
-                        temporal_extent_start=start,
-                        temporal_extent_end=end,
-                        is_mosaic=has_elevation,
-                        has_time=has_time,
-                        has_elevation=has_elevation,
-                        time_regex=upload_session.mosaic_time_regex)
-                )
-        except IntegrityError as e:
+            saved_layer = resource_manager.create(
+                layer_uuid,
+                resource_type=Layer,
+                defaults=dict(
+                    store=target.name,
+                    storeType=target.store_type,
+                    alternate=alternate,
+                    workspace=target.workspace_name,
+                    title=title,
+                    name=task.layer.name,
+                    abstract=abstract or _('No abstract provided'),
+                    owner=user,
+                    temporal_extent_start=start,
+                    temporal_extent_end=end,
+                    is_mosaic=has_elevation,
+                    has_time=has_time,
+                    has_elevation=has_elevation,
+                    time_regex=upload_session.mosaic_time_regex))
+            created = True
+        except Exception as e:
             Upload.objects.invalidate_from_session(upload_session)
             raise UploadException.from_exc(_('Error configuring Layer'), e)
 
-        assert saved_layer
         Upload.objects.update_from_session(upload_session, resource=saved_layer)
 
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions
 
-    geoserver_finalize_upload.apply_async(
-        (import_id, saved_layer.id,
-         permissions, created,
-         metadata_uploaded, xml_file,
-         sld_uploaded, sld_file,
-         upload_session.time_info,
-         upload_session.tempdir))
+    # Finalize Upload
+    resource_manager.set_permissions(None, instance=saved_layer, permissions=permissions, created=created)
+    resource_manager.update(None, instance=saved_layer, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
+    resource_manager.exec('set_style', None, instance=saved_layer, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
+    resource_manager.exec('set_time_info', None, instance=saved_layer, time_info=upload_session.time_info)
+    resource_manager.set_thumbnail(None, instance=saved_layer)
+
+    try:
+        logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
+        if upload_session.tempdir and os.path.exists(upload_session.tempdir):
+            shutil.rmtree(upload_session.tempdir)
+    except Exception as e:
+        logger.warning(e)
+    finally:
+        Upload.objects.filter(import_id=import_id).update(complete=True)
 
     return saved_layer

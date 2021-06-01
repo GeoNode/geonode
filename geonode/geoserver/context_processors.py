@@ -35,20 +35,20 @@ def geoserver_urls(request):
         PRINT_NG_ENABLED=getattr(ogc_server_settings, 'PRINT_NG_ENABLED', False),
         GEONODE_SECURITY_ENABLED=getattr(ogc_server_settings, 'GEONODE_SECURITY_ENABLED', False),
         TIME_ENABLED=getattr(
-                settings,
-                'UPLOADER',
-                dict()).get(
-                    'OPTIONS',
-                    dict()).get(
-                        'TIME_ENABLED',
-                        False),
+            settings,
+            'UPLOADER',
+            dict()).get(
+            'OPTIONS',
+            dict()).get(
+            'TIME_ENABLED',
+            False),
         MOSAIC_ENABLED=getattr(
-                settings,
-                'UPLOADER',
-                dict()).get(
-                    'OPTIONS',
-                    dict()).get(
-                        'MOSAIC_ENABLED',
-                        False),
+            settings,
+            'UPLOADER',
+            dict()).get(
+            'OPTIONS',
+            dict()).get(
+            'MOSAIC_ENABLED',
+            False),
     )
     return defaults

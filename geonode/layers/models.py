@@ -39,8 +39,7 @@ from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import remove_object_permissions
 from geonode.base.models import (
     ResourceBase,
-    ResourceBaseManager,
-    resourcebase_post_save)
+    ResourceBaseManager)
 from geonode.notifications_helper import (
     send_notification,
     get_notification_recipients)
@@ -688,6 +687,5 @@ def post_delete_layer(instance, sender, **kwargs):
 
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
-signals.post_save.connect(resourcebase_post_save, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)

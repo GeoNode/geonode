@@ -45,7 +45,6 @@ from django.utils.html import escape
 from django.forms.utils import ErrorList
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
-from django.db import IntegrityError, transaction
 from django.core.exceptions import PermissionDenied
 from django.forms.models import inlineformset_factory
 from django.template.response import TemplateResponse
@@ -58,9 +57,11 @@ from guardian.shortcuts import get_objects_for_user
 
 from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
-from geonode.upload.utils import update_layer_with_xml_info
+from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_layer_style
 from geonode.thumbs.thumbnails import create_thumbnail
+from geonode.resource.utils import update_layer_with_xml_info
+
 from geonode.base.auth import get_or_create_token
 from geonode.base.forms import (
     CategoryForm,
@@ -1333,20 +1334,9 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             "layer": layer
         })
     if (request.method == 'POST'):
-        try:
-            logger.debug(f'Deleting Layer {layer}')
-            with transaction.atomic():
-                Layer.objects.filter(id=layer.id).delete()
-        except IntegrityError:
-            raise
-        except Exception as e:
-            traceback.print_exc()
+        logger.debug(f'Deleting Layer {layer}')
+        if not resource_manager.delete(layer.uuid, instance=layer):
             message = f'{_("Unable to delete layer")}: {layer.alternate}.'
-            if getattr(e, 'message', None) and 'referenced by layer group' in getattr(e, 'message', ''):
-                message = _(
-                    'This layer is a member of a layer group, you must remove the layer from the group '
-                    'before deleting.')
-
             messages.error(request, message)
             return render(
                 request, template, context={"layer": layer})
