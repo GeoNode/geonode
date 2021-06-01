@@ -36,7 +36,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from uuid_upload_path import upload_to
 
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, resourcebase_post_save, Link
+from geonode.base.models import ResourceBase, Link
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
@@ -267,6 +267,5 @@ def pre_delete_document(instance, sender, **kwargs):
 
 signals.pre_save.connect(pre_save_document, sender=Document)
 signals.post_save.connect(post_save_document, sender=Document)
-signals.post_save.connect(resourcebase_post_save, sender=Document)
 signals.pre_delete.connect(pre_delete_document, sender=Document)
 map_changed_signal.connect(update_documents_extent)

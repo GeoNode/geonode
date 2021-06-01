@@ -19,7 +19,6 @@
 #########################################################################
 import os
 import re
-import shutil
 
 from django.conf import settings
 from django.db import transaction
@@ -41,7 +40,6 @@ from geonode.base.models import ResourceBase
 from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
-from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.upload import geoserver_upload
 from geonode.catalogue.models import catalogue_post_save
 
@@ -190,90 +188,6 @@ def geoserver_create_style(
                     get_sld_for(gs_catalog, instance)
             else:
                 get_sld_for(gs_catalog, instance)
-
-
-@app.task(
-    bind=True,
-    base=FaultTolerantTask,
-    name='geonode.geoserver.tasks.geoserver_finalize_upload',
-    queue='geoserver.events',
-    expires=600,
-    acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 0, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
-def geoserver_finalize_upload(
-        self,
-        import_id,
-        instance_id,
-        permissions,
-        created,
-        metadata_uploaded, xml_file,
-        sld_uploaded, sld_file,
-        time_info,
-        tempdir):
-    """
-    Finalize Layer and GeoServer configuration:
-     - Sets Layer Metadata from XML and updates GeoServer Layer accordingly.
-     - Sets Default Permissions
-    """
-    from geonode.upload.models import Upload
-
-    instance = None
-    try:
-        instance = Layer.objects.get(id=instance_id)
-    except Layer.DoesNotExist:
-        logger.debug(f"Layer id {instance_id} does not exist yet!")
-        raise
-
-    lock_id = f'{self.request.id}'
-    with AcquireLock(lock_id) as lock:
-        if lock.acquire() is True:
-            # @todo if layer was not created, need to ensure upload target is
-            # same as existing target
-            # Create the points of contact records for the layer
-            # logger.debug(f'Creating points of contact records for {instance}')
-            # if not instance.poc:
-            #     instance.poc = instance.owner
-            # if not instance.metadata_author:
-            #     instance.metadata_author = instance.owner
-
-            # logger.debug(f'Look for xml and finalize Layer metadata {instance}')
-            # regions = []
-            # keywords = []
-            # vals = {}
-            # custom = {}
-            # instance.metadata_uploaded = metadata_uploaded
-            # if metadata_uploaded:
-            #     layer_uuid, vals, regions, keywords, custom = parse_metadata(
-            #         open(xml_file).read())
-
-            # TODO: set metadata
-
-            logger.debug(f'Creating style for Layer {instance}')
-            if sld_uploaded:
-                geoserver_set_style(instance.id, sld_file)
-            else:
-                geoserver_create_style(instance.id, instance.name, sld_file, tempdir)
-
-            if time_info:
-                set_time_info(instance, **time_info)
-
-            # TODO: links
-            # TODO: permissions
-            # TODO: thumbnail
-            # TODO: save
-
-            try:
-                logger.debug(f"... Cleaning up the temporary folders {tempdir}")
-                if tempdir and os.path.exists(tempdir):
-                    shutil.rmtree(tempdir)
-            except Exception as e:
-                logger.warning(e)
-            finally:
-                Upload.objects.filter(import_id=import_id).update(complete=True)
 
 
 @app.task(

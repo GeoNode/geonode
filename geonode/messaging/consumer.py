@@ -25,9 +25,7 @@ from datetime import datetime
 
 # from django.conf import settings
 from kombu.mixins import ConsumerMixin
-from geonode.geoserver.signals import geoserver_post_save_local
-from geonode.security.views import send_email_consumer  # , send_email_owner_on_view
-# from geonode.social.signals import notification_post_save_resource2
+from geonode.security.views import send_email_consumer
 from geonode.layers.views import layer_view_counter
 from geonode.layers.models import Layer
 from geonode.geoserver.helpers import gs_slurp
@@ -47,6 +45,7 @@ logger = logging.getLogger(__package__)
 
 
 class Consumer(ConsumerMixin):
+
     def __init__(self, connection, messages_limit=None):
         self.last_message = None
         self.connection = connection
@@ -100,14 +99,14 @@ class Consumer(ConsumerMixin):
 
     def on_geoserver_messages(self, body, message):
         logger.debug(f"on_geoserver_messages: RECEIVED MSG - body: {body}")
-        layer_id = body.get("id")
-        try:
-            layer = _wait_for_layer(layer_id)
-        except Layer.DoesNotExist as err:
-            logger.debug(err)
-            return
+        # layer_id = body.get("id")
+        # try:
+        #     layer = _wait_for_layer(layer_id)
+        # except Layer.DoesNotExist as err:
+        #     logger.debug(err)
+        #     return
 
-        geoserver_post_save_local(layer)
+        # geoserver_post_save_local(layer)
 
         # Not sure if we need to send ack on this fanout version.
         message.ack()

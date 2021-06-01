@@ -21,14 +21,13 @@ import logging
 
 from django.db import models
 from django.urls import reverse
-from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 
 from jsonfield import JSONField
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase
 
 logger = logging.getLogger("geonode.geoapps.models")
 
@@ -147,7 +146,3 @@ class GeoAppData(models.Model):
         null=False,
         blank=False,
         on_delete=models.CASCADE)
-
-
-# signals.pre_delete.connect(pre_delete_app, sender=GeoApp)
-signals.post_save.connect(resourcebase_post_save, sender=GeoApp)

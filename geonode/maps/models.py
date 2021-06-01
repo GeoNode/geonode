@@ -34,7 +34,7 @@ from django.core.cache import cache
 
 from geonode.layers.models import Layer, Style
 from geonode.compat import ensure_string
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.security.utils import remove_object_permissions
 from geonode.client.hooks import hookset
@@ -617,4 +617,3 @@ def pre_delete_map(instance, sender, **kwrargs):
 
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)
-signals.post_save.connect(resourcebase_post_save, sender=Map)

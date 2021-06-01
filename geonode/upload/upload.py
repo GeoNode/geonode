@@ -35,6 +35,7 @@ This needs to be made more stateful by adding a model.
 """
 import pytz
 import uuid
+import shutil
 import os.path
 import logging
 import zipfile
@@ -63,7 +64,6 @@ from ..layers.models import Layer
 from ..layers.metadata import parse_metadata
 from ..people.utils import get_default_user
 from ..layers.utils import get_valid_layer_name
-from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
     gs_catalog,
     gs_uploader
@@ -757,12 +757,20 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions
 
-    geoserver_finalize_upload.apply_async(
-        (import_id, saved_layer.id,
-         permissions, created,
-         metadata_uploaded, xml_file,
-         sld_uploaded, sld_file,
-         upload_session.time_info,
-         upload_session.tempdir))
+    # Finalize Upload
+    resource_manager.set_permissions(None, instance=saved_layer, permissions=permissions, created=created)
+    resource_manager.update(None, instance=saved_layer, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
+    resource_manager.exec('set_style', None, instance=saved_layer, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
+    resource_manager.exec('set_time_info', None, instance=saved_layer, time_info=upload_session.time_info)
+    resource_manager.set_thumbnail(None, instance=saved_layer)
+
+    try:
+        logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
+        if upload_session.tempdir and os.path.exists(upload_session.tempdir):
+            shutil.rmtree(upload_session.tempdir)
+    except Exception as e:
+        logger.warning(e)
+    finally:
+        Upload.objects.filter(import_id=import_id).update(complete=True)
 
     return saved_layer

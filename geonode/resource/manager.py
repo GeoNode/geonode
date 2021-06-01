@@ -27,7 +27,10 @@ from django.db.models.query import QuerySet
 from django.core.exceptions import ValidationError
 
 from . import settings as rm_settings
-from .utils import metadata_storers, update_layer_with_xml_info
+from .utils import (
+    metadata_storers,
+    resourcebase_post_save,
+    update_layer_with_xml_info)
 
 from ..base import enumerations
 from ..base.models import ResourceBase
@@ -59,6 +62,10 @@ class ResourceManagerInterface(metaclass=ABCMeta):
     @abstractmethod
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
                vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
+        pass
+
+    @abstractmethod
+    def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         pass
 
     @abstractmethod
@@ -131,6 +138,7 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 _resource.delete()
                 raise e
+            resourcebase_post_save(_resource)
         return _resource
 
     @transaction.atomic
@@ -142,22 +150,39 @@ class ResourceManager(ResourceManagerInterface):
             _resource.set_missing_info()
             _resource.metadata_uploaded = metadata_uploaded
             logger.debug(f'Look for xml and finalize Layer metadata {_resource}')
-            if metadata_uploaded:
-                _uuid, vals, regions, keywords, custom = parse_metadata(
-                    storage_manager.open(xml_file).read())
-                if uuid != _uuid:
-                    raise ValidationError("The UUID identifier from the XML Metadata is different from the {_resource} one.")
-            logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
-            _resource = metadata_storers(_resource.get_real_instance(), custom)
-            _resource = update_layer_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
             try:
+                if metadata_uploaded and xml_file:
+                    _md_file = None
+                    try:
+                        _md_file = storage_manager.open(xml_file)
+                    except Exception as e:
+                        logger.exception(e)
+                        _md_file = open(xml_file)
+                    _uuid, vals, regions, keywords, custom = parse_metadata(_md_file.read())
+                    if uuid and uuid != _uuid:
+                        raise ValidationError("The UUID identifier from the XML Metadata is different from the {_resource} one.")
+                    else:
+                        uuid = _uuid
+                logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
+                _resource = metadata_storers(_resource.get_real_instance(), custom)
+                _resource = update_layer_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
                 _resource = self._resource_manager.update(uuid, instance=_resource, vals=vals, regions=regions, keywords=keywords, custom=custom, notify=notify)
             except Exception as e:
                 logger.exception(e)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 _resource.save(notify=notify)
+            resourcebase_post_save(_resource)
         return _resource
+
+    @transaction.atomic
+    def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            if hasattr(self._resource_manager, method):
+                _method = getattr(self._resource_manager, method)
+                return _method(method, uuid, instance=_resource, **kwargs)
+        return instance
 
     @transaction.atomic
     def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}, created: bool = False) -> bool:
@@ -170,10 +195,11 @@ class ResourceManager(ResourceManagerInterface):
                 logger.debug(f'Setting permissions {permissions} for {_resource.name}')
                 _resource.get_real_instance().set_permissions(permissions, created=created)
                 self._resource_manager.set_permissions(uuid, instance=_resource, permissions=permissions, created=created)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
                 logger.exception(e)
+            finally:
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
     @transaction.atomic
@@ -183,10 +209,11 @@ class ResourceManager(ResourceManagerInterface):
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 self._resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
                 logger.exception(e)
+            finally:
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
 

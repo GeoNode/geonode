@@ -24,19 +24,15 @@ from deprecated import deprecated
 from geoserver.layer import Layer as GsLayer
 
 from django.conf import settings
-from django.forms.models import model_to_dict
 from django.templatetags.static import static
 
 # use different name to avoid module clash
-from geonode.utils import (
-    is_monochromatic_image,
-    json_serializer_producer)
+from geonode.utils import is_monochromatic_image
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import (
     gs_catalog,
     ogc_server_settings)
 from geonode.geoserver.tasks import geoserver_create_thumbnail
-from geonode.layers.models import Layer
 from geonode.services.enumerations import CASCADED
 
 from . import BACKEND_PACKAGE
@@ -62,23 +58,6 @@ def geoserver_pre_delete(instance, sender, **kwargs):
         if instance.remote_service is None or instance.remote_service.method == CASCADED:
             if instance.alternate:
                 geoserver_cascading_delete.apply_async((instance.alternate,))
-
-
-@on_ogc_backend(BACKEND_PACKAGE)
-def geoserver_post_save(instance, sender, created, **kwargs):
-    from geonode.messaging import producer
-    # this is attached to various models, (ResourceBase, Document)
-    # so we should select what will be handled here
-    if not created:
-        if isinstance(instance, Layer):
-            instance_dict = model_to_dict(instance)
-            payload = json_serializer_producer(instance_dict)
-            try:
-                producer.geoserver_upload_layer(payload)
-            except Exception as e:
-                logger.error(e)
-            if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-                instance.set_dirty_state()
 
 
 @on_ogc_backend(BACKEND_PACKAGE)
