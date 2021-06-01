@@ -127,21 +127,23 @@ class Upload(models.Model):
             else:
                 self.resource = resource
 
-        if upload_session.base_file and self.resource and self.resource.title:
-            uploaded_files = upload_session.base_file[0]
-            aux_files = uploaded_files.auxillary_files
-            sld_files = uploaded_files.sld_files
-            xml_files = uploaded_files.xml_files
+            if upload_session.base_file and self.resource and self.resource.title:
+                uploaded_files = upload_session.base_file[0]
+                aux_files = uploaded_files.auxillary_files
+                sld_files = uploaded_files.sld_files
+                xml_files = uploaded_files.xml_files
 
-            if self.resource and not self.resource.files:
-                files_to_upload = aux_files + sld_files + xml_files + [uploaded_files.base_file]
-                ResourceBase.objects.upload_files(resource_id=resource.id, files=files_to_upload)
+                if self.resource and not self.resource.files:
+                    files_to_upload = aux_files + sld_files + xml_files + [uploaded_files.base_file]
+                    if len(files_to_upload):
+                        ResourceBase.objects.upload_files(resource_id=self.resource.id, files=files_to_upload)
+                        self.resource.refresh_from_db()
 
-            # Now we delete the files from local file system
-            # only if it does not match with the default temporary path
-            if os.path.exists(self.upload_dir):
-                if settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.upload_dir)):
-                    shutil.rmtree(self.upload_dir)
+                # Now we delete the files from local file system
+                # only if it does not match with the default temporary path
+                if os.path.exists(self.upload_dir):
+                    if settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.upload_dir)):
+                        shutil.rmtree(self.upload_dir)
 
         if "COMPLETE" == self.state:
             self.complete = True
