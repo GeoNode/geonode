@@ -26,7 +26,7 @@
 <script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
 
 <div class="page-header">
-   <a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Apps" %}</a>
+  <a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Apps" %}</a>
   <h2 class="page-title">{% trans "Edit Metadata" %}</h2>
 </div>
 <div class="row">
@@ -60,14 +60,14 @@
       </div>
       {% endif %}
       <div class="form-actions">
-        <a href="{% url 'geoapp_detail' geoappid=resource.id %}" class="btn btn-primary">{% trans "Return to GeoApp" %}</a>      
+        <a href="{% url 'geoapp_detail' geoappid=resource.id %}" class="btn btn-primary">{% trans "Return to GeoApp" %}</a>     
         <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update" %}"/>
       </div>
       {% csrf_token %}
       <!-- Added in the thesuarus field here since saving the form without it causes the thesuarus keywords to be removed. 
            Unfortunately this needs to appear at the top (or the bottom) of the form since tkeywords_form is a complete other django form. 
            There might be a better way to solve this. -->
-        <div class="col-md-6 form-controls">
+        <div class="col-md-12 form-controls">
           {% block geoapp_fields %}
           {% for field in geoapp_form %}
             {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' and field.name not in ADVANCED_EDIT_EXCLUDE_FIELD  %}
@@ -80,8 +80,11 @@
             {% endif %}
           {% endfor %}
           {% endblock geoapp_fields %}
+
+
           {% block thesauri %}
-          {% for field in tkeywords_form %}
+          {% if THESAURI_FILTERS %}
+            {% for field in tkeywords_form %}
             <div class="form_item_spacing thesauri_keywords" id="tadv_req">
               <p>
               <label for="{{ field.thesaurus_id }}">{{ field.label }}</label>
@@ -129,7 +132,7 @@
               </fieldset>
 
               <div class="form-actions">
-                 <a href="{% url 'geoapp_detail' geoappid=resource.id %}" class="btn btn-primary">{% trans "Return to GeoApp" %}</a>              
+                <a href="{% url 'geoapp_detail' geoappid=resource.id %}" class="btn btn-primary">{% trans "Return to GeoApp" %}</a>                 
                 <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
               </div>
           </div>

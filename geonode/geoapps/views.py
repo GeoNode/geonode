@@ -327,6 +327,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
     metadata_author = geoapp_obj.metadata_author
     topic_category = geoapp_obj.category
     current_keywords = [keyword.name for keyword in geoapp_obj.keywords.all()]
+
     topic_thesaurus = geoapp_obj.tkeywords.all()
 
     if request.method == "POST":

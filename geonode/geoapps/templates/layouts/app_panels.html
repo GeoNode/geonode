@@ -295,7 +295,6 @@ span.grippy::after {
                                     </div>
                                 </div>
                                 <div class="col-lg-5">
-                                    {% endif %}
                                     <div class="col-lg-6 col-xs-12">
                                         <span><label for="{{ geoapp_form.date_type|id }}">{{ geoapp_form.date_type.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
@@ -352,7 +351,7 @@ span.grippy::after {
                                     </div>
                                     {% if THESAURI_FILTERS %}
                                     <div class="col-lg-12 thesauri_keywords">
-                                      {{tkeywords_form.as_p}}
+                                        {{ tkeywords_form }}
                                     </div>
                                     {% endif %}
                                 </div>
