@@ -55,7 +55,9 @@ class FavoriteFilter(BaseFilterBackend):
             ctype = list(set([r.resource_type for r in queryset]))
             return queryset.filter(
                 pk__in=Subquery(
-                    Favorite.objects.values_list("object_id", flat=True).filter(content_type__model__in=ctype)
+                    Favorite.objects.values_list("object_id", flat=True)
+                    .filter(user=request.user)
+                    .filter(content_type__model__in=ctype)
                 )
             )
         return queryset
