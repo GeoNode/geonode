@@ -32,7 +32,7 @@ class GeoAppForm(ResourceBaseForm):
             'center_y',
             'data'
         )
-    
+
     def __init__(self, *args, **kwargs):
         super(GeoAppForm, self).__init__(*args, **kwargs)
         for field in self.fields:

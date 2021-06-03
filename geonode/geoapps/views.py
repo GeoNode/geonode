@@ -386,7 +386,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
                 tkeywords_form.fields[tid].initial = values
 
     if request.method == "POST" and geoapp_form.is_valid(
-    ) and category_form.is_valid()  and tkeywords_form.is_valid():
+    ) and category_form.is_valid() and tkeywords_form.is_valid():
         new_poc = geoapp_form.cleaned_data['poc']
         new_author = geoapp_form.cleaned_data['metadata_author']
         new_keywords = current_keywords if request.keyword_readonly else geoapp_form.cleaned_data['keywords']
