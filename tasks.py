@@ -185,8 +185,6 @@ def update(ctx):
 @task
 def migrations(ctx):
     print("**************************migrations*******************************")
-    ctx.run(f"python manage.py makemigrations --noinput --merge --settings={_localsettings()}", pty=True)
-    ctx.run(f"python manage.py makemigrations --noinput --settings={_localsettings()}", pty=True)
     ctx.run(f"python manage.py migrate --noinput --settings={_localsettings()}", pty=True)
     ctx.run(f"python manage.py updategeoip --settings={_localsettings()}", pty=True)
     try:
