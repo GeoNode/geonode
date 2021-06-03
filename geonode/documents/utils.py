@@ -81,7 +81,7 @@ def get_download_response(request, docid, attachment=False):
         register_event(request, EventType.EVENT_DOWNLOAD, document)
     filename = slugify(os.path.splitext(os.path.basename(document.title))[0])
     return DownloadResponse(
-        document.doc_file,
+        document.files,
         basename=f'{filename}.{document.extension}',
         attachment=attachment
     )

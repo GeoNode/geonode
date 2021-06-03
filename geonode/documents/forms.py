@@ -187,7 +187,7 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
 
     doc_file = forms.FileField(
         label=_("File"),
-        required=True)
+        required=False)
 
     class Meta:
         model = Document

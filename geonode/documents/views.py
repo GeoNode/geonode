@@ -237,7 +237,8 @@ class DocumentUploadView(CreateView):
             self.object.files = {ext: storage_manager.path(filepath)}
 
         self.object.owner = self.request.user
-
+        self.object.doc_url = doc_form.pop('doc_url', None)
+        self.object.title = doc_form.pop('title', None)
         if settings.ADMIN_MODERATE_UPLOADS:
             self.object.is_approved = False
         if settings.RESOURCE_PUBLISHING:
