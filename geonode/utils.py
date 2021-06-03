@@ -1667,11 +1667,11 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             try:
                 gs_resource = gs_catalog.get_resource(
                     name=instance.name,
+                    store=instance.store,
                     workspace=instance.workspace)
                 if not gs_resource:
                     gs_resource = gs_catalog.get_resource(
                         name=instance.name,
-                        store=instance.store,
                         workspace=instance.workspace)
                 if not gs_resource:
                     gs_resource = gs_catalog.get_resource(name=instance.name)
