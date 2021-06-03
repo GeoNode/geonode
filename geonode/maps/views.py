@@ -17,35 +17,55 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 import math
 import logging
-import traceback
-from urllib.parse import quote, urlsplit, urljoin
-from itertools import chain
 import warnings
+import traceback
 
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
+from itertools import chain
+from dal import autocomplete
+from deprecated import deprecated
+from urllib.parse import quote, urlsplit, urljoin
+
 from django.urls import reverse
-from django.shortcuts import render
-from django.core.exceptions import PermissionDenied
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http import (
-    HttpResponse, HttpResponseRedirect,
-    HttpResponseNotAllowed, HttpResponseServerError, Http404)
 from django.conf import settings
-from django.utils.translation import ugettext as _
-from django.views.decorators.http import require_http_methods
-
-import json
 from django.db.models import F
+from django.shortcuts import render
+from django.utils.translation import ugettext as _
+from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
+from django.core.serializers.json import DjangoJSONEncoder
+from django.views.decorators.http import require_http_methods
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseRedirect,
+    HttpResponseNotAllowed,
+    HttpResponseServerError)
 from django.views.decorators.clickjacking import (
     xframe_options_exempt,
     xframe_options_sameorigin)
-from geonode.decorators import check_keyword_write_perms
+
+from geonode import geoserver
+from geonode.maps.forms import MapForm
 from geonode.layers.models import Layer
+from geonode.base.views import batch_modify
+from geonode.people.forms import ProfileForm
 from geonode.maps.models import Map, MapLayer
+from geonode.monitoring import register_event
+from geonode.groups.models import GroupProfile
+from geonode.monitoring.models import EventType
 from geonode.layers.views import _resolve_layer
+from geonode.base.auth import get_or_create_token
+from geonode.security.views import _perms_info_json
+from geonode.resource.manager import resource_manager
+from geonode.thumbs.thumbnails import create_thumbnail
+from geonode.decorators import check_keyword_write_perms
+from geonode.documents.models import get_related_documents
+from geonode.base.utils import ManageResourceOwnerPermissions
+
 from geonode.utils import (
     DEFAULT_TITLE,
     DEFAULT_ABSTRACT,
@@ -56,27 +76,13 @@ from geonode.utils import (
     default_map_config,
     resolve_object,
     check_ogc_backend)
-from geonode.maps.forms import MapForm
-from geonode.security.views import _perms_info_json
-from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
+from geonode.base.forms import (
+    CategoryForm,
+    TKeywordForm,
+    ThesaurusAvailableForm)
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
-from geonode import geoserver
-from geonode.groups.models import GroupProfile
-from geonode.base.auth import get_or_create_token
-from geonode.documents.models import get_related_documents
-from geonode.people.forms import ProfileForm
-from geonode.base.views import batch_modify
-from .tasks import delete_map
-from geonode.monitoring import register_event
-from geonode.monitoring.models import EventType
-from geonode.thumbs.thumbnails import create_thumbnail
-from deprecated import deprecated
-
-from dal import autocomplete
-
-from geonode.base.utils import ManageResourceOwnerPermissions
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -475,7 +481,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
             "map": map_obj
         })
     elif request.method == 'POST':
-        delete_map.apply_async((map_obj.id, ))
+        resource_manager.delete(map_obj.uuid, instance=map_obj)
 
         register_event(request, EventType.EVENT_REMOVE, map_obj)
 
@@ -763,11 +769,16 @@ def new_map_json(request):
                 status=401
             )
 
-        map_obj = Map(owner=request.user, zoom=0,
-                      center_x=0, center_y=0)
-        map_obj.save()
-        map_obj.set_default_permissions()
-        map_obj.handle_moderated_uploads()
+        map_obj = resource_manager.create(
+            None,
+            resource_type=Map,
+            defaults=dict(
+                zoom=0,
+                center_x=0,
+                center_y=0
+            )
+        )
+        resource_manager.set_permissions(None, instance=map_obj, permissions=None, created=True)
         # If the body has been read already, use an empty string.
         # See https://github.com/django/django/commit/58d555caf527d6f1bdfeab14527484e4cca68648
         # for a better exception to catch when we move to Django 1.7.

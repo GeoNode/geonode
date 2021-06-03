@@ -17,37 +17,36 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import logging
-import uuid
-
-from django.conf import settings
-from django.db import models
-from django.db.models import signals
 import json
-from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
-from django.template.defaultfilters import slugify
-from django.core.cache import cache
-
-from geonode.layers.models import Layer, Style
-from geonode.compat import ensure_string
-from geonode.base.models import ResourceBase, resourcebase_post_save
-from geonode.maps.signals import map_changed_signal
-from geonode.security.utils import remove_object_permissions
-from geonode.client.hooks import hookset
-from geonode.utils import (GXPMapBase,
-                           GXPLayerBase,
-                           layer_from_viewer_config,
-                           default_map_config)
-
-from geonode import geoserver  # noqa
-from geonode.utils import check_ogc_backend
+import uuid
+import logging
 
 from deprecated import deprecated
 from pinax.ratings.models import OverallRating
+
+from django.db import models
+from django.urls import reverse
+from django.conf import settings
+from django.core.cache import cache
+from django.db.models import signals
+from django.template.defaultfilters import slugify
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
+
+from geonode import geoserver  # noqa
+from geonode.compat import ensure_string
+from geonode.client.hooks import hookset
+from geonode.utils import check_ogc_backend
+from geonode.base.models import ResourceBase
+from geonode.layers.models import Layer, Style
+from geonode.maps.signals import map_changed_signal
+from geonode.security.utils import remove_object_permissions
+from geonode.utils import (
+    GXPMapBase,
+    GXPLayerBase,
+    layer_from_viewer_config,
+    default_map_config)
 
 logger = logging.getLogger("geonode.maps.models")
 
@@ -232,7 +231,9 @@ class Map(ResourceBase, GXPMapBase):
                     self.id, MapLayer, layer, source_for(layer), ordering
                 ))
 
-        self.save(notify=True)
+        from geonode.resource.manager import resource_manager
+        resource_manager.update(self.uuid, instance=self, notify=True)
+        resource_manager.set_thumbnail(self.uuid, instance=self, overwrite=False)
 
         if layer_names != set(lyr.alternate for lyr in self.local_layers):
             map_changed_signal.send_robust(sender=self, what_changed='layers')
@@ -617,4 +618,3 @@ def pre_delete_map(instance, sender, **kwrargs):
 
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)
-signals.post_save.connect(resourcebase_post_save, sender=Map)

@@ -33,10 +33,6 @@ echo MONITORING_DATA_TTL=$MONITORING_DATA_TTL
 /usr/local/bin/invoke waitfordbs > /usr/src/geonode/invoke.log 2>&1
 echo "waitfordbs task done"
 
-echo "running migrations"
-/usr/local/bin/invoke migrations > /usr/src/geonode/invoke.log 2>&1
-echo "migrations task done"
-
 cmd="$@"
 
 echo DOCKER_ENV=$DOCKER_ENV
@@ -44,6 +40,9 @@ echo DOCKER_ENV=$DOCKER_ENV
 if [ -z ${DOCKER_ENV} ] || [ ${DOCKER_ENV} = "development" ]
 then
 
+    echo "running migrations"
+    /usr/local/bin/invoke migrations > /usr/src/geonode/invoke.log 2>&1
+    echo "migrations task done"
     /usr/local/bin/invoke prepare > /usr/src/geonode/invoke.log 2>&1
     echo "prepare task done"
     /usr/local/bin/invoke fixtures > /usr/src/geonode/invoke.log 2>&1
@@ -72,6 +71,9 @@ else
         echo "Executing Celery server $cmd for Production"
     else
 
+        echo "running migrations"
+        /usr/local/bin/invoke migrations > /usr/src/geonode/invoke.log 2>&1
+        echo "migrations task done"
         /usr/local/bin/invoke prepare > /usr/src/geonode/invoke.log 2>&1
         echo "prepare task done"
 

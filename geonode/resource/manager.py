@@ -17,14 +17,28 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 import importlib
-from . import settings as rm_settings
+
+from abc import ABCMeta, abstractmethod
 
 from django.db import transaction
 from django.db.models.query import QuerySet
+from django.core.exceptions import ValidationError
 
-from abc import ABCMeta, abstractmethod
-from geonode.base.models import ResourceBase
+from . import settings as rm_settings
+from .utils import (
+    metadata_storers,
+    resourcebase_post_save,
+    update_layer_with_xml_info)
+
+from ..base import enumerations
+from ..base.models import ResourceBase
+from ..layers.metadata import parse_metadata
+
+from ..storage.manager import storage_manager
+
+logger = logging.getLogger(__name__)
 
 
 class ResourceManagerInterface(metaclass=ABCMeta):
@@ -42,11 +56,24 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def create(self, uuid: str, /, instance: ResourceBase = None) -> int:
+    def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
         pass
 
     @abstractmethod
-    def update(self, uuid: str, /, instance: ResourceBase = None) -> int:
+    def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
+               vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
+        pass
+
+    @abstractmethod
+    def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
+        pass
+
+    @abstractmethod
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}, created: bool = False) -> bool:
+        pass
+
+    @abstractmethod
+    def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         pass
 
 
@@ -78,24 +105,119 @@ class ResourceManager(ResourceManagerInterface):
         return _resources_queryset
 
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
-        instance = instance or ResourceManager._get_instance(uuid)
-        if instance:
-            return self._resource_manager.exists(uuid, instance=instance)
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            return self._resource_manager.exists(uuid, instance=_resource)
         return False
 
     @transaction.atomic
     def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
-        instance = instance or ResourceManager._get_instance(uuid)
-        if instance:
-            self._resource_manager.delete(uuid, instance=instance)
-            return instance.delete()
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            try:
+                self._resource_manager.delete(uuid, instance=_resource)
+                _resource.get_real_instance().delete()
+                return 1
+            except Exception as e:
+                logger.exception(e)
         return 0
 
-    def create(self, uuid: str, /, instance: ResourceBase = None) -> int:
-        pass
+    @transaction.atomic
+    def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
+        if resource_type.objects.filter(uuid=uuid).exists():
+            raise ValidationError(f'Object of type {resource_type} with uuid [{uuid}] already exists.')
+        _resource, _created = resource_type.objects.get_or_create(
+            uuid=uuid,
+            defaults=defaults)
+        if _resource and _created:
+            try:
+                _resource.set_processing_state(enumerations.STATE_RUNNING)
+                _resource.set_missing_info()
+                _resource = self._resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+            except Exception as e:
+                _resource.delete()
+                raise e
+            resourcebase_post_save(_resource)
+        return _resource
 
-    def update(self, uuid: str, /, instance: ResourceBase = None) -> int:
-        pass
+    @transaction.atomic
+    def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
+               vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            _resource.set_processing_state(enumerations.STATE_RUNNING)
+            _resource.set_missing_info()
+            _resource.metadata_uploaded = metadata_uploaded
+            logger.debug(f'Look for xml and finalize Layer metadata {_resource}')
+            try:
+                if metadata_uploaded and xml_file:
+                    _md_file = None
+                    try:
+                        _md_file = storage_manager.open(xml_file)
+                    except Exception as e:
+                        logger.exception(e)
+                        _md_file = open(xml_file)
+                    _uuid, vals, regions, keywords, custom = parse_metadata(_md_file.read())
+                    if uuid and uuid != _uuid:
+                        raise ValidationError("The UUID identifier from the XML Metadata is different from the {_resource} one.")
+                    else:
+                        uuid = _uuid
+                logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
+                _resource = update_layer_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
+                _resource = self._resource_manager.update(uuid, instance=_resource, vals=vals, regions=regions, keywords=keywords, custom=custom, notify=notify)
+                _resource = metadata_storers(_resource.get_real_instance(), custom)
+            except Exception as e:
+                logger.exception(e)
+            finally:
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                _resource.save(notify=notify)
+            resourcebase_post_save(_resource)
+        return _resource
+
+    @transaction.atomic
+    def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            if hasattr(self._resource_manager, method):
+                _method = getattr(self._resource_manager, method)
+                return _method(method, uuid, instance=_resource, **kwargs)
+        return instance
+
+    @transaction.atomic
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}, created: bool = False) -> bool:
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            _resource.set_processing_state(enumerations.STATE_RUNNING)
+            logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
+            try:
+                logger.debug(f'Setting permissions {permissions} for {_resource.name}')
+                if permissions is not None:
+                    _resource.get_real_instance().set_permissions(permissions, created=created)
+                    self._resource_manager.set_permissions(uuid, instance=_resource, permissions=permissions, created=created)
+                else:
+                    _resource.get_real_instance().set_default_permissions()
+                _resource.handle_moderated_uploads()
+                return True
+            except Exception as e:
+                logger.exception(e)
+            finally:
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+        return False
+
+    @transaction.atomic
+    def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
+        _resource = instance or ResourceManager._get_instance(uuid)
+        if _resource:
+            _resource.set_processing_state(enumerations.STATE_RUNNING)
+            try:
+                self._resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
+                return True
+            except Exception as e:
+                logger.exception(e)
+            finally:
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+        return False
 
 
 resource_manager = ResourceManager()

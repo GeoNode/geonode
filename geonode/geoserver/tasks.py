@@ -17,10 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.base import enumerations
 import os
 import re
-import shutil
 
 from django.conf import settings
 from django.db import transaction
@@ -37,17 +35,11 @@ from geonode.tasks.tasks import (
     AcquireLock,
     FaultTolerantTask)
 from geonode import GeoNodeException
-from geonode.upload import signals
-from geonode.upload.utils import (
-    metadata_storers,
-    update_layer_with_xml_info)
 from geonode.layers.models import Layer
-from geonode.layers.metadata import parse_metadata
 from geonode.base.models import ResourceBase
 from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
-from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.upload import geoserver_upload
 from geonode.catalogue.models import catalogue_post_save
 
@@ -201,98 +193,6 @@ def geoserver_create_style(
 @app.task(
     bind=True,
     base=FaultTolerantTask,
-    name='geonode.geoserver.tasks.geoserver_finalize_upload',
-    queue='geoserver.events',
-    expires=600,
-    acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 0, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
-def geoserver_finalize_upload(
-        self,
-        import_id,
-        instance_id,
-        permissions,
-        created,
-        metadata_uploaded, xml_file,
-        sld_uploaded, sld_file,
-        time_info,
-        tempdir):
-    """
-    Finalize Layer and GeoServer configuration:
-     - Sets Layer Metadata from XML and updates GeoServer Layer accordingly.
-     - Sets Default Permissions
-    """
-    from geonode.upload.models import Upload
-
-    instance = None
-    try:
-        instance = Layer.objects.get(id=instance_id)
-    except Layer.DoesNotExist:
-        logger.debug(f"Layer id {instance_id} does not exist yet!")
-        raise
-
-    lock_id = f'{self.request.id}'
-    with AcquireLock(lock_id) as lock:
-        if lock.acquire() is True:
-            # @todo if layer was not created, need to ensure upload target is
-            # same as existing target
-            # Create the points of contact records for the layer
-            logger.debug(f'Creating points of contact records for {instance}')
-            if not instance.poc:
-                instance.poc = instance.owner
-            if not instance.metadata_author:
-                instance.metadata_author = instance.owner
-
-            logger.debug(f'Look for xml and finalize Layer metadata {instance}')
-            regions = []
-            keywords = []
-            vals = {}
-            custom = {}
-            instance.metadata_uploaded = metadata_uploaded
-            if metadata_uploaded:
-                layer_uuid, vals, regions, keywords, custom = parse_metadata(
-                    open(xml_file).read())
-
-            logger.debug(f'Update Layer with information coming from XML File if available {instance}')
-            instance = metadata_storers(instance, custom)
-            instance = update_layer_with_xml_info(instance, xml_file, regions, keywords, vals)
-
-            logger.debug(f'Creating style for Layer {instance}')
-            if sld_uploaded:
-                geoserver_set_style(instance.id, sld_file)
-            else:
-                geoserver_create_style(instance.id, instance.name, sld_file, tempdir)
-
-            if time_info:
-                set_time_info(instance, **time_info)
-
-            logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
-            instance.handle_moderated_uploads()
-
-            if permissions is not None:
-                logger.debug(f'Setting permissions {permissions} for {instance.name}')
-                instance.set_permissions(permissions, created=created)
-
-            instance.save(notify=created)
-
-            try:
-                logger.debug(f"... Cleaning up the temporary folders {tempdir}")
-                if tempdir and os.path.exists(tempdir):
-                    shutil.rmtree(tempdir)
-            except Exception as e:
-                logger.warning(e)
-            finally:
-                Upload.objects.filter(import_id=import_id).update(complete=True)
-
-            signals.upload_complete.send(sender=geoserver_finalize_upload, layer=instance)
-
-
-@app.task(
-    bind=True,
-    base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_post_save_layers',
     queue='geoserver.catalog',
     expires=3600,
@@ -309,8 +209,6 @@ def geoserver_post_save_layers(
     """
     Runs update layers.
     """
-    from geonode.geoserver.signals import geoserver_post_save_complete
-
     instance = None
     try:
         instance = Layer.objects.get(id=instance_id)
@@ -324,18 +222,16 @@ def geoserver_post_save_layers(
             # Don't run this signal handler if it is a tile layer or a remote store (Service)
             #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
             if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
-                # Creating Layer Thumbnail by sending a signal
-                geoserver_post_save_complete.send(
-                    sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
+                # # Creating Layer Thumbnail by sending a signal
+                # geoserver_post_save_complete.send(
+                #     sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
                 return instance
 
             if isinstance(instance, ResourceBase):
                 if hasattr(instance, 'layer'):
                     instance = instance.layer
                 else:
-                    return
-
-            instance.set_processing_state(enumerations.STATE_RUNNING)
+                    return instance
 
             gs_resource = None
             values = None
@@ -532,11 +428,9 @@ def geoserver_post_save_layers(
                 except Exception:
                     pass
 
-                # Creating Layer Thumbnail by sending a signal
-                geoserver_post_save_complete.send(
-                    sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
-
-            instance.set_processing_state(enumerations.STATE_PROCESSED)
+                # # Creating Layer Thumbnail by sending a signal
+                # geoserver_post_save_complete.send(
+                #     sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
 
             # Updating HAYSTACK Indexes if needed
             if settings.HAYSTACK_SEARCH:
@@ -584,7 +478,7 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 1, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -596,3 +490,31 @@ def geoserver_cascading_delete(self, *args, **kwargs):
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
             return cascading_delete(*args, **kwargs)
+
+
+@app.task(
+    bind=True,
+    name='geonode.geoserver.tasks.geoserver_delete_map',
+    queue='cleanup',
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 1, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
+def geoserver_delete_map(self, object_id):
+    """
+    Deletes a map and the associated map layers.
+    """
+    from geonode.maps.models import Map
+    lock_id = f'{self.request.id}'
+    with AcquireLock(lock_id) as lock:
+        if lock.acquire() is True:
+            try:
+                map_obj = Map.objects.get(id=object_id)
+            except Map.DoesNotExist:
+                return
+
+            map_obj.layer_set.all().delete()
+            map_obj.delete()

@@ -33,7 +33,6 @@ from owslib.etree import etree as dlxml
 from django.conf import settings
 from django.urls import reverse
 from django.shortcuts import render
-from django.db import IntegrityError, transaction
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -48,16 +47,6 @@ from geonode.geoserver.helpers import (
     get_store,
     set_time_dimension,
     create_geoserver_db_featurestore)  # mosaic_delete_first_granule
-from geonode.base.models import (
-    ResourceBase,
-    TopicCategory,
-    ThesaurusKeyword,
-    HierarchicalKeyword,
-    SpatialRepresentationType)
-from geonode.layers.models import Layer
-
-from ..layers.utils import resolve_regions
-from ..layers.metadata import convert_keyword
 
 ogr.UseExceptions()
 
@@ -648,70 +637,6 @@ def run_response(req, upload_session):
     return next_step_response(req, upload_session)
 
 
-def update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
-    # Updating layer with information coming from the XML file
-    if xml_file:
-        saved_layer.metadata_xml = open(xml_file).read()
-        regions_resolved, regions_unresolved = resolve_regions(regions)
-        keywords.extend(convert_keyword(regions_unresolved))
-
-        # Assign the regions (needs to be done after saving)
-        regions_resolved = list(set(regions_resolved))
-        if regions_resolved:
-            if len(regions_resolved) > 0:
-                if not saved_layer.regions:
-                    saved_layer.regions = regions_resolved
-                else:
-                    saved_layer.regions.clear()
-                    saved_layer.regions.add(*regions_resolved)
-
-        # Assign the keywords (needs to be done after saving)
-        saved_layer = KeywordHandler(saved_layer, keywords).set_keywords()
-
-        # set model properties
-        defaults = {}
-        for key, value in vals.items():
-            if key == 'spatial_representation_type':
-                value = SpatialRepresentationType(identifier=value)
-            elif key == 'topic_category':
-                value, created = TopicCategory.objects.get_or_create(
-                    identifier=value,
-                    defaults={'description': '', 'gn_description': value})
-                key = 'category'
-                defaults[key] = value
-            else:
-                defaults[key] = value
-
-        # Save all the modified information in the instance without triggering signals.
-        try:
-            if not defaults.get('title', saved_layer.title):
-                defaults['title'] = saved_layer.title or saved_layer.name
-            if not defaults.get('abstract', saved_layer.abstract):
-                defaults['abstract'] = saved_layer.abstract or ''
-
-            to_update = {}
-            to_update['charset'] = defaults.pop('charset', saved_layer.charset)
-            to_update['storeType'] = defaults.pop('storeType', saved_layer.storeType)
-            for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
-                if _key in defaults:
-                    to_update[_key] = defaults.pop(_key)
-                else:
-                    to_update[_key] = getattr(saved_layer, _key)
-            to_update.update(defaults)
-
-            with transaction.atomic():
-                ResourceBase.objects.filter(
-                    id=saved_layer.resourcebase_ptr.id).update(
-                    **defaults)
-                Layer.objects.filter(id=saved_layer.id).update(**to_update)
-
-                # Refresh from DB
-                saved_layer.refresh_from_db()
-        except IntegrityError:
-            raise
-    return saved_layer
-
-
 """
  - ImageMosaics Management
 """
@@ -948,88 +873,3 @@ max\ connections={db_conn_max}"""
         cat.reset()
         # cat.reload()
         return append_to_mosaic_name, files_to_upload
-
-
-class KeywordHandler:
-    '''
-    Object needed to handle the keywords coming from the XML
-    The expected input are:
-     - instance (Layer/Document/Map): instance of any object inherited from ResourceBase.
-     - keywords (list(dict)): Is required to analyze the keywords to find if some thesaurus is available.
-    '''
-
-    def __init__(self, instance, keywords):
-        self.instance = instance
-        self.keywords = keywords
-
-    def set_keywords(self):
-        '''
-        Method with the responsible to set the keywords (free and thesaurus) to the object.
-        At return there is always a call to final_step to let it hookable.
-        '''
-        keywords, tkeyword = self.handle_metadata_keywords()
-        self._set_free_keyword(keywords)
-        self._set_tkeyword(tkeyword)
-        return self.instance
-
-    def handle_metadata_keywords(self):
-        '''
-        Method the extract the keyword from the dict.
-        If the keyword are passed, try to extract them from the dict
-        by splitting free-keyword from the thesaurus
-        '''
-        fkeyword = []
-        tkeyword = []
-        if len(self.keywords) > 0:
-            for dkey in self.keywords:
-                if isinstance(dkey, HierarchicalKeyword):
-                    fkeyword += [dkey.name]
-                    continue
-                if dkey['type'] == 'place':
-                    continue
-                thesaurus = dkey['thesaurus']
-                if thesaurus['date'] or thesaurus['datetype'] or thesaurus['title']:
-                    for k in dkey['keywords']:
-                        tavailable = self.is_thesaurus_available(thesaurus, k)
-                        if tavailable.exists():
-                            tkeyword += [tavailable.first()]
-                        else:
-                            fkeyword += [k]
-                else:
-                    fkeyword += dkey['keywords']
-            return fkeyword, tkeyword
-        return self.keywords, []
-
-    @staticmethod
-    def is_thesaurus_available(thesaurus, keyword):
-        is_available = ThesaurusKeyword.objects.filter(alt_label=keyword).filter(thesaurus__title=thesaurus['title'])
-        return is_available
-
-    def _set_free_keyword(self, keywords):
-        if len(keywords) > 0:
-            if not self.instance.keywords:
-                self.instance.keywords = keywords
-            else:
-                self.instance.keywords.add(*keywords)
-        return keywords
-
-    def _set_tkeyword(self, tkeyword):
-        if len(tkeyword) > 0:
-            if not self.instance.tkeywords:
-                self.instance.tkeywords = tkeyword
-            else:
-                self.instance.tkeywords.add(*tkeyword)
-        return [t.alt_label for t in tkeyword]
-
-
-def metadata_storers(layer, custom={}):
-    from django.utils.module_loading import import_string
-    available_storers = (
-        settings.METADATA_STORERS
-        if hasattr(settings, "METADATA_STORERS")
-        else []
-    )
-    for storer_path in available_storers:
-        storer = import_string(storer_path)
-        storer(layer, custom)
-    return layer

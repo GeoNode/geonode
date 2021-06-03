@@ -173,6 +173,8 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
             resource=layer
         )
 
+        assert upload
+
         self.client.login(username='admin', password='admin')
         # ... all should be good
         response = self.client.get(reverse('download', args=(layer.id,)))
@@ -235,6 +237,9 @@ class TestProxyTags(GeoNodeBaseTestSupport):
             state='RUNNING',
             resource=self.resource
         )
+
+        assert upload
+
         self.resource.files = {
             ".dbf": "/tmpe1exb9e9/foo_file.dbf",
             ".prj": "/tmpe1exb9e9/foo_file.prj",
