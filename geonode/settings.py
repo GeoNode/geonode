@@ -1392,6 +1392,7 @@ GEONODE_CATALOGUE_METADATA_XSL = ast.literal_eval(os.getenv('GEONODE_CATALOGUE_M
 DEFAULT_MAP_CRS = os.environ.get('DEFAULT_MAP_CRS', "EPSG:3857")
 
 DEFAULT_LAYER_FORMAT = os.environ.get('DEFAULT_LAYER_FORMAT', "image/png")
+DEFAULT_TILE_SIZE = os.environ.get('DEFAULT_TILE_SIZE', 1024)
 
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (os.environ.get('DEFAULT_MAP_CENTER_X', 0), os.environ.get('DEFAULT_MAP_CENTER_Y', 0))
@@ -1431,7 +1432,10 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
                         "url": CATALOGUE['default']['URL'],
                         "type": "csw",
                         "title": pycsw_config['metadata:main']['identification_title'],
-                        "autoload": True
+                        "autoload": True,
+                        "layerOptions": {
+                            "tileSize": DEFAULT_TILE_SIZE
+                        }
                     }
                 }
                 return pycsw_catalogue
