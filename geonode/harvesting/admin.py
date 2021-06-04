@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import functools
 import json
 import logging
 
@@ -24,6 +25,7 @@ from django.contrib import (
     admin,
     messages,
 )
+from django.db import transaction
 
 from . import (
     forms,
@@ -69,35 +71,43 @@ class HarvesterAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj: models.Harvester, form, change):
         # TODO: disallow changing the model if it is not ready
-        super().save_model(request, obj, form, change)
-        available = utils.update_harvester_availability(obj)
-        if available:
-            if not change:
-                # when creating the object we want to also create its
-                # harvestable resources
-                tasks.update_harvestable_resources.apply_async(args=(obj.pk,))
+        with transaction.atomic():
+            super().save_model(request, obj, form, change)
+            available = utils.update_harvester_availability(obj)
+            if available:
+                partial_task = functools.partial(
+                    tasks.update_harvestable_resources.apply_async, args=(obj.pk,))
+                # NOTE: below we are using transaction.on_commit in order to ensure
+                # the harvester is already saved in the DB before we schedule the
+                # celery task. This is needed in order to avoid the celery worker
+                # picking up the task before it is saved in the DB. More info:
+                #
+                # https://docs.djangoproject.com/en/2.2/topics/db/transactions/#performing-actions-after-commit
+                #
+                if not change:
+                    transaction.on_commit(partial_task)
+                    message = (
+                        f"Updating harvestable resources asynchronously for {obj!r}...")
+                    self.message_user(request, message)
+                    logger.debug(message)
+                elif _worker_config_changed(form):
+                    self.message_user(
+                        request,
+                        (
+                            "Harvester worker specific configuration has been changed. "
+                            "Regenerating list of this harvester's harvestable "
+                            "resources asynchronously... "
+                        ),
+                        level=messages.WARNING
+                    )
+                    models.HarvestableResource.objects.filter(harvester=obj).delete()
+                    transaction.on_commit(partial_task)
+            else:
                 self.message_user(
                     request,
-                    f"Updating harvestable resources asynchronously for {obj}..."
+                    f"Harvester {obj} is{'' if available else ' not'} available",
+                    messages.INFO if available else messages.WARNING
                 )
-            elif _worker_config_changed(form):
-                self.message_user(
-                    request,
-                    (
-                        "Harvester worker specific configuration has been changed. "
-                        "Regenerating list of this harvester's harvestable resources "
-                        "asynchronously... "
-                    ),
-                    level=messages.WARNING
-                )
-                models.HarvestableResource.objects.filter(harvester=obj).delete()
-                tasks.update_harvestable_resources.apply_async(args=(obj.pk,))
-        else:
-            self.message_user(
-                request,
-                f"Harvester {obj} is{'' if available else ' not'} available",
-                messages.INFO if available else messages.WARNING
-            )
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
