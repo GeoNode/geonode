@@ -48,6 +48,7 @@ class HarvesterAdmin(admin.ModelAdmin):
         "remote_available",
         "update_frequency",
         "harvester_type",
+        "get_num_harvestable_resources",
     )
 
     readonly_fields = (
@@ -67,6 +68,7 @@ class HarvesterAdmin(admin.ModelAdmin):
     ]
 
     def save_model(self, request, obj: models.Harvester, form, change):
+        # TODO: disallow changing the model if it is not ready
         super().save_model(request, obj, form, change)
         available = utils.update_harvester_availability(obj)
         if available:
@@ -127,6 +129,14 @@ class HarvesterAdmin(admin.ModelAdmin):
     def update_harvestable_resources(self, request, queryset):
         being_updated = []
         for harvester in queryset:
+            if harvester.status != harvester.STATUS_READY:
+                self.message_user(
+                    request,
+                    f"Harvester {harvester!r} is currently busy. Please wait until "
+                    f"its status is {harvester.STATUS_READY!r} before retrying",
+                    level=messages.ERROR
+                )
+                continue
             available = utils.update_harvester_availability(harvester)
             if not available:
                 self.message_user(
@@ -138,6 +148,8 @@ class HarvesterAdmin(admin.ModelAdmin):
                     messages.ERROR
                 )
                 continue
+            harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
+            harvester.save()
             tasks.update_harvestable_resources.apply_async(args=(harvester.pk,))
             being_updated.append(harvester)
         if len(being_updated) > 0:
@@ -147,6 +159,11 @@ class HarvesterAdmin(admin.ModelAdmin):
             )
     update_harvestable_resources.short_description = (
             "Update harvestable resources from selected harvesters")
+
+    def get_num_harvestable_resources(self, harvester: models.Harvester):
+        return harvester.harvestable_resources.count()
+    get_num_harvestable_resources.short_description = (
+        "number of harvestable resources")
 
 
 @admin.register(models.HarvestingSession)
@@ -172,6 +189,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "title",
         "harvester",
         "should_be_harvested",
+        "remote_resource_type",
     )
     readonly_fields = (
         "unique_identifier",
@@ -179,6 +197,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "harvester",
         "last_updated",
         "available",
+        "remote_resource_type",
     )
     list_filter = (
         "harvester",

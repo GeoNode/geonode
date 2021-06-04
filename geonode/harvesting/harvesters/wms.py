@@ -19,23 +19,18 @@
 
 import logging
 import typing
-from urllib3.exceptions import (
-    MaxRetryError,
-    NewConnectionError,
-)
 
 import requests
-from django.utils import timezone
 from lxml import etree
 
+from .. import resourcedescriptor
 from ..utils import XML_PARSER
-from .. import models
-from .base import BaseHarvester
+from . import base
 
 logger = logging.getLogger(__name__)
 
 
-class OgcWmsHarvester(BaseHarvester):
+class OgcWmsHarvester(base.BaseHarvesterWorker):
     layer_title_filter: typing.Optional[str]
 
     def __init__(
@@ -52,6 +47,10 @@ class OgcWmsHarvester(BaseHarvester):
         }
         self.layer_title_filter = layer_title_filter
 
+    @property
+    def allows_copying_resources(self) -> bool:
+        return False
+
     @classmethod
     def from_django_record(cls, record: "Harvester"):
         return cls(
@@ -61,7 +60,8 @@ class OgcWmsHarvester(BaseHarvester):
                 "layer_title_filter")
         )
 
-    def get_extra_config_schema(self) -> typing.Optional[typing.Dict]:
+    @classmethod
+    def get_extra_config_schema(cls) -> typing.Optional[typing.Dict]:
         return {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$id": "https://geonode.org/harvesting/ogc-wms-harvester.schema.json",
@@ -79,8 +79,16 @@ class OgcWmsHarvester(BaseHarvester):
             "additionalProperties": False,
         }
 
-    def update_availability(self) -> bool:
-        """Check whether the remote WMS service is online."""
+    def get_num_available_resources(self) -> int:
+        raise NotImplementedError
+
+    def list_resources(
+            self,
+            offset: typing.Optional[int] = 0
+    ) -> typing.List[base.BriefRemoteResource]:
+        raise NotImplementedError
+
+    def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
         try:
             response = self.http_session.get(f"{self.remote_url}")
             response.raise_for_status()
@@ -88,14 +96,14 @@ class OgcWmsHarvester(BaseHarvester):
             result = False
         else:
             result = True
-        harvester = models.Harvester.objects.get(pk=self.harvester_id)
-        harvester.remote_available = result
-        harvester.last_checked_availability = timezone.now()
-        harvester.save()
         return result
 
-    def perform_metadata_harvesting(self) -> None:
-        self.create_harvesting_session()
+    def get_resource(
+            self,
+            resource_unique_identifier: str,
+            resource_type: str,
+            harvesting_session_id: typing.Optional[int] = None
+    ) -> typing.Optional[resourcedescriptor.RecordDescription]:
         get_capabilities_response = self.http_session.get(
             self.remote_url,
             params={
@@ -106,7 +114,7 @@ class OgcWmsHarvester(BaseHarvester):
         )
         get_capabilities_response.raise_for_status()
         root = etree.fromstring(get_capabilities_response.content, parser=XML_PARSER)
-        nsmap = self._get_nsmap(root.nsmap)
+        nsmap = _get_nsmap(root.nsmap)
         useful_layers_elements = []
         leaf_layers = root.xpath("//wms:Layer[not(.//wms:Layer)]", namespaces=nsmap)
         for layer_element in leaf_layers:
@@ -119,24 +127,16 @@ class OgcWmsHarvester(BaseHarvester):
                 if self.layer_title_filter.lower() not in title.lower():
                     continue
             logger.debug(f"Creating resource descriptor for layer {title!r}...")
-        self.update_harvesting_session(total_records_found=len(useful_layers_elements))
-        self.finish_harvesting_session()
+        self.update_harvesting_session(
+            harvesting_session_id, total_records_found=len(useful_layers_elements))
+        self.finish_harvesting_session(harvesting_session_id)
 
-    def _get_nsmap(self, original: typing.Dict):
-        """Prepare namespaces dict for running xpath queries.
-
-        lxml complains when a namespaces dict has an entry with None as a key.
-
-        """
-
-        result = original.copy()
-        try:
-            result["wms"] = original[None]
-        except KeyError:
-            pass
-        else:
-            del result[None]
-        return result
+    def update_geonode_resource(
+            self,
+            resource_descriptor: resourcedescriptor.RecordDescription,
+            harvesting_session_id: typing.Optional[int] = None
+    ):
+        raise NotImplementedError
 
     def _get_useful_layers(self) -> typing.List[etree.Element]:
         get_capabilities_response = self.http_session.get(
@@ -149,7 +149,7 @@ class OgcWmsHarvester(BaseHarvester):
         )
         get_capabilities_response.raise_for_status()
         root = etree.fromstring(get_capabilities_response.content, parser=XML_PARSER)
-        nsmap = self._get_nsmap(root.nsmap)
+        nsmap = _get_nsmap(root.nsmap)
         num_layers = 0
         useful_layers_elements = []
         leaf_layers = root.xpath("//wms:Layer[not(.//wms:Layer)]", namespaces=nsmap)
@@ -160,3 +160,20 @@ class OgcWmsHarvester(BaseHarvester):
                     continue
             useful_layers_elements.append(layer_element)
         return useful_layers_elements
+
+
+def _get_nsmap(original: typing.Dict):
+    """Prepare namespaces dict for running xpath queries.
+
+    lxml complains when a namespaces dict has an entry with None as a key.
+
+    """
+
+    result = original.copy()
+    try:
+        result["wms"] = original[None]
+    except KeyError:
+        pass
+    else:
+        del result[None]
+    return result

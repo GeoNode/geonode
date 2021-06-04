@@ -21,8 +21,10 @@ import collections
 import logging
 import typing
 
+import jsonschema.exceptions
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils.module_loading import import_string
 from dynamic_rest.serializers import (
     DynamicModelSerializer,
     DynamicRelationField,
@@ -121,12 +123,43 @@ class HarvesterSerializer(BriefHarvesterSerializer):
             "links",
         )
 
+    def validate_harvester_type_specific_configuration(self, value):
+        logger.debug(f"inside validate_harvester_type_specific_configuration")
+        logger.debug(f"instance: {self.instance}")
+        return value
+
     def validate(self, data):
-        field_name = "harvester_type_specific_configuration"
-        if data.get("status") and data.get(field_name):
+        """Perform object-level validation
+
+        In this method we implement validation of the following:
+
+        - Check that the worker configuration is valid for the current worker type.
+          This is done by validating the config against the worker's extra config
+          jsonschema (if it exists)
+        - Check that the client does not try to change the object's and worker config
+          at the same time, as that could lead to invalid internal state (for example,
+          if the worker config changes we need to regenerate the list of harvestable
+          resources before allowing a new harvesting session to take place).
+
+        """
+
+        worker_config_field = "harvester_type_specific_configuration"
+        worker_type_field = "worker_type"
+        worker_type = data.get(
+            worker_type_field, getattr(self.instance, worker_type_field, None))
+        worker_config = data.get(
+            worker_config_field, getattr(self.instance, worker_config_field, None))
+        if worker_type is not None and worker_config is not None:
+            try:
+                utils.validate_worker_configuration(worker_type, worker_config)
+            except jsonschema.exceptions.ValidationError as exc:
+                raise serializers.ValidationError(
+                    f"Invalid {worker_config_field!r} configuration")
+
+        if data.get("status") and data.get(worker_config_field):
             raise serializers.ValidationError(
-                f"Cannot update a harvester's 'status' and {field_name!r} at the "
-                f"same time"
+                f"Cannot update a harvester's 'status' and {worker_config_field!r} at "
+                f"the same time"
             )
         return data
 

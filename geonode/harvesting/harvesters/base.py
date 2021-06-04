@@ -24,7 +24,10 @@ import typing
 from django.db.models import F
 from django.utils import timezone
 
-from .. import models
+from .. import (
+    models,
+    resourcedescriptor,
+)
 
 
 @dataclasses.dataclass()
@@ -38,12 +41,15 @@ class BriefRemoteResource:
 class BaseHarvesterWorker(abc.ABC):
     remote_url: str
     harvester_id: int
-    _harvesting_session_id: typing.Optional[int]
 
     def __init__(self, remote_url: str, harvester_id: int):
         self.remote_url = remote_url
         self.harvester_id = harvester_id
-        self._harvesting_session_id = None
+
+    @property
+    @abc.abstractmethod
+    def allows_copying_resources(self) -> bool:
+        """Whether copying remote resources is implemented by this worker"""
 
     @classmethod
     @abc.abstractmethod
@@ -56,66 +62,67 @@ class BaseHarvesterWorker(abc.ABC):
 
     @abc.abstractmethod
     def list_resources(
-            self, offset: typing.Optional[int] = 0) -> typing.List[BriefRemoteResource]:
+            self,
+            offset: typing.Optional[int] = 0
+    ) -> typing.List[BriefRemoteResource]:
         """Return a list of resources from the remote service"""
 
     @abc.abstractmethod
-    def check_availability(self) -> bool:
-        """Check whether the remote url is online"""
+    def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
+        """Check whether the remote service is online"""
 
     @abc.abstractmethod
-    def perform_metadata_harvesting(self) -> None:
-        """Harvest resources from the remote service"""
+    def get_resource(
+            self,
+            resource_unique_identifier: str,
+            resource_type: str,
+            harvesting_session_id: typing.Optional[int] = None
+    ) -> typing.Optional[resourcedescriptor.RecordDescription]:
+        """Harvest a single resource from the remote service"""
 
-    @property
     @abc.abstractmethod
-    def allows_copying_resources(self) -> bool:
-        """
-        Whether copying remote resources to local GeoNode is implemented by this worker.
-        """
+    def update_geonode_resource(
+            self,
+            resource_descriptor: resourcedescriptor.RecordDescription,
+            harvesting_session_id: typing.Optional[int] = None
+    ):
+        """Update GeoNode with the input resource descriptor"""
 
-    def get_extra_config_schema(self) -> typing.Optional[typing.Dict]:
-        """
-        Return a jsonschema schema that is used to validate models.Harvester objects.
-        """
-
+    @classmethod
+    def get_extra_config_schema(cls) -> typing.Optional[typing.Dict]:
+        """Return a jsonschema schema to be used to validate models.Harvester objects"""
         return None
 
-    def create_harvesting_session(self) -> int:
-        session = models.HarvestingSession.objects.create(
-            harvester_id=self.harvester_id)
-        self._harvesting_session_id = session.id
-        return self._harvesting_session_id
-
-    def set_harvesting_session_id(self, id_: int) -> None:
-        self._harvesting_session_id = id_
-
+    @classmethod
     def finish_harvesting_session(
-            self, additional_harvested_records: typing.Optional[int] = None) -> None:
-
+            cls,
+            session_id: int,
+            additional_harvested_records: typing.Optional[int] = None
+    ) -> None:
+        """Finish the input harvesting session"""
         update_kwargs = {
             "ended": timezone.now()
         }
         if additional_harvested_records is not None:
             update_kwargs["records_harvested"] = (
                     F("records_harvested") + additional_harvested_records)
-        models.HarvestingSession.objects.filter(
-            id=self._harvesting_session_id).update(**update_kwargs)
+        models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
 
+    @classmethod
     def update_harvesting_session(
-            self,
+            cls,
+            session_id: int,
             total_records_found: typing.Optional[int] = None,
             additional_harvested_records: typing.Optional[int] = None
     ) -> None:
-
+        """Update the input harvesting session"""
         update_kwargs = {}
         if total_records_found is not None:
             update_kwargs["total_records_found"] = total_records_found
         if additional_harvested_records is not None:
             update_kwargs["records_harvested"] = (
                     F("records_harvested") + additional_harvested_records)
-        models.HarvestingSession.objects.filter(
-            id=self._harvesting_session_id).update(**update_kwargs)
+        models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
 
 
 class OldBaseHarvester:

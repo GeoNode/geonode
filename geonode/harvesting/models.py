@@ -19,7 +19,6 @@
 
 import json
 import logging
-import math
 
 import jsonschema.exceptions
 from django.conf import settings
@@ -32,9 +31,9 @@ from django_celery_beat.models import (
     IntervalSchedule,
     PeriodicTask,
 )
-from jsonschema import validate
 from jsonfield import JSONField
 
+from . import utils
 from .config import HARVESTER_CLASSES
 from .harvesters.base import BaseHarvesterWorker
 
@@ -171,15 +170,11 @@ class Harvester(models.Model):
 
         """
 
-        worker = self.get_harvester_worker()
-        json_schema = worker.get_extra_config_schema()
-        if json_schema is not None:
-            try:
-                validate(self.harvester_type_specific_configuration, json_schema)
-            except jsonschema.exceptions.ValidationError as exc:
-                raise ValidationError(str(exc))
-            except jsonschema.exceptions.SchemaError as exc:
-                raise RuntimeError(f"Invalid schema: {exc}")
+        try:
+            utils.validate_worker_configuration(
+                self.harvester_type, self.harvester_type_specific_configuration)
+        except jsonschema.exceptions.ValidationError as exc:
+            raise ValidationError(str(exc))
 
     def setup_periodic_tasks(self) -> None:
         """Setup the related periodic tasks for the instance.
@@ -203,7 +198,7 @@ class Harvester(models.Model):
         )
         self.periodic_task = PeriodicTask.objects.create(
             name=_(self.name),
-            task="geonode.harvesting.tasks.harvesting_session_dispatcher",
+            task="geonode.harvesting.tasks.harvesting_dispatcher",
             interval=update_interval,
             args=json.dumps([self.id]),
             start_time=timezone.now()
@@ -272,6 +267,15 @@ class HarvestableResource(models.Model):
     should_be_harvested = models.BooleanField(default=False)
     last_updated = models.DateTimeField(auto_now=True)
     available = models.BooleanField(default=False)
+    remote_resource_type = models.CharField(
+        max_length=255,
+        help_text=_(
+            "Type of the resource in the remote service. Each harvester worker knows "
+            "how to fill this field, in accordance with the resources for which "
+            "harvesting is supported"
+        ),
+        blank=True
+    )
 
     class Meta:
         constraints = [
