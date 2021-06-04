@@ -24,6 +24,7 @@ when you run "manage.py test".
 
 """
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.storage.manager import storage_manager
 from mock import patch
 import os
 import io
@@ -36,7 +37,6 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.files.storage import default_storage as storage
 
 from guardian.shortcuts import get_perms, get_anonymous_user
 
@@ -507,10 +507,10 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             _d.delete()
 
             from geonode.documents.utils import delete_orphaned_document_files
-            _, document_files_before = storage.listdir(
+            _, document_files_before = storage_manager.listdir(
                 os.path.join("documents", "document"))
             deleted = delete_orphaned_document_files()
-            _, document_files_after = storage.listdir(
+            _, document_files_after = storage_manager.listdir(
                 os.path.join("documents", "document"))
             self.assertTrue(len(deleted) > 0)
             self.assertEqual(set(deleted), set(document_files_before) - set(document_files_after))
@@ -529,7 +529,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
 
             fn = os.path.join(
                 os.path.join("documents", "document"), os.path.basename(input_path))
-            self.assertFalse(storage.exists(fn))
+            self.assertFalse(storage_manager.exists(fn))
 
             files = [thumb for thumb in get_thumbs() if uuid in thumb]
             self.assertEqual(len(files), 0)

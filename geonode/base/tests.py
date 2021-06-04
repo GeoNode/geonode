@@ -52,7 +52,7 @@ from geonode.base.models import (
 from django.conf import settings
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
-from django.core.files.storage import default_storage as storage
+from geonode.storage.manager import storage_manager
 from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
 
@@ -129,7 +129,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         self.assertFalse(thumb_utils.thumb_exists(filename))
         f = BytesIO(test_image.tobytes())
         f.name = filename
-        storage.save(upload_path, File(f))
+        storage_manager.save(upload_path, File(f))
         self.assertTrue(thumb_utils.thumb_exists(filename))
         self.assertEqual(thumb_utils.thumb_size(upload_path), 10000)
 

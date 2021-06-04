@@ -53,7 +53,7 @@ def original_link_available(context, resourceid, url):
     layer_files = []
     if isinstance(instance, ResourceBase):
         try:
-            for ext, file in instance.files.items():
+            for file in instance.files:
                 layer_files.append(file)
                 if not storage_manager.exists(file):
                     return False
