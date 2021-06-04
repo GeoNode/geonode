@@ -279,7 +279,7 @@ def download(request, resourceid, sender=Layer):
         try:
             files = instance.resourcebase_ptr.files
             # Copy all Layer related files into a temporary folder
-            for ext, file_path in files.items():
+            for file_path in files:
                 if storage_manager.exists(file_path):
                     layer_files.append(file_path)
                     filename = os.path.basename(file_path)

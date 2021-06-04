@@ -255,7 +255,7 @@ class Upload(models.Model):
 
         # we delete directly the folder with the files of the resource
         if self.resource:
-            for _, _file in self.resource.files.items():
+            for _file in self.resource.files:
                 try:
                     dirname = os.path.dirname(_file)
                     if storage_manager.exists(dirname):

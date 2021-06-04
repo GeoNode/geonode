@@ -46,7 +46,7 @@ from collections import defaultdict
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from requests.packages.urllib3.util.retry import Retry
-
+from geonode.storage.manager import storage_manager
 from django.conf import settings
 from django.core.cache import cache
 from django.db.models import signals
@@ -2083,8 +2083,8 @@ def is_monochromatic_image(image_url, image_data=None):
     def get_thumb_handler(url):
         _index = url.find(settings.STATIC_URL)
         _thumb_path = urlparse(url[_index + len(settings.STATIC_URL):]).path
-        if storage.exists(_thumb_path):
-            return storage.open(_thumb_path)
+        if storage_manager.exists(_thumb_path):
+            return storage_manager.open(_thumb_path)
         return None
 
     def verify_image(stream):

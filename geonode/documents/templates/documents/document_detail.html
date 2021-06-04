@@ -42,7 +42,7 @@
                 </audio>
             </a>
         </div>
-      {% elif resource.extension|lower in imgtypes and resource.docfiles %}
+      {% elif resource.extension|lower in imgtypes and resource.files %}
         <div id="embedded_map" width="500px">
             <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
                 <img src="{% url "document_download" resource.id %}" width='100%' class="img-responsive" />

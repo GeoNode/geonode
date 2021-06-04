@@ -41,8 +41,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.storage import default_storage as storage
-
+from geonode.storage.manager import storage_manager
 # Geonode functionality
 from geonode.base.models import Region
 from geonode.utils import check_ogc_backend
@@ -392,13 +391,13 @@ def get_bbox(filename):
 def delete_orphaned_layers():
     """Delete orphaned layer files."""
     deleted = []
-    _, files = storage.listdir("layers")
+    _, files = storage_manager.listdir("layers")
 
     for filename in files:
         if Layer.objects.filter(file__icontains=filename).count() == 0:
             logger.debug(f"Deleting orphaned layer file {filename}")
             try:
-                storage.delete(os.path.join("layers", filename))
+                storage_manager.delete(os.path.join("layers", filename))
                 deleted.append(filename)
             except NotImplementedError as e:
                 logger.error(
