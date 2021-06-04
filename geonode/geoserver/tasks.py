@@ -219,6 +219,19 @@ def geoserver_post_save_layers(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
+            if isinstance(instance, ResourceBase):
+                if hasattr(instance, 'layer'):
+                    instance = instance.layer
+                else:
+                    return instance
+
+            # Save layer attributes
+            logger.debug(f"... Refresh GeoServer attributes list for Layer {instance.title}")
+            try:
+                set_attributes_from_geoserver(instance)
+            except Exception as e:
+                logger.exception(e)
+
             # Don't run this signal handler if it is a tile layer or a remote store (Service)
             #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
             if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
@@ -226,12 +239,6 @@ def geoserver_post_save_layers(
                 # geoserver_post_save_complete.send(
                 #     sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
                 return instance
-
-            if isinstance(instance, ResourceBase):
-                if hasattr(instance, 'layer'):
-                    instance = instance.layer
-                else:
-                    return instance
 
             gs_resource = None
             values = None
@@ -404,13 +411,6 @@ def geoserver_post_save_layers(
                 logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
                 try:
                     set_resource_default_links(instance, instance, prune=True)
-                except Exception as e:
-                    logger.exception(e)
-
-                # Save layer attributes
-                logger.debug(f"... Refresh GeoServer attributes list for Layer {instance.title}")
-                try:
-                    set_attributes_from_geoserver(instance)
                 except Exception as e:
                     logger.exception(e)
 

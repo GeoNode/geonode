@@ -20,6 +20,7 @@
 import logging
 import importlib
 
+from uuid import uuid1
 from abc import ABCMeta, abstractmethod
 
 from django.db import transaction
@@ -126,6 +127,7 @@ class ResourceManager(ResourceManagerInterface):
     def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
         if resource_type.objects.filter(uuid=uuid).exists():
             raise ValidationError(f'Object of type {resource_type} with uuid [{uuid}] already exists.')
+        uuid = uuid or str(uuid1())
         _resource, _created = resource_type.objects.get_or_create(
             uuid=uuid,
             defaults=defaults)

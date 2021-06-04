@@ -16,23 +16,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 """Utilities for enabling ESRI:ArcGIS:MapServer and ESRI:ArcGIS:ImageServer remote services in geonode."""
-
 import os
-import re
 import logging
 import traceback
 
 from uuid import uuid4
 
 from django.conf import settings
-from django.template.defaultfilters import slugify, safe
 from django.utils.translation import ugettext as _
+from django.template.defaultfilters import slugify, safe
 
 from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.base.bbox_utils import BBOXHelper
+from geonode.resource.manager import resource_manager
 
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
 
@@ -264,33 +262,19 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         # ``pre_save`` signal for the Layer model. This handler does a check
         # for common fields (such as abstract and title) and adds
         # sensible default values
-        keywords = resource_fields.pop("keywords") or []
-        geonode_layer = Layer(
-            owner=geonode_service.owner,
-            remote_service=geonode_service,
-            uuid=str(uuid4()),
-            **resource_fields
+        keywords = resource_fields.pop("keywords", [])
+        geonode_layer = resource_manager.create(
+            None,
+            resource_type=Layer,
+            defaults=dict(
+                owner=geonode_service.owner,
+                remote_service=geonode_service,
+                **resource_fields
+            )
         )
-        srid = geonode_layer.srid
-        bbox_polygon = geonode_layer.bbox_polygon
-        geonode_layer.full_clean()
-        geonode_layer.save(notify=True)
-        geonode_layer.keywords.add(*keywords)
-        geonode_layer.set_default_permissions()
-        if bbox_polygon and srid:
-            try:
-                # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
-                Layer.objects.filter(id=geonode_layer.id).update(
-                    bbox_polygon=bbox_polygon, srid='EPSG:4326')
-                match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-                bbox_polygon.srid = int(match.group('srid')) if match else 4326
-                Layer.objects.filter(id=geonode_layer.id).update(
-                    ll_bbox_polygon=bbox_polygon, srid=srid)
-            except Exception as e:
-                logger.error(e)
+        resource_manager.update(geonode_layer.uuid, instance=geonode_layer, keywords=keywords, notify=True)
+        resource_manager.set_permissions(geonode_layer.uuid, instance=geonode_layer)
 
-            # Refresh from DB
-            geonode_layer.refresh_from_db()
         return geonode_layer
 
     def _create_layer_thumbnail(self, geonode_layer):

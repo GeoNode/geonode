@@ -16,9 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 """Utilities for enabling OGC WMS remote services in geonode."""
-import re
 import json
 import logging
 import requests
@@ -46,11 +44,11 @@ from geonode.base.models import (
     ResourceBase,
     TopicCategory)
 from geonode.layers.models import Layer
-from geonode.layers.utils import resolve_regions
-from geonode.thumbs.thumbnails import create_thumbnail
-from geonode.geoserver.helpers import set_attributes_from_geoserver
-from geonode.utils import http_client, get_legend_url
 from geonode.base.bbox_utils import BBOXHelper
+from geonode.layers.utils import resolve_regions
+from geonode.utils import http_client, get_legend_url
+from geonode.resource.manager import resource_manager
+from geonode.thumbs.thumbnails import create_thumbnail
 
 from owslib.map import wms111, wms130
 from owslib.util import clean_ows_url
@@ -258,13 +256,10 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
             resource_fields["is_approved"] = False
             resource_fields["is_published"] = False
-        try:
-            geonode_layer = self._create_layer(geonode_service, **resource_fields)
-            self._create_layer_service_link(geonode_layer)
-            self._create_layer_legend_link(geonode_layer)
-            self._create_layer_thumbnail(geonode_layer)
-        except Exception as e:
-            logger.error(e)
+        geonode_layer = self._create_layer(geonode_service, **resource_fields)
+        self._create_layer_service_link(geonode_layer)
+        self._create_layer_legend_link(geonode_layer)
+        self._create_layer_thumbnail(geonode_layer)
 
     def has_resources(self):
         return True if len(self.parsed_service.contents) > 0 else False
@@ -275,37 +270,19 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         # ``pre_save`` signal for the Layer model. This handler does a check
         # for common fields (such as abstract and title) and adds
         # sensible default values
-        keywords = resource_fields.pop("keywords") or []
-        geonode_layer = Layer(
-            owner=geonode_service.owner,
-            remote_service=geonode_service,
-            uuid=str(uuid4()),
-            **resource_fields
+        keywords = resource_fields.pop("keywords", [])
+        geonode_layer = resource_manager.create(
+            None,
+            resource_type=Layer,
+            defaults=dict(
+                owner=geonode_service.owner,
+                remote_service=geonode_service,
+                **resource_fields
+            )
         )
-        srid = geonode_layer.srid
-        bbox_polygon = geonode_layer.bbox_polygon
-        geonode_layer.full_clean()
-        geonode_layer.save(notify=True)
-        geonode_layer.keywords.add(*keywords)
-        geonode_layer.set_default_permissions()
-        try:
-            set_attributes_from_geoserver(geonode_layer)
-        except Exception as e:
-            logger.error(e)
-        if bbox_polygon and srid:
-            try:
-                # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
-                Layer.objects.filter(id=geonode_layer.id).update(
-                    bbox_polygon=bbox_polygon, srid='EPSG:4326')
-                match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-                bbox_polygon.srid = int(match.group('srid')) if match else 4326
-                Layer.objects.filter(id=geonode_layer.id).update(
-                    ll_bbox_polygon=bbox_polygon, srid=srid)
-            except Exception as e:
-                logger.error(e)
+        resource_manager.update(geonode_layer.uuid, instance=geonode_layer, keywords=keywords, notify=True)
+        resource_manager.set_permissions(geonode_layer.uuid, instance=geonode_layer)
 
-            # Refresh from DB
-            geonode_layer.refresh_from_db()
         return geonode_layer
 
     def _create_layer_thumbnail(self, geonode_layer):
