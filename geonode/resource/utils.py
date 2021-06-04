@@ -115,8 +115,8 @@ class KeywordHandler:
         return [t.alt_label for t in tkeyword]
 
 
-def update_layer_with_xml_info(instance, xml_file, regions, keywords, vals):
-    # Updating layer with information coming from the XML file
+def update_resource_with_xml_info(instance, xml_file, regions, keywords, vals):
+    # Updating resource with information coming from the XML file
     if xml_file:
         instance.metadata_xml = open(xml_file).read()
         regions_resolved, regions_unresolved = resolve_regions(regions)

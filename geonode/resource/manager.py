@@ -30,7 +30,7 @@ from . import settings as rm_settings
 from .utils import (
     metadata_storers,
     resourcebase_post_save,
-    update_layer_with_xml_info)
+    update_resource_with_xml_info)
 
 from ..base import enumerations
 from ..base.models import ResourceBase
@@ -164,7 +164,7 @@ class ResourceManager(ResourceManagerInterface):
                     else:
                         uuid = _uuid
                 logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
-                _resource = update_layer_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
+                _resource = update_resource_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
                 _resource = self._resource_manager.update(uuid, instance=_resource, vals=vals, regions=regions, keywords=keywords, custom=custom, notify=notify)
                 _resource = metadata_storers(_resource.get_real_instance(), custom)
             except Exception as e:
