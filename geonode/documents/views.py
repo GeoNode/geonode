@@ -60,7 +60,7 @@ from geonode.monitoring.models import EventType
 from geonode.security.utils import get_visible_resources
 from geonode.storage.manager import storage_manager
 import tempfile
-
+import shutil
 from dal import autocomplete
 
 logger = logging.getLogger("geonode.documents.views")
@@ -227,13 +227,14 @@ class DocumentUploadView(CreateView):
         doc_form = form.cleaned_data
         self.object = Document()
         
-        file = doc_form.pop('files', None)
+        file = doc_form.pop('doc_file', None)
         if file:
             tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
             dirname = os.path.basename(tempdir)
             filepath = storage_manager.save(f"{dirname}/{file.name}", file)
             self.object.title = file.name
             self.object.files = [storage_manager.path(filepath)]
+            shutil.rmtree(tempdir)
 
         self.object.owner = self.request.user
         self.object.doc_url = doc_form.pop('doc_url', None)
