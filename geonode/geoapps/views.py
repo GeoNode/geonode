@@ -19,37 +19,39 @@
 #########################################################################
 import json
 import logging
-import traceback
 import warnings
+import traceback
 from itertools import chain
 
-from django.conf import settings
 from django.db.models import F
 from django.urls import reverse
+from django.conf import settings
 from django.shortcuts import render
 from django.forms.utils import ErrorList
 from django.utils.translation import ugettext as _
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
+from geonode.people.forms import ProfileForm
+from geonode.monitoring import register_event
 from geonode.groups.models import GroupProfile
+from geonode.monitoring.models import EventType
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
 from geonode.geoapps.models import GeoApp, GeoAppData
+from geonode.resource.manager import resource_manager
 from geonode.decorators import check_keyword_write_perms
-from geonode.monitoring import register_event
-from geonode.monitoring.models import EventType
 
-from geonode.people.forms import ProfileForm
-from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
-
+from geonode.base.forms import (
+    CategoryForm,
+    TKeywordForm,
+    ThesaurusAvailableForm)
 from geonode.base.models import (
     Thesaurus,
     TopicCategory
 )
-
 from geonode.utils import (
     resolve_object,
     build_social_links
@@ -219,6 +221,13 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
         except GroupProfile.DoesNotExist:
             group = None
 
+    resource_manager.update(
+        geoapp_obj.uuid,
+        instance=geoapp_obj,
+        notify=True)
+    resource_manager.set_permissions(geoapp_obj.uuid, instance=geoapp_obj, permissions=permissions_json)
+    resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
+
     access_token = None
     if request and request.user:
         access_token = get_or_create_token(request.user)
@@ -268,7 +277,8 @@ def geoapp_remove(request, geoappid, template='apps/app_remove.html'):
             "resource": geoapp_obj
         })
     elif request.method == 'POST':
-        geoapp_obj.delete()
+        resource_manager.delete(geoapp_obj.uuid, instance=geoapp_obj)
+
         register_event(request, EventType.EVENT_REMOVE, geoapp_obj)
         return HttpResponseRedirect(reverse("apps_browse"))
     else:
@@ -434,15 +444,18 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
                 new_author = author_form.save()
 
         geoapp_obj = geoapp_form.instance
-        if new_poc is not None and new_author is not None:
-            geoapp_obj.poc = new_poc
-            geoapp_obj.metadata_author = new_author
-        geoapp_obj.keywords.clear()
-        geoapp_obj.keywords.add(*new_keywords)
-        geoapp_obj.regions.clear()
-        geoapp_obj.regions.add(*new_regions)
-        geoapp_obj.category = new_category
-        geoapp_obj.save(notify=True)
+        resource_manager.update(
+            geoapp_obj.uuid,
+            instance=geoapp_obj,
+            keywords=new_keywords,
+            regions=new_regions,
+            vals=dict(
+                poc=new_poc or geoapp_obj.poc,
+                metadata_author=new_author or geoapp_obj.metadata_author,
+                category=new_category
+            ),
+            notify=True)
+        resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
         if not ajax:
