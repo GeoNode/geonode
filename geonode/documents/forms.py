@@ -130,6 +130,14 @@ class DocumentDescriptionForm(forms.Form):
 
 class DocumentReplaceForm(forms.ModelForm):
 
+    doc_file = forms.FileField(
+        label=_("File"),
+        required=False)
+
+    files = forms.CharField(
+        label=_("File"),
+        required=False)
+
     """
     The form used to replace a document.
     """
@@ -137,6 +145,7 @@ class DocumentReplaceForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = ['doc_url']
+        exclude = ['files']
 
     def clean(self):
         """
@@ -155,7 +164,7 @@ class DocumentReplaceForm(forms.ModelForm):
 
         return cleaned_data
 
-    def clean_doc_file(self):
+    def clean_files(self):
         """
         Ensures the doc_file is valid.
         """

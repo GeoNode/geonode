@@ -17,7 +17,7 @@
         <form method="post" enctype="multipart/form-data" action="{% url "document_replace" document.id %}">
           <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
           {{ form.errors }}
-          {% if document.doc_file %}
+          {% if document.files %}
             {{ form.doc_file }}
           {% elif document.doc_url %}
             {{ form.doc_url }}
