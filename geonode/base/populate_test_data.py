@@ -35,7 +35,7 @@ from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
-
+from django.conf import settings
 from geonode import geoserver  # noqa
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
@@ -54,6 +54,7 @@ imgfile = BytesIO(
     b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
 )
 f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+dfile = [f"{settings.MEDIA_ROOT}/img.gif"]
 
 
 def all_public():
@@ -228,8 +229,7 @@ def create_models(type=None, integration=False):
                         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                         srid='EPSG:4326',
-                        category=category,
-                        doc_file=f,
+                        files=dfile,
                         metadata_only=title == 'doc metadata true'
                     )
                     m.save()
@@ -407,7 +407,7 @@ def create_single_doc(name):
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
-        doc_file=f,
+        files=dfile,
         resource_type="document"
     )
     m.save()

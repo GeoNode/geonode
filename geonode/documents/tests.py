@@ -24,7 +24,7 @@ when you run "manage.py test".
 
 """
 from geonode.tests.base import GeoNodeBaseTestSupport
-
+from mock import patch
 import os
 import io
 import json
@@ -94,33 +94,30 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         self.assertTrue('tiff' in ARCHIVETYPES)
         self.assertTrue('pbm' in ARCHIVETYPES)
 
-    def test_create_document_with_no_rel(self):
+    @patch("geonode.documents.tasks.create_document_thumbnail")
+    def test_create_document_with_no_rel(self, thumb):
         """Tests the creation of a document with no relations"""
-
-        f = SimpleUploadedFile(
-            'test_img_file.gif',
-            self.imgfile.read(),
-            'image/gif')
+        thumb.return_value = True
+        f = [f"{settings.MEDIA_ROOT}/img.gif"]
 
         superuser = get_user_model().objects.get(pk=2)
         c = Document.objects.create(
-            doc_file=f,
+            files=f,
             owner=superuser,
             title='theimg')
         c.set_default_permissions()
         self.assertEqual(Document.objects.get(pk=c.id).title, 'theimg')
 
-    def test_create_document_with_rel(self):
+    @patch("geonode.documents.tasks.create_document_thumbnail")
+    def test_create_document_with_rel(self, thumb):
         """Tests the creation of a document with no a map related"""
-        f = SimpleUploadedFile(
-            'test_img_file.gif',
-            self.imgfile.read(),
-            'image/gif')
+        thumb.return_value = True
+        f = [f"{settings.MEDIA_ROOT}/img.gif"]
 
         superuser = get_user_model().objects.get(pk=2)
 
         c = Document.objects.create(
-            doc_file=f,
+            files=f,
             owner=superuser,
             title='theimg')
 
@@ -237,7 +234,9 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('document_detail', args=(str(d.id),)))
         self.assertEqual(response.status_code, 200)
 
-    def test_document_metadata_details(self):
+    @patch("geonode.documents.tasks.create_document_thumbnail")
+    def test_document_metadata_details(self, thumb):
+        thumb.return_value = True
         d = Document.objects.all().first()
         d.set_default_permissions()
 
@@ -315,19 +314,17 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             user = get_user_model().objects.get(username=username)
             self.assertTrue(user.has_perm(perm, document.get_self_resource()))
 
-    def test_ajax_document_permissions(self):
+    @patch("geonode.documents.tasks.create_document_thumbnail")
+    def test_ajax_document_permissions(self, create_thumb):
         """Verify that the ajax_document_permissions view is behaving as expected
         """
-
+        create_thumb.return_value = True
         # Setup some document names to work with
-        f = SimpleUploadedFile(
-            'test_img_file.gif',
-            self.imgfile.read(),
-            'image/gif')
+        f = [f"{settings.MEDIA_ROOT}/img.gif"]
 
         superuser = get_user_model().objects.get(pk=2)
         document = Document.objects.create(
-            doc_file=f,
+            files=f,
             owner=superuser,
             title='theimg')
         document.set_default_permissions()
@@ -471,19 +468,18 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
     def test_document_upload_redirect(self):
         with self.settings(ADMIN_MODERATE_UPLOADS=False):
             self.client.login(username=self.user, password=self.passwd)
-            input_path = self._get_input_path()
             document_upload_url = str(reverse('document_upload'))
-            with open(input_path, 'rb') as f:
-                data = {'title': 'document title',
-                        'doc_file': f,
-                        'resource': '',
-                        'extension': 'txt',
-                        'permissions': '{}',
-                        }
-                resp = self.client.post(document_upload_url, data=data)
-                if resp.status_code == 200:
-                    content = resp.content.decode('utf-8')
-                    self.asserTrue("document title" in content)
+            f = {".gif": f"{settings.MEDIA_ROOT}/img.gif"}
+            data = {'title': 'document title',
+                    'doc_file': f,
+                    'resource': '',
+                    'extension': 'txt',
+                    'permissions': '{}',
+                    }
+            resp = self.client.post(document_upload_url, data=data)
+            if resp.status_code == 200:
+                content = resp.content.decode('utf-8')
+                self.assertTrue("document title" in content)
 
     def test_moderated_upload(self):
         """
@@ -494,15 +490,15 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
 
             input_path = self._get_input_path()
 
-            with open(input_path, 'rb') as f:
-                data = {'title': 'document title',
-                        'doc_file': f,
-                        'resource': '',
-                        'extension': 'txt',
-                        'permissions': '{}',
-                        }
-                resp = self.client.post(self.document_upload_url, data=data)
-                self.assertEqual(resp.status_code, 200)
+            f = {".gif": f"{settings.MEDIA_ROOT}/img.gif"}
+            data = {'title': 'document title',
+                    'files': f,
+                    'resource': '',
+                    'extension': 'txt',
+                    'permissions': '{}',
+                    }
+            resp = self.client.post(self.document_upload_url, data=data)
+            self.assertEqual(resp.status_code, 200)
             dname = 'document title'
             _d = Document.objects.get(title=dname)
 
@@ -664,16 +660,11 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
     def test_create_document_with_links(self):
         """Tests the creation of document links."""
-        f = SimpleUploadedFile(
-            'test_img_file.gif',
-            self.test_file.read(),
-            'image/gif'
-        )
-
+        f = [f"{settings.MEDIA_ROOT}/img.gif"]
         superuser = get_user_model().objects.get(pk=2)
 
         d = Document.objects.create(
-            doc_file=f,
+            files=f,
             owner=superuser,
             title='theimg'
         )
@@ -741,14 +732,8 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
         self.not_admin.set_password('very-secret')
         self.not_admin.save()
-        self.imgfile = io.BytesIO(
-            b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
-            b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
-        f = SimpleUploadedFile(
-            'test_img_file.gif',
-            self.imgfile.read(),
-            'image/gif')
-        self.test_doc = Document.objects.create(doc_file=f, owner=self.not_admin, title='test', is_approved=True)
+        self.files = [f"{settings.MEDIA_ROOT}/img.gif"]
+        self.test_doc = Document.objects.create(files=self.files, owner=self.not_admin, title='test', is_approved=True)
         self.perm_spec = {"users": {"AnonymousUser": []}}
         self.dock_link_url = reverse('document_link', args=(self.test_doc.pk,))
 

@@ -33,8 +33,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
-from uuid_upload_path import upload_to
-
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Link
@@ -50,13 +48,6 @@ class Document(ResourceBase):
     """
     A document is any kind of information that can be attached to a map such as pdf, images, videos, xls...
     """
-
-    doc_file = models.FileField(
-        upload_to=upload_to,
-        null=True,
-        blank=True,
-        max_length=255,
-        verbose_name=_('File'))
 
     extension = models.CharField(max_length=128, blank=True, null=True)
 
@@ -105,7 +96,7 @@ class Document(ResourceBase):
     def href(self):
         if self.doc_url:
             return self.doc_url
-        elif self.doc_file:
+        elif self.files:
             return urljoin(
                 settings.SITEURL,
                 reverse('document_download', args=(self.id,))
@@ -113,7 +104,7 @@ class Document(ResourceBase):
 
     @property
     def is_file(self):
-        return self.doc_file and self.extension
+        return self.files and self.extension
 
     @property
     def mime_type(self):
@@ -187,8 +178,9 @@ def get_related_resources(document):
 
 
 def pre_save_document(instance, sender, **kwargs):
-    if instance.doc_file:
-        base_name, extension = os.path.splitext(instance.doc_file.name)
+    if instance.files:
+        name = os.path.basename(instance.files[0])
+        base_name, extension = os.path.splitext(name)
         instance.extension = extension[1:]
         doc_type_map = DOCUMENT_TYPE_MAP
         doc_type_map.update(getattr(settings, 'DOCUMENT_TYPE_MAP', {}))
@@ -211,7 +203,8 @@ def pre_save_document(instance, sender, **kwargs):
         instance.abstract = 'No abstract provided'
 
     if instance.title == '' or instance.title is None:
-        instance.title = instance.doc_file.name
+        name = os.path.basename(instance.files[0])
+        instance.title = name
 
     resources = get_related_resources(instance)
 
@@ -233,7 +226,7 @@ def post_save_document(instance, *args, **kwargs):
     mime = mime_type_map.get(ext, 'text/plain')
     url = None
 
-    if instance.id and instance.doc_file:
+    if instance.id and instance.files:
         name = "Hosted Document"
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
         url = f"{site_url}{reverse('document_download', args=(instance.id,))}"

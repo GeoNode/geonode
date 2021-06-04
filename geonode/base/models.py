@@ -595,16 +595,15 @@ class ResourceBaseManager(PolymorphicManager):
     @staticmethod
     def upload_files(resource_id, files):
         try:
-            out = {}
+            out = []
             for f in files:
-                _, ext = os.path.splitext(f)
                 if os.path.isfile(f) and os.path.exists(f):
 
                     with open(f, 'rb') as ff:
                         folder = os.path.basename(os.path.dirname(f))
                         filename = os.path.basename(f)
                         file_uploaded_path = storage_manager.save(f'{folder}/{filename}', ff)
-                        out[ext] = storage_manager.path(file_uploaded_path)
+                        out.append(storage_manager.path(file_uploaded_path))
 
             # making an update instead of save in order to avoid others
             # signal like post_save and commiunication with geoserver
@@ -938,7 +937,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         default=False,
         help_text=_('If true, will be excluded from search'))
 
-    files = JSONField(null=False, default=dict)
+    files = JSONField(null=True, default=list, blank=True)
 
     __is_approved = False
     __is_published = False
@@ -1541,7 +1540,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_path = thumb_path(filename)
-
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):

@@ -40,7 +40,7 @@ class UploadFileField(serializers.RelatedField):
 
     def to_representation(self, obj):
         files = []
-        for _, file in obj.files.items():
+        for file in obj.files:
             name, _ = os.path.splitext(os.path.basename(file))
             files.append(
                 {

@@ -19,6 +19,7 @@
 #########################################################################
 import json
 import logging
+import os
 import warnings
 import traceback
 
@@ -58,7 +59,6 @@ from geonode.base.forms import (
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
-
 from .utils import get_download_response
 from .enumerations import (
     DOCUMENT_TYPE_MAP,
@@ -232,15 +232,28 @@ class DocumentUploadView(CreateView):
         """
         If the form is valid, save the associated model.
         """
-        self.object = form.save(commit=False)
-        self.object.owner = self.request.user
+        doc_form = form.cleaned_data
+        self.object = Document()
 
+        file = doc_form.pop('doc_file', None)
+        if file:
+            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+            dirname = os.path.basename(tempdir)
+            filepath = storage_manager.save(f"{dirname}/{file.name}", file)
+            self.object.title = file.name
+            self.object.files = [storage_manager.path(filepath)]
+            shutil.rmtree(tempdir)
+
+        self.object.owner = self.request.user
+        self.object.doc_url = doc_form.pop('doc_url', None)
+        self.object.title = doc_form.pop('title', None)
         if settings.ADMIN_MODERATE_UPLOADS:
             self.object.is_approved = False
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
+
         self.object.save()
-        form.save_many2many()
+
         self.object.set_permissions(form.cleaned_data['permissions'])
 
         abstract = None
