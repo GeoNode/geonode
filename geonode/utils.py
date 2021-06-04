@@ -59,7 +59,6 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.files.storage import default_storage as storage
 from django.db import models, connection, transaction
 from django.utils.translation import ugettext_lazy as _
 

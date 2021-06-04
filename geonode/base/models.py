@@ -22,7 +22,6 @@ import os
 import re
 import html
 import math
-import uuid
 import logging
 import traceback
 
@@ -65,9 +64,8 @@ from geonode.base import enumerations
 from geonode.singleton import SingletonModel
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
 from geonode.utils import (
-    is_monochromatic_image,
-    add_url_params,
-    bbox_to_wkt)
+    bbox_to_wkt,
+    is_monochromatic_image)
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources
 from geonode.security.models import PermissionLevelMixin
