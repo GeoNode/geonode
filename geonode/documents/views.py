@@ -17,51 +17,62 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
-import logging
 import os
-import traceback
-from itertools import chain
+import json
+import shutil
+import logging
+import tempfile
 import warnings
+import traceback
 
+from itertools import chain
+from dal import autocomplete
 from guardian.shortcuts import get_objects_for_user
 
+from django.db.models import F
+from django.urls import reverse
+from django.conf import settings
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.forms.utils import ErrorList
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from django.urls import reverse
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.views.generic.edit import UpdateView, CreateView
-from django.db.models import F
-from django.forms.utils import ErrorList
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
-from geonode.base.utils import ManageResourceOwnerPermissions
-from geonode.decorators import check_keyword_write_perms
-from geonode.documents.utils import get_download_response
 from geonode.utils import resolve_object
-from geonode.security.views import _perms_info_json
+from geonode.base.views import batch_modify
+from geonode.utils import build_social_links
 from geonode.people.forms import ProfileForm
-from geonode.base.auth import get_or_create_token
+from geonode.monitoring import register_event
 from geonode.base.bbox_utils import BBOXHelper
-from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
+from geonode.groups.models import GroupProfile
+from geonode.monitoring.models import EventType
+from geonode.base.auth import get_or_create_token
+from geonode.security.views import _perms_info_json
+from geonode.storage.manager import storage_manager
+from geonode.resource.manager import resource_manager
+from geonode.decorators import check_keyword_write_perms
+from geonode.security.utils import get_visible_resources
+from geonode.base.utils import ManageResourceOwnerPermissions
+from geonode.base.forms import (
+    CategoryForm,
+    TKeywordForm,
+    ThesaurusAvailableForm)
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
-from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
-from geonode.documents.models import Document, get_related_resources
-from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
-from geonode.utils import build_social_links
-from geonode.groups.models import GroupProfile
-from geonode.base.views import batch_modify
-from geonode.monitoring import register_event
-from geonode.monitoring.models import EventType
-from geonode.security.utils import get_visible_resources
-from geonode.storage.manager import storage_manager
-import tempfile
-import shutil
-from dal import autocomplete
+from .utils import get_download_response
+from .enumerations import (
+    DOCUMENT_TYPE_MAP,
+    DOCUMENT_MIMETYPE_MAP)
+from .models import (
+    Document,
+    get_related_resources)
+from .forms import (
+    DocumentForm,
+    DocumentCreateForm,
+    DocumentReplaceForm)
 
 logger = logging.getLogger("geonode.documents.views")
 
@@ -268,24 +279,20 @@ class DocumentUploadView(CreateView):
             except Exception:
                 logger.error("Exif extraction failed.")
 
-        if abstract:
-            self.object.abstract = abstract
+        resource_manager.update(
+            self.object.uuid,
+            instance=self.object,
+            keywords=keywords,
+            regions=regions,
+            vals=dict(
+                abstract=abstract,
+                date=date,
+                date_type="Creation",
+                bbox_polygon=BBOXHelper.from_xy(bbox).as_polygon() if bbox else None
+            ),
+            notify=True)
+        resource_manager.set_thumbnail(self.object.uuid, instance=self.object, overwrite=False)
 
-        if date:
-            self.object.date = date
-            self.object.date_type = "Creation"
-
-        if len(regions) > 0:
-            self.object.regions.add(*regions)
-
-        if len(keywords) > 0:
-            self.object.keywords.add(*keywords)
-
-        if bbox:
-            bbox = BBOXHelper.from_xy(bbox)
-            self.object.bbox_polygon = bbox.as_polygon()
-
-        self.object.save(notify=True)
         register_event(self.request, EventType.EVENT_UPLOAD, self.object)
 
         if self.request.GET.get('no__redirect', False):
@@ -469,15 +476,18 @@ def document_metadata(
                 new_author = author_form.save()
 
         document = document_form.instance
-        if new_poc is not None and new_author is not None:
-            document.poc = new_poc
-            document.metadata_author = new_author
-        document.keywords.clear()
-        document.keywords.add(*new_keywords)
-        document.regions.clear()
-        document.regions.add(*new_regions)
-        document.category = new_category
-        document.save(notify=True)
+        resource_manager.update(
+            document.uuid,
+            instance=document,
+            keywords=new_keywords,
+            regions=new_regions,
+            vals=dict(
+                poc=new_poc or document.poc,
+                metadata_author=new_author or document.metadata_author,
+                category=new_category
+            ),
+            notify=True)
+        resource_manager.set_thumbnail(document.uuid, instance=document, overwrite=False)
         document_form.save_many2many()
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, document)
@@ -620,7 +630,8 @@ def document_remove(request, docid, template='documents/document_remove.html'):
             "document": document
         })
     if request.method == 'POST':
-        document.delete()
+        resource_manager.delete(document.uuid, instance=document)
+
         register_event(request, EventType.EVENT_REMOVE, document)
         return HttpResponseRedirect(reverse("document_browse"))
     else:

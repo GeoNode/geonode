@@ -60,7 +60,7 @@ from geonode.layers.metadata import parse_metadata
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_layer_style
 from geonode.thumbs.thumbnails import create_thumbnail
-from geonode.resource.utils import update_layer_with_xml_info
+from geonode.resource.utils import update_resource_with_xml_info
 
 from geonode.base.auth import get_or_create_token
 from geonode.base.forms import (
@@ -260,7 +260,7 @@ def layer_upload_metadata(request):
                 open(base_file).read())
             if layer_uuid:
                 layer.uuid = layer_uuid
-            updated_layer = update_layer_with_xml_info(layer.first(), base_file, regions, keywords, vals)
+            updated_layer = update_resource_with_xml_info(layer.first(), base_file, regions, keywords, vals)
             updated_layer.save()
             out['status'] = ['finished']
             out['url'] = updated_layer.get_absolute_url()

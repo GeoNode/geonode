@@ -27,6 +27,7 @@ from django.templatetags.static import static
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
+from geonode.documents.models import Document
 from geonode.services.enumerations import CASCADED
 from geonode.resource.manager import ResourceManager, ResourceManagerInterface
 
@@ -97,8 +98,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return True
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
-        if instance:
-            # TODO: missing thumb for documents
+        if instance and not isinstance(instance.get_real_instance(), Document):
             if overwrite or instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
                 geoserver_create_thumbnail.apply_async(((instance.id, overwrite, check_bbox, )))
             return True
