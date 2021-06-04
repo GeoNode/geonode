@@ -17,11 +17,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.favorite.models import Favorite
 import logging
-
 from rest_framework.filters import SearchFilter, BaseFilterBackend
 
 from geonode.base.bbox_utils import filter_bbox
+from django.db.models import Subquery
+from distutils.util import strtobool
 
 logger = logging.getLogger(__name__)
 
@@ -40,4 +42,22 @@ class ExtentFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         if request.query_params.get('extent'):
             return filter_bbox(queryset, request.query_params.get('extent'))
+        return queryset
+
+
+class FavoriteFilter(BaseFilterBackend):
+    """
+    Filter that only allows users to see their own objects.
+    """
+
+    def filter_queryset(self, request, queryset, _):
+        if strtobool(request.query_params.get("favorite", 'False')):
+            ctype = list(set([r.resource_type for r in queryset]))
+            return queryset.filter(
+                pk__in=Subquery(
+                    Favorite.objects.values_list("object_id", flat=True)
+                    .filter(user=request.user)
+                    .filter(content_type__model__in=ctype)
+                )
+            )
         return queryset
