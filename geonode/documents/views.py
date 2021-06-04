@@ -17,9 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
-import logging
 import os
+import json
+import shutil
+import logging
+import tempfile
 import warnings
 import traceback
 
@@ -48,6 +50,7 @@ from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
+from geonode.storage.manager import storage_manager
 from geonode.resource.manager import resource_manager
 from geonode.decorators import check_keyword_write_perms
 from geonode.security.utils import get_visible_resources

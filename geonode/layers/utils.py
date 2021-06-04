@@ -91,15 +91,14 @@ def _clean_string(
 def resolve_regions(regions):
     regions_resolved = []
     regions_unresolved = []
-    if regions:
-        if len(regions) > 0:
-            for region in regions:
-                try:
-                    region_resolved = Region.objects.get(
-                        Q(name__iexact=region) | Q(code__iexact=region))
-                    regions_resolved.append(region_resolved)
-                except ObjectDoesNotExist:
-                    regions_unresolved.append(region)
+    if regions and len(regions) > 0:
+        for region in regions:
+            try:
+                region_resolved = Region.objects.get(
+                    Q(name__iexact=region) | Q(code__iexact=region))
+                regions_resolved.append(region_resolved)
+            except ObjectDoesNotExist:
+                regions_unresolved.append(region)
 
     return regions_resolved, regions_unresolved
 

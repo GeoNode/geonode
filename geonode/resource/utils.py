@@ -37,6 +37,7 @@ from ..base.models import (
     HierarchicalKeyword,
     SpatialRepresentationType)
 
+from ..layers.models import Layer
 from ..layers.utils import resolve_regions
 from ..layers.metadata import convert_keyword
 
@@ -77,6 +78,9 @@ class KeywordHandler:
             for dkey in self.keywords:
                 if isinstance(dkey, HierarchicalKeyword):
                     fkeyword += [dkey.name]
+                    continue
+                if isinstance(dkey, str):
+                    fkeyword += [dkey]
                     continue
                 if dkey['type'] == 'place':
                     continue
@@ -119,65 +123,73 @@ def update_resource_with_xml_info(instance, xml_file, regions, keywords, vals):
     # Updating resource with information coming from the XML file
     if xml_file:
         instance.metadata_xml = open(xml_file).read()
-        regions_resolved, regions_unresolved = resolve_regions(regions)
-        keywords.extend(convert_keyword(regions_unresolved))
+    regions_resolved, regions_unresolved = resolve_regions(regions)
+    keywords.extend(convert_keyword(regions_unresolved))
 
-        # Assign the regions (needs to be done after saving)
-        regions_resolved = list(set(regions_resolved))
-        if regions_resolved:
-            if len(regions_resolved) > 0:
-                if not instance.regions:
-                    instance.regions = regions_resolved
-                else:
-                    instance.regions.clear()
-                    instance.regions.add(*regions_resolved)
-
-        # Assign the keywords (needs to be done after saving)
-        instance = KeywordHandler(instance, keywords).set_keywords()
-
-        # set model properties
-        defaults = {}
-        for key, value in vals.items():
-            if key == 'spatial_representation_type':
-                value = SpatialRepresentationType(identifier=value)
-            elif key == 'topic_category':
-                value, created = TopicCategory.objects.get_or_create(
-                    identifier=value,
-                    defaults={'description': '', 'gn_description': value})
-                key = 'category'
-                defaults[key] = value
+    # Assign the regions (needs to be done after saving)
+    regions_resolved = list(set(regions_resolved))
+    if regions_resolved:
+        if len(regions_resolved) > 0:
+            if not instance.regions:
+                instance.regions = regions_resolved
             else:
-                defaults[key] = value
+                instance.regions.clear()
+                instance.regions.add(*regions_resolved)
 
-        # Save all the modified information in the instance without triggering signals.
-        try:
-            if hasattr(instance, 'title') and not defaults.get('title', instance.title):
-                defaults['title'] = instance.title or getattr(instance, 'name', "")
-            if hasattr(instance, 'abstract') and not defaults.get('abstract', instance.abstract):
-                defaults['abstract'] = instance.abstract or ''
+    # Assign the keywords (needs to be done after saving)
+    instance = KeywordHandler(instance, keywords).set_keywords()
 
-            to_update = {}
-            if hasattr(instance, 'charset'):
-                to_update['charset'] = defaults.pop('charset', instance.charset)
-            if hasattr(instance, 'storeType'):
-                to_update['storeType'] = defaults.pop('storeType', instance.storeType)
+    # set model properties
+    defaults = {}
+    for key, value in vals.items():
+        if key == 'spatial_representation_type':
+            value = SpatialRepresentationType(identifier=value)
+        elif key == 'topic_category':
+            value, created = TopicCategory.objects.get_or_create(
+                identifier=value,
+                defaults={'description': '', 'gn_description': value})
+            key = 'category'
+            defaults[key] = value
+        else:
+            defaults[key] = value
+
+    poc = defaults.pop('poc', None)
+    metadata_author = defaults.pop('metadata_author', None)
+
+    # Save all the modified information in the instance without triggering signals.
+    try:
+        if hasattr(instance, 'title') and not defaults.get('title', instance.title):
+            defaults['title'] = instance.title or getattr(instance, 'name', "")
+        if hasattr(instance, 'abstract') and not defaults.get('abstract', instance.abstract):
+            defaults['abstract'] = instance.abstract or ''
+
+        to_update = {}
+        if hasattr(instance, 'charset'):
+            to_update['charset'] = defaults.pop('charset', instance.charset)
+        if hasattr(instance, 'storeType'):
+            to_update['storeType'] = defaults.pop('storeType', instance.storeType)
+        if isinstance(instance, Layer):
             for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
                 if _key in defaults:
                     to_update[_key] = defaults.pop(_key)
                 else:
                     to_update[_key] = getattr(instance, _key)
-            to_update.update(defaults)
+        to_update.update(defaults)
 
-            with transaction.atomic():
-                ResourceBase.objects.filter(
-                    id=instance.resourcebase_ptr.id).update(
-                    **defaults)
-                instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
+        with transaction.atomic():
+            ResourceBase.objects.filter(
+                id=instance.resourcebase_ptr.id).update(
+                **defaults)
+            instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
 
-                # Refresh from DB
-                instance.refresh_from_db()
-        except IntegrityError:
-            raise
+            # Refresh from DB
+            instance.refresh_from_db()
+            if poc:
+                instance.poc = poc
+            if metadata_author:
+                instance.metadata_author = metadata_author
+    except IntegrityError:
+        raise
     return instance
 
 
