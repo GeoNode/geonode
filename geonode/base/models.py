@@ -1523,12 +1523,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _thumbnail_url = self.thumbnail_url or static(settings.MISSING_THUMBNAIL)
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
-        if local_thumbnails.count() > 0:
-            _thumbnail_url = add_url_params(
-                local_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
-        elif remote_thumbnails.count() > 0:
-            _thumbnail_url = add_url_params(
-                remote_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
+        if local_thumbnails.exists():
+            _thumbnail_url = local_thumbnails.first().url
+        elif remote_thumbnails.exists():
+            remote_thumbnails = remote_thumbnails.first().url
         return _thumbnail_url
 
     def has_thumbnail(self):
