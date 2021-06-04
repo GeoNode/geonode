@@ -135,7 +135,7 @@ def exif_extract_metadata_doc(doc):
     if not doc.files:
         return None
 
-    _, ext = os.path.splitext(os.path.basename(list(doc.files.values())[0]))
+    _, ext = os.path.splitext(os.path.basename(doc.files[0]))
 
     if ext[1:] in {"jpg", "jpeg"}:
         from PIL import Image, ExifTags

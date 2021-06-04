@@ -157,12 +157,12 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         fopen.return_value = SimpleUploadedFile('foo_file.shp', b'scc')
         layer = Layer.objects.all().first()
 
-        layer.files = {
-            ".dbf": "/tmpe1exb9e9/foo_file.dbf",
-            ".prj": "/tmpe1exb9e9/foo_file.prj",
-            ".shp": "/tmpe1exb9e9/foo_file.shp",
-            ".shx": "/tmpe1exb9e9/foo_file.shx"
-        }
+        layer.files = [
+            "/tmpe1exb9e9/foo_file.dbf",
+            "/tmpe1exb9e9/foo_file.prj",
+            "/tmpe1exb9e9/foo_file.shp",
+            "/tmpe1exb9e9/foo_file.shx"
+        ]
 
         layer.save()
 
@@ -240,12 +240,13 @@ class TestProxyTags(GeoNodeBaseTestSupport):
 
         assert upload
 
-        self.resource.files = {
-            ".dbf": "/tmpe1exb9e9/foo_file.dbf",
-            ".prj": "/tmpe1exb9e9/foo_file.prj",
-            ".shp": "/tmpe1exb9e9/foo_file.shp",
-            ".shx": "/tmpe1exb9e9/foo_file.shx"
-        }
+        self.resource.files = [
+            "/tmpe1exb9e9/foo_file.dbf",
+            "/tmpe1exb9e9/foo_file.prj",
+            "/tmpe1exb9e9/foo_file.shp",
+            "/tmpe1exb9e9/foo_file.shx"
+        ]
+
         self.resource.save()
 
         self.resource.refresh_from_db()

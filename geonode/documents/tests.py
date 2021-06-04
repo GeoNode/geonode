@@ -733,7 +733,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
         self.not_admin.set_password('very-secret')
         self.not_admin.save()
-        self.files = {".gif": f"{settings.MEDIA_ROOT}/img.gif"}
+        self.files = [f"{settings.MEDIA_ROOT}/img.gif"]
         self.test_doc = Document.objects.create(files=self.files, owner=self.not_admin, title='test', is_approved=True)
         self.perm_spec = {"users": {"AnonymousUser": []}}
         self.dock_link_url = reverse('document_link', args=(self.test_doc.pk,))

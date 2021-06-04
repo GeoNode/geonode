@@ -227,14 +227,13 @@ class DocumentUploadView(CreateView):
         doc_form = form.cleaned_data
         self.object = Document()
         
-        file = doc_form.pop('doc_file', None)
+        file = doc_form.pop('files', None)
         if file:
             tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
             dirname = os.path.basename(tempdir)
-            _, ext = os.path.splitext(file.name)
             filepath = storage_manager.save(f"{dirname}/{file.name}", file)
             self.object.title = file.name
-            self.object.files = {ext: storage_manager.path(filepath)}
+            self.object.files = [storage_manager.path(filepath)]
 
         self.object.owner = self.request.user
         self.object.doc_url = doc_form.pop('doc_url', None)
