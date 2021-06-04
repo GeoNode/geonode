@@ -26,7 +26,6 @@ import os
 import logging
 from geonode.storage.manager import storage_manager
 # Django functionality
-from django.core.files.storage import default_storage as storage
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template import loader
@@ -47,13 +46,13 @@ def delete_orphaned_document_files():
     Deletes orphaned files of deleted documents.
     """
     deleted = []
-    _, files = storage.listdir(os.path.join("documents", "document"))
+    _, files = storage_manager.listdir(os.path.join("documents", "document"))
 
     for filename in files:
         if Document.objects.filter(doc_file__contains=filename).count() == 0:
             logger.debug(f"Deleting orphaned document {filename}")
             try:
-                storage.delete(os.path.join(
+                storage_manager.delete(os.path.join(
                     os.path.join("documents", "document"), filename))
                 deleted.append(filename)
             except NotImplementedError as e:

@@ -43,7 +43,6 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.templatetags.static import static
-from django.core.files.storage import default_storage as storage
 from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -84,7 +83,7 @@ from geonode.base.thumb_utils import (
 
 from pyproj import transform, Proj
 
-from urllib.parse import urlparse, urlsplit, urljoin
+from urllib.parse import urlsplit, urljoin
 from imagekit.cachefiles.backends import Simple
 from geonode.storage.manager import storage_manager
 
@@ -1524,12 +1523,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _thumbnail_url = self.thumbnail_url or static(settings.MISSING_THUMBNAIL)
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
-        if local_thumbnails.count() > 0:
-            _thumbnail_url = add_url_params(
-                local_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
-        elif remote_thumbnails.count() > 0:
-            _thumbnail_url = add_url_params(
-                remote_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
+        if local_thumbnails.exists():
+            _thumbnail_url = local_thumbnails.first().url
+        elif remote_thumbnails.exists():
+            remote_thumbnails = remote_thumbnails.first().url
         return _thumbnail_url
 
     def has_thumbnail(self):
@@ -1552,31 +1549,30 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if upload_path and image:
                 name, ext = os.path.splitext(filename)
                 remove_thumbs(name)
-                actual_name = storage.save(upload_path, ContentFile(image))
-                url = storage.url(actual_name)
-                _url = urlparse(url)
-                _upload_path = thumb_path(os.path.basename(_url.path))
-                if upload_path != _upload_path:
-                    if storage.exists(_upload_path):
-                        storage.delete(_upload_path)
-                    try:
-                        os.rename(
-                            storage.path(upload_path),
-                            storage.path(_upload_path)
-                        )
-                    except Exception as e:
-                        logger.exception(e)
+                actual_name = storage_manager.save(upload_path, ContentFile(image))
+                url = storage_manager.url(actual_name)
 
                 try:
                     # Optimize the Thumbnail size and resolution
                     _default_thumb_size = getattr(
                         settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
-                    im = Image.open(open(storage.path(_upload_path), mode='rb'))
+                    im = Image.open(storage_manager.open(actual_name))
                     im.thumbnail(
                         (_default_thumb_size['width'], _default_thumb_size['height']),
                         resample=Image.ANTIALIAS)
                     cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
-                    cover.save(storage.path(_upload_path), format='PNG')
+
+                    # Saving the thumb into a temporary directory on file system
+                    tmp_location = f"{settings.MEDIA_ROOT}/{upload_path}"
+                    cover.save(tmp_location, format='PNG')
+
+                    with open(tmp_location, 'rb+') as img:
+                        # Saving the img via storage manager
+                        storage_manager.save(storage_manager.path(upload_path), img)
+
+                    # If we use a remote storage, the local img is deleted
+                    if tmp_location != storage_manager.path(upload_path):
+                        os.remove(tmp_location)
                 except Exception as e:
                     logger.exception(e)
 
@@ -1587,7 +1583,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                     url = urljoin(site_url, url)
 
-                if thumb_size(_upload_path) == 0:
+                if thumb_size(upload_path) == 0:
                     raise Exception("Generated thumbnail image is zero size")
 
                 # should only have one 'Thumbnail' link
@@ -1900,8 +1896,8 @@ class CuratedThumbnail(models.Model):
         try:
             if not Simple()._exists(self.img_thumbnail):
                 Simple().generate(self.img_thumbnail, force=True)
-            upload_path = storage.path(self.img_thumbnail.name)
-            actual_name = os.path.basename(storage.url(upload_path))
+            upload_path = storage_manager.path(self.img_thumbnail.name)
+            actual_name = os.path.basename(storage_manager.url(upload_path))
             _upload_path = os.path.join(os.path.dirname(upload_path), actual_name)
             if not os.path.exists(_upload_path):
                 os.rename(upload_path, _upload_path)

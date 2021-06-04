@@ -143,7 +143,7 @@ class ResourceManager(ResourceManagerInterface):
 
     @transaction.atomic
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
-               vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
+               vals: dict = {}, regions: dict = {}, keywords: list = [], custom: dict = {}, notify: bool = True) -> ResourceBase:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
@@ -164,7 +164,8 @@ class ResourceManager(ResourceManagerInterface):
                     else:
                         uuid = _uuid
                 logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
-                _resource = update_resource_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
+                if xml_file:
+                    _resource = update_resource_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
                 _resource = self._resource_manager.update(uuid, instance=_resource, vals=vals, regions=regions, keywords=keywords, custom=custom, notify=notify)
                 _resource = metadata_storers(_resource.get_real_instance(), custom)
             except Exception as e:
