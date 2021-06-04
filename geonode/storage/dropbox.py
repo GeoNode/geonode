@@ -49,5 +49,8 @@ class DropboxStorageManager(StorageManagerInterface):
     def save(self, name, content, max_length=None):
         return self._drx.save(name, content)
 
+    def url(self, name):
+        return self._drx.url(name)
+
     def size(self, name):
         return self._drx.size(name)

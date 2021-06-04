@@ -131,10 +131,12 @@ def exif_extract_metadata_doc(doc):
     if not doc:
         return None
 
-    if not doc.doc_file:
+    if not doc.files:
         return None
 
-    if os.path.splitext(doc.doc_file.name)[1].lower()[1:] in {"jpg", "jpeg"}:
+    _, ext = os.path.splitext(os.path.basename(doc.files[0]))
+
+    if ext[1:] in {"jpg", "jpeg"}:
         from PIL import Image, ExifTags
         img = Image.open(doc.doc_file.path)
         exif_data = {

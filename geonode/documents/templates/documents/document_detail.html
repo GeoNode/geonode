@@ -32,7 +32,7 @@
 <div class="row">
   <div class="col-md-8">
     {% if "download_resourcebase" in perms_list %}
-      {% if resource.extension|lower in audiotypes and resource.doc_file %}
+      {% if resource.extension|lower in audiotypes and resource.files %}
         {% get_mime_type mimetypemap resource.extension as mimetype %}
         <div id="embedded_map" width="500px">
             <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
@@ -42,13 +42,13 @@
                 </audio>
             </a>
         </div>
-      {% elif resource.extension|lower in imgtypes and resource.doc_file %}
+      {% elif resource.extension|lower in imgtypes and resource.docfiles %}
         <div id="embedded_map" width="500px">
             <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
                 <img src="{% url "document_download" resource.id %}" width='100%' class="img-responsive" />
             </a>
         </div>
-      {% elif resource.extension|lower in videotypes and resource.doc_file %}
+      {% elif resource.extension|lower in videotypes and resource.files %}
         {% get_mime_type mimetypemap resource.extension as mimetype %}
         <div id="embedded_map" width="500px">
             <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
@@ -58,7 +58,7 @@
                 </video>
             </a>
         </div>
-      {% elif resource.doc_file %}
+      {% elif resource.files %}
       <p><a href="{% url "document_link" resource.id %}" target="_blank">{% trans "Download the" %} {{ resource }} {% trans "document" %}</a></p>
       {% elif  resource.doc_url %}
       <p><a href="{{ resource.doc_url }}" target="_blank">{% trans "Download the" %} {{ resource }} {% trans "document" %}.</a> <small>({% trans 'External Resource' %})</small></p>
@@ -128,9 +128,9 @@
     <ul class="list-group">
       <li class="list-group-item">
       {% if "download_resourcebase" in perms_list %}
-        {% if resource.extension|lower in imgtypes and resource.doc_file %}
+        {% if resource.extension|lower in imgtypes and resource.files %}
           <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
-        {% elif resource.doc_file %}
+        {% elif resource.files %}
           <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
         {% elif  resource.doc_url %}
           <a style="text-decoration:none;" target="_blank" href="{{ resource.doc_url }}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>

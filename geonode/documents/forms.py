@@ -136,7 +136,7 @@ class DocumentReplaceForm(forms.ModelForm):
 
     class Meta:
         model = Document
-        fields = ['doc_file', 'doc_url']
+        fields = ['doc_url']
 
     def clean(self):
         """
@@ -183,6 +183,10 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
 
     links = forms.MultipleChoiceField(
         label=_("Link to"),
+        required=False)
+
+    doc_file = forms.FileField(
+        label=_("File"),
         required=False)
 
     class Meta:
