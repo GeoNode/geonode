@@ -220,13 +220,13 @@ class DocumentUploadView(CreateView):
             form.doc_url = None
             return self.render_to_response(self.get_context_data(form=form))
 
-    def form_valid(self, form):  
+    def form_valid(self, form):
         """
         If the form is valid, save the associated model.
         """
         doc_form = form.cleaned_data
         self.object = Document()
-        
+
         file = doc_form.pop('doc_file', None)
         if file:
             tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)

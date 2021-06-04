@@ -54,7 +54,7 @@ imgfile = BytesIO(
     b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
 )
 f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
-dfile = {".gif": f"{settings.MEDIA_ROOT}/img.gif"}
+dfile = [f"{settings.MEDIA_ROOT}/img.gif"]
 
 
 def all_public():

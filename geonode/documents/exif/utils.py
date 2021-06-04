@@ -20,7 +20,6 @@
 
 import os
 import logging
-from posixpath import basename
 
 from slugify import slugify
 from datetime import datetime

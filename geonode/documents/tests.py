@@ -98,7 +98,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
     def test_create_document_with_no_rel(self, thumb):
         """Tests the creation of a document with no relations"""
         thumb.return_value = True
-        f = {".gif": f"{settings.MEDIA_ROOT}/img.gif"}
+        f = [f"{settings.MEDIA_ROOT}/img.gif"]
 
         superuser = get_user_model().objects.get(pk=2)
         c = Document.objects.create(
@@ -112,7 +112,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
     def test_create_document_with_rel(self, thumb):
         """Tests the creation of a document with no a map related"""
         thumb.return_value = True
-        f = {".gif": f"{settings.MEDIA_ROOT}/img.gif"}
+        f = [f"{settings.MEDIA_ROOT}/img.gif"]
 
         superuser = get_user_model().objects.get(pk=2)
 
@@ -320,7 +320,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """
         create_thumb.return_value = True
         # Setup some document names to work with
-        f = {".gif": f"{settings.MEDIA_ROOT}/img.gif"}
+        f = [f"{settings.MEDIA_ROOT}/img.gif"]
 
         superuser = get_user_model().objects.get(pk=2)
         document = Document.objects.create(
@@ -468,7 +468,6 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
     def test_document_upload_redirect(self):
         with self.settings(ADMIN_MODERATE_UPLOADS=False):
             self.client.login(username=self.user, password=self.passwd)
-            input_path = self._get_input_path()
             document_upload_url = str(reverse('document_upload'))
             f = {".gif": f"{settings.MEDIA_ROOT}/img.gif"}
             data = {'title': 'document title',
@@ -661,7 +660,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
     def test_create_document_with_links(self):
         """Tests the creation of document links."""
-        f = {".gif": f"{settings.MEDIA_ROOT}/img.gif"}
+        f = [f"{settings.MEDIA_ROOT}/img.gif"]
         superuser = get_user_model().objects.get(pk=2)
 
         d = Document.objects.create(

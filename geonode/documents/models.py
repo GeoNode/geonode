@@ -33,8 +33,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
-from uuid_upload_path import upload_to
-
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Link
