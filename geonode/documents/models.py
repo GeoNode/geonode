@@ -36,9 +36,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Link
-from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.maps.signals import map_changed_signal
-from geonode.security.utils import remove_object_permissions
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 
 logger = logging.getLogger(__name__)
 
@@ -255,7 +254,8 @@ def update_documents_extent(sender, **kwargs):
 
 
 def pre_delete_document(instance, sender, **kwargs):
-    remove_object_permissions(instance.get_self_resource())
+    from geonode.resource.manager import resource_manager
+    resource_manager.remove_permissions(instance.uuid, instance=instance)
 
 
 signals.pre_save.connect(pre_save_document, sender=Document)

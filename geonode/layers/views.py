@@ -94,9 +94,11 @@ from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
-from geonode.people.forms import ProfileForm, PocForm
+from geonode.security.utils import get_visible_resources
 from geonode.documents.models import get_related_documents
-from geonode.security.utils import get_visible_resources, set_geowebcache_invalidate_cache
+from geonode.people.forms import (
+    PocForm,
+    ProfileForm)
 from geonode.utils import (
     resolve_object,
     default_map_config,
@@ -106,8 +108,8 @@ from geonode.utils import (
     build_social_links,
     GXPLayer,
     GXPMap)
-from geonode.geoserver.helpers import (
-    ogc_server_settings)
+from geonode.geoserver.helpers import ogc_server_settings
+from geonode.geoserver.security import set_geowebcache_invalidate_cache
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
 from geonode.upload.views import _select_relevant_files, _write_uploaded_files_to_disk

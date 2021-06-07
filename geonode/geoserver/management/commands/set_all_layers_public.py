@@ -17,13 +17,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from geonode.layers.models import Layer
-from geonode.security.utils import set_geofence_all
-import logging
 
+from geonode.geoserver.security.utils import set_geofence_all
 
 logger = logging.getLogger(__name__)
 

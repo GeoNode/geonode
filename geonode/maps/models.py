@@ -41,7 +41,6 @@ from geonode.utils import check_ogc_backend
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer, Style
 from geonode.maps.signals import map_changed_signal
-from geonode.security.utils import remove_object_permissions
 from geonode.utils import (
     GXPMapBase,
     GXPLayerBase,
@@ -614,7 +613,8 @@ def pre_delete_map(instance, sender, **kwrargs):
     OverallRating.objects.filter(
         content_type=ct,
         object_id=instance.id).delete()
-    remove_object_permissions(instance.get_self_resource())
+    from geonode.resource.manager import resource_manager
+    resource_manager.remove_permissions(instance.uuid, instance=instance)
 
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)

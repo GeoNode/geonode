@@ -22,14 +22,24 @@ import tempfile
 
 from django.conf import settings
 from django.db.models.query import QuerySet
+from django.contrib.auth.models import Group
 from django.templatetags.static import static
+from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.services.enumerations import CASCADED
-from geonode.resource.manager import ResourceManager, ResourceManagerInterface
+from geonode.groups.conf import settings as groups_settings
+from geonode.security.permissions import VIEW_PERMISSIONS
+from geonode.security.utils import (
+    get_user_groups,
+    get_obj_group_managers,
+    skip_registered_members_common_group)
+from geonode.resource.manager import (
+    ResourceManager,
+    ResourceManagerInterface)
 
 from .tasks import (
     geoserver_set_style,
@@ -42,7 +52,11 @@ from .helpers import (
     gs_catalog,
     set_time_info,
     ogc_server_settings)
-
+from .security import (
+    purge_geofence_layer_rules,
+    sync_geofence_with_guardian,
+    set_geofence_invalidate_cache
+)
 logger = logging.getLogger(__name__)
 
 
@@ -93,8 +107,123 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 geoserver_post_save_local(instance.get_real_instance())
         return instance
 
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}, created: bool = False) -> bool:
-        # TODO: move GeoFence set perms logic here
+    def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+        instance = instance or ResourceManager._get_instance(uuid)
+
+        try:
+            if instance and isinstance(instance.get_real_instance(), Layer):
+                if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+                    if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                        purge_geofence_layer_rules(instance.get_real_instance())
+                        set_geofence_invalidate_cache()
+                    else:
+                        instance.set_dirty_state()
+        except Exception as e:
+            logger.exception(e)
+            return False
+        return True
+
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner=None, permissions: dict = {}, created: bool = False) -> bool:
+        instance = instance or ResourceManager._get_instance(uuid)
+
+        try:
+            _owner = owner or instance.owner
+            if permissions is not None:
+                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                    if instance.polymorphic_ctype.name == 'layer':
+                        # Owner
+                        if not created:
+                            purge_geofence_layer_rules(instance.get_self_resource())
+                        perms = [
+                            "view_resourcebase",
+                            "change_layer_data",
+                            "change_layer_style",
+                            "change_resourcebase",
+                            "change_resourcebase_permissions",
+                            "download_resourcebase"]
+                        sync_geofence_with_guardian(instance.layer, perms, user=_owner)
+
+                        # All the other users
+                        if 'users' in permissions and len(permissions['users']) > 0:
+                            for user, perms in permissions['users'].items():
+                                _user = get_user_model().objects.get(username=user)
+                                if _user != _owner:
+                                    # Set the GeoFence Rules
+                                    group_perms = None
+                                    if 'groups' in permissions and len(permissions['groups']) > 0:
+                                        group_perms = permissions['groups']
+                                    if user == "AnonymousUser":
+                                        _user = None
+                                    sync_geofence_with_guardian(instance.layer, perms, user=_user, group_perms=group_perms)
+
+                        # All the other groups
+                        if 'groups' in permissions and len(permissions['groups']) > 0:
+                            for group, perms in permissions['groups'].items():
+                                _group = Group.objects.get(name=group)
+                                # Set the GeoFence Rules
+                                if _group and _group.name and _group.name == 'anonymous':
+                                    _group = None
+                                sync_geofence_with_guardian(instance.layer, perms, group=_group)
+            else:
+                anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
+                anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                    if instance.polymorphic_ctype.name == 'layer':
+                        purge_geofence_layer_rules(instance.get_self_resource())
+
+                        # Owner & Managers
+                        perms = [
+                            "view_resourcebase",
+                            "change_layer_data",
+                            "change_layer_style",
+                            "change_resourcebase",
+                            "change_resourcebase_permissions",
+                            "download_resourcebase"]
+                        sync_geofence_with_guardian(instance.layer, perms, user=_owner)
+                        for _group_manager in get_obj_group_managers(_owner):
+                            sync_geofence_with_guardian(instance.layer, perms, user=_group_manager)
+                        for user_group in get_user_groups(_owner):
+                            if not skip_registered_members_common_group(user_group):
+                                sync_geofence_with_guardian(instance.layer, perms, group=user_group)
+
+                        # Anonymous
+                        perms = ["view_resourcebase"]
+                        if anonymous_can_view:
+                            sync_geofence_with_guardian(instance.layer, perms, user=None, group=None)
+
+                        perms = ["download_resourcebase"]
+                        if anonymous_can_download:
+                            sync_geofence_with_guardian(instance.layer, perms, user=None, group=None)
+        except Exception as e:
+            logger.exception(e)
+            return False
+        return True
+
+    def set_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, approved: bool = False, published: bool = False) -> bool:
+        instance = instance or ResourceManager._get_instance(uuid)
+
+        try:
+            if approved:
+                # Set the GeoFence Rules (user = None)
+                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                    if instance.polymorphic_ctype.name == 'layer':
+                        if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
+                            _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                            _members_group_group = Group.objects.get(name=_members_group_name)
+                            sync_geofence_with_guardian(instance.layer, VIEW_PERMISSIONS, group=_members_group_group)
+                        else:
+                            # Set the GeoFence Rules (user = None)
+                            if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                                if instance.polymorphic_ctype.name == 'layer':
+                                    sync_geofence_with_guardian(instance.layer, VIEW_PERMISSIONS)
+            if published:
+                # Set the GeoFence Rules (user = None)
+                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                    if instance.polymorphic_ctype.name == 'layer':
+                        sync_geofence_with_guardian(instance.layer, VIEW_PERMISSIONS)
+        except Exception as e:
+            logger.exception(e)
+            return False
         return True
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
