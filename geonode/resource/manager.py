@@ -250,7 +250,7 @@ class ResourceManager(ResourceManagerInterface):
                 GroupObjectPermission.objects.filter(
                     content_type=ContentType.objects.get_for_model(_resource),
                     object_pk=instance.id).delete()
-                return self._resource_manager.remove_permissions(uuid, instance=_resource)
+                return self._concrete_resource_manager.remove_permissions(uuid, instance=_resource)
             except Exception as e:
                 logger.exception(e)
             finally:
@@ -381,7 +381,7 @@ class ResourceManager(ResourceManagerInterface):
                         assign_perm('change_layer_style', _owner, _resource)
 
                 _resource.handle_moderated_uploads()
-                return self._resource_manager.set_permissions(uuid, instance=_resource, owner=owner, permissions=permissions, created=created)
+                return self._concrete_resource_manager.set_permissions(uuid, instance=_resource, owner=owner, permissions=permissions, created=created)
             except Exception as e:
                 logger.exception(e)
             finally:
@@ -418,7 +418,7 @@ class ResourceManager(ResourceManagerInterface):
                         assign_perm(perm,
                                     anonymous_group, _resource.get_self_resource())
 
-                return self._resource_manager.set_workflow_permissions(uuid, instance=_resource, approved=approved, published=published)
+                return self._concrete_resource_manager.set_workflow_permissions(uuid, instance=_resource, approved=approved, published=published)
             except Exception as e:
                 logger.exception(e)
             finally:
