@@ -455,7 +455,7 @@ class ResourceManager(ResourceManagerInterface):
             if isinstance(files, list):
                 _resource.files = storage_manager.replace_files_list(_resource.files, files)
             else:    
-                _resource.files = storage_manager.replace_single_file(_resource.files, files)
+                _resource.files = storage_manager.replace_single_file(_resource.files[0], files)
             if isinstance(_resource, Layer):
                 upload_session, _ = self._concrete_resource_manager.revise_resource_value(_resource, files, user, action_type='replace')
                 upload_session.save()

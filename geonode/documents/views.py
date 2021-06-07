@@ -346,7 +346,7 @@ class DocumentUpdateView(UpdateView):
         """
         file = form.cleaned_data.get('doc_file')
 
-        self.object = resource_manager.replace_single_file(self.object, file, self.request.user)
+        self.object = resource_manager.replace(self.object, file, self.request.user)
 
         register_event(self.request, EventType.EVENT_CHANGE, self.object)
 
