@@ -50,7 +50,7 @@ from . import settings as rm_settings
 from .utils import (
     metadata_storers,
     resourcebase_post_save,
-    update_resource_with_xml_info)
+    update_resource)
 
 from ..base import enumerations
 from ..base.models import ResourceBase
@@ -108,7 +108,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 class ResourceManager(ResourceManagerInterface):
 
     def __init__(self):
-        self._resource_manager = self._get_concrete_manager()
+        self._gs_resource_manager = self._get_concrete_manager()
 
     def _get_concrete_manager(self):
         module_name, class_name = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
@@ -127,7 +127,7 @@ class ResourceManager(ResourceManagerInterface):
     def search(self, filter: dict, /, type: object = None) -> QuerySet:
         _class = type or ResourceBase
         _resources_queryset = _class.objects.filter(**filter)
-        _filter = self._resource_manager.search(filter, type=_class)
+        _filter = self._gs_resource_manager.search(filter, type=_class)
         if _filter:
             _resources_queryset.filter(_filter)
         return _resources_queryset
@@ -135,7 +135,7 @@ class ResourceManager(ResourceManagerInterface):
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
-            return self._resource_manager.exists(uuid, instance=_resource)
+            return self._gs_resource_manager.exists(uuid, instance=_resource)
         return False
 
     @transaction.atomic
@@ -143,7 +143,7 @@ class ResourceManager(ResourceManagerInterface):
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             try:
-                self._resource_manager.delete(uuid, instance=_resource)
+                self._gs_resource_manager.delete(uuid, instance=_resource)
                 _resource.get_real_instance().delete()
                 return 1
             except Exception as e:
@@ -162,7 +162,7 @@ class ResourceManager(ResourceManagerInterface):
             try:
                 _resource.set_processing_state(enumerations.STATE_RUNNING)
                 _resource.set_missing_info()
-                _resource = self._resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
+                _resource = self._gs_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 _resource.delete()
@@ -172,7 +172,7 @@ class ResourceManager(ResourceManagerInterface):
 
     @transaction.atomic
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
-               vals: dict = {}, regions: dict = {}, keywords: list = [], custom: dict = {}, notify: bool = True) -> ResourceBase:
+               vals: dict = {}, regions: list = [], keywords: list = [], custom: dict = {}, notify: bool = True) -> ResourceBase:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
@@ -187,15 +187,21 @@ class ResourceManager(ResourceManagerInterface):
                     except Exception as e:
                         logger.exception(e)
                         _md_file = open(xml_file)
+
+                    _resource.metadata_xml = _md_file.read()
+
                     _uuid, vals, regions, keywords, custom = parse_metadata(_md_file.read())
                     if uuid and uuid != _uuid:
                         raise ValidationError("The UUID identifier from the XML Metadata is different from the {_resource} one.")
                     else:
                         uuid = _uuid
+
                 logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
-                if xml_file:
-                    _resource = update_resource_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
-                _resource = self._resource_manager.update(uuid, instance=_resource, vals=vals, regions=regions, keywords=keywords, custom=custom, notify=notify)
+
+                _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
+
+                _resource = self._gs_resource_manager.update(uuid, instance=_resource, notify=notify)
+
                 _resource = metadata_storers(_resource.get_real_instance(), custom)
             except Exception as e:
                 logger.exception(e)
@@ -209,8 +215,8 @@ class ResourceManager(ResourceManagerInterface):
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
-            if hasattr(self._resource_manager, method):
-                _method = getattr(self._resource_manager, method)
+            if hasattr(self._gs_resource_manager, method):
+                _method = getattr(self._gs_resource_manager, method)
                 return _method(method, uuid, instance=_resource, **kwargs)
         return instance
 
@@ -425,7 +431,7 @@ class ResourceManager(ResourceManagerInterface):
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
-                self._resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
+                self._gs_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
                 return True
             except Exception as e:
                 logger.exception(e)
