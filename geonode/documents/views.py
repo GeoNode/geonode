@@ -62,6 +62,7 @@ from geonode.base.forms import (
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
+
 from .utils import get_download_response
 from .enumerations import (
     DOCUMENT_TYPE_MAP,
@@ -244,8 +245,10 @@ class DocumentUploadView(CreateView):
             dirname = os.path.basename(tempdir)
             filepath = storage_manager.save(f"{dirname}/{file.name}", file)
             self.object.title = file.name
-            self.object.files = [storage_manager.path(filepath)]
-            shutil.rmtree(tempdir)
+            storage_path = storage_manager.path(filepath)
+            self.object.files = [storage_path]
+            if tempdir != os.path.dirname(storage_path):
+                shutil.rmtree(tempdir)
 
         self.object.owner = self.request.user
         self.object.doc_url = doc_form.pop('doc_url', None)
@@ -255,9 +258,15 @@ class DocumentUploadView(CreateView):
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
 
-        self.object.save()
+        self.object = resource_manager.create(
+            None,
+            resource_type=Document,
+            defaults={"owner": self.request.user, "title": self.object.title, "files": self.object.files},
+        )
 
-        self.object.set_permissions(form.cleaned_data['permissions'])
+        resource_manager.set_permissions(
+            None, instance=self.object, permissions=form.cleaned_data["permissions"], created=True
+        )
 
         abstract = None
         date = None

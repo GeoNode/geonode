@@ -36,7 +36,9 @@ from .utils import (
 from ..base import enumerations
 from ..base.models import ResourceBase
 from ..layers.metadata import parse_metadata
+from ..layers.models import Layer
 
+from geonode.geoserver.helpers import gs_catalog
 from ..storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
@@ -81,7 +83,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 class ResourceManager(ResourceManagerInterface):
 
     def __init__(self):
-        self._resource_manager = self._get_concrete_manager()
+        self._gs_resource_manager = self._get_concrete_manager()
 
     def _get_concrete_manager(self):
         module_name, class_name = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
@@ -100,7 +102,7 @@ class ResourceManager(ResourceManagerInterface):
     def search(self, filter: dict, /, type: object = None) -> QuerySet:
         _class = type or ResourceBase
         _resources_queryset = _class.objects.filter(**filter)
-        _filter = self._resource_manager.search(filter, type=_class)
+        _filter = self._gs_resource_manager.search(filter, type=_class)
         if _filter:
             _resources_queryset.filter(_filter)
         return _resources_queryset
@@ -108,7 +110,7 @@ class ResourceManager(ResourceManagerInterface):
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
-            return self._resource_manager.exists(uuid, instance=_resource)
+            return self._gs_resource_manager.exists(uuid, instance=_resource)
         return False
 
     @transaction.atomic
@@ -116,7 +118,7 @@ class ResourceManager(ResourceManagerInterface):
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             try:
-                self._resource_manager.delete(uuid, instance=_resource)
+                self._gs_resource_manager.delete(uuid, instance=_resource)
                 _resource.get_real_instance().delete()
                 return 1
             except Exception as e:
@@ -135,7 +137,7 @@ class ResourceManager(ResourceManagerInterface):
             try:
                 _resource.set_processing_state(enumerations.STATE_RUNNING)
                 _resource.set_missing_info()
-                _resource = self._resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
+                _resource = self._gs_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 _resource.delete()
@@ -168,7 +170,7 @@ class ResourceManager(ResourceManagerInterface):
                 logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
                 if xml_file:
                     _resource = update_resource_with_xml_info(_resource.get_real_instance(), xml_file, regions, keywords, vals)
-                _resource = self._resource_manager.update(uuid, instance=_resource, vals=vals, regions=regions, keywords=keywords, custom=custom, notify=notify)
+                _resource = self._gs_resource_manager.update(uuid, instance=_resource, vals=vals, regions=regions, keywords=keywords, custom=custom, notify=notify)
                 _resource = metadata_storers(_resource.get_real_instance(), custom)
             except Exception as e:
                 logger.exception(e)
@@ -182,8 +184,8 @@ class ResourceManager(ResourceManagerInterface):
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
-            if hasattr(self._resource_manager, method):
-                _method = getattr(self._resource_manager, method)
+            if hasattr(self._gs_resource_manager, method):
+                _method = getattr(self._gs_resource_manager, method)
                 return _method(method, uuid, instance=_resource, **kwargs)
         return instance
 
@@ -197,7 +199,7 @@ class ResourceManager(ResourceManagerInterface):
                 logger.debug(f'Setting permissions {permissions} for {_resource.name}')
                 if permissions is not None:
                     _resource.get_real_instance().set_permissions(permissions, created=created)
-                    self._resource_manager.set_permissions(uuid, instance=_resource, permissions=permissions, created=created)
+                    self._gs_resource_manager.set_permissions(uuid, instance=_resource, permissions=permissions, created=created)
                 else:
                     _resource.get_real_instance().set_default_permissions()
                 _resource.handle_moderated_uploads()
@@ -214,13 +216,38 @@ class ResourceManager(ResourceManagerInterface):
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
-                self._resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
+                self._gs_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
                 return True
             except Exception as e:
                 logger.exception(e)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
+
+    def append(self, _resource: Layer, files: list, user):
+        if self._validate_resource(_resource, 'append'):
+            # If is a layer, we start the append flow
+            upload_session, _ = self._gs_resource_manager.revise_resource_value(_resource, files, user, action_type='append')
+            upload_session.save()
+            return True
+
+    def replace(self, _resource, files, user):
+        if self._validate_resource(_resource, 'replace'):
+            upload_session, _ = self._gs_resource_manager.revise_resource_value(_resource, files, user, action_type='replace')
+            upload_session.save()
+            return True
+
+    def _validate_resource(self, _resource, action_type) -> bool:
+        if not isinstance(_resource, Layer) and action_type == 'append':
+            raise Exception("Append data is available only for Layers")
+        _resource = gs_catalog.get_layer(_resource.name)
+        if _resource and _resource.type == 'VECTOR' and action_type == "append":
+            is_valid_layer = True
+        elif _resource and action_type == "replace":
+            is_valid_layer = True
+        else:
+            is_valid_layer = False
+        return is_valid_layer
 
 
 resource_manager = ResourceManager()

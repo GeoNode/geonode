@@ -84,7 +84,6 @@ from geonode.layers.models import (
     Attribute)
 from geonode.layers.utils import (
     get_files,
-    gs_handle_layer,
     is_sld_upload_only,
     is_xml_upload_only,
     validate_input_source)
@@ -1274,9 +1273,9 @@ def layer_append_replace_view(request, layername, template, action_type):
                     and os.getenv("DEFAULT_BACKEND_UPLOADER", None) == "geonode.importer"
                     and resource_is_valid
                 ):
-                    upload_session, _ = gs_handle_layer(layer, list(files.values()), request.user, action_type=action_type)
-                    upload_session.processed = True
-                    upload_session.save()
+
+                    getattr(resource_manager, action_type)(layer, list(files.values()), request.user)
+
                     out['success'] = True
                     out['url'] = reverse(
                         'layer_detail', args=[

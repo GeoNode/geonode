@@ -24,6 +24,7 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from django.templatetags.static import static
 
+from geonode.upload.models import Upload
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
@@ -40,6 +41,7 @@ from .tasks import (
 from .signals import geoserver_post_save_local
 from .helpers import (
     gs_catalog,
+    gs_uploader,
     set_time_info,
     ogc_server_settings)
 
@@ -135,3 +137,26 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 logger.exception(e)
                 return None
         return instance
+
+    def revise_resource_value(self, _resource, files, user, action_type):
+        upload_session, _ = Upload.objects.get_or_create(resource=_resource.resourcebase_ptr, user=user)
+        upload_session.resource = _resource.resourcebase_ptr
+        upload_session.processed = False
+        upload_session.save()
+        gs_layer = gs_catalog.get_layer(_resource.name)
+        #  opening Import session for the selected layer
+        if not gs_layer:
+            raise Exception("Layer is not available in GeoServer")
+        import_session = gs_uploader.start_import(
+            import_id=upload_session.id, name=_resource.name, target_store=gs_layer.resource.store.name
+        )
+
+        import_session.upload_task(files)
+        task = import_session.tasks[0]
+        #  Changing layer name, mode and target
+        task.layer.set_target_layer_name(_resource.name)
+        task.set_update_mode(action_type.upper())
+        task.set_target(store_name=gs_layer.resource.store.name, workspace=gs_layer.resource.workspace.name)
+        #  Starting import process
+        import_session.commit()
+        return upload_session, import_session

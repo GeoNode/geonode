@@ -21,9 +21,6 @@ from collections import namedtuple
 from geonode.geoserver.createlayer.utils import create_layer
 
 from django.test.client import RequestFactory
-from geonode.geoserver.upload import geoserver_upload
-
-import requests
 from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
 
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -58,7 +55,6 @@ from geonode import GeoNodeException, geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer, Style, Attribute
 from geonode.layers.utils import (
-    gs_handle_layer,
     is_sld_upload_only,
     is_xml_upload_only,
     layer_type,
@@ -81,7 +77,6 @@ from geonode.utils import DisableDjangoSignals
 from geonode.maps.tests_populate_maplayers import maplayers as ml
 from geonode.security.utils import remove_object_permissions
 from geonode.base.forms import BatchPermissionsForm
-from geonode.geoserver.helpers import gs_catalog
 logger = logging.getLogger(__name__)
 
 
@@ -1651,50 +1646,6 @@ def dummy_metadata_parser(exml, uuid, vals, regions, keywords, custom):
     keywords = "Passed through new parser"
     regions.append("Europe")
     return uuid, vals, regions, keywords, custom
-
-
-class TestGsHandleLayer(GeoNodeBaseTestSupport):
-
-    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
-
-    def setUp(self):
-        self.files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
-        self.files_as_dict = get_files(self.files)
-        self.cat = gs_catalog
-        self.user = get_user_model().objects.get(username="admin")
-        self.sut = create_single_layer("san_andres_y_providencia_water")
-        self.geoserver_out = geoserver_upload(
-            self.sut,
-            self.files,
-            self.user,
-            'san_andres_y_providencia_water',
-            overwrite=True
-        )
-        self.geoserver_url = settings.GEOSERVER_LOCATION
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_gs_handle_layer_in_append_should_add_expected_rows_in_the_catalog(self):
-        layer = Layer.objects.get(name=self.sut.name)
-        _, import_session = gs_handle_layer(layer, list(self.files_as_dict.values()), self.user, action_type="append")
-        result = requests.get(f'{self.geoserver_url}/rest/imports/{import_session.id}')
-        self.assertEqual(result.status_code, 200)
-        actual = result.json().get('import').get('state')
-        self.assertEqual('COMPLETE', actual)
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_gs_handle_layer_in_replace_should_add_expected_rows_in_the_catalog(self):
-        layer = Layer.objects.get(name=self.sut.name)
-        _, import_session = gs_handle_layer(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
-        result = requests.get(f'{self.geoserver_url}/rest/imports/{import_session.id}')
-        self.assertEqual(result.status_code, 200)
-        actual = result.json().get('import').get('state')
-        self.assertEqual('COMPLETE', actual)
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_gs_handle_layer_in_replace_should_return_none_for_not_existing_layer(self):
-        layer = create_single_layer('fake_layer')
-        actual = gs_handle_layer(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
-        self.assertIsNone(actual)
 
 
 class TestIsXmlUploadOnly(TestCase):
