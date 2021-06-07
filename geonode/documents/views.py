@@ -345,17 +345,11 @@ class DocumentUpdateView(UpdateView):
         If the form is valid, save the associated model.
         """
         file = form.cleaned_data.get('doc_file')
-        if file:
-            # If the files exists, we will replace the file present via the storage_manager
-            from pathlib import Path
-            path = str(Path(self.object.files[0]).parent.absolute())
-            old_file_name, _ = os.path.splitext(os.path.basename(self.object.files[0]))
-            _, ext = os.path.splitext(file.name)
-            filepath = storage_manager.save(f"{path}/{old_file_name}{ext}", file)
-            self.object.files = [storage_manager.path(filepath)]
 
-        self.object = form.save()
+        self.object = resource_manager.replace_single_file(self.object, file, self.request.user)
+
         register_event(self.request, EventType.EVENT_CHANGE, self.object)
+
         return HttpResponseRedirect(
             reverse(
                 'document_detail',
