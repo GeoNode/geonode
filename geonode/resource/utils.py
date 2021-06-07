@@ -107,6 +107,7 @@ class KeywordHandler:
             if not self.instance.keywords:
                 self.instance.keywords = keywords
             else:
+                self.instance.keywords.clear()
                 self.instance.keywords.add(*keywords)
         return keywords
 
@@ -119,10 +120,11 @@ class KeywordHandler:
         return [t.alt_label for t in tkeyword]
 
 
-def update_resource_with_xml_info(instance, xml_file, regions, keywords, vals):
-    # Updating resource with information coming from the XML file
+def update_resource(instance: ResourceBase, xml_file: str = None, regions: list = [], keywords: list = [], vals: dict = {}):
+
     if xml_file:
         instance.metadata_xml = open(xml_file).read()
+
     regions_resolved, regions_unresolved = resolve_regions(regions)
     keywords.extend(convert_keyword(regions_unresolved))
 
@@ -136,7 +138,6 @@ def update_resource_with_xml_info(instance, xml_file, regions, keywords, vals):
                 instance.regions.clear()
                 instance.regions.add(*regions_resolved)
 
-    # Assign the keywords (needs to be done after saving)
     instance = KeywordHandler(instance, keywords).set_keywords()
 
     # set model properties
@@ -180,6 +181,7 @@ def update_resource_with_xml_info(instance, xml_file, regions, keywords, vals):
             ResourceBase.objects.filter(
                 id=instance.resourcebase_ptr.id).update(
                 **defaults)
+
             instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
 
             # Refresh from DB
