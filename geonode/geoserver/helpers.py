@@ -61,10 +61,10 @@ from geonode.utils import get_legend_url, http_client
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json
-from geonode.security.utils import set_geowebcache_invalidate_cache
 import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
 
+from .security import set_geowebcache_invalidate_cache
 
 logger = logging.getLogger(__name__)
 

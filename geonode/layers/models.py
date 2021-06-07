@@ -36,7 +36,6 @@ from pinax.ratings.models import OverallRating
 from geonode.people.utils import get_valid_user
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
-from geonode.security.utils import remove_object_permissions
 from geonode.base.models import (
     ResourceBase,
     ResourceBaseManager)
@@ -650,7 +649,8 @@ def pre_delete_layer(instance, sender, **kwargs):
             upload.delete()
 
     # Delete object permissions
-    remove_object_permissions(instance)
+    from geonode.resource.manager import resource_manager
+    resource_manager.remove_permissions(instance.uuid, instance=instance)
 
 
 def post_delete_layer(instance, sender, **kwargs):

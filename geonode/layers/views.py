@@ -60,7 +60,7 @@ from geonode.layers.metadata import parse_metadata
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_layer_style
 from geonode.thumbs.thumbnails import create_thumbnail
-from geonode.resource.utils import update_resource_with_xml_info
+from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
 from geonode.base.forms import (
@@ -93,9 +93,11 @@ from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
-from geonode.people.forms import ProfileForm, PocForm
+from geonode.security.utils import get_visible_resources
 from geonode.documents.models import get_related_documents
-from geonode.security.utils import get_visible_resources, set_geowebcache_invalidate_cache
+from geonode.people.forms import (
+    PocForm,
+    ProfileForm)
 from geonode.utils import (
     resolve_object,
     default_map_config,
@@ -105,8 +107,8 @@ from geonode.utils import (
     build_social_links,
     GXPLayer,
     GXPMap)
-from geonode.geoserver.helpers import (
-    ogc_server_settings)
+from geonode.geoserver.helpers import ogc_server_settings
+from geonode.geoserver.security import set_geowebcache_invalidate_cache
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
 from geonode.upload.views import _select_relevant_files, _write_uploaded_files_to_disk
@@ -259,7 +261,7 @@ def layer_upload_metadata(request):
                 open(base_file).read())
             if layer_uuid:
                 layer.uuid = layer_uuid
-            updated_layer = update_resource_with_xml_info(layer.first(), base_file, regions, keywords, vals)
+            updated_layer = update_resource(layer.first(), base_file, regions, keywords, vals)
             updated_layer.save()
             out['status'] = ['finished']
             out['url'] = updated_layer.get_absolute_url()
