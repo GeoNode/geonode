@@ -19,8 +19,6 @@
 #########################################################################
 
 
-import os
-from pathlib import Path
 from geonode.storage.manager import StorageManagerInterface
 from storages.backends.dropbox import DropBoxStorage
 
@@ -43,7 +41,7 @@ class DropboxStorageManager(StorageManagerInterface):
         return self._drx.listdir(path)
 
     def open(self, name, mode='rb'):
-        return self._drx._open(name, mode=mode)
+        return self._drx.open(name, mode=mode)
 
     def path(self, name):
         return self._drx._full_path(name)
@@ -56,17 +54,3 @@ class DropboxStorageManager(StorageManagerInterface):
 
     def size(self, name):
         return self._drx.size(name)
-
-    def replace_files_list(self, old_files: list, new_files: list):
-        out = []
-        for f in new_files:
-            with open(f, 'rb+') as open_file:
-                out.append(self.replace_single_file(old_files[0], open_file))
-        return out
-
-    def replace_single_file(self, old_file: list, new_file):
-        path = str(Path(old_file).parent.absolute())
-        old_file_name, _ = os.path.splitext(os.path.basename(old_file))
-        _, ext = os.path.splitext(new_file.name)
-        filepath = self.save(f"{path}/{old_file_name}{ext}", new_file)
-        return self.path(filepath)

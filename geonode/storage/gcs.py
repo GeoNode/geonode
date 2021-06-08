@@ -40,7 +40,7 @@ class GoogleStorageManager(StorageManagerInterface):
         return self._drx.listdir(path)
 
     def open(self, name, mode='rb'):
-        return self._drx._open(name, mode=mode)
+        return self._drx.open(name, mode=mode)
 
     def path(self, name):
         raise NotImplementedError

@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.documents.tasks import create_document_thumbnail
 import os
 import json
 import shutil
@@ -347,6 +348,8 @@ class DocumentUpdateView(UpdateView):
         file = form.cleaned_data.get('doc_file')
 
         self.object = resource_manager.replace(self.object, file, self.request.user)
+
+        #create_document_thumbnail(object_id=self.object.resourcebase_ptr.id)
 
         register_event(self.request, EventType.EVENT_CHANGE, self.object)
 

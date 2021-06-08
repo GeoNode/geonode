@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from typing import BinaryIO
 from geonode.documents.models import Document
 import logging
 import importlib
@@ -451,19 +452,19 @@ class ResourceManager(ResourceManagerInterface):
 
     def replace(self, _resource: ResourceBase, files, user):
         if self._validate_resource(_resource, 'replace'):
+            updated_files = {}
             # Replacing old files with the new ones
             if isinstance(files, list):
-                _resource.files = storage_manager.replace_files_list(_resource.files, files)
-            else:    
-                _resource.files = storage_manager.replace_single_file(_resource.files[0], files)
+                updated_files['files'] = storage_manager.replace_files_list(_resource.files, files)
+            else:
+                updated_files['files'] = [storage_manager.replace_single_file(_resource.files[0], files)]
             if isinstance(_resource, Layer):
                 upload_session, _ = self._concrete_resource_manager.revise_resource_value(_resource, files, user, action_type='replace')
                 upload_session.save()
 
-            return self.update(_resource.uuid, _resource)
+            return self.update(_resource.uuid, _resource, vals=updated_files)
 
-
-    def _validate_resource(self, _resource, action_type) -> bool:
+    def _validate_resource(self, _resource: ResourceBase, action_type: str) -> bool:
         if not isinstance(_resource, Layer) and action_type == 'append':
             raise Exception("Append data is available only for Layers")
 
