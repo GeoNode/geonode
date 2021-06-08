@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 from typing import BinaryIO
 from geonode.documents.models import Document
 import logging
@@ -445,10 +446,16 @@ class ResourceManager(ResourceManagerInterface):
 
     def append(self, _resource: Layer, files: list, user):
         if self._validate_resource(_resource, 'append'):
-            # If is a layer, we start the append flow
+            updated_files = {'files': _resource.files}
+            for f in files:
+                filename = os.path.basename(f)
+                dirname = os.path.basename(os.path.dirname(f))
+                with open(f, 'rb') as open_file:
+                    upload_path = storage_manager.save(f"{dirname}/{filename}", open_file)
+                updated_files['files'].append(storage_manager.path(upload_path))
             upload_session, _ = self._concrete_resource_manager.revise_resource_value(_resource, files, user, action_type='append')
             upload_session.save()
-            return True
+            return self.update(_resource.uuid, _resource, vals=updated_files)
 
     def replace(self, _resource: ResourceBase, files, user):
         if self._validate_resource(_resource, 'replace'):
