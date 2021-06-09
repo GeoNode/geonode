@@ -20,12 +20,11 @@
 import importlib
 import os
 from pathlib import Path
-from typing import BinaryIO, List
+from typing import BinaryIO, List, Union
 from django.conf import settings
 
 from django.core.exceptions import SuspiciousFileOperation
 
-from geonode.br.management.commands.utils.utils import MEDIA_ROOT
 from . import settings as sm_settings
 
 from abc import ABCMeta, abstractmethod
@@ -102,23 +101,28 @@ class StorageManager(StorageManagerInterface):
     def url(self, name):
         return self._storage_manager.url(name)
 
-    def generate_filename(self, filename):
-        return self._storage_manager.generate_filename(filename)
+    def replace(self, _resource, files: Union[list, BinaryIO]):
+        updated_files = {}
+        if isinstance(files, list):
+            updated_files['files'] = self._replace_files_list(_resource.files, files)
+        else:
+            updated_files['files'] = [self._replace_single_file(_resource.files[0], files)]
+        return updated_files
 
-    def replace_files_list(self, old_files: List[str], new_files: List[str]):
+    def _replace_files_list(self, old_files: List[str], new_files: List[str]):
         out = []
         for f in new_files:
             with open(f, 'rb+') as open_file:
-                out.append(self.replace_single_file(old_files[0], open_file))
+                out.append(self._replace_single_file(old_files[0], open_file))
         return out
 
-    def replace_single_file(self, old_file: str, new_file: BinaryIO):
+    def _replace_single_file(self, old_file: str, new_file: BinaryIO):
         path = str(os.path.basename(Path(old_file).parent.absolute()))
         old_file_name, _ = os.path.splitext(os.path.basename(old_file))
         _, ext = os.path.splitext(new_file.name)
         try:
             filepath = self.save(f"{path}/{old_file_name}{ext}", new_file)
-        except SuspiciousFileOperation as e:
+        except SuspiciousFileOperation:
             '''
             If the previous file was in another localtion (due a different storage)
             We will save the file to the new location

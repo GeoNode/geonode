@@ -163,6 +163,8 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
             defaults['title'] = instance.title or getattr(instance, 'name', "")
         if hasattr(instance, 'abstract') and not defaults.get('abstract', instance.abstract):
             defaults['abstract'] = instance.abstract or ''
+        if hasattr(instance, 'date') and not defaults.get('date'):
+            defaults['date'] = instance.date or timezone.now()
 
         to_update = {}
         if hasattr(instance, 'charset'):

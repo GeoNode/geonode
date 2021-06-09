@@ -42,6 +42,7 @@ from geonode.resource.manager import (
     ResourceManager,
     ResourceManagerInterface)
 
+from geonode.storage.manager import storage_manager
 from .tasks import (
     geoserver_set_style,
     geoserver_delete_map,
@@ -267,7 +268,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 return None
         return instance
 
-    def revise_resource_value(self, _resource, files, user, action_type):
+    def revise_resource_value(self, _resource, files: list, user, action_type: str):
         upload_session, _ = Upload.objects.get_or_create(resource=_resource.resourcebase_ptr, user=user)
         upload_session.resource = _resource.resourcebase_ptr
         upload_session.processed = False
@@ -288,4 +289,13 @@ class GeoServerResourceManager(ResourceManagerInterface):
         task.set_target(store_name=gs_layer.resource.store.name, workspace=gs_layer.resource.workspace.name)
         #  Starting import process
         import_session.commit()
+
+        # Updating Resource with the files replaced
+        if action_type.lower() == 'replace':
+            updated_files_list = storage_manager.replace(_resource, files)
+            # Using update instead of save in order to avoid calling
+            # side-effect function of the resource
+            r = ResourceBase.objects.filter(id=_resource.id)
+            r.update(**updated_files_list)
+
         return upload_session, import_session

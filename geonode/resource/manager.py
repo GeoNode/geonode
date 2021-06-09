@@ -17,8 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import os
-from typing import BinaryIO
+from typing import BinaryIO, Union
 from geonode.documents.models import Document
 import logging
 import importlib
@@ -38,7 +37,7 @@ from django.db import transaction
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
 
 from geonode.groups.conf import settings as groups_settings
@@ -60,7 +59,6 @@ from ..base.models import ResourceBase
 from ..layers.metadata import parse_metadata
 from ..layers.models import Layer
 
-from geonode.geoserver.helpers import gs_catalog
 from ..storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
@@ -239,7 +237,10 @@ class ResourceManager(ResourceManagerInterface):
                 from geonode.layers.models import Layer
                 _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Layer) else None
                 if not _layer:
-                    _layer = _resource.layer if hasattr(_resource, "layer") else None
+                    try:
+                        _layer = _resource.layer if hasattr(_resource, "layer") else None
+                    except Exception:
+                        _layer = None
                 if _layer:
                     UserObjectPermission.objects.filter(
                         content_type=ContentType.objects.get_for_model(_layer),
@@ -446,25 +447,12 @@ class ResourceManager(ResourceManagerInterface):
 
     def append(self, _resource: Layer, files: list, user):
         if self._validate_resource(_resource, 'append'):
-            updated_files = {'files': _resource.files}
-            for f in files:
-                filename = os.path.basename(f)
-                dirname = os.path.basename(os.path.dirname(f))
-                with open(f, 'rb') as open_file:
-                    upload_path = storage_manager.save(f"{dirname}/{filename}", open_file)
-                updated_files['files'].append(storage_manager.path(upload_path))
             upload_session, _ = self._concrete_resource_manager.revise_resource_value(_resource, files, user, action_type='append')
             upload_session.save()
-            return self.update(_resource.uuid, _resource, vals=updated_files)
 
-    def replace(self, _resource: ResourceBase, files, user):
+    def replace(self, _resource: ResourceBase, files: Union[list, BinaryIO], user):
         if self._validate_resource(_resource, 'replace'):
-            updated_files = {}
-            # Replacing old files with the new ones
-            if isinstance(files, list):
-                updated_files['files'] = storage_manager.replace_files_list(_resource.files, files)
-            else:
-                updated_files['files'] = [storage_manager.replace_single_file(_resource.files[0], files)]
+            updated_files = storage_manager.replace(_resource, files)
             if isinstance(_resource, Layer):
                 upload_session, _ = self._concrete_resource_manager.revise_resource_value(_resource, files, user, action_type='replace')
                 upload_session.save()
@@ -478,14 +466,14 @@ class ResourceManager(ResourceManagerInterface):
         if isinstance(_resource, Document) and action_type == "replace":
             return True
 
-        _resource = gs_catalog.get_layer(_resource.name)
+        exists = self._concrete_resource_manager.exists(_resource.uuid, _resource)
 
-        if _resource and _resource.type == 'VECTOR' and action_type == "append":
+        if exists and _resource.is_vector() and action_type == "append":
             is_valid = True
-        elif _resource and action_type == "replace":
+        elif exists and action_type == "replace":
             is_valid = True
         else:
-            is_valid = False
+            raise ObjectDoesNotExist("Resource does not exists")
         return is_valid
 
 
