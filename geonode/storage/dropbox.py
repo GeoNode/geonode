@@ -54,3 +54,6 @@ class DropboxStorageManager(StorageManagerInterface):
 
     def size(self, name):
         return self._drx.size(name)
+
+    def generate_filename(self, filename):
+        return self._drx.generate_filename(filename)

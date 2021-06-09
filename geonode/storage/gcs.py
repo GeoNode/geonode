@@ -25,31 +25,34 @@ from storages.backends.gcloud import GoogleCloudStorage
 class GoogleStorageManager(StorageManagerInterface):
 
     def __init__(self):
-        self._drx = GoogleCloudStorage()
+        self._gcp = GoogleCloudStorage()
 
     def _get_concrete_manager(self):
         return GoogleStorageManager()
 
     def delete(self, name):
-        return self._drx.delete(name)
+        return self._gcp.delete(name)
 
     def exists(self, name):
-        return self._drx.exists(name)
+        return self._gcp.exists(name)
 
     def listdir(self, path):
-        return self._drx.listdir(path)
+        return self._gcp.listdir(path)
 
     def open(self, name, mode='rb'):
-        return self._drx.open(name, mode=mode)
+        return self._gcp.open(name, mode=mode)
 
     def path(self, name):
         raise NotImplementedError
 
     def save(self, name, content, max_length=None):
-        return self._drx.save(name, content)
+        return self._gcp.save(name, content)
 
     def url(self, name):
-        return self._drx.url(name)
+        return self._gcp.url(name)
 
     def size(self, name):
-        return self._drx.size(name)
+        return self._gcp.size(name)
+
+    def generate_filename(self, filename):
+        return self._gcp.generate_filename(filename)

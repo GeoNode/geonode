@@ -53,3 +53,6 @@ class AwsStorageManager(StorageManagerInterface):
 
     def size(self, name):
         return self._aws.size(name)
+
+    def generate_filename(self, filename):
+        return self._aws.generate_filename(filename)

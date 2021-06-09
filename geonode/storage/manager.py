@@ -24,6 +24,7 @@ from typing import BinaryIO, List, Union
 from django.conf import settings
 
 from django.core.exceptions import SuspiciousFileOperation
+from django.utils.deconstruct import deconstructible
 
 from . import settings as sm_settings
 
@@ -65,7 +66,12 @@ class StorageManagerInterface(metaclass=ABCMeta):
     def size(self, name):
         pass
 
+    @abstractmethod
+    def generate_filename(self, filename):
+        pass
 
+
+@deconstructible
 class StorageManager(StorageManagerInterface):
 
     def __init__(self):
@@ -129,6 +135,9 @@ class StorageManager(StorageManagerInterface):
             '''
             filepath = self.save(f"{settings.MEDIA_ROOT}{path}/{old_file_name}{ext}", new_file)
         return self.path(filepath)
+
+    def generate_filename(self, filename):
+        return self._storage_manager.generate_filename(filename)
 
 
 class DefaultStorageManager(StorageManagerInterface):
