@@ -631,6 +631,42 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.data["message"], "Resource not in favorites")
         self.assertEqual(response.status_code, 404)
 
+    def test_search_resources_with_favorite_true_and_no_favorite_should_return_0(self):
+        """
+        Ensure we can search across the Resource Base list.
+        """
+        url = reverse('base-resources-list')
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+
+        response = self.client.get(
+            f"{url}?favorite=true", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        # No favorite are saved, so the total should be 0
+        self.assertEqual(response.data['total'], 0)
+        self.assertEqual(len(response.data['resources']), 0)
+
+    def test_search_resources_with_favorite_true_and_favorite_should_return_1(self):
+        """
+        Ensure we can search across the Resource Base list.
+        """
+        url = reverse('base-resources-list')
+        # Admin
+        admin = get_user_model().objects.get(username='admin')
+        layer = Layer.objects.first()
+        Favorite.objects.create_favorite(layer, admin)
+
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+
+        response = self.client.get(
+            f"{url}?favorite=true", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        # 1 favorite is saved, so the total should be 1
+        self.assertEqual(response.data['total'], 1)
+        self.assertEqual(len(response.data['resources']), 1)
+
     @patch('PIL.Image.open', return_value=test_image)
     def test_thumbnail_urls(self, img):
         """
