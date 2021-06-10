@@ -21,7 +21,6 @@ from drf_spectacular.utils import extend_schema
 
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
-
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -33,6 +32,7 @@ from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.layers.api.serializers import LayerSerializer
 from geonode.maps.models import Map
+from geonode.maps.api.hook import hookset
 
 from .serializers import MapSerializer, MapLayerSerializer
 from .permissions import MapPermissionsFilter
@@ -52,7 +52,7 @@ class MapViewSet(DynamicModelViewSet):
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, MapPermissionsFilter
     ]
-    queryset = Map.objects.all()
+    queryset = Map.objects.all().order_by('-date')
     serializer_class = MapSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -71,3 +71,14 @@ class MapViewSet(DynamicModelViewSet):
         map = self.get_object()
         resources = map.local_layers
         return Response(LayerSerializer(embed=True, many=True).to_representation(resources))
+
+    def perform_create(self, serializer):
+        if serializer.is_valid():
+            hookset().perform_create(self, serializer)
+            return serializer
+
+    def perform_update(self, serializer):
+        """ Associate current user as task owner """
+        if serializer.is_valid():
+            hookset().perform_update(self, serializer)
+            return serializer
