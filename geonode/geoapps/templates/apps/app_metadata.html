@@ -34,7 +34,7 @@
         Some of your original metadata may have been lost.{% endblocktrans %}</div>
       {% endif %}
 
-      {% if geoapp_form.errors or category_form.errors %}
+      {% if geoapp_form.errors or category_form.errors or tkeywords_form.errors %}
       <div style="background-color: pink">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}
         <ul>
         {% for field in geoapp_form %}
@@ -45,6 +45,9 @@
 
         {% if category_form.errors %}
             <li>{{ category_form.errors.as_ul }}</li>
+        {% endif %}
+        {% if tkeywords_form.errors %}
+            <li>{{ tkeywords_form.errors.as_ul }}</li>
         {% endif %}
         </ul>
       </div>
