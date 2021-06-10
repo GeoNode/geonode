@@ -34,6 +34,7 @@ from geonode.base.utils import OwnerRightsRequestViewUtils, ManageResourceOwnerP
 from geonode.base.templatetags.base_tags import display_change_perms_button
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
+from geonode.layers.utils import get_layer_storetype
 from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -986,29 +987,29 @@ class TestFacets(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create(username='test', email='test@test.com')
         Layer.objects.create(
-            owner=self.user, title='test_boxes', abstract='nothing', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_boxes', abstract='nothing', storeType='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_1', abstract='contains boxes', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_1', abstract='contains boxes', storeType='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_2', purpose='contains boxes', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_2', purpose='contains boxes', storeType='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_3', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_3', storeType='vector', is_approved=True
         )
 
         Layer.objects.create(
-            owner=self.user, title='test_boxes', abstract='nothing', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_boxes', abstract='nothing', storeType='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_1', abstract='contains boxes', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_1', abstract='contains boxes', storeType='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_2', purpose='contains boxes', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_2', purpose='contains boxes', storeType='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_boxes', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_boxes', storeType='raster', is_approved=True
         )
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
@@ -1104,3 +1105,21 @@ class TestGenerateThesaurusReference(TestCase):
         '''
         self.assertEqual(expected, actual)
         self.assertEqual(expected, keyword.about)
+
+
+class TestGetLayerStoreType(SimpleTestCase):
+    def test_return_element_if_not_exists_in_the_subtypes(self):
+        el = get_layer_storetype('not-existing-type')
+        self.assertEqual('not-existing-type', el)
+
+    def test_datastore_should_return_vector(self):
+        el = get_layer_storetype('dataStore')
+        self.assertEqual('vector', el)
+
+    def test_coverageStore_should_return_raster(self):
+        el = get_layer_storetype('coverageStore')
+        self.assertEqual('raster', el)
+
+    def test_remoteStore_should_return_remote(self):
+        el = get_layer_storetype('remoteStore')
+        self.assertEqual('remote', el)

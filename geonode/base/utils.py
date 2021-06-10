@@ -22,6 +22,7 @@
 """
 
 # Standard Modules
+from geonode.api.resourcebase_api import LAYER_SUBTYPES
 import re
 import logging
 from urllib.parse import urljoin

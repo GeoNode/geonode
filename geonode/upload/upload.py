@@ -33,6 +33,7 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
+from geonode.layers.utils import get_layer_storetype
 import pytz
 import uuid
 import shutil
@@ -734,7 +735,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 resource_type=Layer,
                 defaults=dict(
                     store=target.name,
-                    storeType=target.store_type,
+                    storeType=get_layer_storetype(target.store_type),
                     alternate=alternate,
                     workspace=target.workspace_name,
                     title=title,

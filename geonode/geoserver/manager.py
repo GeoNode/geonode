@@ -68,7 +68,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         if instance:
             _real_instance = instance.get_real_instance()
-            if hasattr(_real_instance, 'storeType') and _real_instance.storeType not in ['tileStore', 'remoteStore']:
+            if hasattr(_real_instance, 'storeType') and _real_instance.storeType not in ['tileStore', 'remote']:
                 try:
                     logger.debug(f"Searching GeoServer for layer '{_real_instance.alternate}'")
                     if gs_catalog.get_layer(_real_instance.alternate):

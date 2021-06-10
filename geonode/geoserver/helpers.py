@@ -555,6 +555,7 @@ def gs_slurp(
        It returns a list of dictionaries with the name of the layer,
        the result of the operation and the errors and traceback if it failed.
     """
+    from geonode.layers.utils import get_layer_storetype
     if console is None:
         console = open(os.devnull, 'w')
 
@@ -670,7 +671,7 @@ def gs_slurp(
                     name=name,
                     workspace=workspace.name,
                     store=the_store.name,
-                    storeType=the_store.resource_type,
+                    storeType=get_layer_storetype(the_store.resource_type),
                     alternate=f"{workspace.name}:{resource.name}",
                     title=resource.title or _('No title provided'),
                     abstract=resource.abstract or _('No abstract provided'),
@@ -940,8 +941,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     then store in GeoNode database using Attribute model
     """
     attribute_map = []
-    server_url = ogc_server_settings.LOCATION if layer.storeType not in ['tileStore', 'remoteStore'] else layer.remote_service.service_url
-    if layer.storeType in ['tileStore', 'remoteStore'] and layer.remote_service.ptype == "gxp_arcrestsource":
+    server_url = ogc_server_settings.LOCATION if layer.storeType not in ['tileStore', 'remote'] else layer.remote_service.service_url
+    if layer.storeType in ['tileStore', 'remote'] and layer.remote_service.ptype == "gxp_arcrestsource":
         dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
         try:
             # The code below will fail if http_client cannot be imported
@@ -953,7 +954,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.storeType in {"dataStore", "tileStore", "remoteStore", "wmsStore"}:
+    elif layer.storeType in {"vector", "tileStore", "remote", "wmsStore"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url = re.sub(r"\/wms\/?$",
                          "/",

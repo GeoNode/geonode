@@ -1,4 +1,4 @@
-<Layer xmlns="http://www.opengis.net/wms" xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" queryable="{% if layer.storeType == 'dataStore' %}1{% else %}0{% endif %}" opaque="0">
+<Layer xmlns="http://www.opengis.net/wms" xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" queryable="{% if layer.storeType == 'vector' %}1{% else %}0{% endif %}" opaque="0">
 <Name>{{ layer.name }}</Name>
 <Title>{{ layer.title }}</Title>
 <Abstract>{{ layer.abstract }}</Abstract>

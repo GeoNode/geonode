@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.layers.utils import get_layer_storetype
 import os
 import re
 
@@ -234,7 +235,7 @@ def geoserver_post_save_layers(
 
             # Don't run this signal handler if it is a tile layer or a remote store (Service)
             #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-            if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
+            if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remote']:
                 # # Creating Layer Thumbnail by sending a signal
                 # geoserver_post_save_complete.send(
                 #     sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
@@ -297,7 +298,7 @@ def geoserver_post_save_layers(
                 for key in ['alternate', 'store', 'storeType']:
                     # attr_name = key if 'typename' not in key else 'alternate'
                     # print attr_name
-                    setattr(instance, key, values[key])
+                    setattr(instance, key, get_layer_storetype(values[key]))
 
                 try:
                     if settings.RESOURCE_PUBLISHING:

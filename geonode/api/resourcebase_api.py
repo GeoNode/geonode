@@ -206,17 +206,17 @@ class CommonModelApi(ModelResource):
                     if filtered:
                         if 'time' in the_type:
                             filtered = filtered | semi_filtered.filter(
-                                Layer___storeType=LAYER_SUBTYPES[super_type]).exclude(Layer___has_time=False)
+                                Layer___storeType=super_type).exclude(Layer___has_time=False)
                         else:
                             filtered = filtered | semi_filtered.filter(
-                                Layer___storeType=LAYER_SUBTYPES[super_type])
+                                Layer___storeType=super_type)
                     else:
                         if 'time' in the_type:
                             filtered = semi_filtered.filter(
-                                Layer___storeType=LAYER_SUBTYPES[super_type]).exclude(Layer___has_time=False)
+                                Layer___storeType=super_type).exclude(Layer___has_time=False)
                         else:
                             filtered = semi_filtered.filter(
-                                Layer___storeType=LAYER_SUBTYPES[super_type])
+                                Layer___storeType=super_type)
                 else:
                     _type_filter = FILTER_TYPES[the_type].__name__.lower()
                     if filtered:
@@ -752,7 +752,7 @@ class LayerResource(CommonModelApi):
             formatted_obj['online'] = True
             if hasattr(obj, 'storeType'):
                 formatted_obj['store_type'] = obj.storeType
-                if obj.storeType in ['tileStore', 'remoteStore'] and hasattr(obj, 'remote_service'):
+                if obj.storeType in ['tileStore', 'remote'] and hasattr(obj, 'remote_service'):
                     if obj.remote_service:
                         formatted_obj['online'] = (obj.remote_service.probe == 200)
                     else:

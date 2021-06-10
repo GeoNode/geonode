@@ -45,7 +45,7 @@
     </style>
 
     <h2 class="page-title">{{ resource.title|default:resource.alternate }}</h2>
-    {% if storeType == 'remoteStore' %}
+    {% if storeType == 'remote' %}
     <em>
       <i class="fa fa-power-off {% if online %}text-success{% else %}text-danger{% endif %}"></i> {% trans "Service is" %} {% if online %}{% trans "online" %}{% else %}{% trans "offline" %}{% endif %} 
     </em>
@@ -262,7 +262,7 @@
   <div class="col-md-4">
 
     <ul class="list-group">
-      {% if resource.storeType != "remoteStore" %}
+      {% if resource.storeType != "remote" %}
         {% if link_geotiff_io %}
         <li class="list-group-item">
           <a href="{{link_geotiff_io}}" class="btn btn-primary btn-block" target="_blank">{% trans "Analyze with" %} GeoTIFF.io</a>
@@ -477,7 +477,7 @@
                 {% endif %}
                 {% if GEOSERVER_BASE_URL and not resource.service %}
                   {% if "change_layer_style" in layer_perms %}
-                    {% if resource.storeType != "remoteStore" %}
+                    {% if resource.storeType != "remote" %}
                     <div class="col-sm-3">
                       <i class="fa fa-tint fa-3x"></i>
                       <h4>{% trans "Styles" %}</h4>
@@ -492,7 +492,7 @@
                 <div class="col-sm-3">
                   <i class="fa fa-photo fa-3x"></i>
                   <h4>{% trans "Thumbnail" %}</h4>
-                  {% if resource.storeType != "remoteStore" %}
+                  {% if resource.storeType != "remote" %}
                     <a class="btn btn-default btn-block btn-xs" href="#" id="set_thumbnail">{% trans "Set" %}</a>
                   {% endif %}
                   <a class="btn btn-default btn-block btn-xs" href="{% url "thumbnail_upload" resource.resourcebase_ptr.id %}">{% trans "Upload" %}</a>
@@ -502,14 +502,14 @@
                 <div class="col-sm-3">
                   <i class="fa fa-square-o fa-3x rotate-45"></i>
                   <h4>{% trans "Layer" %}</h4>
-                  {% if "change_resourcebase" in perms_list and resource.storeType != "remoteStore" %}
+                  {% if "change_resourcebase" in perms_list and resource.storeType != "remote" %}
                   <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                   {% endif %}
-                  {% if "change_resourcebase" in perms_list and resource.storeType != "remoteStore" %}
+                  {% if "change_resourcebase" in perms_list and resource.storeType != "remote" %}
                   <a class="btn btn-default btn-block btn-xs" href="{% url "layer_append" resource.service_typename %}">{% trans "Append Data" %}</a>
                   {% endif %}
                   {% if "change_layer_data" in layer_perms and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
-                    {% if layer_type != "raster" and resource.storeType != "remoteStore" %}
+                    {% if layer_type != "raster" and resource.storeType != "remote" %}
                     <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}&storeType={{resource.storeType}}">{% trans "Edit data" %}</a>
                     {% endif %}
                   {% endif %}
@@ -564,7 +564,7 @@
                    {% endfor %}
                 <ul>
             </div>
-            {% if resource.storeType == 'dataStore' %}
+            {% if resource.storeType == 'vector' %}
             <h5 class="modal-title" id="myModalLabel">{% trans "Attribute Information" %}</h5>
             <ul>
               <li><a href="{{ resource.get_absolute_url }}/feature_catalogue" target="_blank">{% trans "ISO Feature Catalogue" %}</a></li>
@@ -659,7 +659,7 @@
     </li>
     {% endif %}
 
-    {% if OGC_SERVER.default.BACKEND == 'geonode.geoserver' and resource.storeType != "remoteStore" %}
+    {% if OGC_SERVER.default.BACKEND == 'geonode.geoserver' and resource.storeType != "remote" %}
     <li class="list-group-item">
       <h4>{% trans "Styles" %}</h4>
        <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
@@ -684,7 +684,7 @@
     </li>
     {% endif %}
 
-    {% if resource.storeType == "remoteStore" %}
+    {% if resource.storeType == "remote" %}
     <li class="list-group-item">
       <h4>{% trans "External service layer" %}</h4>
       <div>{% trans "Source" %}: <a href="/services/{{resource.remote_service.id}}">{{ resource.remote_service.title }}</a>
@@ -694,7 +694,7 @@
     {% endif %}
 
     {% if OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
-      {% if "change_resourcebase" in perms_list and resource.storeType != "remoteStore" %}
+      {% if "change_resourcebase" in perms_list and resource.storeType != "remote" %}
         {% if not READ_ONLY_MODE %}
         <li class="list-group-item">
           <h4>{% trans "Refresh Attributes and Statistics of this layer" %}</h4>

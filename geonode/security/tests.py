@@ -59,17 +59,11 @@ from geonode.decorators import on_ogc_backend, dump_func_name
 from geonode.geoserver.helpers import gs_slurp
 from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
+from geonode.geoserver.security import get_geofence_rules, get_geofence_rules_count , get_highest_priority,    set_geofence_all,    purge_geofence_all,    sync_geofence_with_guardian,    sync_resources_with_guardian
 
 from .utils import (
     get_visible_resources,
-    get_users_with_perms,
-    get_geofence_rules,
-    get_geofence_rules_count,
-    get_highest_priority,
-    set_geofence_all,
-    purge_geofence_all,
-    sync_geofence_with_guardian,
-    sync_resources_with_guardian
+    get_users_with_perms
 )
 
 
@@ -498,7 +492,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             },
             'groups': []
         }
-        layer = Layer.objects.filter(storeType='dataStore').first()
+        layer = Layer.objects.filter(storeType='vector').first()
         layer.set_permissions(perm_spec)
         # Test user has permission with read_only=False
         self.assertTrue(layer.user_can(bobby, 'change_layer_style'))
@@ -519,7 +513,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             4. Try to sync a layer from GeoServer
         """
         bobby = get_user_model().objects.get(username='bobby')
-        layer = Layer.objects.filter(storeType='dataStore').exclude(owner=bobby).first()
+        layer = Layer.objects.filter(storeType='vector').exclude(owner=bobby).first()
         self.client.login(username='admin', password='admin')
 
         # Reset GeoFence Rules
@@ -730,7 +724,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # Change Layer Type and SRID in order to force GeoFence allowed-area reprojection
         _original_storeType = layer.storeType
         _original_srid = layer.srid
-        layer.storeType = 'coverageStore'
+        layer.storeType = 'raster'
         layer.srid = 'EPSG:3857'
         layer.save()
 
@@ -1187,7 +1181,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                 layer.get_self_resource()))
 
         # Test that the owner user can edit data if is vector type
-        if layer.storeType == 'dataStore':
+        if layer.storeType == 'vector':
             self.assertTrue(
                 layer.owner.has_perm(
                     'change_layer_data',
