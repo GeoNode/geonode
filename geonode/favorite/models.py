@@ -78,8 +78,8 @@ class FavoriteManager(models.Manager):
             favs[ct.name] = m.objects.filter(id__in=f.values('object_id'))
         return favs
 
-    def create_favorite(self, content_object, user):
-        content_type = ContentType.objects.get_for_model(type(content_object))
+    def create_favorite(self, content_object, user, resource_type = None):
+        content_type = ContentType.objects.get_for_model(type(content_object)) if not resource_type else resource_type
         favorite, _ = self.get_or_create(
             user=user,
             content_type=content_type,
