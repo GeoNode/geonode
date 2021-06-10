@@ -33,7 +33,7 @@ class MapHookInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def perform_create(self, upobj,  serializer):
+    def perform_create(self, upobj, serializer):
         pass
 
 
@@ -83,7 +83,7 @@ class MapstoreAdapterHook(MapHookInterface):
             if _map_thumbnail_format == 'link':
                 map_obj.thumbnail_url = _map_thumbnail
             else:
-                _map_thumbnail_filename = "map-%s-thumb.%s" % (map_obj.uuid, _map_thumbnail_format)
+                _map_thumbnail_filename = f"map-{map_obj.uuid}-thumb.{_map_thumbnail_format}"
                 map_obj.save_thumbnail(_map_thumbnail_filename, _map_thumbnail)
 
 
