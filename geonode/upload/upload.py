@@ -33,7 +33,6 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
-from geonode.layers.utils import get_layer_storetype
 import pytz
 import uuid
 import shutil
@@ -72,6 +71,7 @@ from ..geoserver.helpers import (
 from . import utils
 from .models import Upload
 from .upload_preprocessing import preprocess_files
+from geonode.geoserver.helpers import get_layer_storetype
 
 logger = logging.getLogger(__name__)
 

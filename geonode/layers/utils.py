@@ -22,7 +22,6 @@
 """
 
 # Standard Modules
-from geonode.api.resourcebase_api import LAYER_SUBTYPES
 import re
 import os
 import glob
@@ -725,7 +724,3 @@ def is_sld_upload_only(request):
 def mdata_search_by_type(request, filetype):
     files = list(set([v.name for k, v in request.FILES.items()]))
     return len(files) == 1 and all([filetype in f for f in files])
-
-def get_layer_storetype(element):
-    reversed_dict = dict(zip(LAYER_SUBTYPES.values(),LAYER_SUBTYPES.keys()))
-    return reversed_dict.get(element, element)

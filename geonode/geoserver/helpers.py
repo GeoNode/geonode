@@ -70,6 +70,13 @@ logger = logging.getLogger(__name__)
 
 temp_style_name_regex = r'[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}_ms_.*'
 
+LAYER_SUBTYPES = {
+    "dataStore": "vector",
+    "coverageStore": "raster",
+    "remoteStore": "remote",
+    "vectorTimeSeries": "vector_time"
+}
+
 if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
@@ -2045,3 +2052,7 @@ def set_time_dimension(cat, name, workspace, time_presentation, time_presentatio
 def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
     implementation = import_string(settings.THUMBNAIL_GENERATOR)
     return implementation(instance, overwrite, check_bbox)
+
+def get_layer_storetype(element):
+    return LAYER_SUBTYPES.get(element, element)
+

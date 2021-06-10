@@ -22,7 +22,7 @@
 """
 
 # Standard Modules
-from geonode.api.resourcebase_api import LAYER_SUBTYPES
+from geonode.base.enumerations import LAYER_TYPES
 import re
 import logging
 from urllib.parse import urljoin

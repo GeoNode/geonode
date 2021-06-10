@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.geoserver.helpers import get_layer_storetype
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import re
@@ -157,3 +158,20 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         }
         _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))
+
+class TestGetLayerStoreType(SimpleTestCase):
+    def test_return_element_if_not_exists_in_the_subtypes(self):
+        el = get_layer_storetype('not-existing-type')
+        self.assertEqual('not-existing-type', el)
+
+    def test_datastore_should_return_vector(self):
+        el = get_layer_storetype('dataStore')
+        self.assertEqual('vector', el)
+
+    def test_coverageStore_should_return_raster(self):
+        el = get_layer_storetype('coverageStore')
+        self.assertEqual('raster', el)
+
+    def test_remoteStore_should_return_remote(self):
+        el = get_layer_storetype('remoteStore')
+        self.assertEqual('remote', el)

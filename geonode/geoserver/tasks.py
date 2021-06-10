@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.layers.utils import get_layer_storetype
+from geonode.geoserver.helpers import get_layer_storetype
 import os
 import re
 

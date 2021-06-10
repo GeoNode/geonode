@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.base.enumerations import LAYER_TYPES
 import re
 import logging
 
@@ -71,14 +72,6 @@ if settings.HAYSTACK_SEARCH:
     from haystack.query import SearchQuerySet  # noqa
 
 logger = logging.getLogger(__name__)
-
-LAYER_SUBTYPES = {
-    'vector': 'dataStore',
-    'raster': 'coverageStore',
-    'remote': 'remoteStore',
-    'vector_time': 'vectorTimeSeries',
-}
-FILTER_TYPES.update(LAYER_SUBTYPES)
 
 
 class CommonMetaApi:
@@ -162,7 +155,7 @@ class CommonModelApi(ModelResource):
             filters = {}
         orm_filters = super(CommonModelApi, self).build_filters(
             filters=filters, ignore_bad_filters=ignore_bad_filters, **kwargs)
-        if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
+        if 'type__in' in filters and (filters['type__in'] in FILTER_TYPES.keys() or filters['type__in'] in LAYER_TYPES):
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'app_type__in' in filters:
             orm_filters.update({'polymorphic_ctype__model': filters['app_type__in'].lower()})
@@ -199,7 +192,7 @@ class CommonModelApi(ModelResource):
         filtered = None
         if types:
             for the_type in types:
-                if the_type in LAYER_SUBTYPES.keys():
+                if the_type in LAYER_TYPES:
                     super_type = the_type
                     if 'vector_time' == the_type:
                         super_type = 'vector'
@@ -308,7 +301,7 @@ class CommonModelApi(ModelResource):
                 if type in {"map", "layer", "document", "user"}:
                     # Type is one of our Major Types (not a sub type)
                     types.append(type)
-                elif type in LAYER_SUBTYPES.keys():
+                elif type in LAYER_TYPES:
                     subtypes.append(type)
 
             if 'vector' in subtypes and 'vector_time' not in subtypes:
