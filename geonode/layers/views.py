@@ -162,7 +162,7 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
         if len(service_typename) > 1:
             query['store'] = service_typename[0]
         else:
-            query['storeType'] = 'remoteStore'
+            query['storeType'] = 'remote'
         return resolve_object(
             request,
             Layer,
@@ -184,9 +184,9 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
         else:
             query = {'alternate': alternate}
         test_query = Layer.objects.filter(**query)
-        if test_query.count() > 1 and test_query.exclude(storeType='remoteStore').count() == 1:
+        if test_query.count() > 1 and test_query.exclude(storeType='remote').count() == 1:
             query = {
-                'id': test_query.exclude(storeType='remoteStore').last().id
+                'id': test_query.exclude(storeType='remote').last().id
             }
         elif test_query.count() > 1:
             query = {
@@ -563,7 +563,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if 'show_popup' in request.GET and request.GET["show_popup"]:
         show_popup = True
 
-    if layer.storeType in ['tileStore', 'remoteStore']:
+    if layer.storeType in ['tileStore', 'remote']:
         service = layer.remote_service
         source_params = {}
         if service.type in ('REST_MAP', 'REST_IMG'):
@@ -625,7 +625,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "show_popup": show_popup,
         "filter": filter,
         "storeType": layer.storeType,
-        "online": (layer.remote_service.probe == 200) if layer.storeType in ['tileStore', 'remoteStore'] else True,
+        "online": (layer.remote_service.probe == 200) if layer.storeType in ['tileStore', 'remote'] else True,
         "processed": layer.processed
     }
 
@@ -640,7 +640,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'DEFAULT_MAP_CRS',
         'EPSG:3857')
 
-    if layer.storeType == 'dataStore':
+    if layer.storeType == 'vector':
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
             Q(link_type='original'))
@@ -669,9 +669,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     context_dict["layer_name"] = json.dumps(layers_names)
     try:
         # get type of layer (raster or vector)
-        if layer.storeType == 'coverageStore':
+        if layer.storeType == 'raster':
             context_dict["layer_type"] = "raster"
-        elif layer.storeType == 'dataStore':
+        elif layer.storeType == 'vector':
             if layer.has_time:
                 context_dict["layer_type"] = "vector_time"
             else:
@@ -770,7 +770,7 @@ def layer_feature_catalogue(
     if not layer:
         raise Http404(_("Not found"))
 
-    if layer.storeType != 'dataStore':
+    if layer.storeType != 'vector':
         out = {
             'success': False,
             'errors': 'layer is not a feature type'
@@ -855,7 +855,7 @@ def layer_metadata(
     config["title"] = layer.title
     config["queryable"] = True
 
-    if layer.storeType in ['tileStore', 'remoteStore']:
+    if layer.storeType in ['tileStore', 'remote']:
         service = layer.remote_service
         source_params = {}
         if service.type in ('REST_MAP', 'REST_IMG'):

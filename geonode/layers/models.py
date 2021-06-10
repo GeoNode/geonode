@@ -179,7 +179,7 @@ class Layer(ResourceBase):
         null=True)
 
     def is_vector(self):
-        return self.storeType == 'dataStore'
+        return self.storeType == 'vector'
 
     @property
     def processed(self):
@@ -191,9 +191,9 @@ class Layer(ResourceBase):
 
     @property
     def display_type(self):
-        if self.storeType == "dataStore":
+        if self.storeType == "vector":
             return "Vector Data"
-        elif self.storeType == "coverageStore":
+        elif self.storeType == "raster":
             return "Raster Data"
         else:
             return "Data"
@@ -280,7 +280,7 @@ class Layer(ResourceBase):
 
         # we need to check, for shapefile, if column names are valid
         list_col = None
-        if self.storeType == 'dataStore':
+        if self.storeType == 'vector':
             valid_shp, wrong_column_name, list_col = check_shp_columnnames(
                 self)
             if wrong_column_name:
@@ -590,9 +590,9 @@ def pre_save_layer(instance, sender, **kwargs):
     if base_file is not None:
         extension = f'.{base_file.name}'
         if extension in vec_exts:
-            instance.storeType = 'dataStore'
+            instance.storeType = 'vector'
         elif extension in cov_exts:
-            instance.storeType = 'coverageStore'
+            instance.storeType = 'raster'
 
     if instance.bbox_polygon is None:
         instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')

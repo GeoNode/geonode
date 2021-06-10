@@ -69,7 +69,7 @@ def create_gn_layer(workspace, datastore, name, title, owner_name):
         name=name,
         workspace=workspace.name,
         store=datastore.name,
-        storeType='dataStore',
+        storeType='vector',
         alternate=f'{workspace.name}:{name}',
         title=title,
         owner=owner,

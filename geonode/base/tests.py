@@ -986,29 +986,29 @@ class TestFacets(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create(username='test', email='test@test.com')
         Layer.objects.create(
-            owner=self.user, title='test_boxes', abstract='nothing', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_boxes', abstract='nothing', storeType='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_1', abstract='contains boxes', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_1', abstract='contains boxes', storeType='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_2', purpose='contains boxes', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_2', purpose='contains boxes', storeType='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_3', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_3', storeType='vector', is_approved=True
         )
 
         Layer.objects.create(
-            owner=self.user, title='test_boxes', abstract='nothing', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_boxes', abstract='nothing', storeType='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_1', abstract='contains boxes', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_1', abstract='contains boxes', storeType='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_2', purpose='contains boxes', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_2', purpose='contains boxes', storeType='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_boxes', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_boxes', storeType='raster', is_approved=True
         )
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())

@@ -1789,7 +1789,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                                     name=ugettext(name),
                                     link_type='image').update(**_d)
 
-        if instance.storeType == "dataStore":
+        if instance.storeType == "vector":
             links = wfs_links(f"{ogc_server_settings.public_url}ows?",
                               instance.alternate,
                               bbox=None,  # bbox filter should be set at runtime otherwise conflicting with CQL
@@ -1812,7 +1812,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         )
                     )
 
-        elif instance.storeType == 'coverageStore':
+        elif instance.storeType == 'raster':
             links = wcs_links(f"{ogc_server_settings.public_url}wcs?",
                               instance.alternate,
                               bbox,
@@ -1856,7 +1856,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
         try:
-            if instance.storeType not in ['tileStore', 'remoteStore']:
+            if instance.storeType not in ['tileStore', 'remote']:
                 for style in set(list(instance.styles.all()) + [instance.default_style, ]):
                     if style:
                         style_name = os.path.basename(
@@ -1920,7 +1920,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 )
             )
 
-        if instance.storeType == "dataStore":
+        if instance.storeType == "vector":
             # ogc_wfs_path = '%s/wfs' % instance.workspace
             ogc_wfs_path = 'ows'
             ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
@@ -1938,7 +1938,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     )
                 )
 
-        if instance.storeType == "coverageStore":
+        if instance.storeType == "raster":
             # ogc_wcs_path = '%s/wcs' % instance.workspace
             ogc_wcs_path = 'ows'
             ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)

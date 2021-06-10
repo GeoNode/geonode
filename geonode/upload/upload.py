@@ -71,6 +71,7 @@ from ..geoserver.helpers import (
 from . import utils
 from .models import Upload
 from .upload_preprocessing import preprocess_files
+from geonode.geoserver.helpers import get_layer_storetype
 
 logger = logging.getLogger(__name__)
 
@@ -734,7 +735,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 resource_type=Layer,
                 defaults=dict(
                     store=target.name,
-                    storeType=target.store_type,
+                    storeType=get_layer_storetype(target.store_type),
                     alternate=alternate,
                     workspace=target.workspace_name,
                     title=title,

@@ -241,7 +241,7 @@ def create_models(type=None, integration=False):
                         m.save()
 
             if not type or ensure_string(type) == 'layer':
-                for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
+                for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('raster', 'vector'))):
                     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                     end = start + timedelta(days=365)
                     logger.debug(f"[SetUp] Add layer {title}")
@@ -346,7 +346,7 @@ def create_single_layer(name):
         temporal_extent_start=test_datetime,
         temporal_extent_end=test_datetime,
         date=start,
-        storeType="dataStore",
+        storeType="vector",
         resource_type="layer",
         typename=f"geonode:{title}"
     )

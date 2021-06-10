@@ -70,6 +70,13 @@ logger = logging.getLogger(__name__)
 
 temp_style_name_regex = r'[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}_ms_.*'
 
+LAYER_SUBTYPES = {
+    "dataStore": "vector",
+    "coverageStore": "raster",
+    "remoteStore": "remote",
+    "vectorTimeSeries": "vector_time"
+}
+
 if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
@@ -670,7 +677,7 @@ def gs_slurp(
                     name=name,
                     workspace=workspace.name,
                     store=the_store.name,
-                    storeType=the_store.resource_type,
+                    storeType=get_layer_storetype(the_store.resource_type),
                     alternate=f"{workspace.name}:{resource.name}",
                     title=resource.title or _('No title provided'),
                     abstract=resource.abstract or _('No abstract provided'),
@@ -940,8 +947,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     then store in GeoNode database using Attribute model
     """
     attribute_map = []
-    server_url = ogc_server_settings.LOCATION if layer.storeType not in ['tileStore', 'remoteStore'] else layer.remote_service.service_url
-    if layer.storeType in ['tileStore', 'remoteStore'] and layer.remote_service.ptype == "gxp_arcrestsource":
+    server_url = ogc_server_settings.LOCATION if layer.storeType not in ['tileStore', 'remote'] else layer.remote_service.service_url
+    if layer.storeType in ['tileStore', 'remote'] and layer.remote_service.ptype == "gxp_arcrestsource":
         dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
         try:
             # The code below will fail if http_client cannot be imported
@@ -953,7 +960,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.storeType in {"dataStore", "tileStore", "remoteStore", "wmsStore"}:
+    elif layer.storeType in {"vector", "tileStore", "remote", "wmsStore"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url = re.sub(r"\/wms\/?$",
                          "/",
@@ -2044,3 +2051,7 @@ def set_time_dimension(cat, name, workspace, time_presentation, time_presentatio
 def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
     implementation = import_string(settings.THUMBNAIL_GENERATOR)
     return implementation(instance, overwrite, check_bbox)
+
+
+def get_layer_storetype(element):
+    return LAYER_SUBTYPES.get(element, element)

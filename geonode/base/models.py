@@ -1271,7 +1271,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             return self.spatial_representation_type.identifier
         else:
             if hasattr(self, 'storeType'):
-                if self.storeType == 'coverageStore':
+                if self.storeType == 'raster':
                     return 'grid'
                 return 'vector'
             else:
@@ -1438,7 +1438,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 _link_type = 'WWW:DOWNLOAD-1.0-http--download'
                 try:
                     _store_type = getattr(self.get_real_instance(), 'storeType', None)
-                    if _store_type and _store_type in ['tileStore', 'remoteStore'] and link.extension in ('html'):
+                    if _store_type and _store_type in ['tileStore', 'remote'] and link.extension in ('html'):
                         _remote_service = getattr(self.get_real_instance(), '_remote_service', None)
                         if _remote_service:
                             _link_type = f'WWW:DOWNLOAD-{_remote_service.type}'

@@ -492,3 +492,5 @@ PROCESSING_STATES = (
     (STATE_INVALID, "INVALID"),
     (STATE_PROCESSED, "PROCESSED"),
 )
+
+LAYER_TYPES = ['vector', 'raster', 'remote', 'vector_time']

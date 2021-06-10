@@ -238,17 +238,17 @@ def facets(context):
 
         count_dict = dict(counts_array)
 
-        vector_time_series = layers.exclude(has_time=False).filter(storeType='dataStore'). \
+        vector_time_series = layers.exclude(has_time=False).filter(storeType='vector'). \
             values('storeType').annotate(count=Count('storeType'))
 
         if vector_time_series:
             count_dict['vectorTimeSeries'] = vector_time_series[0]['count']
 
         facets = {
-            'raster': count_dict.get('coverageStore', 0),
-            'vector': count_dict.get('dataStore', 0),
+            'raster': count_dict.get('raster', 0),
+            'vector': count_dict.get('vector', 0),
             'vector_time': count_dict.get('vectorTimeSeries', 0),
-            'remote': count_dict.get('remoteStore', 0),
+            'remote': count_dict.get('remote', 0),
             'wms': count_dict.get('wmsStore', 0),
         }
 
