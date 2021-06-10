@@ -202,8 +202,9 @@ def pre_save_document(instance, sender, **kwargs):
         instance.abstract = 'No abstract provided'
 
     if instance.title == '' or instance.title is None:
-        name = os.path.basename(instance.files[0])
-        instance.title = name
+        if instance.files:
+            name = os.path.basename(instance.files[0])
+            instance.title = name
 
     resources = get_related_resources(instance)
 

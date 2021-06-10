@@ -38,7 +38,7 @@ from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Polygon, Point
 from django.contrib.gis.db.models import PolygonField
-from django.core.exceptions import ValidationError
+from django.core.exceptions import SuspiciousFileOperation, ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.templatetags.static import static
@@ -1882,9 +1882,10 @@ class MenuItem(models.Model):
 
 class CuratedThumbnail(models.Model):
     resource = models.OneToOneField(ResourceBase, on_delete=models.CASCADE)
-    img = models.ImageField(upload_to='curated_thumbs')
+    img = models.ImageField(upload_to='curated_thumbs', storage=storage_manager)
     # TOD read thumb size from settings
     img_thumbnail = ImageSpecField(source='img',
+                                   cachefile_storage=storage_manager,
                                    processors=[ResizeToFill(240, 180)],
                                    format='PNG',
                                    options={'quality': 60})
@@ -1894,15 +1895,15 @@ class CuratedThumbnail(models.Model):
         try:
             if not Simple()._exists(self.img_thumbnail):
                 Simple().generate(self.img_thumbnail, force=True)
-            upload_path = storage_manager.path(self.img_thumbnail.name)
-            actual_name = os.path.basename(storage_manager.url(upload_path))
-            _upload_path = os.path.join(os.path.dirname(upload_path), actual_name)
-            if not os.path.exists(_upload_path):
-                os.rename(upload_path, _upload_path)
-            return self.img_thumbnail.url
+        except SuspiciousFileOperation:
+            '''
+            we must rely to the storage_manager, if the storage is changed, we will ignore this
+            '''
+            return ''
         except Exception as e:
             logger.exception(e)
-        return ''
+
+        return self.img_thumbnail.url or ''
 
 
 class Configuration(SingletonModel):

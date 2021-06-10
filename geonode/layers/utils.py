@@ -46,7 +46,7 @@ from geonode.storage.manager import storage_manager
 from geonode.base.models import Region
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
-from geonode.geoserver.helpers import gs_catalog, gs_uploader
+from geonode.geoserver.helpers import gs_catalog
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
 
 READ_PERMISSIONS = [
@@ -610,40 +610,6 @@ def set_layers_permissions(permissions_name, resources_names=None,
 def get_uuid_handler():
     from django.utils.module_loading import import_string
     return import_string(settings.LAYER_UUID_HANDLER)
-
-
-def gs_handle_layer(layer, base_files, user, action_type="append"):
-    gs_layer = gs_catalog.get_layer(layer.name)
-    if gs_layer and gs_layer.type == 'VECTOR' and action_type == "append":
-        is_valid_layer = True
-    elif gs_layer and action_type == "replace":
-        is_valid_layer = True
-    else:
-        is_valid_layer = False
-
-    if is_valid_layer:
-        #  opening upload session for the selected layer
-        from geonode.upload.models import Upload
-
-        upload_session, _ = Upload.objects.get_or_create(resource=layer.resourcebase_ptr, user=user)
-        upload_session.resource = layer.resourcebase_ptr
-        upload_session.processed = False
-        upload_session.save()
-
-        #  opening Import session for the selected layer
-        import_session = gs_uploader.start_import(
-            import_id=upload_session.id, name=layer.name, target_store=gs_layer.resource.store.name
-        )
-
-        import_session.upload_task(base_files)
-        task = import_session.tasks[0]
-        #  Changing layer name, mode and target
-        task.layer.set_target_layer_name(layer.name)
-        task.set_update_mode(action_type.upper())
-        task.set_target(store_name=gs_layer.resource.store.name, workspace=gs_layer.resource.workspace.name)
-        #  Starting import process
-        import_session.commit()
-        return upload_session, import_session
 
 
 def validate_input_source(layer, filename, files, gtype=None, action_type='replace'):

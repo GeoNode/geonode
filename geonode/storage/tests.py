@@ -17,6 +17,7 @@
 # along with this profgram. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.storage.manager import StorageManager
 import io
 
 from unittest.mock import patch
@@ -33,7 +34,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         self.sut = DropboxStorageManager
 
     @patch('geonode.storage.dropbox.DropBoxStorage.delete')
-    def test_dropbox_deleted_has_been_called(self, dbx):
+    def test_dropbox_deleted(self, dbx):
         '''
         Will test that the function returns the expected result
         and that the DropBoxStorage function as been called with the expected parameters
@@ -44,7 +45,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         dbx.assert_called_once_with('filename')
 
     @patch('geonode.storage.dropbox.DropBoxStorage.exists')
-    def test_dropbox_exists_has_been_called(self, dbx):
+    def test_dropbox_exists(self, dbx):
         '''
         Will test that the function returns the expected result
         and that the DropBoxStorage function as been called with the expected parameters
@@ -55,7 +56,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         dbx.assert_called_once_with('filename')
 
     @patch('geonode.storage.dropbox.DropBoxStorage.listdir')
-    def test_dropbox_listdir_has_been_called(self, dbx):
+    def test_dropbox_listdir(self, dbx):
         '''
         Will test that the function returns the expected result
         and that the DropBoxStorage function as been called with the expected parameters
@@ -66,7 +67,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         dbx.assert_called_once_with('Apps/')
 
     @patch('geonode.storage.dropbox.DropBoxStorage._open')
-    def test_dropbox_open_has_been_called(self, dbx):
+    def test_dropbox_open(self, dbx):
         '''
         Will test that the function returns the expected result
         and that the DropBoxStorage function as been called with the expected parameters
@@ -74,10 +75,10 @@ class TestDropboxStorageManager(SimpleTestCase):
         dbx.return_value = io.StringIO()
         output = self.sut().open("name", mode='xx')
         self.assertEqual(type(output), io.StringIO().__class__)
-        dbx.assert_called_once_with("name", mode='xx')
+        dbx.assert_called_once_with("name", 'xx')
 
     @patch('geonode.storage.dropbox.DropBoxStorage._full_path')
-    def test_dropbox_path_has_been_called(self, dbx):
+    def test_dropbox_path(self, dbx):
         '''
         Will test that the function returns the expected result
         and that the DropBoxStorage function as been called with the expected parameters
@@ -87,8 +88,8 @@ class TestDropboxStorageManager(SimpleTestCase):
         self.assertEqual("/opt/full/path/to/file", output)
         dbx.assert_called_once_with('file')
 
-    @patch('geonode.storage.dropbox.DropBoxStorage._save')
-    def test_dropbox_save_has_been_called(self, dbx):
+    @patch('geonode.storage.dropbox.DropBoxStorage.save')
+    def test_dropbox_save(self, dbx):
         '''
         Will test that the function returns the expected result
         and that the DropBoxStorage function as been called with the expected parameters
@@ -99,7 +100,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         dbx.assert_called_once_with('file_name', "content")
 
     @patch('geonode.storage.dropbox.DropBoxStorage.size')
-    def test_dropbox_size_has_been_called(self, dbx):
+    def test_dropbox_size(self, dbx):
         '''
         Will test that the function returns the expected result
         and that the DropBoxStorage function as been called with the expected parameters
@@ -115,7 +116,7 @@ class TestGoogleStorageManager(SimpleTestCase):
         self.sut = GoogleStorageManager
 
     @patch('storages.backends.gcloud.GoogleCloudStorage.delete')
-    def test_google_deleted_has_been_called(self, gcs):
+    def test_google_deleted(self, gcs):
         '''
         Will test that the function returns the expected result
         and that the GoogleCloudStorage function as been called with the expected parameters
@@ -126,7 +127,7 @@ class TestGoogleStorageManager(SimpleTestCase):
         gcs.assert_called_once_with('filename')
 
     @patch('storages.backends.gcloud.GoogleCloudStorage.exists')
-    def test_google_exists_has_been_called(self, gcs):
+    def test_google_exists(self, gcs):
         '''
         Will test that the function returns the expected result
         and that the GoogleCloudStorage function as been called with the expected parameters
@@ -137,7 +138,7 @@ class TestGoogleStorageManager(SimpleTestCase):
         gcs.assert_called_once_with('filename')
 
     @patch('storages.backends.gcloud.GoogleCloudStorage.listdir')
-    def test_google_listdir_has_been_called(self, gcs):
+    def test_google_listdir(self, gcs):
         '''
         Will test that the function returns the expected result
         and that the GoogleCloudStorage function as been called with the expected parameters
@@ -148,7 +149,7 @@ class TestGoogleStorageManager(SimpleTestCase):
         gcs.assert_called_once_with('Apps/')
 
     @patch('storages.backends.gcloud.GoogleCloudStorage._open')
-    def test_google_open_has_been_called(self, gcs):
+    def test_google_open(self, gcs):
         '''
         Will test that the function returns the expected result
         and that the GoogleCloudStorage function as been called with the expected parameters
@@ -156,9 +157,9 @@ class TestGoogleStorageManager(SimpleTestCase):
         gcs.return_value = io.StringIO()
         output = self.sut().open("name", mode='xx')
         self.assertEqual(type(output), io.StringIO().__class__)
-        gcs.assert_called_once_with("name", mode='xx')
+        gcs.assert_called_once_with("name", 'xx')
 
-    def test_google_path_has_been_called(self):
+    def test_google_path(self):
         '''
         Will test that the function returns the expected result
         and that the GoogleCloudStorage function as been called with the expected parameters
@@ -166,8 +167,8 @@ class TestGoogleStorageManager(SimpleTestCase):
         with self.assertRaises(NotImplementedError):
             self.sut().path('file')
 
-    @patch('storages.backends.gcloud.GoogleCloudStorage._save')
-    def test_google_save_has_been_called(self, gcs):
+    @patch('storages.backends.gcloud.GoogleCloudStorage.save')
+    def test_google_save(self, gcs):
         '''
         Will test that the function returns the expected result
         and that the GoogleCloudStorage function as been called with the expected parameters
@@ -178,7 +179,7 @@ class TestGoogleStorageManager(SimpleTestCase):
         gcs.assert_called_once_with('file_name', "content")
 
     @patch('storages.backends.gcloud.GoogleCloudStorage.size')
-    def test_google_size_has_been_called(self, gcs):
+    def test_google_size(self, gcs):
         '''
         Will test that the function returns the expected result
         and that the GoogleCloudStorage function as been called with the expected parameters
@@ -194,7 +195,7 @@ class TestAwsStorageManager(SimpleTestCase):
         self.sut = AwsStorageManager
 
     @patch('storages.backends.s3boto3.S3Boto3Storage.delete')
-    def test_aws_deleted_has_been_called(self, aws):
+    def test_aws_deleted(self, aws):
         '''
         Will test that the function returns the expected result
         and that the AwsStorageManager function as been called with the expected parameters
@@ -205,7 +206,7 @@ class TestAwsStorageManager(SimpleTestCase):
         aws.assert_called_once_with('filename')
 
     @patch('storages.backends.s3boto3.S3Boto3Storage.exists')
-    def test_aws_exists_has_been_called(self, aws):
+    def test_aws_exists(self, aws):
         '''
         Will test that the function returns the expected result
         and that the AwsStorageManager function as been called with the expected parameters
@@ -216,7 +217,7 @@ class TestAwsStorageManager(SimpleTestCase):
         aws.assert_called_once_with('filename')
 
     @patch('storages.backends.s3boto3.S3Boto3Storage.listdir')
-    def test_aws_listdir_has_been_called(self, aws):
+    def test_aws_listdir(self, aws):
         '''
         Will test that the function returns the expected result
         and that the AwsStorageManager function as been called with the expected parameters
@@ -227,7 +228,7 @@ class TestAwsStorageManager(SimpleTestCase):
         aws.assert_called_once_with('Apps/')
 
     @patch('storages.backends.s3boto3.S3Boto3Storage._open')
-    def test_aws_open_has_been_called(self, aws):
+    def test_aws_open(self, aws):
         '''
         Will test that the function returns the expected result
         and that the AwsStorageManager function as been called with the expected parameters
@@ -235,10 +236,10 @@ class TestAwsStorageManager(SimpleTestCase):
         aws.return_value = io.StringIO()
         output = self.sut().open("name", mode='xx')
         self.assertEqual(type(output), io.StringIO().__class__)
-        aws.assert_called_once_with("name", mode='xx')
+        aws.assert_called_once_with("name", 'xx')
 
     @patch('storages.backends.s3boto3.S3Boto3Storage._normalize_name')
-    def test_aws_path_has_been_called(self, aws):
+    def test_aws_path(self, aws):
         '''
         Will test that the function returns the expected result
         and that the AwsStorageManager function as been called with the expected parameters
@@ -248,8 +249,8 @@ class TestAwsStorageManager(SimpleTestCase):
         self.assertEqual("/opt/full/path/to/file", output)
         aws.assert_called_once_with('file')
 
-    @patch('storages.backends.s3boto3.S3Boto3Storage._save')
-    def test_aws_save_has_been_called(self, aws):
+    @patch('storages.backends.s3boto3.S3Boto3Storage.save')
+    def test_aws_save(self, aws):
         '''
         Will test that the function returns the expected result
         and that the AwsStorageManager function as been called with the expected parameters
@@ -260,7 +261,7 @@ class TestAwsStorageManager(SimpleTestCase):
         aws.assert_called_once_with('file_name', "content")
 
     @patch('storages.backends.s3boto3.S3Boto3Storage.size')
-    def test_aws_size_has_been_called(self, aws):
+    def test_aws_size(self, aws):
         '''
         Will test that the function returns the expected result
         and that the AwsStorageManager function as been called with the expected parameters
@@ -269,3 +270,116 @@ class TestAwsStorageManager(SimpleTestCase):
         output = self.sut().size('name')
         self.assertEqual(1, output)
         aws.assert_called_once_with('name')
+
+
+class TestStorageManager(SimpleTestCase):
+    def setUp(self):
+        self.sut = StorageManager
+
+    @patch('django.core.files.storage.FileSystemStorage.delete')
+    def test_storage_manager_deleted(self, strg):
+        '''
+        Will test that the function returns the expected result
+        and that the StorageManager function as been called with the expected parameters
+        '''
+        strg.return_value = None
+        output = self.sut().delete('filename')
+        self.assertIsNone(output)
+        strg.assert_called_once_with('filename')
+
+    @patch('django.core.files.storage.FileSystemStorage.exists')
+    def test_storage_manager_exists(self, strg):
+        '''
+        Will test that the function returns the expected result
+        and that the StorageManager function as been called with the expected parameters
+        '''
+        strg.return_value = True
+        output = self.sut().exists('filename')
+        self.assertTrue(output)
+        strg.assert_called_once_with('filename')
+
+    @patch('django.core.files.storage.FileSystemStorage.listdir')
+    def test_storage_manager_listdir(self, strg):
+        '''
+        Will test that the function returns the expected result
+        and that the StorageManager function as been called with the expected parameters
+        '''
+        strg.return_value = (['folder1'], ['file1', 'file2'])
+        output = self.sut().listdir('Apps/')
+        self.assertTupleEqual((['folder1'], ['file1', 'file2']), output)
+        strg.assert_called_once_with('Apps/')
+
+    @patch('django.core.files.storage.FileSystemStorage._open')
+    def test_storage_manager_open(self, strg):
+        '''
+        Will test that the function returns the expected result
+        and that the StorageManager function as been called with the expected parameters
+        '''
+        strg.return_value = io.StringIO()
+        output = self.sut().open("name", mode='xx')
+        self.assertEqual(type(output), io.StringIO().__class__)
+        strg.assert_called_once()
+
+    @patch('django.core.files.storage.FileSystemStorage.path')
+    def test_storage_manager_path(self, strg):
+        '''
+        Will test that the function returns the expected result
+        and that the StorageManager function as been called with the expected parameters
+        '''
+        strg.return_value = "/opt/full/path/to/file"
+        output = self.sut().path('file')
+        self.assertEqual("/opt/full/path/to/file", output)
+        strg.assert_called_once_with('file')
+
+    @patch('django.core.files.storage.FileSystemStorage.save')
+    def test_storage_manager_save(self, strg):
+        '''
+        Will test that the function returns the expected result
+        and that the StorageManager function as been called with the expected parameters
+        '''
+        strg.return_value = True
+        output = self.sut().save('file_name', "content")
+        self.assertTrue(output)
+        strg.assert_called_once()
+
+    @patch('django.core.files.storage.FileSystemStorage.size')
+    def test_storage_manager_size(self, strg):
+        '''
+        Will test that the function returns the expected result
+        and that the StorageManager function as been called with the expected parameters
+        '''
+        strg.return_value = 1
+        output = self.sut().size('name')
+        self.assertEqual(1, output)
+        strg.assert_called_once_with('name')
+
+    @patch('django.core.files.storage.FileSystemStorage.save')
+    @patch('django.core.files.storage.FileSystemStorage.path')
+    def test_storage_manager_replace_files_list(self, path, strg):
+        '''
+        Will test that the function returns the expected result
+        and that the StorageManager function as been called with the expected parameters
+        '''
+        path.return_value = '/opt/full/path/to/file'
+        strg.return_value = '/opt/full/path/to/file'
+        expected = ['/opt/full/path/to/file', '/opt/full/path/to/file']
+        old_files = ['/opt/full/path/to/file', '/opt/full/path/to/file']
+        new_files = ['geonode/base/fixtures/test_sld.sld', 'geonode/base/fixtures/test_data.json']
+
+        output = self.sut().replace_files_list(old_files, new_files)
+        self.assertEqual(2, len(output))
+        self.assertListEqual(expected, output)
+
+    @patch('django.core.files.storage.FileSystemStorage.save')
+    @patch('django.core.files.storage.FileSystemStorage.path')
+    def test_storage_manager_replace_single_file(self, path, strg):
+        '''
+        Will test that the function returns the expected result
+        and that the StorageManager function as been called with the expected parameters
+        '''
+        path.return_value = '/opt/full/path/to/file'
+        strg.return_value = '/opt/full/path/to/file'
+        expected = '/opt/full/path/to/file'
+        with open('geonode/base/fixtures/test_sld.sld') as new_file:
+            output = self.sut().replace_single_file('geonode/base/fixtures/old_file.sld', new_file)
+        self.assertEqual(expected, output)

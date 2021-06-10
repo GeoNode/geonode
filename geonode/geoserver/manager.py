@@ -26,6 +26,7 @@ from django.contrib.auth.models import Group
 from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 
+from geonode.upload.models import Upload
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
@@ -41,6 +42,7 @@ from geonode.resource.manager import (
     ResourceManager,
     ResourceManagerInterface)
 
+from geonode.storage.manager import storage_manager
 from .tasks import (
     geoserver_set_style,
     geoserver_delete_map,
@@ -50,6 +52,7 @@ from .tasks import (
 from .signals import geoserver_post_save_local
 from .helpers import (
     gs_catalog,
+    gs_uploader,
     set_time_info,
     ogc_server_settings)
 from .security import (
@@ -264,3 +267,35 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 logger.exception(e)
                 return None
         return instance
+
+    def revise_resource_value(self, _resource, files: list, user, action_type: str):
+        upload_session, _ = Upload.objects.get_or_create(resource=_resource.resourcebase_ptr, user=user)
+        upload_session.resource = _resource.resourcebase_ptr
+        upload_session.processed = False
+        upload_session.save()
+        gs_layer = gs_catalog.get_layer(_resource.name)
+        #  opening Import session for the selected layer
+        if not gs_layer:
+            raise Exception("Layer is not available in GeoServer")
+        import_session = gs_uploader.start_import(
+            import_id=upload_session.id, name=_resource.name, target_store=gs_layer.resource.store.name
+        )
+
+        import_session.upload_task(files)
+        task = import_session.tasks[0]
+        #  Changing layer name, mode and target
+        task.layer.set_target_layer_name(_resource.name)
+        task.set_update_mode(action_type.upper())
+        task.set_target(store_name=gs_layer.resource.store.name, workspace=gs_layer.resource.workspace.name)
+        #  Starting import process
+        import_session.commit()
+
+        # Updating Resource with the files replaced
+        if action_type.lower() == 'replace':
+            updated_files_list = storage_manager.replace(_resource, files)
+            # Using update instead of save in order to avoid calling
+            # side-effect function of the resource
+            r = ResourceBase.objects.filter(id=_resource.id)
+            r.update(**updated_files_list)
+
+        return upload_session, import_session

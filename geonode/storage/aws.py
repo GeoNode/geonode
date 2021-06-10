@@ -40,7 +40,7 @@ class AwsStorageManager(StorageManagerInterface):
         return self._aws.listdir(path)
 
     def open(self, name, mode='rb'):
-        return self._aws._open(name, mode=mode)
+        return self._aws.open(name, mode=mode)
 
     def path(self, name):
         return self._aws._normalize_name(name)
@@ -53,3 +53,6 @@ class AwsStorageManager(StorageManagerInterface):
 
     def size(self, name):
         return self._aws.size(name)
+
+    def generate_filename(self, filename):
+        return self._aws.generate_filename(filename)

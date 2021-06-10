@@ -62,6 +62,7 @@ from geonode.base.forms import (
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
+
 from .utils import get_download_response
 from .enumerations import (
     DOCUMENT_TYPE_MAP,
@@ -244,8 +245,10 @@ class DocumentUploadView(CreateView):
             dirname = os.path.basename(tempdir)
             filepath = storage_manager.save(f"{dirname}/{file.name}", file)
             self.object.title = file.name
-            self.object.files = [storage_manager.path(filepath)]
-            shutil.rmtree(tempdir)
+            storage_path = storage_manager.path(filepath)
+            self.object.files = [storage_path]
+            if tempdir != os.path.dirname(storage_path):
+                shutil.rmtree(tempdir)
 
         self.object.owner = self.request.user
         self.object.doc_url = doc_form.pop('doc_url', None)
@@ -255,9 +258,15 @@ class DocumentUploadView(CreateView):
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
 
-        self.object.save()
+        self.object = resource_manager.create(
+            None,
+            resource_type=Document,
+            defaults={"owner": self.request.user, "title": self.object.title, "files": self.object.files},
+        )
 
-        self.object.set_permissions(form.cleaned_data['permissions'])
+        resource_manager.set_permissions(
+            None, instance=self.object, permissions=form.cleaned_data["permissions"], created=True
+        )
 
         abstract = None
         date = None
@@ -336,17 +345,11 @@ class DocumentUpdateView(UpdateView):
         If the form is valid, save the associated model.
         """
         file = form.cleaned_data.get('doc_file')
-        if file:
-            # If the files exists, we will replace the file present via the storage_manager
-            from pathlib import Path
-            path = str(Path(self.object.files[0]).parent.absolute())
-            old_file_name, _ = os.path.splitext(os.path.basename(self.object.files[0]))
-            _, ext = os.path.splitext(file.name)
-            filepath = storage_manager.save(f"{path}/{old_file_name}{ext}", file)
-            self.object.files = [storage_manager.path(filepath)]
 
-        self.object = form.save()
+        self.object = resource_manager.replace(self.object, file, self.request.user)
+
         register_event(self.request, EventType.EVENT_CHANGE, self.object)
+
         return HttpResponseRedirect(
             reverse(
                 'document_detail',

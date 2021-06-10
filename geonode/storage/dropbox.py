@@ -41,7 +41,7 @@ class DropboxStorageManager(StorageManagerInterface):
         return self._drx.listdir(path)
 
     def open(self, name, mode='rb'):
-        return self._drx._open(name, mode=mode)
+        return self._drx.open(name, mode=mode)
 
     def path(self, name):
         return self._drx._full_path(name)
@@ -54,3 +54,6 @@ class DropboxStorageManager(StorageManagerInterface):
 
     def size(self, name):
         return self._drx.size(name)
+
+    def generate_filename(self, filename):
+        return self._drx.generate_filename(filename)

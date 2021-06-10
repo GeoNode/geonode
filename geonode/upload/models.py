@@ -257,10 +257,8 @@ class Upload(models.Model):
         if self.resource:
             for _file in self.resource.files:
                 try:
-                    dirname = os.path.dirname(_file)
-                    if storage_manager.exists(dirname):
-                        storage_manager.delete(dirname)
-                        break
+                    if storage_manager.exists(_file):
+                        storage_manager.delete(_file)
                 except Exception as e:
                     logger.warning(e)
 
