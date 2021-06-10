@@ -75,7 +75,7 @@ class StorageManagerInterface(metaclass=ABCMeta):
 class StorageManager(StorageManagerInterface):
 
     def __init__(self):
-        self._storage_manager = self._get_concrete_manager()
+        self._concrete_storage_manager = self._get_concrete_manager()
 
     def _get_concrete_manager(self):
         module_name, class_name = sm_settings.STORAGE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
@@ -84,28 +84,28 @@ class StorageManager(StorageManagerInterface):
         return class_()
 
     def delete(self, name):
-        return self._storage_manager.delete(name)
+        return self._concrete_storage_manager.delete(name)
 
     def exists(self, name):
-        return self._storage_manager.exists(name)
+        return self._concrete_storage_manager.exists(name)
 
     def listdir(self, path):
-        return self._storage_manager.listdir(path)
+        return self._concrete_storage_manager.listdir(path)
 
     def open(self, name, mode='rb'):
-        return self._storage_manager.open(name, mode=mode)
+        return self._concrete_storage_manager.open(name, mode=mode)
 
     def path(self, name):
-        return self._storage_manager.path(name)
+        return self._concrete_storage_manager.path(name)
 
     def save(self, name, content, max_length=None):
-        return self._storage_manager.save(name, content, max_length=max_length)
+        return self._concrete_storage_manager.save(name, content, max_length=max_length)
 
     def size(self, name):
-        return self._storage_manager.size(name)
+        return self._concrete_storage_manager.size(name)
 
     def url(self, name):
-        return self._storage_manager.url(name)
+        return self._concrete_storage_manager.url(name)
 
     def replace(self, _resource, files: Union[list, BinaryIO]):
         updated_files = {}
@@ -137,7 +137,7 @@ class StorageManager(StorageManagerInterface):
         return self.path(filepath)
 
     def generate_filename(self, filename):
-        return self._storage_manager.generate_filename(filename)
+        return self._concrete_storage_manager.generate_filename(filename)
 
 
 class DefaultStorageManager(StorageManagerInterface):
