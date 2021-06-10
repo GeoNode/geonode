@@ -22,7 +22,6 @@
 """
 
 # Standard Modules
-from geonode.base.enumerations import LAYER_TYPES
 import re
 import logging
 from urllib.parse import urljoin

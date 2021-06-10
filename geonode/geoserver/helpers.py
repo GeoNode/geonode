@@ -2052,6 +2052,6 @@ def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
     implementation = import_string(settings.THUMBNAIL_GENERATOR)
     return implementation(instance, overwrite, check_bbox)
 
+
 def get_layer_storetype(element):
     return LAYER_SUBTYPES.get(element, element)
-

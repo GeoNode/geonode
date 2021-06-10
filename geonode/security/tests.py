@@ -59,7 +59,15 @@ from geonode.decorators import on_ogc_backend, dump_func_name
 from geonode.geoserver.helpers import gs_slurp
 from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
-from geonode.geoserver.security import get_geofence_rules, get_geofence_rules_count , get_highest_priority,    set_geofence_all,    purge_geofence_all,    sync_geofence_with_guardian,    sync_resources_with_guardian
+from geonode.geoserver.security import (
+    get_geofence_rules,
+    get_geofence_rules_count,
+    get_highest_priority,
+    set_geofence_all,
+    purge_geofence_all,
+    sync_geofence_with_guardian,
+    sync_resources_with_guardian,
+)
 
 from .utils import (
     get_visible_resources,

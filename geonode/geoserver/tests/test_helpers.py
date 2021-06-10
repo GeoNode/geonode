@@ -19,6 +19,7 @@
 #########################################################################
 from geonode.geoserver.helpers import get_layer_storetype
 from geonode.tests.base import GeoNodeBaseTestSupport
+from django.test.testcases import SimpleTestCase
 
 import re
 from urllib.parse import urljoin
@@ -158,6 +159,7 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         }
         _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))
+
 
 class TestGetLayerStoreType(SimpleTestCase):
     def test_return_element_if_not_exists_in_the_subtypes(self):
