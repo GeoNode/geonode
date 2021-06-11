@@ -61,13 +61,6 @@ class GeoAppSerializer(ResourceBaseSerializer):
     """
      - Deferred / not Embedded --> ?include[]=data
     """
-    data = GeoAppDataField(
-        GeoAppDataSerializer,
-        source='id',
-        many=False,
-        embed=False,
-        deferred=True)
-
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
         super(GeoAppSerializer, self).__init__(*args, **kwargs)
@@ -79,7 +72,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         fields = (
             'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
-            'urlsuffix', 'data'
+            'urlsuffix', 'blob'
         )
 
     def to_internal_value(self, data):

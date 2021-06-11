@@ -88,13 +88,6 @@ class Map(ResourceBase, GXPMapBase):
         blank=True)
     # Full URL for featured map view, ie http://domain/someview
 
-    data = models.OneToOneField(
-        "MapData",
-        related_name="data",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE)
-
     def __str__(self):
         return f'{self.title} by {(self.owner.username if self.owner else "<Anonymous>")}'
 

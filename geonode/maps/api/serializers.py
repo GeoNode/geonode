@@ -82,7 +82,7 @@ class MapSerializer(ResourceBaseSerializer):
         fields = (
             'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
-            'urlsuffix', 'featuredurl', 'data',
+            'urlsuffix', 'featuredurl', 'blob',
         )
 
     def to_internal_value(self, data):
@@ -95,9 +95,3 @@ class MapSerializer(ResourceBaseSerializer):
     """
      - Deferred / not Embedded --> ?include[]=data
     """
-    data = MapDataField(
-        MapAppDataSerializer,
-        source='id',
-        many=False,
-        embed=False,
-        deferred=True)

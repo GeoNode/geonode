@@ -11,8 +11,8 @@ LAYER_SUBTYPES = {
 }
 
 def change_value(apps, schema_editor):
-    ll = Layer.objects.all()
-    for l in ll:
+    MyModel = apps.get_model('layers', 'Layer')
+    for l in MyModel.objects.all():
         u = Layer.objects.filter(resourcebase_ptr_id=l.resourcebase_ptr_id)
         store_type = get_layer_storetype(l.storeType)
         u.update(**{"storeType": store_type})
