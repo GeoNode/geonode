@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.base.models import ResourceBase
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -79,7 +80,11 @@ class FavoriteManager(models.Manager):
         return favs
 
     def create_favorite(self, content_object, user):
-        content_type = ContentType.objects.get_for_model(type(content_object))
+        if type(content_object) == ResourceBase:
+            content_type = ContentType.objects.get(model=content_object.resource_type)
+        else:
+            content_type = ContentType.objects.get_for_model(type(content_object))
+
         favorite, _ = self.get_or_create(
             user=user,
             content_type=content_type,
