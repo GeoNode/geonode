@@ -537,8 +537,8 @@ def _get_layer_values(layer, upload_session, expand=0):
         inDataSource = ogr.Open(absolute_base_file)
         lyr = inDataSource.GetLayer(str(layer.name))
         limit = 10
-        for feat in islice(lyr, 0, limit):
-            try:
+        try:
+            for feat in islice(lyr, 0, limit):
                 feat_values = json_loads_byteified(
                     feat.ExportToJson(),
                     upload_session.charset).get('properties')
@@ -553,8 +553,8 @@ def _get_layer_values(layer, upload_session, expand=0):
                         else:
                             feat_values[k] = feat_value
                     layer_values.append(feat_values)
-            except Exception as e:
-                logger.exception(e)
+        except Exception as e:
+            logger.exception(e)
     return layer_values
 
 
