@@ -25,7 +25,6 @@ from django.db.models import Subquery
 from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
-from django.contrib.contenttypes.models import ContentType
 
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import GenericViewSet
@@ -284,8 +283,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 Favorite.objects.get(user=user, object_id=resource.pk)
                 return Response({"message": "Resource is already in favorites"}, status=400)
             except Favorite.DoesNotExist:
-                content_type = ContentType.objects.get(model=resource.resource_type)
-                Favorite.objects.create_favorite(resource, user, content_type)
+                Favorite.objects.create_favorite(resource, user)
                 return Response({"message": "Successfuly added resource to favorites"}, status=201)
 
         if request.method == 'DELETE':

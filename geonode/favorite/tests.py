@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+from geonode.base.models import ResourceBase
+from geonode.base.populate_test_data import create_single_layer
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import json
@@ -89,6 +91,27 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(len(bulk_favorites["layer"]), 0)
         self.assertEqual(len(bulk_favorites["map"]), 0)
         self.assertEqual(len(bulk_favorites["user"]), 0)
+
+    def test_given_resource_base_object_will_assign_subtype_as_content_type(self):
+        test_user = get_user_model().objects.first()
+
+        '''
+        If the input object is a ResourceBase, in favorite content type, should be saved he
+        subtype content type (Doc, Layer, Map or GeoApp)
+        '''
+        create_single_layer('foo_layer')
+        resource = ResourceBase.objects.get(title='foo_layer')
+        created_fav = Favorite.objects.create_favorite(resource, test_user)
+        self.assertEqual('layer', created_fav.content_type.model)
+
+        '''
+        If the input object is a subtype, should save the relative content type
+        '''
+        test_document_1 = Document.objects.first()
+        Favorite.objects.create_favorite(test_document_1, test_user)
+        fav = Favorite.objects.last()
+        ct = ContentType.objects.get_for_model(test_document_1)
+        self.assertEqual(fav.content_type, ct)
 
     # tests of view methods.
     def test_create_favorite_view(self):
