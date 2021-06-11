@@ -19,6 +19,7 @@
 # Translators:
 # Translators:
 # Translators:
+# Julierme Gonçalves Pinheiro <juliermegp@gmail.com>, 2021
 # Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
 # Bibiana T. de Almeida <bibiana.almeida@embrapa.br>, 2013-2015
 # Davi de O Custodio <davicustodio@gmail.com>, 2014
