@@ -340,7 +340,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             )
             if not request.user.is_anonymous:
                 favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
-                data['favourite'] = favorite > 0
+                data['favorite'] = favorite > 0
         return data
 
 
