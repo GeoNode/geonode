@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.base.models import ResourceBase
 from dynamic_rest.fields.fields import DynamicRelationField
 from rest_framework import serializers
 
@@ -57,16 +58,18 @@ class MapAppDataSerializer(DynamicModelSerializer):
 
     class Meta:
         ref_name = 'MapData'
-        model = MapData
+        model = ResourceBase
         name = 'MapData'
-        fields = ('pk', 'blob')
+        fields = ('pk', 'data')
 
     def to_internal_value(self, data):
         return data
 
     def to_representation(self, value):
-        data = MapData.objects.filter(resource__id=value).first()
-        return data.blob if data else {}
+        data = Map.objects.filter(resourcebase_ptr_id=value)
+        if data.exists():
+            return data.first().data
+        return {}
 
 
 class MapSerializer(ResourceBaseSerializer):
@@ -82,16 +85,22 @@ class MapSerializer(ResourceBaseSerializer):
         fields = (
             'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
-            'urlsuffix', 'featuredurl', 'blob',
+            'urlsuffix', 'featuredurl', 'data',
         )
 
     def to_internal_value(self, data):
         if 'data' in data:
             _data = data.pop('data')
             if self.is_valid():
-                data['blob'] = _data
+                data['data'] = _data
 
         return data
     """
      - Deferred / not Embedded --> ?include[]=data
     """
+    data = MapDataField(
+        MapAppDataSerializer,
+        source='id',
+        many=False,
+        embed=False,
+        deferred=True)
