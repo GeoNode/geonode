@@ -17,7 +17,7 @@ decorator==5.0.9
 celery==5.1.0
 kombu==5.1.0
 vine==5.0.0
-tqdm==4.61.0
+tqdm==4.61.1
 Deprecated==1.2.12
 wrapt==1.12.1
 jsonfield==3.1.0
@@ -43,7 +43,7 @@ django-tinymce==3.3.0
 django-grappelli==2.15.1
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.8
-oauthlib==3.1.0
+oauthlib==3.1.1
 pyopenssl==20.0.1
 
 # geopython dependencies
@@ -73,7 +73,7 @@ djangorestframework-gis==0.17
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.0
 drf-writable-nested==0.6.3
-drf-spectacular==0.17.0
+drf-spectacular==0.17.1
 git+https://github.com/GeoNode/dynamic-rest.git@v2.0.1#egg=dynamic-rest
 Markdown==3.3.4
 
