@@ -31,7 +31,13 @@ logger = logging.getLogger(__name__)
 
 
 class OgcWmsHarvester(base.BaseHarvesterWorker):
+    """Harvester for resources coming from OGC WMS web services"""
+
     layer_title_filter: typing.Optional[str]
+    _base_wms_parameters: typing.Dict = {
+        "service": "WMS",
+        "version": "1.3.0",
+    }
 
     def __init__(
             self,
@@ -39,7 +45,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             layer_title_filter: typing.Optional[str] = None,
             **kwargs
     ):
-        """A harvester for OGC WMS servers."""
         super().__init__(*args, **kwargs)
         self.http_session = requests.Session()
         self.http_session.headers = {
@@ -104,14 +109,12 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             resource_type: str,
             harvesting_session_id: typing.Optional[int] = None
     ) -> typing.Optional[resourcedescriptor.RecordDescription]:
+        params = self._base_wms_parameters
+        params.update({
+            "request": "GetCapabilities",
+        })
         get_capabilities_response = self.http_session.get(
-            self.remote_url,
-            params={
-                "service": "WMS",
-                "version": "1.3.0",
-                "request": "GetCapabilities",
-            }
-        )
+            self.remote_url, params=params)
         get_capabilities_response.raise_for_status()
         root = etree.fromstring(get_capabilities_response.content, parser=XML_PARSER)
         nsmap = _get_nsmap(root.nsmap)

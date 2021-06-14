@@ -32,27 +32,6 @@ from . import (
 logger = logging.getLogger(__name__)
 
 
-# TODO: Remove this
-@app.task(
-    bind=True,
-    #name='geonode.harvesting.tasks.harvesting_session_dispatcher',
-    queue='geonode',
-    acks_late=False,
-)
-def harvesting_session_dispatcher(self, harvester_id: int):
-    """Kick-off a new harvesting session"""
-    harvester = models.Harvester.objects.get(pk=harvester_id)
-    worker = harvester.get_harvester_worker()
-    available = utils.update_harvester_availability(harvester)
-    if available:
-        worker.perform_metadata_harvesting()
-    else:
-        logger.warning(
-            f"Skipping harvesting session for harvester {harvester.name!r} because the "
-            f"remote {harvester.remote_url!r} seems to be unavailable"
-        )
-
-
 @app.task(
     bind=True,
     queue='geonode',
@@ -72,6 +51,11 @@ def harvesting_dispatcher(self, harvester_id: int):
     - determine which of the known harvestable resources are to be harvested
     - schedule each harvestable resource to be harvested asynchronously
     - when all resources have been harvested, finish the harvesting session
+
+    The code uses celery's chord workflow primitive. This is used to allow the
+    harvesting of individual resources to be done in parallel (as much as the celery
+    worker config allows for) and still have a final synchronization step, once all
+    resources are harvested, that finalizes the harvesting session.
 
     """
 

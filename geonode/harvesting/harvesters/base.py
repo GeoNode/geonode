@@ -39,6 +39,15 @@ class BriefRemoteResource:
 
 
 class BaseHarvesterWorker(abc.ABC):
+    """Base class for harvesters.
+
+    This provides two relevant things:
+
+    - an interface that all custom GeoNode harvesting classes must implement
+    - default implementation of some lower-level methods
+
+    """
+
     remote_url: str
     harvester_id: int
 
