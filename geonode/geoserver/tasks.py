@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.geoserver.helpers import get_layer_storetype
 import os
 import re
 
@@ -28,7 +27,7 @@ from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 from django.templatetags.static import static
 
-
+from celery import shared_task
 from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
@@ -43,7 +42,9 @@ from geonode.utils import (
     set_resource_default_links)
 from geonode.geoserver.upload import geoserver_upload
 from geonode.catalogue.models import catalogue_post_save
+from geonode.geoserver.helpers import get_layer_storetype
 
+from .security import sync_resources_with_guardian
 from .helpers import (
     gs_slurp,
     gs_catalog,
@@ -519,3 +520,22 @@ def geoserver_delete_map(self, object_id):
 
             map_obj.layer_set.all().delete()
             map_obj.delete()
+
+
+@shared_task(
+    bind=True,
+    name='geonode.security.tasks.synch_guardian',
+    queue='security',
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
+def synch_guardian():
+    """
+    Sync resources with Guardian and clear their dirty state
+    """
+    if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+        sync_resources_with_guardian()
