@@ -479,7 +479,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             resp = self.client.post(document_upload_url, data=data)
             if resp.status_code == 200:
                 content = resp.content.decode('utf-8')
-                self.assertTrue("document title" in content)
+                self.assertIn("document title", content)
 
     def test_moderated_upload(self):
         """

@@ -251,10 +251,10 @@ class ResourceManager(ResourceManagerInterface):
                         object_pk=instance.id
                     ).delete()
                 UserObjectPermission.objects.filter(
-                    content_type=ContentType.objects.get_for_model(_resource),
+                    content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
                     object_pk=instance.id).delete()
                 GroupObjectPermission.objects.filter(
-                    content_type=ContentType.objects.get_for_model(_resource),
+                    content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
                     object_pk=instance.id).delete()
                 return self._concrete_resource_manager.remove_permissions(uuid, instance=_resource)
             except Exception as e:
