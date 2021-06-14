@@ -28,14 +28,14 @@ import traceback
 from django.db import models
 from django.conf import settings
 from django.core import serializers
-from django.db.models.fields.json import JSONField
-from django.utils.functional import cached_property
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.db.models import Q, signals
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
+from django.db.models.fields.json import JSONField
+from django.utils.functional import cached_property
 from django.contrib.gis.geos import Polygon, Point
 from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import SuspiciousFileOperation, ValidationError
