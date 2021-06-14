@@ -424,17 +424,6 @@ class Map(ResourceBase, GXPMapBase):
         pass
 
 
-class MapData(models.Model):
-    blob = JSONField(
-        null=False,
-        default={})
-    resource = models.ForeignKey(
-        Map,
-        null=False,
-        blank=False,
-        on_delete=models.CASCADE)
-
-
 class MapLayer(models.Model, GXPLayerBase):
 
     """

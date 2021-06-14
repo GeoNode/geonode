@@ -24,7 +24,7 @@ from rest_framework import serializers
 
 from dynamic_rest.serializers import DynamicModelSerializer
 
-from geonode.maps.models import Map, MapData, MapLayer
+from geonode.maps.models import Map, MapLayer
 from geonode.base.api.serializers import ResourceBaseSerializer
 
 import logging
@@ -62,9 +62,6 @@ class MapAppDataSerializer(DynamicModelSerializer):
         name = 'MapData'
         fields = ('pk', 'data')
 
-    def to_internal_value(self, data):
-        return data
-
     def to_representation(self, value):
         data = Map.objects.filter(resourcebase_ptr_id=value)
         if data.exists():
@@ -88,13 +85,6 @@ class MapSerializer(ResourceBaseSerializer):
             'urlsuffix', 'featuredurl', 'data',
         )
 
-    def to_internal_value(self, data):
-        if 'data' in data:
-            _data = data.pop('data')
-            if self.is_valid():
-                data['data'] = _data
-
-        return data
     """
      - Deferred / not Embedded --> ?include[]=data
     """

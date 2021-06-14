@@ -22,13 +22,8 @@ from django.contrib import admin
 
 from modeltranslation.admin import TabbedTranslationAdmin
 
-from geonode.geoapps.models import GeoApp, GeoAppData
+from geonode.geoapps.models import GeoApp
 from geonode.base.admin import ResourceBaseAdminForm
-
-
-class GeoAppDataInline(admin.TabularInline):
-    model = GeoAppData
-
 
 class GeoAppAdminForm(ResourceBaseAdminForm):
 
@@ -38,7 +33,6 @@ class GeoAppAdminForm(ResourceBaseAdminForm):
 
 
 class GeoAppAdmin(TabbedTranslationAdmin):
-    inlines = [GeoAppDataInline, ]
     list_display_links = ('title',)
     list_display = ('id', 'title', 'type', 'owner', 'category', 'group', 'is_approved', 'is_published',)
     list_editable = ('owner', 'category', 'group', 'is_approved', 'is_published',)

@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.base.models import ResourceBase
 import json
 import logging
 
@@ -24,7 +25,7 @@ from django.contrib.auth import get_user_model
 from dynamic_rest.fields.fields import DynamicRelationField
 from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.base.api.serializers import ResourceBaseSerializer
-from geonode.geoapps.models import GeoApp, GeoAppData
+from geonode.geoapps.models import GeoApp
 from rest_framework.serializers import ValidationError
 
 logger = logging.getLogger(__name__)
@@ -41,19 +42,14 @@ class GeoAppDataSerializer(DynamicModelSerializer):
 
     class Meta:
         ref_name = 'GeoAppData'
-        model = GeoAppData
+        model = ResourceBase
         name = 'GeoAppData'
         fields = ('pk', 'blob')
-
-    def to_internal_value(self, data):
-        return data
-
+       
     def to_representation(self, value):
-        data = GeoAppData.objects.filter(resource__id=value).first()
-        if data and data.blob:
-            if isinstance(data.blob, dict):
-                return data.blob
-            return json.loads(data.blob)
+        data = GeoApp.objects.filter(resourcebase_ptr_id=value)
+        if data.exists():
+            return data.first().data
         return {}
 
 
@@ -110,26 +106,6 @@ class GeoAppSerializer(ResourceBaseSerializer):
 
     def create(self, validated_data):
 
-        # perform sanity checks
-        self.extra_create_checks(validated_data)
-
-        # Extract JSON blob
-        _data = None
-        if 'blob' in validated_data:
-            _data = validated_data.pop('blob')
-
-        # Create a new instance
-        _instance = self.Meta.model.objects.create(**validated_data)
-
-        if _instance and _data:
-            try:
-                _geo_app, _created = GeoAppData.objects.get_or_create(resource=_instance)
-                _geo_app.blob = _data
-                _geo_app.save()
-            except Exception as e:
-                raise ValidationError(e)
-
-        _instance.save()
         return _instance
 
     def update(self, instance, validated_data):

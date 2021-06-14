@@ -126,16 +126,3 @@ class GeoApp(ResourceBase):
 
     class Meta(ResourceBase.Meta):
         pass
-
-
-class GeoAppData(models.Model):
-
-    blob = JSONField(
-        null=False,
-        default={})
-
-    resource = models.ForeignKey(
-        GeoApp,
-        null=False,
-        blank=False,
-        on_delete=models.CASCADE)
