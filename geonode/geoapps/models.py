@@ -24,8 +24,6 @@ from django.urls import reverse
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 
-from jsonfield import JSONField
-
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.base.models import ResourceBase, resourcebase_post_save
@@ -138,7 +136,7 @@ class GeoApp(ResourceBase):
 
 class GeoAppData(models.Model):
 
-    blob = JSONField(
+    blob = models.JSONField(
         null=False,
         default={})
 
