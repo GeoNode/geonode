@@ -135,7 +135,7 @@ def geoapp_detail(request, geoappid, template='apps/app_detail.html'):
             id=geoapp_obj.id).update(
             popular_count=F('popular_count') + 1)
 
-    _config = geoappid.data
+    _config = geoapp_obj.data
 
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(geoapp_obj)
@@ -221,7 +221,7 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
         except GroupProfile.DoesNotExist:
             group = None
 
-    resource_manager.update(
+    r = resource_manager.update(
         geoapp_obj.uuid,
         instance=geoapp_obj,
         notify=True)
@@ -242,7 +242,7 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
         else:
             access_token = None
 
-    _config = geoappid.data
+    _config = json.dumps(r.data)
     _ctx = {
         'appId': geoappid,
         'appType': geoapp_obj.type,
@@ -401,10 +401,10 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
 
     if request.method == "POST" and geoapp_form.is_valid(
     ) and category_form.is_valid() and tkeywords_form.is_valid():
-        new_poc = geoapp_form.cleaned_data['poc']
-        new_author = geoapp_form.cleaned_data['metadata_author']
-        new_keywords = current_keywords if request.keyword_readonly else geoapp_form.cleaned_data['keywords']
-        new_regions = geoapp_form.cleaned_data['regions']
+        new_poc = geoapp_form.cleaned_data.pop('poc')
+        new_author = geoapp_form.cleaned_data.pop('metadata_author')
+        new_keywords = current_keywords if request.keyword_readonly else geoapp_form.cleaned_data.pop('keywords')
+        new_regions = geoapp_form.cleaned_data.pop('regions')
 
         new_category = None
         if category_form and 'category_choice_field' in category_form.cleaned_data and \
@@ -448,6 +448,12 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
+        additional_vals = dict(
+            poc=new_poc or geoapp_obj.poc,
+            metadata_author=new_author or geoapp_obj.metadata_author,
+            category=new_category
+        )
+
         geoapp_obj = geoapp_form.instance
         resource_manager.update(
             geoapp_obj.uuid,
@@ -455,9 +461,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             keywords=new_keywords,
             regions=new_regions,
             vals=dict(
-                poc=new_poc or geoapp_obj.poc,
-                metadata_author=new_author or geoapp_obj.metadata_author,
-                category=new_category
+                **geoapp_form.cleaned_data, **additional_vals
             ),
             notify=True)
         resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
