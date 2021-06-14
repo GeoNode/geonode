@@ -1524,7 +1524,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if local_thumbnails.exists():
             _thumbnail_url = local_thumbnails.first().url
         elif remote_thumbnails.exists():
-            remote_thumbnails = remote_thumbnails.first().url
+            _thumbnail_url = remote_thumbnails.first().url
         return _thumbnail_url
 
     def has_thumbnail(self):

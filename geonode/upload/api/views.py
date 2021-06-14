@@ -105,11 +105,6 @@ class UploadViewSet(DynamicModelViewSet):
             request.GET['id'] = import_id
 
             response = upload_view(request, 'check')
-            content = response.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            data = json.loads(content)
-
             response = upload_view(request, 'final')
             content = response.content
             if isinstance(content, bytes):

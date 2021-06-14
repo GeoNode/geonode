@@ -73,6 +73,7 @@ class Command(BaseCommand):
 
 
 class GeoNodeUploader:
+
     def __init__(
         self,
         host: str,
@@ -82,7 +83,7 @@ class GeoNodeUploader:
         call_delay: int = 10,
         **kwargs,
     ):
-        super().__init__(**kwargs)
+        GeoNodeUploader.__init__(**kwargs)
         self.host = host
         self.folder_path = folder_path
         self.username = username
@@ -106,7 +107,6 @@ class GeoNodeUploader:
                 "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',  # to be decided
                 "time": "false",
                 "layer_title": file,
-                "time": "false",
                 "charset": "UTF-8",
             }
 

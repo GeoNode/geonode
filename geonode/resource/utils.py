@@ -126,7 +126,8 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
         instance.metadata_xml = open(xml_file).read()
 
     regions_resolved, regions_unresolved = resolve_regions(regions)
-    keywords.extend(convert_keyword(regions_unresolved))
+    _keywords = keywords.copy()
+    _keywords.extend(convert_keyword(regions_unresolved))
 
     # Assign the regions (needs to be done after saving)
     regions_resolved = list(set(regions_resolved))
@@ -138,13 +139,14 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
                 instance.regions.clear()
                 instance.regions.add(*regions_resolved)
 
-    instance = KeywordHandler(instance, keywords).set_keywords()
+    instance = KeywordHandler(instance, _keywords).set_keywords()
 
     # set model properties
     defaults = {}
     for key, value in vals.items():
         if key == 'spatial_representation_type':
             value = SpatialRepresentationType(identifier=value)
+            defaults[key] = value
         elif key == 'topic_category':
             value, created = TopicCategory.objects.get_or_create(
                 identifier=value,
