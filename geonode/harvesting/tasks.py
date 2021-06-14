@@ -95,7 +95,6 @@ def harvesting_dispatcher(self, harvester_id: int):
         )
 
 
-
 @app.task(
     bind=True,
     queue='geonode',
@@ -193,8 +192,9 @@ def update_harvestable_resources(self, harvester_id: int):
     worker = harvester.get_harvester_worker()
     try:
         num_resources = worker.get_num_available_resources()
-    except Exception:
-        pass
+    except NotImplementedError:
+        _handle_harvestable_resources_update_error(
+            self.request.id, harvester_id=harvester_id)
     page_size = 10
     total_pages = math.ceil(num_resources / page_size)
     batches = []

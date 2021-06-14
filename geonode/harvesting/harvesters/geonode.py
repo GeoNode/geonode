@@ -222,9 +222,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             harvesting_session_id: typing.Optional[int] = None
     ) -> typing.Optional[resourcedescriptor.RecordDescription]:
         endpoint_suffix = {
-            "document": f"/documents/{resource_unique_identifier}/",
-            "layer": f"/layers/{resource_unique_identifier}/",
-            "map": f"/maps/{resource_unique_identifier}/",
+            "documents": f"/documents/{resource_unique_identifier}/",
+            "layers": f"/layers/{resource_unique_identifier}/",
+            "maps": f"/maps/{resource_unique_identifier}/",
         }[resource_type.lower()]
         response = self.http_session.get(f"{self.base_api_url}/{endpoint_suffix}")
         resource_descriptor = None

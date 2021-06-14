@@ -102,7 +102,10 @@ class Harvester(models.Model):
         help_text=_("Default owner of harvested resources")
     )
     default_access_permissions = JSONField(
-        help_text=_("Default access permissions of harvested resources"))
+        default=dict,
+        blank=True,
+        help_text=_("Default access permissions of harvested resources")
+    )
     harvest_new_resources_by_default = models.BooleanField(
         help_text=_(
             "Should new resources be harvested automatically without "
@@ -135,6 +138,8 @@ class Harvester(models.Model):
         default=HARVESTER_CLASSES[0]
     )
     harvester_type_specific_configuration = JSONField(
+        default=dict,
+        blank=True,
         help_text=_(
             "Configuration specific to each harvester type. Please consult GeoNode "
             "documentation on harvesting for more info. This field is mandatory, so at "

@@ -20,6 +20,7 @@
 import functools
 import json
 import logging
+import typing
 
 from django.contrib import (
     admin,
@@ -67,6 +68,7 @@ class HarvesterAdmin(admin.ModelAdmin):
     actions = [
         "update_harvester_availability",
         "update_harvestable_resources",
+        "perform_harvesting"
     ]
 
     def save_model(self, request, obj: models.Harvester, form, change):
@@ -114,6 +116,7 @@ class HarvesterAdmin(admin.ModelAdmin):
         form.base_fields["default_owner"].initial = request.user
         return form
 
+    @admin.action(description="Check availability of selected harvesters")
     def update_harvester_availability(self, request, queryset):
         updated_harvesters = []
         non_available_harvesters = []
@@ -133,47 +136,65 @@ class HarvesterAdmin(admin.ModelAdmin):
                 ),
                 messages.WARNING
             )
-    update_harvester_availability.short_description = (
-        "Check availability of selected harvesters")
 
+    @admin.action(description="Update harvestable resources from selected harvesters")
     def update_harvestable_resources(self, request, queryset):
         being_updated = []
         for harvester in queryset:
-            if harvester.status != harvester.STATUS_READY:
-                self.message_user(
-                    request,
-                    f"Harvester {harvester!r} is currently busy. Please wait until "
-                    f"its status is {harvester.STATUS_READY!r} before retrying",
-                    level=messages.ERROR
-                )
+            should_continue, error_msg = _should_act(harvester)
+            if should_continue:
+                harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
+                harvester.save()
+                tasks.update_harvestable_resources.apply_async(args=(harvester.pk,))
+                being_updated.append(harvester)
+            else:
+                self.message_user(request, error_msg, level=messages.ERROR)
                 continue
-            available = utils.update_harvester_availability(harvester)
-            if not available:
-                self.message_user(
-                    request,
-                    (
-                        f"harvester {harvester} is not available, skipping "
-                        f"check of harvestable resources for it..."
-                    ),
-                    messages.ERROR
-                )
-                continue
-            harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
-            harvester.save()
-            tasks.update_harvestable_resources.apply_async(args=(harvester.pk,))
-            being_updated.append(harvester)
         if len(being_updated) > 0:
             self.message_user(
                 request,
                 f"Updating harvestable resources asynchronously for {being_updated}..."
             )
-    update_harvestable_resources.short_description = (
-            "Update harvestable resources from selected harvesters")
 
+    @admin.display(description="Number of resources to harvest")
     def get_num_harvestable_resources(self, harvester: models.Harvester):
-        return harvester.harvestable_resources.count()
-    get_num_harvestable_resources.short_description = (
-        "number of harvestable resources")
+        return harvester.harvestable_resources.filter(should_be_harvested=True).count()
+
+    @admin.action(description="Perform harvesting on selected harvesters")
+    def perform_harvesting(self, request, queryset):
+        being_harvested = []
+        for harvester in queryset:
+            should_continue, error_msg = _should_act(harvester)
+            if should_continue:
+                harvester.status = harvester.STATUS_PERFORMING_HARVESTING
+                harvester.save()
+                tasks.harvesting_dispatcher.apply_async(args=(harvester.pk,))
+                being_harvested.append(harvester)
+            else:
+                self.message_user(request, error_msg, level=messages.ERROR)
+                continue
+        if len(being_harvested) > 0:
+            self.message_user(
+                request, f"Performing harvesting asynchronously for {being_harvested}")
+
+
+def _should_act(harvester: models.Harvester) -> typing.Tuple[bool, str]:
+    if harvester.status != harvester.STATUS_READY:
+        error_message = (
+            f"Harvester {harvester!r} is currently busy. Please wait until its status "
+            f"is {harvester.STATUS_READY!r} before retrying"
+        )
+        result = False
+    else:
+        available = utils.update_harvester_availability(harvester)
+        if not available:
+            error_message = (
+                f"harvester {harvester!r} is not available, skipping harvesting...")
+            result = False
+        else:
+            result = True
+            error_message = ""
+    return result, error_message
 
 
 @admin.register(models.HarvestingSession)
