@@ -2,7 +2,6 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import jsonfield.fields
 
 
 class Migration(migrations.Migration):
@@ -36,7 +35,7 @@ class Migration(migrations.Migration):
             name='GeoAppData',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('blob', jsonfield.fields.JSONField(default={})),
+                ('blob', models.JSONField(default={})),
                 ('resource', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='geoapps.GeoApp')),
             ],
         ),
