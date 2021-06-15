@@ -3,6 +3,17 @@
 # Exit script in case of error
 set -e
 
+INVOKE_LOG_STDOUT=${INVOKE_LOG_STDOUT:-FALSE}
+invoke () {
+    if [ $INVOKE_LOG_STDOUT = 'true' ] || [ $INVOKE_LOG_STDOUT = 'True' ]
+    then
+        /usr/local/bin/invoke $@
+    else
+        /usr/local/bin/invoke $@ > /usr/src/geonode/invoke.log 2>&1
+    fi
+    echo "$@ tasks done"
+}
+
 # Start cron && memcached services
 service cron restart
 service memcached restart
@@ -12,7 +23,7 @@ echo "-----------------------------------------------------"
 echo "STARTING DJANGO ENTRYPOINT $(date)"
 echo "-----------------------------------------------------"
 
-/usr/local/bin/invoke update > /usr/src/geonode/invoke.log 2>&1
+invoke update
 
 source $HOME/.bashrc
 source $HOME/.override_env
@@ -30,8 +41,7 @@ echo MONITORING_HOST_NAME=$MONITORING_HOST_NAME
 echo MONITORING_SERVICE_NAME=$MONITORING_SERVICE_NAME
 echo MONITORING_DATA_TTL=$MONITORING_DATA_TTL
 
-/usr/local/bin/invoke waitfordbs > /usr/src/geonode/invoke.log 2>&1
-echo "waitfordbs task done"
+invoke waitfordbs
 
 cmd="$@"
 
@@ -40,13 +50,9 @@ echo DOCKER_ENV=$DOCKER_ENV
 if [ -z ${DOCKER_ENV} ] || [ ${DOCKER_ENV} = "development" ]
 then
 
-    echo "running migrations"
-    /usr/local/bin/invoke migrations > /usr/src/geonode/invoke.log 2>&1
-    echo "migrations task done"
-    /usr/local/bin/invoke prepare > /usr/src/geonode/invoke.log 2>&1
-    echo "prepare task done"
-    /usr/local/bin/invoke fixtures > /usr/src/geonode/invoke.log 2>&1
-    echo "fixture task done"
+    invoke migrations
+    invoke prepare
+    invoke fixtures
 
     if [ ${IS_CELERY} = "true" ] || [ ${IS_CELERY} = "True" ]
     then
@@ -55,11 +61,8 @@ then
 
     else
 
-        echo "install requirements for development"
-        /usr/local/bin/invoke devrequirements > /usr/src/geonode/invoke.log 2>&1
-        echo "refresh static data"
-        /usr/local/bin/invoke statics > /usr/src/geonode/invoke.log 2>&1
-        echo "static data refreshed"
+        invoke devrequirements
+        invoke statics
 
         echo "Executing standard Django server $cmd for Development"
 
@@ -71,32 +74,20 @@ else
         echo "Executing Celery server $cmd for Production"
     else
 
-        echo "running migrations"
-        /usr/local/bin/invoke migrations > /usr/src/geonode/invoke.log 2>&1
-        echo "migrations task done"
-        /usr/local/bin/invoke prepare > /usr/src/geonode/invoke.log 2>&1
-        echo "prepare task done"
+        invoke migrations
+        invoke prepare
 
         if [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
-            /usr/local/bin/invoke updategeoip > /usr/src/geonode/invoke.log 2>&1
-            echo "updategeoip task done"
-            /usr/local/bin/invoke fixtures > /usr/src/geonode/invoke.log 2>&1
-            echo "fixture task done"
-            /usr/local/bin/invoke monitoringfixture > /usr/src/geonode/invoke.log 2>&1
-            echo "monitoringfixture task done"
-            /usr/local/bin/invoke initialized > /usr/src/geonode/invoke.log 2>&1
-            echo "initialized"
+            invoke updategeoip
+            invoke fixtures
+            invoke monitoringfixture
+            invoke initialized
         fi
 
-        echo "refresh static data"
-        /usr/local/bin/invoke statics > /usr/src/geonode/invoke.log 2>&1
-        echo "static data refreshed"
-        /usr/local/bin/invoke waitforgeoserver > /usr/src/geonode/invoke.log 2>&1
-        echo "waitforgeoserver task done"
-        /usr/local/bin/invoke geoserverfixture > /usr/src/geonode/invoke.log 2>&1
-        echo "geoserverfixture task done"
-        /usr/local/bin/invoke updateadmin > /usr/src/geonode/invoke.log 2>&1
-        echo "updateadmin task done"
+        invoke statics
+        invoke waitforgeoserver
+        invoke geoserverfixture
+        invoke updateadmin
 
         echo "Executing UWSGI server $cmd for Production"
     fi
