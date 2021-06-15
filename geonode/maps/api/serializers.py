@@ -17,9 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from geonode.base.models import ResourceBase
-from dynamic_rest.fields.fields import DynamicRelationField
 from rest_framework import serializers
 
 from dynamic_rest.serializers import DynamicModelSerializer
@@ -47,33 +44,6 @@ class MapLayerSerializer(DynamicModelSerializer):
     store = serializers.CharField(read_only=True)
 
 
-
-class MapBlobDataField(DynamicRelationField):
-
-    def value_to_string(self, obj):
-        value = self.value_from_object(obj)
-        return self.get_prep_value(value)
-
-
-class MapBlobDataSerializer(DynamicModelSerializer):
-
-    class Meta:
-        ref_name = 'MapBloblData'
-        model = ResourceBase
-        name = 'MapBloblData'
-        fields = ('pk', 'blob')
-
-    def to_internal_value(self, data):
-        return data
-
-       
-    def to_representation(self, value):
-        data = Map.objects.filter(resourcebase_ptr_id=value)
-        if data.exists():
-            return data.first().blob
-        return {}
-
-
 class MapSerializer(ResourceBaseSerializer):
 
     def __init__(self, *args, **kwargs):
@@ -97,12 +67,3 @@ class MapSerializer(ResourceBaseSerializer):
                 data['blob'] = _data
 
         return data
-    
-    data = MapBlobDataField(
-        MapBlobDataSerializer,
-        source='id',
-        many=False,
-        embed=False,
-        deferred=True)
-
-
