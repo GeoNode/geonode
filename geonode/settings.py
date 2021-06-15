@@ -491,6 +491,7 @@ INSTALLED_APPS = (
     'floppyforms',
     'tinymce',
     'widget_tweaks',
+    'markdownify',
 
     # REST APIs
     'rest_framework',
@@ -523,8 +524,6 @@ INSTALLED_APPS = (
     # GeoNode
     'geonode',
 )
-
-INSTALLED_APPS += ('markdownify',)
 
 markdown_white_listed_tags = [
     'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'ul', 'li', 'span', 'blockquote', 'strong', 'code'

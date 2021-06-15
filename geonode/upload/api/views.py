@@ -104,7 +104,7 @@ class UploadViewSet(DynamicModelViewSet):
             request.method = 'GET'
             request.GET['id'] = import_id
 
-            response = upload_view(request, 'check')
+            upload_view(request, 'check')
             response = upload_view(request, 'final')
             content = response.content
             if isinstance(content, bytes):

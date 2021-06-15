@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import migrations, models
-import jsonfield.fields
+from django.db.models.fields.json import JSONField
 
 
 class Migration(migrations.Migration):
@@ -35,6 +35,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='notificationcheck',
             name='user_threshold',
-            field=jsonfield.fields.JSONField(default={}, help_text='Expected min/max values for user configuration'),
+            field=JSONField(default=dict, help_text='Expected min/max values for user configuration'),
         ),
     ]
