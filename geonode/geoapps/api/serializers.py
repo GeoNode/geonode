@@ -49,7 +49,7 @@ class GeoAppDataSerializer(DynamicModelSerializer):
     def to_representation(self, value):
         data = GeoApp.objects.filter(resourcebase_ptr_id=value)
         if data.exists():
-            return data.first().data
+            return data.first().blob
         return {}
 
 
@@ -68,7 +68,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         fields = (
             'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
-            'urlsuffix', 'data'
+            'urlsuffix', 'blob'
         )
 
     def to_internal_value(self, data):

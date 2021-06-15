@@ -936,7 +936,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     files = JSONField(null=True, default=list, blank=True)
 
-    data = JSONField(null=True, default=dict, blank=True)
+    blob = JSONField(null=True, default=dict, blank=True)
 
     __is_approved = False
     __is_published = False

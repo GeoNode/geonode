@@ -60,12 +60,12 @@ class MapAppDataSerializer(DynamicModelSerializer):
         ref_name = 'MapData'
         model = ResourceBase
         name = 'MapData'
-        fields = ('pk', 'data')
+        fields = ('pk', 'blob')
 
     def to_representation(self, value):
         data = Map.objects.filter(resourcebase_ptr_id=value)
         if data.exists():
-            return data.first().data
+            return data.first().blob
         return {}
 
 

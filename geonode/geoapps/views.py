@@ -135,7 +135,7 @@ def geoapp_detail(request, geoappid, template='apps/app_detail.html'):
             id=geoapp_obj.id).update(
             popular_count=F('popular_count') + 1)
 
-    _config = geoapp_obj.data
+    _config = geoapp_obj.blob
 
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(geoapp_obj)
@@ -242,7 +242,7 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
         else:
             access_token = None
 
-    _config = json.dumps(r.data)
+    _config = json.dumps(r.blob)
     _ctx = {
         'appId': geoappid,
         'appType': geoapp_obj.type,

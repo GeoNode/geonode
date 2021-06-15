@@ -111,3 +111,4 @@ else:
     adapter = os.getenv("MAP_SERIALIZER", "geonode.maps.api.hook.DefaultMapHook")
 
 hookset = import_string(adapter)
+print(adapter)
