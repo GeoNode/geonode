@@ -47,9 +47,34 @@ class MapLayerSerializer(DynamicModelSerializer):
     store = serializers.CharField(read_only=True)
 
 
-class MapSerializer(ResourceBaseSerializer):
 
-    data = serializers.SerializerMethodField('blob_to_data')
+class MapBlobDataField(DynamicRelationField):
+
+    def value_to_string(self, obj):
+        value = self.value_from_object(obj)
+        return self.get_prep_value(value)
+
+
+class MapBlobDataSerializer(DynamicModelSerializer):
+
+    class Meta:
+        ref_name = 'MapBloblData'
+        model = ResourceBase
+        name = 'MapBloblData'
+        fields = ('pk', 'blob')
+
+    def to_internal_value(self, data):
+        return data
+
+       
+    def to_representation(self, value):
+        data = Map.objects.filter(resourcebase_ptr_id=value)
+        if data.exists():
+            return data.first().blob
+        return {}
+
+
+class MapSerializer(ResourceBaseSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
@@ -72,7 +97,12 @@ class MapSerializer(ResourceBaseSerializer):
                 data['blob'] = _data
 
         return data
+    
+    data = MapBlobDataField(
+        MapBlobDataSerializer,
+        source='id',
+        many=False,
+        embed=False,
+        deferred=True)
 
-    # required to maintain retrocompatibility
-    def blob_to_data(self, obj):
-        return obj.blob
+
