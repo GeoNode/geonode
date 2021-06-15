@@ -21,7 +21,6 @@ import logging
 
 from django.db import models
 from django.urls import reverse
-from django.db.models.fields.json import JSONField
 from django.utils.translation import ugettext_lazy as _
 
 from guardian.shortcuts import get_anonymous_user

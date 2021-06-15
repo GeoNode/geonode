@@ -227,8 +227,8 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
         notify=True)
 
     resource_manager.set_permissions(
-        geoapp_obj.uuid, 
-        instance=geoapp_obj, 
+        geoapp_obj.uuid,
+        instance=geoapp_obj,
         permissions=ast.literal_eval(permissions_json)
     )
 

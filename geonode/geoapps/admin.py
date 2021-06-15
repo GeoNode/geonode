@@ -25,6 +25,7 @@ from modeltranslation.admin import TabbedTranslationAdmin
 from geonode.geoapps.models import GeoApp
 from geonode.base.admin import ResourceBaseAdminForm
 
+
 class GeoAppAdminForm(ResourceBaseAdminForm):
 
     class Meta(ResourceBaseAdminForm.Meta):

@@ -30,7 +30,6 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db.models import signals
 from django.template.defaultfilters import slugify
-from django.db.models.fields.json import JSONField
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType

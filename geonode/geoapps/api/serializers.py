@@ -22,8 +22,6 @@ import logging
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
-from dynamic_rest.fields.fields import DynamicRelationField
-from dynamic_rest.serializers import DynamicModelSerializer
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.geoapps.models import GeoApp
 from rest_framework.serializers import ValidationError
