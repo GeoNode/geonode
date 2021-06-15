@@ -42,7 +42,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         fields = (
             'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
-            'urlsuffix', 'blob'
+            'urlsuffix', 'data'
         )
 
     def to_internal_value(self, data):
