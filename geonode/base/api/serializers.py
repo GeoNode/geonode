@@ -243,6 +243,29 @@ class ContactRoleField(DynamicComputedField):
         return UserSerializer(embed=True, many=False).to_representation(value)
 
 
+class DataBlobField(DynamicRelationField):
+
+    def value_to_string(self, obj):
+        value = self.value_from_object(obj)
+        return self.get_prep_value(value)
+
+
+class DataBlobSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = ResourceBase
+        fields = ('pk', 'blob')
+
+    def to_internal_value(self, data):
+        return data
+
+    def to_representation(self, value):
+        data = ResourceBase.objects.filter(id=value)
+        if data.exists() and data.count() == 1:
+            return data.get().blob
+        return {}
+
+
 class ResourceBaseSerializer(BaseDynamicModelSerializer):
 
     def __init__(self, *args, **kwargs):
@@ -324,7 +347,8 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             'popular_count', 'share_count', 'rating', 'featured', 'is_published', 'is_approved',
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
-            'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed'
+            'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed',
+            'data'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
@@ -342,6 +366,16 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
                 favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
                 data['favorite'] = favorite > 0
         return data
+
+    """
+     - Deferred / not Embedded --> ?include[]=data
+    """
+    data = DataBlobField(
+        DataBlobSerializer,
+        source='id',
+        many=False,
+        embed=False,
+        deferred=True)
 
 
 class FavoriteSerializer(DynamicModelSerializer):

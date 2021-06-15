@@ -17,13 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from dynamic_rest.fields.fields import DynamicRelationField
 from rest_framework import serializers
 
 from dynamic_rest.serializers import DynamicModelSerializer
 
-from geonode.maps.models import Map, MapData, MapLayer
+from geonode.maps.models import Map, MapLayer
 from geonode.base.api.serializers import ResourceBaseSerializer
 
 import logging
@@ -44,29 +42,6 @@ class MapLayerSerializer(DynamicModelSerializer):
 
     name = serializers.CharField(read_only=True)
     store = serializers.CharField(read_only=True)
-
-
-class MapDataField(DynamicRelationField):
-
-    def value_to_string(self, obj):
-        value = self.value_from_object(obj)
-        return self.get_prep_value(value)
-
-
-class MapAppDataSerializer(DynamicModelSerializer):
-
-    class Meta:
-        ref_name = 'MapData'
-        model = MapData
-        name = 'MapData'
-        fields = ('pk', 'blob')
-
-    def to_internal_value(self, data):
-        return data
-
-    def to_representation(self, value):
-        data = MapData.objects.filter(resource__id=value).first()
-        return data.blob if data else {}
 
 
 class MapSerializer(ResourceBaseSerializer):
@@ -92,12 +67,3 @@ class MapSerializer(ResourceBaseSerializer):
                 data['blob'] = _data
 
         return data
-    """
-     - Deferred / not Embedded --> ?include[]=data
-    """
-    data = MapDataField(
-        MapAppDataSerializer,
-        source='id',
-        many=False,
-        embed=False,
-        deferred=True)

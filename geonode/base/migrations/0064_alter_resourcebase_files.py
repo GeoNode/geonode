@@ -4,13 +4,12 @@ from django.db import migrations, models
 from geonode.base.models import ResourceBase
 
 def change_value(apps, schema_editor):
-    resource = ResourceBase.objects.all()
-    for r in resource:
+    resources = apps.get_model('base', 'ResourceBase')
+    for r in resources.objects.all():
         if isinstance(r.files, dict):
+            r2 = ResourceBase.objects.filter(id=r.id)
             f = list(r.files.values())
-            r.files = f
-            r.save()
-
+            r2.update(**{'files': f})
 
 class Migration(migrations.Migration):
 

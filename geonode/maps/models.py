@@ -30,7 +30,6 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db.models import signals
 from django.template.defaultfilters import slugify
-from django.db.models.fields.json import JSONField
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -87,13 +86,6 @@ class Map(ResourceBase, GXPMapBase):
         max_length=255,
         blank=True)
     # Full URL for featured map view, ie http://domain/someview
-
-    data = models.OneToOneField(
-        "MapData",
-        related_name="data",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.title} by {(self.owner.username if self.owner else "<Anonymous>")}'
@@ -429,17 +421,6 @@ class Map(ResourceBase, GXPMapBase):
 
     class Meta(ResourceBase.Meta):
         pass
-
-
-class MapData(models.Model):
-    blob = JSONField(
-        null=False,
-        default=dict)
-    resource = models.ForeignKey(
-        Map,
-        null=False,
-        blank=False,
-        on_delete=models.CASCADE)
 
 
 class MapLayer(models.Model, GXPLayerBase):
