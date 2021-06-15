@@ -47,21 +47,26 @@ class MapLayerSerializer(DynamicModelSerializer):
     store = serializers.CharField(read_only=True)
 
 
-class MapDataField(DynamicRelationField):
+
+class MapBlobDataField(DynamicRelationField):
 
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
         return self.get_prep_value(value)
 
 
-class MapAppDataSerializer(DynamicModelSerializer):
+class MapBlobDataSerializer(DynamicModelSerializer):
 
     class Meta:
-        ref_name = 'MapData'
+        ref_name = 'MapBloblData'
         model = ResourceBase
-        name = 'MapData'
+        name = 'MapBloblData'
         fields = ('pk', 'blob')
 
+    def to_internal_value(self, data):
+        return data
+
+       
     def to_representation(self, value):
         data = Map.objects.filter(resourcebase_ptr_id=value)
         if data.exists():
@@ -85,12 +90,19 @@ class MapSerializer(ResourceBaseSerializer):
             'urlsuffix', 'featuredurl', 'data',
         )
 
-    """
-     - Deferred / not Embedded --> ?include[]=data
-    """
-    data = MapDataField(
-        MapAppDataSerializer,
+    def to_internal_value(self, data):
+        if 'data' in data:
+            _data = data.pop('data')
+            if self.is_valid():
+                data['blob'] = _data
+
+        return data
+    
+    data = MapBlobDataField(
+        MapBlobDataSerializer,
         source='id',
         many=False,
         embed=False,
         deferred=True)
+
+
