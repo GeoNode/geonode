@@ -547,7 +547,9 @@ class ResourceBaseForm(TranslationModelForm):
             'users_geolimits',
             'groups_geolimits',
             'dirty_state',
-            'state'
+            'state',
+            'blob',
+            'files',
         )
 
 
