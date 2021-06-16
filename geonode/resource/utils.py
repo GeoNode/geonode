@@ -145,7 +145,8 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
     defaults = {}
     for key, value in vals.items():
         if key == 'spatial_representation_type':
-            value = SpatialRepresentationType(identifier=value)
+            if value is not None:
+                value = SpatialRepresentationType(identifier=value)
             defaults[key] = value
         elif key == 'topic_category':
             value, created = TopicCategory.objects.get_or_create(
@@ -173,6 +174,8 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
             to_update['charset'] = defaults.pop('charset', instance.charset)
         if hasattr(instance, 'storeType'):
             to_update['storeType'] = defaults.pop('storeType', instance.storeType)
+        if hasattr(instance, 'urlsuffix'):
+            to_update['urlsuffix'] = defaults.pop('urlsuffix', instance.urlsuffix)
         if isinstance(instance, Layer):
             for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
                 if _key in defaults:
