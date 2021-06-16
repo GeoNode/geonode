@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 from urllib.parse import urljoin
 
 from django.contrib.auth.models import Group
@@ -354,6 +355,16 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
             # users_geolimits, groups_geolimits
         )
+
+    def to_internal_value(self, data):
+        if isinstance(data, str):
+            data = json.loads(data)
+        if 'data' in data:
+            _data = data.pop('data')
+            if self.is_valid():
+                data['blob'] = _data
+
+        return data
 
     def to_representation(self, instance):
         request = self.context.get('request')

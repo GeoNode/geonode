@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import logging
 from uuid import uuid4
 
@@ -44,16 +43,6 @@ class GeoAppSerializer(ResourceBaseSerializer):
             'zoom', 'projection', 'center_x', 'center_y',
             'urlsuffix', 'data'
         )
-
-    def to_internal_value(self, data):
-        if isinstance(data, str):
-            data = json.loads(data)
-        if 'data' in data:
-            _data = data.pop('data')
-            if self.is_valid():
-                data['blob'] = _data
-
-        return data
 
     def extra_update_checks(self, validated_data):
         _user_profiles = {}

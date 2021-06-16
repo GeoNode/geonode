@@ -83,7 +83,7 @@ class GeoNodeUploader:
         call_delay: int = 10,
         **kwargs,
     ):
-        GeoNodeUploader.__init__(**kwargs)
+        super().__init__(**kwargs)
         self.host = host
         self.folder_path = folder_path
         self.username = username
