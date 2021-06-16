@@ -75,7 +75,6 @@ from geonode.layers.views import _resolve_layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import DisableDjangoSignals
 from geonode.maps.tests_populate_maplayers import maplayers as ml
-from geonode.security.utils import remove_object_permissions
 from geonode.base.forms import BatchPermissionsForm
 logger = logging.getLogger(__name__)
 
@@ -1248,7 +1247,9 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         Test that an authenticated user without permissions to view a map does not see the map under
         'Maps using this layer' in layer_detail when map is not viewable by 'anyone'
         """
-        remove_object_permissions(self.map.get_self_resource())
+        from geonode.resource.manager import resource_manager
+        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+
         self.client.login(username='dybala', password='very-secret')
         response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
         self.assertEqual(response.context['map_layers'], [])
@@ -1317,7 +1318,9 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         Test that anonymous user cannot view map that are not viewable by 'anyone'
         """
-        remove_object_permissions(self.map.get_self_resource())
+        from geonode.resource.manager import resource_manager
+        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+
         response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
         self.assertEqual(response.context['map_layers'], [])
 
@@ -1325,7 +1328,8 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         Test only users with view permissions to a map can view them in layer detail view
         """
-        remove_object_permissions(self.map.get_self_resource())
+        from geonode.resource.manager import resource_manager
+        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
         self.assertEqual(response.context['map_layers'], [self.map_layer])
