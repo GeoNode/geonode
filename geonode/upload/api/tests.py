@@ -346,7 +346,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         url = urljoin(
             settings.SITEURL,
-            f"{reverse('uploads-detail', kwargs={'pk': response_data['uploads'][0]['id']})}.json")
+            f"{reverse('uploads-detail', kwargs={'resource_id': response_data['uploads'][0]['id']})}.json")
         response = self.selenium.request('GET', url, headers=headers)
         self.assertEqual(response.status_code, 200)
         upload_data = response.json()['upload']
@@ -380,7 +380,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         url = urljoin(
             settings.SITEURL,
-            f"{reverse('uploads-detail', kwargs={'pk': response_data['uploads'][0]['id']})}.json")
+            f"{reverse('uploads-detail', kwargs={'resource_id': response_data['uploads'][0]['id']})}.json")
         for _cnt in range(10):
             time.sleep(5.0)
             response = self.selenium.request('GET', url, headers=headers)
@@ -427,7 +427,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         resp, data = self.rest_upload_file(fname)
         self.assertEqual(resp.status_code, 201)
         self.assertTrue(data['success'])
-        self.assertIn('redirect_to', data)
 
         url = reverse('uploads-list')
         # Anonymous
@@ -450,7 +449,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(len(response.data['uploads']), 1)
         logger.debug(response.data)
 
-        url = f"{reverse('uploads-detail', kwargs={'pk': response.data['uploads'][0]['id']})}/"
+        url = f"{reverse('uploads-detail', kwargs={'resource_id': response.data['uploads'][0]['id']})}/"
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         upload_data = response.data['upload']

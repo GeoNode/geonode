@@ -21,23 +21,22 @@ import django
 import logging
 
 from urllib.parse import urljoin
-from django.conf import settings
+from rest_framework.test import APITestCase, URLPatternsTestCase
 
+from django.conf import settings
 from django.urls import reverse
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
 from django.views.i18n import JavaScriptCatalog
-from rest_framework.test import APITestCase, URLPatternsTestCase
-
-from geonode.api.urls import router
-from geonode.services.views import services
-from geonode.maps.models import Map, MapData
-from geonode.maps.views import map_embed
-from geonode.geoapps.views import geoapp_edit
-from geonode.layers.views import layer_embed
 
 from geonode import geoserver
+from geonode.api.urls import router
+from geonode.maps.models import Map
+from geonode.maps.views import map_embed
 from geonode.utils import check_ogc_backend
+from geonode.services.views import services
+from geonode.layers.views import layer_embed
+from geonode.geoapps.views import geoapp_edit
 from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
@@ -105,10 +104,8 @@ class MapsApiTests(APITestCase, URLPatternsTestCase):
         create_models(b'map')
         create_models(b'layer')
         first = Map.objects.first()
-        _, _ = MapData.objects.get_or_create(
-            resource=first,
-            blob=DUMMY_MAPDATA
-        )
+        first.blob = DUMMY_MAPDATA
+        first.save()
 
     def test_maps(self):
         """

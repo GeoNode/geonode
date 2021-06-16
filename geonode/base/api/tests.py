@@ -254,7 +254,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 18)
+        self.assertEqual(response.data['total'], 26)
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
 
@@ -263,7 +263,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 18)
+        self.assertEqual(response.data['total'], 26)
         # response has link to the response
         self.assertTrue('link' in response.data['resources'][0].keys())
         # Pagination
@@ -275,7 +275,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 18)
+        self.assertEqual(response.data['total'], 26)
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
         logger.debug(response.data)
@@ -285,7 +285,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 18)
+        self.assertEqual(response.data['total'], 26)
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
         logger.debug(response.data)
@@ -297,7 +297,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(f"{url}?page_size=17", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 18)
+        self.assertEqual(response.data['total'], 26)
         # Pagination
         self.assertEqual(len(response.data['resources']), 17)
 
@@ -410,9 +410,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
             f"{url}?filter{{category.identifier}}=elevation", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 9)
+        self.assertEqual(response.data['total'], 6)
         # Pagination
-        self.assertEqual(len(response.data['resources']), 9)
+        self.assertEqual(len(response.data['resources']), 6)
 
         # Extent Filter
         response = self.client.get(f"{url}?page_size=26&extent=-180,-90,180,90", format='json')
