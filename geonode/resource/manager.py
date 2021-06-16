@@ -267,6 +267,7 @@ class ResourceManager(ResourceManagerInterface):
     def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner=None, permissions: dict = {}, created: bool = False) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
+            _resource = _resource.get_real_instance()
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             logger.debug(f'Finalizing (permissions and notifications) on resource {instance}')
             try:

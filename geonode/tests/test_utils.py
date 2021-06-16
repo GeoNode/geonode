@@ -27,17 +27,14 @@ from osgeo import ogr
 from unittest.mock import patch
 from datetime import datetime, timedelta
 
-from django.db.models import signals
-from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Polygon
+from django.contrib.auth import get_user_model
 from django.core.management import call_command
-
-from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.maps.models import Layer
 from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
-from geonode.geoserver.signals import geoserver_post_save
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
 from geonode.utils import copy_tree, fixup_shp_columnnames, unzip_file
 
@@ -156,21 +153,12 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         # Creating a layer requires being logged in
         self.client.login(username='norman', password='norman')
 
-        # Disconnect the geoserver-specific post_save signal attached to Layer creation.
-        # The geoserver signal handler assumes things about the store where the Layer is placed.
-        # this is a workaround.
-        disconnected_post_save = signals.post_save.disconnect(geoserver_post_save, sender=Layer)
-
         # Create dummy layer to attach attributes to
         _l = Layer.objects.create(
             owner=self.user,
             name='dummy_layer',
             bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
             srid='EPSG:4326')
-
-        # Reconnect the signal if it was disconnected
-        if disconnected_post_save:
-            signals.post_save.connect(geoserver_post_save, sender=Layer)
 
         attribute_map = [
             ['id', 'Integer'],
