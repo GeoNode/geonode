@@ -234,7 +234,7 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
         from django.conf import settings
         if settings.OGC_SERVER['default'].get(
                 "GEOFENCE_SECURITY_ENABLED", False):
-            from geonode.security.utils import purge_geofence_all
+            from geonode.geoserver.security import purge_geofence_all
             purge_geofence_all()
 
 

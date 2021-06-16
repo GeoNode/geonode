@@ -17,8 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.maps.models import Map
-from geonode.documents.models import Document
 from unittest.mock import patch
 from django.conf import settings
 
@@ -33,7 +31,9 @@ from django.test.utils import override_settings
 from guardian.shortcuts import get_anonymous_user
 
 from geonode import geoserver
+from geonode.maps.models import Map
 from geonode.layers.models import Layer
+from geonode.documents.models import Document
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
 from geonode.groups.models import GroupProfile
@@ -147,7 +147,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # with delayed security
         with self.settings(DELAYED_SECURITY_SIGNALS=True):
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                from geonode.security.utils import sync_geofence_with_guardian
+                from geonode.geoserver.security import sync_geofence_with_guardian
                 sync_geofence_with_guardian(layer, self.perm_spec)
                 self.assertTrue(layer.dirty_state)
 
