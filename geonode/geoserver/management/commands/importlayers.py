@@ -17,15 +17,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from io import BufferedReader, IOBase
-
 import os
 import argparse
 import datetime
 import requests
+
+from urllib.parse import urljoin
+from io import BufferedReader, IOBase
+from requests.auth import HTTPBasicAuth
+
 from django.utils import timezone
 from django.core.management.base import BaseCommand
-from requests.auth import HTTPBasicAuth
 
 parser = argparse.ArgumentParser()
 
@@ -83,7 +85,6 @@ class GeoNodeUploader:
         call_delay: int = 10,
         **kwargs,
     ):
-        super().__init__(**kwargs)
         self.host = host
         self.folder_path = folder_path
         self.username = username
@@ -93,75 +94,75 @@ class GeoNodeUploader:
     def execute(self):
         success = []
         errors = []
-        for file in os.listdir(self.folder_path):
-            if not os.path.exists(f"{self.folder_path}/{file}"):
-                print(f"The selected file path does not exist: {file}")
-                continue
+        for root, subdirs, files in os.walk(self.folder_path):
+            for file in files:
+                _file = os.path.join(root, file)
+                print(f"Scanning: {_file}")
+                if not os.path.exists(_file):
+                    print(f"The selected file path does not exist: {_file}")
+                    continue
+                spatial_files = ("dbf_file", "shx_file", "prj_file")
+                base, ext = os.path.splitext(_file)
+                params = {
+                    # make public since wms client doesn't do authentication
+                    "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',  # to be decided
+                    "time": "false",
+                    "layer_title": file,
+                    "charset": "UTF-8",
+                }
 
-            _file = f"{self.folder_path}/{file}"
-            spatial_files = ("dbf_file", "shx_file", "prj_file")
+                if ext.lower() == ".shp":
+                    for spatial_file in spatial_files:
+                        ext, _ = spatial_file.split("_")
+                        file_path = f"{base}.{ext}"
+                        # sometimes a shapefile is missing an extra file,
+                        # allow for that
+                        if os.path.exists(file_path):
+                            params[spatial_file] = open(file_path, "rb")
+                elif ext.lower() == ".tif":
+                    file_path = base + ext
+                    params["tif_file"] = open(file_path, "rb")
+                else:
+                    continue
 
-            base, ext = os.path.splitext(_file)
-            params = {
-                # make public since wms client doesn't do authentication
-                "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',  # to be decided
-                "time": "false",
-                "layer_title": file,
-                "charset": "UTF-8",
-            }
+                files = {}
 
-            if ext.lower() == ".shp":
-                for spatial_file in spatial_files:
-                    ext, _ = spatial_file.split("_")
-                    file_path = f"{base}.{ext}"
-                    # sometimes a shapefile is missing an extra file,
-                    # allow for that
-                    if os.path.exists(file_path):
-                        params[spatial_file] = open(file_path, "rb")
-            elif ext.lower() == ".tif":
-                file_path = base + ext
-                params["tif_file"] = open(file_path, "rb")
-            else:
-                continue
+                client = requests.session()
 
-            files = {}
+                with open(_file, "rb") as base_file:
+                    params["base_file"] = base_file
+                    for name, value in params.items():
+                        if isinstance(value, BufferedReader):
+                            files[name] = (os.path.basename(value.name), value)
+                            params[name] = os.path.basename(value.name)
 
-            client = requests.session()
+                    response = client.post(
+                        urljoin(self.host, "/api/v2/uploads/upload/"),
+                        auth=HTTPBasicAuth(self.username, self.password),
+                        data=params,
+                        files=files,
+                    )
+                    print(f"{file}: {response.status_code}")
 
-            with open(_file, "rb") as base_file:
-                params["base_file"] = base_file
-                for name, value in params.items():
-                    if isinstance(value, BufferedReader):
-                        files[name] = (os.path.basename(value.name), value)
-                        params[name] = os.path.basename(value.name)
+                if isinstance(params.get("tif_file"), IOBase):
+                    params["tif_file"].close()
 
-                response = client.post(
-                    f"{self.host}/api/v2/uploads/upload/",
-                    auth=HTTPBasicAuth(self.username, self.password),
-                    data=params,
-                    files=files,
-                )
-                print(f"{file}: {response.status_code}")
-
-            if isinstance(params.get("tif_file"), IOBase):
-                params["tif_file"].close()
-
-            data = response.json()
-            if data['status'] == 'finished':
-                if data['success']:
+                data = response.json()
+                if data['status'] == 'finished':
+                    if data['success']:
+                        success.append(file)
+                    else:
+                        errors.append(file)
+                elif 'redirect_to' in data:
+                    import_id = int(data["redirect_to"].split("?id=")[1].split("&")[0])
+                    upload_response = client.get(f"{self.host}/api/v2/uploads/")
+                    upload_id = self._get_upload_id(upload_response, import_id)
+                    client.get(f"{self.host}/api/v2/uploads/{upload_id}")
+                    client.get(f"{self.host}/upload/check?id={import_id}")
+                    client.get(f"{self.host}/upload/final?id={import_id}")
                     success.append(file)
                 else:
                     errors.append(file)
-            elif 'redirect_to' in data:
-                import_id = int(data["redirect_to"].split("?id=")[1].split("&")[0])
-                upload_response = client.get(f"{self.host}/api/v2/uploads/")
-                upload_id = self._get_upload_id(upload_response, import_id)
-                client.get(f"{self.host}/api/v2/uploads/{upload_id}")
-                client.get(f"{self.host}/upload/check?id={import_id}")
-                client.get(f"{self.host}/upload/final?id={import_id}")
-                success.append(file)
-            else:
-                errors.append(file)
         return success, errors
 
     @staticmethod
