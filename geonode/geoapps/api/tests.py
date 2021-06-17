@@ -29,11 +29,11 @@ from django.views.i18n import JavaScriptCatalog
 from rest_framework.test import APITestCase, URLPatternsTestCase
 
 from geonode.api.urls import router
-from geonode.services.views import services
 from geonode.maps.views import map_embed
-from geonode.geoapps.views import geoapp_edit
+from geonode.geoapps.models import GeoApp
+from geonode.services.views import services
 from geonode.layers.views import layer_embed
-from geonode.geoapps.models import GeoApp, GeoAppData
+from geonode.geoapps.views import geoapp_edit
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -42,7 +42,7 @@ from geonode.base.populate_test_data import create_models
 logger = logging.getLogger(__name__)
 
 
-class BaseApiTests(APITestCase, URLPatternsTestCase):
+class GeoAppsApiTests(APITestCase, URLPatternsTestCase):
 
     fixtures = [
         'initial_data.json',
@@ -118,11 +118,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.norman = get_user_model().objects.get(username='norman')
         self.gep_app = GeoApp.objects.create(
             title="Test GeoApp",
-            owner=self.bobby
-        )
-        self.gep_app_data = GeoAppData.objects.create(
-            blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}',
-            resource=self.gep_app
+            owner=self.bobby,
+            blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}'
         )
         self.gep_app.set_default_permissions()
 
@@ -182,9 +179,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 2)
+        self.assertEqual(response.data['total'], 1)
         # Pagination
-        self.assertEqual(len(response.data['geoapps']), 2)
+        self.assertEqual(len(response.data['geoapps']), 1)
 
         # Update: PATCH
         url = reverse('geoapps-detail', kwargs={'pk': self.gep_app.pk})

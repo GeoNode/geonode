@@ -39,7 +39,7 @@ logger = get_task_logger(__name__)
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -60,7 +60,8 @@ def create_document_thumbnail(self, object_id):
 
     if document.is_image:
         dname = storage_manager.path(document.files[0])
-        image_file = storage_manager.open(dname, 'rb')
+        if storage_manager.exists(dname):
+            image_file = storage_manager.open(dname, 'rb')
     elif document.is_video or document.is_audio:
         image_file = open(document.find_placeholder(), 'rb')
     elif document.is_file:
@@ -117,7 +118,7 @@ def create_document_thumbnail(self, object_id):
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -133,7 +134,7 @@ def delete_orphaned_document_files(self):
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
