@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.maps.models import Map
 import re
 import logging
 import datetime
@@ -145,8 +146,12 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
     defaults = {}
     for key, value in vals.items():
         if key == 'spatial_representation_type':
-            if value is not None:
+            spatial_repr = SpatialRepresentationType.objects.filter(identifier=value)
+            if value is not None and spatial_repr.exists():
                 value = SpatialRepresentationType(identifier=value)
+            # if the SpatialRepresentationType is not available in the DB, we just set it as None
+            elif value is not None and not spatial_repr.exists():
+                value = None
             defaults[key] = value
         elif key == 'topic_category':
             value, created = TopicCategory.objects.get_or_create(
@@ -182,6 +187,13 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
                     to_update[_key] = defaults.pop(_key)
                 else:
                     to_update[_key] = getattr(instance, _key)
+        if isinstance(instance, Map):
+            for _key in ('center_x', 'center_y', 'zoom'):
+                if _key in defaults:
+                    to_update[_key] = defaults.pop(_key)
+                else:
+                    to_update[_key] = getattr(instance, _key)
+
         to_update.update(defaults)
 
         with transaction.atomic():
