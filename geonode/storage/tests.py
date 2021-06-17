@@ -368,10 +368,10 @@ class TestStorageManager(TestCase):
         expected = ['/opt/full/path/to/file', '/opt/full/path/to/file']
         old_files = ['/opt/full/path/to/file', '/opt/full/path/to/file']
         new_files = ['geonode/base/fixtures/test_sld.sld', 'geonode/base/fixtures/test_data.json']
-        l = create_single_layer('storage_manager')
-        l.files = old_files
-        l.save()
-        output = self.sut().replace(l, new_files)
+        layer = create_single_layer('storage_manager')
+        layer.files = old_files
+        layer.save()
+        output = self.sut().replace(layer, new_files)
         self.assertEqual(2, len(output['files']))
         self.assertListEqual(expected, output['files'])
 
@@ -385,9 +385,9 @@ class TestStorageManager(TestCase):
         path.return_value = '/opt/full/path/to/file'
         strg.return_value = '/opt/full/path/to/file'
         expected = '/opt/full/path/to/file'
-        l = create_single_layer('storage_manager')
-        l.files = ['/opt/full/path/to/file2']
-        l.save()
+        layer = create_single_layer('storage_manager')
+        layer.files = ['/opt/full/path/to/file2']
+        layer.save()
         with open('geonode/base/fixtures/test_sld.sld') as new_file:
-            output = self.sut().replace(l, new_file)
+            output = self.sut().replace(layer, new_file)
         self.assertListEqual([expected], output['files'])
