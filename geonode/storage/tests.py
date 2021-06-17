@@ -17,18 +17,21 @@
 # along with this profgram. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.test.utils import override_settings
 from geonode.storage.manager import StorageManager
+from geonode.base.populate_test_data import create_single_layer
 import io
 
 from unittest.mock import patch
 
-from django.test.testcases import SimpleTestCase
+from django.test.testcases import SimpleTestCase, TestCase
 
 from geonode.storage.aws import AwsStorageManager
 from geonode.storage.gcs import GoogleStorageManager
 from geonode.storage.dropbox import DropboxStorageManager
 
 
+@override_settings(DROPBOX_OAUTH2_TOKEN="auth_token")
 class TestDropboxStorageManager(SimpleTestCase):
     def setUp(self):
         self.sut = DropboxStorageManager
@@ -272,7 +275,7 @@ class TestAwsStorageManager(SimpleTestCase):
         aws.assert_called_once_with('name')
 
 
-class TestStorageManager(SimpleTestCase):
+class TestStorageManager(TestCase):
     def setUp(self):
         self.sut = StorageManager
 
@@ -365,10 +368,12 @@ class TestStorageManager(SimpleTestCase):
         expected = ['/opt/full/path/to/file', '/opt/full/path/to/file']
         old_files = ['/opt/full/path/to/file', '/opt/full/path/to/file']
         new_files = ['geonode/base/fixtures/test_sld.sld', 'geonode/base/fixtures/test_data.json']
-
-        output = self.sut().replace_files_list(old_files, new_files)
-        self.assertEqual(2, len(output))
-        self.assertListEqual(expected, output)
+        l = create_single_layer('storage_manager')
+        l.files = old_files
+        l.save()
+        output = self.sut().replace(l, new_files)
+        self.assertEqual(2, len(output['files']))
+        self.assertListEqual(expected, output['files'])
 
     @patch('django.core.files.storage.FileSystemStorage.save')
     @patch('django.core.files.storage.FileSystemStorage.path')
@@ -380,6 +385,9 @@ class TestStorageManager(SimpleTestCase):
         path.return_value = '/opt/full/path/to/file'
         strg.return_value = '/opt/full/path/to/file'
         expected = '/opt/full/path/to/file'
+        l = create_single_layer('storage_manager')
+        l.files = ['/opt/full/path/to/file2']
+        l.save()
         with open('geonode/base/fixtures/test_sld.sld') as new_file:
-            output = self.sut().replace_single_file('geonode/base/fixtures/old_file.sld', new_file)
-        self.assertEqual(expected, output)
+            output = self.sut().replace(l, new_file)
+        self.assertListEqual([expected], output['files'])
