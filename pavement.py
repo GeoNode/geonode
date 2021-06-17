@@ -969,7 +969,7 @@ def setup_data(options):
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = f'DJANGO_SETTINGS_MODULE={settings}'
 
-    from geonode import settings as geonode_settings
+    from django.conf import settings as geonode_settings
     sh(f"{settings} python -W ignore manage.py importlayers -v2 -hh {geonode_settings.SITEURL} {data_dir}")
 
 

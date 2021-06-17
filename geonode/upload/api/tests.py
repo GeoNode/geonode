@@ -341,7 +341,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         total_uploads = response_data['total']
         self.assertGreaterEqual(total_uploads, 1)
         # Pagination
-        self.assertEqual(len(response_data['uploads']), total_uploads)
+        self.assertEqual(len(response_data['uploads']), 10)
         logger.debug(response_data)
         upload_data = response_data['uploads'][0]
         self.assertIsNotNone(upload_data)
