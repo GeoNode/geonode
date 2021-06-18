@@ -184,6 +184,9 @@ def get_map(
     else:
         thumbnail_url = ogc_server_settings.LOCATION
 
+    if thumbnail_url.startswith(ogc_server_settings.PUBLIC_LOCATION):
+        thumbnail_url = thumbnail_url.replace(ogc_server_settings.PUBLIC_LOCATION, ogc_server_settings.LOCATION)
+
     wms_endpoint = ""
     additional_kwargs = {}
     if thumbnail_url == ogc_server_settings.LOCATION:
@@ -201,7 +204,7 @@ def get_map(
     # prepare authorization for WMS service
     headers = {}
     if "access_token" not in additional_kwargs.keys():
-        if thumbnail_url.startswith(settings.OGC_SERVER["default"]["LOCATION"]):
+        if thumbnail_url.startswith(ogc_server_settings.LOCATION):
             # for the Geoserver backend, use Basic Auth, if access_token is not provided
             _user = settings.OGC_SERVER["default"].get("USER")
             _pwd = settings.OGC_SERVER["default"].get("PASSWORD")
