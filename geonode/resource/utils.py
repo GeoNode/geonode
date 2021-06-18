@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.maps.models import Map
 import re
 import logging
 import datetime
@@ -27,7 +26,6 @@ from django.utils import timezone
 
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
-from django.db import IntegrityError, transaction
 
 from ..base.models import (
     Region,
@@ -38,6 +36,7 @@ from ..base.models import (
     HierarchicalKeyword,
     SpatialRepresentationType)
 
+from ..maps.models import Map
 from ..layers.models import Layer
 from ..layers.utils import resolve_regions
 from ..layers.metadata import convert_keyword
