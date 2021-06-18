@@ -237,32 +237,38 @@ class DocumentUploadView(CreateView):
         If the form is valid, save the associated model.
         """
         doc_form = form.cleaned_data
-        self.object = Document()
 
         file = doc_form.pop('doc_file', None)
         if file:
             tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
             dirname = os.path.basename(tempdir)
             filepath = storage_manager.save(f"{dirname}/{file.name}", file)
-            self.object.title = file.name
             storage_path = storage_manager.path(filepath)
-            self.object.files = [storage_path]
+            self.object = resource_manager.create(
+                None,
+                resource_type=Document,
+                defaults=dict(
+                    owner=self.request.user,
+                    doc_url=doc_form.pop('doc_url', None),
+                    title=doc_form.pop('title', file.name),
+                    files=[storage_path])
+            )
             if tempdir != os.path.dirname(storage_path):
                 shutil.rmtree(tempdir)
+        else:
+            self.object = resource_manager.create(
+                None,
+                resource_type=Document,
+                defaults=dict(
+                    owner=self.request.user,
+                    doc_url=doc_form.pop('doc_url', None),
+                    title=doc_form.pop('title', None))
+            )
 
-        self.object.owner = self.request.user
-        self.object.doc_url = doc_form.pop('doc_url', None)
-        self.object.title = doc_form.pop('title', None)
         if settings.ADMIN_MODERATE_UPLOADS:
             self.object.is_approved = False
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
-
-        self.object = resource_manager.create(
-            None,
-            resource_type=Document,
-            defaults={"owner": self.request.user, "title": self.object.title, "files": self.object.files},
-        )
 
         resource_manager.set_permissions(
             None, instance=self.object, permissions=form.cleaned_data["permissions"], created=True
@@ -344,9 +350,13 @@ class DocumentUpdateView(UpdateView):
         """
         If the form is valid, save the associated model.
         """
-        file = form.cleaned_data.get('doc_file')
-
-        self.object = resource_manager.replace(self.object, file, self.request.user)
+        self.object = resource_manager.replace(
+            self.object,
+            vals={
+                'files': form.cleaned_data.get('doc_file'),
+                'doc_url': form.cleaned_data.get('doc_url'),
+                'user': self.request.user
+            })
 
         register_event(self.request, EventType.EVENT_CHANGE, self.object)
 

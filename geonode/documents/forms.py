@@ -86,6 +86,8 @@ class DocumentFormMixin(object):
 
 class DocumentForm(ResourceBaseForm, DocumentFormMixin):
 
+    title = forms.CharField(required=False)
+
     links = forms.MultipleChoiceField(
         label=_("Link to"),
         required=False)

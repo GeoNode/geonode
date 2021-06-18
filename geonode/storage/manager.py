@@ -111,7 +111,7 @@ class StorageManager(StorageManagerInterface):
         updated_files = {}
         if isinstance(files, list):
             updated_files['files'] = self._replace_files_list(_resource.files, files)
-        else:
+        elif len(_resource.files):
             updated_files['files'] = [self._replace_single_file(_resource.files[0], files)]
         return updated_files
 

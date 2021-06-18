@@ -387,7 +387,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         elif upload_data['state'] == enumerations.STATE_PENDING:
             self.assertGreaterEqual(upload_data['progress'], 33.0)
             self.assertIsNone(upload_data['detail_url'])
-            self.assertIsNotNone(upload_data['resume_url'])
+            self.assertIsNone(upload_data['resume_url'])
             self.assertIsNotNone(upload_data['delete_url'])
 
         response = self.selenium.request('GET', delete_url, headers=headers)

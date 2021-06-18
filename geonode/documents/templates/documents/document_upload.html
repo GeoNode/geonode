@@ -43,6 +43,11 @@
             $('#id_title').val($('#id_doc_file').val().replace("C:\\fakepath\\", ""));
         }
     });
+    $('#id_doc_url').on('change', function(){
+        if($('#id_title').val() == ''){
+            $('#id_title').val($('#id_doc_url').val());
+        }
+    });
     $("#id_links").select2({
         width: '100%'
     });

@@ -1275,17 +1275,17 @@ def layer_append_replace_view(request, layername, template, action_type):
                     and os.getenv("DEFAULT_BACKEND_UPLOADER", None) == "geonode.importer"
                     and resource_is_valid
                 ):
-
-                    getattr(resource_manager, action_type)(layer, list(files.values()), request.user)
-
+                    getattr(resource_manager, action_type)(
+                        layer,
+                        vals={
+                            'files': list(files.values()),
+                            'user': request.user})
                     out['success'] = True
                     out['url'] = reverse(
                         'layer_detail', args=[
                             layer.service_typename])
                     #  invalidating resource chache
                     set_geowebcache_invalidate_cache(layer.typename)
-                    #  updating layer
-                    layer.save()
                 else:
                     out['success'] = False
                     out['errors'] = str("Please select a valid Geoserver backend")

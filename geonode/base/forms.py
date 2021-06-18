@@ -397,22 +397,27 @@ class ResourceBaseForm(TranslationModelForm):
         label=_("Abstract"),
         required=False,
         widget=TinyMCE())
+
     purpose = forms.CharField(
         label=_("Purpose"),
         required=False,
         widget=TinyMCE())
+
     constraints_other = forms.CharField(
         label=_("Other constraints"),
         required=False,
         widget=TinyMCE())
+
     supplemental_information = forms.CharField(
         label=_('Supplemental information'),
         required=False,
         widget=TinyMCE())
+
     data_quality_statement = forms.CharField(
         label=_("Data quality statement"),
         required=False,
         widget=TinyMCE())
+
     owner = forms.ModelChoiceField(
         empty_label=_("Owner"),
         label=_("Owner"),
@@ -426,6 +431,7 @@ class ResourceBaseForm(TranslationModelForm):
         input_formats=['%Y-%m-%d %H:%M %p'],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
+
     temporal_extent_start = forms.DateTimeField(
         label=_("temporal extent start"),
         required=False,
@@ -433,6 +439,7 @@ class ResourceBaseForm(TranslationModelForm):
         input_formats=['%Y-%m-%d %H:%M %p'],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
+
     temporal_extent_end = forms.DateTimeField(
         label=_("temporal extent end"),
         required=False,
