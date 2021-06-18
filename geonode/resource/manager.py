@@ -87,6 +87,18 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+        pass
+
+    @abstractmethod
+    def append(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
+        pass
+
+    @abstractmethod
+    def replace(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
+        pass
+
+    @abstractmethod
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         pass
 
@@ -104,14 +116,6 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 
     @abstractmethod
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
-        pass
-
-    @abstractmethod
-    def append(self, instance: ResourceBase, vals: dict = {}):
-        pass
-
-    @abstractmethod
-    def replace(self, instance: ResourceBase, vals: dict = {}):
         pass
 
 
@@ -217,6 +221,58 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.save(notify=notify)
             resourcebase_post_save(_resource)
         return _resource
+
+    @transaction.atomic
+    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+        instance.id = None
+        instance.pk = None
+        instance.uuid = uuid or str(uuid1())
+        instance.save()
+        to_update = defaults.copy()
+        to_update.update(storage_manager.copy(instance))
+        self._concrete_resource_manager.copy(instance, uuid=instance.uuid, defaults=to_update)
+        if 'user' in to_update:
+            to_update.pop('user')
+        return self.update(instance.uuid, instance, vals=to_update)
+
+    @transaction.atomic
+    def append(self, instance: ResourceBase, vals: dict = {}):
+        if self._validate_resource(instance, 'append'):
+            self._concrete_resource_manager.append(instance, vals=vals)
+            to_update = vals.copy()
+            if 'user' in to_update:
+                to_update.pop('user')
+            return self.update(instance.uuid, instance, vals=to_update)
+        return instance
+
+    @transaction.atomic
+    def replace(self, instance: ResourceBase, vals: dict = {}):
+        if self._validate_resource(instance, 'replace'):
+            if vals.get('files', None):
+                vals.update(storage_manager.replace(instance, vals.get('files')))
+            self._concrete_resource_manager.replace(instance, vals=vals)
+            to_update = vals.copy()
+            if 'user' in to_update:
+                to_update.pop('user')
+            return self.update(instance.uuid, instance, vals=to_update)
+        return instance
+
+    def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:
+        if not isinstance(instance, Layer) and action_type == 'append':
+            raise Exception("Append data is available only for Layers")
+
+        if isinstance(instance, Document) and action_type == "replace":
+            return True
+
+        exists = self._concrete_resource_manager.exists(instance.uuid, instance)
+
+        if exists and instance.is_vector() and action_type == "append":
+            is_valid = True
+        elif exists and action_type == "replace":
+            is_valid = True
+        else:
+            raise ObjectDoesNotExist("Resource does not exists")
+        return is_valid
 
     @transaction.atomic
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
@@ -449,41 +505,6 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
-
-    @transaction.atomic
-    def append(self, instance: ResourceBase, vals: dict = {}):
-        if self._validate_resource(instance, 'append'):
-            self._concrete_resource_manager.append(instance, vals=vals)
-            to_update = vals.copy()
-            to_update.pop('user')
-            return self.update(instance.uuid, instance, vals=to_update)
-
-    @transaction.atomic
-    def replace(self, instance: ResourceBase, vals: dict = {}):
-        if self._validate_resource(instance, 'replace'):
-            if vals.get('files', None):
-                vals.update(storage_manager.replace(instance, vals.get('files')))
-            self._concrete_resource_manager.replace(instance, vals=vals)
-            to_update = vals.copy()
-            to_update.pop('user')
-            return self.update(instance.uuid, instance, vals=to_update)
-
-    def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:
-        if not isinstance(instance, Layer) and action_type == 'append':
-            raise Exception("Append data is available only for Layers")
-
-        if isinstance(instance, Document) and action_type == "replace":
-            return True
-
-        exists = self._concrete_resource_manager.exists(instance.uuid, instance)
-
-        if exists and instance.is_vector() and action_type == "append":
-            is_valid = True
-        elif exists and action_type == "replace":
-            is_valid = True
-        else:
-            raise ObjectDoesNotExist("Resource does not exists")
-        return is_valid
 
 
 resource_manager = ResourceManager()

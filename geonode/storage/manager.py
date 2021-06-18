@@ -17,8 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import importlib
 import os
+import importlib
+
+from uuid import uuid1
 from pathlib import Path
 from typing import BinaryIO, List, Union
 from django.conf import settings
@@ -70,6 +72,12 @@ class StorageManagerInterface(metaclass=ABCMeta):
     def generate_filename(self, filename):
         pass
 
+    def replace(self, resource, files: Union[list, BinaryIO]):
+        pass
+
+    def copy(self, resource):
+        pass
+
 
 @deconstructible
 class StorageManager(StorageManagerInterface):
@@ -107,25 +115,48 @@ class StorageManager(StorageManagerInterface):
     def url(self, name):
         return self._concrete_storage_manager.url(name)
 
-    def replace(self, _resource, files: Union[list, BinaryIO]):
+    def replace(self, resource, files: Union[list, BinaryIO]):
         updated_files = {}
         if isinstance(files, list):
-            updated_files['files'] = self._replace_files_list(_resource.files, files)
-        elif len(_resource.files):
-            updated_files['files'] = [self._replace_single_file(_resource.files[0], files)]
+            updated_files['files'] = self._replace_files_list(resource.files, files)
+        elif len(resource.files):
+            updated_files['files'] = [self._replace_single_file(resource.files[0], files)]
         return updated_files
+
+    def copy(self, resource):
+        updated_files = {}
+        if len(resource.files):
+            updated_files['files'] = self._copy_files_list(resource.files)
+        return updated_files
+
+    def _copy_files_list(self, files: List[str]):
+        out = []
+        for f in files:
+            with self.open(f, 'rb+') as open_file:
+                old_path = str(os.path.basename(Path(f).parent.absolute()))
+                old_file_name, _ = os.path.splitext(os.path.basename(f))
+                _, ext = os.path.splitext(open_file.name)
+                path = os.path.join(old_path, f'{uuid1().hex[:8]}')
+                new_file = f"{path}/{self.generate_filename(old_file_name)}{ext}"
+                out.append(self._copy_single_file(open_file, new_file))
+        return out
+
+    def _copy_single_file(self, old_file: BinaryIO, new_file: str):
+        filepath = self.save(new_file, old_file)
+        return self.path(filepath)
 
     def _replace_files_list(self, old_files: List[str], new_files: List[str]):
         out = []
         for f in new_files:
-            with open(f, 'rb+') as open_file:
+            with self.open(f, 'rb+') as open_file:
                 out.append(self._replace_single_file(old_files[0], open_file))
         return out
 
     def _replace_single_file(self, old_file: str, new_file: BinaryIO):
-        path = str(os.path.basename(Path(old_file).parent.absolute()))
+        old_path = str(os.path.basename(Path(old_file).parent.absolute()))
         old_file_name, _ = os.path.splitext(os.path.basename(old_file))
         _, ext = os.path.splitext(new_file.name)
+        path = os.path.join(old_path, f'{uuid1().hex[:8]}')
         try:
             filepath = self.save(f"{path}/{old_file_name}{ext}", new_file)
         except SuspiciousFileOperation:
@@ -158,7 +189,10 @@ class DefaultStorageManager(StorageManagerInterface):
         return self._fsm.listdir(path)
 
     def open(self, name, mode='rb'):
-        return self._fsm.open(name, mode=mode)
+        try:
+            return self._fsm.open(name, mode=mode)
+        except SuspiciousFileOperation:
+            return open(name, mode=mode)
 
     def path(self, name):
         return self._fsm.path(name)
