@@ -58,6 +58,7 @@ from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
 from geonode import GeoNodeException
 from geonode.utils import get_legend_url, http_client
+from geonode.base.models import Link
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json
@@ -397,6 +398,10 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
         for _s in _old_styles:
             try:
                 gs_catalog.delete(_s)
+                Link.objects.filter(
+                    resource=saved_layer.resourcebase_ptr,
+                    name='Legend',
+                    url__contains=f'STYLE={_s.name}').delete()
             except Exception as e:
                 logger.debug(e)
         set_styles(saved_layer, gs_catalog)
