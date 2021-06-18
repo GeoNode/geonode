@@ -58,9 +58,9 @@ class MapstoreAdapterHook(MapHookInterface):
 
     def perform_create(self, upobj, serializer):
         thumbnail = serializer.validated_data.pop('thumbnail_url', '')
-        self.adapter.perform_create(upobj, serializer)
-        self._handle_thumbnail(thumbnail, serializer)
-        return serializer
+        updated_serializer = self.adapter.perform_create(upobj, serializer)
+        self._handle_thumbnail(thumbnail, updated_serializer)
+        return updated_serializer
 
     def perform_update(self, upobj, serializer):
         thumbnail = serializer.validated_data.pop('thumbnail_url', '')
