@@ -19,6 +19,7 @@
 #########################################################################
 import os
 import time
+import shutil
 import logging
 import tempfile
 
@@ -106,6 +107,10 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.temp_folder = tempfile.mkdtemp(dir=CURRENT_LOCATION)
         self.session_id = None
         self.csrf_token = None
+
+    def tearDown(self):
+        shutil.rmtree(self.temp_folder, ignore_errors=True)
+        return super(UploadApiTests, self).tearDown()
 
     def set_session_cookies(self, url=None):
         # selenium will set cookie domain based on current page domain
@@ -403,7 +408,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(len(response_data), 5)
         self.assertEqual(response_data['total'], total_uploads - 1)
         # Pagination
-        self.assertEqual(len(response_data['uploads']), total_uploads - 1)
+        self.assertEqual(len(response_data['uploads']), 10)
         logger.debug(response_data)
 
     def test_rest_uploads(self):
