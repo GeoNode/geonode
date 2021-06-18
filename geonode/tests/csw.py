@@ -200,7 +200,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                 elif link.protocol == 'OGC:WFS':
                     self.assertEqual(
                         link.url,
-                        f'{settings.GEOSERVER_PUBLIC_LOCATION}wfs',
+                        f'{settings.GEOSERVER_PUBLIC_LOCATION}ows',
                         'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_dc_bbox(self):

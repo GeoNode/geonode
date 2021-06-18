@@ -379,13 +379,13 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                 break
             time.sleep(10.0)
 
-        self.assertGreaterEqual(upload_data['progress'], 80.0)
-
         if upload_data['state'] == enumerations.STATE_PROCESSED:
+            self.assertGreaterEqual(upload_data['progress'], 80.0)
             self.assertIsNotNone(upload_data['detail_url'])
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
         elif upload_data['state'] == enumerations.STATE_PENDING:
+            self.assertGreaterEqual(upload_data['progress'], 33.0)
             self.assertIsNone(upload_data['detail_url'])
             self.assertIsNotNone(upload_data['resume_url'])
             self.assertIsNotNone(upload_data['delete_url'])
