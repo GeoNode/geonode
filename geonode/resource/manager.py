@@ -454,6 +454,7 @@ class ResourceManager(ResourceManagerInterface):
     def append(self, instance: ResourceBase, vals: dict = {}):
         if self._validate_resource(instance, 'append'):
             self._concrete_resource_manager.append(instance, vals=vals)
+            vals.pop('user')
             return self.update(instance.uuid, instance, vals=vals)
 
     @transaction.atomic
@@ -462,6 +463,7 @@ class ResourceManager(ResourceManagerInterface):
             if vals.get('files', None):
                 vals.update(storage_manager.replace(instance, vals.get('files')))
             self._concrete_resource_manager.replace(instance, vals=vals)
+            vals.pop('user')
             return self.update(instance.uuid, instance, vals=vals)
 
     def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:

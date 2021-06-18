@@ -167,51 +167,48 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
     metadata_author = defaults.pop('metadata_author', None)
 
     # Save all the modified information in the instance without triggering signals.
-    try:
-        if hasattr(instance, 'title') and not defaults.get('title', instance.title):
-            defaults['title'] = instance.title or getattr(instance, 'name', "")
-        if hasattr(instance, 'abstract') and not defaults.get('abstract', instance.abstract):
-            defaults['abstract'] = instance.abstract or ''
-        if hasattr(instance, 'date') and not defaults.get('date'):
-            defaults['date'] = instance.date or timezone.now()
+    if hasattr(instance, 'title') and not defaults.get('title', instance.title):
+        defaults['title'] = instance.title or getattr(instance, 'name', "")
+    if hasattr(instance, 'abstract') and not defaults.get('abstract', instance.abstract):
+        defaults['abstract'] = instance.abstract or ''
+    if hasattr(instance, 'date') and not defaults.get('date'):
+        defaults['date'] = instance.date or timezone.now()
 
-        to_update = {}
-        if hasattr(instance, 'charset'):
-            to_update['charset'] = defaults.pop('charset', instance.charset)
-        if hasattr(instance, 'storeType'):
-            to_update['storeType'] = defaults.pop('storeType', instance.storeType)
-        if hasattr(instance, 'urlsuffix'):
-            to_update['urlsuffix'] = defaults.pop('urlsuffix', instance.urlsuffix)
-        if isinstance(instance, Layer):
-            for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
-                if _key in defaults:
-                    to_update[_key] = defaults.pop(_key)
-                else:
-                    to_update[_key] = getattr(instance, _key)
-        if isinstance(instance, Map):
-            for _key in ('center_x', 'center_y', 'zoom'):
-                if _key in defaults:
-                    to_update[_key] = defaults.pop(_key)
-                else:
-                    to_update[_key] = getattr(instance, _key)
+    to_update = {}
+    if hasattr(instance, 'charset'):
+        to_update['charset'] = defaults.pop('charset', instance.charset)
+    if hasattr(instance, 'storeType'):
+        to_update['storeType'] = defaults.pop('storeType', instance.storeType)
+    if hasattr(instance, 'urlsuffix'):
+        to_update['urlsuffix'] = defaults.pop('urlsuffix', instance.urlsuffix)
+    if isinstance(instance, Layer):
+        for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
+            if _key in defaults:
+                to_update[_key] = defaults.pop(_key)
+            else:
+                to_update[_key] = getattr(instance, _key)
+    if isinstance(instance, Map):
+        for _key in ('center_x', 'center_y', 'zoom'):
+            if _key in defaults:
+                to_update[_key] = defaults.pop(_key)
+            else:
+                to_update[_key] = getattr(instance, _key)
 
-        to_update.update(defaults)
+    to_update.update(defaults)
 
-        with transaction.atomic():
-            ResourceBase.objects.filter(
-                id=instance.resourcebase_ptr.id).update(
-                **defaults)
+    ResourceBase.objects.filter(
+        id=instance.resourcebase_ptr.id).update(
+        **defaults)
 
-            instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
+    instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
 
-            # Refresh from DB
-            instance.refresh_from_db()
-            if poc:
-                instance.poc = poc
-            if metadata_author:
-                instance.metadata_author = metadata_author
-    except IntegrityError:
-        raise
+    # Refresh from DB
+    instance.refresh_from_db()
+    if poc:
+        instance.poc = poc
+    if metadata_author:
+        instance.metadata_author = metadata_author
+
     return instance
 
 
