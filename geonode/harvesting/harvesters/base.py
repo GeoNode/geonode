@@ -89,14 +89,6 @@ class BaseHarvesterWorker(abc.ABC):
     ) -> typing.Optional[resourcedescriptor.RecordDescription]:
         """Harvest a single resource from the remote service"""
 
-    @abc.abstractmethod
-    def update_geonode_resource(
-            self,
-            resource_descriptor: resourcedescriptor.RecordDescription,
-            harvesting_session_id: typing.Optional[int] = None
-    ):
-        """Update GeoNode with the input resource descriptor"""
-
     @classmethod
     def get_extra_config_schema(cls) -> typing.Optional[typing.Dict]:
         """Return a jsonschema schema to be used to validate models.Harvester objects"""
@@ -132,6 +124,34 @@ class BaseHarvesterWorker(abc.ABC):
             update_kwargs["records_harvested"] = (
                     F("records_harvested") + additional_harvested_records)
         models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
+
+    def update_geonode_resource(
+            self,
+            resource_descriptor: resourcedescriptor.RecordDescription,
+            harvesting_session_id: typing.Optional[int] = None
+    ):
+        """Update GeoNode with the input resource descriptor
+
+        This may entail creating the resource if it does not exist yet.
+
+        """
+
+        # we need the harvester instance in order to know the following information
+        # about the resources being created/updated:
+        # - Default owner
+        # - Default access permissions
+        harvester = models.Harvester.objects.get(pk=self.harvester_id)
+
+        # now we need to interface with the resource_manager:
+        # 1. find out if the resource already exists
+        # 2. create (or update) the resource by using the resource manager and the
+        #    information present both in the `harvester` and in the
+        #    `resource_descriptor`
+        # 3. set permissions on the newly created resource (ideally this will be done
+        #    when the resource is created - not sure if the resource manager allows it)
+        # 4. set a thumbnail for the resource, if possible
+
+        raise NotImplementedError  # FIXME: Finish implementation of this method
 
 
 class OldBaseHarvester:

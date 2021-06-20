@@ -238,14 +238,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 f"Could not retrieve remote resource {resource_unique_identifier!r}")
         return resource_descriptor
 
-    def update_geonode_resource(
-            self,
-            resource_descriptor: resourcedescriptor.RecordDescription,
-            harvesting_session_id: typing.Optional[int] = None
-    ):
-        # FIXME: what to call here for asking GeoNode to generate resource?
-        raise NotImplementedError
-
     def _get_resource_details(
             self,
             raw_brief_resource: typing.Dict
@@ -347,7 +339,7 @@ def get_resource_descriptor(
             record.xpath(
                 "gmd:dateStamp/gco:DateTime/text()", namespaces=record.nsmap)[0],
         ).replace(tzinfo=dt.timezone.utc),
-        reference_system=f"EPSG:{crs_epsg_code}",
+        reference_systems=[f"EPSG:{crs_epsg_code}"],
         identification=get_identification_descriptor(
             record.xpath("gmd:identificationInfo", namespaces=record.nsmap)[0]
         ),
