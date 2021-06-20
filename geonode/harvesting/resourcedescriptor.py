@@ -84,7 +84,7 @@ class RecordDescription:
     point_of_contact: RecordDescriptionContact
     author: RecordDescriptionContact
     date_stamp: dt.datetime
-    reference_system: str
+    reference_systems: typing.List[str]
     identification: RecordIdentification
     distribution: RecordDistribution
     data_quality: str
