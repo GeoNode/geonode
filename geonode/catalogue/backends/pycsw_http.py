@@ -26,6 +26,6 @@ class CatalogueBackend(GenericCatalogueBackend):
 
     def __init__(self, *args, **kwargs):
         """initialize pycsw HTTP CSW backend"""
-        super().__init__(*args, **kwargs)
+        super(CatalogueBackend, self).__init__(*args, **kwargs)  # LGTM: super() will not work in old-style classes
         self.catalogue.formats = \
             ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO']

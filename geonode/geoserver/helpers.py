@@ -1446,7 +1446,7 @@ class ServerDoesNotExist(Exception):
     pass
 
 
-class OGC_Server:
+class OGC_Server(object):  # LGTM: @property will not work in old-style classes
 
     """
     OGC Server object.

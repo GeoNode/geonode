@@ -144,7 +144,7 @@ class ProfileAdmin(admin.ModelAdmin):
         }
         extra_context.update(defaults)
         return super().add_view(request, form_url,
-                                                  extra_context)
+                                extra_context)
 
     @sensitive_post_parameters_m
     def user_change_password(self, request, id, form_url=''):
@@ -207,7 +207,7 @@ class ProfileAdmin(admin.ModelAdmin):
             request.POST['_continue'] = 1
             request.POST._mutable = mutable
         return super().response_add(request, obj,
-                                                      post_url_continue)
+                                    post_url_continue)
 
 
 admin.site.register(Profile, ProfileAdmin)

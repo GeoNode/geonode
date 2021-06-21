@@ -301,8 +301,8 @@ def setup(options):
 
     updategeoip(options)
     info('GeoNode development environment successfully set up.'
-          'If you have not set up an administrative account,'
-          ' please do so now. Use "paver start" to start up the server.')
+         'If you have not set up an administrative account,'
+         ' please do so now. Use "paver start" to start up the server.')
 
 
 def grab_winfiles(url, dest, packagename):
@@ -721,7 +721,7 @@ def start_geoserver(options):
         # If applications did not start in time we will give the user a chance
         # to inspect them and stop them manually.
         info('GeoServer never started properly or timed out.'
-              'It may still be running in the background.')
+             'It may still be running in the background.')
         sys.exit(1)
 
 

@@ -499,8 +499,8 @@ class DjangoParallelTestRunner(DiscoverRunner):
     def __init__(self, verbosity=2, failfast=True, **kwargs):
         stream = BufferWritesDevice()
         super().__init__(stream=stream,
-                                                       verbosity=verbosity,
-                                                       failfast=failfast)
+                         verbosity=verbosity,
+                         failfast=failfast)
 
 
 class TwistedParallelTestSuiteRunner(ParallelTestSuiteRunner):
@@ -508,7 +508,7 @@ class TwistedParallelTestSuiteRunner(ParallelTestSuiteRunner):
                  **kwargs):
         self.config = config
         super().__init__(verbosity, interactive,
-                                                             failfast, **kwargs)
+                         failfast, **kwargs)
 
     def run_tests(self, test_labels, extra_tests=None, **kwargs):
         app_tests = self._group_by_app(test_labels)
