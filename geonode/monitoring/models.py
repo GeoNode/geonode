@@ -31,11 +31,11 @@ from django import forms
 from django.db import models
 from django.conf import settings
 from django.http import Http404
-from jsonfield import JSONField
 
 from django.utils.translation import ugettext_noop as _
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django_jsonfield_backport.models import JSONField
 
 try:
     from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
@@ -929,7 +929,7 @@ class MetricValue(models.Model):
     value_raw = models.TextField(null=True, default=None, blank=True)
     samples_count = models.PositiveIntegerField(
         null=False, default=0, blank=False)
-    data = JSONField(null=False, default={})
+    data = JSONField(null=False, default=dict)
 
     class Meta:
         unique_together = (
@@ -1094,7 +1094,7 @@ class NotificationCheck(models.Model):
         null=False,
         blank=False,
         help_text="Description of the alert")
-    user_threshold = JSONField(default={}, null=False, blank=False,
+    user_threshold = JSONField(default=dict, null=False, blank=False,
                                help_text=_("Expected min/max values for user configuration"))
     metrics = models.ManyToManyField(
         Metric,

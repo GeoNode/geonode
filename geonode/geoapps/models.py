@@ -23,8 +23,7 @@ from django.db import models
 from django.urls import reverse
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
-
-from jsonfield import JSONField
+from django_jsonfield_backport.models import JSONField
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -140,7 +139,7 @@ class GeoAppData(models.Model):
 
     blob = JSONField(
         null=False,
-        default={})
+        default=dict)
 
     resource = models.ForeignKey(
         GeoApp,
