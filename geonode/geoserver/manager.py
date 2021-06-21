@@ -110,6 +110,83 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 geoserver_post_save_local(instance.get_real_instance())
         return instance
 
+    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+        if instance and isinstance(instance.get_real_instance(), Layer):
+            return self.import_layer(
+                'import_layer',
+                instance.uuid,
+                instance=instance,
+                files=defaults.get('files', None),
+                user=defaults.get('user', instance.owner),
+                action_type='create')
+        return instance
+
+    def append(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
+        if instance and isinstance(instance.get_real_instance(), Layer):
+            return self.import_layer(
+                'import_layer',
+                instance.uuid,
+                instance=instance,
+                files=vals.get('files', None),
+                user=vals.get('user', instance.owner),
+                action_type='append')
+        return instance
+
+    def replace(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
+        if instance and isinstance(instance.get_real_instance(), Layer):
+            return self.import_layer(
+                'import_layer',
+                instance.uuid,
+                instance=instance,
+                files=vals.get('files', None),
+                user=vals.get('user', instance.owner),
+                action_type='replace')
+        return instance
+
+    def import_layer(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
+        instance = instance or ResourceManager._get_instance(uuid)
+
+        if instance and isinstance(instance.get_real_instance(), Layer):
+            upload_session, _ = self._revise_resource_value(
+                instance,
+                kwargs.get('files', None),
+                kwargs.get('user', instance.owner),
+                action_type=kwargs.get('action_type', 'create'))
+            upload_session.save()
+        return instance
+
+    def _revise_resource_value(self, instance, files: list, user, action_type: str):
+        upload_session, _ = Upload.objects.get_or_create(resource=instance.resourcebase_ptr, user=user)
+        upload_session.resource = instance.resourcebase_ptr
+        upload_session.processed = False
+        upload_session.save()
+        gs_layer = gs_catalog.get_layer(instance.name)
+        #  opening Import session for the selected layer
+        if not gs_layer:
+            raise Exception("Layer is not available in GeoServer")
+        import_session = gs_uploader.start_import(
+            import_id=upload_session.id, name=instance.name, target_store=gs_layer.resource.store.name
+        )
+
+        import_session.upload_task(files)
+        task = import_session.tasks[0]
+        #  Changing layer name, mode and target
+        task.layer.set_target_layer_name(instance.name)
+        task.set_update_mode(action_type.upper())
+        task.set_target(store_name=gs_layer.resource.store.name, workspace=gs_layer.resource.workspace.name)
+        #  Starting import process
+        import_session.commit()
+
+        # Updating Resource with the files replaced
+        if action_type.lower() == 'replace':
+            updated_files_list = storage_manager.replace(instance, files)
+            # Using update instead of save in order to avoid calling
+            # side-effect function of the resource
+            r = ResourceBase.objects.filter(id=instance.id)
+            r.update(**updated_files_list)
+
+        return upload_session, import_session
+
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         instance = instance or ResourceManager._get_instance(uuid)
 
@@ -267,35 +344,3 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 logger.exception(e)
                 return None
         return instance
-
-    def revise_resource_value(self, _resource, files: list, user, action_type: str):
-        upload_session, _ = Upload.objects.get_or_create(resource=_resource.resourcebase_ptr, user=user)
-        upload_session.resource = _resource.resourcebase_ptr
-        upload_session.processed = False
-        upload_session.save()
-        gs_layer = gs_catalog.get_layer(_resource.name)
-        #  opening Import session for the selected layer
-        if not gs_layer:
-            raise Exception("Layer is not available in GeoServer")
-        import_session = gs_uploader.start_import(
-            import_id=upload_session.id, name=_resource.name, target_store=gs_layer.resource.store.name
-        )
-
-        import_session.upload_task(files)
-        task = import_session.tasks[0]
-        #  Changing layer name, mode and target
-        task.layer.set_target_layer_name(_resource.name)
-        task.set_update_mode(action_type.upper())
-        task.set_target(store_name=gs_layer.resource.store.name, workspace=gs_layer.resource.workspace.name)
-        #  Starting import process
-        import_session.commit()
-
-        # Updating Resource with the files replaced
-        if action_type.lower() == 'replace':
-            updated_files_list = storage_manager.replace(_resource, files)
-            # Using update instead of save in order to avoid calling
-            # side-effect function of the resource
-            r = ResourceBase.objects.filter(id=_resource.id)
-            r.update(**updated_files_list)
-
-        return upload_session, import_session

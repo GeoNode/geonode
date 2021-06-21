@@ -35,6 +35,7 @@ from geonode.tasks.tasks import (
     AcquireLock,
     FaultTolerantTask)
 from geonode import GeoNodeException
+from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
 from geonode.utils import (
@@ -184,6 +185,10 @@ def geoserver_create_style(
                         set_styles(instance, gs_catalog)
                         try:
                             gs_catalog.delete(_default_style)
+                            Link.objects.filter(
+                                resource=instance.resourcebase_ptr,
+                                name='Legend',
+                                url__contains=f'STYLE={_default_style.name}').delete()
                         except Exception as e:
                             logger.exception(e)
                 else:

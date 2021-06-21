@@ -17,8 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from typing import BinaryIO, Union
-from geonode.documents.models import Document
 import logging
 import importlib
 
@@ -36,6 +34,7 @@ from django.conf import settings
 from django.db import transaction
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
+from geonode.documents.models import Document
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
@@ -85,6 +84,18 @@ class ResourceManagerInterface(metaclass=ABCMeta):
     @abstractmethod
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
                vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
+        pass
+
+    @abstractmethod
+    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+        pass
+
+    @abstractmethod
+    def append(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
+        pass
+
+    @abstractmethod
+    def replace(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
         pass
 
     @abstractmethod
@@ -200,11 +211,8 @@ class ResourceManager(ResourceManagerInterface):
                         uuid = _uuid
 
                 logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
-
                 _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
-
                 _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
-
                 _resource = metadata_storers(_resource.get_real_instance(), custom)
             except Exception as e:
                 logger.exception(e)
@@ -213,6 +221,58 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.save(notify=notify)
             resourcebase_post_save(_resource)
         return _resource
+
+    @transaction.atomic
+    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+        instance.id = None
+        instance.pk = None
+        instance.uuid = uuid or str(uuid1())
+        instance.save()
+        to_update = defaults.copy()
+        to_update.update(storage_manager.copy(instance))
+        self._concrete_resource_manager.copy(instance, uuid=instance.uuid, defaults=to_update)
+        if 'user' in to_update:
+            to_update.pop('user')
+        return self.update(instance.uuid, instance, vals=to_update)
+
+    @transaction.atomic
+    def append(self, instance: ResourceBase, vals: dict = {}):
+        if self._validate_resource(instance, 'append'):
+            self._concrete_resource_manager.append(instance, vals=vals)
+            to_update = vals.copy()
+            if 'user' in to_update:
+                to_update.pop('user')
+            return self.update(instance.uuid, instance, vals=to_update)
+        return instance
+
+    @transaction.atomic
+    def replace(self, instance: ResourceBase, vals: dict = {}):
+        if self._validate_resource(instance, 'replace'):
+            if vals.get('files', None):
+                vals.update(storage_manager.replace(instance, vals.get('files')))
+            self._concrete_resource_manager.replace(instance, vals=vals)
+            to_update = vals.copy()
+            if 'user' in to_update:
+                to_update.pop('user')
+            return self.update(instance.uuid, instance, vals=to_update)
+        return instance
+
+    def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:
+        if not isinstance(instance, Layer) and action_type == 'append':
+            raise Exception("Append data is available only for Layers")
+
+        if isinstance(instance, Document) and action_type == "replace":
+            return True
+
+        exists = self._concrete_resource_manager.exists(instance.uuid, instance)
+
+        if exists and instance.is_vector() and action_type == "append":
+            is_valid = True
+        elif exists and action_type == "replace":
+            is_valid = True
+        else:
+            raise ObjectDoesNotExist("Resource does not exists")
+        return is_valid
 
     @transaction.atomic
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
@@ -445,37 +505,6 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
-
-    def append(self, _resource: Layer, files: list, user):
-        if self._validate_resource(_resource, 'append'):
-            upload_session, _ = self._concrete_resource_manager.revise_resource_value(_resource, files, user, action_type='append')
-            upload_session.save()
-
-    def replace(self, _resource: ResourceBase, files: Union[list, BinaryIO], user):
-        if self._validate_resource(_resource, 'replace'):
-            updated_files = storage_manager.replace(_resource, files)
-            if isinstance(_resource, Layer):
-                upload_session, _ = self._concrete_resource_manager.revise_resource_value(_resource, files, user, action_type='replace')
-                upload_session.save()
-
-            return self.update(_resource.uuid, _resource, vals=updated_files)
-
-    def _validate_resource(self, _resource: ResourceBase, action_type: str) -> bool:
-        if not isinstance(_resource, Layer) and action_type == 'append':
-            raise Exception("Append data is available only for Layers")
-
-        if isinstance(_resource, Document) and action_type == "replace":
-            return True
-
-        exists = self._concrete_resource_manager.exists(_resource.uuid, _resource)
-
-        if exists and _resource.is_vector() and action_type == "append":
-            is_valid = True
-        elif exists and action_type == "replace":
-            is_valid = True
-        else:
-            raise ObjectDoesNotExist("Resource does not exists")
-        return is_valid
 
 
 resource_manager = ResourceManager()
