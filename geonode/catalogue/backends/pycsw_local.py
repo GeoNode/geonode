@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -59,7 +58,7 @@ CONFIGURATION = {
 
 class CatalogueBackend(GenericCatalogueBackend):
     def __init__(self, *args, **kwargs):
-        super(CatalogueBackend, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.catalogue.formats = ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO']
         self.catalogue.local = True
 

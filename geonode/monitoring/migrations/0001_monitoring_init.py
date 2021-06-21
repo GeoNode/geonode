@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.db import migrations, models
 from django.db.models.fields.json import JSONField
 import datetime
@@ -131,7 +129,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='monitoredresource',
-            unique_together=set([('name', 'type')]),
+            unique_together={('name', 'type')},
         ),
         migrations.AddField(
             model_name='metricvalue',

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -35,7 +34,7 @@ GEONODE_DEMO_JOB = 'geonode-aws'  # jenkins job name for demo site
 # task can be either "redeploy-demo-site", "build-demo-job"
 
 
-class DemoGeonode(object):
+class DemoGeonode:
     """
     This class allows interaction with the Jenkins APIs to do several tasks,
     for a more detailed guide on how to use self.j see

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -318,7 +317,7 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
     if srid and str(srid).startswith('EPSG:'):
         srid = srid[5:]
     if None not in {x0, x1, y0, y1}:
-        wkt = 'POLYGON((%f %f,%f %f,%f %f,%f %f,%f %f))' % (
+        wkt = 'POLYGON(({:f} {:f},{:f} {:f},{:f} {:f},{:f} {:f},{:f} {:f}))'.format(
             float(x0), float(y0),
             float(x0), float(y1),
             float(x1), float(y1),
@@ -540,7 +539,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
     return _model
 
 
-class GXPMapBase(object):
+class GXPMapBase:
 
     def viewer_json(self, request, *added_layers):
         """
@@ -706,7 +705,7 @@ class GXPMap(GXPMapBase):
         self.layers = []
 
 
-class GXPLayerBase(object):
+class GXPLayerBase:
 
     def source_config(self, access_token):
         """
@@ -1394,7 +1393,7 @@ def check_ogc_backend(backend_package):
     return False
 
 
-class HttpClient(object):
+class HttpClient:
 
     def __init__(self):
         self.timeout = 5

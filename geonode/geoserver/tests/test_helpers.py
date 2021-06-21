@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2019 OSGeo
@@ -42,7 +41,7 @@ class HelperTest(GeoNodeBaseTestSupport):
     type = 'layer'
 
     def setUp(self):
-        super(HelperTest, self).setUp()
+        super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
         create_layer_data()

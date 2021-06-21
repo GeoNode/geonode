@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -79,7 +78,7 @@ class Consumer(ConsumerMixin):
             return True
 
     def on_consume_end(self, connection, channel):
-        super(Consumer, self).on_consume_end(connection, channel)
+        super().on_consume_end(connection, channel)
         logger.debug("finished.")
 
     def on_message(self, body, message):
@@ -159,7 +158,7 @@ class Consumer(ConsumerMixin):
         logger.debug(f"{len(consumers)} consumers:")
         for i, consumer in enumerate(consumers, start=1):
             logger.debug(f"{i} {consumer}")
-        super(Consumer, self).on_consume_ready(
+        super().on_consume_ready(
             connection, channel, consumers, **kwargs)
 
     def on_layer_viewer(self, body, message):

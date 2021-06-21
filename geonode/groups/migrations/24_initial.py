@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import migrations, models
 from django.conf import settings
 import taggit.managers
@@ -75,6 +72,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='groupinvitation',
-            unique_together=set([('group', 'email')]),
+            unique_together={('group', 'email')},
         ),
     ]

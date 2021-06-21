@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -54,7 +53,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
     """
 
     def setUp(self):
-        super(SmokeTest, self).setUp()
+        super().setUp()
 
         self.norman = get_user_model().objects.get(username="norman")
         self.norman.groups.add(Group.objects.get(name='anonymous'))
@@ -658,7 +657,7 @@ class GroupActivityTest(GeoNodeBaseTestSupport):
     integration = True
 
     def setUp(self):
-        super(GroupActivityTest, self).setUp()
+        super().setUp()
 
         self.norman = get_user_model().objects.get(username="norman")
         self.norman.groups.add(Group.objects.get(name='anonymous'))
@@ -825,7 +824,7 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
     """
 
     def setUp(self):
-        super(GroupCategoriesTestCase, self).setUp()
+        super().setUp()
 
         c1 = GroupCategory.objects.create(name='test #1 category')
         g = GroupProfile.objects.create(slug='test', title='test')
@@ -926,7 +925,7 @@ class GroupProfileTest(GeoNodeBaseTestSupport):
                 slug="test",
                 description="test",
                 access="public",
-                logo=SimpleUploadedFile("dummy-file.jpg", "dummy contents".encode("UTF-8"))
+                logo=SimpleUploadedFile("dummy-file.jpg", b"dummy contents")
             )
             test_profile.save()
             response = self.client.get(

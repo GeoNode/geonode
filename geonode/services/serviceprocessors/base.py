@@ -94,7 +94,7 @@ def get_geoserver_cascading_workspace(create=True):
     return workspace
 
 
-class ServiceHandlerBase(object):
+class ServiceHandlerBase:
     """Base class for remote service handlers
 
     This class is not to be instantiated directly, but rather subclassed by
@@ -166,7 +166,7 @@ class ServiceHandlerBase(object):
         return result
 
 
-class CascadableServiceHandlerMixin(object):
+class CascadableServiceHandlerMixin:
 
     def create_cascaded_store(self):
         raise NotImplementedError

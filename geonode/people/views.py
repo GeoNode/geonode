@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -50,7 +49,7 @@ class SetUserLayerPermission(View):
 class CustomSignupView(SignupView):
 
     def get_context_data(self, **kwargs):
-        ret = super(CustomSignupView, self).get_context_data(**kwargs)
+        ret = super().get_context_data(**kwargs)
         ret.update({'account_geonode_local_signup': settings.SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP})
         return ret
 

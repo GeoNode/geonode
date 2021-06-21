@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -168,7 +167,7 @@ class ApiLockdownAuthorization(DjangoAuthorization):
 class GroupAuthorization(ApiLockdownAuthorization):
 
     def read_list(self, object_list, bundle):
-        groups = super(GroupAuthorization, self).read_list(object_list, bundle)
+        groups = super().read_list(object_list, bundle)
         user = bundle.request.user
         if groups:
             if not user.is_authenticated or user.is_anonymous:
@@ -181,7 +180,7 @@ class GroupAuthorization(ApiLockdownAuthorization):
 class GroupProfileAuthorization(ApiLockdownAuthorization):
 
     def read_list(self, object_list, bundle):
-        groups = super(GroupProfileAuthorization, self).read_list(object_list, bundle)
+        groups = super().read_list(object_list, bundle)
         user = bundle.request.user
         if groups:
             if not user.is_authenticated or user.is_anonymous:

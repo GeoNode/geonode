@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -30,7 +29,7 @@ from django.template.defaultfilters import slugify
 try:
     import unittest.mock as mock
 except ImportError:
-    import mock
+    from unittest import mock
 from owslib.map.wms111 import ContentMetadata
 
 from geonode.layers.models import Layer
@@ -515,7 +514,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
 class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(WmsServiceHandlerTestCase, self).setUp()
+        super().setUp()
 
         self.phony_url = ("http://a-really-long-and-fake-name-here-so-that-"
                           "we-use-it-in-tests")
@@ -813,7 +812,7 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(WmsServiceHarvestingTestCase, cls).setUpClass()
+        super().setUpClass()
 
         try:
             cls.client = Client()
@@ -851,7 +850,7 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
     def tearDownClass(cls):
         if cls.selenium:
             cls.selenium.quit()
-            super(WmsServiceHarvestingTestCase, cls).tearDownClass()
+            super().tearDownClass()
 
     def test_harvest_resources(self):
         if self.selenium:

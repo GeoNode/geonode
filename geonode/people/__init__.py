@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -31,7 +30,7 @@ class PeopleAppConfig(NotificationsAppConfigBase):
                      )
 
     def ready(self):
-        super(PeopleAppConfig, self).ready()
+        super().ready()
 
 
 default_app_config = 'geonode.people.PeopleAppConfig'

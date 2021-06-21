@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -89,7 +88,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             gs_catalog.get_layer(
                 instance.name),
             GsLayer)
-    except EnvironmentError as e:
+    except OSError as e:
         if e.errno == errno.ECONNREFUSED:
             msg = f'Could not connect to catalog to verify if layer {instance.name} was local'
             logger.warn(msg)
@@ -104,7 +103,7 @@ def geoserver_post_save_map(instance, sender, created, **kwargs):
         if not instance.thumbnail_url or \
                 instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
             logger.debug(f"... Creating Thumbnail for Map [{instance.title}]")
-            geoserver_create_thumbnail.apply_async(((instance.id, False, True, )))
+            geoserver_create_thumbnail.apply_async((instance.id, False, True, ))
 
 
 @deprecated(version='3.2.1', reason="Use direct calls to the ReourceManager.")
@@ -123,7 +122,7 @@ def geoserver_set_thumbnail(instance, **kwargs):
                 is_monochromatic_image(instance.thumbnail_url):
             _recreate_thumbnail = True
         if _recreate_thumbnail:
-            geoserver_create_thumbnail.apply_async(((instance.id, False, True, )))
+            geoserver_create_thumbnail.apply_async((instance.id, False, True, ))
         else:
             logger.debug(f"... Thumbnail for Layer {instance.title} already exists: {instance.thumbnail_url}")
     except Exception as e:

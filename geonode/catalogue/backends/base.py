@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -19,7 +18,7 @@
 #########################################################################
 
 
-class BaseCatalogueBackend(object):
+class BaseCatalogueBackend:
     """Catalogue abstract base class"""
 
     def remove_record(self, uuid):

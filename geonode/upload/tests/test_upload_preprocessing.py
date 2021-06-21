@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -25,7 +24,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 try:
     import unittest.mock as mock
 except ImportError:
-    import mock
+    from unittest import mock
 import os.path
 
 from geonode.upload import files

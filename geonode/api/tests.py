@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -45,7 +44,7 @@ from geonode.base.populate_test_data import all_public
 class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(PermissionsApiTests, self).setUp()
+        super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
         self.list_url = reverse(
@@ -211,7 +210,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
 class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def setUp(self):
-        super(OAuthApiTests, self).setUp()
+        super().setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -253,7 +252,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     """Test the search"""
 
     def setUp(self):
-        super(SearchApiTests, self).setUp()
+        super().setUp()
 
         self.list_url = reverse(
             'api_dispatch_list',
@@ -446,7 +445,7 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     """Test the api lockdown functionality"""
 
     def setUp(self):
-        super(LockdownApiTests, self).setUp()
+        super().setUp()
         self.profiles_list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -572,7 +571,7 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSuppor
     ]
 
     def setUp(self):
-        super(ThesaurusKeywordResourceTests, self).setUp()
+        super().setUp()
         all_public()
         self.list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "thesaurus/keywords"})
 
@@ -652,7 +651,7 @@ class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     ]
 
     def setUp(self):
-        super(LayerResourceTests, self).setUp()
+        super().setUp()
         self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse(
             'api_dispatch_list',
@@ -685,7 +684,7 @@ class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     ]
 
     def setUp(self):
-        super(DocumentResourceTests, self).setUp()
+        super().setUp()
         all_public()
         self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse(
@@ -714,7 +713,7 @@ class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     ]
 
     def setUp(self):
-        super(MapResourceTests, self).setUp()
+        super().setUp()
         all_public()
         self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse(
@@ -743,7 +742,7 @@ class TopicCategoryResourceTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     ]
 
     def setUp(self):
-        super(TopicCategoryResourceTest, self).setUp()
+        super().setUp()
         self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse(
             'api_dispatch_list',

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -23,7 +22,7 @@ from django.test.testcases import SimpleTestCase, TestCase, LiveServerTestCase
 try:
     from django.utils.decorators import classproperty
 except Exception:
-    class classproperty(object):
+    class classproperty:
 
         def __init__(self, method=None):
             self.fget = method
@@ -72,7 +71,7 @@ class GeoNodeBaseTestSupport(TestCase):
         return cls.integration
 
     def setUp(self):
-        super(GeoNodeBaseTestSupport, self).setUp()
+        super().setUp()
         faulthandler.enable()
         logging.debug(" Test setUp. Creating models.")
         self.get_obj_ids = create_models(type=self.get_type, integration=self.get_integration)
@@ -85,7 +84,7 @@ class GeoNodeBaseTestSupport(TestCase):
                 "GEOFENCE_SECURITY_ENABLED", False):
             from geonode.geoserver.security import purge_geofence_all
             purge_geofence_all()
-        super(GeoNodeBaseTestSupport, self).tearDown()
+        super().tearDown()
 
 
 class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,
@@ -95,13 +94,13 @@ class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,
     port = 8000
 
     def setUp(self):
-        super(GeoNodeLiveTestSupport, self).setUp()
+        super().setUp()
         logging.debug(" Test setUp. Creating models.")
         self.get_obj_ids = create_models(type=self.get_type, integration=self.get_integration)
         self.user_admin = get_user_model().objects.get(username="admin")
 
     def tearDown(self):
-        super(GeoNodeLiveTestSupport, self).tearDown()
+        super().tearDown()
         logging.debug(" Test tearDown. Destroying models / Cleaning up Server.")
         remove_models(self.get_obj_ids, type=self.get_type, integration=self.get_integration)
         from django.conf import settings

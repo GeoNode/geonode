@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -65,7 +64,7 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
     fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
-        super(CreateLayerCoreTest, self).setUp()
+        super().setUp()
         # createlayer must use postgis as a datastore
         # set temporary settings to use a postgis datastore
         DATASTORE_URL = 'postgis://geonode:geonode@localhost:5432/datastore'

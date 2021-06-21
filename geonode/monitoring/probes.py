@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -26,7 +25,7 @@ import socket
 import psutil
 
 
-class BaseProbe(object):
+class BaseProbe:
 
     @staticmethod
     def get_loadavg():

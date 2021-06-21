@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -44,7 +43,7 @@ class SimpleTest(GeoNodeBaseTestSupport):
     integration = True
 
     def setUp(self):
-        super(SimpleTest, self).setUp()
+        super().setUp()
 
         registry.register(Layer)
         registry.register(Comment)

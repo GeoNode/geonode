@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -58,7 +57,7 @@ logger = logging.getLogger(__name__)
 class BaseDynamicModelSerializer(DynamicModelSerializer):
 
     def to_representation(self, instance):
-        data = super(BaseDynamicModelSerializer, self).to_representation(instance)
+        data = super().to_representation(instance)
         try:
             path = reverse(self.Meta.view_name)
             if not path.endswith('/'):
@@ -168,7 +167,7 @@ class AvatarUrlField(DynamicComputedField):
 
     def __init__(self, avatar_size, **kwargs):
         self.avatar_size = avatar_size
-        super(AvatarUrlField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         return build_absolute_uri(avatar_url(instance, self.avatar_size))
@@ -177,7 +176,7 @@ class AvatarUrlField(DynamicComputedField):
 class EmbedUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):
-        super(EmbedUrlField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         _instance = instance.get_real_instance()
@@ -190,7 +189,7 @@ class EmbedUrlField(DynamicComputedField):
 class DetailUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):
-        super(DetailUrlField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         return build_absolute_uri(instance.detail_url)
@@ -199,7 +198,7 @@ class DetailUrlField(DynamicComputedField):
 class ThumbnailUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):
-        super(ThumbnailUrlField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         thumbnail_url = instance.thumbnail_url
@@ -235,7 +234,7 @@ class ContactRoleField(DynamicComputedField):
 
     def __init__(self, contat_type, **kwargs):
         self.contat_type = contat_type
-        super(ContactRoleField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         return getattr(instance, self.contat_type)
@@ -271,7 +270,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
-        super(ResourceBaseSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['pk'] = serializers.CharField(read_only=True)
         self.fields['uuid'] = serializers.CharField(read_only=True)
@@ -368,7 +367,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
 
     def to_representation(self, instance):
         request = self.context.get('request')
-        data = super(ResourceBaseSerializer, self).to_representation(instance)
+        data = super().to_representation(instance)
         if request:
             data['perms'] = instance.get_user_perms(request.user).union(
                 instance.get_self_resource().get_user_perms(request.user)
@@ -398,7 +397,7 @@ class FavoriteSerializer(DynamicModelSerializer):
         fields = 'resource',
 
     def to_representation(self, value):
-        data = super(FavoriteSerializer, self).to_representation(value)
+        data = super().to_representation(value)
         return data['resource']
 
     def get_resource(self, instance):
@@ -416,7 +415,7 @@ class BaseResourceCountSerializer(BaseDynamicModelSerializer):
                 'type_filter': request.query_params.get('type'),
                 'title_filter': request.query_params.get('title__icontains')
             }
-        data = super(BaseResourceCountSerializer, self).to_representation(instance)
+        data = super().to_representation(instance)
         count_filter = {self.Meta.count_type: instance}
         data['count'] = get_resources_with_perms(
             request.user, filter_options).filter(**count_filter).count()

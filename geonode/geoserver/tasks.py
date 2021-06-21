@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -160,13 +159,13 @@ def geoserver_create_style(
                 f = None
                 if os.path.isfile(sld_file):
                     try:
-                        f = open(sld_file, 'r')
+                        f = open(sld_file)
                     except Exception:
                         pass
                 elif tempdir and os.path.exists(tempdir):
                     if os.path.isfile(os.path.join(tempdir, sld_file)):
                         try:
-                            f = open(os.path.join(tempdir, sld_file), 'r')
+                            f = open(os.path.join(tempdir, sld_file))
                         except Exception:
                             pass
                 if f:

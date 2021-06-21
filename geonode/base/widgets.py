@@ -1,4 +1,3 @@
-
 from dal_select2_taggit.widgets import TaggitSelect2
 
 
@@ -15,7 +14,7 @@ class TaggitSelect2Custom(TaggitSelect2):
         """
 
         try:
-            value = super(TaggitSelect2Custom, self).value_from_datadict(data, files, name)
+            value = super().value_from_datadict(data, files, name)
             if value and ',' not in value:
                 value = f'{value},'
             return value

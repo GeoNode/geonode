@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -37,7 +36,7 @@ class MessagingAppConfig(NotificationsAppConfigBase):
     NOTIFICATIONS = (("message_received", _("Message received"), _("New message received in one of your threads")),)
 
     def ready(self):
-        super(MessagingAppConfig, self).ready()
+        super().ready()
 
         from kombu import pools
         from kombu import BrokerConnection

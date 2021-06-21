@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -30,7 +29,7 @@ from geonode.monitoring.models import RequestEvent, ExceptionEvent
 log = logging.getLogger(__name__)
 
 
-class BaseServiceExpose(object):
+class BaseServiceExpose:
 
     NAME = None
 
@@ -90,7 +89,7 @@ class GeoNodeServiceExpose(BaseServiceExpose):
         return data
 
 
-class BaseServiceHandler(object):
+class BaseServiceHandler:
 
     def __init__(self, service, force_check=False):
         utc = pytz.utc
@@ -229,13 +228,13 @@ class HostGeoNodeService(BaseServiceHandler):
         return data
 
 
-services = dict(
-    (c.get_name(), c,)
+services = {
+    c.get_name(): c
     for c in (
         GeoNodeService,
         GeoServerService,
         HostGeoNodeService,
-        HostGeoServerService,))
+        HostGeoServerService,)}
 
 
 def get_for_service(sname):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -20,7 +19,7 @@
 import json
 
 
-class BaseHookSet(object):
+class BaseHookSet:
 
     # Layers
     def layer_list_template(self, context=None):

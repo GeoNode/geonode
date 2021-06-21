@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.db import migrations, models
 
 
@@ -39,6 +37,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='metricvalue',
-            unique_together=set([('valid_from', 'valid_to', 'service', 'service_metric', 'resource', 'label', 'ows_service')]),
+            unique_together={('valid_from', 'valid_to', 'service', 'service_metric', 'resource', 'label', 'ows_service')},
         ),
     ]

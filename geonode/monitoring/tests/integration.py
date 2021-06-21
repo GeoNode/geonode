@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -96,9 +95,9 @@ res_dir = os.path.join(os.path.dirname(__file__), 'resources')
 req_err_path = os.path.join(res_dir, 'req_err.xml')
 req_path = os.path.join(res_dir, 'req.xml')
 
-with open(req_err_path, 'rt') as req_err_xml_file:
+with open(req_err_path) as req_err_xml_file:
     req_err_xml = req_err_xml_file.read()
-with open(req_path, 'rt') as req_xml_file:
+with open(req_path) as req_xml_file:
     req_xml = req_xml_file.read()
 
 req_big = xmljson.yahoo.data(dlxml.fromstring(req_xml))
@@ -120,15 +119,15 @@ class TestClient(DjangoTestClient):
                 f'{morsel.key}={morsel.coded_value}'
                 for morsel in self.cookies.values()
             )),
-            'PATH_INFO': str('/'),
-            'REMOTE_ADDR': str('127.0.0.1'),
-            'REQUEST_METHOD': str('GET'),
-            'SCRIPT_NAME': str(''),
-            'SERVER_NAME': str('testserver'),
-            'SERVER_PORT': str('80'),
-            'SERVER_PROTOCOL': str('HTTP/1.1'),
+            'PATH_INFO': '/',
+            'REMOTE_ADDR': '127.0.0.1',
+            'REQUEST_METHOD': 'GET',
+            'SCRIPT_NAME': '',
+            'SERVER_NAME': 'testserver',
+            'SERVER_PORT': '80',
+            'SERVER_PROTOCOL': 'HTTP/1.1',
             'wsgi.version': (1, 0),
-            'wsgi.url_scheme': str('http'),
+            'wsgi.url_scheme': 'http',
             'wsgi.input': FakePayload(b''),
             'wsgi.errors': self.errors,
             'wsgi.multiprocess': True,
@@ -242,7 +241,7 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
 class RequestsTestCase(MonitoringTestBase):
 
     def setUp(self):
-        super(RequestsTestCase, self).setUp()
+        super().setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -390,7 +389,7 @@ class RequestsTestCase(MonitoringTestBase):
 class MonitoringUtilsTestCase(MonitoringTestBase):
 
     def setUp(self):
-        super(MonitoringUtilsTestCase, self).setUp()
+        super().setUp()
 
     def test_time_periods(self):
         """
@@ -462,7 +461,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
     reserved_fields = ('emails', 'severity', 'active', 'grace_period',)
 
     def setUp(self):
-        super(MonitoringChecksTestCase, self).setUp()
+        super().setUp()
 
         populate()
 
@@ -792,10 +791,10 @@ class MonitoringChecksTestCase(MonitoringTestBase):
                 _emails = data['emails'].split('\n')[-1:]
                 _users = data['emails'].split('\n')[:-1]
                 self.assertEqual(
-                    set(u.email for u in nc.get_users()),
+                    {u.email for u in nc.get_users()},
                     set(_users))
                 self.assertEqual(
-                    set(email for email in nc.get_emails()),
+                    {email for email in nc.get_emails()},
                     set(_emails))
 
         metric_rq_count = Metric.objects.get(name='request.count')
@@ -843,7 +842,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         self.assertIsNotNone(nresp)
         self.assertEqual(nresp.status_code, 200)
         ndata = json.loads(ensure_string(nresp.content))
-        self.assertEqual(set(n['id'] for n in ndata['data']),
+        self.assertEqual({n['id'] for n in ndata['data']},
                          set(NotificationCheck.objects.all().values_list('id', flat=True)))
         mail.outbox = []
         self.assertEqual(len(mail.outbox), 0)
@@ -870,7 +869,7 @@ class AutoConfigTestCase(MonitoringTestBase):
                   }
 
     def setUp(self):
-        super(AutoConfigTestCase, self).setUp()
+        super().setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -915,7 +914,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
     # fixtures = ['metric_data']
 
     def setUp(self):
-        super(MonitoringAnalyticsTestCase, self).setUp()
+        super().setUp()
 
         call_command('loaddata', 'metric_data', verbosity=0)
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2021 OSGeo
@@ -188,7 +187,7 @@ class ProgressUrlField(DynamicComputedField):
 
     def __init__(self, type, **kwargs):
         self.type = type
-        super(ProgressUrlField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         try:
@@ -203,7 +202,7 @@ class UploadSerializer(BaseDynamicModelSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
-        super(UploadSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if 'request' in self.context and \
                 self.context['request'].query_params.get('full'):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -42,4 +41,4 @@ class MultiEmailWidget(Textarea):
 
     def render(self, name, value, attrs=None, renderer=None):
         value = self.prep_value(value)
-        return super(MultiEmailWidget, self).render(name, value, attrs, renderer)
+        return super().render(name, value, attrs, renderer)

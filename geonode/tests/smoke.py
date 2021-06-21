@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -41,7 +40,7 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
     GEOSERVER = False
 
     def setUp(self):
-        super(GeoNodeSmokeTests, self).setUp()
+        super().setUp()
 
         # If Geoserver is not running
         # avoid running tests that call those views.
@@ -271,7 +270,7 @@ class PermissionViewTests(GeoNodeBaseTestSupport):
 class UserMessagesTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(UserMessagesTestCase, self).setUp()
+        super().setUp()
 
         self.user_password = "somepass"
         self.first_user = get_user_model().objects.create_user(

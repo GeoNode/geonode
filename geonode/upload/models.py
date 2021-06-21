@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -238,7 +237,7 @@ class Upload(models.Model):
 
     def delete(self, *args, **kwargs):
         importer_locations = []
-        super(Upload, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
         try:
             session = gs_uploader.get_session(self.import_id)
         except (NotFound, Exception):
