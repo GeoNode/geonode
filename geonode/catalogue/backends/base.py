@@ -18,7 +18,7 @@
 #########################################################################
 
 
-class BaseCatalogueBackend:
+class BaseCatalogueBackend(object):
     """Catalogue abstract base class"""
 
     def remove_record(self, uuid):
