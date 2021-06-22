@@ -360,7 +360,7 @@ class PermissionLevelMixin(object):
                         gf_services = _get_gf_services(self.layer, perms)
                         _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, _user, None, gf_services)
                         _disable_cache.append(_disable_layer_cache)
-        
+
         if _disable_cache and settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
             if any(_disable_cache):
                 filters = None
@@ -382,7 +382,6 @@ class PermissionLevelMixin(object):
                 ]
             _layer_workspace = get_layer_workspace(self.layer)
             toggle_layer_cache(f'{_layer_workspace}:{self.layer.name}', enable=True, filters=filters, formats=formats)
-
 
     @transaction.atomic
     def set_workflow_perms(self, approved=False, published=False):

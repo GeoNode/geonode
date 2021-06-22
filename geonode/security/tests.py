@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.contrib.auth.models import AnonymousUser
 from django.test.testcases import TestCase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
@@ -1846,7 +1845,7 @@ class TestGetUserGeolimits(TestCase):
     def test_should_not_disable_cache_for_user_without_geolimits(self):
         _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, self.owner, None, self.gf_services)
         self.assertFalse(_disable_layer_cache)
-    
+
     def test_should_disable_cache_for_user_with_geolimits(self):
         geo_limit, _ = UserGeoLimit.objects.get_or_create(
             user=self.owner,
@@ -1870,4 +1869,3 @@ class TestGetUserGeolimits(TestCase):
         self.layer.refresh_from_db()
         _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, None, None, self.gf_services)
         self.assertTrue(_disable_layer_cache)
-    

@@ -608,6 +608,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     else:
         layer.set_dirty_state()
 
+
 def get_user_geolimits(layer, user, group, gf_services):
     _user = None
     _group = None
@@ -645,7 +646,7 @@ def _get_gf_services(layer, perms):
     gf_services["WPS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms
     gf_services["*"] = 'download_resourcebase' in perms and \
         ('view_resourcebase' in perms or 'change_layer_style' in perms)
-        
+
     return gf_services
 
 
