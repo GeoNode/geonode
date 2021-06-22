@@ -337,7 +337,7 @@ class PermissionLevelMixin(object):
                             _group = None
                         sync_geofence_with_guardian(self.layer, perms, group=_group)
                         gf_services = _get_gf_services(self.layer, perms)
-                        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, _user, _group, gf_services)
+                        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, None, _group, gf_services)
                         _disable_cache.append(_disable_layer_cache)
 
         # AnonymousUser

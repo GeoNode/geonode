@@ -91,7 +91,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 7)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
     def test_layer_get_list_layer_private_to_one_user(self):
         """
@@ -111,7 +111,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         self.api_client.client.login(username=self.user, password=self.passwd)
         resp = self.api_client.get(self.list_url)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 7)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
         layer.is_published = False
         layer.save()
