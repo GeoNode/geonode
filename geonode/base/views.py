@@ -323,15 +323,19 @@ class ThesaurusAvailable(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         tid = self.request.GET.get("sysid")
         lang = self.request.GET.get("lang")
-
         qs_local = []
         qs_non_local = []
         for key in ThesaurusKeyword.objects.filter(thesaurus_id=tid):
             label = ThesaurusKeywordLabel.objects.filter(keyword=key).filter(lang=lang)
+            if self.q:
+                label = label.filter(label__icontains=self.q)
             if label.exists():
                 qs_local.append(label.get())
             else:
-                qs_non_local.append(key)
+                if self.q in key.alt_label:
+                    qs_non_local.append(key)
+                elif not self.q:
+                    qs_non_local.append(key)
 
         return qs_non_local + qs_local
 
