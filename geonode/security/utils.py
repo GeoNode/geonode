@@ -811,12 +811,9 @@ def sync_resources_with_guardian(resource=None):
                             user = get_user_model().objects.get(username=user)
                             # Set the GeoFence User Rules
                             geofence_user = str(user)
-                            if geofence_user:
-                                _disable_layer_cache = _should_disable_cache(layer=layer, per=perms, user=geofence_user)
                             if "AnonymousUser" in geofence_user:
                                 geofence_user = None
-                                _disable_layer_cache = _should_disable_cache(layer=layer, per=perms, user=geofence_user)
-                            sync_geofence_with_guardian(layer, perms, _disable_layer_cache, user=geofence_user)
+                            sync_geofence_with_guardian(layer, perms, user=geofence_user)
                     # All the other groups
                     if 'groups' in perm_spec:
                         for group, perms in perm_spec['groups'].items():
@@ -828,28 +825,6 @@ def sync_resources_with_guardian(resource=None):
                     logger.exception(e)
                     logger.warn(f"!WARNING! - Failure Synching-up Security Rules for Resource [{r}]")
 
-
-def _should_disable_cache(layer, perm, user=None, group=None):
-    _disable_layer_cache = False
-    gf_services = _get_gf_services(layer, perm)
-    if user:
-        _user = user if isinstance(user, str) else user.username
-        users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
-        gf_services["*"] = users_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-        _disable_layer_cache = users_geolimits.count() > 0
-
-    if group:
-        _group = group if isinstance(group, str) else group.name
-        if GroupProfile.objects.filter(group__name=_group).count() == 1:
-            groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=_group))
-            gf_services["*"] = groups_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-            _disable_layer_cache = groups_geolimits.count() > 0
-
-    if not user and not group:
-        anonymous_geolimits = layer.users_geolimits.filter(user=get_anonymous_user())
-        gf_services["*"] = anonymous_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-        _disable_layer_cache = anonymous_geolimits.count() > 0
-    return _disable_layer_cache
 
 def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
     """
