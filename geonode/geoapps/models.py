@@ -43,7 +43,7 @@ class GeoApp(ResourceBase):
         ]
     }
 
-    name = models.TextField(_('Name'), unique=True, db_index=True)
+    name = models.TextField(_('Name'), null=False, blank=False)
 
     # viewer configuration
     zoom = models.IntegerField(_('zoom'), null=True, blank=True)
@@ -120,6 +120,3 @@ class GeoApp(ResourceBase):
     @property
     def embed_url(self):
         return reverse('geoapp_embed', kwargs={'geoappid': self.pk})
-
-    class Meta(ResourceBase.Meta):
-        pass

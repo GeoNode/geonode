@@ -25,9 +25,10 @@ from django.contrib.auth.models import Group
 from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 
-from geonode.upload.models import Upload
 from geonode.maps.models import Map
+from geonode.base import enumerations
 from geonode.layers.models import Layer
+from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.services.enumerations import CASCADED
@@ -52,6 +53,7 @@ from .signals import geoserver_post_save_local
 from .helpers import (
     gs_catalog,
     gs_uploader,
+    set_styles,
     set_time_info,
     ogc_server_settings)
 from .security import (
@@ -117,6 +119,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 instance=instance,
                 files=defaults.get('files', None),
                 user=defaults.get('user', instance.owner),
+                defaults=defaults,
                 action_type='create')
         return instance
 
@@ -146,12 +149,21 @@ class GeoServerResourceManager(ResourceManagerInterface):
         instance = instance or ResourceManager._get_instance(uuid)
 
         if instance and isinstance(instance.get_real_instance(), Layer):
-            upload_session, _ = self._revise_resource_value(
+            upload_session, import_session = self._revise_resource_value(
                 instance,
                 kwargs.get('files', None),
                 kwargs.get('user', instance.owner),
                 action_type=kwargs.get('action_type', 'create'))
             upload_session.save()
+            if import_session and import_session.state == enumerations.STATE_COMPLETE:
+                _alternate = f'{instance.workspace}:{import_session.tasks[0].layer.name}'
+                instance.name = import_session.tasks[0].layer.name
+                instance.alternate = _alternate
+                if 'defaults' in kwargs:
+                    kwargs['defaults']['name'] = import_session.tasks[0].layer.name
+                    kwargs['defaults']['alternate'] = _alternate
+                if kwargs.get('action_type', 'create') == 'create':
+                    set_styles(instance.get_real_instance(), gs_catalog)
         return instance
 
     def _revise_resource_value(self, instance, files: list, user, action_type: str):
@@ -163,8 +175,12 @@ class GeoServerResourceManager(ResourceManagerInterface):
         #  opening Import session for the selected layer
         if not gs_layer:
             raise Exception("Layer is not available in GeoServer")
+
+        _target_store = gs_layer.resource.store.name if instance.storeType == 'vector' else None
         import_session = gs_uploader.start_import(
-            import_id=upload_session.id, name=instance.name, target_store=gs_layer.resource.store.name
+            import_id=upload_session.id,
+            name=instance.name,
+            target_store=_target_store
         )
 
         import_session.upload_task(files)
@@ -172,7 +188,10 @@ class GeoServerResourceManager(ResourceManagerInterface):
         #  Changing layer name, mode and target
         task.layer.set_target_layer_name(instance.name)
         task.set_update_mode(action_type.upper())
-        task.set_target(store_name=gs_layer.resource.store.name, workspace=gs_layer.resource.workspace.name)
+        task.set_target(
+            store_name=_target_store,
+            workspace=gs_layer.resource.workspace.name
+        )
         #  Starting import process
         import_session.commit()
 
@@ -184,7 +203,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
             r = ResourceBase.objects.filter(id=instance.id)
             r.update(**updated_files_list)
 
-        return upload_session, import_session
+        return upload_session, gs_uploader.get_session(import_session.id)
 
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         instance = instance or ResourceManager._get_instance(uuid)

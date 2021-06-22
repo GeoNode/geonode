@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import copy
 import logging
 import importlib
 
@@ -210,6 +211,7 @@ class ResourceManager(ResourceManagerInterface):
                         uuid = _uuid
 
                 logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
+                _resource.save()
                 _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
                 _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
                 _resource = metadata_storers(_resource.get_real_instance(), custom)
@@ -223,16 +225,21 @@ class ResourceManager(ResourceManagerInterface):
 
     @transaction.atomic
     def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
-        instance.id = None
-        instance.pk = None
-        instance.uuid = uuid or str(uuid1())
-        instance.save()
-        to_update = defaults.copy()
-        to_update.update(storage_manager.copy(instance))
-        self._concrete_resource_manager.copy(instance, uuid=instance.uuid, defaults=to_update)
-        if 'user' in to_update:
-            to_update.pop('user')
-        return self.update(instance.uuid, instance, vals=to_update)
+        if instance:
+            _owner = instance.owner
+            _perms = instance.get_all_level_info()
+            _resource = copy.copy(instance)
+            _resource.pk = _resource.id = None
+            _resource.uuid = uuid or str(uuid1())
+            _resource.save()
+            to_update = defaults.copy()
+            to_update.update(storage_manager.copy(_resource))
+            self._concrete_resource_manager.copy(_resource, uuid=_resource.uuid, defaults=to_update)
+            if 'user' in to_update:
+                to_update.pop('user')
+            self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+            return self.update(_resource.uuid, _resource, vals=to_update)
+        return instance
 
     @transaction.atomic
     def append(self, instance: ResourceBase, vals: dict = {}):

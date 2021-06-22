@@ -19,8 +19,13 @@
 from django.conf.urls import url, include
 
 from .views import (
-    ResourceBaseAutocomplete, RegionAutocomplete,
-    HierarchicalKeywordAutocomplete, ThesaurusKeywordLabelAutocomplete, OwnerRightsRequestView, ThesaurusAvailable)
+    resource_clone,
+    RegionAutocomplete,
+    ThesaurusAvailable,
+    OwnerRightsRequestView,
+    ResourceBaseAutocomplete,
+    HierarchicalKeywordAutocomplete,
+    ThesaurusKeywordLabelAutocomplete)
 
 
 urlpatterns = [
@@ -56,6 +61,11 @@ urlpatterns = [
         r'^resource_rights/(?P<pk>\d+)$',
         OwnerRightsRequestView.as_view(),
         name='owner_rights_request',
+    ),
+    url(
+        r'^resource_clone/?$',
+        resource_clone,
+        name='resource_clone',
     ),
     url(r'^', include('geonode.base.api.urls')),
 ]

@@ -478,6 +478,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.gis',
+    'sequences.apps.SequencesConfig',
 
     # Utility
     'dj_pagination',

@@ -1269,11 +1269,7 @@ def layer_append_replace_view(request, layername, template, action_type):
                     layer=layer, filename=base_file, files=files, action_type=action_type
                 )
                 out = {}
-                if (
-                    os.getenv("DEFAULT_BACKEND_DATASTORE", None) == "datastore"
-                    and os.getenv("DEFAULT_BACKEND_UPLOADER", None) == "geonode.importer"
-                    and resource_is_valid
-                ):
+                if resource_is_valid:
                     getattr(resource_manager, action_type)(
                         layer,
                         vals={
@@ -1285,9 +1281,6 @@ def layer_append_replace_view(request, layername, template, action_type):
                             layer.service_typename])
                     #  invalidating resource chache
                     set_geowebcache_invalidate_cache(layer.typename)
-                else:
-                    out['success'] = False
-                    out['errors'] = "Please select a valid Geoserver backend"
             except Exception as e:
                 logger.exception(e)
                 out['success'] = False

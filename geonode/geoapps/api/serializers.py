@@ -17,12 +17,14 @@
 #
 #########################################################################
 import logging
-from uuid import uuid4
+
+from rest_framework.serializers import ValidationError
 
 from django.contrib.auth import get_user_model
-from geonode.base.api.serializers import ResourceBaseSerializer
+
 from geonode.geoapps.models import GeoApp
-from rest_framework.serializers import ValidationError
+from geonode.resource.manager import resource_manager
+from geonode.base.api.serializers import ResourceBaseSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -100,15 +102,18 @@ class GeoAppSerializer(ResourceBaseSerializer):
             _data = validated_data.pop('blob')
 
         # Create a new instance
-        # TODO: Must use resource_manager here!
+        _instance = resource_manager.create(
+            None,
+            resource_type=self.Meta.model,
+            defaults=validated_data)
 
-        if 'uuid' not in validated_data:
-            validated_data["uuid"] = str(uuid4())
-
-        _instance = self.Meta.model.objects.create(**validated_data)
-        _instance.blob = _data
-        _instance.save()
-        return _instance
+        return resource_manager.update(
+            _instance.uuid,
+            instance=_instance,
+            vals=dict(
+                blob=_data
+            ),
+            notify=True)
 
     def update(self, instance, validated_data):
 

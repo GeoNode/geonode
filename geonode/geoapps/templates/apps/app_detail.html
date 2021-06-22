@@ -95,9 +95,9 @@
         {% if not READ_ONLY_MODE %}
           {% if "change_resourcebase" in perms_list  or "change_resourcebase_metadata" in perms_list %}
           <li class="list-group-item">
-            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-map">{% trans "Editing Tools" %}</button>
+            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-geoapp">{% trans "Editing Tools" %}</button>
           </li>
-          <div class="modal fade" id="edit-map" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal fade" id="edit-geoapp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -125,6 +125,7 @@
                     <div class="col-sm-3">
                       <i class="fa fa-map-marker fa-3x"></i>
                       <h4>{{ resource.type }}</h4>
+                      <a href="#" class="btn btn-default btn-block btn-xs" data-dismiss="modal" id="resource_clone_action">{% trans "Clone" %}</a>
                       <a class="btn btn-default btn-block btn-xs" href="{% url "geoapp_edit" resource.id %}">{% trans "Edit" %}</a>
                       <a class="btn btn-danger btn-block btn-xs" href="{% url "geoapp_remove" resource.id %}">{% trans "Remove" %}</a>
                     </div>
@@ -266,5 +267,62 @@
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
     {% endif %}
+
+    <script type="text/javascript">
+        $("#resource_clone_action").click(function(){
+            $.ajax(
+            {
+                type: "POST",
+                url: "{% url 'resource_clone' %}",
+                dataType: 'json',
+                data: { uuid: "{{ resource.uuid }}" },
+                beforeSend: function(){
+                    $("#edit-geoapp").modal("toggle")
+                    // Handle the beforeSend event
+                    try {
+                        $(".lmask").modal("show");
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    $("#_perms_processing").modal("show");
+                },
+                complete: function(){
+                    // Handle the complete event
+                    try {
+                        $(".lmask").modal("hide");
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    $("#_perms_processing").modal("hide");
+                },
+                success: function(data) {
+                message = data;
+                title = "";
+                body = message.message;
+                if (message.success) {
+                    title = "OK";
+                } else {
+                    title = "Warning";
+                }
+                $("#_permissions_feedbacks").find('.modal-title').text(title);
+                $("#_permissions_feedbacks").find('.modal-body').text(body);
+                $("#_permissions_feedbacks").modal("show");
+                $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
+                },
+                cache: false
+            }
+            ).fail(function (jqXHR, textStatus, error) {
+                // Handle error here
+                message = JSON.parse(jqXHR.responseText);
+                body = message.message;
+                title = "Error";
+                $("#_permissions_feedbacks").find('.modal-title').text(title);
+                $("#_permissions_feedbacks").find('.modal-body').text(body);
+                $("#_permissions_feedbacks").modal("show");
+                $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
+            });
+            return false;
+        });
+    </script>
 
 {% endblock extra_script %}

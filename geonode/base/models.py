@@ -24,7 +24,10 @@ import math
 import logging
 import traceback
 
+from sequences import get_next_value
+
 from django.db import models
+from django.db.models import Max
 from django.conf import settings
 from django.core import serializers
 from django.utils.html import escape
@@ -1005,7 +1008,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and self.title:
                 # Resource Created
-
                 notice_type_label = f'{self.class_name.lower()}_created'
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
@@ -1043,6 +1045,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
+        if self.pk is None:
+            self.pk = self.id = get_next_value(
+                # type(self).__name__,
+                "ResourceBase",
+                initial_value=type(self).objects.aggregate(Max("id"))['id__max'] or 1)
         super().save(*args, **kwargs)
         self.__is_approved = self.is_approved
         self.__is_published = self.is_published
