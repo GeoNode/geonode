@@ -3,7 +3,6 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import jsonfield.fields
 
 
 class Migration(migrations.Migration):
@@ -24,9 +23,9 @@ class Migration(migrations.Migration):
                 ('remote_url', models.URLField(help_text='Base URL of the remote service that is to be harvested')),
                 ('scheduling_enabled', models.BooleanField(default=True, help_text='Whether to periodically schedule this harvester to look for resources on the remote service')),
                 ('update_frequency', models.PositiveIntegerField(default=60, help_text='How often (in minutes) should new harvesting sessions be automatically scheduled? Setting this value to zero has the same effect as setting `scheduling_enabled` to False ')),
-                ('default_access_permissions', jsonfield.fields.JSONField(default=dict, help_text='Default access permissions of harvested resources')),
+                ('default_access_permissions', models.JSONField(default=dict, help_text='Default access permissions of harvested resources')),
                 ('harvester_type', models.CharField(choices=[('geonode.harvesting.harvesters.geonode.GeonodeHarvester', 'geonode.harvesting.harvesters.geonode.GeonodeHarvester')], default='geonode.harvesting.harvesters.geonode.GeonodeHarvester', help_text='Harvester class used to perform harvesting sessions', max_length=255)),
-                ('harvester_type_specific_configuration', jsonfield.fields.JSONField(default=dict, help_text='Configuration specific to each harvester type. Please consult GeoNode documentation on harvesting for more info.')),
+                ('harvester_type_specific_configuration', models.JSONField(default=dict, help_text='Configuration specific to each harvester type. Please consult GeoNode documentation on harvesting for more info.')),
                 ('default_owner', models.ForeignKey(help_text='Default owner of harvested resources', on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 ('periodic_task', models.OneToOneField(blank=True, help_text='Periodic task used to configure harvest scheduling', null=True, on_delete=django.db.models.deletion.CASCADE, to='django_celery_beat.PeriodicTask')),
             ],

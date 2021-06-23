@@ -31,7 +31,6 @@ from django_celery_beat.models import (
     IntervalSchedule,
     PeriodicTask,
 )
-from jsonfield import JSONField
 
 from . import utils
 from .config import HARVESTER_CLASSES
@@ -101,7 +100,7 @@ class Harvester(models.Model):
         on_delete=models.CASCADE,
         help_text=_("Default owner of harvested resources")
     )
-    default_access_permissions = JSONField(
+    default_access_permissions = models.JSONField(
         default=dict,
         blank=True,
         help_text=_("Default access permissions of harvested resources")
@@ -137,7 +136,7 @@ class Harvester(models.Model):
         choices=(((i, i) for i in HARVESTER_CLASSES)),
         default=HARVESTER_CLASSES[0]
     )
-    harvester_type_specific_configuration = JSONField(
+    harvester_type_specific_configuration = models.JSONField(
         default=dict,
         blank=True,
         help_text=_(
