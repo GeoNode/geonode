@@ -438,12 +438,14 @@ GEONODE_INTERNAL_APPS = (
     'geonode.services',
 
     'geonode.resource',
+    'geonode.resource.processing',
     'geonode.storage',
 
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
     'geonode.geoserver',
+    'geonode.geoserver.processing',
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
@@ -716,6 +718,22 @@ INTEGRATION = 'geonode.tests.integration' in sys.argv
 #
 
 # Django automatically includes the "templates" dir in all the INSTALLED_APPS.
+CONTEXT_PROCESSORS = [
+    'django.template.context_processors.debug',
+    'django.template.context_processors.i18n',
+    'django.template.context_processors.tz',
+    'django.template.context_processors.request',
+    'django.template.context_processors.media',
+    'django.template.context_processors.static',
+    'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
+    'django.contrib.auth.context_processors.auth',
+    'geonode.context_processors.resource_urls',
+    'geonode.themes.context_processors.custom_theme'
+]
+if 'geonode.geoserver' in INSTALLED_APPS:
+    CONTEXT_PROCESSORS += ['geonode.geoserver.context_processors.geoserver_urls', ]
+
 TEMPLATES = [
     {
         'NAME': 'GeoNode Project Templates',
@@ -723,20 +741,7 @@ TEMPLATES = [
         'DIRS': [os.path.join(PROJECT_ROOT, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.tz',
-                'django.template.context_processors.request',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'django.contrib.auth.context_processors.auth',
-                'geonode.context_processors.resource_urls',
-                'geonode.geoserver.context_processors.geoserver_urls',
-                'geonode.themes.context_processors.custom_theme'
-            ],
+            'context_processors': CONTEXT_PROCESSORS,
             # Either remove APP_DIRS or remove the 'loaders' option.
             # 'loaders': [
             #      'django.template.loaders.filesystem.Loader',

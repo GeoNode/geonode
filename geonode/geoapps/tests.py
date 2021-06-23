@@ -27,6 +27,7 @@ class GeoAppTests(GeoNodeBaseTestSupport):
 
     """Tests geonode.geoapps module
     """
+
     def setUp(self):
         super().setUp()
         self.bobby = get_user_model().objects.get(username='bobby')

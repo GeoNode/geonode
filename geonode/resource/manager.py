@@ -215,6 +215,13 @@ class ResourceManager(ResourceManagerInterface):
                 _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
                 _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
                 _resource = metadata_storers(_resource.get_real_instance(), custom)
+
+                # The following is only a demo proof of concept for a pluggable WF subsystem
+                from geonode.resource.processing.models import ProcessingWorkflow
+                _p = ProcessingWorkflow.objects.first()
+                if _p and _p.is_enabled:
+                    for _task in _p.get_tasks():
+                        _task.execute(_resource)
             except Exception as e:
                 logger.exception(e)
             finally:

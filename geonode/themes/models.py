@@ -16,15 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from django.db import models
-from django.template.defaultfilters import slugify
-from django.core.cache import cache
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
-from django.utils.translation import ugettext_noop as _
 from imagekit.models import ImageSpecField
 
+from django.db import models
+from django.core.cache import cache
+from django.dispatch import receiver
+from django.template.defaultfilters import slugify
+from django.utils.translation import ugettext_noop as _
+from django.db.models.signals import post_save, post_delete
 
 THEME_CACHE_KEY = 'enabled_theme'
 
