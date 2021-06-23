@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.utils import get_layer_workspace
 import logging
 import traceback
 import operator
@@ -48,12 +49,15 @@ from .permissions import (
 )
 
 from .utils import (
+    _get_gf_services,
+    get_user_geolimits,
     get_users_with_perms,
     set_owner_permissions,
     remove_object_permissions,
     purge_geofence_layer_rules,
     sync_geofence_with_guardian,
-    get_user_obj_perms_model
+    get_user_obj_perms_model,
+    toggle_layer_cache
 )
 
 logger = logging.getLogger("geonode.security.models")
@@ -262,7 +266,7 @@ class PermissionLevelMixin(object):
 
         # default permissions for resource owner
         set_owner_permissions(self)
-
+        _disable_cache = []
         # Anonymous User group
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
             anonymous_group = Group.objects.get(name='anonymous')
@@ -286,6 +290,9 @@ class PermissionLevelMixin(object):
                     "change_resourcebase_permissions",
                     "download_resourcebase"]
                 sync_geofence_with_guardian(self.layer, perms, user=self.owner)
+                gf_services = _get_gf_services(self.layer, perms)
+                _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, self.owner, None, gf_services)
+                _disable_cache.append(_disable_layer_cache)
 
         # All the other users
         if 'users' in perm_spec and len(perm_spec['users']) > 0:
@@ -307,6 +314,10 @@ class PermissionLevelMixin(object):
                             if 'groups' in perm_spec and len(perm_spec['groups']) > 0:
                                 group_perms = perm_spec['groups']
                             sync_geofence_with_guardian(self.layer, perms, user=_user, group_perms=group_perms)
+                            gf_services = _get_gf_services(self.layer, perms)
+                            _group = list(group_perms.keys())[0] if group_perms else None
+                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, _user, _group, gf_services)
+                            _disable_cache.append(_disable_layer_cache)
 
         # All the other groups
         if 'groups' in perm_spec and len(perm_spec['groups']) > 0:
@@ -326,6 +337,9 @@ class PermissionLevelMixin(object):
                         if _group and _group.name and _group.name == 'anonymous':
                             _group = None
                         sync_geofence_with_guardian(self.layer, perms, group=_group)
+                        gf_services = _get_gf_services(self.layer, perms)
+                        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, None, _group, gf_services)
+                        _disable_cache.append(_disable_layer_cache)
 
         # AnonymousUser
         if 'users' in perm_spec and len(perm_spec['users']) > 0:
@@ -344,6 +358,31 @@ class PermissionLevelMixin(object):
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     if self.polymorphic_ctype.name == 'layer':
                         sync_geofence_with_guardian(self.layer, perms)
+                        gf_services = _get_gf_services(self.layer, perms)
+                        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, _user, None, gf_services)
+                        _disable_cache.append(_disable_layer_cache)
+
+        if _disable_cache and settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+            if any(_disable_cache):
+                filters = None
+                formats = None
+            else:
+                filters = [{
+                    "styleParameterFilter": {
+                        "STYLES": ""
+                    }
+                }]
+                formats = [
+                    'application/json;type=utfgrid',
+                    'image/gif',
+                    'image/jpeg',
+                    'image/png',
+                    'image/png8',
+                    'image/vnd.jpeg-png',
+                    'image/vnd.jpeg-png8'
+                ]
+            _layer_workspace = get_layer_workspace(self.layer)
+            toggle_layer_cache(f'{_layer_workspace}:{self.layer.name}', enable=True, filters=filters, formats=formats)
 
     @transaction.atomic
     def set_workflow_perms(self, approved=False, published=False):

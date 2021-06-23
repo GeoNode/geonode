@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.test.testcases import TestCase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
@@ -48,7 +49,7 @@ from geonode.base.models import (
     UserGeoLimit,
     GroupGeoLimit
 )
-from geonode.base.populate_test_data import all_public
+from geonode.base.populate_test_data import all_public, create_single_layer
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
 from geonode.groups.models import Group, GroupProfile
@@ -61,6 +62,8 @@ from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
 from .utils import (
+    _get_gf_services,
+    get_user_geolimits,
     get_visible_resources,
     get_users_with_perms,
     get_geofence_rules,
@@ -1830,3 +1833,39 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             queryset=layers,
             user=self.user)
         self.assertIn(x.title, list(actual.values_list('title', flat=True)))
+
+
+class TestGetUserGeolimits(TestCase):
+    def setUp(self):
+        self.layer = create_single_layer("main-layer")
+        self.owner = get_user_model().objects.get(username='admin')
+        self.perms = {'*': ''}
+        self.gf_services = _get_gf_services(self.layer, self.perms)
+
+    def test_should_not_disable_cache_for_user_without_geolimits(self):
+        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, self.owner, None, self.gf_services)
+        self.assertFalse(_disable_layer_cache)
+
+    def test_should_disable_cache_for_user_with_geolimits(self):
+        geo_limit, _ = UserGeoLimit.objects.get_or_create(
+            user=self.owner,
+            resource=self.layer
+        )
+        self.layer.users_geolimits.set([geo_limit])
+        self.layer.refresh_from_db()
+        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, self.owner, None, self.gf_services)
+        self.assertTrue(_disable_layer_cache)
+
+    def test_should_not_disable_cache_for_anonymous_without_geolimits(self):
+        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, None, None, self.gf_services)
+        self.assertFalse(_disable_layer_cache)
+
+    def test_should_disable_cache_for_anonymous_with_geolimits(self):
+        geo_limit, _ = UserGeoLimit.objects.get_or_create(
+            user=get_anonymous_user(),
+            resource=self.layer
+        )
+        self.layer.users_geolimits.set([geo_limit])
+        self.layer.refresh_from_db()
+        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, None, None, self.gf_services)
+        self.assertTrue(_disable_layer_cache)
