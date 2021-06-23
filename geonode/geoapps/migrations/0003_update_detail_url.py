@@ -7,7 +7,7 @@ from geonode.geoapps.models import GeoApp
 
 
 def update_geoapps_detail_url(apps, schema_editor):
-    GeoApp.objects.update(detail_url=Concat(Value('apps/'), 'id'))
+    GeoApp.objects.update(detail_url=Concat(Value('/apps/'), 'id'))
 
 
 class Migration(migrations.Migration):
