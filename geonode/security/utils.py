@@ -569,22 +569,6 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
         gf_services_limits_first = {"*": gf_services.pop('*')}
         gf_services_limits_first.update(gf_services)
         gf_services = gf_services_limits_first
-    else:
-        filters = [{
-            "styleParameterFilter": {
-                "STYLES": ""
-            }
-        }]
-        formats = [
-            'application/json;type=utfgrid',
-            'image/gif',
-            'image/jpeg',
-            'image/png',
-            'image/png8',
-            'image/vnd.jpeg-png',
-            'image/vnd.jpeg-png8'
-        ]
-    toggle_layer_cache(f'{_layer_workspace}:{_layer_name}', enable=True, filters=filters, formats=formats)
 
     for service, allowed in gf_services.items():
         if layer and _layer_name and allowed:
