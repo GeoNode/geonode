@@ -27,7 +27,7 @@ from lxml import etree
 
 
 # explicitly disable resolving XML entities in order to prevent malicious attacks
-XML_PARSER = etree.XMLParser(resolve_entities=False)
+XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
 
 
 def update_harvester_availability(

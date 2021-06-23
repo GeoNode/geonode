@@ -83,7 +83,7 @@ class BaseHarvesterWorker(abc.ABC):
         """Check whether the remote service is online"""
 
     @abc.abstractmethod
-    def get_resource_type_class(self, remote_resource_type: str) -> ResourceBase:
+    def get_geonode_resource_type(self, remote_resource_type: str) -> ResourceBase:
         """
         Return the GeoNode type that should be created from the remote resource type
         """
@@ -91,9 +91,8 @@ class BaseHarvesterWorker(abc.ABC):
     @abc.abstractmethod
     def get_resource(
             self,
-            resource_unique_identifier: str,
-            resource_type: str,
-            harvesting_session_id: typing.Optional[int] = None
+            harvestable_resource: models.HarvestableResource,
+            harvesting_session_id: int
     ) -> typing.Optional[resourcedescriptor.RecordDescription]:
         """Harvest a single resource from the remote service"""
 
@@ -133,20 +132,45 @@ class BaseHarvesterWorker(abc.ABC):
                     F("records_harvested") + additional_harvested_records)
         models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
 
-    @classmethod
-    def get_geonode_resource_defaults(
-            cls,
+    def update_geonode_resource(
+            self,
             resource_descriptor: resourcedescriptor.RecordDescription,
-            geonode_resource_type: typing.Type,
-            default_owner,
+            harvestable_resource: models.HarvestableResource,
+            harvesting_session_id: int
+    ):
+        """Update GeoNode with the input resource descriptor."""
+        harvester = models.Harvester.objects.get(pk=self.harvester_id)
+        defaults = self.get_geonode_resource_defaults(
+            resource_descriptor, harvestable_resource)
+        if resource_manager.exists(str(resource_descriptor.uuid)):
+            geonode_resource = resource_manager.update(
+                str(resource_descriptor.uuid),
+                vals=defaults,
+            )
+        else:
+            geonode_resource = resource_manager.create(
+                str(resource_descriptor.uuid),
+                self.get_geonode_resource_type(
+                    harvestable_resource.remote_resource_type),
+                defaults
+            )
+        resource_manager.set_permissions(
+            str(resource_descriptor.uuid),
+            instance=geonode_resource,
+            permissions=harvester.default_access_permissions)
+
+    def get_geonode_resource_defaults(
+            self,
+            resource_descriptor: resourcedescriptor.RecordDescription,
+            harvestable_resource: models.HarvestableResource,
     ) -> typing.Dict:
         """
         Extract default values to be used by resource manager when updating a resource
         """
 
         defaults = {
-            "owner": default_owner,
-            "uuid": resource_descriptor.uuid,
+            "owner": harvestable_resource.harvester.default_owner,
+            "uuid": str(resource_descriptor.uuid),
             "abstract": resource_descriptor.identification.abstract,
             "bbox_polygon": resource_descriptor.identification.spatial_extent,
             "constraints_other": resource_descriptor.identification.other_constraints,
@@ -160,121 +184,18 @@ class BaseHarvesterWorker(abc.ABC):
                 resource_descriptor.identification.supplemental_information),
             "title": resource_descriptor.identification.title
         }
-        if geonode_resource_type == Map:
-            defaults.update({
-                "zoom": resource_descriptor.zoom,
-                "center_x": resource_descriptor.center_x,
-                "center_y": resource_descriptor.center_y,
-                "projection": resource_descriptor.projection,
-                "last_modified": resource_descriptor.last_modified
-            })
-        elif geonode_resource_type == Layer:
-            defaults.update({
-                "charset": resource_descriptor.character_set
-            })
-        return defaults
-
-    def update_geonode_resource(
-            self,
-            resource_descriptor: resourcedescriptor.RecordDescription,
-            remote_resource_type: str,
-            harvesting_session_id: typing.Optional[int] = None
-    ):
-        """Update GeoNode with the input resource descriptor"""
-        geonode_resource_type = self.get_resource_type_class(remote_resource_type)
-        harvester = models.Harvester.objects.get(pk=self.harvester_id)
-        defaults = self.get_geonode_resource_defaults(
-            resource_descriptor, geonode_resource_type, harvester.default_owner)
-        if resource_manager.exists(str(resource_descriptor.uuid)):
-            geonode_resource = resource_manager.update(
-                str(resource_descriptor.uuid),
-                vals=defaults,
-            )
-        else:
-            geonode_resource = resource_manager.create(
-                str(resource_descriptor.uuid),
-                geonode_resource_type,
-                defaults
-            )
-        resource_manager.set_permissions(
-            str(resource_descriptor.uuid),
-            instance=geonode_resource,
-            permissions=harvester.default_access_permissions)
-
-
-# class OldBaseHarvester:
-#     remote_url: str
-#     harvester_id: int
-#     _harvesting_session_id: typing.Optional[int]
-#
-#     def __init__(self, remote_url: str, harvester_id: int):
-#         self.remote_url = remote_url
-#         self.harvester_id = harvester_id
-#         self._harvesting_session_id = None
-#
-#     @classmethod
-#     def from_django_record(cls, record: "Harvester"):
-#         return cls(
-#             record.remote_url,
-#             record.id,
-#         )
-#
-#     def get_extra_config_schema(self) -> typing.Optional[typing.Dict]:
-#         """
-#         Return a jsonschema schema that is used to validate models.Harvester objects.
-#         """
-#
-#         return None
-#
-#     def get_num_available_resources(self) -> int:
-#         return 0
-#
-#     def list_resources(
-#             self, offset: typing.Optional[int] = 0) -> typing.List[BriefRemoteResource]:
-#         """Return a list of resources from the remote service"""
-#
-#         return []
-#
-#     def create_harvesting_session(self) -> int:
-#         session = models.HarvestingSession.objects.create(
-#             harvester_id=self.harvester_id)
-#         self._harvesting_session_id = session.id
-#         return self._harvesting_session_id
-#
-#     def set_harvesting_session_id(self, id_: int) -> None:
-#         self._harvesting_session_id = id_
-#
-#     def finish_harvesting_session(
-#             self, additional_harvested_records: typing.Optional[int] = None) -> None:
-#
-#         update_kwargs = {
-#             "ended": timezone.now()
-#         }
-#         if additional_harvested_records is not None:
-#             update_kwargs["records_harvested"] = (
-#                     F("records_harvested") + additional_harvested_records)
-#         models.HarvestingSession.objects.filter(
-#             id=self._harvesting_session_id).update(**update_kwargs)
-#
-#     def update_harvesting_session(
-#             self,
-#             total_records_found: typing.Optional[int] = None,
-#             additional_harvested_records: typing.Optional[int] = None
-#     ) -> None:
-#
-#         update_kwargs = {}
-#         if total_records_found is not None:
-#             update_kwargs["total_records_found"] = total_records_found
-#         if additional_harvested_records is not None:
-#             update_kwargs["records_harvested"] = (
-#                     F("records_harvested") + additional_harvested_records)
-#         models.HarvestingSession.objects.filter(
-#             id=self._harvesting_session_id).update(**update_kwargs)
-#
-#     def check_availability(self) -> bool:
-#         """Check whether the remote url is online"""
-#         raise NotImplementedError
-#
-#     def perform_metadata_harvesting(self) -> None:
-#         """Harvest resources from the remote service"""
-#         raise NotImplementedError
+        # geonode_resource_type = self.get_resource_type_class(
+        #     harvestable_resource.remote_resource_type)
+        # if geonode_resource_type == Map:
+        #     defaults.update({
+        #         "zoom": resource_descriptor.zoom,
+        #         "center_x": resource_descriptor.center_x,
+        #         "center_y": resource_descriptor.center_y,
+        #         "projection": resource_descriptor.projection,
+        #         "last_modified": resource_descriptor.last_modified
+        #     })
+        # elif geonode_resource_type == Layer:
+        #     defaults.update({
+        #         "charset": resource_descriptor.character_set
+        #     })
+        return {key: value for key, value in defaults.items() if value is not None}

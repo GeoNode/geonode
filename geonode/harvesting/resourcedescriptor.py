@@ -76,6 +76,15 @@ class RecordDistribution:
 
 
 @dataclasses.dataclass()
+class MapDescriptorParameters:
+    zoom: int
+    projection: str
+    center_x: float
+    center_y: float
+    last_modified: dt.datetime
+
+
+@dataclasses.dataclass()
 class RecordDescription:
     uuid: uuid.UUID
     language: typing.Optional[str]
@@ -88,10 +97,5 @@ class RecordDescription:
     identification: RecordIdentification
     distribution: RecordDistribution
     data_quality: str
-
-    # this is needed by map
-    zoom: typing.Optional[int]
-    projection: typing.Optional[str]
-    center_x: typing.Optional[float]
-    center_y: typing.Optional[float]
-    last_modified: typing.Optional[dt.datetime]
+    additional_parameters: typing.Optional[typing.Dict] = dataclasses.field(
+        default_factory=dict)

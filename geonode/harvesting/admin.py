@@ -235,6 +235,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "should_be_harvested",
         "available",
         "last_updated",
+        "remote_resource_type",
     )
     list_editable = (
         "should_be_harvested",
@@ -243,6 +244,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
 
 def _worker_config_changed(form) -> bool:
     field_name = "harvester_type_specific_configuration"
-    original = eval(form.data[f"initial-{field_name}"], {})
+    # original = eval(form.data[f"initial-{field_name}"], {})
+    original = json.loads(form.data[f"initial-{field_name}"])
     cleaned = form.cleaned_data.get(field_name)
     return original != cleaned

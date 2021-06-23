@@ -106,7 +106,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
     def get_resource(
             self,
             resource_unique_identifier: str,
-            resource_type: str,
+            remote_resource_type: str,
             harvesting_session_id: typing.Optional[int] = None
     ) -> typing.Optional[resourcedescriptor.RecordDescription]:
         params = self._base_wms_parameters

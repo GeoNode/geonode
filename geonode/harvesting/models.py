@@ -34,9 +34,14 @@ from django_celery_beat.models import (
 
 from . import utils
 from .config import HARVESTER_CLASSES
-from .harvesters.base import BaseHarvesterWorker
 
 logger = logging.getLogger(__name__)
+
+
+def get_default_access_permissions():
+    return {
+        "AnonymousUser": ["view"]
+    }
 
 
 class Harvester(models.Model):
@@ -101,8 +106,7 @@ class Harvester(models.Model):
         help_text=_("Default owner of harvested resources")
     )
     default_access_permissions = models.JSONField(
-        default=dict,
-        blank=True,
+        default=get_default_access_permissions,
         help_text=_("Default access permissions of harvested resources")
     )
     harvest_new_resources_by_default = models.BooleanField(
@@ -220,7 +224,7 @@ class Harvester(models.Model):
         )
         self.save()
 
-    def get_harvester_worker(self) -> BaseHarvesterWorker:
+    def get_harvester_worker(self) -> "BaseHarvesterWorker":
         worker_class = import_string(self.harvester_type)
         return worker_class.from_django_record(self)
 

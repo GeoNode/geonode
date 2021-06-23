@@ -112,11 +112,10 @@ def _harvest_resource(
         pk=harvestable_resource_id)
     worker = harvestable_resource.harvester.get_harvester_worker()
     resource_descriptor = worker.get_resource(
-        harvestable_resource.unique_identifier,
-        harvestable_resource.remote_resource_type,
-        harvesting_session_id=harvesting_session_id)
-    worker.update_geonode_resource(
-        resource_descriptor, harvestable_resource.remote_resource_type)
+        harvestable_resource, harvesting_session_id)
+    if resource_descriptor is not None:
+        worker.update_geonode_resource(
+            resource_descriptor, harvestable_resource, harvesting_session_id)
 
 
 @app.task(
