@@ -88,3 +88,10 @@ class RecordDescription:
     identification: RecordIdentification
     distribution: RecordDistribution
     data_quality: str
+
+    # this is needed by map
+    zoom: typing.Optional[int]
+    projection: typing.Optional[str]
+    center_x: typing.Optional[float]
+    center_y: typing.Optional[float]
+    last_modified: typing.Optional[dt.datetime]

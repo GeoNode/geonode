@@ -28,6 +28,10 @@ from .. import (
     models,
     resourcedescriptor,
 )
+from geonode.documents.models import Document
+from geonode.layers.models import Layer
+from geonode.maps.models import Map
+from geonode.resource.manager import ResourceManager
 
 
 @dataclasses.dataclass()
@@ -81,6 +85,12 @@ class BaseHarvesterWorker(abc.ABC):
         """Check whether the remote service is online"""
 
     @abc.abstractmethod
+    def get_resource_type_class(
+            self, resource_type: str) -> typing.Optional[
+        typing.Union[Layer, Map, Document]]:
+        """ Return resource type class from resource type string """
+
+    @abc.abstractmethod
     def get_resource(
             self,
             resource_unique_identifier: str,
@@ -128,6 +138,7 @@ class BaseHarvesterWorker(abc.ABC):
     def update_geonode_resource(
             self,
             resource_descriptor: resourcedescriptor.RecordDescription,
+            resource_type: str,
             harvesting_session_id: typing.Optional[int] = None
     ):
         """Update GeoNode with the input resource descriptor
@@ -135,23 +146,55 @@ class BaseHarvesterWorker(abc.ABC):
         This may entail creating the resource if it does not exist yet.
 
         """
-
-        # we need the harvester instance in order to know the following information
-        # about the resources being created/updated:
-        # - Default owner
-        # - Default access permissions
         harvester = models.Harvester.objects.get(pk=self.harvester_id)
-
-        # now we need to interface with the resource_manager:
-        # 1. find out if the resource already exists
-        # 2. create (or update) the resource by using the resource manager and the
-        #    information present both in the `harvester` and in the
-        #    `resource_descriptor`
-        # 3. set permissions on the newly created resource (ideally this will be done
-        #    when the resource is created - not sure if the resource manager allows it)
-        # 4. set a thumbnail for the resource, if possible
-
-        raise NotImplementedError  # FIXME: Finish implementation of this method
+        resource_type = self.get_resource_type_class(resource_type)
+        if resource_type:
+            defaults = {
+                'owner': harvester.default_owner,
+                'uuid': resource_descriptor.uuid,
+                'abstract': resource_descriptor.identification.abstract,
+                'bbox_polygon': resource_descriptor.identification.spatial_extent,
+                'constraints_other': resource_descriptor.identification.other_constraints,
+                'created': resource_descriptor.date_stamp,
+                'data_quality_statement': resource_descriptor.data_quality,
+                'date': resource_descriptor.identification.date,
+                'date_type': resource_descriptor.identification.date_type,
+                'language': resource_descriptor.language,
+                'purpose': resource_descriptor.identification.purpose,
+                'supplemental_information': resource_descriptor.identification.supplemental_information,
+                'title': resource_descriptor.identification.title
+            }
+            if resource_type == Map:
+                defaults.update({
+                    'zoom': resource_descriptor.zoom,
+                    'center_x': resource_descriptor.center_x,
+                    'center_y': resource_descriptor.center_y,
+                    'projection': resource_descriptor.projection,
+                    'last_modified': resource_descriptor.last_modified
+                })
+            elif resource_type == Layer:
+                defaults.update({
+                    'charset': resource_descriptor.character_set
+                })
+            manager = ResourceManager()
+            try:
+                _resource = resource_type.objects.get(
+                    uuid=str(resource_descriptor.uuid))
+                manager.update(
+                    str(resource_descriptor.uuid),
+                    instance=_resource
+                )
+            except (Map.DoesNotExist, Layer.DoesNotExist, Document.DoesNotExist):
+                _resource, created = manager.create(
+                    str(resource_descriptor.uuid),
+                    resource_type=resource_type,
+                    defaults=defaults
+                )
+            # set default permissions
+            manager.set_permissions(
+                str(resource_descriptor.uuid),
+                instance=_resource,
+                permissions=harvester.default_access_permissions)
 
 
 class OldBaseHarvester:

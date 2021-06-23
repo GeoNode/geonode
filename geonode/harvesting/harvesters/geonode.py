@@ -34,6 +34,10 @@ from .. import (
 from ..utils import XML_PARSER
 from . import base
 
+from geonode.documents.models import Document
+from geonode.layers.models import Layer
+from geonode.maps.models import Map
+
 logger = logging.getLogger(__name__)
 
 
@@ -215,6 +219,19 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             result = True
         return result
 
+    def get_resource_type_class(
+            self, resource_type: str) -> typing.Optional[
+        typing.Union[Layer, Map, Document]]:
+        """ Return resource type class from resource type string """
+        try:
+            return {
+                'maps': Map,
+                'layers': Layer,
+                'documents': Document,
+            }[resource_type]
+        except KeyError:
+            return None
+
     def get_resource(
             self,
             resource_unique_identifier: str,
@@ -230,43 +247,13 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         resource_descriptor = None
         if response.status_code == requests.codes.ok:
             raw_brief_resource = response.json()
-            resource_descriptor = self._get_resource_details(raw_brief_resource)
+            resource_descriptor = get_resource_descriptor(raw_brief_resource)
             self.update_harvesting_session(
                 harvesting_session_id, additional_harvested_records=1)
         else:
             logger.warning(
                 f"Could not retrieve remote resource {resource_unique_identifier!r}")
         return resource_descriptor
-
-    def _get_resource_details(
-            self,
-            raw_brief_resource: typing.Dict
-    ) -> typing.Optional[resourcedescriptor.RecordDescription]:
-        detail_url = f"{self.base_api_url}{raw_brief_resource['detail_url']}"
-        result = None
-        # we get the full record representation because that contains more
-        # information, including embedded CSW GetRecord too
-        full_resource_response = self.http_session.get(detail_url)
-        if full_resource_response.status_code == requests.codes.ok:
-            raw_resource = full_resource_response.json()
-            xml_root = etree.fromstring(
-                raw_resource["metadata_xml"], parser=XML_PARSER)
-            try:
-                result = get_resource_descriptor(xml_root)
-            except TypeError:
-                logger.warning(
-                    f"Could not retrieve metadata details to generate "
-                    f"resource descriptor, skipping..."
-                )
-            else:
-                logger.debug(
-                    f"Found details for resource {result.uuid!r} - "
-                    f"{result.identification.title!r}"
-                )
-        else:
-            logger.warning(
-                f"Got invalid response from {full_resource_response.request.url}")
-        return result
 
     def _get_resource_list_params(
             self, offset: typing.Optional[int] = 0) -> typing.Dict:
@@ -309,149 +296,222 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
 
 
 def get_resource_descriptor(
-        record: etree.Element) -> resourcedescriptor.RecordDescription:
-    crs_epsg_code = ''.join(
-        record.xpath(
-            'gmd:referenceSystemInfo//code//text()', namespaces=record.nsmap)
-    ).strip()
-    return resourcedescriptor.RecordDescription(
-        uuid=uuid.UUID(get_xpath_value(record, "gmd:fileIdentifier")),
-        language=get_xpath_value(record, "gmd:language"),
-        character_set=record.xpath(
-            "gmd:characterSet/gmd:MD_CharacterSetCode/text()",
-            namespaces=record.nsmap)[0],
-        hierarchy_level=record.xpath(
-            "gmd:hierarchyLevel/gmd:MD_ScopeCode/text()",
-            namespaces=record.nsmap)[0],
-        point_of_contact=get_contact_descriptor(
-            record.xpath(
+        record: dict) -> resourcedescriptor.RecordDescription:
+    record_from_xml = {}
+
+    # get metadata from xml
+    try:
+        xml = etree.fromstring(
+            record["metadata_xml"], parser=XML_PARSER)
+
+        record_from_xml = {
+            'character_set': xml.xpath(
+                "gmd:characterSet/gmd:MD_CharacterSetCode/text()",
+                namespaces=xml.nsmap)[0],
+            'hierarchy_level': xml.xpath(
+                "gmd:hierarchyLevel/gmd:MD_ScopeCode/text()",
+                namespaces=xml.nsmap)[0],
+            'point_of_contact': xml.xpath(
                 "gmd:contact[.//gmd:role//@codeListValue='pointOfContact']",
-                namespaces=record.nsmap
-            )[0]
-        ),
-        author=get_contact_descriptor(
-            record.xpath(
+                namespaces=xml.nsmap
+            )[0],
+            'author': xml.xpath(
                 "gmd:contact[.//gmd:role//@codeListValue='author']",
-                namespaces=record.nsmap
+                namespaces=xml.nsmap
             )[0]
-        ),
+        }
+    except (TypeError, KeyError):
+        logger.warning(
+            f"No metadata detail from xml found"
+        )
+
+    return resourcedescriptor.RecordDescription(
+        uuid=record['uuid'],
+        language=record.get('language', None),
+        character_set=record_from_xml.get('character_set', ''),
+        hierarchy_level=record_from_xml.get('hierarchy_level', ''),
+        point_of_contact=get_contact_descriptor(record_from_xml.get('point_of_contact', '')),
+        author=get_contact_descriptor(record_from_xml.get('author', '')),
         date_stamp=dateutil.parser.parse(
-            record.xpath(
-                "gmd:dateStamp/gco:DateTime/text()", namespaces=record.nsmap)[0],
-        ).replace(tzinfo=dt.timezone.utc),
-        reference_systems=[f"EPSG:{crs_epsg_code}"],
-        identification=get_identification_descriptor(
-            record.xpath("gmd:identificationInfo", namespaces=record.nsmap)[0]
-        ),
-        distribution=get_distribution_info(
-            record.xpath("gmd:distributionInfo", namespaces=record.nsmap)[0]
-        ),
-        data_quality=get_xpath_value(record, ".//gmd:dataQualityInfo//gmd:lineage")
+            record.get('date', None)).replace(tzinfo=dt.timezone.utc),
+        reference_systems=[record_from_xml.get('srid', None)],
+        identification=get_identification_descriptor(record),
+        distribution=get_distribution_info(record),
+        data_quality=record.get('data_quality_statement', None),
+        # this is needed by map
+        zoom=record.get('zoom', None),
+        projection=record.get('projection', None),
+        center_x=record.get('center_x', None),
+        center_y=record.get('center_y', None),
+        last_modified=record.get('last_modified', None),
     )
 
 
-def get_contact_descriptor(contact: etree.Element):
+def get_contact_descriptor(contact: typing.Optional[etree.Element]) -> resourcedescriptor.RecordDescriptionContact:
+    if contact:
+        return resourcedescriptor.RecordDescriptionContact(
+            role=contact.xpath(
+                ".//gmd:role/gmd:CI_RoleCode/text()",
+                namespaces=contact.nsmap
+            )[0],
+            name=_get_optional_attribute_value(
+                contact, ".//gmd:individualName"),
+            organization=_get_optional_attribute_value(
+                contact, ".//gmd:organisationName"),
+            position=_get_optional_attribute_value(
+                contact, ".//gmd:positionName"),
+            phone_voice=_get_optional_attribute_value(
+                contact, ".//gmd:contactInfo//gmd:phone//gmd:voice"),
+            phone_facsimile=_get_optional_attribute_value(
+                contact, ".//gmd:contactInfo//gmd:phone//gmd:facsimile"),
+            address_delivery_point=_get_optional_attribute_value(
+                contact, ".//gmd:contactInfo//gmd:address//gmd:deliveryPoint"),
+            address_city=_get_optional_attribute_value(
+                contact, ".//gmd:contactInfo//gmd:address//gmd:city"),
+            address_administrative_area=_get_optional_attribute_value(
+                contact,
+                ".//gmd:contactInfo//gmd:address//gmd:administrativeArea"
+            ),
+            address_postal_code=_get_optional_attribute_value(
+                contact, ".//gmd:contactInfo//gmd:address//gmd:postalCode"),
+            address_country=_get_optional_attribute_value(
+                contact, ".//gmd:contactInfo//gmd:address//gmd:country"),
+            address_email=get_xpath_value(
+                contact,
+                ".//gmd:contactInfo//gmd:address//gmd:electronicMailAddress"
+            )
+        )
     return resourcedescriptor.RecordDescriptionContact(
-        role=contact.xpath(
-            ".//gmd:role/gmd:CI_RoleCode/text()",
-            namespaces=contact.nsmap
-        )[0],
-        name=_get_optional_attribute_value(
-            contact, ".//gmd:individualName"),
-        organization=_get_optional_attribute_value(
-            contact, ".//gmd:organisationName"),
-        position=_get_optional_attribute_value(
-            contact, ".//gmd:positionName"),
-        phone_voice=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:phone//gmd:voice"),
-        phone_facsimile=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:phone//gmd:facsimile"),
-        address_delivery_point=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:address//gmd:deliveryPoint"),
-        address_city=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:address//gmd:city"),
-        address_administrative_area=_get_optional_attribute_value(
-            contact,
-            ".//gmd:contactInfo//gmd:address//gmd:administrativeArea"
-        ),
-        address_postal_code=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:address//gmd:postalCode"),
-        address_country=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:address//gmd:country"),
-        address_email=get_xpath_value(
-            contact,
-            ".//gmd:contactInfo//gmd:address//gmd:electronicMailAddress"
-        )
+        role='',
+        name='',
+        organization='',
+        position='',
+        phone_voice='',
+        phone_facsimile='',
+        address_delivery_point='',
+        address_city='',
+        address_administrative_area='',
+        address_postal_code='',
+        address_country='',
+        address_email=''
     )
 
 
-def get_identification_descriptor(identification: etree.Element):
-    place_keywords = identification.xpath(
-        ".//gmd:descriptiveKeywords//gmd:keyword//text()[../../../gmd:type//"
-        "@codeListValue='place']",
-        namespaces=identification.nsmap
-    )
-    other_keywords = identification.xpath(
-        ".//gmd:descriptiveKeywords//gmd:keyword//text()[../../../gmd:type//"
-        "@codeListValue!='place']",
-        namespaces=identification.nsmap
-    )
-    license_info = "".join(
-        identification.xpath(
-            ".//gmd:resourceConstraints//gmd:otherConstraints//text()[../../..//"
-            "gmd:useConstraints//@codeListValue='license']",
-            namespaces=identification.nsmap
-        )
-    ).strip()
-    other_constraints_description = "".join(
-        identification.xpath(
-            ".//gmd:resourceConstraints//gmd:otherConstraints//text()[../../..//"
-            "gmd:useConstraints//@codeListValue!='license']",
-            namespaces=identification.nsmap
-        )
-    ).strip()
-    other_constraints_code = "".join(
-        identification.xpath(
-            ".//gmd:resourceConstraints//gmd:useConstraints//text()[../../..//"
-            "gmd:useConstraints//@codeListValue!='license']",
-            namespaces=identification.nsmap
-        )
-    ).strip() or None
-    return resourcedescriptor.RecordIdentification(
-        name=get_xpath_value(identification, ".//gmd:citation//gmd:name"),
-        title=get_xpath_value(identification, ".//gmd:citation//gmd:title"),
-        date=dateutil.parser.parse(
+def get_identification_descriptor(
+        record: dict) -> resourcedescriptor.RecordIdentification:
+    name = record.get('name', None)
+    title = record.get('title', None)
+    date = dateutil.parser.parse(
+            record.get('date', None)).replace(tzinfo=dt.timezone.utc)
+    date_type = record.get('date_type', None)
+    abstract = record.get('abstract', None)
+    purpose = record.get('purpose', None)
+    status = None
+    originator = get_contact_descriptor(None)
+    graphic_overview_uri = None
+    native_format = ''
+    place_keywords = None
+    other_keywords = record.get('keywords', None)
+    licenses = []
+    other_constraints = record.get('constraints_other', None)
+    topic_category = None
+    spatial_extent = geos.Polygon.from_ewkt(record.get('bbox_polygon', None))
+    temporal_extent = None
+    supplemental_information = record.get('supplemental_information', None)
+
+    # check from metadata xml
+    try:
+        xml = etree.fromstring(
+            record["metadata_xml"], parser=XML_PARSER)
+        identification = xml.xpath("gmd:identificationInfo", namespaces=xml.nsmap)[0]
+
+        license_info = "".join(
+            identification.xpath(
+                ".//gmd:resourceConstraints//gmd:otherConstraints//text()[../../..//"
+                "gmd:useConstraints//@codeListValue='license']",
+                namespaces=identification.nsmap
+            )
+        ).strip()
+
+        other_constraints_description = "".join(
+            identification.xpath(
+                ".//gmd:resourceConstraints//gmd:otherConstraints//text()[../../..//"
+                "gmd:useConstraints//@codeListValue!='license']",
+                namespaces=identification.nsmap
+            )
+        ).strip()
+        other_constraints_code = "".join(
+            identification.xpath(
+                ".//gmd:resourceConstraints//gmd:useConstraints//text()[../../..//"
+                "gmd:useConstraints//@codeListValue!='license']",
+                namespaces=identification.nsmap
+            )
+        ).strip() or None
+
+        # get all values
+        name = get_xpath_value(identification, ".//gmd:citation//gmd:name")
+        title = get_xpath_value(identification, ".//gmd:citation//gmd:title")
+        date = dateutil.parser.parse(
             get_xpath_value(identification, ".//gmd:citation//gmd:date//gmd:date")
-        ).replace(tzinfo=dt.timezone.utc),
-        date_type=get_xpath_value(identification, ".//gmd:citation//gmd:dateType"),
-        abstract=get_xpath_value(identification, ".//gmd:abstract"),
-        purpose=get_xpath_value(identification, ".//gmd:purpose"),
-        status=get_xpath_value(identification, ".//gmd:status"),
-        originator=get_contact_descriptor(
+        ).replace(tzinfo=dt.timezone.utc)
+        date_type = get_xpath_value(identification, ".//gmd:citation//gmd:dateType")
+        abstract = get_xpath_value(identification, ".//gmd:abstract")
+        purpose = get_xpath_value(identification, ".//gmd:purpose")
+        status = get_xpath_value(identification, ".//gmd:status")
+        originator = get_contact_descriptor(
             identification.xpath(
                 ".//gmd:pointOfContact", namespaces=identification.nsmap)[0]
-        ),
-        graphic_overview_uri=get_xpath_value(
-            identification, ".//gmd:graphicOverview//gmd:fileName"),
-        native_format=get_xpath_value(
-            identification, ".//gmd:resourceFormat//gmd:name"),
+        )
+        graphic_overview_uri = get_xpath_value(
+            identification, ".//gmd:graphicOverview//gmd:fileName")
+        native_format = get_xpath_value(
+            identification, ".//gmd:resourceFormat//gmd:name")
+        place_keywords = identification.xpath(
+            ".//gmd:descriptiveKeywords//gmd:keyword//text()[../../../gmd:type//"
+            "@codeListValue='place']",
+            namespaces=identification.nsmap
+        )
+        other_keywords = identification.xpath(
+            ".//gmd:descriptiveKeywords//gmd:keyword//text()[../../../gmd:type//"
+            "@codeListValue!='place']",
+            namespaces=identification.nsmap
+        )
+        licenses = license_info.split(":", maxsplit=1)
+        other_constraints = (
+            f"{other_constraints_code or ''}:{other_constraints_description}")
+        topic_category = get_xpath_value(identification, ".//gmd:topicCategory")
+        spatial_extent = get_spatial_extent(identification)
+        temporal_extent = get_temporal_extent(identification)
+        supplemental_information = get_xpath_value(
+            identification, ".//gmd:supplumentalInformation")
+    except (TypeError, KeyError):
+        logger.warning(
+            f"No links metadata detail from xml found"
+        )
+
+    return resourcedescriptor.RecordIdentification(
+        name=name,
+        title=title,
+        date=date,
+        date_type=date_type,
+        abstract=abstract,
+        purpose=purpose,
+        status=status,
+        originator=originator,
+        graphic_overview_uri=graphic_overview_uri,
+        native_format=native_format,
         place_keywords=place_keywords,
         other_keywords=other_keywords,
-        license=license_info.split(":", maxsplit=1),
-        other_constraints=(
-            f"{other_constraints_code or ''}:{other_constraints_description}"),
-        topic_category=get_xpath_value(identification, ".//gmd:topicCategory"),
-        spatial_extent=get_spatial_extent(identification),
-        temporal_extent=get_temporal_extent(identification),
-        supplemental_information=get_xpath_value(
-            identification, ".//gmd:supplumentalInformation")
+        license=licenses,
+        other_constraints=other_constraints,
+        topic_category=topic_category,
+        spatial_extent=spatial_extent,
+        temporal_extent=temporal_extent,
+        supplemental_information=supplemental_information
     )
 
 
-def get_distribution_info(
-        distribution: etree.Element) -> resourcedescriptor.RecordDistribution:
-    online_elements = distribution.xpath(
-        ".//gmd:transferOptions//gmd:onLine", namespaces=distribution.nsmap)
+def get_distribution_info(record: dict) -> resourcedescriptor.RecordDistribution:
     link = None
     wms = None
     wfs = None
@@ -460,26 +520,59 @@ def get_distribution_info(
     legend = None
     geojson = None
     original = None
-    for online_el in online_elements:
-        protocol = get_xpath_value(online_el, ".//gmd:protocol").lower()
-        linkage = get_xpath_value(online_el, ".//gmd:linkage")
-        description = (get_xpath_value(online_el, ".//gmd:description") or "").lower()
-        if "link" in protocol:
-            link = linkage
-        elif "ogc:wms" in protocol:
-            wms = linkage
-        elif "ogc:wfs" in protocol:
-            wfs = linkage
-        elif "ogc:wcs" in protocol:
-            wcs = linkage
-        elif "thumbnail" in description:
-            thumbnail = linkage
-        elif "legend" in description:
-            legend = linkage
-        elif "geojson" in description:
-            geojson = linkage
-        elif "original dataset format" in description:
-            original = linkage
+
+    # check from metadata xml
+    try:
+        xml = etree.fromstring(
+            record["metadata_xml"], parser=XML_PARSER)
+        distribution = xml.xpath("gmd:distributionInfo", namespaces=xml.nsmap)[0]
+        online_elements = distribution.xpath(
+            ".//gmd:transferOptions//gmd:onLine", namespaces=distribution.nsmap)
+        for online_el in online_elements:
+            protocol = get_xpath_value(online_el, ".//gmd:protocol").lower()
+            linkage = get_xpath_value(online_el, ".//gmd:linkage")
+            description = (
+                    get_xpath_value(online_el, ".//gmd:description") or "").lower()
+            if "link" in protocol:
+                link = linkage
+            elif "ogc:wms" in protocol:
+                wms = linkage
+            elif "ogc:wfs" in protocol:
+                wfs = linkage
+            elif "ogc:wcs" in protocol:
+                wcs = linkage
+            elif "thumbnail" in description:
+                thumbnail = linkage
+            elif "legend" in description:
+                legend = linkage
+            elif "geojson" in description:
+                geojson = linkage
+            elif "original dataset format" in description:
+                original = linkage
+    except (TypeError, KeyError):
+        logger.warning(
+            f"No links metadata detail from xml found"
+        )
+        # if no metadata on xml, use from record links
+        for link in record.get('links', []):
+            protocol = link['link_type'].lower()
+            linkage = link['url']
+            if "link" in protocol:
+                link = linkage
+            elif "ogc:wms" in protocol:
+                wms = linkage
+            elif "ogc:wfs" in protocol:
+                wfs = linkage
+            elif "ogc:wcs" in protocol:
+                wcs = linkage
+            elif "thumbnail" in link['name'].lower():
+                thumbnail = linkage
+            elif "legend" in link['name'].lower():
+                legend = linkage
+            elif "geojson" in link['name'].lower():
+                geojson = linkage
+            elif "original dataset" in link['name'].lower():
+                original = linkage
     return resourcedescriptor.RecordDistribution(
         link_url=link,
         wms_url=wms,

@@ -115,7 +115,8 @@ def _harvest_resource(
         harvestable_resource.unique_identifier,
         harvestable_resource.remote_resource_type,
         harvesting_session_id=harvesting_session_id)
-    worker.update_geonode_resource(resource_descriptor)
+    worker.update_geonode_resource(
+        resource_descriptor, harvestable_resource.remote_resource_type)
 
 
 @app.task(
@@ -161,7 +162,7 @@ def _handle_harvesting_error(self, task_id, *args, **kwargs):
 
 @app.task(
     bind=True,
-    #name='geonode.harvesting.tasks.check_harvester_available',
+    # name='geonode.harvesting.tasks.check_harvester_available',
     queue='geonode',
     acks_late=False,
 )
