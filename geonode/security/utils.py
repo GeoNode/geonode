@@ -352,7 +352,9 @@ def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
                 gwc_enabled.text = str(enable).lower()
 
                 gwc_mimeFormats = tree.find('mimeFormats')
-                tree.remove(gwc_mimeFormats)
+                # Returns an element instance or None
+                if gwc_mimeFormats:
+                    tree.remove(gwc_mimeFormats)
 
                 if formats is not None:
                     for format in formats:

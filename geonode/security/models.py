@@ -315,7 +315,8 @@ class PermissionLevelMixin(object):
                                 group_perms = perm_spec['groups']
                             sync_geofence_with_guardian(self.layer, perms, user=_user, group_perms=group_perms)
                             gf_services = _get_gf_services(self.layer, perms)
-                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, _user, group_perms, gf_services)
+                            _group = list(group_perms.keys())[0] if group_perms else None
+                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, _user, _group, gf_services)
                             _disable_cache.append(_disable_layer_cache)
 
         # All the other groups

@@ -1862,7 +1862,7 @@ class TestGetUserGeolimits(TestCase):
 
     def test_should_disable_cache_for_anonymous_with_geolimits(self):
         geo_limit, _ = UserGeoLimit.objects.get_or_create(
-            user=self.owner,
+            user=get_anonymous_user(),
             resource=self.layer
         )
         self.layer.users_geolimits.set([geo_limit])
