@@ -203,13 +203,15 @@ def get_map(
 
     # prepare authorization for WMS service
     headers = {}
-    if "access_token" not in additional_kwargs.keys():
-        if thumbnail_url.startswith(ogc_server_settings.LOCATION):
+
+    if thumbnail_url.startswith(ogc_server_settings.LOCATION):
+        if "access_token" not in additional_kwargs.keys():
             # for the Geoserver backend, use Basic Auth, if access_token is not provided
-            _user = settings.OGC_SERVER["default"].get("USER")
-            _pwd = settings.OGC_SERVER["default"].get("PASSWORD")
+            _user, _pwd = ogc_server_settings.credentials
             encoded_credentials = base64.b64encode(f"{_user}:{_pwd}".encode("UTF-8")).decode("ascii")
             headers["Authorization"] = f"Basic {encoded_credentials}"
+        else:
+            headers["Authorization"] = f"Berarer {additional_kwargs['access_token']}"
 
     wms = WebMapService(f"{thumbnail_url}{wms_endpoint}", version=wms_version, headers=headers)
 
