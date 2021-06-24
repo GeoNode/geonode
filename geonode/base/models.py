@@ -1046,10 +1046,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     send_notification(recipients, notice_type_label, {'resource': self})
 
         if self.pk is None:
+            _initial_value = type(self).objects.aggregate(Max("id"))['id__max']
+            if not _initial_value:
+                _initial_value = 1
+            else:
+                _initial_value += 1
             self.pk = self.id = get_next_value(
-                # type(self).__name__,
-                "ResourceBase",
-                initial_value=type(self).objects.aggregate(Max("id"))['id__max'] or 1)
+                "ResourceBase",  # type(self).__name__,
+                initial_value=_initial_value)
         super().save(*args, **kwargs)
         self.__is_approved = self.is_approved
         self.__is_published = self.is_published

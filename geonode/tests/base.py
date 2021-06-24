@@ -16,8 +16,13 @@
 # along with this profgram. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.contrib.auth import get_user_model
-from django.test.testcases import SimpleTestCase, TestCase, LiveServerTestCase
+import logging
+import faulthandler
+
+from django.test.testcases import (
+    TestCase,
+    SimpleTestCase,
+    LiveServerTestCase)
 
 try:
     from django.utils.decorators import classproperty
@@ -33,11 +38,6 @@ except Exception:
         def getter(self, method):
             self.fget = method
             return self
-
-from geonode.base.populate_test_data import create_models, remove_models
-
-import faulthandler
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -62,29 +62,10 @@ class GeoNodeBaseTestSupport(TestCase):
     def get_type(cls):
         return cls.type
 
-    @classproperty
-    def get_obj_ids(cls):
-        return cls.obj_ids
-
-    @classproperty
-    def get_integration(cls):
-        return cls.integration
-
     def setUp(self):
         super().setUp()
         faulthandler.enable()
         logging.debug(" Test setUp. Creating models.")
-        self.get_obj_ids = create_models(type=self.get_type, integration=self.get_integration)
-
-    def tearDown(self):
-        logging.debug(" Test tearDown. Destroying models / Cleaning up Server.")
-        remove_models(self.get_obj_ids, type=self.get_type, integration=self.get_integration)
-        from django.conf import settings
-        if settings.OGC_SERVER['default'].get(
-                "GEOFENCE_SECURITY_ENABLED", False):
-            from geonode.geoserver.security import purge_geofence_all
-            purge_geofence_all()
-        super().tearDown()
 
 
 class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,
@@ -92,19 +73,3 @@ class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,
 
     integration = True
     port = 8000
-
-    def setUp(self):
-        super().setUp()
-        logging.debug(" Test setUp. Creating models.")
-        self.get_obj_ids = create_models(type=self.get_type, integration=self.get_integration)
-        self.user_admin = get_user_model().objects.get(username="admin")
-
-    def tearDown(self):
-        super().tearDown()
-        logging.debug(" Test tearDown. Destroying models / Cleaning up Server.")
-        remove_models(self.get_obj_ids, type=self.get_type, integration=self.get_integration)
-        from django.conf import settings
-        if settings.OGC_SERVER['default'].get(
-                "GEOFENCE_SECURITY_ENABLED", False):
-            from geonode.geoserver.security import purge_geofence_all
-            purge_geofence_all()
