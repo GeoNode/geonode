@@ -774,7 +774,8 @@ def new_map_json(request):
             defaults=dict(
                 zoom=0,
                 center_x=0,
-                center_y=0
+                center_y=0,
+                owner=request.user
             )
         )
         resource_manager.set_permissions(None, instance=map_obj, permissions=None, created=True)

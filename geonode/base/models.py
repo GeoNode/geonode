@@ -1006,8 +1006,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.resource_type = self.polymorphic_ctype.model.lower()
 
         if hasattr(self, 'class_name') and (self.pk is None or notify):
-            if self.pk is None and self.title:
+            if self.pk is None and (self.title or getattr(self, 'name', None)):
                 # Resource Created
+                if not self.title and getattr(self, 'name', None):
+                    self.title = getattr(self, 'name', None)
                 notice_type_label = f'{self.class_name.lower()}_created'
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
