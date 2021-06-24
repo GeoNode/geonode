@@ -29,6 +29,7 @@ from django.template.defaultfilters import slugify
 from geonode import GeoNodeException
 from geonode.layers.models import Layer
 from geonode.layers.utils import get_valid_name
+from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import (
     gs_catalog,
     ogc_server_settings,
@@ -64,26 +65,28 @@ def create_gn_layer(workspace, datastore, name, title, owner_name):
     """
     owner = get_user_model().objects.get(username=owner_name)
 
-    layer = Layer.objects.create(
-        name=name,
-        workspace=workspace.name,
-        store=datastore.name,
-        storeType='vector',
-        alternate=f'{workspace.name}:{name}',
-        title=title,
-        owner=owner,
-        uuid=str(uuid.uuid4()),
-        bbox_polygon=Polygon.from_bbox(BBOX),
-        data_quality_statement=DATA_QUALITY_MESSAGE,
-    )
+    layer = resource_manager.create(
+        str(uuid.uuid4()),
+        resource_type=Layer,
+        defaults=dict(
+            name=name,
+            workspace=workspace.name,
+            store=datastore.name,
+            storeType='vector',
+            alternate=f'{workspace.name}:{name}',
+            title=title,
+            owner=owner,
+            bbox_polygon=Polygon.from_bbox(BBOX),
+            data_quality_statement=DATA_QUALITY_MESSAGE
+        ))
 
+    to_update = {}
     if settings.ADMIN_MODERATE_UPLOADS:
-        layer.is_approved = False
+        to_update['is_approved'] = False
     if settings.RESOURCE_PUBLISHING:
-        layer.is_published = False
+        to_update['is_published'] = False
 
-    layer.save()
-    return layer
+    return resource_manager.update(layer.uuid, instance=layer, vals=to_update)
 
 
 def get_attributes(geometry_type, json_attrs=None):

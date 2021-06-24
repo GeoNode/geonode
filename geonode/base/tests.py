@@ -788,6 +788,7 @@ class TestOwnerRightsRequestUtils(TestCase):
 
 
 class TestGetVisibleResource(TestCase):
+
     def setUp(self):
         self.user = get_user_model().objects.create(username='mikel_arteta')
         self.category = TopicCategory.objects.create(identifier='biota')
@@ -857,6 +858,7 @@ class TestHtmlTagRemoval(SimpleTestCase):
 
 
 class TestTagThesaurus(TestCase):
+
     #  loading test thesausurs
     fixtures = [
         "test_thesaurus.json"
@@ -927,6 +929,7 @@ class TestTagThesaurus(TestCase):
 
 @override_settings(THESAURUS_DEFAULT_LANG="en")
 class TestThesaurusAvailableForm(TestCase):
+
     #  loading test thesausurs
     fixtures = [
         "test_thesaurus.json"
@@ -1036,6 +1039,7 @@ class TestFacets(TestCase):
 
 
 class TestGenerateThesaurusReference(TestCase):
+
     fixtures = [
         "test_thesaurus.json"
     ]

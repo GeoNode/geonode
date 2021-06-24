@@ -419,7 +419,7 @@ def surrogate_escape_string(input_string, source_character_set):
 
 def set_layers_permissions(permissions_name, resources_names=None,
                            users_usernames=None, groups_names=None,
-                           delete_flag=None, verbose=False):
+                           delete_flag=False, verbose=False):
     # Processing information
     if not resources_names:
         # If resources is None we consider all the existing layer
@@ -475,13 +475,16 @@ def set_layers_permissions(permissions_name, resources_names=None,
                     users = []
                     if users_usernames:
                         User = get_user_model()
-                        for username in users_usernames:
+                        for _user in users_usernames:
                             try:
-                                user = User.objects.get(username=username)
+                                if isinstance(_user, str):
+                                    user = User.objects.get(username=_user)
+                                else:
+                                    user = User.objects.get(username=_user.username)
                                 users.append(user)
                             except User.DoesNotExist:
                                 logger.warning(
-                                    f'The user {username} does not exists. '
+                                    f'The user {_user} does not exists. '
                                     'It has been skipped.'
                                 )
                     # GROUPS
@@ -593,7 +596,9 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                             "It has been skipped."
                                         )
                             # Set final permissions
-                            resource.set_permissions(perm_spec)
+                            from geonode.resource.manager import resource_manager
+                            resource_manager.set_permissions(resource.uuid, instance=resource, permissions=perm_spec)
+
                             if verbose:
                                 logger.info(
                                     f"Final permissions info for the resource {resource.title}: {perm_spec}"

@@ -16,14 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from collections import namedtuple
-from geonode.geoserver.createlayer.utils import create_layer
-
-from django.test.client import RequestFactory
-from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
-
-from geonode.tests.base import GeoNodeBaseTestSupport
-from django.test import TestCase
 import io
 import os
 import shutil
@@ -33,12 +25,15 @@ import zipfile
 import tempfile
 
 from unittest.mock import patch
+from collections import namedtuple
 from pinax.ratings.models import OverallRating
 
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.forms import ValidationError
-from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
+from django.test import TestCase
+from django.forms import ValidationError
+from django.test.client import RequestFactory
+from django.contrib.contenttypes.models import ContentType
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import Polygon
 from django.db.models import Count
@@ -47,12 +42,29 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.test.utils import override_settings
 
-from guardian.shortcuts import get_anonymous_user
-from guardian.shortcuts import assign_perm, remove_perm
-
-from geonode import GeoNodeException, geoserver
+from geonode.layers import utils
+from geonode.layers import LayersAppConfig
 from geonode.decorators import on_ogc_backend
+from geonode.maps.models import Map, MapLayer
+from geonode.utils import DisableDjangoSignals
+from geonode.layers.views import _resolve_layer
+from geonode import GeoNodeException, geoserver
+from geonode.people.utils import get_valid_user
+from guardian.shortcuts import get_anonymous_user
+from geonode.base.forms import BatchPermissionsForm
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.resource.manager import resource_manager
+from guardian.shortcuts import assign_perm, remove_perm
+from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Layer, Style, Attribute
+from geonode.layers.forms import JSONField, LayerUploadForm
+from geonode.geoserver.createlayer.utils import create_layer
+from geonode.maps.tests_populate_maplayers import maplayers as ml
+from geonode.layers.populate_layers_data import create_layer_data
+from geonode.base.models import TopicCategory, License, Region, Link
+from geonode.utils import check_ogc_backend, set_resource_default_links
+from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
+
 from geonode.layers.utils import (
     is_sld_upload_only,
     is_xml_upload_only,
@@ -61,20 +73,13 @@ from geonode.layers.utils import (
     get_valid_name,
     get_valid_layer_name,
     surrogate_escape_string, validate_input_source)
-from geonode.people.utils import get_valid_user
-from geonode.base.populate_test_data import all_public, create_single_layer
-from geonode.base.models import TopicCategory, License, Region, Link
-from geonode.layers.forms import JSONField, LayerUploadForm
-from geonode.utils import check_ogc_backend, set_resource_default_links
-from geonode.layers import LayersAppConfig
-from geonode.tests.utils import NotificationsTestsHelper
-from geonode.layers.populate_layers_data import create_layer_data
-from geonode.layers import utils
-from geonode.layers.views import _resolve_layer
-from geonode.maps.models import Map, MapLayer
-from geonode.utils import DisableDjangoSignals
-from geonode.maps.tests_populate_maplayers import maplayers as ml
-from geonode.base.forms import BatchPermissionsForm
+
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models,
+    create_single_layer)
+
 logger = logging.getLogger(__name__)
 
 
@@ -84,12 +89,34 @@ class LayersTest(GeoNodeBaseTestSupport):
     """
     type = 'layer'
 
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+        create_layer_data()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
     def setUp(self):
         super().setUp()
-        create_layer_data()
         self.user = 'admin'
         self.passwd = 'admin'
         self.anonymous_user = get_anonymous_user()
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
+        self.maxDiff = None
+        self.sut = create_single_layer("single_point")
+        self.r = namedtuple('GSCatalogRes', ['resource'])
 
     # Data Tests
 
@@ -1037,21 +1064,6 @@ class LayersTest(GeoNodeBaseTestSupport):
             "layers.utils.surrogate_escape_string did not produce expected result. "
             f"Expected {surrogate_escape_expected}, received {surrogate_escape_result}")
 
-
-class UnpublishedObjectTests(GeoNodeBaseTestSupport):
-
-    """Test the is_published base attribute"""
-    type = 'layer'
-
-    def setUp(self):
-        super().setUp()
-        self.list_url = reverse(
-            'api_dispatch_list',
-            kwargs={
-                'api_name': 'api',
-                'resource_name': 'layers'})
-        all_public()
-
     def test_published_layer(self):
         """Test unpublished layer behaviour"""
 
@@ -1105,280 +1117,132 @@ class UnpublishedObjectTests(GeoNodeBaseTestSupport):
         layer.is_published = True
         layer.save()
 
-
-class LayerNotificationsTestCase(NotificationsTestsHelper):
-
-    type = 'layer'
-
-    def setUp(self):
-        super().setUp()
-        self.user = 'admin'
-        self.passwd = 'admin'
-        create_layer_data()
-        self.anonymous_user = get_anonymous_user()
-        self.u = get_user_model().objects.get(username=self.user)
-        self.u.email = 'test@email.com'
-        self.u.is_active = True
-        self.u.save()
-        self.setup_notifications_for(LayersAppConfig.NOTIFICATIONS, self.u)
-        self.norman = get_user_model().objects.get(username='norman')
-        self.norman.email = 'norman@email.com'
-        self.norman.is_active = True
-        self.norman.save()
-        self.setup_notifications_for(LayersAppConfig.NOTIFICATIONS, self.norman)
-
-    def testLayerNotifications(self):
-        with self.settings(
-                EMAIL_ENABLE=True,
-                NOTIFICATION_ENABLED=True,
-                NOTIFICATIONS_BACKEND="pinax.notifications.backends.email.EmailBackend",
-                PINAX_NOTIFICATIONS_QUEUE_ALL=False):
-            self.clear_notifications_queue()
-            self.client.login(username=self.user, password=self.passwd)
-            _l = Layer.objects.create(
-                name='test notifications',
-                bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
-                srid='EPSG:4326',
-                owner=self.norman)
-            self.assertTrue(self.check_notification_out('layer_created', self.u))
-            # Ensure "resource.owner" won't be notified for having uploaded its own resource
-            self.assertFalse(self.check_notification_out('layer_created', self.norman))
-
-            self.clear_notifications_queue()
-            _l.name = 'test notifications 2'
-            _l.save(notify=True)
-            self.assertTrue(self.check_notification_out('layer_updated', self.u))
-
-            self.clear_notifications_queue()
-            from dialogos.models import Comment
-            lct = ContentType.objects.get_for_model(_l)
-            comment = Comment(
-                author=self.norman,
-                name=self.u.username,
-                content_type=lct,
-                object_id=_l.id,
-                content_object=_l,
-                comment='test comment')
-            comment.save()
-            self.assertTrue(self.check_notification_out('layer_comment', self.u))
-
-            self.clear_notifications_queue()
-            if "pinax.ratings" in settings.INSTALLED_APPS:
-                self.clear_notifications_queue()
-                from pinax.ratings.models import Rating
-                rating = Rating(
-                    user=self.norman,
-                    content_type=lct,
-                    object_id=_l.id,
-                    content_object=_l,
-                    rating=5)
-                rating.save()
-                self.assertTrue(self.check_notification_out('layer_rated', self.u))
-
-
-class SetLayersPermissions(GeoNodeBaseTestSupport):
-
-    type = 'layer'
-
-    def setUp(self):
-        super().setUp()
-        create_layer_data()
-        self.username = 'test_username'
-        self.passwd = 'test_password'
-        self.user = get_user_model().objects.create(
-            username=self.username
-        )
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_assign_remove_permissions(self):
         # Assing
         layer = Layer.objects.all().first()
         perm_spec = layer.get_all_level_info()
-        self.assertNotIn(self.user, perm_spec["users"])
-        utils.set_layers_permissions("write", None, [self.user], None, None)
-        layer_after = Layer.objects.get(name=layer.name)
-        perm_spec = layer_after.get_all_level_info()
-        for perm in utils.WRITE_PERMISSIONS:
-            self.assertIn(perm, perm_spec["users"][self.user])
-            _c = 0
+        self.assertNotIn(get_user_model().objects.get(username="norman"), perm_spec["users"])
+
+        utils.set_layers_permissions("write", resources_names=[layer.name], users_usernames=["norman"], delete_flag=False, verbose=True)
+        perm_spec = layer.get_all_level_info()
+        _c = 0
+        if "users" in perm_spec:
             for _u in perm_spec["users"]:
-                if _u == self.user:
+                if _u == "norman" or _u == get_user_model().objects.get(username="norman"):
                     _c += 1
-            self.assertEqual(_c, 1)
+        # "norman" has both read & write permissions
+        self.assertEqual(_c, 1)
+
         # Remove
-        utils.set_layers_permissions("write", None, [self.user], None, True)
-        layer_after = Layer.objects.get(name=layer.name)
-        perm_spec = layer_after.get_all_level_info()
-        for perm in utils.WRITE_PERMISSIONS:
-            if self.user in perm_spec["users"]:
-                self.assertNotIn(perm, perm_spec["users"][self.user])
+        utils.set_layers_permissions("read", resources_names=[layer.name], users_usernames=["norman"], delete_flag=True, verbose=True)
+        perm_spec = layer.get_all_level_info()
+        _c = 0
+        if "users" in perm_spec:
+            for _u in perm_spec["users"]:
+                if _u == "norman" or _u == get_user_model().objects.get(username="norman"):
+                    _c += 1
+        # "norman" has no permissions
+        self.assertEqual(_c, 0)
 
+    def test_xml_form_without_files_should_raise_500(self):
+        files = dict()
+        files['permissions'] = '{}'
+        files['charset'] = 'utf-8'
+        self.client.login(username="admin", password="admin")
+        resp = self.client.post(reverse('layer_upload'), data=files)
+        self.assertEqual(500, resp.status_code)
 
-class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
-    def setUp(self):
-        super().setUp()
-        create_layer_data()
-        self.user = get_user_model().objects.create(username='dybala', email='dybala@gmail.com')
-        self.user.set_password('very-secret')
-        admin = get_user_model().objects.get(username='admin')
-        self.map = Map.objects.create(owner=admin, title='test', is_approved=True, zoom=0, center_x=0.0, center_y=0.0)
-        self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
-        self.not_admin.set_password('very-secret')
-        self.not_admin.save()
+    def test_xml_should_return_404_if_the_layer_does_not_exists(self):
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.exml_path),
+            "xml_file": open(self.exml_path),
+            "layer_title": "Fake layer title",
+            "metadata_upload_form": True,
+            "time": False,
+            "charset": "UTF-8"
+        }
 
-        self.layer = Layer.objects.all().first()
-        with DisableDjangoSignals():
-            self.map_layer = MapLayer.objects.create(
-                fixed=ml[0]['fixed'],
-                group=ml[0]['group'],
-                name=self.layer.alternate,
-                layer_params=ml[0]['layer_params'],
-                map=self.map,
-                source_params=ml[0]['source_params'],
-                stack_order=ml[0]['stack_order'],
-                opacity=ml[0]['opacity'],
-                transparent=True,
-                visibility=True
-            )
+        self.client.login(username="admin", password="admin")
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(404, resp.status_code)
 
-    def test_that_authenticated_user_without_permissions_cannot_view_map_in_layer_detail(self):
-        """
-        Test that an authenticated user without permissions to view a map does not see the map under
-        'Maps using this layer' in layer_detail when map is not viewable by 'anyone'
-        """
-        from geonode.resource.manager import resource_manager
-        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+    def test_xml_should_update_the_layer_with_the_expected_values(self):
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.exml_path),
+            "xml_file": open(self.exml_path),
+            "layer_title": "geonode:single_point",
+            "metadata_upload_form": True,
+            "time": False,
+            "charset": "UTF-8"
+        }
 
-        self.client.login(username='dybala', password='very-secret')
-        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_layers'], [])
+        self.client.login(username="admin", password="admin")
+        prev_layer = Layer.objects.get(typename="geonode:single_point")
+        self.assertEqual(0, prev_layer.keywords.count())
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(200, resp.status_code)
+        updated_layer = Layer.objects.get(typename="geonode:single_point")
+        # just checking some values if are updated
+        self.assertEqual(5, updated_layer.keywords.all().count())
 
-    def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
-        """
-        Test that keyword multiselect widget is disabled when the user is not an admin
-        """
-        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
-        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
-
-        self.client.login(username=self.not_admin.username, password='very-secret')
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.get(url)
-            self.assertTrue(response.context['form']['keywords'].field.disabled)
-
-    def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
-        """
-        Test that only admin users can create/edit keywords  when FREETEXT_KEYWORDS_READONLY=True
-        """
-        admin = self.not_admin
-        admin.is_superuser = True
-        admin.save()
-        self.test_layer = Layer.objects.create(owner=admin, title='test', is_approved=True)
-        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
-
-        self.client.login(username=admin.username, password='very-secret')
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.get(url)
-            self.assertFalse(response.context['form']['keywords'].field.disabled)
-
-    def test_that_non_admin_user_cannot_create_edit_keyword(self):
-        """
-        Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
-        """
-        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
-        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
-
-        self.client.login(username=self.not_admin.username, password='very-secret')
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
-            self.assertEqual(response.status_code, 401)
-            self.assertEqual(response.content, b'Unauthorized: Cannot edit/create Free-text Keywords')
-
-    def test_that_keyword_multiselect_is_enabled_for_non_admin_users_when_freetext_keywords_readonly_istrue(self):
-        """
-        Test that keyword multiselect widget is not disabled when the user is not an admin
-        and FREETEXT_KEYWORDS_READONLY=False
-        """
-        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
-        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
-
-        self.client.login(username=self.not_admin.username, password='very-secret')
-        with self.settings(FREETEXT_KEYWORDS_READONLY=False):
-            response = self.client.get(url)
-            self.assertFalse(response.context['form']['keywords'].field.disabled)
-
-    def test_that_anonymous_user_can_view_map_available_to_anyone(self):
-        """
-        Test that anonymous user can view map that has view permissions to 'anyone'
-        """
-        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_layers'], [self.map_layer])
-
-    def test_that_anonymous_user_cannot_view_map_with_restricted_view(self):
-        """
-        Test that anonymous user cannot view map that are not viewable by 'anyone'
-        """
-        from geonode.resource.manager import resource_manager
-        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
-
-        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_layers'], [])
-
-    def test_that_only_users_with_permissions_can_view_maps_in_layer_view(self):
-        """
-        Test only users with view permissions to a map can view them in layer detail view
-        """
-        from geonode.resource.manager import resource_manager
-        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
-        self.client.login(username='admin', password='admin')
-        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_layers'], [self.map_layer])
-
-
-'''
-Smoke test to explain how the uuidhandler will override the uuid for the layers
-Documentation of the handler is available here:
-https://github.com/GeoNode/documentation/blob/703cc6ba92b7b7a83637a874fb449420a9f8b78a/basic/settings/index.rst#uuid-handler
-'''
-
-
-class DummyUUIDHandler():
-    def __init__(self, instance):
-        self.instance = instance
-
-    def create_uuid(self):
-        return f'abc:{self.instance.uuid}'
-
-
-class TestCustomUUidHandler(TestCase):
-    def setUp(self):
-        User = get_user_model()
-        self.user = User.objects.create(username='test', email='test@test.com')
-        self.sut = Layer.objects.create(
-            name="testLayer", owner=self.user, title='test', is_approved=True, uuid='abc-1234-abc'
+    def test_sld_should_raise_500_if_is_invalid(self):
+        user = get_user_model().objects.get(username="admin")
+        layer = create_layer(
+            "single_point",
+            "single_point",
+            user,
+            'Point'
         )
 
-    def test_layer_will_maintain_his_uud_if_no_handler_is_definded(self):
-        expected = "abc-1234-abc"
-        self.assertEqual(expected, self.sut.uuid)
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.sld_path),
+            "sld_file": open(self.sld_path),
+            "layer_title": "random",
+            "metadata_upload_form": False,
+            "time": False,
+            "charset": "UTF-8"
+        }
 
-    @override_settings(LAYER_UUID_HANDLER="geonode.layers.tests.DummyUUIDHandler")
-    def test_layer_will_override_the_uuid_if_handler_is_defined(self):
-        self.sut.keywords.add(*["updating", "values"])
-        self.sut.save()
-        expected = "abc:abc-1234-abc"
-        actual = Layer.objects.get(id=self.sut.id)
-        self.assertEqual(expected, actual.uuid)
+        self.client.login(username="admin", password="admin")
+        self.assertEqual(1, layer.styles.count())
+        self.assertEqual("Default Point", layer.styles.first().sld_title)
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(500, resp.status_code)
+        self.assertFalse(resp.json().get('success'))
+        self.assertEqual('No Layer matches the given query.', resp.json().get('errors'))
 
+    def test_sld_should_update_the_layer_with_the_expected_values(self):
+        user = get_user_model().objects.get(username="admin")
+        layer = create_layer(
+            "single_point",
+            "single_point",
+            user,
+            'Point'
+        )
 
-class TestalidateInputSource(TestCase):
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.sld_path),
+            "sld_file": open(self.sld_path),
+            "layer_title": f"geonode:{layer.name}",
+            "metadata_upload_form": False,
+            "time": False,
+            "charset": "UTF-8"
+        }
 
-    def setUp(self):
-        self.maxDiff = None
-        self.layer = create_single_layer('single_point')
-        self.r = namedtuple('GSCatalogRes', ['resource'])
-
-    def tearDown(self):
-        self.layer.delete()
+        self.client.login(username="admin", password="admin")
+        self.assertEqual(1, layer.styles.count())
+        self.assertEqual("Default Point", layer.styles.first().sld_title)
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(200, resp.status_code)
+        updated_layer = Layer.objects.get(alternate=f"geonode:{layer.name}")
+        # just checking some values if are updated
+        self.assertEqual(1, updated_layer.styles.all().count())
+        self.assertEqual("SLD Cook Book: Simple Point", updated_layer.styles.first().sld_title)
 
     def test_will_raise_exception_for_replace_vector_layer_with_raster(self):
         layer = Layer.objects.filter(name="single_point")[0]
@@ -1478,7 +1342,289 @@ class TestalidateInputSource(TestCase):
         self.assertTrue(actual)
 
 
+class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
+
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
+    def setUp(self):
+        super().setUp()
+        create_layer_data()
+        self.user = get_user_model().objects.create(username='dybala', email='dybala@gmail.com')
+        self.user.set_password('very-secret')
+        self.admin = get_user_model().objects.get(username='admin')
+        self.map = Map.objects.create(owner=self.admin, title='test', is_approved=True, zoom=0, center_x=0.0, center_y=0.0)
+        self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
+        self.not_admin.set_password('very-secret')
+        self.not_admin.save()
+
+        self.layer = Layer.objects.all().first()
+        with DisableDjangoSignals():
+            self.map_layer = MapLayer.objects.create(
+                fixed=ml[0]['fixed'],
+                group=ml[0]['group'],
+                name=self.layer.alternate,
+                layer_params=ml[0]['layer_params'],
+                map=self.map,
+                source_params=ml[0]['source_params'],
+                stack_order=ml[0]['stack_order'],
+                opacity=ml[0]['opacity'],
+                transparent=True,
+                visibility=True
+            )
+
+    def test_that_authenticated_user_without_permissions_cannot_view_map_in_layer_detail(self):
+        """
+        Test that an authenticated user without permissions to view a map does not see the map under
+        'Maps using this layer' in layer_detail when map is not viewable by 'anyone'
+        """
+        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+
+        self.client.login(username='dybala', password='very-secret')
+        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
+        self.assertEqual(response.context['map_layers'], [])
+
+    def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
+        """
+        Test that keyword multiselect widget is disabled when the user is not an admin
+        """
+        self.test_layer = resource_manager.create(
+            None,
+            resource_type=Layer,
+            defaults=dict(
+                owner=self.not_admin,
+                title='test',
+                is_approved=True))
+
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
+            response = self.client.get(url)
+            self.assertTrue(response.context['form']['keywords'].field.disabled)
+
+    def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
+        """
+        Test that only admin users can create/edit keywords  when FREETEXT_KEYWORDS_READONLY=True
+        """
+        admin = self.not_admin
+        admin.is_superuser = True
+        admin.save()
+
+        self.test_layer = resource_manager.create(
+            None,
+            resource_type=Layer,
+            defaults=dict(
+                owner=admin,
+                title='test',
+                is_approved=True))
+
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+
+        self.client.login(username=admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
+            response = self.client.get(url)
+            self.assertFalse(response.context['form']['keywords'].field.disabled)
+
+    def test_that_non_admin_user_cannot_create_edit_keyword(self):
+        """
+        Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
+        """
+        self.test_layer = resource_manager.create(
+            None,
+            resource_type=Layer,
+            defaults=dict(
+                owner=self.not_admin,
+                title='test',
+                is_approved=True))
+
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
+            response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
+            self.assertEqual(response.status_code, 401)
+            self.assertEqual(response.content, b'Unauthorized: Cannot edit/create Free-text Keywords')
+
+    def test_that_keyword_multiselect_is_enabled_for_non_admin_users_when_freetext_keywords_readonly_istrue(self):
+        """
+        Test that keyword multiselect widget is not disabled when the user is not an admin
+        and FREETEXT_KEYWORDS_READONLY=False
+        """
+        self.test_layer = resource_manager.create(
+            None,
+            resource_type=Layer,
+            defaults=dict(
+                owner=self.not_admin,
+                title='test',
+                is_approved=True))
+
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=False):
+            response = self.client.get(url)
+            self.assertFalse(response.context['form']['keywords'].field.disabled)
+
+    def test_that_anonymous_user_cannot_view_map_with_restricted_view(self):
+        """
+        Test that anonymous user cannot view map that are not viewable by 'anyone'
+        """
+        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+
+        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
+        self.assertEqual(response.context['map_layers'], [])
+
+    def test_that_only_users_with_permissions_can_view_maps_in_layer_view(self):
+        """
+        Test only users with view permissions to a map can view them in layer detail view
+        """
+        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
+        self.assertEqual(response.context['map_layers'], [self.map_layer])
+
+
+class LayerNotificationsTestCase(NotificationsTestsHelper):
+
+    type = 'layer'
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
+    def setUp(self):
+        super().setUp()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        # create_layer_data()
+        self.anonymous_user = get_anonymous_user()
+        self.u = get_user_model().objects.get(username=self.user)
+        self.u.email = 'test@email.com'
+        self.u.is_active = True
+        self.u.save()
+        self.setup_notifications_for(LayersAppConfig.NOTIFICATIONS, self.u)
+        self.norman = get_user_model().objects.get(username='norman')
+        self.norman.email = 'norman@email.com'
+        self.norman.is_active = True
+        self.norman.save()
+        self.setup_notifications_for(LayersAppConfig.NOTIFICATIONS, self.norman)
+
+    def testLayerNotifications(self):
+        with self.settings(
+                EMAIL_ENABLE=True,
+                NOTIFICATION_ENABLED=True,
+                NOTIFICATIONS_BACKEND="pinax.notifications.backends.email.EmailBackend",
+                PINAX_NOTIFICATIONS_QUEUE_ALL=False):
+            self.clear_notifications_queue()
+            self.client.login(username=self.user, password=self.passwd)
+
+            _l = resource_manager.create(
+                None,
+                resource_type=Layer,
+                defaults=dict(
+                    name='test notifications',
+                    title='test notifications',
+                    bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
+                    srid='EPSG:4326',
+                    owner=self.norman)
+            )
+
+            self.assertTrue(self.check_notification_out('layer_created', self.u))
+            # Ensure "resource.owner" won't be notified for having uploaded its own resource
+            self.assertFalse(self.check_notification_out('layer_created', self.norman))
+
+            self.clear_notifications_queue()
+            _l.name = 'test notifications 2'
+            _l.save(notify=True)
+            self.assertTrue(self.check_notification_out('layer_updated', self.u))
+
+            self.clear_notifications_queue()
+            from dialogos.models import Comment
+            lct = ContentType.objects.get_for_model(_l)
+            comment = Comment(
+                author=self.norman,
+                name=self.u.username,
+                content_type=lct,
+                object_id=_l.id,
+                content_object=_l,
+                comment='test comment')
+            comment.save()
+            self.assertTrue(self.check_notification_out('layer_comment', self.u))
+
+            self.clear_notifications_queue()
+            if "pinax.ratings" in settings.INSTALLED_APPS:
+                self.clear_notifications_queue()
+                from pinax.ratings.models import Rating
+                rating = Rating(
+                    user=self.norman,
+                    content_type=lct,
+                    object_id=_l.id,
+                    content_object=_l,
+                    rating=5)
+                rating.save()
+                self.assertTrue(self.check_notification_out('layer_rated', self.u))
+
+
+'''
+Smoke test to explain how the uuidhandler will override the uuid for the layers
+Documentation of the handler is available here:
+https://github.com/GeoNode/documentation/blob/703cc6ba92b7b7a83637a874fb449420a9f8b78a/basic/settings/index.rst#uuid-handler
+'''
+
+
+class DummyUUIDHandler():
+
+    def __init__(self, instance):
+        self.instance = instance
+
+    def create_uuid(self):
+        return f'abc:{self.instance.uuid}'
+
+
+class TestCustomUUidHandler(TestCase):
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create(username='test', email='test@test.com')
+        self.sut = Layer.objects.create(
+            name="testLayer", owner=self.user, title='test', is_approved=True, uuid='abc-1234-abc'
+        )
+
+    def test_layer_will_maintain_his_uud_if_no_handler_is_definded(self):
+        expected = "abc-1234-abc"
+        self.assertEqual(expected, self.sut.uuid)
+
+    @override_settings(LAYER_UUID_HANDLER="geonode.layers.tests.DummyUUIDHandler")
+    def test_layer_will_override_the_uuid_if_handler_is_defined(self):
+        self.sut.keywords.add(*["updating", "values"])
+        self.sut.save()
+        expected = "abc:abc-1234-abc"
+        actual = Layer.objects.get(id=self.sut.id)
+        self.assertEqual(expected, actual.uuid)
+
+
 class TestSetMetadata(TestCase):
+
     def setUp(self):
         self.maxDiff = None
         self.invalid_xml = "xml"
@@ -1567,6 +1713,7 @@ Is required to define a fuction that takes 1 parameters (the metadata xml) and r
 
 
 class TestCustomMetadataParser(TestCase):
+
     def setUp(self):
         import datetime
         self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
@@ -1674,115 +1821,6 @@ class TestIsXmlUploadOnly(TestCase):
             request.FILES['base_file'] = f
         actual = is_xml_upload_only(request)
         self.assertFalse(actual)
-
-
-class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
-
-    fixtures = ["group_test_data.json", "default_oauth_apps.json"]
-
-    def setUp(self):
-        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
-        self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
-        self.sut = create_single_layer("single_point")
-
-    def test_xml_form_without_files_should_raise_500(self):
-        files = dict()
-        files['permissions'] = '{}'
-        files['charset'] = 'utf-8'
-        self.client.login(username="admin", password="admin")
-        resp = self.client.post(reverse('layer_upload'), data=files)
-        self.assertEqual(500, resp.status_code)
-
-    def test_xml_should_return_404_if_the_layer_does_not_exists(self):
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.exml_path),
-            "xml_file": open(self.exml_path),
-            "layer_title": "Fake layer title",
-            "metadata_upload_form": True,
-            "time": False,
-            "charset": "UTF-8"
-        }
-
-        self.client.login(username="admin", password="admin")
-        resp = self.client.post(reverse('layer_upload'), params)
-        self.assertEqual(404, resp.status_code)
-
-    def test_xml_should_update_the_layer_with_the_expected_values(self):
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.exml_path),
-            "xml_file": open(self.exml_path),
-            "layer_title": "geonode:single_point",
-            "metadata_upload_form": True,
-            "time": False,
-            "charset": "UTF-8"
-        }
-
-        self.client.login(username="admin", password="admin")
-        prev_layer = Layer.objects.get(typename="geonode:single_point")
-        self.assertEqual(0, prev_layer.keywords.count())
-        resp = self.client.post(reverse('layer_upload'), params)
-        self.assertEqual(200, resp.status_code)
-        updated_layer = Layer.objects.get(typename="geonode:single_point")
-        # just checking some values if are updated
-        self.assertEqual(6, updated_layer.keywords.all().count())
-
-    def test_sld_should_raise_500_if_is_invalid(self):
-        user = get_user_model().objects.get(username="admin")
-        layer = create_layer(
-            "single_point",
-            "single_point",
-            user,
-            'Point'
-        )
-
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.sld_path),
-            "sld_file": open(self.sld_path),
-            "layer_title": "random",
-            "metadata_upload_form": False,
-            "time": False,
-            "charset": "UTF-8"
-        }
-
-        self.client.login(username="admin", password="admin")
-        self.assertEqual(1, layer.styles.count())
-        self.assertEqual("Default Point", layer.styles.first().sld_title)
-        resp = self.client.post(reverse('layer_upload'), params)
-        self.assertEqual(500, resp.status_code)
-        self.assertFalse(resp.json().get('success'))
-        self.assertEqual('No Layer matches the given query.', resp.json().get('errors'))
-
-    def test_sld_should_update_the_layer_with_the_expected_values(self):
-        user = get_user_model().objects.get(username="admin")
-        layer = create_layer(
-            "single_point",
-            "single_point",
-            user,
-            'Point'
-        )
-
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.sld_path),
-            "sld_file": open(self.sld_path),
-            "layer_title": f"geonode:{layer.name}",
-            "metadata_upload_form": False,
-            "time": False,
-            "charset": "UTF-8"
-        }
-
-        self.client.login(username="admin", password="admin")
-        self.assertEqual(1, layer.styles.count())
-        self.assertEqual("Default Point", layer.styles.first().sld_title)
-        resp = self.client.post(reverse('layer_upload'), params)
-        self.assertEqual(200, resp.status_code)
-        updated_layer = Layer.objects.get(alternate=f"geonode:{layer.name}")
-        # just checking some values if are updated
-        self.assertEqual(1, updated_layer.styles.all().count())
-        self.assertEqual("SLD Cook Book: Simple Point", updated_layer.styles.first().sld_title)
 
 
 class TestIsSldUploadOnly(TestCase):

@@ -31,19 +31,23 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 
-from geonode.maps.models import Map, MapLayer
+from geonode import geoserver
 from geonode.settings import on_travis
 from geonode.maps import MapsAppConfig
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
-from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.maps.utils import fix_baselayers
+from geonode.maps.models import Map, MapLayer
 from geonode.base.models import License, Region
-from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.utils import default_map_config, check_ogc_backend
 from geonode.maps.tests_populate_maplayers import create_maplayers
+
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
 
 logger = logging.getLogger(__name__)
 
@@ -78,10 +82,29 @@ VIEWER_CONFIG = """
 """
 
 
-class MapsTest(GeoNodeBaseTestSupport):
+class MapsTest(NotificationsTestsHelper):
 
     """Tests geonode.maps app/module
     """
+
+    type = 'map'
+
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
         super().setUp()
@@ -92,6 +115,18 @@ class MapsTest(GeoNodeBaseTestSupport):
         self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
         self.not_admin.set_password('very-secret')
         self.not_admin.save()
+
+        self.u = get_user_model().objects.get(username=self.user)
+        self.u.email = 'test@email.com'
+        self.u.is_active = True
+        self.u.save()
+        self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.u)
+
+        self.norman = get_user_model().objects.get(username='norman')
+        self.norman.email = 'norman@email.com'
+        self.norman.is_active = True
+        self.norman.save()
+        self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.norman)
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
@@ -983,19 +1018,6 @@ community."
             # when there is no style in layer_params
             self.assertIsNone(map_layer.get_legend)
 
-
-class MapModerationTestCase(GeoNodeBaseTestSupport):
-
-    def setUp(self):
-        super().setUp()
-
-        self.user = 'admin'
-        self.passwd = 'admin'
-        self.u = get_user_model().objects.get(username=self.user)
-        self.u.email = 'test@email.com'
-        self.u.is_active = True
-        self.u.save()
-
     def test_moderated_upload(self):
         """
         Test if moderation flag works
@@ -1029,25 +1051,6 @@ class MapModerationTestCase(GeoNodeBaseTestSupport):
             _l = Map.objects.get(id=map_id)
             self.assertFalse(_l.is_approved)
             self.assertTrue(_l.is_published)
-
-
-class MapsNotificationsTestCase(NotificationsTestsHelper):
-
-    def setUp(self):
-        super().setUp()
-
-        self.user = 'admin'
-        self.passwd = 'admin'
-        self.u = get_user_model().objects.get(username=self.user)
-        self.u.email = 'test@email.com'
-        self.u.is_active = True
-        self.u.save()
-        self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.u)
-        self.norman = get_user_model().objects.get(username='norman')
-        self.norman.email = 'norman@email.com'
-        self.norman.is_active = True
-        self.norman.save()
-        self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.norman)
 
     def testMapsNotifications(self):
         with self.settings(
