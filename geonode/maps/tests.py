@@ -20,6 +20,7 @@ import json
 import logging
 
 from unittest.mock import patch
+from django import test
 from owslib.etree import etree as dlxml
 from django.test.utils import override_settings
 
@@ -86,8 +87,6 @@ class MapsTest(NotificationsTestsHelper):
 
     """Tests geonode.maps app/module
     """
-
-    type = 'map'
 
     fixtures = [
         'initial_data.json',
@@ -478,6 +477,7 @@ community."
         test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
+        test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
             response = self.client.get(url)
@@ -492,8 +492,8 @@ community."
         test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
+        test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
-
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
             response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
             self.assertFalse(self.not_admin.is_superuser)
@@ -508,8 +508,8 @@ community."
         test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
+        test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
-
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
             response = self.client.post(url)
             self.assertFalse(self.not_admin.is_superuser)
@@ -523,6 +523,7 @@ community."
         test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
+        test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
         with self.settings(FREETEXT_KEYWORDS_READONLY=False):
             response = self.client.get(url)
@@ -537,8 +538,8 @@ community."
         test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
+        test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
-
         with self.settings(FREETEXT_KEYWORDS_READONLY=False):
             response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
             self.assertFalse(self.not_admin.is_superuser)
