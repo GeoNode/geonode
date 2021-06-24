@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -37,7 +36,7 @@ from geonode.layers.models import Layer, Attribute
 class JSONField(forms.CharField):
 
     def clean(self, text):
-        text = super(JSONField, self).clean(text)
+        text = super().clean(text)
         try:
             return json.loads(text)
         except ValueError:
@@ -61,7 +60,7 @@ class LayerForm(ResourceBaseForm):
         # }
 
     def __init__(self, *args, **kwargs):
-        super(LayerForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for field in self.fields:
             help_text = self.fields[field].help_text
             self.fields[field].help_text = None
@@ -105,7 +104,7 @@ class LayerUploadForm(forms.Form):
     spatial_files = tuple(spatial_files)
 
     def clean(self):
-        cleaned = super(LayerUploadForm, self).clean()
+        cleaned = super().clean()
         dbf_file = shx_file = prj_file = xml_file = sld_file = None
         base_name = base_ext = None
         if zipfile.is_zipfile(cleaned["base_file"]):
@@ -246,7 +245,7 @@ class LayerDescriptionForm(forms.Form):
 class LayerAttributeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(LayerAttributeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['attribute'].widget.attrs['readonly'] = True
         self.fields['display_order'].widget.attrs['size'] = 3
 

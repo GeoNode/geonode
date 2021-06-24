@@ -62,7 +62,7 @@ class TestGroupResAuthorization(GeoNodeBaseTestSupport):
         mock_bundle.configure_mock(**attrs)
 
         groups = GroupAuthorization().read_list(['not_empty_but_fake'], mock_bundle)
-        self.assertEqual(2, groups.count())
+        self.assertEqual(1, groups.count())
 
     @patch('geonode.api.authorization.ApiLockdownAuthorization.read_list',
            return_value=Group.objects.exclude(name='anonymous'))
@@ -80,7 +80,7 @@ class TestGroupResAuthorization(GeoNodeBaseTestSupport):
         mock_bundle.configure_mock(**attrs)
 
         groups = GroupAuthorization().read_list(['not_empty_but_fake'], mock_bundle)
-        self.assertEqual(3, groups.count())
+        self.assertEqual(2, groups.count())
 
     @patch('geonode.api.authorization.ApiLockdownAuthorization.read_list',
            return_value=Group.objects.exclude(name='anonymous'))
@@ -98,7 +98,7 @@ class TestGroupResAuthorization(GeoNodeBaseTestSupport):
         mock_bundle.configure_mock(**attrs)
 
         groups = GroupAuthorization().read_list(['not_empty_but_fake'], mock_bundle)
-        self.assertEqual(2, groups.count())
+        self.assertEqual(1, groups.count())
 
 
 class TestGroupProfileResAuthorization(GeoNodeBaseTestSupport):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -43,7 +42,7 @@ def create_files(names, zipped=False):
         else:
             try:
                 open(f, 'wb').close()
-            except IOError:
+            except OSError:
                 # windows fails at writing special characters
                 # need to do something better here
                 print("Test does not work in Windows")
@@ -78,7 +77,7 @@ class FilesTests(GeoNodeBaseTestSupport):
             try:
                 renamed = files._rename_files(tests)
                 self.assertTrue(renamed[0].endswith("junk_y_"))
-            except WindowsError:
+            except OSError:
                 pass
 
     def test_rename_and_prepare(self):

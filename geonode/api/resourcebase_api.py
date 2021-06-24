@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -153,7 +152,7 @@ class CommonModelApi(ModelResource):
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
         if filters is None:
             filters = {}
-        orm_filters = super(CommonModelApi, self).build_filters(
+        orm_filters = super().build_filters(
             filters=filters, ignore_bad_filters=ignore_bad_filters, **kwargs)
         if 'type__in' in filters and (filters['type__in'] in FILTER_TYPES.keys() or filters['type__in'] in LAYER_TYPES):
             orm_filters.update({'type': filters.getlist('type__in')})
@@ -184,9 +183,7 @@ class CommonModelApi(ModelResource):
                 filters |= Q(f)
             semi_filtered = self.get_object_list(request).filter(filters)
         else:
-            semi_filtered = super(
-                CommonModelApi,
-                self).apply_filters(
+            semi_filtered = super().apply_filters(
                 request,
                 applicable_filters)
         filtered = None
@@ -635,7 +632,7 @@ class CommonModelApi(ModelResource):
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
             return [
-                url(r"^(?P<resource_name>%s)/search%s$" % (
+                url(r"^(?P<resource_name>{})/search{}$".format(
                     self._meta.resource_name, trailing_slash()
                 ),
                     self.wrap_view('get_search'), name="api_get_search"),
@@ -694,7 +691,7 @@ class LayerResource(CommonModelApi):
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
         _filters = filters.copy()
         metadata_only = _filters.pop('metadata_only', False)
-        orm_filters = super(LayerResource, self).build_filters(_filters)
+        orm_filters = super().build_filters(_filters)
         orm_filters['metadata_only'] = False if not metadata_only else metadata_only[0]
         return orm_filters
 
@@ -852,7 +849,7 @@ class MapResource(CommonModelApi):
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
         _filters = filters.copy()
         metadata_only = _filters.pop('metadata_only', False)
-        orm_filters = super(MapResource, self).build_filters(_filters)
+        orm_filters = super().build_filters(_filters)
         orm_filters['metadata_only'] = False if not metadata_only else metadata_only[0]
         return orm_filters
 
@@ -1000,7 +997,7 @@ class DocumentResource(CommonModelApi):
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
         _filters = filters.copy()
         metadata_only = _filters.pop('metadata_only', False)
-        orm_filters = super(DocumentResource, self).build_filters(_filters)
+        orm_filters = super().build_filters(_filters)
         orm_filters['metadata_only'] = False if not metadata_only else metadata_only[0]
         return orm_filters
 

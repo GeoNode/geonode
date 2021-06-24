@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -17,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.base.models import ResourceBase
-from geonode.storage.manager import storage_manager
 import os
 import json
 import base64
@@ -35,6 +32,8 @@ from django.utils.timezone import now
 from geonode import GeoNodeException
 from geonode.base import enumerations
 from geonode.tasks.tasks import AcquireLock
+from geonode.base.models import ResourceBase
+from geonode.storage.manager import storage_manager
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
 from .utils import next_step_response, get_next_step
@@ -238,7 +237,7 @@ class Upload(models.Model):
 
     def delete(self, *args, **kwargs):
         importer_locations = []
-        super(Upload, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
         try:
             session = gs_uploader.get_session(self.import_id)
         except (NotFound, Exception):

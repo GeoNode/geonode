@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -90,7 +89,7 @@ assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
 
 dev_config = None
-with open("dev_config.yml", 'r') as f:
+with open("dev_config.yml") as f:
     dev_config = yaml.load(f, Loader=yaml.Loader)
 
 
@@ -301,9 +300,9 @@ def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
 
     updategeoip(options)
-    info(('GeoNode development environment successfully set up.'
-          'If you have not set up an administrative account,'
-          ' please do so now. Use "paver start" to start up the server.'))
+    info('GeoNode development environment successfully set up.'
+         'If you have not set up an administrative account,'
+         ' please do so now. Use "paver start" to start up the server.')
 
 
 def grab_winfiles(url, dest, packagename):
@@ -636,7 +635,7 @@ def start_geoserver(options):
     socket_free = True
     try:
         s.bind(("127.0.0.1", jetty_port))
-    except socket.error as e:
+    except OSError as e:
         socket_free = False
         if e.errno == 98:
             info(f'Port {jetty_port} is already in use')
@@ -653,12 +652,12 @@ def start_geoserver(options):
         with pushd(data_dir):
             javapath = "java"
             if on_travis:
-                sh((
+                sh(
                     'sudo apt install -y openjdk-8-jre openjdk-8-jdk;'
                     ' sudo update-java-alternatives --set java-1.8.0-openjdk-amd64;'
                     ' export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");'
                     ' export PATH=$JAVA_HOME\'bin/java\':$PATH;'
-                ))
+                )
                 # import subprocess
                 # result = subprocess.run(['update-alternatives', '--list', 'java'], stdout=subprocess.PIPE)
                 # javapath = result.stdout
@@ -670,7 +669,7 @@ def start_geoserver(options):
             if loggernullpath == "nul":
                 try:
                     open("../../downloaded/null.txt", 'w+').close()
-                except IOError:
+                except OSError:
                     print("Chances are that you have Geoserver currently running. You "
                           "can either stop all servers with paver stop or start only "
                           "the django application with paver start_django.")
@@ -696,7 +695,7 @@ def start_geoserver(options):
                 # if there are spaces
                 javapath = f"START /B \"\" \"{javapath_opt}\""
 
-            sh((
+            sh(
                 '%(javapath)s -Xms512m -Xmx2048m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=512m'
                 ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
                 ' -DGEOSERVER_CSRF_DISABLED=true'
@@ -710,7 +709,7 @@ def start_geoserver(options):
                 ' --log %(log_file)s'
                 ' %(config)s'
                 ' > %(loggernullpath)s &' % locals()
-            ))
+            )
 
         info(f'Starting GeoServer on {url}')
 
@@ -721,8 +720,8 @@ def start_geoserver(options):
     if not started:
         # If applications did not start in time we will give the user a chance
         # to inspect them and stop them manually.
-        info(('GeoServer never started properly or timed out.'
-              'It may still be running in the background.'))
+        info('GeoServer never started properly or timed out.'
+             'It may still be running in the background.')
         sys.exit(1)
 
 
@@ -1151,7 +1150,7 @@ def waitfor(url, timeout=300):
     for a in range(timeout):
         try:
             resp = urlopen(url)
-        except IOError:
+        except OSError:
             pass
         else:
             if resp.getcode() == 200:

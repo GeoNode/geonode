@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -75,7 +74,7 @@ class CreateServiceForm(forms.Form):
 
     def clean(self):
         """Validates form fields that depend on each other"""
-        super(CreateServiceForm, self).clean()
+        super().clean()
         url = self.cleaned_data.get("url")
         service_type = self.cleaned_data.get("type")
         if url is not None and service_type is not None:

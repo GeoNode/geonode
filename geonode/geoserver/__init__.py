@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -67,7 +66,7 @@ class GeoserverAppConfig(NotificationsAppConfigBase):
                      )
 
     def ready(self):
-        super(GeoserverAppConfig, self).ready()
+        super().ready()
         run_setup_hooks()
         # Connect the post_migrate signal with the _set_resource_links
         # method to update links for each resource

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2021 OSGeo
@@ -318,25 +317,17 @@ def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
                 gwc_enabled.text = str(enable).lower()
 
                 gwc_mimeFormats = tree.find('mimeFormats')
-                if formats is None:
+                # Returns an element instance or None
+                if gwc_mimeFormats:
                     tree.remove(gwc_mimeFormats)
-                else:
+
+                if formats is not None:
                     for format in formats:
                         gwc_format = etree.Element('string')
                         gwc_format.text = format
                         gwc_mimeFormats.append(gwc_format)
 
-                gwc_gridSubsets = tree.find('gridSubsets')
-                tree.remove(gwc_gridSubsets)
-                gwc_gridSubsets = etree.Element('gridSubsets')
-                for gridSubset in ('EPSG:4326', 'EPSG:3857', 'EPSG:900913'):
-                    gwc_gridSubset = etree.Element('gridSubset')
-                    gwc_gridSetName = etree.Element('gridSetName')
-                    gwc_gridSetName.text = gridSubset
-                    gwc_gridSubset.append(gwc_gridSetName)
-                    gwc_gridSubsets.append(gwc_gridSubset)
-
-                tree.append(gwc_gridSubsets)
+                    tree.append(gwc_mimeFormats)
 
                 gwc_parameterFilters = tree.find('parameterFilters')
                 if filters is None:
@@ -504,16 +495,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     _layer_name = layer.name if layer and hasattr(layer, 'name') else layer.alternate.split(":")[0]
     _layer_workspace = get_layer_workspace(layer)
     # Create new rule-set
-    gf_services = {}
-    gf_services["WMS"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
-    gf_services["GWC"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
-    gf_services["WFS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
-        and layer.is_vector()
-    gf_services["WCS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
-        and not layer.is_vector()
-    gf_services["WPS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms
-    gf_services["*"] = 'download_resourcebase' in perms and \
-        ('view_resourcebase' in perms or 'change_layer_style' in perms)
+    gf_services = _get_gf_services(layer, perms)
 
     gf_requests = {}
     if 'change_layer_data' not in perms:
@@ -534,53 +516,15 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
             }
     _user = None
     _group = None
-    _disable_layer_cache = False
     users_geolimits = None
     groups_geolimits = None
     anonymous_geolimits = None
+    _group, _user, _disable_cache, users_geolimits, groups_geolimits, anonymous_geolimits = get_user_geolimits(layer, user, group, gf_services)
 
-    if user:
-        _user = user if isinstance(user, str) else user.username
-        users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
-        gf_services["*"] = users_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-        _disable_layer_cache = users_geolimits.count() > 0
-
-    if group:
-        _group = group if isinstance(group, str) else group.name
-        if GroupProfile.objects.filter(group__name=_group).count() == 1:
-            groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=_group))
-            gf_services["*"] = groups_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-            _disable_layer_cache = groups_geolimits.count() > 0
-
-    if not user and not group:
-        anonymous_geolimits = layer.users_geolimits.filter(user=get_anonymous_user())
-        gf_services["*"] = anonymous_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-        _disable_layer_cache = anonymous_geolimits.count() > 0
-
-    if _disable_layer_cache:
-        filters = None
-        formats = None
-        # Re-order dictionary
-        # - if geo-limits have been defined for this user/group, the "*" rule must be the first one
+    if _disable_cache:
         gf_services_limits_first = {"*": gf_services.pop('*')}
         gf_services_limits_first.update(gf_services)
         gf_services = gf_services_limits_first
-    else:
-        filters = [{
-            "styleParameterFilter": {
-                "STYLES": ""
-            }
-        }]
-        formats = [
-            'application/json;type=utfgrid',
-            'image/gif',
-            'image/jpeg',
-            'image/png',
-            'image/png8',
-            'image/vnd.jpeg-png',
-            'image/vnd.jpeg-png8'
-        ]
-    toggle_layer_cache(f'{_layer_workspace}:{_layer_name}', enable=True, filters=filters, formats=formats)
 
     for service, allowed in gf_services.items():
         if layer and _layer_name and allowed:
@@ -667,3 +611,44 @@ def sync_resources_with_guardian(resource=None):
                 except Exception as e:
                     logger.exception(e)
                     logger.warn(f"!WARNING! - Failure Synching-up Security Rules for Resource [{r}]")
+
+
+def get_user_geolimits(layer, user, group, gf_services):
+    _user = None
+    _group = None
+    users_geolimits = None
+    groups_geolimits = None
+    anonymous_geolimits = None
+    if user:
+        _user = user if isinstance(user, str) else user.username
+        users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
+        gf_services["*"] = users_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
+        _disable_layer_cache = users_geolimits.count() > 0
+
+    if group:
+        _group = group if isinstance(group, str) else group.name
+        if GroupProfile.objects.filter(group__name=_group).count() == 1:
+            groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=_group))
+            gf_services["*"] = groups_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
+            _disable_layer_cache = groups_geolimits.count() > 0
+
+    if not user and not group:
+        anonymous_geolimits = layer.users_geolimits.filter(user=get_anonymous_user())
+        gf_services["*"] = anonymous_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
+        _disable_layer_cache = anonymous_geolimits.count() > 0
+    return _group, _user, _disable_layer_cache, users_geolimits, groups_geolimits, anonymous_geolimits
+
+
+def _get_gf_services(layer, perms):
+    gf_services = {}
+    gf_services["WMS"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
+    gf_services["GWC"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
+    gf_services["WFS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
+        and layer.is_vector()
+    gf_services["WCS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
+        and not layer.is_vector()
+    gf_services["WPS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms
+    gf_services["*"] = 'download_resourcebase' in perms and \
+        ('view_resourcebase' in perms or 'change_layer_style' in perms)
+
+    return gf_services

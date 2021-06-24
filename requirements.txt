@@ -1,7 +1,7 @@
 # native dependencies
 Pillow==8.2.0
 lxml==4.6.3
-psycopg2==2.8.6
+psycopg2==2.9.1
 Django==3.2.4
 
 # Other
@@ -14,7 +14,7 @@ urllib3==1.26.5
 Paver==1.3.4
 python-slugify==5.0.2
 decorator==5.0.9
-celery==5.1.0
+celery==5.1.1
 kombu==5.1.0
 vine==5.0.0
 tqdm==4.61.1
@@ -40,6 +40,7 @@ django-tinymce==3.3.0
 django-grappelli==2.15.1
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.8
+django-sequences==2.6
 oauthlib==3.1.1
 pyopenssl==20.0.1
 
@@ -70,7 +71,7 @@ djangorestframework-gis==0.17
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.0
 drf-writable-nested==0.6.3
-drf-spectacular==0.17.1
+drf-spectacular==0.17.2
 git+https://github.com/GeoNode/dynamic-rest.git@v2.0.1#egg=dynamic-rest
 Markdown==3.3.4
 
@@ -103,7 +104,7 @@ django-storages==1.11.1
 dropbox==11.9.0
 google-cloud-storage==1.38.0
 google-cloud-core==1.6.0
-boto3==1.17.92
+boto3==1.17.97
 
 # Django Caches
 python-memcached<=1.59

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -25,7 +24,10 @@ import math
 import logging
 import traceback
 
+from sequences import get_next_value
+
 from django.db import models
+from django.db.models import Max
 from django.conf import settings
 from django.core import serializers
 from django.utils.html import escape
@@ -320,7 +322,7 @@ class HierarchicalKeywordQuerySet(MP_NodeQuerySet):
     def create(self, **kwargs):
         if 'depth' not in kwargs:
             return self.model.add_root(**kwargs)
-        return super(HierarchicalKeywordQuerySet, self).create(**kwargs)
+        return super().create(**kwargs)
 
 
 class HierarchicalKeywordManager(MP_NodeManager):
@@ -421,11 +423,11 @@ class TaggedContentItem(ItemBase):
 
 class _HierarchicalTagManager(_TaggableManager):
     def add(self, *tags):
-        str_tags = set([
+        str_tags = {
             t
             for t in tags
             if not isinstance(t, self.through.tag_model())
-        ])
+        }
         tag_objs = set(tags) - str_tags
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
@@ -433,7 +435,7 @@ class _HierarchicalTagManager(_TaggableManager):
             name__in=str_tags
         )
         tag_objs.update(existing)
-        for new_tag in str_tags - set(t.name for t in existing):
+        for new_tag in str_tags - {t.name for t in existing}:
             if new_tag:
                 new_tag = escape(new_tag)
                 tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
@@ -582,12 +584,10 @@ class ResourceBaseManager(PolymorphicManager):
         return superusers[0]
 
     def get_queryset(self):
-        return super(
-            ResourceBaseManager,
-            self).get_queryset().non_polymorphic()
+        return super().get_queryset().non_polymorphic()
 
     def polymorphic_queryset(self):
-        return super(ResourceBaseManager, self).get_queryset()
+        return super().get_queryset()
 
     @staticmethod
     def upload_files(resource_id, files):
@@ -960,7 +960,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if all(bbox):
             kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
             kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
-        super(ResourceBase, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __str__(self):
         return str(self.title)
@@ -1008,7 +1008,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and self.title:
                 # Resource Created
-
                 notice_type_label = f'{self.class_name.lower()}_created'
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
@@ -1046,7 +1045,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
-        super(ResourceBase, self).save(*args, **kwargs)
+        if self.pk is None:
+            _initial_value = type(self).objects.aggregate(Max("id"))['id__max']
+            if not _initial_value:
+                _initial_value = 1
+            else:
+                _initial_value += 1
+            self.pk = self.id = get_next_value(
+                "ResourceBase",  # type(self).__name__,
+                initial_value=_initial_value)
+        super().save(*args, **kwargs)
         self.__is_approved = self.is_approved
         self.__is_published = self.is_published
 
@@ -1059,7 +1067,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             recipients = get_notification_recipients(notice_type_label, resource=self)
             send_notification(recipients, notice_type_label, {'resource': self})
 
-        super(ResourceBase, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def get_upload_session(self):
         raise NotImplementedError()

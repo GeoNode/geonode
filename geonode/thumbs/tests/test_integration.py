@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2021 OSGeo
@@ -17,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from geonode.geoserver.createlayer.utils import create_layer
 import json
 import logging
 import tempfile
@@ -39,9 +36,10 @@ from django.templatetags.static import static
 
 
 from geonode import geoserver
+from geonode.maps.models import Map
+from geonode.layers.models import Layer
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
-from geonode.maps.models import Map
 from geonode.utils import http_client, DisableDjangoSignals
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
@@ -51,7 +49,6 @@ from geonode.thumbs.background import (
     GenericXYZBackground,
     GenericWMSBackground,
 )
-from geonode.base.populate_test_data import create_single_layer
 
 logger = logging.getLogger(__name__)
 
@@ -300,21 +297,7 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
         cls.user_admin = get_user_model().objects.get(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # upload shape files
-            cls.layer_coast_line = create_layer(
-                name="san_andres_y_providencia_coastline",
-                title="san_andres_y_providencia_coastline",
-                owner=get_user_model().objects.get_or_create("admin"),
-                geometry_type="Point"
-            )
-
-    @classmethod
-    def tearDownClass(cls):
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            if cls.layer_coast_line:
-                cls.layer_coast_line.delete()
-
-        super().tearDownClass()
+            cls.layer_coast_line = Layer.objects.get(name='san_andres_y_providencia_coastline')
 
     @override_settings(
         THUMBNAIL_BACKGROUND={
@@ -462,9 +445,8 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         admin, _ = get_user_model().objects.get_or_create(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # upload shape files
-            cls.layer_coast_line = create_single_layer("san_andres_y_providencia_coastline")
-            cls.layer_highway = create_single_layer("san_andres_y_providencia_highway")
+            cls.layer_coast_line = Layer.objects.get(name='san_andres_y_providencia_coastline')
+            cls.layer_highway = Layer.objects.get(name='san_andres_y_providencia_highway')
 
             # create a map from loaded layers
             cls.map_composition = Map()
@@ -482,16 +464,6 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
                         maplayer.refresh_from_db()
 
             cls.map_composition.refresh_from_db()
-
-    @classmethod
-    def tearDownClass(cls):
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            if cls.layer_coast_line:
-                cls.layer_coast_line.delete()
-            if cls.layer_highway:
-                cls.layer_highway.delete()
-
-        super().tearDownClass()
 
     def _fetch_thumb_and_compare(self, url, expected_image):
         if url == missing_thumbnail_url:

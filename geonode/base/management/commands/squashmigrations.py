@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -39,4 +38,4 @@ class Command(DjangoCommand):
         # Monkeypatch
         RunPython.noop = noop
         # Invoke original
-        return super(Command, self).handle(**options)
+        return super().handle(**options)

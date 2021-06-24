@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -122,7 +121,7 @@ class JSONResponse(HttpResponse):
         if json_opts is None:
             json_opts = {}
         content = json.dumps(obj, **json_opts)
-        super(JSONResponse, self).__init__(
+        super().__init__(
             content, content_type, *args, **kwargs)
 
 
@@ -223,8 +222,8 @@ _pages = {
     'sid': ('run', 'final'),  # MrSID
 }
 
-_latitude_names = set(['latitude', 'lat'])
-_longitude_names = set(['longitude', 'lon', 'lng', 'long'])
+_latitude_names = {'latitude', 'lat'}
+_longitude_names = {'longitude', 'lon', 'lng', 'long'}
 
 
 if not _ALLOW_TIME_STEP:
@@ -481,7 +480,7 @@ def _get_time_dimensions(layer, upload_session):
             ft = layer_values[0]
             attributes = [{'name': k, 'binding': ft[k]['binding'] or 0} for k in ft.keys()]
             for a in attributes:
-                if ((('Integer' in a['binding'] or 'Long' in a['binding']) and 'id' != a['name'].lower())) \
+                if (('Integer' in a['binding'] or 'Long' in a['binding']) and 'id' != a['name'].lower()) \
                         and filter_name(a['name'].lower()):
                     if layer_values:
                         for feat in layer_values:
@@ -652,7 +651,7 @@ def _get_time_regex(spatial_files, base_file_name):
         basename = os.path.basename(aux)
         aux_head, aux_tail = os.path.splitext(basename)
         if 'timeregex' == aux_head and '.properties' == aux_tail:
-            with open(aux, 'r') as timeregex_prop_file:
+            with open(aux) as timeregex_prop_file:
                 rr = timeregex_prop_file.read()
                 if rr and rr.split(","):
                     rrff = rr.split(",")

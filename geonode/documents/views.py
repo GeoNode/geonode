@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -212,7 +211,7 @@ class DocumentUploadView(CreateView):
     form_class = DocumentCreateForm
 
     def get_context_data(self, **kwargs):
-        context = super(DocumentUploadView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
         return context
 
@@ -342,7 +341,7 @@ class DocumentUpdateView(UpdateView):
     context_object_name = 'document'
 
     def get_context_data(self, **kwargs):
-        context = super(DocumentUpdateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
         return context
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -20,7 +19,7 @@
 from .conf import settings
 
 
-class HookProxy(object):
+class HookProxy:
 
     def __getattr__(self, attr):
         if not isinstance(settings.GEONODE_CLIENT_HOOKSET, str):

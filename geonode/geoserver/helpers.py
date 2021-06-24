@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -438,7 +437,7 @@ def cascading_delete(layer_name=None, catalog=None):
             resource = cat.get_resource(name=name, store=store, workspace=workspace)
         else:
             resource = cat.get_resource(name=layer_name)
-    except EnvironmentError as e:
+    except OSError as e:
         if e.errno == errno.ECONNREFUSED:
             msg = (f'Could not connect to geoserver at "{ogc_server_settings.LOCATION}"'
                    f'to save information for layer "{layer_name}"')
@@ -1447,7 +1446,7 @@ class ServerDoesNotExist(Exception):
     pass
 
 
-class OGC_Server(object):
+class OGC_Server(object):  # LGTM: @property will not work in old-style classes
 
     """
     OGC Server object.
@@ -1521,7 +1520,7 @@ class OGC_Server(object):
         return str(self.alias)
 
 
-class OGC_Servers_Handler(object):
+class OGC_Servers_Handler:
 
     """
     OGC Server Settings Convenience dict.
@@ -1558,7 +1557,7 @@ class OGC_Servers_Handler(object):
         server.setdefault('LOCATION', 'http://localhost:8080/geoserver/')
         server.setdefault('USER', 'admin')
         server.setdefault('PASSWORD', 'geoserver')
-        server.setdefault('DATASTORE', str())
+        server.setdefault('DATASTORE', '')
 
         for option in ['MAPFISH_PRINT_ENABLED', 'PRINT_NG_ENABLED', 'GEONODE_SECURITY_ENABLED',
                        'GEOFENCE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:

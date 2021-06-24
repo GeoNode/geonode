@@ -503,6 +503,9 @@
                   <i class="fa fa-square-o fa-3x rotate-45"></i>
                   <h4>{% trans "Layer" %}</h4>
                   {% if "change_resourcebase" in perms_list and resource.storeType != "remote" %}
+                  <a href="#" class="btn btn-default btn-block btn-xs" data-dismiss="modal" id="resource_clone_action">{% trans "Clone" %}</a>
+                  {% endif %}
+                  {% if "change_resourcebase" in perms_list and resource.storeType != "remote" %}
                   <a class="btn btn-default btn-block btn-xs" href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
                   {% endif %}
                   {% if "change_resourcebase" in perms_list and resource.storeType != "remote" %}
@@ -727,23 +730,6 @@
 
     {% include "base/_resourcebase_contact_snippet.html" %}
   </ul>
-
-  <div class="modal fade" style="width: 100%; height: 100%;" id="_perms_processing" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h1>{% trans "Processing..." %}</h1>
-              </div>
-              <div class="modal-body">
-                  <div class="progress">
-                    <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                      {% trans "Updating Permissions..." %}
-                    </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
 
   {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form.html" %}
@@ -1009,6 +995,61 @@
       {% if show_popup %}
         $('#download-layer').modal('toggle');
       {% endif %}
+
+      $("#resource_clone_action").click(function(){
+        $.ajax(
+          {
+            type: "POST",
+            url: "{% url 'resource_clone' %}",
+            dataType: 'json',
+            data: { uuid: "{{ resource.uuid }}" },
+            beforeSend: function(){
+                 $("#edit-layer").modal("toggle")
+                 // Handle the beforeSend event
+                 try {
+                    $(".lmask").modal("show");
+                 } catch (err) {
+                    console.log(err);
+                 }
+                 $("#_perms_processing").modal("show");
+            },
+            complete: function(){
+                 // Handle the complete event
+                 try {
+                    $(".lmask").modal("hide");
+                 } catch (err) {
+                    console.log(err);
+                 }
+                 $("#_perms_processing").modal("hide");
+            },
+            success: function(data) {
+              var message = data;
+              var title = "";
+              var body = message.message;
+              if (message.success) {
+                  title = "OK";
+              } else {
+                  title = "Warning";
+              }
+              $("#_permissions_feedbacks").find('.modal-title').text(title);
+              $("#_permissions_feedbacks").find('.modal-body').text(body);
+              $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
+            },
+            cache: false
+          }
+        ).fail(function (jqXHR, textStatus, error) {
+              // Handle error here
+              var message = JSON.parse(jqXHR.responseText);
+              var body = message.message;
+              var title = "Error";
+              $("#_permissions_feedbacks").find('.modal-title').text(title);
+              $("#_permissions_feedbacks").find('.modal-body').text(body);
+              $("#_permissions_feedbacks").modal("show");
+              $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
+        });
+        return false;
+    });
 
   </script>
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -39,21 +38,29 @@ from geonode.decorators import on_ogc_backend
 from geonode.groups.models import GroupProfile
 from geonode.base.auth import get_or_create_token
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.base.populate_test_data import all_public
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
 
 
 class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
     def setUp(self):
-        super(PermissionsApiTests, self).setUp()
+        super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
-        self.list_url = reverse(
-            'api_dispatch_list',
-            kwargs={
-                'api_name': 'api',
-                'resource_name': 'layers'})
-        all_public()
         self.perm_spec = {"users": {}, "groups": {}}
 
     def test_layer_get_list_unauth_all_public(self):
@@ -61,8 +68,12 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         Test that the correct number of layers are returned when the
         client is not logged in and all are public
         """
-
-        resp = self.api_client.get(self.list_url)
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
+        resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
@@ -71,11 +82,16 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         Test that if a layer is not public then not all are returned when the
         client is not logged in
         """
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
 
         layer = Layer.objects.all()[0]
         layer.set_permissions(self.perm_spec)
 
-        resp = self.api_client.get(self.list_url)
+        resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
@@ -84,64 +100,79 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         Test that if a layer is not public then all are returned if the
         client is not logged in
         """
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
 
         self.api_client.client.login(username=self.user, password=self.passwd)
         layer = Layer.objects.all()[0]
         layer.set_permissions(self.perm_spec)
 
-        resp = self.api_client.get(self.list_url)
+        resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 7)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
     def test_layer_get_list_layer_private_to_one_user(self):
         """
         Test that if a layer is only visible by admin, then does not appear
         in the unauthenticated list nor in the list when logged is as bobby
         """
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
 
         perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
         layer = Layer.objects.all()[0]
         layer.set_permissions(perm_spec)
-        resp = self.api_client.get(self.list_url)
+        resp = self.api_client.get(list_url)
         self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
         self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(self.list_url)
+        resp = self.api_client.get(list_url)
         self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
         self.api_client.client.login(username=self.user, password=self.passwd)
-        resp = self.api_client.get(self.list_url)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 7)
+        resp = self.api_client.get(list_url)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
         layer.is_published = False
         layer.save()
 
         # with resource publishing
         with self.settings(RESOURCE_PUBLISHING=True):
-            resp = self.api_client.get(self.list_url)
+            resp = self.api_client.get(list_url)
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             self.api_client.client.login(username='bobby', password='bob')
-            resp = self.api_client.get(self.list_url)
+            resp = self.api_client.get(list_url)
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             self.api_client.client.login(username=self.user, password=self.passwd)
-            resp = self.api_client.get(self.list_url)
+            resp = self.api_client.get(list_url)
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
     def test_layer_get_detail_unauth_layer_not_public(self):
         """
         Test that layer detail gives 404 when not public and not logged in
         """
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
 
         layer = Layer.objects.all()[0]
         layer.set_permissions(self.perm_spec)
         layer.clear_dirty_state()
         self.assertHttpNotFound(self.api_client.get(
-            f"{self.list_url + str(layer.id)}/"))
+            f"{list_url + str(layer.id)}/"))
 
         self.api_client.client.login(username=self.user, password=self.passwd)
-        resp = self.api_client.get(f"{self.list_url + str(layer.id)}/")
+        resp = self.api_client.get(f"{list_url + str(layer.id)}/")
         self.assertValidJSONResponse(resp)
 
         # with delayed security
@@ -152,11 +183,11 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 self.assertTrue(layer.dirty_state)
 
                 self.client.login(username=self.user, password=self.passwd)
-                resp = self.client.get(self.list_url)
+                resp = self.client.get(list_url)
                 self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
                 self.client.logout()
-                resp = self.client.get(self.list_url)
+                resp = self.client.get(list_url)
                 self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
                 from django.contrib.auth import get_user_model
@@ -165,7 +196,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     password='pbkdf2_sha256$12000$UE4gAxckVj4Z$N\
                     6NbOXIQWWblfInIoq/Ta34FdRiPhawCIZ+sOO3YQs=')
                 self.client.login(username='imnew', password='thepwd')
-                resp = self.client.get(self.list_url)
+                resp = self.client.get(list_url)
                 self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
     def test_new_user_has_access_to_old_layers(self):
@@ -176,8 +207,14 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             password='pbkdf2_sha256$12000$UE4gAxckVj4Z$N\
             6NbOXIQWWblfInIoq/Ta34FdRiPhawCIZ+sOO3YQs=')
 
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
+
         self.api_client.client.login(username='imnew', password='thepwd')
-        resp = self.api_client.get(self.list_url)
+        resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
         self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
@@ -192,75 +229,209 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     layer = Layer.objects.all()[0]
                     layer.set_default_permissions()
                     layer.refresh_from_db()
-                    self.assertTrue(layer.dirty_state)
+                    # self.assertTrue(layer.dirty_state)
 
                     self.client.login(username=self.user, password=self.passwd)
-                    resp = self.client.get(self.list_url)
+                    resp = self.client.get(list_url)
                     self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
                     self.client.logout()
-                    resp = self.client.get(self.list_url)
+                    resp = self.client.get(list_url)
                     self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
                     self.client.login(username='imnew', password='thepwd')
-                    resp = self.client.get(self.list_url)
+                    resp = self.client.get(list_url)
                     self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
             finally:
                 _ogc_geofence_enabled['default']['GEOFENCE_SECURITY_ENABLED'] = False
 
-
-class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-    def setUp(self):
-        super(OAuthApiTests, self).setUp()
-
-        self.user = 'admin'
-        self.passwd = 'admin'
-        self._user = get_user_model().objects.get(username=self.user)
-        self.token = get_or_create_token(self._user)
-        self.auth_header = f'Bearer {self.token}'
-        self.list_url = reverse(
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_outh_token(self):
+        user = 'admin'
+        _user = get_user_model().objects.get(username=user)
+        token = get_or_create_token(_user)
+        auth_header = f'Bearer {token}'
+        list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
                 'resource_name': 'layers'})
-        all_public()
-        self.perm_spec = {"users": {}, "groups": {}}
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_outh_token(self):
 
         with self.settings(SESSION_EXPIRED_CONTROL_ENABLED=False, DELAYED_SECURITY_SIGNALS=False):
             # all public
-            resp = self.api_client.get(self.list_url)
+            resp = self.api_client.get(list_url)
             self.assertValidJSONResponse(resp)
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
             layer = Layer.objects.all()[0]
             layer.set_permissions(perm_spec)
-            resp = self.api_client.get(self.list_url)
+            resp = self.api_client.get(list_url)
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
-            resp = self.api_client.get(self.list_url, authentication=self.auth_header)
+            resp = self.api_client.get(list_url, authentication=auth_header)
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             layer.is_published = False
             layer.save()
+
+    @override_settings(API_LOCKDOWN=True)
+    def test_api_lockdown_false(self):
+        profiles_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'profiles'})
+
+        # test if results are returned for anonymous users if API_LOCKDOWN is set to False in settings
+        filter_url = profiles_list_url
+
+        with self.settings(API_LOCKDOWN=False):
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 9)
+
+    @override_settings(API_LOCKDOWN=True)
+    def test_profiles_lockdown(self):
+        profiles_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'profiles'})
+
+        filter_url = profiles_list_url
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+
+        # now test with logged in user
+        self.api_client.client.login(username='bobby', password='bob')
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
+        # Returns limitted info about other users
+        bobby = get_user_model().objects.get(username='bobby')
+        profiles = self.deserialize(resp)['objects']
+        for profile in profiles:
+            if profile['username'] == 'bobby':
+                self.assertEquals(profile.get('email'), bobby.email)
+            else:
+                self.assertIsNone(profile.get('email'))
+
+    @override_settings(API_LOCKDOWN=True)
+    def test_owners_lockdown(self):
+        owners_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'owners'})
+
+        filter_url = owners_list_url
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+
+        # now test with logged in user
+        self.api_client.client.login(username='bobby', password='bob')
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
+        # Returns limitted info about other users
+        bobby = get_user_model().objects.get(username='bobby')
+        owners = self.deserialize(resp)['objects']
+        for owner in owners:
+            if owner['username'] == 'bobby':
+                self.assertEquals(owner.get('email'), bobby.email)
+            else:
+                self.assertIsNone(owner.get('email'))
+                self.assertIsNone(owner.get('first_name'))
+
+    @override_settings(API_LOCKDOWN=True)
+    def test_groups_lockdown(self):
+        groups_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'groups'})
+
+        filter_url = groups_list_url
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+
+        # now test with logged in user
+        self.api_client.client.login(username='bobby', password='bob')
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+
+    @override_settings(API_LOCKDOWN=True)
+    def test_regions_lockdown(self):
+        region_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'regions'})
+
+        filter_url = region_list_url
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+
+        self.api_client.client.login(username='bobby', password='bob')
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertTrue(len(self.deserialize(resp)['objects']) >= 200)
+
+    @override_settings(API_LOCKDOWN=True)
+    def test_tags_lockdown(self):
+        tag_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'keywords'})
+
+        filter_url = tag_list_url
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+
+        self.api_client.client.login(username='bobby', password='bob')
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 5)
 
 
 class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     """Test the search"""
 
-    def setUp(self):
-        super(SearchApiTests, self).setUp()
+    #  loading test thesausuri and initial data
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json',
+        "test_thesaurus.json"
+    ]
 
-        self.list_url = reverse(
-            'api_dispatch_list',
-            kwargs={
-                'api_name': 'api',
-                'resource_name': 'layers'})
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
         all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
+    def setUp(self):
+        super().setUp()
+
         self.norman = get_user_model().objects.get(username="norman")
         self.norman.groups.add(Group.objects.get(name='anonymous'))
         self.test_user = get_user_model().objects.get(username='test_user')
@@ -337,16 +508,21 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_category_filters(self):
         """Test category filtering"""
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
 
         # check we get the correct layers number returnered filtering on one
         # and then two different categories
-        filter_url = f"{self.list_url}?category__identifier=location"
+        filter_url = f"{list_url}?category__identifier=location"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 3)
 
-        filter_url = f"{self.list_url}?category__identifier__in=location&category__identifier__in=biota"
+        filter_url = f"{list_url}?category__identifier__in=location&category__identifier__in=biota"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -354,16 +530,21 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_tag_filters(self):
         """Test keywords filtering"""
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
 
         # check we get the correct layers number returnered filtering on one
         # and then two different keywords
-        filter_url = f"{self.list_url}?keywords__slug=layertagunique"
+        filter_url = f"{list_url}?keywords__slug=layertagunique"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-        filter_url = f"{self.list_url}?keywords__slug__in=layertagunique&keywords__slug__in=populartag"
+        filter_url = f"{list_url}?keywords__slug__in=layertagunique&keywords__slug__in=populartag"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -371,16 +552,21 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_owner_filters(self):
         """Test owner filtering"""
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
 
         # check we get the correct layers number returnered filtering on one
         # and then two different owners
-        filter_url = f"{self.list_url}?owner__username=user1"
+        filter_url = f"{list_url}?owner__username=user1"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-        filter_url = f"{self.list_url}?owner__username__in=user1&owner__username__in=foo"
+        filter_url = f"{list_url}?owner__username__in=user1&owner__username__in=foo"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -388,10 +574,15 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_title_filter(self):
         """Test title filtering"""
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
 
         # check we get the correct layers number returnered filtering on the
         # title
-        filter_url = f"{self.list_url}?title=layer2"
+        filter_url = f"{list_url}?title=layer2"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -399,6 +590,11 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_date_filter(self):
         """Test date filtering"""
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
 
         # check we get the correct layers number returnered filtering on the
         # dates
@@ -410,21 +606,21 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             return val.date().strftime(fstring)
 
         d1 = to_date(now - step)
-        filter_url = f"{self.list_url}?date__exact={d1}"
+        filter_url = f"{list_url}?date__exact={d1}"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         d3 = to_date(now - (3 * step))
-        filter_url = f"{self.list_url}?date__gte={d3}"
+        filter_url = f"{list_url}?date__gte={d3}"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 3)
 
         d4 = to_date(now - (4 * step))
-        filter_url = f"{self.list_url}?date__range={d4},{to_date(now)}"
+        filter_url = f"{list_url}?date__range={d4},{to_date(now)}"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -432,180 +628,159 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_extended_text_filter(self):
         """Test that the extended text filter works as expected"""
-        filter_url = f"{self.list_url}?title__icontains=layer2&abstract__icontains=layer2&purpose__icontains=layer2&f_method=or"
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
+
+        filter_url = f"{list_url}?title__icontains=layer2&abstract__icontains=layer2&purpose__icontains=layer2&f_method=or"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-
-# noinspection DuplicatedCode
-@override_settings(API_LOCKDOWN=True)
-class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-
-    """Test the api lockdown functionality"""
-
-    def setUp(self):
-        super(LockdownApiTests, self).setUp()
-        self.profiles_list_url = reverse(
+    def test_the_api_should_return_all_layers_with_metadata_false(self):
+        list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'profiles'})
-        self.groups_list_url = reverse(
+                'resource_name': 'layers'})
+        user = get_user_model().objects.get(username="admin")
+        token = get_or_create_token(user)
+        auth_header = f'Bearer {token}'
+
+        resp = self.api_client.get(list_url, authentication=auth_header)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(8, resp.json()["meta"]["total_count"])
+
+    def test_the_api_should_return_all_layers_with_metadata_true(self):
+        list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'groups'})
-        self.owners_list_url = reverse(
+                'resource_name': 'layers'})
+        user = get_user_model().objects.get(username="admin")
+        token = get_or_create_token(user)
+        auth_header = f'Bearer {token}'
+
+        url = f"{list_url}?metadata_only=True"
+        resp = self.api_client.get(url, authentication=auth_header)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(1, resp.json()["meta"]["total_count"])
+
+    def test_the_api_should_return_all_documents_with_metadata_false(self):
+        list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'owners'})
-        self.tag_list_url = reverse(
+                'resource_name': 'documents'})
+
+        resp = self.api_client.get(list_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 9)
+
+    def test_the_api_should_return_all_documents_with_metadata_true(self):
+        list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'keywords'})
-        self.region_list_url = reverse(
+                'resource_name': 'documents'})
+
+        url = f"{list_url}?metadata_only=True"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 1)
+
+    def test_the_api_should_return_all_maps_with_metadata_false(self):
+        list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'regions'})
-        self.bobby = get_user_model().objects.get(username='bobby')
+                'resource_name': 'maps'})
 
-    def test_api_lockdown_false(self):
-        # test if results are returned for anonymous users if API_LOCKDOWN is set to False in settings
-        filter_url = self.profiles_list_url
-
-        with self.settings(API_LOCKDOWN=False):
-            resp = self.api_client.get(filter_url)
-            self.assertValidJSONResponse(resp)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 9)
-
-    def test_profiles_lockdown(self):
-        filter_url = self.profiles_list_url
-        resp = self.api_client.get(filter_url)
+        resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+        self.assertEqual(resp.json()["meta"]["total_count"], 9)
 
-        # now test with logged in user
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
+    def test_the_api_should_return_all_maps_with_metadata_true(self):
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'maps'})
+
+        url = f"{list_url}?metadata_only=True"
+        resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
-        # Returns limitted info about other users
-        profiles = self.deserialize(resp)['objects']
-        for profile in profiles:
-            if profile['username'] == 'bobby':
-                self.assertEquals(profile.get('email'), self.bobby.email)
-            else:
-                self.assertIsNone(profile.get('email'))
-
-    def test_owners_lockdown(self):
-        filter_url = self.owners_list_url
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
-
-        # now test with logged in user
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
-        # Returns limitted info about other users
-        owners = self.deserialize(resp)['objects']
-        for owner in owners:
-            if owner['username'] == 'bobby':
-                self.assertEquals(owner.get('email'), self.bobby.email)
-            else:
-                self.assertIsNone(owner.get('email'))
-                self.assertIsNone(owner.get('first_name'))
-
-    def test_groups_lockdown(self):
-        filter_url = self.groups_list_url
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
-
-        # now test with logged in user
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
-
-    def test_regions_lockdown(self):
-        filter_url = self.region_list_url
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
-
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertTrue(len(self.deserialize(resp)['objects']) >= 200)
-
-    def test_tags_lockdown(self):
-        filter_url = self.tag_list_url
-
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
-
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 5)
-
-
-class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-
-    #  loading test thesausuri
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json',
-        "test_thesaurus.json"
-    ]
-
-    def setUp(self):
-        super(ThesaurusKeywordResourceTests, self).setUp()
-        all_public()
-        self.list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "thesaurus/keywords"})
+        self.assertEqual(resp.json()["meta"]["total_count"], 1)
 
     def test_api_will_return_a_valid_json_response(self):
-        resp = self.api_client.get(self.list_url)
+        list_url = reverse(
+            "api_dispatch_list",
+            kwargs={
+                "api_name": "api",
+                "resource_name": "thesaurus/keywords"})
+
+        resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
 
     def test_will_return_empty_if_the_thesaurus_does_not_exists(self):
-        url = f"{self.list_url}?thesaurus=invalid-identifier"
+        list_url = reverse(
+            "api_dispatch_list",
+            kwargs={
+                "api_name": "api",
+                "resource_name": "thesaurus/keywords"})
+
+        url = f"{list_url}?thesaurus=invalid-identifier"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(resp.json()["meta"]["total_count"], 0)
 
     def test_will_return_keywords_for_the_selected_thesaurus_if_exists(self):
-        url = f"{self.list_url}?thesaurus=inspire-theme"
+        list_url = reverse(
+            "api_dispatch_list",
+            kwargs={
+                "api_name": "api",
+                "resource_name": "thesaurus/keywords"})
+
+        url = f"{list_url}?thesaurus=inspire-theme"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(resp.json()["meta"]["total_count"], 36)
 
     def test_will_return_empty_if_the_alt_label_does_not_exists(self):
-        url = f"{self.list_url}?alt_label=invalid-alt_label"
+        list_url = reverse(
+            "api_dispatch_list",
+            kwargs={
+                "api_name": "api",
+                "resource_name": "thesaurus/keywords"})
+
+        url = f"{list_url}?alt_label=invalid-alt_label"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(resp.json()["meta"]["total_count"], 0)
 
     def test_will_return_keywords_for_the_selected_alt_label_if_exists(self):
-        url = f"{self.list_url}?alt_label=ac"
+        list_url = reverse(
+            "api_dispatch_list",
+            kwargs={
+                "api_name": "api",
+                "resource_name": "thesaurus/keywords"})
+
+        url = f"{list_url}?alt_label=ac"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(resp.json()["meta"]["total_count"], 1)
 
     def test_will_return_empty_if_the_kaywordId_does_not_exists(self):
-        url = f"{self.list_url}?id=12365478954862"
+        list_url = reverse(
+            "api_dispatch_list",
+            kwargs={
+                "api_name": "api",
+                "resource_name": "thesaurus/keywords"})
+
+        url = f"{list_url}?id=12365478954862"
         resp = self.api_client.get(url)
         print(self.deserialize(resp))
         self.assertValidJSONResponse(resp)
@@ -613,8 +788,14 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSuppor
 
     @patch("geonode.api.api.get_language")
     def test_will_return_expected_keyword_label_for_existing_lang(self, lang):
+        list_url = reverse(
+            "api_dispatch_list",
+            kwargs={
+                "api_name": "api",
+                "resource_name": "thesaurus/keywords"})
+
         lang.return_value = "de"
-        url = f"{self.list_url}?thesaurus=inspire-theme"
+        url = f"{list_url}?thesaurus=inspire-theme"
         resp = self.api_client.get(url)
         # the german translations exists, for the other labels, the alt_label will be used
         expected_labels = [
@@ -629,8 +810,14 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSuppor
 
     @patch("geonode.api.api.get_language")
     def test_will_return_default_keyword_label_for_not_existing_lang(self, lang):
+        list_url = reverse(
+            "api_dispatch_list",
+            kwargs={
+                "api_name": "api",
+                "resource_name": "thesaurus/keywords"})
+
         lang.return_value = "ke"
-        url = f"{self.list_url}?thesaurus=inspire-theme"
+        url = f"{list_url}?thesaurus=inspire-theme"
         resp = self.api_client.get(url)
         # no translations exists, the alt_label will be used for all keywords
         expected_labels = [
@@ -643,146 +830,62 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSuppor
         self.assertValidJSONResponse(resp)
         self.assertListEqual(expected_labels, actual_labels)
 
-
-class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
-
-    def setUp(self):
-        super(LayerResourceTests, self).setUp()
-        self.user = get_user_model().objects.get(username="admin")
-        self.list_url = reverse(
-            'api_dispatch_list',
-            kwargs={
-                'api_name': 'api',
-                'resource_name': 'layers'})
-        all_public()
-        self.token = get_or_create_token(self.user)
-        self.auth_header = f'Bearer {self.token}'
-
-    def test_the_api_should_return_all_layers_with_metadata_false(self):
-
-        resp = self.api_client.get(self.list_url, authentication=self.auth_header)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(8, resp.json()["meta"]["total_count"])
-
-    def test_the_api_should_return_all_layers_with_metadata_true(self):
-
-        url = f"{self.list_url}?metadata_only=True"
-        resp = self.api_client.get(url, authentication=self.auth_header)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(1, resp.json()["meta"]["total_count"])
-
-
-class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
-
-    def setUp(self):
-        super(DocumentResourceTests, self).setUp()
-        all_public()
-        self.user = get_user_model().objects.get(username="admin")
-        self.list_url = reverse(
-            'api_dispatch_list',
-            kwargs={
-                'api_name': 'api',
-                'resource_name': 'documents'})
-
-    def test_the_api_should_return_all_documents_with_metadata_false(self):
-        resp = self.api_client.get(self.list_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 9)
-
-    def test_the_api_should_return_all_documents_with_metadata_true(self):
-        url = f"{self.list_url}?metadata_only=True"
-        resp = self.api_client.get(url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 1)
-
-
-class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
-
-    def setUp(self):
-        super(MapResourceTests, self).setUp()
-        all_public()
-        self.user = get_user_model().objects.get(username="admin")
-        self.list_url = reverse(
-            'api_dispatch_list',
-            kwargs={
-                'api_name': 'api',
-                'resource_name': 'maps'})
-
-    def test_the_api_should_return_all_maps_with_metadata_false(self):
-        resp = self.api_client.get(self.list_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 9)
-
-    def test_the_api_should_return_all_maps_with_metadata_true(self):
-        url = f"{self.list_url}?metadata_only=True"
-        resp = self.api_client.get(url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 1)
-
-
-class TopicCategoryResourceTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
-
-    def setUp(self):
-        super(TopicCategoryResourceTest, self).setUp()
-        self.user = get_user_model().objects.get(username="admin")
-        self.list_url = reverse(
+    def test_the_api_should_return_all_map_categories_with_metadata_false(self):
+        list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
                 'resource_name': 'categories'})
 
-    def test_the_api_should_return_all_maps_with_metadata_false(self):
-        url = f"{self.list_url}?type=map"
+        url = f"{list_url}?type=map"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         actual = sum([x['count'] for x in resp.json()['objects']])
         self.assertEqual(9, actual)
 
-    def test_the_api_should_return_all_maps_with_metadata_true(self):
+    def test_the_api_should_return_all_map_categories_with_metadata_true(self):
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'categories'})
+
         x = Map.objects.get(title='map metadata true')
         x.metadata_only = False
         x.save()
-        url = f"{self.list_url}?type=map"
+        url = f"{list_url}?type=map"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         # by adding a new layer, the total should increase
         actual = sum([x['count'] for x in resp.json()['objects']])
         self.assertEqual(10, actual)
 
-    def test_the_api_should_return_all_document_with_metadata_false(self):
-        url = f"{self.list_url}?type=document"
+    def test_the_api_should_return_all_document_categories_with_metadata_false(self):
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'categories'})
+
+        url = f"{list_url}?type=document"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         actual = sum([x['count'] for x in resp.json()['objects']])
-        self.assertEqual(9, actual)
+        self.assertEqual(0, actual)
 
-    def test_the_api_should_return_all_document_with_metadata_true(self):
+    def test_the_api_should_return_all_document_categories_with_metadata_true(self):
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'categories'})
+
         x = Document.objects.get(title='doc metadata true')
         x.metadata_only = False
         x.save()
-        url = f"{self.list_url}?type=document"
+        url = f"{list_url}?type=document"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         # by adding a new layer, the total should increase
         actual = sum([x['count'] for x in resp.json()['objects']])
-        self.assertEqual(10, actual)
+        self.assertEqual(0, actual)

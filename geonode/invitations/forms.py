@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -29,7 +28,7 @@ from invitations.utils import get_invitation_model
 Invitation = get_invitation_model()
 
 
-class CleanEmailMixin(object):
+class CleanEmailMixin:
 
     def validate_invitation(self, email):
         if Invitation.objects.all_valid().filter(

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -33,8 +32,9 @@ from geonode.people import profileextractors
 
 
 class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
+
     def setUp(self):
-        super(TestSetUnsetUserLayerPermissions, self).setUp()
+        super().setUp()
         self.layers = Layer.objects.all()[:3]
         self.layer_ids = [layer.pk for layer in self.layers]
         self.user_ids = ','.join(str(element.pk) for element in get_user_model().objects.all()[:3])
@@ -55,7 +55,7 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
         """
         Test that only admin users can access the routes
         """
-        self.client.login(username="bobby", password="bob")
+        self.client.logout()
         response = self.client.get(reverse('set_user_layer_permissions'))
         self.assertEqual(response.status_code, 401)
 
@@ -239,7 +239,7 @@ class PeopleTest(GeoNodeBaseTestSupport):
 class FacebookExtractorTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(FacebookExtractorTestCase, self).setUp()
+        super().setUp()
         self.data = {
             "email": "phony_mail",
             "first_name": "phony_first_name",
@@ -304,7 +304,7 @@ class FacebookExtractorTestCase(GeoNodeBaseTestSupport):
 class LinkedInExtractorTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(LinkedInExtractorTestCase, self).setUp()
+        super().setUp()
         self.data = {
             "id": "REDACTED",
             "firstName": {

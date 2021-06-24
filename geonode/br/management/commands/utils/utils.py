@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -89,7 +88,7 @@ def geoserver_option_list(parser):
         help="Don't dump geoserver raster data")
 
 
-class Config(object):
+class Config:
 
     def __init__(self, options):
         self.config_parser = None

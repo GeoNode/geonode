@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -20,7 +19,7 @@
 import json
 import logging
 
-from mock import patch
+from unittest.mock import patch
 from owslib.etree import etree as dlxml
 from django.test.utils import override_settings
 
@@ -85,7 +84,7 @@ class MapsTest(GeoNodeBaseTestSupport):
     """
 
     def setUp(self):
-        super(MapsTest, self).setUp()
+        super().setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -977,7 +976,7 @@ community."
 
     def test_get_legend(self):
         layer = Layer.objects.all().first()
-        map_layer = MapLayer.objects.filter(name=layer.alternate).exclude(layer_params=u'').first()
+        map_layer = MapLayer.objects.filter(name=layer.alternate).exclude(layer_params='').first()
         if map_layer and layer.default_style:
             self.assertIsNone(map_layer.get_legend)
         elif map_layer:
@@ -988,7 +987,7 @@ community."
 class MapModerationTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(MapModerationTestCase, self).setUp()
+        super().setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -1035,7 +1034,7 @@ class MapModerationTestCase(GeoNodeBaseTestSupport):
 class MapsNotificationsTestCase(NotificationsTestsHelper):
 
     def setUp(self):
-        super(MapsNotificationsTestCase, self).setUp()
+        super().setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'

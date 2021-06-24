@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -176,7 +175,7 @@ def layer_style_upload(request, layername):
         try:
             if sld:
                 if isfile(sld):
-                    with open(sld, "r") as sld_file:
+                    with open(sld) as sld_file:
                         sld = sld_file.read()
                 etree.XML(sld)
         except Exception:
@@ -262,7 +261,7 @@ def layer_style_manage(request, layername):
                     "default_style": default_style
                 }
             )
-        except (FailedRequestError, EnvironmentError):
+        except (FailedRequestError, OSError):
             tb = traceback.format_exc()
             logger.debug(tb)
             msg = (f'Could not connect to geoserver at "{ogc_server_settings.LOCATION}"'
@@ -328,7 +327,7 @@ def layer_style_manage(request, layername):
                     args=(
                         layer.service_typename,
                     )))
-        except (FailedRequestError, EnvironmentError, MultiValueDictKeyError):
+        except (FailedRequestError, OSError, MultiValueDictKeyError):
             tb = traceback.format_exc()
             logger.debug(tb)
             msg = (f'Error Saving Styles for Layer "{layer.name}"')

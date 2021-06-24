@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -25,7 +24,7 @@ when you run "manage.py test".
 """
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.storage.manager import storage_manager
-from mock import patch
+from unittest.mock import patch
 import os
 import io
 import json
@@ -70,7 +69,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         "groups": {}}
 
     def setUp(self):
-        super(DocumentsTest, self).setUp()
+        super().setUp()
         create_models('map')
         self.imgfile = io.BytesIO(
             b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
@@ -450,7 +449,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 class DocumentModerationTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(DocumentModerationTestCase, self).setUp()
+        super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
         create_models(type=b'document')

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -36,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 class CatalogueTest(GeoNodeBaseTestSupport):
     def setUp(self):
-        super(CatalogueTest, self).setUp()
+        super().setUp()
 
     def test_get_catalog(self):
         """Tests the get_catalogue function works."""
@@ -65,7 +64,7 @@ class CatalogueTest(GeoNodeBaseTestSupport):
 
 class TestCswGlobalDispatch(GeoNodeBaseTestSupport):
     def setUp(self):
-        super(TestCswGlobalDispatch, self).setUp()
+        super().setUp()
         self.request = self.__request_factory_single(123)
         create_layer_data()
         self.user = "admin"

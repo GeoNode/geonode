@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -48,7 +47,7 @@ def catalogue_post_save(instance, sender, **kwargs):
         catalogue = get_catalogue()
         catalogue.create_record(instance)
         record = catalogue.get_record(instance.uuid)
-    except EnvironmentError as err:
+    except OSError as err:
         msg = f'Could not connect to catalogue to save information for layer "{instance.name}"'
         if err.errno == errno.ECONNREFUSED:
             LOGGER.warn(msg, err)

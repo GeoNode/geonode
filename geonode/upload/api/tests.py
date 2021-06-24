@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2021 OSGeo
@@ -103,14 +102,14 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         super().tearDownClass()
 
     def setUp(self):
-        super(UploadApiTests, self).setUp()
+        super().setUp()
         self.temp_folder = tempfile.mkdtemp(dir=CURRENT_LOCATION)
         self.session_id = None
         self.csrf_token = None
 
     def tearDown(self):
         shutil.rmtree(self.temp_folder, ignore_errors=True)
-        return super(UploadApiTests, self).tearDown()
+        return super().tearDown()
 
     def set_session_cookies(self, url=None):
         # selenium will set cookie domain based on current page domain

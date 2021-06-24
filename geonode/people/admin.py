@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -87,7 +86,7 @@ class ProfileAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if not obj:
             return self.add_fieldsets
-        return super(ProfileAdmin, self).get_fieldsets(request, obj)
+        return super().get_fieldsets(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
         """
@@ -101,19 +100,19 @@ class ProfileAdmin(admin.ModelAdmin):
             })
 
         defaults.update(kwargs)
-        return super(ProfileAdmin, self).get_form(request, obj, **defaults)
+        return super().get_form(request, obj, **defaults)
 
     def get_urls(self):
         return [  # '',
             url(r'^(\d+)/password/$',
                 self.admin_site.admin_view(self.user_change_password))
-        ] + super(ProfileAdmin, self).get_urls()
+        ] + super().get_urls()
 
     def lookup_allowed(self, lookup, value):
         # See #20078: we don't want to allow any lookups involving passwords.
         if lookup.startswith('password'):
             return False
-        return super(ProfileAdmin, self).lookup_allowed(lookup, value)
+        return super().lookup_allowed(lookup, value)
 
     @sensitive_post_parameters_m
     @csrf_protect_m
@@ -144,8 +143,8 @@ class ProfileAdmin(admin.ModelAdmin):
             'username_help_text': username_field.help_text,
         }
         extra_context.update(defaults)
-        return super(ProfileAdmin, self).add_view(request, form_url,
-                                                  extra_context)
+        return super().add_view(request, form_url,
+                                extra_context)
 
     @sensitive_post_parameters_m
     def user_change_password(self, request, id, form_url=''):
@@ -207,8 +206,8 @@ class ProfileAdmin(admin.ModelAdmin):
             request.POST._mutable = True
             request.POST['_continue'] = 1
             request.POST._mutable = mutable
-        return super(ProfileAdmin, self).response_add(request, obj,
-                                                      post_url_continue)
+        return super().response_add(request, obj,
+                                    post_url_continue)
 
 
 admin.site.register(Profile, ProfileAdmin)

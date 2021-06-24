@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -17,30 +16,35 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
+import logging
 
+from dal import views, autocomplete
+from user_messages.models import Message
+from guardian.shortcuts import get_objects_for_user
 
-# Geonode functionality
-from django.shortcuts import render
 from django.conf import settings
+from django.http import Http404
+from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import FormView
 from django.http import HttpResponseRedirect
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from dal import views, autocomplete
-from user_messages.models import Message
-from guardian.shortcuts import get_objects_for_user
-
+# Geonode dependencies
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.utils import resolve_object
+from geonode.monitoring import register_event
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 from geonode.tasks.tasks import set_permissions
 from geonode.base.forms import CuratedThumbnailForm
+from geonode.resource.manager import resource_manager
 from geonode.security.utils import get_visible_resources
 from geonode.notifications_helper import send_notification
 from geonode.base.utils import OwnerRightsRequestViewUtils
@@ -53,9 +57,12 @@ from geonode.base.forms import (
 from geonode.base.models import (
     Region,
     ResourceBase,
-    HierarchicalKeyword, ThesaurusKeyword,
+    HierarchicalKeyword,
+    ThesaurusKeyword,
     ThesaurusKeywordLabel
 )
+
+logger = logging.getLogger(__name__)
 
 
 def user_and_group_permission(request, model):
@@ -323,15 +330,19 @@ class ThesaurusAvailable(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         tid = self.request.GET.get("sysid")
         lang = self.request.GET.get("lang")
-
         qs_local = []
         qs_non_local = []
         for key in ThesaurusKeyword.objects.filter(thesaurus_id=tid):
             label = ThesaurusKeywordLabel.objects.filter(keyword=key).filter(lang=lang)
+            if self.q:
+                label = label.filter(label__icontains=self.q)
             if label.exists():
                 qs_local.append(label.get())
             else:
-                qs_non_local.append(key)
+                if self.q in key.alt_label:
+                    qs_non_local.append(key)
+                elif not self.q:
+                    qs_non_local.append(key)
 
         return qs_non_local + qs_local
 
@@ -393,3 +404,44 @@ class OwnerRightsRequestView(LoginRequiredMixin, FormView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+
+@login_required
+def resource_clone(request):
+    try:
+        uuid = request.POST['uuid']
+        resource = resolve_object(
+            request, ResourceBase, {
+                'uuid': uuid}, 'base.change_resourcebase')
+    except PermissionDenied:
+        return HttpResponse("Not allowed", status=403)
+    except Exception:
+        raise Http404("Not found")
+    if not resource:
+        raise Http404("Not found")
+
+    out = {}
+    try:
+        getattr(resource_manager, "copy")(
+            resource.get_real_instance(),
+            uuid=None,
+            defaults={
+                'user': request.user})
+        out['success'] = True
+        out['message'] = _("Resource Cloned Successfully!")
+    except Exception as e:
+        logger.exception(e)
+        out['success'] = False
+        out['message'] = _(f"Error Occurred while Cloning the Resource: {e}")
+        out['errors'] = str(e)
+
+    if out['success']:
+        status_code = 200
+        register_event(request, 'change', resource)
+    else:
+        status_code = 400
+
+    return HttpResponse(
+        json.dumps(out),
+        content_type='application/json',
+        status=status_code)

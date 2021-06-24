@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -32,7 +31,7 @@ class MessagingTest(GeoNodeBaseTestSupport):
     type = 'layer'
 
     def setUp(self):
-        super(MessagingTest, self).setUp()
+        super().setUp()
 
         self.adm_un = "admin"
         self.adm_pw = "admin"

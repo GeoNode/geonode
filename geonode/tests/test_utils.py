@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -141,7 +140,7 @@ class TestFixupShp(GeoNodeBaseTestSupport):
 class TestSetAttributes(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(TestSetAttributes, self).setUp()
+        super().setUp()
         # Load users to log in as
         call_command('loaddata', 'people_data', verbosity=0)
         self.user = get_user_model().objects.get(username='admin')

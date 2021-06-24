@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -23,7 +22,7 @@
 from django.conf import settings
 
 
-class BaseExtractor(object):
+class BaseExtractor:
     """Base class for social account data extractors.
 
     In order to define new extractors you just need to define a class that

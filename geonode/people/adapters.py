@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -154,7 +153,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         return enhanced_context
 
     def save_user(self, request, user, form, commit=True):
-        user = super(LocalAccountAdapter, self).save_user(
+        user = super().save_user(
             request, user, form, commit=commit)
         if settings.ACCOUNT_APPROVAL_REQUIRED:
             user.is_active = False
@@ -180,13 +179,13 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def populate_user(self, request, sociallogin, data):
         """This method is called when a new sociallogin is created"""
-        user = super(SocialAccountAdapter, self).populate_user(
+        user = super().populate_user(
             request, sociallogin, data)
         update_profile(sociallogin)
         return user
 
     def save_user(self, request, sociallogin, form=None):
-        user = super(SocialAccountAdapter, self).save_user(
+        user = super().save_user(
             request, sociallogin, form=form)
         extractor = get_data_extractor(sociallogin.account.provider)
         try:

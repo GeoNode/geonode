@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -49,7 +48,7 @@ log = logging.getLogger(__name__)
 class MonitoringHandler(logging.Handler):
 
     def __init__(self, service, *args, **kwargs):
-        super(MonitoringHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.service = service
 
     def emit(self, record):
@@ -75,7 +74,7 @@ class RequestToMonitoringThread(threading.Thread):
     q = queue.Queue()
 
     def __init__(self, service, *args, **kwargs):
-        super(RequestToMonitoringThread, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.service = service
 
     def add(self, req, resp):
@@ -93,7 +92,7 @@ class RequestToMonitoringThread(threading.Thread):
                 RequestEvent.from_geonode(self.service, req, resp)
 
 
-class GeoServerMonitorClient(object):
+class GeoServerMonitorClient:
 
     REPORT_FORMATS = ('html', 'xml', 'json',)
 
@@ -251,7 +250,7 @@ def generate_periods(since, interval, end=None, align=True):
         since_aligned = since_aligned + interval
 
 
-class TypeChecks(object):
+class TypeChecks:
     AUDIT_TYPE_JSON = 'json'
     AUDIT_TYPE_XML = 'xml'
     AUDIT_FORMATS = (AUDIT_TYPE_JSON, AUDIT_TYPE_XML,)

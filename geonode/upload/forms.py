@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -77,7 +76,7 @@ class LayerUploadForm(forms.Form):
     spatial_files = tuple(spatial_files)
 
     def clean(self):
-        cleaned = super(LayerUploadForm, self).clean()
+        cleaned = super().clean()
         uploaded_files = self._get_uploaded_files()
         valid_extensions = validate_uploaded_files(
             cleaned=cleaned,
@@ -110,7 +109,7 @@ class TimeForm(forms.Form):
         self._time_names = kwargs.pop('time_names', None)
         self._text_names = kwargs.pop('text_names', None)
         self._year_names = kwargs.pop('year_names', None)
-        super(TimeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._build_choice('time_attribute', self._time_names)
         self._build_choice('end_time_attribute', self._time_names)
         self._build_choice('text_attribute', self._text_names)

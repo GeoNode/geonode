@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import migrations, models
 import mptt.fields
 import geonode.security.models
@@ -224,6 +221,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='contactrole',
-            unique_together=set([('contact', 'resource', 'role')]),
+            unique_together={('contact', 'resource', 'role')},
         ),
     ]

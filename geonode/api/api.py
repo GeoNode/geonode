@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -117,8 +116,8 @@ class CountJSONSerializer(Serializer):
         else:
             counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))
 
-        return dict(
-            [(c[options['count_type']], c['count']) for c in counts if c and c['count'] and options['count_type']])
+        return {
+            c[options['count_type']]: c['count'] for c in counts if c and c['count'] and options['count_type']}
 
     def to_json(self, data, options=None):
         options = options or {}
@@ -146,7 +145,7 @@ class TypeFilteredResource(ModelResource):
         self.type_filter = None
         self.title_filter = None
 
-        orm_filters = super(TypeFilteredResource, self).build_filters(filters)
+        orm_filters = super().build_filters(filters)
 
         if 'type' in filters and filters['type'] in FILTER_TYPES.keys():
             self.type_filter = FILTER_TYPES[filters['type']]
@@ -164,7 +163,7 @@ class TypeFilteredResource(ModelResource):
         options['type_filter'] = getattr(self, 'type_filter', None)
         options['user'] = request.user
 
-        return super(TypeFilteredResource, self).serialize(request, data, format, options)
+        return super().serialize(request, data, format, options)
 
 
 class TagResource(TypeFilteredResource):
@@ -175,7 +174,7 @@ class TagResource(TypeFilteredResource):
             options = {}
         options['count_type'] = 'keywords'
 
-        return super(TagResource, self).serialize(request, data, format, options)
+        return super().serialize(request, data, format, options)
 
     class Meta:
         queryset = HierarchicalKeyword.objects.all().order_by('name')
@@ -198,7 +197,7 @@ class ThesaurusKeywordResource(TypeFilteredResource):
         """adds filtering by current language"""
         _filters = filters.copy()
         id = _filters.pop('id', None)
-        orm_filters = super(ThesaurusKeywordResource, self).build_filters(_filters)
+        orm_filters = super().build_filters(_filters)
 
         if id is not None:
             orm_filters['id__in'] = id
@@ -211,7 +210,7 @@ class ThesaurusKeywordResource(TypeFilteredResource):
     def serialize(self, request, data, format, options={}):
         options['count_type'] = 'tkeywords__id'
 
-        return super(ThesaurusKeywordResource, self).serialize(request, data, format, options)
+        return super().serialize(request, data, format, options)
 
     def dehydrate_id(self, bundle):
         return bundle.obj.id
@@ -259,7 +258,7 @@ class RegionResource(TypeFilteredResource):
             options = {}
         options['count_type'] = 'regions'
 
-        return super(RegionResource, self).serialize(request, data, format, options)
+        return super().serialize(request, data, format, options)
 
     class Meta:
         queryset = Region.objects.all().order_by('name')
@@ -299,7 +298,7 @@ class TopicCategoryResource(TypeFilteredResource):
             options = {}
         options['count_type'] = 'category'
 
-        return super(TopicCategoryResource, self).serialize(request, data, format, options)
+        return super().serialize(request, data, format, options)
 
     class Meta:
         queryset = TopicCategory.objects.all()
@@ -327,9 +326,7 @@ class GroupCategoryResource(TypeFilteredResource):
         authorization = ApiLockdownAuthorization()
 
     def apply_filters(self, request, applicable_filters):
-        filtered = super(
-            GroupCategoryResource,
-            self).apply_filters(
+        filtered = super().apply_filters(
             request,
             applicable_filters)
         return filtered
@@ -445,7 +442,7 @@ class GroupResource(ModelResource):
 
         """
 
-        qs = super(GroupResource, self).get_object_list(request)
+        qs = super().get_object_list(request)
         return qs.exclude(name="anonymous")
 
 
@@ -465,7 +462,7 @@ class ProfileResource(TypeFilteredResource):
         if filters is None:
             filters = {}
 
-        orm_filters = super(ProfileResource, self).build_filters(filters)
+        orm_filters = super().build_filters(filters)
 
         if 'group' in filters:
             orm_filters['group'] = filters['group']
@@ -481,9 +478,7 @@ class ProfileResource(TypeFilteredResource):
         group = applicable_filters.pop('group', None)
         name = applicable_filters.pop('name__icontains', None)
 
-        semi_filtered = super(
-            ProfileResource,
-            self).apply_filters(
+        semi_filtered = super().apply_filters(
             request,
             applicable_filters)
 
@@ -562,7 +557,7 @@ class ProfileResource(TypeFilteredResource):
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
             return [
-                url(r"^(?P<resource_name>%s)/search%s$" % (
+                url(r"^(?P<resource_name>{})/search{}$".format(
                     self._meta.resource_name, trailing_slash()
                 ),
                     self.wrap_view('get_search'), name="api_get_search"),
@@ -575,7 +570,7 @@ class ProfileResource(TypeFilteredResource):
             options = {}
         options['count_type'] = 'owner'
 
-        return super(ProfileResource, self).serialize(request, data, format, options)
+        return super().serialize(request, data, format, options)
 
     class Meta:
         queryset = get_user_model().objects.exclude(Q(username='AnonymousUser') | Q(is_active=False))
@@ -620,7 +615,7 @@ class OwnersResource(TypeFilteredResource):
             options = {}
         options['count_type'] = 'owner'
 
-        return super(OwnersResource, self).serialize(request, data, format, options)
+        return super().serialize(request, data, format, options)
 
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
@@ -674,7 +669,7 @@ class GeoserverStyleResource(ModelResource):
 
     def build_filters(self, filters=None, **kwargs):
         """Apply custom filters for layer."""
-        filters = super(GeoserverStyleResource, self).build_filters(
+        filters = super().build_filters(
             filters, **kwargs)
         # Convert layer__ filters into layer_styles__layer__
         updated_filters = {}

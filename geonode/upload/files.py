@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -61,7 +60,7 @@ class SpatialFiles(UserList):
         return all
 
 
-class SpatialFile(object):
+class SpatialFile:
 
     def __init__(self, base_file, file_type, auxillary_files,
                  sld_files, xml_files):
@@ -79,7 +78,7 @@ class SpatialFile(object):
 aux={self.auxillary_files} sld={self.sld_files} xml={self.xml_files}>"
 
 
-class FileType(object):
+class FileType:
 
     def __init__(self, name, code, layer_type, aliases=None,
                  auxillary_file_exts=None):
