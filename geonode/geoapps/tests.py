@@ -16,11 +16,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.contrib.auth import get_user_model
 from django.urls.base import reverse
+from django.contrib.auth import get_user_model
 
 from geonode.geoapps.models import GeoApp
+from geonode.resource.manager import resource_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
+
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
 
 
 class GeoAppTests(GeoNodeBaseTestSupport):
@@ -28,13 +34,34 @@ class GeoAppTests(GeoNodeBaseTestSupport):
     """Tests geonode.geoapps module
     """
 
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
     def setUp(self):
         super().setUp()
         self.bobby = get_user_model().objects.get(username='bobby')
-        self.geo_app = GeoApp.objects.create(
-            title="Testing GeoApp",
-            owner=self.bobby,
-            blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}'
+        self.geo_app = resource_manager.create(
+            None,
+            resource_type=GeoApp,
+            defaults=dict(
+                title="Testing GeoApp",
+                owner=self.bobby,
+                blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}'
+            )
         )
 
     def test_geoapp_remove(self):

@@ -164,7 +164,6 @@ class ResourceManager(ResourceManagerInterface):
                 logger.exception(e)
         return 0
 
-    @transaction.atomic
     def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
         if resource_type.objects.filter(uuid=uuid).exists():
             raise ValidationError(f'Object of type {resource_type} with uuid [{uuid}] already exists.')
@@ -173,18 +172,19 @@ class ResourceManager(ResourceManagerInterface):
             uuid=uuid,
             defaults=defaults)
         if _resource and _created:
+            _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
-                _resource.set_processing_state(enumerations.STATE_RUNNING)
-                _resource.set_missing_info()
-                _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                with transaction.atomic():
+                    _resource.set_missing_info()
+                    _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
             except Exception as e:
                 _resource.delete()
                 raise e
+            finally:
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
             resourcebase_post_save(_resource)
         return _resource
 
-    @transaction.atomic
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
                vals: dict = {}, regions: list = [], keywords: list = [], custom: dict = {}, notify: bool = True) -> ResourceBase:
         _resource = instance or ResourceManager._get_instance(uuid)
@@ -194,34 +194,35 @@ class ResourceManager(ResourceManagerInterface):
             _resource.metadata_uploaded = metadata_uploaded
             logger.debug(f'Look for xml and finalize Layer metadata {_resource}')
             try:
-                if metadata_uploaded and xml_file:
-                    _md_file = None
-                    try:
-                        _md_file = storage_manager.open(xml_file)
-                    except Exception as e:
-                        logger.exception(e)
-                        _md_file = open(xml_file)
+                with transaction.atomic():
+                    if metadata_uploaded and xml_file:
+                        _md_file = None
+                        try:
+                            _md_file = storage_manager.open(xml_file)
+                        except Exception as e:
+                            logger.exception(e)
+                            _md_file = open(xml_file)
 
-                    _resource.metadata_xml = _md_file.read()
+                        _resource.metadata_xml = _md_file.read()
 
-                    _uuid, vals, regions, keywords, custom = parse_metadata(_md_file.read())
-                    if uuid and uuid != _uuid:
-                        raise ValidationError("The UUID identifier from the XML Metadata is different from the {_resource} one.")
-                    else:
-                        uuid = _uuid
+                        _uuid, vals, regions, keywords, custom = parse_metadata(_md_file.read())
+                        if uuid and uuid != _uuid:
+                            raise ValidationError("The UUID identifier from the XML Metadata is different from the {_resource} one.")
+                        else:
+                            uuid = _uuid
 
-                logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
-                _resource.save()
-                _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
-                _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
-                _resource = metadata_storers(_resource.get_real_instance(), custom)
+                    logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
+                    _resource.save()
+                    _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
+                    _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
+                    _resource = metadata_storers(_resource.get_real_instance(), custom)
 
-                # The following is only a demo proof of concept for a pluggable WF subsystem
-                from geonode.resource.processing.models import ProcessingWorkflow
-                _p = ProcessingWorkflow.objects.first()
-                if _p and _p.is_enabled:
-                    for _task in _p.get_tasks():
-                        _task.execute(_resource)
+                    # The following is only a demo proof of concept for a pluggable WF subsystem
+                    from geonode.resource.processing.models import ProcessingWorkflow
+                    _p = ProcessingWorkflow.objects.first()
+                    if _p and _p.is_enabled:
+                        for _task in _p.get_tasks():
+                            _task.execute(_resource)
             except Exception as e:
                 logger.exception(e)
             finally:
@@ -230,7 +231,6 @@ class ResourceManager(ResourceManagerInterface):
             resourcebase_post_save(_resource)
         return _resource
 
-    @transaction.atomic
     def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
         if instance:
             _owner = instance.owner
@@ -248,7 +248,6 @@ class ResourceManager(ResourceManagerInterface):
             return self.update(_resource.uuid, _resource, vals=to_update)
         return instance
 
-    @transaction.atomic
     def append(self, instance: ResourceBase, vals: dict = {}):
         if self._validate_resource(instance, 'append'):
             self._concrete_resource_manager.append(instance, vals=vals)
@@ -258,7 +257,6 @@ class ResourceManager(ResourceManagerInterface):
             return self.update(instance.uuid, instance, vals=to_update)
         return instance
 
-    @transaction.atomic
     def replace(self, instance: ResourceBase, vals: dict = {}):
         if self._validate_resource(instance, 'replace'):
             if vals.get('files', None):
@@ -296,7 +294,6 @@ class ResourceManager(ResourceManagerInterface):
                 return _method(method, uuid, instance=_resource, **kwargs)
         return instance
 
-    @transaction.atomic
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         """Remove object permissions on given resource.
         If is a layer removes the layer specific permissions then the
@@ -306,37 +303,37 @@ class ResourceManager(ResourceManagerInterface):
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
-                logger.debug(f'Removing all permissions on {_resource}')
-                from geonode.layers.models import Layer
-                _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Layer) else None
-                if not _layer:
-                    try:
-                        _layer = _resource.layer if hasattr(_resource, "layer") else None
-                    except Exception:
-                        _layer = None
-                if _layer:
+                with transaction.atomic():
+                    logger.debug(f'Removing all permissions on {_resource}')
+                    from geonode.layers.models import Layer
+                    _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Layer) else None
+                    if not _layer:
+                        try:
+                            _layer = _resource.layer if hasattr(_resource, "layer") else None
+                        except Exception:
+                            _layer = None
+                    if _layer:
+                        UserObjectPermission.objects.filter(
+                            content_type=ContentType.objects.get_for_model(_layer),
+                            object_pk=instance.id
+                        ).delete()
+                        GroupObjectPermission.objects.filter(
+                            content_type=ContentType.objects.get_for_model(_layer),
+                            object_pk=instance.id
+                        ).delete()
                     UserObjectPermission.objects.filter(
-                        content_type=ContentType.objects.get_for_model(_layer),
-                        object_pk=instance.id
-                    ).delete()
+                        content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
+                        object_pk=instance.id).delete()
                     GroupObjectPermission.objects.filter(
-                        content_type=ContentType.objects.get_for_model(_layer),
-                        object_pk=instance.id
-                    ).delete()
-                UserObjectPermission.objects.filter(
-                    content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
-                    object_pk=instance.id).delete()
-                GroupObjectPermission.objects.filter(
-                    content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
-                    object_pk=instance.id).delete()
-                return self._concrete_resource_manager.remove_permissions(uuid, instance=_resource)
+                        content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
+                        object_pk=instance.id).delete()
+                    return self._concrete_resource_manager.remove_permissions(uuid, instance=_resource)
             except Exception as e:
                 logger.exception(e)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
-    @transaction.atomic
     def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner=None, permissions: dict = {}, created: bool = False) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
@@ -344,51 +341,77 @@ class ResourceManager(ResourceManagerInterface):
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             logger.debug(f'Finalizing (permissions and notifications) on resource {instance}')
             try:
-                logger.debug(f'Setting permissions {permissions} on {_resource}')
-                """
-                Remove all the permissions except for the owner and assign the
-                view permission to the anonymous group
-                """
-                self.remove_permissions(uuid, instance=_resource)
-                if permissions is not None:
+                with transaction.atomic():
+                    logger.debug(f'Setting permissions {permissions} on {_resource}')
                     """
-                    Sets an object's the permission levels based on the perm_spec JSON.
+                    Remove all the permissions except for the owner and assign the
+                    view permission to the anonymous group
+                    """
+                    self.remove_permissions(uuid, instance=_resource)
+                    if permissions is not None:
+                        """
+                        Sets an object's the permission levels based on the perm_spec JSON.
 
-                    the mapping looks like:
-                    {
-                        'users': {
-                            'AnonymousUser': ['view'],
-                            <username>: ['perm1','perm2','perm3'],
-                            <username2>: ['perm1','perm2','perm3']
-                            ...
+                        the mapping looks like:
+                        {
+                            'users': {
+                                'AnonymousUser': ['view'],
+                                <username>: ['perm1','perm2','perm3'],
+                                <username2>: ['perm1','perm2','perm3']
+                                ...
+                            }
+                            'groups': [
+                                <groupname>: ['perm1','perm2','perm3'],
+                                <groupname2>: ['perm1','perm2','perm3'],
+                                ...
+                                ]
                         }
-                        'groups': [
-                            <groupname>: ['perm1','perm2','perm3'],
-                            <groupname2>: ['perm1','perm2','perm3'],
-                            ...
-                            ]
-                    }
-                    """
+                        """
 
-                    # default permissions for resource owner
-                    set_owner_permissions(_resource)
+                        # default permissions for resource owner
+                        set_owner_permissions(_resource)
 
-                    # Anonymous User group
-                    if 'users' in permissions and "AnonymousUser" in permissions['users']:
-                        anonymous_group = Group.objects.get(name='anonymous')
-                        for perm in permissions['users']['AnonymousUser']:
-                            if _resource.polymorphic_ctype.name == 'layer' and perm in (
-                                    'change_layer_data', 'change_layer_style',
-                                    'add_layer', 'change_layer', 'delete_layer',):
-                                assign_perm(perm, anonymous_group, _resource.layer)
-                            else:
-                                assign_perm(perm, anonymous_group, _resource.get_self_resource())
+                        # Anonymous User group
+                        if 'users' in permissions and "AnonymousUser" in permissions['users']:
+                            anonymous_group = Group.objects.get(name='anonymous')
+                            for perm in permissions['users']['AnonymousUser']:
+                                if _resource.polymorphic_ctype.name == 'layer' and perm in (
+                                        'change_layer_data', 'change_layer_style',
+                                        'add_layer', 'change_layer', 'delete_layer',):
+                                    assign_perm(perm, anonymous_group, _resource.layer)
+                                else:
+                                    assign_perm(perm, anonymous_group, _resource.get_self_resource())
 
-                    # All the other users
-                    if 'users' in permissions and len(permissions['users']) > 0:
-                        for user, perms in permissions['users'].items():
-                            _user = get_user_model().objects.get(username=user)
-                            if _user != _resource.owner and user != "AnonymousUser":
+                        # All the other users
+                        if 'users' in permissions and len(permissions['users']) > 0:
+                            for user, perms in permissions['users'].items():
+                                _user = get_user_model().objects.get(username=user)
+                                if _user != _resource.owner and user != "AnonymousUser":
+                                    for perm in perms:
+                                        if _resource.polymorphic_ctype.name == 'layer' and perm in (
+                                                'change_layer_data', 'change_layer_style',
+                                                'add_layer', 'change_layer', 'delete_layer',):
+                                            assign_perm(perm, _user, _resource.layer)
+                                        else:
+                                            assign_perm(perm, _user, _resource.get_self_resource())
+
+                        # All the other groups
+                        if 'groups' in permissions and len(permissions['groups']) > 0:
+                            for group, perms in permissions['groups'].items():
+                                _group = Group.objects.get(name=group)
+                                for perm in perms:
+                                    if _resource.polymorphic_ctype.name == 'layer' and perm in (
+                                            'change_layer_data', 'change_layer_style',
+                                            'add_layer', 'change_layer', 'delete_layer',):
+                                        assign_perm(perm, _group, _resource.layer)
+                                    else:
+                                        assign_perm(perm, _group, _resource.get_self_resource())
+
+                        # AnonymousUser
+                        if 'users' in permissions and len(permissions['users']) > 0:
+                            if "AnonymousUser" in permissions['users']:
+                                _user = get_anonymous_user()
+                                perms = permissions['users']["AnonymousUser"]
                                 for perm in perms:
                                     if _resource.polymorphic_ctype.name == 'layer' and perm in (
                                             'change_layer_data', 'change_layer_style',
@@ -396,79 +419,53 @@ class ResourceManager(ResourceManagerInterface):
                                         assign_perm(perm, _user, _resource.layer)
                                     else:
                                         assign_perm(perm, _user, _resource.get_self_resource())
-
-                    # All the other groups
-                    if 'groups' in permissions and len(permissions['groups']) > 0:
-                        for group, perms in permissions['groups'].items():
-                            _group = Group.objects.get(name=group)
-                            for perm in perms:
-                                if _resource.polymorphic_ctype.name == 'layer' and perm in (
-                                        'change_layer_data', 'change_layer_style',
-                                        'add_layer', 'change_layer', 'delete_layer',):
-                                    assign_perm(perm, _group, _resource.layer)
-                                else:
-                                    assign_perm(perm, _group, _resource.get_self_resource())
-
-                    # AnonymousUser
-                    if 'users' in permissions and len(permissions['users']) > 0:
-                        if "AnonymousUser" in permissions['users']:
-                            _user = get_anonymous_user()
-                            perms = permissions['users']["AnonymousUser"]
-                            for perm in perms:
-                                if _resource.polymorphic_ctype.name == 'layer' and perm in (
-                                        'change_layer_data', 'change_layer_style',
-                                        'add_layer', 'change_layer', 'delete_layer',):
-                                    assign_perm(perm, _user, _resource.layer)
-                                else:
-                                    assign_perm(perm, _user, _resource.get_self_resource())
-                else:
-                    # default permissions for anonymous users
-                    anonymous_group, created = Group.objects.get_or_create(name='anonymous')
-
-                    # default permissions for owner
-                    _owner = owner or _resource.owner
-
-                    if not anonymous_group:
-                        raise Exception("Could not acquire 'anonymous' Group.")
-
-                    # default permissions for resource owner
-                    set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
-
-                    # Anonymous
-                    anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
-                    if anonymous_can_view:
-                        assign_perm('view_resourcebase',
-                                    anonymous_group, _resource.get_self_resource())
                     else:
-                        for user_group in get_user_groups(_owner):
-                            if not skip_registered_members_common_group(user_group):
-                                assign_perm('view_resourcebase',
-                                            user_group, _resource.get_self_resource())
+                        # default permissions for anonymous users
+                        anonymous_group, created = Group.objects.get_or_create(name='anonymous')
 
-                    anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
-                    if anonymous_can_download:
-                        assign_perm('download_resourcebase',
-                                    anonymous_group, _resource.get_self_resource())
-                    else:
-                        for user_group in get_user_groups(_owner):
-                            if not skip_registered_members_common_group(user_group):
-                                assign_perm('download_resourcebase',
-                                            user_group, _resource.get_self_resource())
+                        # default permissions for owner
+                        _owner = owner or _resource.owner
 
-                    if _resource.__class__.__name__ == 'Layer':
-                        # only for layer owner
-                        assign_perm('change_layer_data', _owner, _resource)
-                        assign_perm('change_layer_style', _owner, _resource)
+                        if not anonymous_group:
+                            raise Exception("Could not acquire 'anonymous' Group.")
 
-                _resource.handle_moderated_uploads()
-                return self._concrete_resource_manager.set_permissions(uuid, instance=_resource, owner=owner, permissions=permissions, created=created)
+                        # default permissions for resource owner
+                        set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
+
+                        # Anonymous
+                        anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
+                        if anonymous_can_view:
+                            assign_perm('view_resourcebase',
+                                        anonymous_group, _resource.get_self_resource())
+                        else:
+                            for user_group in get_user_groups(_owner):
+                                if not skip_registered_members_common_group(user_group):
+                                    assign_perm('view_resourcebase',
+                                                user_group, _resource.get_self_resource())
+
+                        anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+                        if anonymous_can_download:
+                            assign_perm('download_resourcebase',
+                                        anonymous_group, _resource.get_self_resource())
+                        else:
+                            for user_group in get_user_groups(_owner):
+                                if not skip_registered_members_common_group(user_group):
+                                    assign_perm('download_resourcebase',
+                                                user_group, _resource.get_self_resource())
+
+                        if _resource.__class__.__name__ == 'Layer':
+                            # only for layer owner
+                            assign_perm('change_layer_data', _owner, _resource)
+                            assign_perm('change_layer_style', _owner, _resource)
+
+                    _resource.handle_moderated_uploads()
+                    return self._concrete_resource_manager.set_permissions(uuid, instance=_resource, owner=owner, permissions=permissions, created=created)
             except Exception as e:
                 logger.exception(e)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
-    @transaction.atomic
     def set_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, approved: bool = False, published: bool = False) -> bool:
         """
                           |  N/PUBLISHED   | PUBLISHED
@@ -481,38 +478,39 @@ class ResourceManager(ResourceManagerInterface):
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
-                anonymous_group = Group.objects.get(name='anonymous')
-                if approved:
-                    if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-                        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                        _members_group_group = Group.objects.get(name=_members_group_name)
-                        for perm in VIEW_PERMISSIONS:
-                            assign_perm(perm,
-                                        _members_group_group, _resource.get_self_resource())
-                    else:
+                with transaction.atomic():
+                    anonymous_group = Group.objects.get(name='anonymous')
+                    if approved:
+                        if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
+                            _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                            _members_group_group = Group.objects.get(name=_members_group_name)
+                            for perm in VIEW_PERMISSIONS:
+                                assign_perm(perm,
+                                            _members_group_group, _resource.get_self_resource())
+                        else:
+                            for perm in VIEW_PERMISSIONS:
+                                assign_perm(perm,
+                                            anonymous_group, _resource.get_self_resource())
+                    if published:
                         for perm in VIEW_PERMISSIONS:
                             assign_perm(perm,
                                         anonymous_group, _resource.get_self_resource())
-                if published:
-                    for perm in VIEW_PERMISSIONS:
-                        assign_perm(perm,
-                                    anonymous_group, _resource.get_self_resource())
 
-                return self._concrete_resource_manager.set_workflow_permissions(uuid, instance=_resource, approved=approved, published=published)
+                    return self._concrete_resource_manager.set_workflow_permissions(uuid, instance=_resource, approved=approved, published=published)
             except Exception as e:
                 logger.exception(e)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
-    @transaction.atomic
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
-                self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
-                return True
+                with transaction.atomic():
+                    self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
+                    return True
             except Exception as e:
                 logger.exception(e)
             finally:

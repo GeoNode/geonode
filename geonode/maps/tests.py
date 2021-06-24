@@ -21,14 +21,13 @@ import logging
 
 from unittest.mock import patch
 from owslib.etree import etree as dlxml
-from django.test.utils import override_settings
-
 from pinax.ratings.models import OverallRating
 
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.test.utils import override_settings
 from django.contrib.contenttypes.models import ContentType
 
 from geonode import geoserver

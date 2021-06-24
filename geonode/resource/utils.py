@@ -37,6 +37,7 @@ from ..base.models import (
 
 from ..maps.models import Map
 from ..layers.models import Layer
+from ..documents.models import Document
 from ..layers.utils import resolve_regions
 from ..layers.metadata import convert_keyword
 
@@ -181,24 +182,43 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
         to_update['urlsuffix'] = defaults.pop('urlsuffix', instance.urlsuffix)
     if isinstance(instance, Layer):
         for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
-            if _key in defaults:
-                to_update[_key] = defaults.pop(_key)
-            else:
-                to_update[_key] = getattr(instance, _key)
+            if hasattr(instance, _key):
+                if _key in defaults:
+                    to_update[_key] = defaults.pop(_key)
+                else:
+                    to_update[_key] = getattr(instance, _key)
+            elif _key in defaults:
+                defaults.pop(_key)
     if isinstance(instance, Map):
         for _key in ('center_x', 'center_y', 'zoom'):
-            if _key in defaults:
-                to_update[_key] = defaults.pop(_key)
-            else:
-                to_update[_key] = getattr(instance, _key)
+            if hasattr(instance, _key):
+                if _key in defaults:
+                    to_update[_key] = defaults.pop(_key)
+                else:
+                    to_update[_key] = getattr(instance, _key)
+            elif _key in defaults:
+                defaults.pop(_key)
+    if isinstance(instance, Document):
+        if 'links' in defaults:
+            defaults.pop('links')
+        for _key in ('doc_type', 'doc_url', 'doc_file', 'extension'):
+            if hasattr(instance, _key):
+                if _key in defaults:
+                    to_update[_key] = defaults.pop(_key)
+                else:
+                    to_update[_key] = getattr(instance, _key)
+            elif _key in defaults:
+                defaults.pop(_key)
 
     to_update.update(defaults)
-
-    ResourceBase.objects.filter(
-        id=instance.resourcebase_ptr.id).update(
-        **defaults)
-
-    instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
+    try:
+        ResourceBase.objects.filter(id=instance.resourcebase_ptr.id).update(**defaults)
+    except Exception as e:
+        logger.error(f"{e} - {defaults}")
+    try:
+        instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
+    except Exception as e:
+        logger.error(f"{e} - {to_update}")
 
     # Refresh from DB
     instance.refresh_from_db()
