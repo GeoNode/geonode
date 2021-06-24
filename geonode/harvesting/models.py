@@ -275,7 +275,9 @@ class HarvestableResource(models.Model):
     should_be_harvested = models.BooleanField(default=False)
     last_updated = models.DateTimeField(auto_now=True)
     last_refreshed = models.DateTimeField()
-    available = models.BooleanField(default=False)
+    last_harvested = models.DateTimeField(null=True, blank=True)
+    last_harvesting_message = models.TextField(blank=True)
+    last_harvesting_succeeded = models.BooleanField(default=False)
     remote_resource_type = models.CharField(
         max_length=255,
         help_text=_(
@@ -293,3 +295,9 @@ class HarvestableResource(models.Model):
                 name="unique_id_for_harvester"
             ),
         ]
+
+    def delete(self, using=None, keep_parents=False):
+        delete_geonode_resource = self.harvester.delete_orphan_resources_automatically
+        if self.geonode_resource is not None and delete_geonode_resource:
+            self.geonode_resource.delete()
+        return super().delete(using, keep_parents)

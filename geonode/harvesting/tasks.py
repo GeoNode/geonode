@@ -114,11 +114,20 @@ def _harvest_resource(
     worker: BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
     resource_descriptor = worker.get_resource(
         harvestable_resource, harvesting_session_id)
+    now_ = now()
     if resource_descriptor is not None:
         worker.update_geonode_resource(
             resource_descriptor, harvestable_resource, harvesting_session_id)
-    worker.update_harvesting_session(
-        harvesting_session_id, additional_harvested_records=1)
+        worker.update_harvesting_session(
+            harvesting_session_id, additional_harvested_records=1)
+        harvestable_resource.last_harvesting_message = (
+            f"{now_} - Harvested successfully")
+        harvestable_resource.last_harvesting_succeeded = True
+    else:
+        harvestable_resource.last_harvesting_message = f"{now_}Harvesting failed"
+        harvestable_resource.last_harvesting_succeeded = False
+    harvestable_resource.last_harvested = now_
+    harvestable_resource.save()
 
 
 @app.task(
@@ -236,7 +245,6 @@ def _update_harvestable_resources_batch(
             harvester=harvester,
             unique_identifier=remote_resource.unique_identifier,
             title=remote_resource.title,
-            available=True,
             defaults={
                 "should_be_harvested": harvester.harvest_new_resources_by_default,
                 "remote_resource_type": remote_resource.resource_type,
@@ -258,20 +266,10 @@ def _update_harvestable_resources_batch(
 )
 def _finish_harvestable_resources_update(self, harvester_id: int):
     harvester = models.Harvester.objects.get(pk=harvester_id)
-    now_ = now()
     if harvester.last_checked_harvestable_resources is not None:
-        # delete harvestable resources that were not updated since the last check,
-        # as this means they have not been found this time around (maybe they are not
-        # available anymore, or maybe the user just changed the harvester parameters
-        # and they are no longer relevant)
-        previously_checked_at = harvester.last_checked_harvestable_resources
-        logger.debug(f"last checked at: {previously_checked_at}")
-        logger.debug(f"now: {now_}")
-        models.HarvestableResource.objects.filter(
-            harvester=harvester,
-            last_refreshed__lte=previously_checked_at
-        ).delete()
+        _delete_stale_harvestable_resources(harvester)
     harvester.status = harvester.STATUS_READY
+    now_ = now()
     harvester.last_checked_harvestable_resources = now_
     harvester.last_check_harvestable_resources_message = (
         f"{now_} - Harvestable resources successfully checked")
@@ -300,3 +298,35 @@ def _handle_harvestable_resources_update_error(self, task_id, *args, **kwargs):
         f"Please check the logs"
     )
     harvester.save()
+
+
+def _delete_stale_harvestable_resources(harvester: models.Harvester):
+    """Delete harvestable resources that haven't been found on the current refresh.
+
+    If a harvestable resource was not refreshed since the last check, it this means
+    it has not been found this time around - maybe it is not available anymore, or
+    maybe the user just changed the harvester parameters. Either way, the harvestable
+    resource is no longer relevant, and therefore can be deleted.
+
+    When a harvestable resource is deleted, it may leave a corresponding GeoNode
+    resource orphan. The corresponding GeoNode resource is the one that had been
+    created locally as a result of harvesting information of the HarvestableResource
+    on the remote server by the harvester worker. Depending on the value of the
+    corresponding `models.Harvester.delete_orphan_resources_automatically`, the GeoNode
+    resource may also be deleted as a result of running this method.
+
+    """
+
+    previously_checked_at = harvester.last_checked_harvestable_resources
+    logger.debug(f"last checked at: {previously_checked_at}")
+    logger.debug(f"now: {now()}")
+    to_remove = models.HarvestableResource.objects.filter(
+        harvester=harvester, last_refreshed__lte=previously_checked_at)
+    for harvestable_resource in to_remove:
+        # NOTE: Iterating on each resource and calling its `delete()` method instead of
+        # just calling `delete()` on the queryset because this way we can be sure that
+        # the instance's `delete()` method is called (django may not call
+        # `instance.delete()` when using the queryset directly, for performance
+        # reasons). This is because `HarvestableResource.delete()` has the custom logic
+        # to check whether the related GeoNode resource should also be deleted or not
+        harvestable_resource.delete()

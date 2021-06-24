@@ -219,8 +219,9 @@ class HarvestingSessionAdmin(admin.ModelAdmin):
 class HarvestableResourceAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "available",
         "last_refreshed",
+        "last_harvesting_succeeded",
+        "last_harvested",
         "unique_identifier",
         "title",
         "harvester",
@@ -233,19 +234,55 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "harvester",
         "last_updated",
         "last_refreshed",
-        "available",
+        "last_harvested",
+        "last_harvesting_message",
+        "last_harvesting_succeeded",
         "remote_resource_type",
     )
     list_filter = (
         "harvester",
         "should_be_harvested",
-        "available",
         "last_updated",
         "remote_resource_type",
+        "last_harvesting_succeeded",
     )
     list_editable = (
         "should_be_harvested",
     )
+
+    actions = [
+        "toggle_should_be_harvested",
+    ]
+
+    def delete_queryset(self, request, queryset):
+        """
+        Re-implemented to assure individual instance's `delete()` method is called.
+
+        `HarvestableResource.delete()` has some custom logic to check whether the
+        related GeoNode resource should also be deleted. Therefore we don't want Django
+        to potentially optimize this into performing the deletion on the DB, as that
+        would not run our custom logic.
+
+        Further info:
+
+        https://docs.djangoproject.com/en/3.2/topics/db/queries/#deleting-objects
+
+        """
+
+        for harvestable_resource in queryset:
+            harvestable_resource.delete()
+        self.message_user(request, "Harvestable resources have been deleted")
+
+    @admin.action(description="Toggle selected resources' `should_be_harvested` property")
+    def toggle_should_be_harvested(self, request, queryset):
+        for harvestable_resource in queryset:
+            harvestable_resource: models.HarvestableResource
+            harvestable_resource.should_be_harvested = (
+                not harvestable_resource.should_be_harvested)
+            harvestable_resource.save()
+
+        self.message_user(
+            request, "Toggled harvestable resources' `should_be_harvested` attribute")
 
 
 def _worker_config_changed(form) -> bool:
