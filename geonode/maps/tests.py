@@ -20,7 +20,6 @@ import json
 import logging
 
 from unittest.mock import patch
-from django import test
 from owslib.etree import etree as dlxml
 from django.test.utils import override_settings
 
