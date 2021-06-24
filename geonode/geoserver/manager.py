@@ -229,11 +229,11 @@ class GeoServerResourceManager(ResourceManagerInterface):
         instance = instance or ResourceManager._get_instance(uuid)
 
         try:
-            _disable_cache = []
-            _owner = owner or instance.owner
-            if permissions is not None:
-                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                    if instance.polymorphic_ctype.name == 'layer':
+            if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                if isinstance(instance.get_real_instance(), Layer):
+                    _disable_cache = []
+                    _owner = owner or instance.owner
+                    if permissions is not None:
                         # Owner
                         if not created:
                             purge_geofence_layer_rules(instance.get_self_resource())
@@ -277,11 +277,9 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                 gf_services = _get_gf_services(instance, perms)
                                 _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, _group, gf_services)
                                 _disable_cache.append(_disable_layer_cache)
-            else:
-                anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
-                anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
-                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                    if instance.polymorphic_ctype.name == 'layer':
+                    else:
+                        anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
+                        anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
                         purge_geofence_layer_rules(instance.get_self_resource())
 
                         # Owner & Managers
@@ -323,28 +321,28 @@ class GeoServerResourceManager(ResourceManagerInterface):
                             _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                             _disable_cache.append(_disable_layer_cache)
 
-            if _disable_cache and any(_disable_cache):
-                filters = None
-                formats = None
-            else:
-                filters = [{
-                    "styleParameterFilter": {
-                        "STYLES": ""
-                    }
-                }]
-                formats = [
-                    'application/json;type=utfgrid',
-                    'image/gif',
-                    'image/jpeg',
-                    'image/png',
-                    'image/png8',
-                    'image/vnd.jpeg-png',
-                    'image/vnd.jpeg-png8'
-                ]
-            try:
-                toggle_layer_cache(f'{get_layer_workspace(instance)}:{instance.name}', enable=True, filters=filters, formats=formats)
-            except Layer.DoesNotExist:
-                pass
+                    if _disable_cache and any(_disable_cache):
+                        filters = None
+                        formats = None
+                    else:
+                        filters = [{
+                            "styleParameterFilter": {
+                                "STYLES": ""
+                            }
+                        }]
+                        formats = [
+                            'application/json;type=utfgrid',
+                            'image/gif',
+                            'image/jpeg',
+                            'image/png',
+                            'image/png8',
+                            'image/vnd.jpeg-png',
+                            'image/vnd.jpeg-png8'
+                        ]
+                    try:
+                        toggle_layer_cache(f'{get_layer_workspace(instance.get_real_instance())}:{instance.get_real_instance().name}', filters=filters, formats=formats)
+                    except Layer.DoesNotExist:
+                        pass
         except Exception as e:
             logger.exception(e)
             return False
@@ -354,12 +352,12 @@ class GeoServerResourceManager(ResourceManagerInterface):
         instance = instance or ResourceManager._get_instance(uuid)
 
         try:
-            _disable_cache = []
-            gf_services = _get_gf_services(instance, VIEW_PERMISSIONS)
-            if approved:
-                # Set the GeoFence Rules (user = None)
-                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                    if instance.polymorphic_ctype.name == 'layer':
+            if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                if isinstance(instance.get_real_instance(), Layer):
+                    _disable_cache = []
+                    gf_services = _get_gf_services(instance, VIEW_PERMISSIONS)
+                    if approved:
+                        # Set the GeoFence Rules (user = None)
                         if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
                             _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
                             _members_group_group = Group.objects.get(name=_members_group_name)
@@ -368,41 +366,37 @@ class GeoServerResourceManager(ResourceManagerInterface):
                             _disable_cache.append(_disable_layer_cache)
                         else:
                             # Set the GeoFence Rules (user = None)
-                            if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                                if instance.polymorphic_ctype.name == 'layer':
-                                    sync_geofence_with_guardian(instance, VIEW_PERMISSIONS)
-                                    _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
-                                    _disable_cache.append(_disable_layer_cache)
-            if published:
-                # Set the GeoFence Rules (user = None)
-                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                    if instance.polymorphic_ctype.name == 'layer':
+                            sync_geofence_with_guardian(instance, VIEW_PERMISSIONS)
+                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
+                            _disable_cache.append(_disable_layer_cache)
+                    if published:
+                        # Set the GeoFence Rules (user = None)
                         sync_geofence_with_guardian(instance, VIEW_PERMISSIONS)
                         _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                         _disable_cache.append(_disable_layer_cache)
 
-            if _disable_cache and any(_disable_cache):
-                filters = None
-                formats = None
-            else:
-                filters = [{
-                    "styleParameterFilter": {
-                        "STYLES": ""
-                    }
-                }]
-                formats = [
-                    'application/json;type=utfgrid',
-                    'image/gif',
-                    'image/jpeg',
-                    'image/png',
-                    'image/png8',
-                    'image/vnd.jpeg-png',
-                    'image/vnd.jpeg-png8'
-                ]
-            try:
-                toggle_layer_cache(f'{get_layer_workspace(instance)}:{instance.name}', enable=True, filters=filters, formats=formats)
-            except Layer.DoesNotExist:
-                pass
+                    if _disable_cache and any(_disable_cache):
+                        filters = None
+                        formats = None
+                    else:
+                        filters = [{
+                            "styleParameterFilter": {
+                                "STYLES": ""
+                            }
+                        }]
+                        formats = [
+                            'application/json;type=utfgrid',
+                            'image/gif',
+                            'image/jpeg',
+                            'image/png',
+                            'image/png8',
+                            'image/vnd.jpeg-png',
+                            'image/vnd.jpeg-png8'
+                        ]
+                    try:
+                        toggle_layer_cache(f'{get_layer_workspace(instance.get_real_instance())}:{instance.get_real_instance().name}', filters=filters, formats=formats)
+                    except Layer.DoesNotExist:
+                        pass
         except Exception as e:
             logger.exception(e)
             return False
