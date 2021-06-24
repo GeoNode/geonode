@@ -164,6 +164,19 @@ class BaseHarvesterWorker(abc.ABC):
             permissions=harvester.default_access_permissions)
         harvestable_resource.geonode_resource = geonode_resource
         harvestable_resource.save()
+        self.finalize_resource_update(
+            geonode_resource, resource_descriptor,
+            harvestable_resource, harvesting_session_id
+        )
+
+    def finalize_resource_update(
+            self,
+            geonode_resource: ResourceBase,
+            resource_descriptor: resourcedescriptor.RecordDescription,
+            harvestable_resource: models.HarvestableResource,
+            harvesting_session_id: int
+    ) -> ResourceBase:
+        return geonode_resource
 
     def get_geonode_resource_defaults(
             self,

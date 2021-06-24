@@ -237,14 +237,35 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         response = self.http_session.get(f"{self.base_api_url}/{endpoint_suffix}")
         resource_descriptor = None
         if response.status_code == requests.codes.ok:
-            raw_brief_resource = response.json()
-            resource_descriptor = self._get_resource_details(raw_brief_resource)
+            api_record = response.json()
+            resource_descriptor = self._get_resource_details(
+                api_record, harvestable_resource)
             self.update_harvesting_session(
                 harvesting_session_id, additional_harvested_records=1)
         else:
             logger.warning(
                 f"Could not retrieve remote resource {resource_unique_identifier!r}")
         return resource_descriptor
+
+    def finalize_resource_update(
+            self,
+            geonode_resource: ResourceBase,
+            resource_descriptor: resourcedescriptor.RecordDescription,
+            harvestable_resource: models.HarvestableResource,
+            harvesting_session_id: int
+    ) -> ResourceBase:
+        # geonode_resource.metadata_only = True
+        is_document = (
+                harvestable_resource.remote_resource_type ==
+                GeoNodeResourceType.DOCUMENT.value
+        )
+        if is_document:
+            geonode_resource.thumbnail_url = (
+                resource_descriptor.distribution.thumbnail_url)
+            geonode_resource.doc_url = (
+                resource_descriptor.distribution.original_format_url)
+        geonode_resource.save()
+        return geonode_resource
 
     def _get_num_available_resources_by_type(
             self) -> typing.Dict[GeoNodeResourceType, int]:
@@ -308,10 +329,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     def _extract_unique_identifier(self, raw_remote_resource: typing.Dict) -> str:
         return raw_remote_resource["id"]
 
-
     def _get_resource_details(
             self,
-            raw_brief_resource: typing.Dict
+            api_record: typing.Dict,
+            harvestable_resource: models.HarvestableResource
     ) -> typing.Optional[resourcedescriptor.RecordDescription]:
         """
         Produce a record description from the response provided by the remote GeoNode.
@@ -325,7 +346,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "service": "CSW",
                 "version": "2.0.2",
                 "request": "GetRecordById",
-                "id": raw_brief_resource["uuid"],
+                "id": api_record["uuid"],
                 "elementsetname": "full",
                 "outputschema": "http://www.isotc211.org/2005/gmd",
             }
@@ -345,7 +366,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                     f"Original response content: {get_record_by_id_response.content}")
             else:
                 try:
-                    result = get_resource_descriptor(metadata_element)
+                    result = self._get_resource_descriptor(
+                        metadata_element, api_record, harvestable_resource)
                 except TypeError:
                     logger.exception(
                         f"Could not retrieve metadata details to generate "
@@ -386,51 +408,167 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         else:
             try:
                 result = response.json().get("meta", {}).get("total_count", 0)
-            except json.JSONDecodeError as exc:
+            except json.JSONDecodeError:
                 logger.exception("Could not decode response as a JSON object")
         return result
 
+    def _get_resource_descriptor(
+            self,
+            csw_record: etree.Element,
+            api_record: typing.Dict,
+            harvestable_resource: models.HarvestableResource
+    ) -> resourcedescriptor.RecordDescription:
+        crs_epsg_code = ''.join(
+            csw_record.xpath(
+                'gmd:referenceSystemInfo//code//text()', namespaces=csw_record.nsmap)
+        ).strip()
+        return resourcedescriptor.RecordDescription(
+            uuid=uuid.UUID(get_xpath_value(csw_record, "gmd:fileIdentifier")),
+            language=get_xpath_value(csw_record, "gmd:language"),
+            character_set=csw_record.xpath(
+                "gmd:characterSet/gmd:MD_CharacterSetCode/text()",
+                namespaces=csw_record.nsmap)[0],
+            hierarchy_level=csw_record.xpath(
+                "gmd:hierarchyLevel/gmd:MD_ScopeCode/text()",
+                namespaces=csw_record.nsmap)[0],
+            point_of_contact=get_contact_descriptor(
+                csw_record.xpath(
+                    "gmd:contact[.//gmd:role//@codeListValue='pointOfContact']",
+                    namespaces=csw_record.nsmap
+                )[0]
+            ),
+            author=get_contact_descriptor(
+                csw_record.xpath(
+                    "gmd:contact[.//gmd:role//@codeListValue='author']",
+                    namespaces=csw_record.nsmap
+                )[0]
+            ),
+            date_stamp=dateutil.parser.parse(
+                csw_record.xpath(
+                    "gmd:dateStamp/gco:DateTime/text()", namespaces=csw_record.nsmap)[0],
+            ).replace(tzinfo=dt.timezone.utc),
+            reference_systems=[f"EPSG:{crs_epsg_code}"],
+            identification=get_identification_descriptor(
+                csw_record.xpath("gmd:identificationInfo", namespaces=csw_record.nsmap)[0]
+            ),
+            distribution=self.get_distribution_info(
+                csw_record.xpath(
+                    "gmd:distributionInfo", namespaces=csw_record.nsmap)[0],
+                api_record,
+                harvestable_resource,
+            ),
+            data_quality=get_xpath_value(csw_record, ".//gmd:dataQualityInfo//gmd:lineage"),
+        )
 
-def get_resource_descriptor(
-        record: etree.Element) -> resourcedescriptor.RecordDescription:
-    crs_epsg_code = ''.join(
-        record.xpath(
-            'gmd:referenceSystemInfo//code//text()', namespaces=record.nsmap)
-    ).strip()
-    return resourcedescriptor.RecordDescription(
-        uuid=uuid.UUID(get_xpath_value(record, "gmd:fileIdentifier")),
-        language=get_xpath_value(record, "gmd:language"),
-        character_set=record.xpath(
-            "gmd:characterSet/gmd:MD_CharacterSetCode/text()",
-            namespaces=record.nsmap)[0],
-        hierarchy_level=record.xpath(
-            "gmd:hierarchyLevel/gmd:MD_ScopeCode/text()",
-            namespaces=record.nsmap)[0],
-        point_of_contact=get_contact_descriptor(
-            record.xpath(
-                "gmd:contact[.//gmd:role//@codeListValue='pointOfContact']",
-                namespaces=record.nsmap
-            )[0]
-        ),
-        author=get_contact_descriptor(
-            record.xpath(
-                "gmd:contact[.//gmd:role//@codeListValue='author']",
-                namespaces=record.nsmap
-            )[0]
-        ),
-        date_stamp=dateutil.parser.parse(
-            record.xpath(
-                "gmd:dateStamp/gco:DateTime/text()", namespaces=record.nsmap)[0],
-        ).replace(tzinfo=dt.timezone.utc),
-        reference_systems=[f"EPSG:{crs_epsg_code}"],
-        identification=get_identification_descriptor(
-            record.xpath("gmd:identificationInfo", namespaces=record.nsmap)[0]
-        ),
-        distribution=get_distribution_info(
-            record.xpath("gmd:distributionInfo", namespaces=record.nsmap)[0]
-        ),
-        data_quality=get_xpath_value(record, ".//gmd:dataQualityInfo//gmd:lineage"),
-    )
+    def get_distribution_info(
+            self,
+            csw_distribution: etree.Element,
+            api_record: typing.Dict,
+            harvestable_resource: models.HarvestableResource,
+    ) -> resourcedescriptor.RecordDistribution:
+        online_elements = csw_distribution.xpath(
+            ".//gmd:transferOptions//gmd:onLine", namespaces=csw_distribution.nsmap)
+        link = None
+        wms = None
+        wfs = None
+        wcs = None
+        legend = None
+        geojson = None
+        original = None
+        original_format_values = (
+            "original dataset format",
+            "hosted document format",
+        )
+        for online_el in online_elements:
+            protocol = get_xpath_value(online_el, ".//gmd:protocol").lower()
+            linkage = get_xpath_value(online_el, ".//gmd:linkage")
+            description = (get_xpath_value(online_el, ".//gmd:description") or "").lower()
+            if "link" in protocol:
+                link = linkage
+            elif "ogc:wms" in protocol:
+                wms = linkage
+            elif "ogc:wfs" in protocol:
+                wfs = linkage
+            elif "ogc:wcs" in protocol:
+                wcs = linkage
+            elif "legend" in description.lower():
+                legend = linkage
+            elif "geojson" in description.lower():
+                geojson = linkage
+            elif api_record.get("doc_file") is not None:
+                # NOTE: for resources of type document, the GeoNode API returns a
+                # relative URL which can be used directly, as opposed to its CSW API,
+                # which returns a generic download URL
+                document_url: str = api_record.get("doc_file")
+                if document_url.startswith("/"):
+                    original = f"{self.remote_url}{document_url}"
+                else:
+                    original = document_url
+            else:
+                for original_value in original_format_values:
+                    if original_value in description.lower():
+                        original = linkage
+                        break
+        return resourcedescriptor.RecordDistribution(
+            link_url=link,
+            wms_url=wms,
+            wfs_url=wfs,
+            wcs_url=wcs,
+            thumbnail_url=self._retrieve_thumbnail_url(
+                api_record, harvestable_resource),
+            legend_url=legend,
+            geojson_url=geojson,
+            original_format_url=original,
+        )
+
+    def _retrieve_thumbnail_url(
+            self,
+            api_record: typing.Dict,
+            harvestable_resource: models.HarvestableResource,
+    ) -> str:
+        is_document = (
+                harvestable_resource.remote_resource_type ==
+                GeoNodeResourceType.DOCUMENT.value
+        )
+        found_thumbnail = False
+        if is_document:
+            # there seems to be a bug in GeoNode whereby the thumbnail for documents
+            # is reported correctly on the document list endpoint but it is reported
+            # incorrectly on the document detail endpoint and it is also incorrect in
+            # the CSW response. Therefore we resort to fetching the thumbnail through
+            # the document list endpoint
+            document_list_response = self.http_session.get(
+                f"{self.base_api_url}/documents/",
+                params={"id": harvestable_resource.unique_identifier}
+            )
+            if document_list_response.status_code == requests.codes.ok:
+                raw_response = document_list_response.json()
+                try:
+                    reported_thumbnail: str = (
+                        raw_response["objects"][0]["thumbnail_url"])
+                except (KeyError, IndexError):
+                    logger.exception(
+                        f"Could not retrieve document details from the list endpoint")
+                else:
+                    if reported_thumbnail.startswith("/"):
+                        thumbnail = f"{self.remote_url}{reported_thumbnail}"
+                    else:
+                        thumbnail = reported_thumbnail
+                    found_thumbnail = True
+            else:
+                logger.debug(
+                    f"Could not retrieve document list endpoint: "
+                    f"{document_list_response.status_code} - "
+                    f"{document_list_response.reason}"
+                )
+        if not found_thumbnail:
+            reported_thumbnail: typing.Optional[str] = api_record.get("thumbnail_url")
+            if reported_thumbnail is not None and reported_thumbnail.startswith("/"):
+                # it is not a full URL
+                thumbnail = f"{self.remote_url}{reported_thumbnail}"
+            else:
+                thumbnail = reported_thumbnail
+        return thumbnail
 
 
 def get_contact_descriptor(contact: etree.Element):
@@ -528,50 +666,6 @@ def get_identification_descriptor(identification: etree.Element):
         temporal_extent=get_temporal_extent(identification),
         supplemental_information=get_xpath_value(
             identification, ".//gmd:supplumentalInformation")
-    )
-
-
-def get_distribution_info(
-        distribution: etree.Element) -> resourcedescriptor.RecordDistribution:
-    online_elements = distribution.xpath(
-        ".//gmd:transferOptions//gmd:onLine", namespaces=distribution.nsmap)
-    link = None
-    wms = None
-    wfs = None
-    wcs = None
-    thumbnail = None
-    legend = None
-    geojson = None
-    original = None
-    for online_el in online_elements:
-        protocol = get_xpath_value(online_el, ".//gmd:protocol").lower()
-        linkage = get_xpath_value(online_el, ".//gmd:linkage")
-        description = (get_xpath_value(online_el, ".//gmd:description") or "").lower()
-        if "link" in protocol:
-            link = linkage
-        elif "ogc:wms" in protocol:
-            wms = linkage
-        elif "ogc:wfs" in protocol:
-            wfs = linkage
-        elif "ogc:wcs" in protocol:
-            wcs = linkage
-        elif "thumbnail" in description:
-            thumbnail = linkage
-        elif "legend" in description:
-            legend = linkage
-        elif "geojson" in description:
-            geojson = linkage
-        elif "original dataset format" in description:
-            original = linkage
-    return resourcedescriptor.RecordDistribution(
-        link_url=link,
-        wms_url=wms,
-        wfs_url=wfs,
-        wcs_url=wcs,
-        thumbnail_url=thumbnail,
-        legend_url=legend,
-        geojson_url=geojson,
-        original_format_url=original,
     )
 
 
