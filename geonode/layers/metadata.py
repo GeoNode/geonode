@@ -21,7 +21,6 @@
 """Utilities for managing GeoNode resource metadata
 """
 # Standard Modules
-import uuid
 import logging
 import datetime
 from owslib.etree import etree as dlxml

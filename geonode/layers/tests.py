@@ -27,13 +27,11 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from django.test import TestCase
 import io
 import os
-import json
 import shutil
 import gisdata
 import logging
 import zipfile
 import tempfile
-import contextlib
 
 from mock import patch
 from pinax.ratings.models import OverallRating
@@ -1768,7 +1766,7 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
         resp = self.client.post(reverse('layer_upload'), params)
         self.assertEqual(404, resp.status_code)
         expected = {
-            "success": False, 
+            "success": False,
             "errors": "The UUID identifier from the XML Metadata, is different from the one saved"
         }
         self.assertDictEqual(expected, resp.json())
