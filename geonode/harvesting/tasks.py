@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import datetime as dt
 import logging
 import math
 
@@ -28,6 +29,7 @@ from . import (
     models,
     utils,
 )
+from .harvesters.base import BaseHarvesterWorker
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +54,7 @@ def harvesting_dispatcher(self, harvester_id: int):
     - schedule each harvestable resource to be harvested asynchronously
     - when all resources have been harvested, finish the harvesting session
 
-    The code uses celery's chord workflow primitive. This is used to allow the
+    The code uses celery's `chord` workflow primitive. This is used to allow the
     harvesting of individual resources to be done in parallel (as much as the celery
     worker config allows for) and still have a final synchronization step, once all
     resources are harvested, that finalizes the harvesting session.
@@ -107,15 +109,16 @@ def _harvest_resource(
         harvesting_session_id: int
 ):
     """Harvest a single resource from the input harvestable resource id"""
-    logger.debug(f"Inside _harvest_resource")
     harvestable_resource = models.HarvestableResource.objects.get(
         pk=harvestable_resource_id)
-    worker = harvestable_resource.harvester.get_harvester_worker()
+    worker: BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
     resource_descriptor = worker.get_resource(
         harvestable_resource, harvesting_session_id)
     if resource_descriptor is not None:
         worker.update_geonode_resource(
             resource_descriptor, harvestable_resource, harvesting_session_id)
+    worker.update_harvesting_session(
+        harvesting_session_id, additional_harvested_records=1)
 
 
 @app.task(
@@ -185,7 +188,6 @@ def update_harvestable_resources(self, harvester_id: int):
     # because we want to know about all of them. We are not able to batch harvesting
     # of resources because these have potentially been individually selected by the
     # user, which means we are not interested in all of them
-    # TODO: implement removal of harvestable_resources that are not available anymore
     harvester = models.Harvester.objects.get(pk=harvester_id)
     harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
     harvester.save()
@@ -195,25 +197,26 @@ def update_harvestable_resources(self, harvester_id: int):
     except NotImplementedError:
         _handle_harvestable_resources_update_error(
             self.request.id, harvester_id=harvester_id)
-    page_size = 10
-    total_pages = math.ceil(num_resources / page_size)
-    batches = []
-    for page in range(total_pages):
-        batches.append(
-            _update_harvestable_resources_batch.signature(
-                args=(harvester_id, page, page_size),
+    else:
+        page_size = 10
+        total_pages = math.ceil(num_resources / page_size)
+        batches = []
+        for page in range(total_pages):
+            batches.append(
+                _update_harvestable_resources_batch.signature(
+                    args=(harvester_id, page, page_size),
+                )
+            )
+        update_finalizer = _finish_harvestable_resources_update.signature(
+            args=(harvester_id,),
+            immutable=True
+        ).on_error(
+            _handle_harvestable_resources_update_error.signature(
+                kwargs={"harvester_id": harvester_id}
             )
         )
-    update_finalizer = _finish_harvestable_resources_update.signature(
-        args=(harvester_id,),
-        immutable=True
-    ).on_error(
-        _handle_harvestable_resources_update_error.signature(
-            kwargs={"harvester_id": harvester_id}
-        )
-    )
-    update_workflow = chord(batches, body=update_finalizer)
-    update_workflow.apply_async()
+        update_workflow = chord(batches, body=update_finalizer)
+        update_workflow.apply_async()
 
 
 @app.task(
@@ -236,9 +239,15 @@ def _update_harvestable_resources_batch(
             available=True,
             defaults={
                 "should_be_harvested": harvester.harvest_new_resources_by_default,
-                "remote_resource_type": remote_resource.resource_type
+                "remote_resource_type": remote_resource.resource_type,
+                "last_refreshed": now()
             }
         )
+        # NOTE: make sure to save the resource because we need to have its
+        # `last_updated` property be refreshed - this is done in order to be able
+        # to compare when a resource has been found
+        resource.last_refreshed = now()
+        resource.save()
 
 
 @app.task(
@@ -249,8 +258,20 @@ def _update_harvestable_resources_batch(
 )
 def _finish_harvestable_resources_update(self, harvester_id: int):
     harvester = models.Harvester.objects.get(pk=harvester_id)
-    harvester.status = harvester.STATUS_READY
     now_ = now()
+    if harvester.last_checked_harvestable_resources is not None:
+        # delete harvestable resources that were not updated since the last check,
+        # as this means they have not been found this time around (maybe they are not
+        # available anymore, or maybe the user just changed the harvester parameters
+        # and they are no longer relevant)
+        previously_checked_at = harvester.last_checked_harvestable_resources
+        logger.debug(f"last checked at: {previously_checked_at}")
+        logger.debug(f"now: {now_}")
+        models.HarvestableResource.objects.filter(
+            harvester=harvester,
+            last_refreshed__lte=previously_checked_at
+        ).delete()
+    harvester.status = harvester.STATUS_READY
     harvester.last_checked_harvestable_resources = now_
     harvester.last_check_harvestable_resources_message = (
         f"{now_} - Harvestable resources successfully checked")

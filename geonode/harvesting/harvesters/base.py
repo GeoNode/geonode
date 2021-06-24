@@ -138,26 +138,32 @@ class BaseHarvesterWorker(abc.ABC):
             harvestable_resource: models.HarvestableResource,
             harvesting_session_id: int
     ):
-        """Update GeoNode with the input resource descriptor."""
+        """Create or update GeoNode with the input resource descriptor."""
         harvester = models.Harvester.objects.get(pk=self.harvester_id)
         defaults = self.get_geonode_resource_defaults(
             resource_descriptor, harvestable_resource)
-        if resource_manager.exists(str(resource_descriptor.uuid)):
-            geonode_resource = resource_manager.update(
-                str(resource_descriptor.uuid),
-                vals=defaults,
-            )
-        else:
+        geonode_resource = harvestable_resource.geonode_resource
+        if geonode_resource is None:
             geonode_resource = resource_manager.create(
                 str(resource_descriptor.uuid),
                 self.get_geonode_resource_type(
                     harvestable_resource.remote_resource_type),
                 defaults
             )
+        else:
+            if not geonode_resource.uuid == str(resource_descriptor.uuid):
+                raise RuntimeError(
+                    f"Resource {geonode_resource!r} already exists locally but its "
+                    f"UUID ({geonode_resource.uuid}) does not match the one found on "
+                    f"the remote resource {resource_descriptor.uuid!r}")
+            geonode_resource = resource_manager.update(
+                str(resource_descriptor.uuid), vals=defaults)
         resource_manager.set_permissions(
             str(resource_descriptor.uuid),
             instance=geonode_resource,
             permissions=harvester.default_access_permissions)
+        harvestable_resource.geonode_resource = geonode_resource
+        harvestable_resource.save()
 
     def get_geonode_resource_defaults(
             self,

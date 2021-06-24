@@ -274,6 +274,7 @@ class HarvestableResource(models.Model):
         "base.ResourceBase", null=True, on_delete=models.SET_NULL)
     should_be_harvested = models.BooleanField(default=False)
     last_updated = models.DateTimeField(auto_now=True)
+    last_refreshed = models.DateTimeField()
     available = models.BooleanField(default=False)
     remote_resource_type = models.CharField(
         max_length=255,

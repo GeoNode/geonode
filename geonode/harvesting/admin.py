@@ -52,6 +52,7 @@ class HarvesterAdmin(admin.ModelAdmin):
         "update_frequency",
         "harvester_type",
         "get_num_harvestable_resources",
+        "get_num_harvestable_resources_selected",
     )
 
     readonly_fields = (
@@ -97,12 +98,12 @@ class HarvesterAdmin(admin.ModelAdmin):
                         request,
                         (
                             "Harvester worker specific configuration has been changed. "
-                            "Regenerating list of this harvester's harvestable "
+                            "Updating list of this harvester's harvestable "
                             "resources asynchronously... "
                         ),
                         level=messages.WARNING
                     )
-                    models.HarvestableResource.objects.filter(harvester=obj).delete()
+                    # models.HarvestableResource.objects.filter(harvester=obj).delete()
                     transaction.on_commit(partial_task)
             else:
                 self.message_user(
@@ -156,9 +157,13 @@ class HarvesterAdmin(admin.ModelAdmin):
                 f"Updating harvestable resources asynchronously for {being_updated}..."
             )
 
-    @admin.display(description="Number of resources to harvest")
-    def get_num_harvestable_resources(self, harvester: models.Harvester):
+    @admin.display(description="Number of selected resources to harvest")
+    def get_num_harvestable_resources_selected(self, harvester: models.Harvester):
         return harvester.harvestable_resources.filter(should_be_harvested=True).count()
+
+    @admin.display(description="Number of existing harvestable resources")
+    def get_num_harvestable_resources(self, harvester: models.Harvester):
+        return harvester.harvestable_resources.count()
 
     @admin.action(description="Perform harvesting on selected harvesters")
     def perform_harvesting(self, request, queryset):
@@ -215,7 +220,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "available",
-        "last_updated",
+        "last_refreshed",
         "unique_identifier",
         "title",
         "harvester",
@@ -227,6 +232,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "title",
         "harvester",
         "last_updated",
+        "last_refreshed",
         "available",
         "remote_resource_type",
     )

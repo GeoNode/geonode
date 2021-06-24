@@ -17,7 +17,10 @@
 #
 #########################################################################
 
+"""Harvester for legacy GeoNode remote servers"""
+
 import datetime as dt
+import enum
 import json
 import logging
 import typing
@@ -43,6 +46,12 @@ from geonode.maps.models import Map
 logger = logging.getLogger(__name__)
 
 
+class GeoNodeResourceType(enum.Enum):
+    DOCUMENT = "documents"
+    LAYER = "layers"
+    MAP = "maps"
+
+
 class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     harvest_documents: bool
     harvest_layers: bool
@@ -51,6 +60,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     resource_title_filter: typing.Optional[str]
     http_session: requests.Session
     page_size: int = 10
+
+    _TYPE_DOCUMENT = "documents"
+    _TYPE_LAYER = "layers"
+    _TYPE_MAP = "maps"
 
     def __init__(
             self,
@@ -141,79 +154,52 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
 
     def get_num_available_resources(self) -> int:
         result = 0
-        types_to_harvest = []
-        if self.harvest_maps:
-            types_to_harvest.append("maps")
-        if self.harvest_layers:
-            types_to_harvest.append("layers")
         if self.harvest_documents:
-            types_to_harvest.append("documents")
-        for resource_type_suffix in types_to_harvest:
-            result += self._get_total_records(resource_type_suffix)
+            result += self._get_total_records(GeoNodeResourceType.DOCUMENT)
+        if self.harvest_layers:
+            result += self._get_total_records(GeoNodeResourceType.LAYER)
+        if self.harvest_maps:
+            result += self._get_total_records(GeoNodeResourceType.MAP)
         return result
-
-    def _get_num_available_resources_by_type(self) -> typing.Dict[str, int]:
-        result = {
-            "documents": 0,
-            "layers": 0,
-            "maps": 0,
-        }
-        for resource_type_suffix in result.keys():
-            result[resource_type_suffix] = self._get_total_records(resource_type_suffix)
-        return result
-
-    def _list_resources_by_type(
-            self,
-            resource_type: str, offset: int
-    ) -> typing.List[base.BriefRemoteResource]:
-        response = self.http_session.get(
-            f"{self.base_api_url}/{resource_type}/",
-            params=self._get_resource_list_params(offset)
-        )
-        response.raise_for_status()
-        resources = response.json().get("objects", [])
-        result = []
-        for resource in response.json().get("objects", []):
-            brief_resource = base.BriefRemoteResource(
-                unique_identifier=self._extract_unique_identifier(resource),
-                title=resource["title"],
-                resource_type=resource_type,
-            )
-            result.append(brief_resource)
-        return result
-
-    def _extract_unique_identifier(self, raw_remote_resource: typing.Dict) -> str:
-        return raw_remote_resource["id"]
 
     def list_resources(
             self,
             offset: typing.Optional[int] = 0
     ) -> typing.List[base.BriefRemoteResource]:
+        # the implementation of this method is a bit convoluted because the GeoNode
+        # legacy versions do not have a common `/resources` endpoint, we must query
+        # the individual endpoints for documents, layers and maps and work out the
+        # correct offsets to use.
         total_resources = self._get_num_available_resources_by_type()
-        if offset < total_resources["documents"]:
-            document_list = self._list_resources_by_type("documents", offset)
+        if offset < total_resources[GeoNodeResourceType.DOCUMENT]:
+            document_list = self._list_document_resources(offset)
             if len(document_list) < self.page_size:
-                layer_list = self._list_resources_by_type("layers", 0)
+                layer_list = self._list_layer_resources(0)
                 added = document_list + layer_list
                 if len(added) < self.page_size:
-                    map_list = self._list_resources_by_type("maps", 0)
+                    map_list = self._list_map_resources(0)
                     result = (added + map_list)[:self.page_size]
                 else:
                     result = added[:self.page_size]
             else:
                 result = document_list
-        elif offset < (total_resources["documents"] + total_resources["layers"]):
-            layer_offset = offset - total_resources["documents"]
-            layer_list = self._list_resources_by_type("layers", layer_offset)
+        elif offset < (
+                total_resources[GeoNodeResourceType.DOCUMENT] +
+                total_resources[GeoNodeResourceType.LAYER]
+        ):
+            layer_offset = offset - total_resources[GeoNodeResourceType.DOCUMENT]
+            layer_list = self._list_layer_resources(layer_offset)
             if len(layer_list) < self.page_size:
-                map_list = self._list_resources_by_type("maps", 0)
+                map_list = self._list_map_resources(0)
                 result = (layer_list + map_list)[:self.page_size]
             else:
                 result = layer_list
         else:
             map_offset = offset - (
-                    total_resources["documents"] + total_resources["layers"])
-            result = self._list_resources_by_type("maps", map_offset)
+                    total_resources[GeoNodeResourceType.DOCUMENT] +
+                    total_resources[GeoNodeResourceType.LAYER]
+            )
+            result = self._list_map_resources(map_offset)
         return result
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
@@ -231,9 +217,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     def get_geonode_resource_type(self, remote_resource_type: str) -> ResourceBase:
         """Return resource type class from resource type string."""
         return {
-            "maps": Map,
-            "layers": Layer,
-            "documents": Document,
+            GeoNodeResourceType.MAP.value: Map,
+            GeoNodeResourceType.LAYER.value: Layer,
+            GeoNodeResourceType.DOCUMENT.value: Document,
         }[remote_resource_type]
 
     def get_resource(
@@ -243,9 +229,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     ) -> typing.Optional[resourcedescriptor.RecordDescription]:
         resource_unique_identifier = harvestable_resource.unique_identifier
         endpoint_suffix = {
-            "documents": f"/documents/{resource_unique_identifier}/",
-            "layers": f"/layers/{resource_unique_identifier}/",
-            "maps": f"/maps/{resource_unique_identifier}/",
+            GeoNodeResourceType.DOCUMENT.value: (
+                f"/documents/{resource_unique_identifier}/"),
+            GeoNodeResourceType.LAYER.value: f"/layers/{resource_unique_identifier}/",
+            GeoNodeResourceType.MAP.value: f"/maps/{resource_unique_identifier}/",
         }[harvestable_resource.remote_resource_type.lower()]
         response = self.http_session.get(f"{self.base_api_url}/{endpoint_suffix}")
         resource_descriptor = None
@@ -258,6 +245,69 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             logger.warning(
                 f"Could not retrieve remote resource {resource_unique_identifier!r}")
         return resource_descriptor
+
+    def _get_num_available_resources_by_type(
+            self) -> typing.Dict[GeoNodeResourceType, int]:
+        result = {
+            GeoNodeResourceType.DOCUMENT: 0,
+            GeoNodeResourceType.LAYER: 0,
+            GeoNodeResourceType.MAP: 0,
+        }
+        if self.harvest_documents:
+            result[GeoNodeResourceType.DOCUMENT] = self._get_total_records(
+                GeoNodeResourceType.DOCUMENT)
+        if self.harvest_layers:
+            result[GeoNodeResourceType.LAYER] = self._get_total_records(
+                GeoNodeResourceType.LAYER)
+        if self.harvest_maps:
+            result[GeoNodeResourceType.MAP] = self._get_total_records(
+                GeoNodeResourceType.MAP)
+        return result
+
+    def _list_document_resources(
+            self, offset: int) -> typing.List[base.BriefRemoteResource]:
+        result = []
+        if self.harvest_documents:
+            result = self._list_resources_by_type(GeoNodeResourceType.DOCUMENT, offset)
+        return result
+
+    def _list_layer_resources(
+            self, offset: int) -> typing.List[base.BriefRemoteResource]:
+        result = []
+        if self.harvest_layers:
+            result = self._list_resources_by_type(GeoNodeResourceType.LAYER, offset)
+        return result
+
+    def _list_map_resources(
+            self, offset: int) -> typing.List[base.BriefRemoteResource]:
+        result = []
+        if self.harvest_maps:
+            result = self._list_resources_by_type(GeoNodeResourceType.MAP, offset)
+        return result
+
+    def _list_resources_by_type(
+            self,
+            resource_type: GeoNodeResourceType,
+            offset: int
+    ) -> typing.List[base.BriefRemoteResource]:
+        response = self.http_session.get(
+            f"{self.base_api_url}/{resource_type.value}/",
+            params=self._get_resource_list_params(offset)
+        )
+        response.raise_for_status()
+        result = []
+        for resource in response.json().get("objects", []):
+            brief_resource = base.BriefRemoteResource(
+                unique_identifier=self._extract_unique_identifier(resource),
+                title=resource["title"],
+                resource_type=resource_type.value,
+            )
+            result.append(brief_resource)
+        return result
+
+    def _extract_unique_identifier(self, raw_remote_resource: typing.Dict) -> str:
+        return raw_remote_resource["id"]
+
 
     def _get_resource_details(
             self,
@@ -323,9 +373,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
 
     def _get_total_records(
             self,
-            endpoint_suffix: str,
+            resource_type: GeoNodeResourceType,
     ) -> int:
-        url = f"{self.base_api_url}/{endpoint_suffix}/"
+        url = f"{self.base_api_url}/{resource_type.value}/"
         response = self.http_session.get(
             url,
             params=self._get_resource_list_params()
