@@ -31,6 +31,7 @@ from geonode.layers.models import Layer
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
+from geonode.utils import get_layer_workspace
 from geonode.services.enumerations import CASCADED
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.permissions import VIEW_PERMISSIONS
@@ -340,7 +341,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     'image/vnd.jpeg-png',
                     'image/vnd.jpeg-png8'
                 ]
-            toggle_layer_cache(f'{instance.layer.alternate}', filters=filters, formats=formats)
+            toggle_layer_cache(f'{get_layer_workspace(instance.layer)}:{instance.layer.name}', enable=True, filters=filters, formats=formats)
         except Exception as e:
             logger.exception(e)
             return False
@@ -395,7 +396,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     'image/vnd.jpeg-png',
                     'image/vnd.jpeg-png8'
                 ]
-            toggle_layer_cache(f'{instance.layer.alternate}', filters=filters, formats=formats)
+            toggle_layer_cache(f'{get_layer_workspace(instance.layer)}:{instance.layer.name}', enable=True, filters=filters, formats=formats)
         except Exception as e:
             logger.exception(e)
             return False
