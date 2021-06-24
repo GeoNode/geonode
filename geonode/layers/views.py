@@ -245,11 +245,10 @@ def layer_upload_metadata(request):
             if layer_uuid and layer.first().uuid != layer_uuid:
                 out['success'] = False
                 out['errors'] = "The UUID identifier from the XML Metadata, is different from the one saved"
-                status_code = 500
                 return HttpResponse(
                     json.dumps(out),
                     content_type='application/json',
-                    status=status_code)
+                    status=404)
 
             updated_layer = _update_layer_with_xml_info(layer.first(), base_file, regions, keywords, vals)
             updated_layer.save()

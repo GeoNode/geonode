@@ -742,7 +742,7 @@ def final_step(upload_session, user, charset="UTF-8"):
         try:
             with transaction.atomic():
                 saved_layer, created = Layer.objects.get_or_create(
-                    uuid=layer_uuid,
+                    uuid=layer_uuid or str(uuid.uuid1()),
                     defaults=dict(
                         store=target.name,
                         storeType=target.store_type,
