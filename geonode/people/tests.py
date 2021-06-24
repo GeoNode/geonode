@@ -32,6 +32,7 @@ from geonode.people import profileextractors
 
 
 class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
+
     def setUp(self):
         super().setUp()
         self.layers = Layer.objects.all()[:3]
@@ -54,7 +55,7 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
         """
         Test that only admin users can access the routes
         """
-        self.client.login(username="bobby", password="bob")
+        self.client.logout()
         response = self.client.get(reverse('set_user_layer_permissions'))
         self.assertEqual(response.status_code, 401)
 

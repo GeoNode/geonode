@@ -59,13 +59,20 @@ class GeoNodeBaseTestSupport(TestCase):
     ]
 
     @classproperty
+    def get_obj_ids(cls):
+        return cls.obj_ids
+
+    @classproperty
+    def get_integration(cls):
+        return cls.integration
+
+    @classproperty
     def get_type(cls):
         return cls.type
 
     def setUp(self):
         super().setUp()
         faulthandler.enable()
-        logging.debug(" Test setUp. Creating models.")
 
 
 class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,

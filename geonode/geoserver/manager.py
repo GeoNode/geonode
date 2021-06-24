@@ -244,9 +244,9 @@ class GeoServerResourceManager(ResourceManagerInterface):
                             "change_resourcebase",
                             "change_resourcebase_permissions",
                             "download_resourcebase"]
-                        sync_geofence_with_guardian(instance.layer, perms, user=_owner)
-                        gf_services = _get_gf_services(instance.layer, perms)
-                        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, _owner, None, gf_services)
+                        sync_geofence_with_guardian(instance, perms, user=_owner)
+                        gf_services = _get_gf_services(instance, perms)
+                        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, _owner, None, gf_services)
                         _disable_cache.append(_disable_layer_cache)
 
                         # All the other users
@@ -260,10 +260,10 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                         group_perms = permissions['groups']
                                     if user == "AnonymousUser":
                                         _user = None
-                                    sync_geofence_with_guardian(instance.layer, perms, user=_user, group_perms=group_perms)
-                                    gf_services = _get_gf_services(instance.layer, perms)
+                                    sync_geofence_with_guardian(instance, perms, user=_user, group_perms=group_perms)
+                                    gf_services = _get_gf_services(instance, perms)
                                     _group = list(group_perms.keys())[0] if group_perms else None
-                                    _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, _user, _group, gf_services)
+                                    _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, _user, _group, gf_services)
                                     _disable_cache.append(_disable_layer_cache)
 
                         # All the other groups
@@ -273,9 +273,9 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                 # Set the GeoFence Rules
                                 if _group and _group.name and _group.name == 'anonymous':
                                     _group = None
-                                sync_geofence_with_guardian(instance.layer, perms, group=_group)
-                                gf_services = _get_gf_services(instance.layer, perms)
-                                _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, None, _group, gf_services)
+                                sync_geofence_with_guardian(instance, perms, group=_group)
+                                gf_services = _get_gf_services(instance, perms)
+                                _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, _group, gf_services)
                                 _disable_cache.append(_disable_layer_cache)
             else:
                 anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
@@ -292,35 +292,35 @@ class GeoServerResourceManager(ResourceManagerInterface):
                             "change_resourcebase",
                             "change_resourcebase_permissions",
                             "download_resourcebase"]
-                        sync_geofence_with_guardian(instance.layer, perms, user=_owner)
-                        gf_services = _get_gf_services(instance.layer, perms)
-                        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, _owner, None, gf_services)
+                        sync_geofence_with_guardian(instance, perms, user=_owner)
+                        gf_services = _get_gf_services(instance, perms)
+                        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, _owner, None, gf_services)
                         _disable_cache.append(_disable_layer_cache)
 
                         for _group_manager in get_obj_group_managers(_owner):
-                            sync_geofence_with_guardian(instance.layer, perms, user=_group_manager)
-                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, _group_manager, None, gf_services)
+                            sync_geofence_with_guardian(instance, perms, user=_group_manager)
+                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, _group_manager, None, gf_services)
                             _disable_cache.append(_disable_layer_cache)
 
                         for user_group in get_user_groups(_owner):
                             if not skip_registered_members_common_group(user_group):
-                                sync_geofence_with_guardian(instance.layer, perms, group=user_group)
-                                _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, None, user_group, gf_services)
+                                sync_geofence_with_guardian(instance, perms, group=user_group)
+                                _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, user_group, gf_services)
                                 _disable_cache.append(_disable_layer_cache)
 
                         # Anonymous
                         perms = ["view_resourcebase"]
                         if anonymous_can_view:
-                            sync_geofence_with_guardian(instance.layer, perms, user=None, group=None)
-                            gf_services = _get_gf_services(instance.layer, perms)
-                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, None, None, gf_services)
+                            sync_geofence_with_guardian(instance, perms, user=None, group=None)
+                            gf_services = _get_gf_services(instance, perms)
+                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                             _disable_cache.append(_disable_layer_cache)
 
                         perms = ["download_resourcebase"]
                         if anonymous_can_download:
-                            sync_geofence_with_guardian(instance.layer, perms, user=None, group=None)
-                            gf_services = _get_gf_services(instance.layer, perms)
-                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, None, None, gf_services)
+                            sync_geofence_with_guardian(instance, perms, user=None, group=None)
+                            gf_services = _get_gf_services(instance, perms)
+                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                             _disable_cache.append(_disable_layer_cache)
 
             if _disable_cache and any(_disable_cache):
@@ -341,7 +341,10 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     'image/vnd.jpeg-png',
                     'image/vnd.jpeg-png8'
                 ]
-            toggle_layer_cache(f'{get_layer_workspace(instance.layer)}:{instance.layer.name}', enable=True, filters=filters, formats=formats)
+            try:
+                toggle_layer_cache(f'{get_layer_workspace(instance)}:{instance.name}', enable=True, filters=filters, formats=formats)
+            except Layer.DoesNotExist:
+                pass
         except Exception as e:
             logger.exception(e)
             return False
@@ -352,7 +355,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
         try:
             _disable_cache = []
-            gf_services = _get_gf_services(instance.layer, VIEW_PERMISSIONS)
+            gf_services = _get_gf_services(instance, VIEW_PERMISSIONS)
             if approved:
                 # Set the GeoFence Rules (user = None)
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
@@ -360,22 +363,22 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
                             _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
                             _members_group_group = Group.objects.get(name=_members_group_name)
-                            sync_geofence_with_guardian(instance.layer, VIEW_PERMISSIONS, group=_members_group_group)
-                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, None, _members_group_group, gf_services)
+                            sync_geofence_with_guardian(instance, VIEW_PERMISSIONS, group=_members_group_group)
+                            _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, _members_group_group, gf_services)
                             _disable_cache.append(_disable_layer_cache)
                         else:
                             # Set the GeoFence Rules (user = None)
                             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                                 if instance.polymorphic_ctype.name == 'layer':
-                                    sync_geofence_with_guardian(instance.layer, VIEW_PERMISSIONS)
-                                    _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, None, None, gf_services)
+                                    sync_geofence_with_guardian(instance, VIEW_PERMISSIONS)
+                                    _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                                     _disable_cache.append(_disable_layer_cache)
             if published:
                 # Set the GeoFence Rules (user = None)
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     if instance.polymorphic_ctype.name == 'layer':
-                        sync_geofence_with_guardian(instance.layer, VIEW_PERMISSIONS)
-                        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance.layer, None, None, gf_services)
+                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS)
+                        _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                         _disable_cache.append(_disable_layer_cache)
 
             if _disable_cache and any(_disable_cache):
@@ -396,7 +399,10 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     'image/vnd.jpeg-png',
                     'image/vnd.jpeg-png8'
                 ]
-            toggle_layer_cache(f'{get_layer_workspace(instance.layer)}:{instance.layer.name}', enable=True, filters=filters, formats=formats)
+            try:
+                toggle_layer_cache(f'{get_layer_workspace(instance)}:{instance.name}', enable=True, filters=filters, formats=formats)
+            except Layer.DoesNotExist:
+                pass
         except Exception as e:
             logger.exception(e)
             return False
