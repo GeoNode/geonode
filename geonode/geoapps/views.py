@@ -228,7 +228,12 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
             access_token = None
 
     _data = GeoAppData.objects.filter(resource__id=geoappid).first()
-    _config = _data.blob if _data else {}
+
+    if _data and isinstance(_data, str):
+        _config = json.dumps(_data.blob)
+    else:
+        _config = _data.blob if _data else {}
+
     _ctx = {
         'appId': geoappid,
         'appType': geoapp_obj.type,
