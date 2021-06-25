@@ -357,15 +357,15 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             try:
                 metadata_element = xml_root.xpath(
                     "./gmd:MD_Metadata", namespaces=xml_root.nsmap)[0]
-            except IndexError as e:
-                logger.warning(f"Unable to retrieve a metadata element from the CSW GetRecordById response, skipping... {e}")
+            except IndexError:
+                logger.warning("Unable to retrieve a metadata element from the CSW GetRecordById response, skipping...")
                 logger.debug(f"Original response content: {get_record_by_id_response.content}")
             else:
                 try:
                     result = self._get_resource_descriptor(
                         metadata_element, api_record, harvestable_resource)
-                except TypeError as e:
-                    logger.exception(f"Could not retrieve metadata details to generate resource descriptor, skipping... {e}")
+                except TypeError:
+                    logger.exception("Could not retrieve metadata details to generate resource descriptor, skipping...")
                 else:
                     logger.debug(
                         f"Found details for resource {result.uuid!r} - {result.identification.title!r}"
@@ -538,9 +538,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 try:
                     reported_thumbnail: str = (
                         raw_response["objects"][0]["thumbnail_url"])
-                except (KeyError, IndexError) as e:
-                    logger.exception(
-                        f"Could not retrieve document details from the list endpoint {e}")
+                except (KeyError, IndexError):
+                    logger.exception("Could not retrieve document details from the list endpoint")
                 else:
                     if reported_thumbnail.startswith("/"):
                         thumbnail = f"{self.remote_url}{reported_thumbnail}"

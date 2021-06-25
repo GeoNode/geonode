@@ -147,8 +147,8 @@ class HarvesterSerializer(BriefHarvesterSerializer):
         if worker_type is not None and worker_config is not None:
             try:
                 utils.validate_worker_configuration(worker_type, worker_config)
-            except jsonschema.exceptions.ValidationError as exc:
-                logger.exception(exc)
+            except jsonschema.exceptions.ValidationError:
+                logger.exception()
                 raise serializers.ValidationError(
                     f"Invalid {worker_config_field!r} configuration")
 
