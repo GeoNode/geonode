@@ -23,6 +23,7 @@ import html
 import math
 import logging
 import traceback
+from sequences.models import Sequence
 
 from sequences import get_next_value
 
@@ -1048,14 +1049,20 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     send_notification(recipients, notice_type_label, {'resource': self})
 
         if self.pk is None:
-            _initial_value = type(self).objects.aggregate(Max("id"))['id__max']
+            _initial_value = ResourceBase.objects.aggregate(Max("pk"))['pk__max']
             if not _initial_value:
                 _initial_value = 1
             else:
                 _initial_value += 1
-            self.pk = self.id = get_next_value(
+            _next_value = get_next_value(
                 "ResourceBase",  # type(self).__name__,
                 initial_value=_initial_value)
+            if _initial_value > _next_value:
+                Sequence.objects.filter(name='ResourceBase').update(last=_initial_value)
+                _next_value = _initial_value
+
+            self.pk = self.id = _next_value
+
         super().save(*args, **kwargs)
         self.__is_approved = self.is_approved
         self.__is_published = self.is_published
