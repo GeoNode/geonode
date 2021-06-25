@@ -137,8 +137,9 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
 
     def update_geonode_resource(
             self,
-            resource_descriptor: resourcedescriptor.RecordDescription,
-            harvesting_session_id: typing.Optional[int] = None
+            harvested_info: base.HarvestedResourceInfo,
+            harvestable_resource: "HarvestableResource",  # noqa
+            harvesting_session_id: int,
     ):
         raise NotImplementedError
 

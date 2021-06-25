@@ -34,7 +34,6 @@ from django_celery_beat.models import (
 
 from . import utils
 from .config import HARVESTER_CLASSES
-from .harvesters.base import BaseHarvesterWorker
 
 logger = logging.getLogger(__name__)
 
@@ -225,7 +224,7 @@ class Harvester(models.Model):
         )
         self.save()
 
-    def get_harvester_worker(self) -> BaseHarvesterWorker:
+    def get_harvester_worker(self) -> "BaseHarvesterWorker":  # noqa
         worker_class = import_string(self.harvester_type)
         return worker_class.from_django_record(self)
 
