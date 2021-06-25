@@ -226,7 +226,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             self,
             harvestable_resource: models.HarvestableResource,
             harvesting_session_id: int
-    ) -> typing.Optional[resourcedescriptor.RecordDescription]:
+    ) -> typing.Optional[base.HarvestedResourceInfo]:
         resource_unique_identifier = harvestable_resource.unique_identifier
         endpoint_suffix = {
             GeoNodeResourceType.DOCUMENT.value: (
@@ -235,35 +235,38 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             GeoNodeResourceType.MAP.value: f"/maps/{resource_unique_identifier}/",
         }[harvestable_resource.remote_resource_type.lower()]
         response = self.http_session.get(f"{self.base_api_url}/{endpoint_suffix}")
-        resource_descriptor = None
+        result = None
         if response.status_code == requests.codes.ok:
             api_record = response.json()
             resource_descriptor = self._get_resource_details(
                 api_record, harvestable_resource)
             self.update_harvesting_session(
                 harvesting_session_id, additional_harvested_records=1)
+            result = base.HarvestedResourceInfo(
+                resource_descriptor=resource_descriptor,
+                additional_information=None
+            )
         else:
             logger.warning(
                 f"Could not retrieve remote resource {resource_unique_identifier!r}")
-        return resource_descriptor
+        return result
 
     def finalize_resource_update(
             self,
             geonode_resource: ResourceBase,
-            resource_descriptor: resourcedescriptor.RecordDescription,
+            harvested_info: base.HarvestedResourceInfo,
             harvestable_resource: models.HarvestableResource,
             harvesting_session_id: int
     ) -> ResourceBase:
-        # geonode_resource.metadata_only = True
         is_document = (
             harvestable_resource.remote_resource_type ==
             GeoNodeResourceType.DOCUMENT.value
         )
         if is_document:
             geonode_resource.thumbnail_url = (
-                resource_descriptor.distribution.thumbnail_url)
+                harvested_info.resource_descriptor.distribution.thumbnail_url)
             geonode_resource.doc_url = (
-                resource_descriptor.distribution.original_format_url)
+                harvested_info.resource_descriptor.distribution.original_format_url)
         geonode_resource.save()
         return geonode_resource
 

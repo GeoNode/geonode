@@ -111,12 +111,15 @@ def _harvest_resource(
     harvestable_resource = models.HarvestableResource.objects.get(
         pk=harvestable_resource_id)
     worker: BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
-    resource_descriptor = worker.get_resource(
+    harvested_resource_info = worker.get_resource(
         harvestable_resource, harvesting_session_id)
     now_ = now()
-    if resource_descriptor is not None:
+    if harvested_resource_info is not None:
         worker.update_geonode_resource(
-            resource_descriptor, harvestable_resource, harvesting_session_id)
+            harvested_resource_info,
+            harvestable_resource,
+            harvesting_session_id,
+        )
         worker.update_harvesting_session(
             harvesting_session_id, additional_harvested_records=1)
         harvestable_resource.last_harvesting_message = (

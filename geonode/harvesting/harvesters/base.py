@@ -40,6 +40,12 @@ class BriefRemoteResource:
     should_be_harvested: bool = False
 
 
+@dataclasses.dataclass()
+class HarvestedResourceInfo:
+    resource_descriptor: resourcedescriptor.RecordDescription
+    additional_information: typing.Optional[typing.Any]
+
+
 class BaseHarvesterWorker(abc.ABC):
     """Base class for harvesters.
 
@@ -93,8 +99,17 @@ class BaseHarvesterWorker(abc.ABC):
             self,
             harvestable_resource: "HarvestableResource",  # noqa
             harvesting_session_id: int
-    ) -> typing.Optional[resourcedescriptor.RecordDescription]:
-        """Harvest a single resource from the remote service"""
+    ) -> typing.Optional[HarvestedResourceInfo]:
+        """Harvest a single resource from the remote service.
+
+        The return value is an instance of `HarvestedResourceInfo`. It stores
+        an instance of `RecordDescription` and additionally whatever type is
+        required by child classes to be able to customize resource creation/update on
+        the local GeoNode. Note that the default implementation of `update_geonode_resource()`
+        only needs the `RecordDescription`. The possibility to return additional information
+        exists solely for extensibility purposes and can be left as None in the simple cases.
+
+        """
 
     @classmethod
     def get_extra_config_schema(cls) -> typing.Optional[typing.Dict]:
@@ -134,45 +149,47 @@ class BaseHarvesterWorker(abc.ABC):
 
     def update_geonode_resource(
             self,
-            resource_descriptor: resourcedescriptor.RecordDescription,
+            harvested_info: HarvestedResourceInfo,
             harvestable_resource: "HarvestableResource",  # noqa
-            harvesting_session_id: int
+            harvesting_session_id: int,
     ):
-        """Create or update GeoNode with the input resource descriptor."""
+        """Create or update a local GeoNode resource with the input harvested information."""
         harvester = models.Harvester.objects.get(pk=self.harvester_id)
         defaults = self.get_geonode_resource_defaults(
-            resource_descriptor, harvestable_resource)
+            harvested_info.resource_descriptor, harvestable_resource)
         geonode_resource = harvestable_resource.geonode_resource
         if geonode_resource is None:
             geonode_resource = resource_manager.create(
-                str(resource_descriptor.uuid),
+                str(harvested_info.resource_descriptor.uuid),
                 self.get_geonode_resource_type(
                     harvestable_resource.remote_resource_type),
                 defaults
             )
         else:
-            if not geonode_resource.uuid == str(resource_descriptor.uuid):
+            if not geonode_resource.uuid == str(harvested_info.resource_descriptor.uuid):
                 raise RuntimeError(
                     f"Resource {geonode_resource!r} already exists locally but its "
                     f"UUID ({geonode_resource.uuid}) does not match the one found on "
-                    f"the remote resource {resource_descriptor.uuid!r}")
+                    f"the remote resource {harvested_info.resource_descriptor.uuid!r}")
             geonode_resource = resource_manager.update(
-                str(resource_descriptor.uuid), vals=defaults)
+                str(harvested_info.resource_descriptor.uuid), vals=defaults)
         resource_manager.set_permissions(
-            str(resource_descriptor.uuid),
+            str(harvested_info.resource_descriptor.uuid),
             instance=geonode_resource,
             permissions=harvester.default_access_permissions)
         harvestable_resource.geonode_resource = geonode_resource
         harvestable_resource.save()
         self.finalize_resource_update(
-            geonode_resource, resource_descriptor,
-            harvestable_resource, harvesting_session_id
+            geonode_resource,
+            harvested_info,
+            harvestable_resource,
+            harvesting_session_id
         )
 
     def finalize_resource_update(
             self,
             geonode_resource: ResourceBase,
-            resource_descriptor: resourcedescriptor.RecordDescription,
+            harvested_info: HarvestedResourceInfo,
             harvestable_resource: "HarvestableResource",  # noqa
             harvesting_session_id: int
     ) -> ResourceBase:
