@@ -18,12 +18,12 @@
 #########################################################################
 
 import typing
-
 import jsonschema
-from django.core.exceptions import ValidationError
-from django.utils.module_loading import import_string
-from django.utils.timezone import now
+
 from lxml import etree
+
+from django.utils.timezone import now
+from django.utils.module_loading import import_string
 
 
 # explicitly disable resolving XML entities in order to prevent malicious attacks
@@ -31,7 +31,7 @@ XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
 
 
 def update_harvester_availability(
-        harvester: "Harvester",
+        harvester: "Harvester",  # noqa
         timeout_seconds: typing.Optional[int] = 5
 ) -> bool:
     harvester.status = harvester.STATUS_CHECKING_AVAILABILITY

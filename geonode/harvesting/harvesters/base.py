@@ -18,8 +18,8 @@
 #########################################################################
 
 import abc
-import dataclasses
 import typing
+import dataclasses
 
 from django.db.models import F
 from django.utils import timezone
@@ -64,7 +64,7 @@ class BaseHarvesterWorker(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def from_django_record(cls, harvester: "Harvester"):
+    def from_django_record(cls, harvester: "Harvester"):  # noqa
         """Return a new instance of the worker from the django harvester"""
 
     @abc.abstractmethod
@@ -91,7 +91,7 @@ class BaseHarvesterWorker(abc.ABC):
     @abc.abstractmethod
     def get_resource(
             self,
-            harvestable_resource: models.HarvestableResource,
+            harvestable_resource: "HarvestableResource",  # noqa
             harvesting_session_id: int
     ) -> typing.Optional[resourcedescriptor.RecordDescription]:
         """Harvest a single resource from the remote service"""
@@ -113,7 +113,7 @@ class BaseHarvesterWorker(abc.ABC):
         }
         if additional_harvested_records is not None:
             update_kwargs["records_harvested"] = (
-                    F("records_harvested") + additional_harvested_records)
+                F("records_harvested") + additional_harvested_records)
         models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
 
     @classmethod
@@ -129,13 +129,13 @@ class BaseHarvesterWorker(abc.ABC):
             update_kwargs["total_records_found"] = total_records_found
         if additional_harvested_records is not None:
             update_kwargs["records_harvested"] = (
-                    F("records_harvested") + additional_harvested_records)
+                F("records_harvested") + additional_harvested_records)
         models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
 
     def update_geonode_resource(
             self,
             resource_descriptor: resourcedescriptor.RecordDescription,
-            harvestable_resource: models.HarvestableResource,
+            harvestable_resource: "HarvestableResource",  # noqa
             harvesting_session_id: int
     ):
         """Create or update GeoNode with the input resource descriptor."""
@@ -173,7 +173,7 @@ class BaseHarvesterWorker(abc.ABC):
             self,
             geonode_resource: ResourceBase,
             resource_descriptor: resourcedescriptor.RecordDescription,
-            harvestable_resource: models.HarvestableResource,
+            harvestable_resource: "HarvestableResource",  # noqa
             harvesting_session_id: int
     ) -> ResourceBase:
         return geonode_resource
@@ -181,7 +181,7 @@ class BaseHarvesterWorker(abc.ABC):
     def get_geonode_resource_defaults(
             self,
             resource_descriptor: resourcedescriptor.RecordDescription,
-            harvestable_resource: models.HarvestableResource,
+            harvestable_resource: "HarvestableResource",  # noqa
     ) -> typing.Dict:
         """
         Extract default values to be used by resource manager when updating a resource

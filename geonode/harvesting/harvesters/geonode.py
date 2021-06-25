@@ -19,17 +19,17 @@
 
 """Harvester for legacy GeoNode remote servers"""
 
-import datetime as dt
 import enum
 import json
-import logging
-import typing
 import uuid
-
-import dateutil.parser
+import typing
+import logging
 import requests
-from django.contrib.gis import geos
+import datetime as dt
+import dateutil.parser
+
 from lxml import etree
+from django.contrib.gis import geos
 
 from .. import (
     models,
@@ -38,10 +38,10 @@ from .. import (
 from ..utils import XML_PARSER
 from . import base
 
+from geonode.maps.models import Map
+from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
-from geonode.layers.models import Layer
-from geonode.maps.models import Map
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         return True
 
     @classmethod
-    def from_django_record(cls, record: "Harvester"):
+    def from_django_record(cls, record: models.Harvester):
         return cls(
             record.remote_url,
             record.id,
@@ -196,8 +196,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 result = layer_list
         else:
             map_offset = offset - (
-                    total_resources[GeoNodeResourceType.DOCUMENT] +
-                    total_resources[GeoNodeResourceType.LAYER]
+                total_resources[GeoNodeResourceType.DOCUMENT] +
+                total_resources[GeoNodeResourceType.LAYER]
             )
             result = self._list_map_resources(map_offset)
         return result
@@ -256,8 +256,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     ) -> ResourceBase:
         # geonode_resource.metadata_only = True
         is_document = (
-                harvestable_resource.remote_resource_type ==
-                GeoNodeResourceType.DOCUMENT.value
+            harvestable_resource.remote_resource_type ==
+            GeoNodeResourceType.DOCUMENT.value
         )
         if is_document:
             geonode_resource.thumbnail_url = (
@@ -357,26 +357,18 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             try:
                 metadata_element = xml_root.xpath(
                     "./gmd:MD_Metadata", namespaces=xml_root.nsmap)[0]
-            except IndexError:
-                logger.warning(
-                    f"Unable to retrieve a metadata element from the CSW GetRecordById "
-                    f"response, skipping..."
-                )
-                logger.debug(
-                    f"Original response content: {get_record_by_id_response.content}")
+            except IndexError as e:
+                logger.warning(f"Unable to retrieve a metadata element from the CSW GetRecordById response, skipping... {e}")
+                logger.debug(f"Original response content: {get_record_by_id_response.content}")
             else:
                 try:
                     result = self._get_resource_descriptor(
                         metadata_element, api_record, harvestable_resource)
-                except TypeError:
-                    logger.exception(
-                        f"Could not retrieve metadata details to generate "
-                        f"resource descriptor, skipping..."
-                    )
+                except TypeError as e:
+                    logger.exception(f"Could not retrieve metadata details to generate resource descriptor, skipping... {e}")
                 else:
                     logger.debug(
-                        f"Found details for resource {result.uuid!r} - "
-                        f"{result.identification.title!r}"
+                        f"Found details for resource {result.uuid!r} - {result.identification.title!r}"
                     )
         else:
             logger.warning(
@@ -527,8 +519,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             harvestable_resource: models.HarvestableResource,
     ) -> str:
         is_document = (
-                harvestable_resource.remote_resource_type ==
-                GeoNodeResourceType.DOCUMENT.value
+            harvestable_resource.remote_resource_type ==
+            GeoNodeResourceType.DOCUMENT.value
         )
         found_thumbnail = False
         if is_document:
@@ -546,9 +538,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 try:
                     reported_thumbnail: str = (
                         raw_response["objects"][0]["thumbnail_url"])
-                except (KeyError, IndexError):
+                except (KeyError, IndexError) as e:
                     logger.exception(
-                        f"Could not retrieve document details from the list endpoint")
+                        f"Could not retrieve document details from the list endpoint {e}")
                 else:
                     if reported_thumbnail.startswith("/"):
                         thumbnail = f"{self.remote_url}{reported_thumbnail}"
@@ -557,9 +549,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                     found_thumbnail = True
             else:
                 logger.debug(
-                    f"Could not retrieve document list endpoint: "
-                    f"{document_list_response.status_code} - "
-                    f"{document_list_response.reason}"
+                    f"Could not retrieve document list endpoint: {document_list_response.status_code} - {document_list_response.reason}"
                 )
         if not found_thumbnail:
             reported_thumbnail: typing.Optional[str] = api_record.get("thumbnail_url")

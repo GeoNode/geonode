@@ -17,18 +17,14 @@
 #
 #########################################################################
 
-import collections
-import logging
 import typing
-
+import logging
+import collections
 import jsonschema.exceptions
+
 from django.contrib.auth import get_user_model
+from dynamic_rest.serializers import DynamicModelSerializer
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.utils.module_loading import import_string
-from dynamic_rest.serializers import (
-    DynamicModelSerializer,
-    DynamicRelationField,
-)
 from rest_framework import (
     exceptions,
     serializers,
@@ -124,8 +120,7 @@ class HarvesterSerializer(BriefHarvesterSerializer):
         )
 
     def validate_harvester_type_specific_configuration(self, value):
-        logger.debug(f"inside validate_harvester_type_specific_configuration")
-        logger.debug(f"instance: {self.instance}")
+        logger.debug(f"inside validate_harvester_type_specific_configuration instance: {self.instance}")
         return value
 
     def validate(self, data):
@@ -153,6 +148,7 @@ class HarvesterSerializer(BriefHarvesterSerializer):
             try:
                 utils.validate_worker_configuration(worker_type, worker_config)
             except jsonschema.exceptions.ValidationError as exc:
+                logger.exception(exc)
                 raise serializers.ValidationError(
                     f"Invalid {worker_config_field!r} configuration")
 
@@ -315,7 +311,7 @@ class HarvestableResourceSerializer(DynamicModelSerializer):
         fields = self._writable_fields
 
         for field in fields:
-            validate_method = getattr(self, 'validate_' + field.field_name, None)
+            validate_method = getattr(self, f"validate_{field.field_name}", None)
             primitive_value = field.get_value(data)
             try:
                 validated_value = field.run_validation(primitive_value)

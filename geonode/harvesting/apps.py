@@ -18,10 +18,16 @@
 #########################################################################
 
 from django.apps import AppConfig
+from django.conf.urls import url, include
 
 
 class HarvestingAppConfig(AppConfig):
     name = "geonode.harvesting"
 
     def ready(self):
-        from . import signals
+        from . import signals  # noqa
+        from geonode.urls import urlpatterns
+
+        urlpatterns += [
+            url(r'^api/v2/', include('geonode.harvesting.api.urls'))
+        ]

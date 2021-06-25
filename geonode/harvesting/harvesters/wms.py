@@ -17,15 +17,16 @@
 #
 #########################################################################
 
-import logging
 import typing
-
+import logging
 import requests
+
 from lxml import etree
 
-from .. import resourcedescriptor
-from ..utils import XML_PARSER
 from . import base
+from ..models import Harvester
+from ..utils import XML_PARSER
+from .. import resourcedescriptor
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         return False
 
     @classmethod
-    def from_django_record(cls, record: "Harvester"):
+    def from_django_record(cls, record: Harvester):
         return cls(
             record.remote_url,
             record.id,
@@ -153,7 +154,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         get_capabilities_response.raise_for_status()
         root = etree.fromstring(get_capabilities_response.content, parser=XML_PARSER)
         nsmap = _get_nsmap(root.nsmap)
-        num_layers = 0
         useful_layers_elements = []
         leaf_layers = root.xpath("//wms:Layer[not(.//wms:Layer)]", namespaces=nsmap)
         for layer_element in leaf_layers:

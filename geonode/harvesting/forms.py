@@ -36,5 +36,3 @@ class HarvesterForm(forms.ModelForm):
                 f"status becomes {models.Harvester.STATUS_READY!r} before retrying"
             )
         return self.cleaned_data
-
-

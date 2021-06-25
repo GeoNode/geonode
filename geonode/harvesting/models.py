@@ -19,8 +19,8 @@
 
 import json
 import logging
-
 import jsonschema.exceptions
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -34,6 +34,7 @@ from django_celery_beat.models import (
 
 from . import utils
 from .config import HARVESTER_CLASSES
+from .harvesters.base import BaseHarvesterWorker
 
 logger = logging.getLogger(__name__)
 
@@ -216,7 +217,7 @@ class Harvester(models.Model):
             period="minutes"
         )
         self.availability_check_task = PeriodicTask.objects.create(
-            name=_("Check availability of %(name)s" % {"name": self.name}),
+            name=_(f"Check availability of {self.name}"),
             task="geonode.harvesting.tasks.check_harvester_available",
             interval=check_interval,
             args=json.dumps([self.id]),
@@ -224,7 +225,7 @@ class Harvester(models.Model):
         )
         self.save()
 
-    def get_harvester_worker(self) -> "BaseHarvesterWorker":
+    def get_harvester_worker(self) -> BaseHarvesterWorker:
         worker_class = import_string(self.harvester_type)
         return worker_class.from_django_record(self)
 

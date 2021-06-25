@@ -17,9 +17,8 @@
 #
 #########################################################################
 
-import datetime as dt
-import logging
 import math
+import logging
 
 from celery import chord
 from django.utils.timezone import now
