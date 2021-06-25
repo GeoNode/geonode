@@ -605,6 +605,8 @@ def final_step_view(req, upload_session):
 
                 saved_layer = final_step(upload_session, upload_session.user, layer_id)
 
+                assert saved_layer
+
                 # this response is different then all of the other views in the
                 # upload as it does not return a response as a json object
                 _json_response = json_response(
