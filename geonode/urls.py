@@ -115,6 +115,9 @@ urlpatterns += [
     # Group Profiles views
     url(r'^groups/', include('geonode.groups.urls')),
 
+    # Harvesting views
+    url(r'^harvesters/', include('geonode.harvesting.urls')),
+
     # ident
     url(r'^ident.json$',
         views.ident_json,

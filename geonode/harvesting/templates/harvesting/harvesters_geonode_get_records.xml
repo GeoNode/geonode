@@ -1,0 +1,17 @@
+<csw:GetRecords
+        xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+        xmlns:gmd="http://www.isotc211.org/2005/gmd"
+        service="CSW"
+        version="2.0.2"
+        resultType="{{ result_type }}"
+        startPosition="{{ start_position }}"
+        maxRecords="{{ max_records }}"
+        outputFormat="application/xml"
+        outputSchema="http://www.isotc211.org/2005/gmd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd"
+>
+	<csw:Query typeNames="{{  typename }}">
+		<csw:ElementSetName>full</csw:ElementSetName>
+	</csw:Query>
+</csw:GetRecords>

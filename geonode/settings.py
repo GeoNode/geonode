@@ -420,6 +420,7 @@ GEONODE_CORE_APPS = (
     'geonode.security',
     'geonode.catalogue',
     'geonode.catalogue.metadataxsl',
+    'geonode.harvesting.apps.HarvestingAppConfig',
 )
 
 # GeoNode Apps
@@ -493,6 +494,8 @@ INSTALLED_APPS = (
     'floppyforms',
     'tinymce',
     'widget_tweaks',
+    'django_celery_beat',
+    'django_celery_results',
     'markdownify',
 
     # REST APIs
@@ -552,6 +555,9 @@ REST_FRAMEWORK = {
         'dynamic_rest.renderers.DynamicBrowsableAPIRenderer',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+REST_FRAMEWORK_EXTENSIONS = {
+    'DEFAULT_PARENT_LOOKUP_KWARG_NAME_PREFIX': '',
 }
 
 REST_API_DEFAULT_PAGE = os.getenv('REST_API_DEFAULT_PAGE', 1)
@@ -657,21 +663,21 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
         'mail_admins': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
     "loggers": {
         "django": {
-            "handlers": ["console"], "level": "INFO", },
+            "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "INFO", },
+            "handlers": ["console"], "level": "ERROR", },
         "geoserver-restconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
         "owslib": {
@@ -679,7 +685,7 @@ LOGGING = {
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
         "celery": {
-            'handlers': ["console"], 'level': 'INFO', },
+            'handlers': ["console"], 'level': 'ERROR', },
     },
 }
 
@@ -1642,14 +1648,9 @@ LOCAL_SIGNALS_BROKER_URL = 'memory://'
 
 if ASYNC_SIGNALS:
     _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
-    CELERY_RESULT_BACKEND = 'rpc://'
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
-    CELERY_RESULT_BACKEND_PATH = os.getenv(
-        'CELERY_RESULT_BACKEND_PATH', os.path.join(PROJECT_ROOT, '.celery_results'))
-    if not os.path.exists(CELERY_RESULT_BACKEND_PATH):
-        os.makedirs(CELERY_RESULT_BACKEND_PATH)
-    CELERY_RESULT_BACKEND = f'file:///{CELERY_RESULT_BACKEND_PATH}'
+CELERY_RESULT_BACKEND = 'django-db'
 
 CELERY_BROKER_URL = os.environ.get('BROKER_URL', _BROKER_URL)
 CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get('CELERY_RESULT_PERSISTENT', 'False'))
@@ -1724,6 +1725,7 @@ if USE_GEOSERVER:
 #          'task': 'my_app.tasks.send_notification',
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_SCHEDULE = {}
 
 if 'geonode.services' in INSTALLED_APPS:
