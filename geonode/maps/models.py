@@ -230,11 +230,7 @@ class Map(ResourceBase, GXPMapBase):
                 ))
 
         from geonode.resource.manager import resource_manager
-        resource_manager.update(
-            self.uuid, 
-            instance=self, 
-            notify=True
-        )
+        resource_manager.update(self.uuid, instance=self, notify=True)
         resource_manager.set_thumbnail(self.uuid, instance=self, overwrite=False)
 
         if layer_names != {lyr.alternate for lyr in self.local_layers}:
