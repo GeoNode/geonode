@@ -229,7 +229,7 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
 
     _data = GeoAppData.objects.filter(resource__id=geoappid).first()
 
-    if _data and isinstance(_data, str):
+    if _data and isinstance(_data.blob, dict):
         _config = json.dumps(_data.blob)
     else:
         _config = _data.blob if _data else {}
