@@ -121,6 +121,8 @@ class CommonModelApi(ModelResource):
         # fields in the db
         'id',
         'uuid',
+        'name',
+        'typename',
         'title',
         'date',
         'date_type',
