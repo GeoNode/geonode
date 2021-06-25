@@ -31,6 +31,7 @@ from guardian.shortcuts import get_objects_for_user
 from django.db.models import F
 from django.urls import reverse
 from django.conf import settings
+from django.contrib import messages
 from django.shortcuts import render
 from django.forms.utils import ErrorList
 from django.utils.translation import ugettext as _
@@ -216,9 +217,10 @@ class DocumentUploadView(CreateView):
         return context
 
     def form_invalid(self, form):
+        messages.error(self.request, f"{form.errors}")
         if self.request.GET.get('no__redirect', False):
             out = {'success': False}
-            out['message'] = ""
+            out['message'] = f"{form.errors}"
             status_code = 400
             return HttpResponse(
                 json.dumps(out),
@@ -229,7 +231,8 @@ class DocumentUploadView(CreateView):
             form.title = None
             form.doc_file = None
             form.doc_url = None
-            return self.render_to_response(self.get_context_data(form=form))
+            return self.render_to_response(
+                self.get_context_data(request=self.request, form=form))
 
     def form_valid(self, form):
         """

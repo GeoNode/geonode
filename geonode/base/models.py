@@ -1006,8 +1006,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.resource_type = self.polymorphic_ctype.model.lower()
 
         if hasattr(self, 'class_name') and (self.pk is None or notify):
-            if self.pk is None and self.title:
+            if self.pk is None and (self.title or getattr(self, 'name', None)):
                 # Resource Created
+                if not self.title and getattr(self, 'name', None):
+                    self.title = getattr(self, 'name', None)
                 notice_type_label = f'{self.class_name.lower()}_created'
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
@@ -1046,10 +1048,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     send_notification(recipients, notice_type_label, {'resource': self})
 
         if self.pk is None:
+            _initial_value = type(self).objects.aggregate(Max("id"))['id__max']
+            if not _initial_value:
+                _initial_value = 1
+            else:
+                _initial_value += 1
             self.pk = self.id = get_next_value(
-                # type(self).__name__,
-                "ResourceBase",
-                initial_value=type(self).objects.aggregate(Max("id"))['id__max'] or 1)
+                "ResourceBase",  # type(self).__name__,
+                initial_value=_initial_value)
         super().save(*args, **kwargs)
         self.__is_approved = self.is_approved
         self.__is_published = self.is_published

@@ -32,7 +32,7 @@ from geonode.maps.views import map_embed
 from geonode.geoapps.models import GeoApp
 from geonode.services.views import services
 from geonode.layers.views import layer_embed
-from geonode.geoapps.views import geoapp_edit
+from geonode.geoapps.views import geoapp_detail, geoapp_edit
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -97,6 +97,7 @@ class GeoAppsApiTests(APITestCase, URLPatternsTestCase):
         url(r'^(?P<mapid>[^/]+)/embed$', map_embed, name='map_embed'),
         url(r'^(?P<layername>[^/]+)/embed$', layer_embed, name='layer_embed'),
         url(r'^(?P<geoappid>[^/]+)/embed$', geoapp_edit, {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
+        url(r'^(?P<geoappid>[^/]*)$', geoapp_detail, name="geoapp_detail"),
     ]
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -178,9 +179,9 @@ class GeoAppsApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 1)
+        self.assertEqual(response.data['total'], 2)
         # Pagination
-        self.assertEqual(len(response.data['geoapps']), 1)
+        self.assertEqual(len(response.data['geoapps']), 2)
 
         # Update: PATCH
         url = reverse('geoapps-detail', kwargs={'pk': self.gep_app.pk})

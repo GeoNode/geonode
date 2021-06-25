@@ -230,11 +230,11 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         doc_url = self.cleaned_data.get('doc_url')
 
         if not doc_file and not doc_url:
-            logger.debug("Document must be a file or url.")
+            logger.error("Document must be a file or url.")
             raise forms.ValidationError(_("Document must be a file or url."))
 
         if doc_file and doc_url:
-            logger.debug("A document cannot have both a file and a url.")
+            logger.error("A document cannot have both a file and a url.")
             raise forms.ValidationError(
                 _("A document cannot have both a file and a url."))
 
