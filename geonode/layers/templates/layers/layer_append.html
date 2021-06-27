@@ -7,6 +7,7 @@
 {% load pagination_tags %}
 {% load base_tags %}
 {% load guardian_tags %}
+{% load client_lib_tags %}
 
 {% block title %} {% trans "Append to Dataset"  %} - {{ block.super }}  {% endblock %}
 
@@ -20,8 +21,8 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Explore Datasets" %}</a>
-  <a href="{% url 'layer_detail' layername=resource.service_typename %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Return to Dataset" %}</a>
+  <a href="{% layer_list_url %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Explore Datasets" %}</a>
+  <a href="{% layer_detail_url resource %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Return to Dataset" %}</a>
   <h2 class="page-title">{% trans "Append to Dataset" %} <small><a href="{{ resource.get_absolute_url }}">{{ resource.title }}</a><small></h2>
 </div>
 <div class="row">

@@ -18,6 +18,9 @@
 #########################################################################
 import json
 
+from django.conf import settings
+from django.urls.base import reverse
+
 
 class BaseHookSet:
 
@@ -49,6 +52,12 @@ class BaseHookSet:
     def layer_style_edit_template(self, context=None):
         return NotImplemented
 
+    def layer_list_url(self):
+        return self.add_limit_settings(reverse('layer_browse'))
+
+    def layer_detail_url(self, layer):
+        return reverse('layer_detail', args=(layer.alternate,))
+
     # Maps
     def map_list_template(self, context=None):
         return 'maps/map_list_default.html'
@@ -73,6 +82,12 @@ class BaseHookSet:
 
     def map_download_template(self, context=None):
         return NotImplemented
+
+    def map_list_url(self):
+        return self.add_limit_settings(reverse('maps_browse'))
+
+    def map_detail_url(self, map):
+        return reverse('map_detail', args=(map.id,))
 
     # GeoApps
     def geoapp_list_template(self, context=None):
@@ -99,6 +114,19 @@ class BaseHookSet:
     def geoapp_download_template(self, context=None):
         return NotImplemented
 
+    def geoapp_list_url(self):
+        return self.add_limit_settings(reverse('apps_browse'))
+
+    def geoapp_detail_url(self, geoapp):
+        return reverse('geoapp_detail', args=(geoapp.id,))
+
+    # Documents
+    def document_list_url(self):
+        return self.add_limit_settings(reverse('document_browse'))
+
+    def document_detail_url(self, document):
+        return reverse('document_detail', args=(document.id,))
+
     # Map Persisting
     def viewer_json(self, conf, context=None):
         if isinstance(conf, str):
@@ -109,3 +137,7 @@ class BaseHookSet:
         conf = self.viewer_json(conf, context=context)
         context['config'] = conf
         return 'maps/map_edit.html'
+
+    def add_limit_settings(self, url):
+        CLIENT_RESULTS_LIMIT = settings.CLIENT_RESULTS_LIMIT
+        return url + '?limit={}'.format(CLIENT_RESULTS_LIMIT)

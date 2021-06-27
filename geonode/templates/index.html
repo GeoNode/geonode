@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load static %}
 {% load base_tags %}
+{% load client_lib_tags %}
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
@@ -130,7 +131,7 @@
                 {% if user.is_authenticated %}
                 <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Add layers" %} &raquo;</a></p>
                 {% else %}
-                <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore layers" %} &raquo;</a></p>
+                <p class="text-center"><a class="btn btn-default" href="{% layer_list_url %}" role="button">{% trans "Explore layers" %} &raquo;</a></p>
                 {% endif %}
               </div>
               <div class="col-md-6">
@@ -140,7 +141,7 @@
                 {% if user.is_authenticated %}
                 <p><a class="btn btn-default" href="{% url "new_map" %}" role="button">{% trans "Create maps" %} &raquo;</a></p>
                 {% else %}
-                <p><a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Explore maps" %} &raquo;</a></p>
+                <p><a class="btn btn-default" href="{% map_list_url %}" role="button">{% trans "Explore maps" %} &raquo;</a></p>
                 {% endif %}
               </div>
               <div class="col-md-6">

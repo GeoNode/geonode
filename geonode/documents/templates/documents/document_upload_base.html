@@ -3,6 +3,7 @@
 {% load base_tags %}
 {% load guardian_tags %}
 {% load pagination_tags %}
+{% load client_lib_tags %}
 
 {% block title %} {{ block.super }} {% endblock %}
 
@@ -10,7 +11,7 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
+  <a href="{% document_list_url %}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
   <h2 class="page-title">{% trans "Upload Documents" %}</h2>
 	<p>{% trans "Allowed document types" %}:</p>
 	<p>
