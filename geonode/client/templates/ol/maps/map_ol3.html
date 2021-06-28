@@ -8,8 +8,8 @@
 
     var layers = [];
     var zoom = {{ resource.zoom }};
-    var center_x = {{ resource.center_x }};
-    var center_y = {{ resource.center_y }};
+    var center_x = {{ resource.center_x|safe }};
+    var center_y = {{ resource.center_y|safe }};
     var center = [center_x, center_y];
     var settings_crs = '{{ crs }}'
 
