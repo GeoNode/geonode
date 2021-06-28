@@ -28,17 +28,17 @@ from django.contrib.gis import geos
 @dataclasses.dataclass()
 class RecordDescriptionContact:
     role: str
-    name: typing.Optional[str]
-    organization: typing.Optional[str]
-    position: typing.Optional[str]
-    phone_voice: typing.Optional[str]
-    phone_facsimile: typing.Optional[str]
-    address_delivery_point: typing.Optional[str]
-    address_city: typing.Optional[str]
-    address_administrative_area: typing.Optional[str]
-    address_postal_code: typing.Optional[str]
-    address_country: typing.Optional[str]
-    address_email: typing.Optional[str]
+    name: typing.Optional[str] = ""
+    organization: typing.Optional[str] = ""
+    position: typing.Optional[str] = ""
+    phone_voice: typing.Optional[str] = ""
+    phone_facsimile: typing.Optional[str] = ""
+    address_delivery_point: typing.Optional[str] = ""
+    address_city: typing.Optional[str] = ""
+    address_administrative_area: typing.Optional[str] = ""
+    address_postal_code: typing.Optional[str] = ""
+    address_country: typing.Optional[str] = ""
+    address_email: typing.Optional[str] = ""
 
 
 @dataclasses.dataclass()
@@ -47,32 +47,32 @@ class RecordIdentification:
     title: str
     date: dt.datetime
     date_type: str
-    abstract: typing.Optional[str]
-    purpose: typing.Optional[str]
-    status: typing.Optional[str]
     originator: RecordDescriptionContact
     graphic_overview_uri: str
-    native_format: str
     place_keywords: typing.List[str]
     other_keywords: typing.Tuple
     license: typing.List[str]
-    other_constraints: typing.Optional[str]
-    topic_category: typing.Optional[str]
-    spatial_extent: typing.Optional[geos.Polygon]
-    temporal_extent: typing.Optional[typing.Tuple[dt.datetime, dt.datetime]]
-    supplemental_information: typing.Optional[str]
+    abstract: typing.Optional[str] = ""
+    purpose: typing.Optional[str] = ""
+    status: typing.Optional[str] = ""
+    native_format: typing.Optional[str] = None
+    other_constraints: typing.Optional[str] = ""
+    topic_category: typing.Optional[str] = None
+    supplemental_information: typing.Optional[str] = ""
+    spatial_extent: typing.Optional[geos.Polygon] = None
+    temporal_extent: typing.Optional[typing.Tuple[dt.datetime, dt.datetime]] = None
 
 
 @dataclasses.dataclass()
 class RecordDistribution:
-    link_url: typing.Optional[str]
-    wms_url: typing.Optional[str]
-    wfs_url: typing.Optional[str]
-    wcs_url: typing.Optional[str]
-    thumbnail_url: typing.Optional[str]
-    legend_url: typing.Optional[str]
-    geojson_url: typing.Optional[str]
-    original_format_url: typing.Optional[str]
+    link_url: typing.Optional[str] = None
+    wms_url: typing.Optional[str] = None
+    wfs_url: typing.Optional[str] = None
+    wcs_url: typing.Optional[str] = None
+    thumbnail_url: typing.Optional[str] = None
+    legend_url: typing.Optional[str] = None
+    geojson_url: typing.Optional[str] = None
+    original_format_url: typing.Optional[str] = None
 
 
 @dataclasses.dataclass()
@@ -87,15 +87,15 @@ class MapDescriptorParameters:
 @dataclasses.dataclass()
 class RecordDescription:
     uuid: uuid.UUID
-    language: typing.Optional[str]
-    character_set: typing.Optional[str]
-    hierarchy_level: str
     point_of_contact: RecordDescriptionContact
     author: RecordDescriptionContact
     date_stamp: dt.datetime
-    reference_systems: typing.List[str]
     identification: RecordIdentification
     distribution: RecordDistribution
-    data_quality: str
+    hierarchy_level: typing.Optional[str] = "dataset"
+    reference_systems: typing.Optional[typing.List[str]] = None
+    data_quality: typing.Optional[str] = None
     additional_parameters: typing.Optional[typing.Dict] = dataclasses.field(
         default_factory=dict)
+    language: typing.Optional[str] = None
+    character_set: typing.Optional[str] = None
