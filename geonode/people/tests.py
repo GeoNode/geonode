@@ -30,8 +30,30 @@ from geonode.layers import utils
 from geonode.layers.models import Layer
 from geonode.people import profileextractors
 
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
 
-class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
+
+class PeopleAndProfileTests(GeoNodeBaseTestSupport):
+
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
         super().setUp()
@@ -57,7 +79,7 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
         """
         self.client.logout()
         response = self.client.get(reverse('set_user_layer_permissions'))
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 302)
 
     @override_settings(ASYNC_SIGNALS=False)
     def test_set_unset_user_layer_permissions(self):
@@ -149,9 +171,6 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
             perm_spec = layer.get_all_level_info()
             self.assertTrue(user not in perm_spec["users"])
 
-
-class PeopleTest(GeoNodeBaseTestSupport):
-
     def test_forgot_username(self):
         url = reverse('forgot_username')
 
@@ -235,77 +254,96 @@ class PeopleTest(GeoNodeBaseTestSupport):
         self.assertIn('Profile of bobby', content)
         self.assertIn(bobby.voice, content)
 
-
-class FacebookExtractorTestCase(GeoNodeBaseTestSupport):
-
-    def setUp(self):
-        super().setUp()
-        self.data = {
+    def _facebook_extractor_init(self):
+        data = {
             "email": "phony_mail",
             "first_name": "phony_first_name",
             "last_name": "phony_last_name",
             "cover": "phony_cover",
         }
-        self.extractor = profileextractors.FacebookExtractor()
+        extractor = profileextractors.FacebookExtractor()
+        return extractor, data
 
     def test_extract_area(self):
+        extractor, data = self._facebook_extractor_init()
+
         with self.assertRaises(NotImplementedError):
-            self.extractor.extract_area(self.data)
+            extractor.extract_area(data)
 
     def test_extract_city(self):
+        extractor, data = self._facebook_extractor_init()
+
         with self.assertRaises(NotImplementedError):
-            self.extractor.extract_city(self.data)
+            extractor.extract_city(data)
 
     def test_extract_country(self):
+        extractor, data = self._facebook_extractor_init()
+
         with self.assertRaises(NotImplementedError):
-            self.extractor.extract_country(self.data)
+            extractor.extract_country(data)
 
     def test_extract_delivery(self):
-        with self.assertRaises(NotImplementedError):
-            self.extractor.extract_delivery(self.data)
+        extractor, data = self._facebook_extractor_init()
 
-    def test_extract_email(self):
-        result = self.extractor.extract_email(self.data)
-        self.assertEqual(result, self.data["email"])
+        with self.assertRaises(NotImplementedError):
+            extractor.extract_delivery(data)
+
+    def test_fb_extract_email(self):
+        extractor, data = self._facebook_extractor_init()
+
+        result = extractor.extract_email(data)
+        self.assertEqual(result, data["email"])
 
     def test_extract_fax(self):
+        extractor, data = self._facebook_extractor_init()
+
         with self.assertRaises(NotImplementedError):
-            self.extractor.extract_fax(self.data)
+            extractor.extract_fax(data)
 
-    def test_extract_first_name(self):
-        result = self.extractor.extract_first_name(self.data)
-        self.assertEqual(result, self.data["first_name"])
+    def test_fb_extract_first_name(self):
+        extractor, data = self._facebook_extractor_init()
 
-    def test_extract_last_name(self):
-        result = self.extractor.extract_last_name(self.data)
-        self.assertEqual(result, self.data["last_name"])
+        result = extractor.extract_first_name(data)
+        self.assertEqual(result, data["first_name"])
+
+    def test_fb_extract_last_name(self):
+        extractor, data = self._facebook_extractor_init()
+
+        result = extractor.extract_last_name(data)
+        self.assertEqual(result, data["last_name"])
 
     def test_extract_organization(self):
+        extractor, data = self._facebook_extractor_init()
+
         with self.assertRaises(NotImplementedError):
-            self.extractor.extract_organization(self.data)
+            extractor.extract_organization(data)
 
     def test_extract_position(self):
+        extractor, data = self._facebook_extractor_init()
+
         with self.assertRaises(NotImplementedError):
-            self.extractor.extract_position(self.data)
+            extractor.extract_position(data)
 
     def test_extract_profile(self):
-        result = self.extractor.extract_profile(self.data)
-        self.assertEqual(result, self.data["cover"])
+        extractor, data = self._facebook_extractor_init()
+
+        result = extractor.extract_profile(data)
+        self.assertEqual(result, data["cover"])
 
     def test_extract_voice(self):
+        extractor, data = self._facebook_extractor_init()
+
         with self.assertRaises(NotImplementedError):
-            self.extractor.extract_voice(self.data)
+            extractor.extract_voice(data)
 
     def test_extract_zipcode(self):
+        extractor, data = self._facebook_extractor_init()
+
         with self.assertRaises(NotImplementedError):
-            self.extractor.extract_zipcode(self.data)
+            extractor.extract_zipcode(data)
 
-
-class LinkedInExtractorTestCase(GeoNodeBaseTestSupport):
-
-    def setUp(self):
-        super().setUp()
-        self.data = {
+    def _linkedin_extractor_init(self):
+        data = {
             "id": "REDACTED",
             "firstName": {
                 "localized": {
@@ -337,25 +375,32 @@ class LinkedInExtractorTestCase(GeoNodeBaseTestSupport):
                 }
             ]
         }
-        self.extractor = profileextractors.LinkedInExtractor()
+        extractor = profileextractors.LinkedInExtractor()
+        return extractor, data
 
-    def test_extract_email(self):
-        result = self.extractor.extract_email(self.data)
+    def test_ln_extract_email(self):
+        extractor, data = self._linkedin_extractor_init()
+
+        result = extractor.extract_email(data)
         self.assertEqual(
             result,
-            self.data["elements"][0]["handle~"]["emailAddress"]
+            data["elements"][0]["handle~"]["emailAddress"]
         )
 
-    def test_extract_first_name(self):
-        result = self.extractor.extract_first_name(self.data)
+    def test_ln_extract_first_name(self):
+        extractor, data = self._linkedin_extractor_init()
+
+        result = extractor.extract_first_name(data)
         self.assertEqual(
             result,
-            self.data["firstName"]["localized"]["en_US"]
+            data["firstName"]["localized"]["en_US"]
         )
 
-    def test_extract_last_name(self):
-        result = self.extractor.extract_last_name(self.data)
+    def test_ln_extract_last_name(self):
+        extractor, data = self._linkedin_extractor_init()
+
+        result = extractor.extract_last_name(data)
         self.assertEqual(
             result,
-            self.data["lastName"]["localized"]["en_US"]
+            data["lastName"]["localized"]["en_US"]
         )

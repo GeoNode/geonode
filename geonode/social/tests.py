@@ -25,22 +25,45 @@ Replace this with more appropriate tests for your application.
 """
 import json
 
-from geonode.tests.base import GeoNodeBaseTestSupport
-
 from actstream import registry
 from actstream.models import Action, actor_stream
+
 from dialogos.models import Comment
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
+from django.contrib.contenttypes.models import ContentType
+
+from geonode.layers.models import Layer
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.social.templatetags.social_tags import activity_item
-from geonode.layers.models import Layer
+
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
 
 
-class SimpleTest(GeoNodeBaseTestSupport):
+class SocialAppsTest(GeoNodeBaseTestSupport):
 
     integration = True
+
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
         super().setUp()
