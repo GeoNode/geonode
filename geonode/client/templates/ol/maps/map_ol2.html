@@ -15,8 +15,8 @@
     var config = {{ config|safe }};
     var model_crs = config['map']['projection'];
     var zoom = {{ map.zoom }};
-    var center_x = {{ map.center_x }};
-    var center_y = {{ map.center_y }};
+    var center_x = {{ map.center_x|safe }};
+    var center_y = {{ map.center_y|safe }};
     var center = [center_x, center_y];
     var settings_crs = '{{ crs }}';
     if (settings_crs != 'EPSG:4326') {
