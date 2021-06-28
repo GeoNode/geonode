@@ -798,7 +798,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             _gs_layer = gs_catalog.get_layer(saved_layer.alternate)
             logger.error(f" ----> fetching layer {saved_layer.alternate} from GeoServer...: '{_gs_layer}'")
             self.assertIsNotNone(_gs_layer)
-            _gs_layer_store = saved_layer.store = _gs_layer.resource().store.name
+            _gs_layer_store = saved_layer.store = _gs_layer.resource.store.name
             saved_layer.save()
         store = get_store(gs_catalog, saved_layer.store, workspace=ws)
         self.assertIsNotNone(store)
@@ -807,7 +807,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
-        rest_path = f'rest/workspaces/{workspace}/datastores/{saved_layer.store}/featuretypes/{name}.xml'
+        rest_path = f'rest/workspaces/{workspace}/datastores/{saved_layer.store}/featuretypes/boxes_with_date.xml'
         r = requests.get(url + rest_path,
                          auth=HTTPBasicAuth(user, passwd))
         self.assertEqual(r.status_code, 200)
@@ -815,7 +815,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         featureType = etree.ElementTree(dlxml.fromstring(r.text))
         metadata = featureType.findall('./[metadata]')
-        self.assertEqual(len(metadata), 0)
+        self.assertEqual(len(metadata), 1)
 
         payload = """<featureType>
         <metadata>
