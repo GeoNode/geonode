@@ -16,12 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import json
 import base64
 import logging
+import requests
 import importlib
 
+from requests.auth import HTTPBasicAuth
 from urllib.request import urlopen, Request
 from tastypie.test import ResourceTestCaseMixin
 
@@ -405,8 +406,6 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             user = settings.OGC_SERVER['default']['USER']
             passwd = settings.OGC_SERVER['default']['PASSWORD']
 
-            import requests
-            from requests.auth import HTTPBasicAuth
             r = requests.get(f"{url}gwc/rest/seed/{test_perm_layer.alternate}.json",
                              auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 400)
@@ -793,6 +792,14 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertIsNotNone(name)
         ws = gs_catalog.get_workspace(workspace)
         self.assertIsNotNone(ws)
+        _gs_layer_store = saved_layer.store
+        if not _gs_layer_store:
+            saved_layer.alternate = f"{workspace}:boxes_with_date"
+            _gs_layer = gs_catalog.get_layer(saved_layer.alternate)
+            logger.error(f" ----> fetching layer {saved_layer.alternate} from GeoServer...: '{_gs_layer}'")
+            self.assertIsNotNone(_gs_layer)
+            _gs_layer_store = saved_layer.store = _gs_layer.resource().store.name
+            saved_layer.save()
         store = get_store(gs_catalog, saved_layer.store, workspace=ws)
         self.assertIsNotNone(store)
 
@@ -800,9 +807,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
-        rest_path = f'rest/workspaces/geonode/datastores/{saved_layer.store}/featuretypes/{name}.xml'
-        import requests
-        from requests.auth import HTTPBasicAuth
+        rest_path = f'rest/workspaces/{workspace}/datastores/{saved_layer.store}/featuretypes/{name}.xml'
         r = requests.get(url + rest_path,
                          auth=HTTPBasicAuth(user, passwd))
         self.assertEqual(r.status_code, 200)
