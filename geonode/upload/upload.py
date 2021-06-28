@@ -621,7 +621,7 @@ def final_step(upload_session, user, charset="UTF-8"):
     _log('Creating Django record for [%s]', name)
     target = task.target
     alternate = task.get_target_layer_name()
-    layer_uuid = str(uuid.uuid1())
+    layer_uuid = None
     title = upload_session.layer_title
     abstract = upload_session.layer_abstract
     regions = []
@@ -662,7 +662,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                 _("Exception occurred while parsing the provided Metadata file."), e)
 
     # Make sure the layer does not exists already
-    if Layer.objects.filter(uuid=layer_uuid).count():
+    if layer_uuid and Layer.objects.filter(uuid=layer_uuid).count():
         Upload.objects.invalidate_from_session(upload_session)
         logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
         raise GeoNodeException(
@@ -692,7 +692,7 @@ def final_step(upload_session, user, charset="UTF-8"):
             try:
                 with transaction.atomic():
                     saved_layer, created = Layer.objects.get_or_create(
-                        uuid=layer_uuid,
+                        uuid=layer_uuid or str(uuid.uuid1()),
                         defaults=dict(
                             store=target.name,
                             storeType=target.store_type,
@@ -742,7 +742,7 @@ def final_step(upload_session, user, charset="UTF-8"):
         try:
             with transaction.atomic():
                 saved_layer, created = Layer.objects.get_or_create(
-                    uuid=layer_uuid,
+                    uuid=layer_uuid or str(uuid.uuid1()),
                     defaults=dict(
                         store=target.name,
                         storeType=target.store_type,
