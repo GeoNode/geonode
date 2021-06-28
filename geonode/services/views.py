@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from geonode.security.utils import get_visible_resources
 import logging
 
 from django.conf import settings
@@ -62,12 +63,22 @@ def service_proxy(request, service_id):
     return proxy(request, url=service_url, sec_chk_hosts=False)
 
 
+@login_required
 def services(request):
     """This view shows the list of all registered services"""
+    resources = get_visible_resources(
+        queryset=Service.objects.all(),
+        user=request.user,
+        metadata_only=True
+    )
+
     return render(
         request,
         "services/service_list.html",
-        {"services": Service.objects.all()}
+        {
+            "services": resources,
+            "can_add_resources": request.user.has_perm('add_resources')
+        }
     )
 
 
@@ -128,6 +139,13 @@ def harvest_resources_handle_get(request, service, handler):
     available_resources = handler.get_resources()
     is_sync = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False)
     errored_state = False
+    _ = _perms_info_json(service)
+
+    perms_list = list(
+        service.get_self_resource().get_user_perms(request.user)
+        .union(service.get_user_perms(request.user))
+    )
+
     already_harvested = HarvestJob.objects.values_list(
         "resource_id", flat=True).filter(service=service, status=enumerations.PROCESSED)
     if available_resources:
@@ -162,6 +180,8 @@ def harvest_resources_handle_get(request, service, handler):
             "is_sync": is_sync,
             "errored_state": errored_state,
             "filter_row": filter_row,
+            "permissions_list": perms_list
+
         }
     )
     return result
@@ -204,6 +224,7 @@ def harvest_resources_handle_post(request, service, handler):
 
 @login_required
 def harvest_resources(request, service_id):
+
     service = get_object_or_404(Service, pk=service_id)
     try:
         handler = request.session[service.base_url]
@@ -274,12 +295,38 @@ def rescan_service(request, service_id):
 @login_required
 def service_detail(request, service_id):
     """This view shows the details of a service"""
-    service = get_object_or_404(Service, pk=service_id)
+    services = get_visible_resources(
+        queryset=Service.objects.filter(pk=service_id),
+        user=request.user,
+        metadata_only=True
+    )
+    if not services.exists():
+        messages.add_message(
+            request,
+            messages.ERROR,
+            _("You dont have enougth rigths to see the resource detail")
+        )
+        return redirect(
+            reverse("services")
+        )
+    service = services.first()
+
+    permissions_json = _perms_info_json(service)
+
+    perms_list = list(
+        service.get_self_resource().get_user_perms(request.user)
+        .union(service.get_user_perms(request.user))
+    )
+
+    already_imported_layers = get_visible_resources(
+        queryset=Layer.objects.filter(remote_service=service),
+        user=request.user
+    )
     resources_being_harvested = HarvestJob.objects.filter(service=service)
-    already_imported_layers = Layer.objects.filter(remote_service=service)
+
     service_list = service.service_set.all()
-    all_resources = (list(resources_being_harvested) +
-                     list(already_imported_layers) + list(service_list))
+    all_resources = (list(resources_being_harvested) + list(already_imported_layers) + list(service_list))
+
     paginator = Paginator(
         all_resources,
         getattr(settings, "CLIENT_RESULTS_LIMIT", 25),
@@ -309,10 +356,11 @@ def service_detail(request, service_id):
         context={
             "service": service,
             "layers": already_imported_layers,
-            "services": (r for r in resources if isinstance(r, Service)),
+            "services": services,
             "resource_jobs": (
                 r for r in resources if isinstance(r, HarvestJob)),
-            "permissions_json": _perms_info_json(service),
+            "permissions_json": permissions_json,
+            "permissions_list": perms_list,
             "resources": resources,
             "total_resources": len(already_imported_layers),
         }

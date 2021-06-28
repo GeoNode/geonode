@@ -26,3 +26,7 @@ LAYER_ADMIN_PERMISSIONS = [
     'change_layer_data',
     'change_layer_style'
 ]
+
+SERVICE_PERMISSIONS = [
+    "add_resourcebase_from_service"
+]

@@ -113,10 +113,10 @@ def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
     """
-    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
+    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
-    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
+    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
 
     for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
         permissions[perm.id] = perm.codename
@@ -562,8 +562,6 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     _group, _user, _disable_cache, users_geolimits, groups_geolimits, anonymous_geolimits = get_user_geolimits(layer, user, group, gf_services)
 
     if _disable_cache:
-        filters = None
-        formats = None
         # Re-order dictionary
         # - if geo-limits have been defined for this user/group, the "*" rule must be the first one
         gf_services_limits_first = {"*": gf_services.pop('*')}
@@ -659,7 +657,7 @@ def _get_gf_services(layer, perms):
 
 def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
-    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
+    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
         admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
@@ -679,6 +677,13 @@ def set_owner_permissions(resource, members=None):
                 if members:
                     for user in members:
                         assign_perm(perm, user, resource.layer)
+
+        if resource.polymorphic_ctype.name == 'service':
+            for perm in SERVICE_PERMISSIONS:
+                assign_perm(perm, resource.owner, resource.service)
+                if members:
+                    for user in members:
+                        assign_perm(perm, user, resource.service)
 
 
 def remove_object_permissions(instance):

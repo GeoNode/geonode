@@ -181,6 +181,13 @@ class Service(ResourceBase):
         except Exception:
             return 404
 
+    class Meta:
+        # custom permissions,
+        # change and delete are standard in django-guardian
+        permissions = (
+            ('add_resourcebase_from_service', 'Can add resources to Service'),
+        )
+
 
 class ServiceProfileRole(models.Model):
 
