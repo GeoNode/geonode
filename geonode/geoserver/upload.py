@@ -145,7 +145,7 @@ def geoserver_upload(
         raise
     finally:
         if _tmpdir is not None:
-            shutil.rmtree(_tmpdir)
+            shutil.rmtree(_tmpdir, ignore_errors=True)
     logger.debug(f'Finished upload of {name} to GeoServer without errors.')
 
     # Step 5. Create the resource in GeoServer

@@ -1302,7 +1302,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 out['errors'] = str(e)
             finally:
                 if tempdir is not None:
-                    shutil.rmtree(tempdir)
+                    shutil.rmtree(tempdir, ignore_errors=True)
         else:
             errormsgs = []
             for e in form.errors.values():
@@ -1381,9 +1381,9 @@ def layer_append(request, layername, template='layers/layer_append.html'):
                 out['errors'] = str(e)
             finally:
                 if tempdir is not None:
-                    shutil.rmtree(tempdir)
+                    shutil.rmtree(tempdir, ignore_errors=True)
                 if _tmpdir is not None:
-                    shutil.rmtree(_tmpdir)
+                    shutil.rmtree(_tmpdir, ignore_errors=True)
         else:
             errormsgs = []
             for e in form.errors.values():

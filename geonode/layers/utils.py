@@ -159,7 +159,7 @@ def get_files(filename):
         msg = f'Could not open {filename}. Make sure you are using a valid file'
         logger.debug(msg)
         if tempdir is not None:
-            shutil.rmtree(tempdir)
+            shutil.rmtree(tempdir, ignore_errors=True)
         raise GeoNodeException(msg)
 
     base_name, extension = os.path.splitext(filename)
@@ -176,13 +176,13 @@ def get_files(filename):
                        'requires helper files with the following extensions: '
                        f'{list(required_extensions.keys())}')
                 if tempdir is not None:
-                    shutil.rmtree(tempdir)
+                    shutil.rmtree(tempdir, ignore_errors=True)
                 raise GeoNodeException(msg)
             elif len(matches) > 1:
                 msg = ('Multiple helper files for %s exist; they need to be '
                        'distinct by spelling and not just case.') % filename
                 if tempdir is not None:
-                    shutil.rmtree(tempdir)
+                    shutil.rmtree(tempdir, ignore_errors=True)
                 raise GeoNodeException(msg)
             else:
                 files[ext] = matches[0]
@@ -194,7 +194,7 @@ def get_files(filename):
             msg = ('Multiple helper files for %s exist; they need to be '
                    'distinct by spelling and not just case.') % filename
             if tempdir is not None:
-                shutil.rmtree(tempdir)
+                shutil.rmtree(tempdir, ignore_errors=True)
             raise GeoNodeException(msg)
 
     elif extension.lower() in cov_exts:
@@ -213,7 +213,7 @@ def get_files(filename):
                 msg = ('Multiple style files (sld) for %s exist; they need to be '
                        'distinct by spelling and not just case.') % filename
                 if tempdir is not None:
-                    shutil.rmtree(tempdir)
+                    shutil.rmtree(tempdir, ignore_errors=True)
                 raise GeoNodeException(msg)
 
     matches = glob.glob(f"{glob_name}.[xX][mM][lL]")
@@ -229,7 +229,7 @@ def get_files(filename):
         msg = ('Multiple XML files for %s exist; they need to be '
                'distinct by spelling and not just case.') % filename
         if tempdir is not None:
-            shutil.rmtree(tempdir)
+            shutil.rmtree(tempdir, ignore_errors=True)
         raise GeoNodeException(msg)
 
     return files, tempdir
@@ -466,7 +466,7 @@ def file_upload(filename,
 
     # Get all the files uploaded with the layer
     if os.path.exists(filename):
-        files = get_files(filename)
+        files, _ = get_files(filename)
     else:
         raise Exception(
             _("You are attempting to replace a vector layer with an unknown format."))

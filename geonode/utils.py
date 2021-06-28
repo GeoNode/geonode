@@ -1229,7 +1229,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
         return True, None, list_col
     finally:
         if tempdir is not None:
-            shutil.rmtree(tempdir)
+            shutil.rmtree(tempdir, ignore_errors=True)
 
 
 def id_to_obj(id_):
@@ -1533,15 +1533,11 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
             s = os.path.join(src, item)
             d = os.path.join(dst, item)
             if os.path.isdir(s):
-                # shutil.rmtree(d)
                 if os.path.exists(d):
                     try:
                         os.remove(d)
                     except Exception:
-                        try:
-                            shutil.rmtree(d)
-                        except Exception:
-                            pass
+                        shutil.rmtree(d, ignore_errors=True)
                 try:
                     shutil.copytree(s, d, symlinks=symlinks, ignore=ignore)
                 except Exception:

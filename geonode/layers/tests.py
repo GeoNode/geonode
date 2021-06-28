@@ -592,9 +592,9 @@ class LayersTest(GeoNodeBaseTestSupport):
             self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
-                shutil.rmtree(d)
+                shutil.rmtree(d, ignore_errors=True)
             if _tmpdir is not None:
-                shutil.rmtree(_tmpdir)
+                shutil.rmtree(_tmpdir, ignore_errors=True)
 
         # Check that a Shapefile missing required components raises an
         # exception
@@ -604,7 +604,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
             if d is not None:
-                shutil.rmtree(d)
+                shutil.rmtree(d, ignore_errors=True)
 
         # Check that including an SLD with a valid shapefile results in the SLD
         # getting picked up
@@ -618,9 +618,9 @@ class LayersTest(GeoNodeBaseTestSupport):
                 self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
-                shutil.rmtree(d)
+                shutil.rmtree(d, ignore_errors=True)
             if _tmpdir is not None:
-                shutil.rmtree(_tmpdir)
+                shutil.rmtree(_tmpdir, ignore_errors=True)
 
         # Check that capitalized extensions are ok
         d = None
@@ -632,9 +632,9 @@ class LayersTest(GeoNodeBaseTestSupport):
             self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
-                shutil.rmtree(d)
+                shutil.rmtree(d, ignore_errors=True)
             if _tmpdir is not None:
-                shutil.rmtree(_tmpdir)
+                shutil.rmtree(_tmpdir, ignore_errors=True)
 
         # Check that mixed capital and lowercase extensions are ok
         d = None
@@ -646,9 +646,9 @@ class LayersTest(GeoNodeBaseTestSupport):
             self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
-                shutil.rmtree(d)
+                shutil.rmtree(d, ignore_errors=True)
             if _tmpdir is not None:
-                shutil.rmtree(_tmpdir)
+                shutil.rmtree(_tmpdir, ignore_errors=True)
 
         # Check that including both capital and lowercase extensions raises an
         # exception
@@ -662,7 +662,7 @@ class LayersTest(GeoNodeBaseTestSupport):
                 self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
             if d is not None:
-                shutil.rmtree(d)
+                shutil.rmtree(d, ignore_errors=True)
 
         # Check that including both capital and lowercase PRJ (this is
         # special-cased in the implementation)
@@ -676,7 +676,7 @@ class LayersTest(GeoNodeBaseTestSupport):
                 self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
             if d is not None:
-                shutil.rmtree(d)
+                shutil.rmtree(d, ignore_errors=True)
 
         # Check that including both capital and lowercase SLD (this is
         # special-cased in the implementation)
@@ -691,7 +691,7 @@ class LayersTest(GeoNodeBaseTestSupport):
                     self.assertRaises(GeoNodeException, lambda: get_files(os.path.join(d, "foo.shp")))
         finally:
             if d is not None:
-                shutil.rmtree(d)
+                shutil.rmtree(d, ignore_errors=True)
 
     def test_get_valid_name(self):
         self.assertEqual(get_valid_name("blug"), "blug")
