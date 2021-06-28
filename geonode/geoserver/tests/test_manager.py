@@ -33,9 +33,10 @@ import os
 
 
 class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
+
     def setUp(self):
         self.files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
-        self.files_as_dict = get_files(self.files)
+        self.files_as_dict, _tmpdir = get_files(self.files)
         self.cat = gs_catalog
         self.user = get_user_model().objects.get(username="admin")
         self.sut = create_single_layer("san_andres_y_providencia_water")

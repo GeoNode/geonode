@@ -16,12 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from geonode.base.models import ResourceBase
 import io
 import os
 import re
 import gzip
+import shutil
 import logging
 import tempfile
 import traceback
@@ -36,11 +35,12 @@ from django.views.generic import View
 from distutils.version import StrictVersion
 from django.http.request import validate_host
 from django.utils.translation import ugettext as _
-from geonode.storage.manager import storage_manager
 from django.views.decorators.csrf import requires_csrf_token
 
 from geonode.layers.models import Layer
 from geonode.upload.models import Upload
+from geonode.base.models import ResourceBase
+from geonode.storage.manager import storage_manager
 from geonode.utils import (
     resolve_object,
     check_ogc_backend,
@@ -328,6 +328,9 @@ def download(request, resourceid, sender=Layer):
                         'error_message': _no_files_found
                     },
                     request=request), status=404)
+        finally:
+            if target_folder is not None:
+                shutil.rmtree(target_folder)
     return HttpResponse(
         loader.render_to_string(
             '401.html',
