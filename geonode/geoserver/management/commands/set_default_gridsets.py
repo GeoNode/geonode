@@ -48,7 +48,7 @@ class Command(BaseCommand):
             for layer in layers:
                 print(f"Processing layer: {layer.typename}")
                 r = requests.get(f'{url}gwc/rest/layers/{layer.typename}.xml',
-                                auth=HTTPBasicAuth(user, passwd))
+                                 auth=HTTPBasicAuth(user, passwd))
 
                 if (r.status_code < 200 or r.status_code > 201):
                     print(f"Layer does not exists on geoserver: {layer.name}")
@@ -83,9 +83,9 @@ class Command(BaseCommand):
                     headers = {'Content-type': 'text/xml'}
                     payload = ET.tostring(tree)
                     r = requests.post(f'{url}gwc/rest/layers/{layer.typename}.xml',
-                                    headers=headers,
-                                    data=payload,
-                                    auth=HTTPBasicAuth(user, passwd))
+                                      headers=headers,
+                                      data=payload,
+                                      auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code < 200 or r.status_code > 201):
                         print(f"Error during update of layer in geoserver: {layer.name} {r.content}")
                         continue
