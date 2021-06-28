@@ -16,29 +16,48 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.geoserver.helpers import get_layer_storetype
-from geonode.tests.base import GeoNodeBaseTestSupport
-from django.test.testcases import SimpleTestCase
-
 import re
+import logging
+
 from urllib.parse import urljoin
 
 from django.conf import settings
 
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
-
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.geoserver.views import _response_callback
+from geonode.geoserver.helpers import get_layer_storetype
 from geonode.layers.populate_layers_data import create_layer_data
 
-from geonode.geoserver.views import _response_callback
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
 
-import logging
 logger = logging.getLogger(__name__)
 
 
 class HelperTest(GeoNodeBaseTestSupport):
 
     type = 'layer'
+
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
         super().setUp()
@@ -159,8 +178,6 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))
 
-
-class TestGetLayerStoreType(SimpleTestCase):
     def test_return_element_if_not_exists_in_the_subtypes(self):
         el = get_layer_storetype('not-existing-type')
         self.assertEqual('not-existing-type', el)

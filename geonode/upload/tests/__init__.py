@@ -19,13 +19,12 @@
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import contextlib
 import os
-import shutil
-import tempfile
 import zipfile
-import geonode.upload.files as files
+import tempfile
+import contextlib
 
+import geonode.upload.files as files
 from geonode.upload.files import SpatialFiles, scan_file
 from geonode.upload.files import _rename_files, _contains_bad_names
 
@@ -57,7 +56,6 @@ def create_files(names, zipped=False):
             os.unlink(f)
         names = [basefile]
     yield names
-    shutil.rmtree(tmpdir, ignore_errors=True)
 
 
 class FilesTests(GeoNodeBaseTestSupport):

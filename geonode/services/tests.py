@@ -17,15 +17,21 @@
 #
 #########################################################################
 import logging
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.test import Client
-from selenium import webdriver
-from unittest import TestCase as StandardTestCase
-from flaky import flaky
 
+from flaky import flaky
+from selenium import webdriver
+from urllib.error import HTTPError
+from collections import namedtuple
+from arcrest import MapService as ArcMapService
+from unittest import TestCase as StandardTestCase
+from owslib.wms import WebMapService as OwsWebMapService
+
+from django.test import Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
 try:
     import unittest.mock as mock
 except ImportError:
@@ -35,6 +41,7 @@ from owslib.map.wms111 import ContentMetadata
 from geonode.layers.models import Layer
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.services.utils import test_resource_table_status
+
 from . import enumerations, forms
 from .models import HarvestJob, Service
 from .serviceprocessors import (
@@ -44,10 +51,6 @@ from .serviceprocessors import (
     arcgis)
 from .serviceprocessors.arcgis import MapLayer
 from .serviceprocessors.wms import WebMapService
-
-from arcrest import MapService as ArcMapService
-from owslib.wms import WebMapService as OwsWebMapService
-from collections import namedtuple
 
 logger = logging.getLogger(__name__)
 
@@ -487,8 +490,8 @@ class ModuleFunctionsTestCase(StandardTestCase):
         if created:
             test_user.set_password("somepassword")
             test_user.save()
-        result = handler.create_geonode_service(test_user)
         try:
+            result = handler.create_geonode_service(test_user)
             geonode_service, created = Service.objects.get_or_create(
                 base_url=result.base_url,
                 owner=test_user)
@@ -506,7 +509,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             Layer.objects.filter(remote_service=geonode_service).delete()
             self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
                                                        resource_id=geonode_layer.alternate).count(), 0)
-        except Service.DoesNotExist as e:
+        except (Service.DoesNotExist, HTTPError) as e:
             # In the case the Service URL becomes inaccessible for some reason
             logger.error(e)
 

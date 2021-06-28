@@ -146,9 +146,10 @@ class StorageManager(StorageManagerInterface):
 
     def _replace_files_list(self, old_files: List[str], new_files: List[str]):
         out = []
-        for f in new_files:
-            with self.open(f, 'rb+') as open_file:
-                out.append(self._replace_single_file(old_files[0], open_file))
+        if len(old_files) and old_files[0]:
+            for f in new_files:
+                with self.open(f, 'rb+') as open_file:
+                    out.append(self._replace_single_file(old_files[0], open_file))
         return out
 
     def _replace_single_file(self, old_file: str, new_file: BinaryIO):
