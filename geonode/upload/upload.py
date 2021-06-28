@@ -33,7 +33,6 @@ State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
 import pytz
-import uuid
 import shutil
 import os.path
 import logging
@@ -627,7 +626,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     _log(f'Creating Django record for [{name}]')
     target = task.target
     alternate = task.get_target_layer_name()
-    layer_uuid = str(uuid.uuid1())
+    layer_uuid = None
     title = upload_session.layer_title
     abstract = upload_session.layer_abstract
 
@@ -686,7 +685,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         sld_uploaded = False
 
     # Make sure the layer does not exists already
-    if Layer.objects.filter(uuid=layer_uuid).count():
+    if layer_uuid and Layer.objects.filter(uuid=layer_uuid).count():
         Upload.objects.invalidate_from_session(upload_session)
         logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
         raise GeoNodeException(
