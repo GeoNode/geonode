@@ -146,12 +146,10 @@ def geoserver_upload(
     finally:
         if _tmpdir is not None:
             shutil.rmtree(_tmpdir)
-    logger.debug('Finished upload of [%s] to GeoServer without '
-                    'errors.', name)
+    logger.debug(f'Finished upload of {name} to GeoServer without errors.')
 
     # Step 5. Create the resource in GeoServer
-    logger.debug('>>> Step 5. Generating the metadata for [%s] after '
-                 'successful import to GeoSever', name)
+    logger.debug(f'>>> Step 5. Generating the metadata for {name} after successful import to GeoSever')
 
     # Verify the resource was created
     if not gs_resource:
