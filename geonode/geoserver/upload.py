@@ -18,6 +18,7 @@
 #
 #########################################################################
 import uuid
+import shutil
 import logging
 import geoserver
 
@@ -116,7 +117,7 @@ def geoserver_upload(
     logger.debug('>>> Step 4. Starting upload of [%s] to GeoServer...', name)
 
     # Get the helper files if they exist
-    files = get_files(base_file)
+    files, _tmpdir = get_files(base_file)
     data = files
     if 'shp' not in files:
         data = base_file
@@ -142,13 +143,13 @@ def geoserver_upload(
         logger.warn(msg)
         e.args = (msg,)
         raise
-    else:
-        logger.debug('Finished upload of [%s] to GeoServer without '
-                     'errors.', name)
+    finally:
+        if _tmpdir is not None:
+            shutil.rmtree(_tmpdir)
+    logger.debug(f'Finished upload of {name} to GeoServer without errors.')
 
     # Step 5. Create the resource in GeoServer
-    logger.debug('>>> Step 5. Generating the metadata for [%s] after '
-                 'successful import to GeoSever', name)
+    logger.debug(f'>>> Step 5. Generating the metadata for {name} after successful import to GeoSever')
 
     # Verify the resource was created
     if not gs_resource:

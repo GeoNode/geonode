@@ -1350,7 +1350,7 @@ def layer_append(request, layername, template='layers/layer_append.html'):
         if form.is_valid():
             try:
                 tempdir, base_file = form.write_files()
-                files = get_files(base_file)
+                files, _tmpdir = get_files(base_file)
                 #  validate input source
                 resource_is_valid = validate_input_source(
                     layer=layer, filename=base_file, files=files, action_type="append"
@@ -1382,6 +1382,8 @@ def layer_append(request, layername, template='layers/layer_append.html'):
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
+                if _tmpdir is not None:
+                    shutil.rmtree(_tmpdir)
         else:
             errormsgs = []
             for e in form.errors.values():

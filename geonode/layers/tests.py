@@ -584,14 +584,17 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         # Check that a well-formed Shapefile has its components all picked up
         d = None
+        _tmpdir = None
         try:
             d, expected_files = generate_files("shp", "shx", "prj", "dbf")
-            gotten_files = get_files(os.path.join(d, "foo.shp"))
+            gotten_files, _tmpdir = get_files(os.path.join(d, "foo.shp"))
             gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
             self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
                 shutil.rmtree(d)
+            if _tmpdir is not None:
+                shutil.rmtree(_tmpdir)
 
         # Check that a Shapefile missing required components raises an
         # exception
@@ -606,37 +609,46 @@ class LayersTest(GeoNodeBaseTestSupport):
         # Check that including an SLD with a valid shapefile results in the SLD
         # getting picked up
         d = None
+        _tmpdir = None
         try:
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                 d, expected_files = generate_files("shp", "shx", "prj", "dbf", "sld")
-                gotten_files = get_files(os.path.join(d, "foo.shp"))
+                gotten_files, _tmpdir = get_files(os.path.join(d, "foo.shp"))
                 gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
                 self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
                 shutil.rmtree(d)
+            if _tmpdir is not None:
+                shutil.rmtree(_tmpdir)
 
         # Check that capitalized extensions are ok
         d = None
+        _tmpdir = None
         try:
             d, expected_files = generate_files("SHP", "SHX", "PRJ", "DBF")
-            gotten_files = get_files(os.path.join(d, "foo.SHP"))
+            gotten_files, _tmpdir = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
             self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
                 shutil.rmtree(d)
+            if _tmpdir is not None:
+                shutil.rmtree(_tmpdir)
 
         # Check that mixed capital and lowercase extensions are ok
         d = None
+        _tmpdir = None
         try:
             d, expected_files = generate_files("SHP", "shx", "pRJ", "DBF")
-            gotten_files = get_files(os.path.join(d, "foo.SHP"))
+            gotten_files, _tmpdir = get_files(os.path.join(d, "foo.SHP"))
             gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
             self.assertEqual(gotten_files, expected_files)
         finally:
             if d is not None:
                 shutil.rmtree(d)
+            if _tmpdir is not None:
+                shutil.rmtree(_tmpdir)
 
         # Check that including both capital and lowercase extensions raises an
         # exception

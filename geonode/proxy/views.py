@@ -410,6 +410,9 @@ def download(request, resourceid, sender=Layer):
                         'error_message': _no_files_found
                     },
                     request=request), status=404)
+        finally:
+            if target_folder is not None:
+                shutil.rmtree(target_folder)
     return HttpResponse(
         loader.render_to_string(
             '401.html',
