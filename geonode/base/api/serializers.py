@@ -21,6 +21,7 @@ from urllib.parse import urljoin
 
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.forms.models import model_to_dict
 
 from rest_framework import serializers
 from rest_framework_gis import fields
@@ -33,6 +34,7 @@ from avatar.templatetags.avatar_tags import avatar_url
 
 from geonode.favorite.models import Favorite
 from geonode.base.models import (
+    Link,
     ResourceBase,
     HierarchicalKeyword,
     Region,
@@ -341,6 +343,24 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             if not request.user.is_anonymous:
                 favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
                 data['favorite'] = favorite > 0
+        # Adding links to resource_base api
+        obj_id = data.get('pk', None)
+        if obj_id:
+            dehydrated = []
+            link_fields = [
+                'extension',
+                'link_type',
+                'name',
+                'mime',
+                'url'
+            ]
+
+            links = Link.objects.filter(resource_id=int(obj_id), link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
+            for lnk in links:
+                formatted_link = model_to_dict(lnk, fields=link_fields)
+                dehydrated.append(formatted_link)
+            if len(dehydrated) > 0:
+                data['links'] = dehydrated
         return data
 
 

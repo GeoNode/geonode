@@ -347,7 +347,8 @@ def create_single_layer(name):
         temporal_extent_end=test_datetime,
         date=start,
         storeType="dataStore",
-        resource_type="layer"
+        resource_type="layer",
+        typename=f"geonode:{title}"
     )
     layer.save()
     layer.set_default_permissions()
