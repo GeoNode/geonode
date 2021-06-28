@@ -1287,9 +1287,9 @@ def layer_append_replace_view(request, layername, template, action_type):
                 out['errors'] = str(e)
             finally:
                 if tempdir is not None:
-                    shutil.rmtree(tempdir)
+                    shutil.rmtree(tempdir, ignore_errors=True)
                 if _tmpdir is not None:
-                    shutil.rmtree(_tmpdir)
+                    shutil.rmtree(_tmpdir, ignore_errors=True)
         else:
             errormsgs = []
             for e in form.errors.values():

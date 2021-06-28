@@ -256,7 +256,7 @@ class DocumentUploadView(CreateView):
                     files=[storage_path])
             )
             if tempdir != os.path.dirname(storage_path):
-                shutil.rmtree(tempdir)
+                shutil.rmtree(tempdir, ignore_errors=True)
         else:
             self.object = resource_manager.create(
                 None,

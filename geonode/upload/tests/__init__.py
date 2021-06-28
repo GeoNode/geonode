@@ -57,7 +57,7 @@ def create_files(names, zipped=False):
             os.unlink(f)
         names = [basefile]
     yield names
-    shutil.rmtree(tmpdir)
+    shutil.rmtree(tmpdir, ignore_errors=True)
 
 
 class FilesTests(GeoNodeBaseTestSupport):

@@ -142,7 +142,7 @@ class Upload(models.Model):
                 # only if it does not match with the default temporary path
                 if os.path.exists(self.upload_dir):
                     if settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.upload_dir)):
-                        shutil.rmtree(self.upload_dir)
+                        shutil.rmtree(self.upload_dir, ignore_errors=True)
 
         if "COMPLETE" == self.state:
             self.complete = True

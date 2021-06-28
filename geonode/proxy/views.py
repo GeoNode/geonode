@@ -330,7 +330,7 @@ def download(request, resourceid, sender=Layer):
                     request=request), status=404)
         finally:
             if target_folder is not None:
-                shutil.rmtree(target_folder)
+                shutil.rmtree(target_folder, ignore_errors=True)
     return HttpResponse(
         loader.render_to_string(
             '401.html',
