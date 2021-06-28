@@ -1858,3 +1858,143 @@ class TestIsSldUploadOnly(TestCase):
             request.FILES['base_file'] = f
         actual = is_sld_upload_only(request)
         self.assertFalse(actual)
+
+
+class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
+
+    fixtures = ["group_test_data.json", "default_oauth_apps.json"]
+
+    def setUp(self):
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
+        self.sut = create_single_layer("single_point")
+
+    def test_xml_form_without_files_should_raise_500(self):
+        files = dict()
+        files['permissions'] = '{}'
+        files['charset'] = 'utf-8'
+        self.client.login(username="admin", password="admin")
+        resp = self.client.post(reverse('layer_upload'), data=files)
+        self.assertEqual(500, resp.status_code)
+
+    def test_xml_should_return_404_if_the_layer_does_not_exists(self):
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.exml_path),
+            "xml_file": open(self.exml_path),
+            "layer_title": "Fake layer title",
+            "metadata_upload_form": True,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(404, resp.status_code)
+
+    def test_xml_should_raise_an_error_if_the_uuid_is_changed(self):
+        '''
+        If the UUID coming from the XML and the one saved in the DB are different
+        The system should raise an error
+        '''
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.exml_path),
+            "xml_file": open(self.exml_path),
+            "layer_title": "geonode:single_point",
+            "metadata_upload_form": True,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        prev_layer = Layer.objects.get(typename="geonode:single_point")
+        self.assertEqual(0, prev_layer.keywords.count())
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(404, resp.status_code)
+        expected = {
+            "success": False,
+            "errors": "The UUID identifier from the XML Metadata, is different from the one saved"
+        }
+        self.assertDictEqual(expected, resp.json())
+
+    def test_xml_should_update_the_layer_with_the_expected_values(self):
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.exml_path),
+            "xml_file": open(self.exml_path),
+            "layer_title": "geonode:single_point",
+            "metadata_upload_form": True,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        prev_layer = Layer.objects.get(typename="geonode:single_point")
+        # updating the layer with the same uuid of the xml uploaded
+        # otherwise will rase an error
+        prev_layer.uuid = '7cfbc42c-efa7-431c-8daa-1399dff4cd19'
+        prev_layer.save()
+
+        self.assertEqual(0, prev_layer.keywords.count())
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(200, resp.status_code)
+        updated_layer = Layer.objects.get(typename="geonode:single_point")
+        # just checking some values if are updated
+        self.assertEqual(6, updated_layer.keywords.all().count())
+
+    def test_sld_should_raise_500_if_is_invalid(self):
+        user = get_user_model().objects.get(username="admin")
+        layer = create_layer(
+            "single_point",
+            "single_point",
+            user,
+            'Point'
+        )
+
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.sld_path),
+            "sld_file": open(self.sld_path),
+            "layer_title": "random",
+            "metadata_upload_form": False,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        self.assertEqual(1, layer.styles.count())
+        self.assertEqual("Default Point", layer.styles.first().sld_title)
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(500, resp.status_code)
+        self.assertFalse(resp.json().get('success'))
+        self.assertEqual('No Layer matches the given query.', resp.json().get('errors'))
+
+    def test_sld_should_update_the_layer_with_the_expected_values(self):
+        user = get_user_model().objects.get(username="admin")
+        layer = create_layer(
+            "single_point",
+            "single_point",
+            user,
+            'Point'
+        )
+
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.sld_path),
+            "sld_file": open(self.sld_path),
+            "layer_title": f"geonode:{layer.name}",
+            "metadata_upload_form": False,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        self.assertEqual(1, layer.styles.count())
+        self.assertEqual("Default Point", layer.styles.first().sld_title)
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(200, resp.status_code)
+        updated_layer = Layer.objects.get(alternate=f"geonode:{layer.name}")
+        # just checking some values if are updated
+        self.assertEqual(1, updated_layer.styles.all().count())
+        self.assertEqual("SLD Cook Book: Simple Point", updated_layer.styles.first().sld_title)

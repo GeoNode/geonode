@@ -258,8 +258,13 @@ def layer_upload_metadata(request):
         if layer.exists():
             layer_uuid, vals, regions, keywords, _ = parse_metadata(
                 open(base_file).read())
-            if layer_uuid:
-                layer.uuid = layer_uuid
+            if layer_uuid and layer.first().uuid != layer_uuid:
+                out['success'] = False
+                out['errors'] = "The UUID identifier from the XML Metadata, is different from the one saved"
+                return HttpResponse(
+                    json.dumps(out),
+                    content_type='application/json',
+                    status=404)
             updated_layer = update_resource(layer.first(), base_file, regions, keywords, vals)
             updated_layer.save()
             out['status'] = ['finished']
