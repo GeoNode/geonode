@@ -562,8 +562,6 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     _group, _user, _disable_cache, users_geolimits, groups_geolimits, anonymous_geolimits = get_user_geolimits(layer, user, group, gf_services)
 
     if _disable_cache:
-        filters = None
-        formats = None
         # Re-order dictionary
         # - if geo-limits have been defined for this user/group, the "*" rule must be the first one
         gf_services_limits_first = {"*": gf_services.pop('*')}
