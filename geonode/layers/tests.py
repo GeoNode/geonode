@@ -100,7 +100,6 @@ class LayersTest(GeoNodeBaseTestSupport):
         super().setUpClass()
         create_models(type=cls.get_type, integration=cls.get_integration)
         all_public()
-        create_layer_data()
 
     @classmethod
     def tearDownClass(cls):
@@ -116,6 +115,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
         self.maxDiff = None
         self.sut = create_single_layer("single_point")
+        create_layer_data(self.sut.resourcebase_ptr_id)
         self.r = namedtuple('GSCatalogRes', ['resource'])
 
     # Data Tests
@@ -1362,7 +1362,6 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        create_layer_data()
         self.user = get_user_model().objects.create(username='dybala', email='dybala@gmail.com')
         self.user.set_password('very-secret')
         self.admin = get_user_model().objects.get(username='admin')
@@ -1372,6 +1371,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.not_admin.save()
 
         self.layer = Layer.objects.all().first()
+        create_layer_data(self.layer.resourcebase_ptr_id)
         with DisableDjangoSignals():
             self.map_layer = MapLayer.objects.create(
                 fixed=ml[0]['fixed'],
@@ -1515,7 +1515,6 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
         super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
-        # create_layer_data()
         self.anonymous_user = get_anonymous_user()
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
