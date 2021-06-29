@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-06-29 10:38+0300\n"
 "PO-Revision-Date: 2020-12-23 16:21+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -400,6 +400,14 @@ msgstr "Is this resource validated from a publisher or editor?"
 msgid "Thumbnail url"
 msgstr "Thumbnail url"
 
+#, fuzzy
+#| msgid "Dirty State"
+msgid "State"
+msgstr "Dirty State"
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr "Dirty State"
 
@@ -582,6 +590,16 @@ msgid ""
 msgstr ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+
+#, fuzzy
+#| msgid "Service rescanned successfully"
+msgid "Resource Cloned Successfully!"
+msgstr "Service rescanned successfully"
+
+#, fuzzy, python-brace-format
+#| msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "Error Occurred while Cloning the Resource: {e}"
+msgstr "Some error occurred while trying to access the uploaded schema: %s"
 
 msgid "Resource Metadata"
 msgstr "Resource Metadata"
@@ -937,6 +955,9 @@ msgstr "Speed Rating"
 msgid "Link to"
 msgstr "Link to"
 
+msgid "File"
+msgstr "File"
+
 msgid "Document must be a file or url."
 msgstr "Document must be a file or url."
 
@@ -948,9 +969,6 @@ msgstr "This file type is not allowed"
 
 msgid "Permissions must be valid JSON."
 msgstr "Permissions must be valid JSON."
-
-msgid "File"
-msgstr "File"
 
 msgid "The URL of the document if it is external."
 msgstr "The URL of the document if it is external."
@@ -1004,6 +1022,9 @@ msgid "Document"
 msgid_plural "Documents"
 msgstr[0] "Document"
 msgstr[1] "Documents"
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr "Replace"
@@ -1376,6 +1397,11 @@ msgstr ""
 "Core metadata elements.\n"
 "        Some of your original metadata may have been lost."
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "Explore Maps"
+
 #, python-format
 msgid ""
 "\n"
@@ -1385,6 +1411,11 @@ msgstr ""
 "\n"
 "        Editing details for %(map_title)s\n"
 "      "
+
+#, fuzzy
+#| msgid "Return to Map"
+msgid "Return to GeoApp"
+msgstr "Return to Map"
 
 msgid "New Map"
 msgstr "New Map"
@@ -1767,6 +1798,121 @@ msgstr "Edit Group Category"
 msgid "Save"
 msgstr "Save"
 
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "harvesting-resources"
+msgstr "Harvesting resources..."
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "Harvested"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "version of the cited resource"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "Set permissions on selected resources"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "harvesting-resource"
+msgstr "Harvesting resources..."
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
+
 #, fuzzy, python-brace-format
 #| msgid "The e-mail address '%(email)s' has already been invited."
 msgid "The e-mail address '{email}' has already been invited."
@@ -2023,10 +2169,17 @@ msgstr "date when attribute statistics were last updated"
 
 #, fuzzy
 #| msgid "Return to Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "Return to Layer"
 
-msgid "Return to Layer"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
+msgstr "Explore Layers"
+
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Return to Dataset"
 msgstr "Return to Layer"
 
 msgid "Preserve Metadata XML"
@@ -2276,12 +2429,6 @@ msgstr "Click the button below to change the permissions of this layer."
 msgid "Change Layer Permissions"
 msgstr "Change Layer Permissions"
 
-msgid "Processing..."
-msgstr "Processing..."
-
-msgid "Updating Permissions..."
-msgstr "Updating Permissions..."
-
 msgid "Remove Mosaic Granules"
 msgstr "Remove Mosaic Granules"
 
@@ -2332,6 +2479,11 @@ msgstr ""
 "Dublin Core metadata elements.\n"
 "          Some of your original metadata may have been lost."
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Dataset"
+msgstr "Explore Maps"
+
 #, python-format
 msgid ""
 "\n"
@@ -2360,7 +2512,9 @@ msgstr "ERROR"
 msgid "Following items are required:"
 msgstr ""
 
-msgid "Upload Layer Metadata"
+#, fuzzy
+#| msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "Upload Layer Metadata"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
@@ -2381,7 +2535,9 @@ msgstr ""
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "Replace Layer"
 
 msgid "Manage Styles"
@@ -2399,7 +2555,9 @@ msgstr ""
 "%(layer_title)s</a>\n"
 "    "
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "Layer Default Style"
 
 msgid "Available styles"
@@ -2414,6 +2572,12 @@ msgstr ""
 
 msgid "Update Available Styles"
 msgstr "Update Available Styles"
+
+msgid "Upload Layer Metadata"
+msgstr "Upload Layer Metadata"
+
+msgid "Return to Layer"
+msgstr "Return to Layer"
 
 msgid "Upload Layer Style"
 msgstr "Upload Layer Style"
@@ -3032,13 +3196,6 @@ msgstr " Or just go "
 msgid "now"
 msgstr "now"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr "You are attempting to replace a vector layer with an unknown format."
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
-
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with a raster."
 msgid "You are attempting to {action_type} a vector layer with a raster."
@@ -3122,15 +3279,6 @@ msgstr "You are not permitted to modify this layer's metadata"
 
 msgid "You are not permitted to view this layer"
 msgstr "You are not permitted to view this layer"
-
-msgid "Failed to upload the layer"
-msgstr "Failed to upload the layer"
-
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr "You are attempting to replace a vector layer with a raster."
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr "You are attempting to replace a raster layer with a vector."
 
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
@@ -3953,6 +4101,17 @@ msgstr "No files found."
 msgid "Not Authorized"
 msgstr "Not Authorized"
 
+#, fuzzy
+#| msgid "GeoNode Themes Library"
+msgid "GeoNode Resource Processing Library"
+msgstr "GeoNode Themes Library"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr "Session is Expired. Please login again!"
 
@@ -4100,8 +4259,8 @@ msgstr "Edit Service"
 msgid "Services"
 msgstr "Services"
 
-msgid "Register a new Service"
-msgstr "Register a new Service"
+msgid "Add Remote Service"
+msgstr "Add Remote Service"
 
 msgid "Remote Services"
 msgstr "Remote Services"
@@ -4300,9 +4459,6 @@ msgstr ""
 "actual error and fix it or file an issue in <a href=\"http://github.com/"
 "GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "            "
-
-msgid "Add Remote Service"
-msgstr "Add Remote Service"
 
 msgid "Create Map"
 msgstr "Create Map"
@@ -5037,11 +5193,19 @@ msgstr "Uploading..."
 msgid "Upload in progress..."
 msgstr "Upload in progress..."
 
+msgid "Processing..."
+msgstr "Processing..."
+
 msgid "Updating Thumbnail..."
 msgstr "Updating Thumbnail..."
 
 msgid "Message. Do you want to proceed?"
 msgstr "Message. Do you want to proceed?"
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "Processing Resource..."
+msgstr "Harvesting resources..."
 
 msgid "Information for Developers"
 msgstr "Information for Developers"
@@ -6203,6 +6367,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6285,6 +6453,25 @@ msgstr "Invalid permission level."
 
 msgid "Permission Denied"
 msgstr "Permission Denied"
+
+#~ msgid "Updating Permissions..."
+#~ msgstr "Updating Permissions..."
+
+#~ msgid "You are attempting to replace a vector layer with an unknown format."
+#~ msgstr ""
+#~ "You are attempting to replace a vector layer with an unknown format."
+
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Failed to upload the layer"
+
+#~ msgid "You are attempting to replace a vector layer with a raster."
+#~ msgstr "You are attempting to replace a vector layer with a raster."
+
+#~ msgid "You are attempting to replace a raster layer with a vector."
+#~ msgstr "You are attempting to replace a raster layer with a vector."
+
+#~ msgid "Register a new Service"
+#~ msgstr "Register a new Service"
 
 #~ msgid "batch edit"
 #~ msgstr "batch edit"
