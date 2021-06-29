@@ -616,6 +616,7 @@ def sync_resources_with_guardian(resource=None):
 def get_user_geolimits(layer, user, group, gf_services):
     _user = None
     _group = None
+    _disable_layer_cache = None
     users_geolimits = None
     groups_geolimits = None
     anonymous_geolimits = None
