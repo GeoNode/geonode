@@ -420,7 +420,7 @@ GEONODE_CORE_APPS = (
     'geonode.security',
     'geonode.catalogue',
     'geonode.catalogue.metadataxsl',
-    'geonode.harvesting.apps.HarvestingAppConfig',
+    'geonode.harvesting',
 )
 
 # GeoNode Apps

@@ -22,6 +22,7 @@ from django.conf.urls import url, include
 
 
 class HarvestingAppConfig(AppConfig):
+
     name = "geonode.harvesting"
 
     def ready(self):
