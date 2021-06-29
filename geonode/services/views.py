@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import json
 from geonode.security.utils import get_visible_resources
 import logging
 
@@ -66,8 +67,11 @@ def service_proxy(request, service_id):
 @login_required
 def services(request):
     """This view shows the list of all registered services"""
+    queryset = Service.objects.all()
+    if not request.user.is_superuser:
+        queryset = queryset.filter(owner=request.user)
     resources = get_visible_resources(
-        queryset=Service.objects.all(),
+        queryset=queryset,
         user=request.user,
         metadata_only=True
     )
@@ -77,7 +81,7 @@ def services(request):
         "services/service_list.html",
         {
             "services": resources,
-            "can_add_resources": request.user.has_perm('add_resources')
+            "can_add_resources": request.user.has_perm('base.add_resourcebase')
         }
     )
 
@@ -97,7 +101,12 @@ def register_service(request):
                 raise Http404(str(e))
             service.save()
             service.keywords.add(*service_handler.get_keywords())
-            service.set_default_permissions()
+            
+            perm_spec = json.loads(_perms_info_json(service))
+            if 'anonymous' in perm_spec.get('groups', []):
+                perm_spec['groups'].pop('anonymous')
+            service.set_permissions(perm_spec)
+
             if service_handler.indexing_method == enumerations.CASCADED:
                 service_handler.create_cascaded_store()
             request.session[service_handler.url] = service_handler
@@ -295,11 +304,16 @@ def rescan_service(request, service_id):
 @login_required
 def service_detail(request, service_id):
     """This view shows the details of a service"""
+    queryset = Service.objects.all()
+    if not request.user.is_superuser:
+        queryset = queryset.filter(owner=request.user)
+
     services = get_visible_resources(
-        queryset=Service.objects.filter(pk=service_id),
+        queryset=queryset,
         user=request.user,
         metadata_only=True
     )
+
     if not services.exists():
         messages.add_message(
             request,

@@ -186,6 +186,7 @@ class Service(ResourceBase):
         # change and delete are standard in django-guardian
         permissions = (
             ('add_resourcebase_from_service', 'Can add resources to Service'),
+            ('change_resourcebase_metadata', 'Can change resources metadata'),
         )
 
 
