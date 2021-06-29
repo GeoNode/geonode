@@ -16,16 +16,28 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+from storages.utils import setting
+from storages.backends.dropbox import (
+    _DEFAULT_MODE,
+    _DEFAULT_TIMEOUT,
+    DropBoxStorage)
 
 from geonode.storage.manager import StorageManagerInterface
-from storages.backends.dropbox import DropBoxStorage
 
 
 class DropboxStorageManager(StorageManagerInterface):
 
     def __init__(self):
-        self._drx = DropBoxStorage()
+        location = setting('DROPBOX_ROOT_PATH', '/')
+        oauth2_access_token = setting('DROPBOX_OAUTH2_TOKEN')
+        timeout = setting('DROPBOX_TIMEOUT', _DEFAULT_TIMEOUT)
+        write_mode = setting('DROPBOX_WRITE_MODE', _DEFAULT_MODE)
+
+        self._drx = DropBoxStorage(
+            oauth2_access_token=oauth2_access_token,
+            root_path=location,
+            timeout=timeout,
+            write_mode=write_mode)
 
     def _get_concrete_manager(self):
         return DropboxStorageManager()

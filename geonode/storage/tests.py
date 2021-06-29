@@ -16,24 +16,25 @@
 # along with this profgram. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.test.utils import override_settings
-from geonode.storage.manager import StorageManager
-from geonode.base.populate_test_data import create_single_layer
 import io
+import os
 
 from unittest.mock import patch
 
 from django.test.testcases import SimpleTestCase, TestCase
 
 from geonode.storage.aws import AwsStorageManager
+from geonode.storage.manager import StorageManager
 from geonode.storage.gcs import GoogleStorageManager
 from geonode.storage.dropbox import DropboxStorageManager
+from geonode.base.populate_test_data import create_single_layer
 
 
-@override_settings(DROPBOX_OAUTH2_TOKEN="auth_token")
 class TestDropboxStorageManager(SimpleTestCase):
+
     def setUp(self):
-        self.sut = DropboxStorageManager
+        with self.settings(DROPBOX_OAUTH2_TOKEN="auth_token"):
+            self.sut = DropboxStorageManager()
 
     @patch('geonode.storage.dropbox.DropBoxStorage.delete')
     def test_dropbox_deleted(self, dbx):
@@ -42,7 +43,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         and that the DropBoxStorage function as been called with the expected parameters
         '''
         dbx.return_value = None
-        output = self.sut().delete('filename')
+        output = self.sut.delete('filename')
         self.assertIsNone(output)
         dbx.assert_called_once_with('filename')
 
@@ -53,7 +54,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         and that the DropBoxStorage function as been called with the expected parameters
         '''
         dbx.return_value = True
-        output = self.sut().exists('filename')
+        output = self.sut.exists('filename')
         self.assertTrue(output)
         dbx.assert_called_once_with('filename')
 
@@ -64,7 +65,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         and that the DropBoxStorage function as been called with the expected parameters
         '''
         dbx.return_value = (['folder1'], ['file1', 'file2'])
-        output = self.sut().listdir('Apps/')
+        output = self.sut.listdir('Apps/')
         self.assertTupleEqual((['folder1'], ['file1', 'file2']), output)
         dbx.assert_called_once_with('Apps/')
 
@@ -75,7 +76,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         and that the DropBoxStorage function as been called with the expected parameters
         '''
         dbx.return_value = io.StringIO()
-        output = self.sut().open("name", mode='xx')
+        output = self.sut.open("name", mode='xx')
         self.assertEqual(type(output), io.StringIO().__class__)
         dbx.assert_called_once_with("name", 'xx')
 
@@ -86,7 +87,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         and that the DropBoxStorage function as been called with the expected parameters
         '''
         dbx.return_value = "/opt/full/path/to/file"
-        output = self.sut().path('file')
+        output = self.sut.path('file')
         self.assertEqual("/opt/full/path/to/file", output)
         dbx.assert_called_once_with('file')
 
@@ -97,7 +98,7 @@ class TestDropboxStorageManager(SimpleTestCase):
         and that the DropBoxStorage function as been called with the expected parameters
         '''
         dbx.return_value = "cleaned_name"
-        output = self.sut().save('file_name', "content")
+        output = self.sut.save('file_name', "content")
         self.assertEqual("cleaned_name", output)
         dbx.assert_called_once_with('file_name', "content")
 
@@ -108,12 +109,13 @@ class TestDropboxStorageManager(SimpleTestCase):
         and that the DropBoxStorage function as been called with the expected parameters
         '''
         dbx.return_value = 1
-        output = self.sut().size('name')
+        output = self.sut.size('name')
         self.assertEqual(1, output)
         dbx.assert_called_once_with('name')
 
 
 class TestGoogleStorageManager(SimpleTestCase):
+
     def setUp(self):
         self.sut = GoogleStorageManager
 
@@ -193,6 +195,7 @@ class TestGoogleStorageManager(SimpleTestCase):
 
 
 class TestAwsStorageManager(SimpleTestCase):
+
     def setUp(self):
         self.sut = AwsStorageManager
 
@@ -275,8 +278,10 @@ class TestAwsStorageManager(SimpleTestCase):
 
 
 class TestStorageManager(TestCase):
+
     def setUp(self):
         self.sut = StorageManager
+        self.project_root = os.path.abspath(os.path.dirname(__file__))
 
     @patch('django.core.files.storage.FileSystemStorage.delete')
     def test_storage_manager_deleted(self, strg):
@@ -355,24 +360,24 @@ class TestStorageManager(TestCase):
         self.assertEqual(1, output)
         strg.assert_called_once_with('name')
 
-    @patch('django.core.files.storage.FileSystemStorage.save')
-    @patch('django.core.files.storage.FileSystemStorage.path')
-    def test_storage_manager_replace_files_list(self, path, strg):
+    # @patch('django.core.files.storage.FileSystemStorage.save')
+    # @patch('django.core.files.storage.FileSystemStorage.path')
+    def test_storage_manager_replace_files_list(self):  # , path, strg):
         '''
         Will test that the function returns the expected result
         and that the StorageManager function as been called with the expected parameters
         '''
-        path.return_value = '/opt/full/path/to/file'
-        strg.return_value = '/opt/full/path/to/file'
-        expected = ['/opt/full/path/to/file', '/opt/full/path/to/file']
+        # path.return_value = '/opt/full/path/to/file'
+        # strg.return_value = '/opt/full/path/to/file'
         old_files = ['/opt/full/path/to/file', '/opt/full/path/to/file']
-        new_files = ['geonode/base/fixtures/test_sld.sld', 'geonode/base/fixtures/test_data.json']
+        new_files = [os.path.join(f"{self.project_root}", "tests/data/test_sld.sld"), os.path.join(f"{self.project_root}", "tests/data/test_data.json")]
         layer = create_single_layer('storage_manager')
         layer.files = old_files
         layer.save()
         output = self.sut().replace(layer, new_files)
         self.assertEqual(2, len(output['files']))
-        self.assertListEqual(expected, output['files'])
+        self.assertTrue('file.sld' in output['files'][0])
+        self.assertTrue('file.json' in output['files'][1])
 
     @patch('django.core.files.storage.FileSystemStorage.save')
     @patch('django.core.files.storage.FileSystemStorage.path')
