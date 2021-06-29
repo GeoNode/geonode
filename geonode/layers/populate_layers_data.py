@@ -112,17 +112,19 @@ def create_layer_data(object_id=None, owner=None):
     if not owner:
         owner = get_user_model().objects.get(username="admin")
     for style in styles:
-        new_style = Style.objects.create(
+        new_style, created = Style.objects.get_or_create(
             name=style['name'],
-            sld_url=style['sld_url'],
-            sld_body=style['sld_body'])
-        layer.styles.add(new_style)
-        layer.default_style = new_style
+            defaults=dict(
+                sld_url=style['sld_url'],
+                sld_body=style['sld_body']))
+        if new_style not in layer.styles.all():
+            layer.styles.add(new_style)
+            layer.default_style = new_style
     layer.owner = owner
     layer.save()
 
     for attr in attributes:
-        Attribute.objects.create(
+        Attribute.objects.update_or_create(
             layer=layer,
             attribute=attr['attribute'],
             attribute_label=attr['attribute_label'],
