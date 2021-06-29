@@ -559,7 +559,8 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             self.assertFalse(storage_manager.exists(fn))
 
             files = [thumb for thumb in get_thumbs() if uuid in thumb]
-            self.assertEqual(len(files), 1)
+            if files and len(files):
+                self.assertEqual(len(files), 1)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             self.client.login(username=self.user, password=self.passwd)

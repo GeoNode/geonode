@@ -1199,13 +1199,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(resp.json()["errors"], "The UUID identifier from the XML Metadata, is different from the one saved")
 
     def test_sld_should_raise_500_if_is_invalid(self):
-        user = get_user_model().objects.get(username="admin")
-        layer = create_layer(
-            "single_point",
-            "single_point",
-            user,
-            'Point'
-        )
+        layer = Layer.objects.get(typename="geonode:single_point")
 
         params = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
@@ -1226,13 +1220,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual('No Layer matches the given query.', resp.json().get('errors'))
 
     def test_sld_should_update_the_layer_with_the_expected_values(self):
-        user = get_user_model().objects.get(username="admin")
-        layer = create_layer(
-            "single_point",
-            "single_point",
-            user,
-            'Point'
-        )
+        layer = Layer.objects.get(typename="geonode:single_point")
 
         params = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
@@ -1255,7 +1243,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual("SLD Cook Book: Simple Point", updated_layer.styles.first().sld_title)
 
     def test_will_raise_exception_for_replace_vector_layer_with_raster(self):
-        layer = Layer.objects.filter(name="single_point")[0]
+        layer = Layer.objects.get(name="single_point")
         filename = "/tpm/filename.tif"
         files = ["/opt/file1.shp", "/opt/file2.ccc"]
         with self.assertRaises(Exception) as e:
@@ -1264,7 +1252,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(expected, e.exception.args[0])
 
     def test_will_raise_exception_for_replace_layer_with_unknown_format(self):
-        layer = Layer.objects.filter(name="single_point")[0]
+        layer = Layer.objects.get(name="single_point")
         filename = "/tpm/filename.ccc"
         files = ["/opt/file1.shp", "/opt/file2.ccc"]
         with self.assertRaises(Exception) as e:
@@ -1293,7 +1281,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     @patch("geonode.layers.utils.gs_catalog")
     def test_will_raise_exception_for_not_existing_layer_in_the_catalog(self, catalog):
         catalog.get_layer.return_value = None
-        layer = Layer.objects.filter(name="single_point")[0]
+        layer = Layer.objects.get(name="single_point")
         file_path = gisdata.VECTOR_DATA
         filename = os.path.join(file_path, "single_point.shp")
         files = {
