@@ -37,11 +37,10 @@ from django.templatetags.static import static
 
 from geonode import geoserver
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
 from geonode.utils import http_client, DisableDjangoSignals
-from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
 from geonode.thumbs.background import (
     OSMTileBackground,

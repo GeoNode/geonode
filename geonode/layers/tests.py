@@ -1185,7 +1185,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
             "base_file": open(self.exml_path),
             "xml_file": open(self.exml_path),
-            "layer_title": "single_point",
+            "layer_title": "geonode:single_point",
             "metadata_upload_form": True,
             "time": False,
             "charset": "UTF-8"
@@ -1195,10 +1195,8 @@ class LayersTest(GeoNodeBaseTestSupport):
         prev_layer = Layer.objects.get(typename="geonode:single_point")
         self.assertEqual(0, prev_layer.keywords.count())
         resp = self.client.post(reverse('layer_upload'), params)
-        self.assertEqual(200, resp.status_code)
-        updated_layer = Layer.objects.get(typename="geonode:single_point")
-        # just checking some values if are updated
-        self.assertEqual(5, updated_layer.keywords.all().count())
+        self.assertEqual(404, resp.status_code)
+        self.assertEqual(resp.json()["errors"], "The UUID identifier from the XML Metadata, is different from the one saved")
 
     def test_sld_should_raise_500_if_is_invalid(self):
         user = get_user_model().objects.get(username="admin")
