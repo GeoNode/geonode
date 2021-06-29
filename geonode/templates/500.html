@@ -1,5 +1,6 @@
 {% load i18n avatar_tags %}
 {% load static %}
+{% load client_lib_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -63,7 +64,7 @@
             </li>
             {% if GEONODE_APPS_ENABLE and GEONODE_APPS_NAV_MENU_ENABLE %}
             <li id="nav_maps">
-              <a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
+              <a href="{% geoapp_list_url %}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
             </li>
             {% endif %}
            {% block extra_tab %}
@@ -177,7 +178,7 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
-            <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
+            <li><a href="{% map_list_url %}">{% trans "Explore Maps" %}</a></li>
             {% if user.is_authenticated and not READ_ONLY_MODE %}
             <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
             {% endif %}
