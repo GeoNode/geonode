@@ -319,7 +319,7 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
     if srid and str(srid).startswith('EPSG:'):
         srid = srid[5:]
     if None not in {x0, x1, y0, y1}:
-        wkt = 'POLYGON((%f %f,%f %f,%f %f,%f %f,%f %f))' % (
+        wkt = 'POLYGON(({:f} {:f},{:f} {:f},{:f} {:f},{:f} {:f},{:f} {:f}))'.format(
             float(x0), float(y0),
             float(x0), float(y1),
             float(x1), float(y1),
@@ -1149,83 +1149,87 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     """
     charset = charset if charset and 'undefined' not in charset else 'UTF-8'
 
-    if not tempdir:
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-
-    if is_zipfile(inShapefile):
-        inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
-
-    inDriver = ogr.GetDriverByName('ESRI Shapefile')
     try:
-        inDataSource = inDriver.Open(inShapefile, 1)
-    except Exception:
-        tb = traceback.format_exc()
-        logger.debug(tb)
-        inDataSource = None
+        if not tempdir:
+            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
 
-    if inDataSource is None:
-        logger.debug(f"Could not open {inShapefile}")
-        return False, None, None
-    else:
-        inLayer = inDataSource.GetLayer()
+        if is_zipfile(inShapefile):
+            inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
-    # TODO we may need to improve this regexp
-    # first character must be any letter or "_"
-    # following characters can be any letter, number, "#", ":"
-    regex = r'^[a-zA-Z,_][a-zA-Z,_#:\d]*$'
-    a = re.compile(regex)
-    regex_first_char = r'[a-zA-Z,_]{1}'
-    b = re.compile(regex_first_char)
-    inLayerDefn = inLayer.GetLayerDefn()
-
-    list_col_original = []
-    list_col = {}
-
-    for i in range(inLayerDefn.GetFieldCount()):
+        inDriver = ogr.GetDriverByName('ESRI Shapefile')
         try:
-            field_name = inLayerDefn.GetFieldDefn(i).GetName()
-            if a.match(field_name):
-                list_col_original.append(field_name)
-        except Exception as e:
-            logger.exception(e)
+            inDataSource = inDriver.Open(inShapefile, 1)
+        except Exception:
+            tb = traceback.format_exc()
+            logger.debug(tb)
+            inDataSource = None
+
+        if inDataSource is None:
+            logger.debug(f"Could not open {inShapefile}")
+            return False, None, None
+        else:
+            inLayer = inDataSource.GetLayer()
+
+        # TODO we may need to improve this regexp
+        # first character must be any letter or "_"
+        # following characters can be any letter, number, "#", ":"
+        regex = r'^[a-zA-Z,_][a-zA-Z,_#:\d]*$'
+        a = re.compile(regex)
+        regex_first_char = r'[a-zA-Z,_]{1}'
+        b = re.compile(regex_first_char)
+        inLayerDefn = inLayer.GetLayerDefn()
+
+        list_col_original = []
+        list_col = {}
+
+        for i in range(inLayerDefn.GetFieldCount()):
+            try:
+                field_name = inLayerDefn.GetFieldDefn(i).GetName()
+                if a.match(field_name):
+                    list_col_original.append(field_name)
+            except Exception as e:
+                logger.exception(e)
+                return True, None, None
+
+        for i in range(inLayerDefn.GetFieldCount()):
+            try:
+                field_name = inLayerDefn.GetFieldDefn(i).GetName()
+                if not a.match(field_name):
+                    # once the field_name contains Chinese, to use slugify_zh
+                    if any('\u4e00' <= ch <= '\u9fff' for ch in field_name):
+                        new_field_name = slugify_zh(field_name, separator='_')
+                    else:
+                        new_field_name = slugify(field_name)
+                    if not b.match(new_field_name):
+                        new_field_name = f"_{new_field_name}"
+                    j = 0
+                    while new_field_name in list_col_original or new_field_name in list_col.values():
+                        if j == 0:
+                            new_field_name += '_0'
+                        if new_field_name.endswith(f"_{str(j)}"):
+                            j += 1
+                            new_field_name = f"{new_field_name[:-2]}_{str(j)}"
+                    if field_name != new_field_name:
+                        list_col[field_name] = new_field_name
+            except Exception as e:
+                logger.exception(e)
+                return True, None, None
+
+        if len(list_col) == 0:
             return True, None, None
-
-    for i in range(inLayerDefn.GetFieldCount()):
-        try:
-            field_name = inLayerDefn.GetFieldDefn(i).GetName()
-            if not a.match(field_name):
-                # once the field_name contains Chinese, to use slugify_zh
-                if any('\u4e00' <= ch <= '\u9fff' for ch in field_name):
-                    new_field_name = slugify_zh(field_name, separator='_')
-                else:
-                    new_field_name = slugify(field_name)
-                if not b.match(new_field_name):
-                    new_field_name = f"_{new_field_name}"
-                j = 0
-                while new_field_name in list_col_original or new_field_name in list_col.values():
-                    if j == 0:
-                        new_field_name += '_0'
-                    if new_field_name.endswith(f"_{str(j)}"):
-                        j += 1
-                        new_field_name = f"{new_field_name[:-2]}_{str(j)}"
-                if field_name != new_field_name:
-                    list_col[field_name] = new_field_name
-        except Exception as e:
-            logger.exception(e)
-            return True, None, None
-
-    if len(list_col) == 0:
-        return True, None, None
-    else:
-        try:
-            rename_shp_columnnames(inLayer, list_col)
-            inDataSource.SyncToDisk()
-            inDataSource.Destroy()
-        except Exception as e:
-            logger.exception(e)
-            raise GeoNodeException(
-                f"Could not decode SHAPEFILE attributes by using the specified charset '{charset}'.")
-    return True, None, list_col
+        else:
+            try:
+                rename_shp_columnnames(inLayer, list_col)
+                inDataSource.SyncToDisk()
+                inDataSource.Destroy()
+            except Exception as e:
+                logger.exception(e)
+                raise GeoNodeException(
+                    f"Could not decode SHAPEFILE attributes by using the specified charset '{charset}'.")
+        return True, None, list_col
+    finally:
+        if tempdir is not None:
+            shutil.rmtree(tempdir, ignore_errors=True)
 
 
 def id_to_obj(id_):
@@ -1529,15 +1533,11 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
             s = os.path.join(src, item)
             d = os.path.join(dst, item)
             if os.path.isdir(s):
-                # shutil.rmtree(d)
                 if os.path.exists(d):
                     try:
                         os.remove(d)
                     except Exception:
-                        try:
-                            shutil.rmtree(d)
-                        except Exception:
-                            pass
+                        shutil.rmtree(d, ignore_errors=True)
                 try:
                     shutil.copytree(s, d, symlinks=symlinks, ignore=ignore)
                 except Exception:
