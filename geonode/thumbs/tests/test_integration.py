@@ -49,6 +49,11 @@ from geonode.thumbs.background import (
     GenericXYZBackground,
     GenericWMSBackground,
 )
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models,
+    create_single_layer)
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +63,30 @@ LOCAL_TIMEOUT = 300
 EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
 
 
-class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
+class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
+
+    layer_coast_line = None
+
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+        cls.user_admin = get_user_model().objects.get(username="admin")
+
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            cls.layer_coast_line = create_single_layer('san_andres_y_providencia_coastline')
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     @override_settings(
         THUMBNAIL_BACKGROUND={
@@ -231,7 +259,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
 
                 mismatch = pixelmatch(image, expected_image, diff)
                 self.assertTrue(
-                    mismatch < width * height * 0.01, "Expected test and pre-generated backgrounds to differ up to 1%"
+                    mismatch <= width * height * 0.05, "Expected test and pre-generated backgrounds to differ up to 5%"
                 )
             except UnidentifiedImageError as e:
                 logger.error(f"It was not possible to fetch the background: {e}")
@@ -285,19 +313,6 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
 
         for bbox, expected_image_path in zip(bboxes_3857, expected_images_paths):
             self._fetch_and_compare_background(background, bbox, expected_image_path)
-
-
-class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
-
-    layer_coast_line = None
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.user_admin = get_user_model().objects.get(username="admin")
-
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            cls.layer_coast_line = Layer.objects.get(name='san_andres_y_providencia_coastline')
 
     @override_settings(
         THUMBNAIL_BACKGROUND={
@@ -445,8 +460,8 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         admin, _ = get_user_model().objects.get_or_create(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            cls.layer_coast_line = Layer.objects.get(name='san_andres_y_providencia_coastline')
-            cls.layer_highway = Layer.objects.get(name='san_andres_y_providencia_highway')
+            cls.layer_coast_line = create_single_layer('san_andres_y_providencia_coastline')
+            cls.layer_highway = create_single_layer('san_andres_y_providencia_highway')
 
             # create a map from loaded layers
             cls.map_composition = Map()
@@ -539,14 +554,14 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         ]
 
         self.client.login(username="norman", password="norman")
-        thumbnail_post_url = reverse("layer_thumbnail", kwargs={"layername": self.layer_coast_line.alternate})
+        thumbnail_post_url = reverse("layer_thumbnail", kwargs={"layername": "geonode:san_andres_y_providencia_coastline"})
 
         for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):
             response = self.client.post(
                 thumbnail_post_url, json.dumps({"bbox": bbox[0:4], "srid": bbox[-1]}), content_type="application/json"
             )
 
-            self.assertEqual(response.status_code, 200, "Expected 200 OK response")
+            self.assertEqual(response.status_code, 200, f"Expected 200 OK response from {thumbnail_post_url}")
             expected_thumb = Image.open(expected_thumb_path)
 
             self.layer_coast_line.refresh_from_db()

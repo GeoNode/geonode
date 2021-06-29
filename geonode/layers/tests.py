@@ -1185,7 +1185,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
             "base_file": open(self.exml_path),
             "xml_file": open(self.exml_path),
-            "layer_title": "geonode:single_point",
+            "layer_title": "single_point",
             "metadata_upload_form": True,
             "time": False,
             "charset": "UTF-8"
@@ -1367,6 +1367,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         super().setUpClass()
         create_models(type=cls.get_type, integration=cls.get_integration)
         all_public()
+        create_single_layer('single_point')
 
     @classmethod
     def tearDownClass(cls):

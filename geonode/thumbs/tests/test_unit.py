@@ -34,6 +34,7 @@ FIXTURES_DIR = "geonode/thumbs/tests/fixtures/"
 
 
 class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
+
     def test_make_bbox_to_pixels_transf_same(self):
 
         src_bbox = [0, 0, 1, 1]
@@ -81,7 +82,6 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         FIXTURES_DIR + filename
         for filename in [
             "resource_base.json",
-            "upload_session.json",
             "service.json",
             "style.json",
             "layer.json",
@@ -133,7 +133,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
 
     def test_layers_locations_layer_default_bbox(self):
-        expected_bbox = [-8238681.428369759, -8220320.787127878, 4969844.155936863, 4984363.948829668, "epsg:3857"]
+        expected_bbox = [-8238681.428369759, -8220320.787127878, 4969844.155936863, 4984363.9488296695, "epsg:3857"]
         layer = Layer.objects.get(title_en="theaters_nyc")
 
         locations, bbox = thumbnails._layers_locations(layer, compute_bbox=True)
@@ -161,7 +161,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
 
     def test_layers_locations_simple_map_default_bbox(self):
-        expected_bbox = [-8238681.428369759, -8220320.787127878, 4969844.155936863, 4984363.948829668, "epsg:3857"]
+        expected_bbox = [-8238681.428369759, -8220320.787127878, 4969844.155936863, 4984363.9488296695, "epsg:3857"]
 
         layer = Layer.objects.get(title_en="theaters_nyc")
         map = Map.objects.get(title_en="theaters_nyc_map")
@@ -173,7 +173,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
 
     def test_layers_locations_composition_map_default_bbox(self):
-        expected_bbox = [-18411664.521739896, 1414810.0631394347, -20040289.599925745, 16329038.485056704, 'EPSG:3857']
+        expected_bbox = [-18411664.521739896, 1414810.0631394347, -20040289.59992574, 16329038.485056708, 'EPSG:3857']
         expected_locations = [
             [
                 settings.GEOSERVER_LOCATION,
