@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:01+0200\n"
+"POT-Creation-Date: 2021-06-29 10:38+0300\n"
 "PO-Revision-Date: 2020-12-23 16:22+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -381,12 +381,20 @@ msgstr ""
 "HTTP request is not supported by the web server. To resolve the issue, you "
 "may need to update the server."
 
+#, fuzzy
+#| msgid "<br>Unknown."
+msgid "Unknwon"
+msgstr "<br>Unknown."
+
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
 msgstr ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
+
+msgid "Additional info: "
+msgstr ""
 
 msgid "Finalizing"
 msgstr ""
@@ -551,6 +559,9 @@ msgstr ""
 msgid "'"
 msgstr ""
 
+msgid "-1"
+msgstr ""
+
 msgid "trailingComments"
 msgstr ""
 
@@ -570,10 +581,16 @@ msgstr ""
 msgid "SelectList"
 msgstr "Select"
 
-msgid "error"
+msgid "show:"
 msgstr ""
 
-msgid "show:"
+msgid "DraftEditor/root"
+msgstr ""
+
+msgid "DraftEditor/editorContainer"
+msgstr ""
+
+msgid "-"
 msgstr ""
 
 msgid "uirevision"
@@ -640,36 +657,6 @@ msgid "range"
 msgstr ""
 
 msgid "bingroup"
-msgstr ""
-
-msgid "layerProperties.visibilityLimits.rangeError"
-msgstr ""
-
-msgid "layerProperties.visibilityLimits.serverValuesError"
-msgstr ""
-
-msgid "typed_constructor"
-msgstr ""
-
-msgid "def_constructor"
-msgstr ""
-
-msgid "POP"
-msgstr ""
-
-msgid "PUSH"
-msgstr ""
-
-msgid "layerdownload.exportResultsMessages.newExport"
-msgstr ""
-
-msgid "layerdownload.exportResultsMessages.exportSuccess"
-msgstr ""
-
-msgid "layerdownload.exportResultsMessages.exportFailure"
-msgstr ""
-
-msgid "data-grid"
 msgstr ""
 
 msgid "Abort"

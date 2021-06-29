@@ -8,7 +8,7 @@
 {% load base_tags %}
 {% load guardian_tags %}
 
-{% block title %} {% trans "Upload Layer Metadata"  %} - {{ block.super }}  {% endblock %}
+{% block title %} {% trans "Upload Dataset Metadata"  %} - {{ block.super }}  {% endblock %}
 
 {% block body_class %}layers upload{% endblock %}
 
@@ -21,9 +21,9 @@
 {% block body_outer %}
 
 <div class="page-header">
-  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Explore Layers" %}</a>
-  <a href="{% url 'layer_detail' layername=resource.alternate %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Return to Layer" %}</a>
-  <h2 class="page-title">{% trans "Upload Layer Metadata" %} <small>{% trans "(XML - ISO, FGDC, ebRIM, Dublin Core)" %}<small></h2>
+  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Explore Datasets" %}</a>
+  <a href="{% url 'layer_detail' layername=resource.alternate %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Return to Dataset" %}</a>
+  <h2 class="page-title">{% trans "Upload Dataset Metadata" %} <small>{% trans "(XML - ISO, FGDC, ebRIM, Dublin Core)" %}<small></h2>
 </div>
 
 <div class="row">
