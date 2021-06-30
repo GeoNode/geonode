@@ -1,6 +1,6 @@
 # Permissions mapping
 PERMISSIONS = {
-    'base_addresourcebase': 'add_resource',
+    'add_resourcebase': 'add_resource',
 }
 
 # The following permissions will be filtered out when READ_ONLY mode is active

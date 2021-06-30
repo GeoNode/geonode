@@ -156,12 +156,7 @@ def create_models(type=None, integration=False):
         map_data, user_data, people_data, layer_data, document_data = create_fixtures()
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
         cont_group, created = Group.objects.get_or_create(name='contributors')
-        ctype = ContentType.objects.get_for_model(cont_group)
-        perm, created = Permission.objects.get_or_create(
-            codename='base_addresourcebase',
-            name='Can add resources',
-            content_type=ctype
-        )
+        perm = Permission.objects.get(codename='add_resourcebase')
         cont_group.permissions.add(perm)
         logger.debug("[SetUp] Get or create user admin")
         u, created = get_user_model().objects.get_or_create(username='admin')

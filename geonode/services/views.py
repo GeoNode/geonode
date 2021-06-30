@@ -81,7 +81,7 @@ def services(request):
         "services/service_list.html",
         {
             "services": resources,
-            "can_add_resources": request.user.has_perm('auth.addresourcebase')
+            "can_add_resources": request.user.has_perm('base.add_resourcebase')
         }
     )
 
