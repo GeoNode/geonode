@@ -115,7 +115,7 @@
         {% if "add_resourcebase_from_service" in resource_perms %}
             <li class="list-group-item"><a id="harvestResources" class="btn btn-default btn-md btn-block" href="{% url "harvest_resources" service.id %}">{% trans "Import Service Resources" %}</a></li>
         {% endif %}
-        {% if "remove_service" in permissions_list or "delete_service" in permissions_list %}
+        {% if "remove_service" in permissions_list or "delete_service" in permissions_list or 'delete_resourcebase' in permissions_list %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "remove_service" service.id %}">{% trans "Remove Service" %}</a></li>
         {% endif %}
       </ul>
