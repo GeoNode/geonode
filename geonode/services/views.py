@@ -81,7 +81,7 @@ def services(request):
         "services/service_list.html",
         {
             "services": resources,
-            "can_add_resources": request.user.has_perm('base.add_resourcebase')
+            "can_add_resources": request.user.has_perm('auth.addresourcebase')
         }
     )
 
@@ -101,7 +101,7 @@ def register_service(request):
                 raise Http404(str(e))
             service.save()
             service.keywords.add(*service_handler.get_keywords())
-            
+
             perm_spec = json.loads(_perms_info_json(service))
             if 'anonymous' in perm_spec.get('groups', []):
                 perm_spec['groups'].pop('anonymous')
