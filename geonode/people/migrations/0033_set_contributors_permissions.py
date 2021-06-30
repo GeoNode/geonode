@@ -1,8 +1,6 @@
 # Assign the contributors group to users according to #7364
 
 from django.contrib.auth.models import Group, Permission
-from geonode.base.models import ResourceBase
-from django.contrib.contenttypes.models import ContentType
 from django.db import migrations
 from django.db.migrations.operations import RunPython
 
