@@ -16,17 +16,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from geonode.storage.manager import storage_manager
 import os
 
-from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 
-from geonode.documents.models import Document
-from geonode.documents.renderers import render_document
-from geonode.documents.renderers import generate_thumbnail_content
-from geonode.documents.renderers import ConversionError
+from geonode.celery_app import app
+from geonode.storage.manager import storage_manager
+
+from .models import Document
+from .renderers import (
+    render_document,
+    generate_thumbnail_content,
+    ConversionError)
 
 logger = get_task_logger(__name__)
 
@@ -91,7 +92,7 @@ def create_document_thumbnail(self, object_id):
         try:
             thumbnail_content = generate_thumbnail_content(image_file)
         except Exception as e:
-            logger.error(f"Could not generate thumbnail, falling back to 'placeholder': {e}")
+            logger.debug(f"Could not generate thumbnail, falling back to 'placeholder': {e}")
             thumbnail_content = generate_thumbnail_content(document.find_placeholder())
     except Exception as e:
         logger.error(f"Could not generate thumbnail: {e}")

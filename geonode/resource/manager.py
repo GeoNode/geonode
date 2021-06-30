@@ -34,13 +34,14 @@ from django.conf import settings
 from django.db import transaction
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
-from geonode.documents.models import Document
+from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
 
-from geonode.groups.conf import settings as groups_settings
+from geonode.documents.models import Document
 from geonode.security.permissions import VIEW_PERMISSIONS
+from geonode.groups.conf import settings as groups_settings
 from geonode.security.utils import (
     get_user_groups,
     set_owner_permissions,
@@ -509,6 +510,10 @@ class ResourceManager(ResourceManagerInterface):
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
+                    if instance and instance.files and isinstance(instance.get_real_instance(), Document):
+                        if overwrite or instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
+                            from geonode.documents.tasks import create_document_thumbnail
+                            create_document_thumbnail.apply_async((instance.id,))
                     self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
                     return True
             except Exception as e:

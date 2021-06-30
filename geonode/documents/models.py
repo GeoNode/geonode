@@ -216,7 +216,8 @@ def pre_save_document(instance, sender, **kwargs):
 
 
 def post_save_document(instance, *args, **kwargs):
-    from .tasks import create_document_thumbnail
+    from geonode.resource.manager import resource_manager
+    resource_manager.set_thumbnail(instance.uuid, instance=instance)
 
     name = None
     ext = instance.extension
@@ -229,7 +230,6 @@ def post_save_document(instance, *args, **kwargs):
         name = "Hosted Document"
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
         url = f"{site_url}{reverse('document_download', args=(instance.id,))}"
-        create_document_thumbnail.apply_async((instance.id,))
     elif instance.doc_url:
         name = "External Document"
         url = instance.doc_url
