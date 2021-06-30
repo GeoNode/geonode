@@ -182,7 +182,7 @@ def document_detail(request, docid):
             if exif:
                 context_dict['exif_data'] = exif
         except Exception:
-            logger.error("Exif extraction failed.")
+            logger.debug("Exif extraction failed.")
 
     if request.user.is_authenticated:
         if getattr(settings, 'FAVORITE_ENABLED', False):
@@ -294,7 +294,7 @@ class DocumentUploadView(CreateView):
                     bbox = exif_metadata.get('bbox', None)
                     abstract = exif_metadata.get('abstract', None)
             except Exception:
-                logger.error("Exif extraction failed.")
+                logger.debug("Exif extraction failed.")
 
         resource_manager.update(
             self.object.uuid,
