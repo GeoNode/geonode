@@ -646,7 +646,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             self.assertEqual(line_sld_name, 'line 3')
         finally:
             if d is not None:
-                shutil.rmtree(d)
+                shutil.rmtree(d, ignore_errors=True)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_acls(self):

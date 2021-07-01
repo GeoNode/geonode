@@ -21,7 +21,6 @@
 """Utilities for managing GeoNode resource metadata
 """
 # Standard Modules
-import uuid
 import logging
 import datetime
 from defusedxml import lxml as dlxml
@@ -64,7 +63,7 @@ def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}
         identifier, vals, regions, keywords = dc2dict(exml)
     else:
         raise RuntimeError('Unsupported metadata format')
-    identifier = identifier or str(uuid.uuid1())
+
     if not vals.get("date"):
         vals["date"] = datetime.datetime.now(timezone.get_current_timezone()).strftime("%Y-%m-%dT%H:%M:%S")
 
