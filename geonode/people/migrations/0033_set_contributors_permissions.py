@@ -1,15 +1,21 @@
 # Assign the contributors group to users according to #7364
 
 from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.db import migrations
 from django.db.migrations.operations import RunPython
+from geonode.base.models import ResourceBase
 
 
 def assign_permissions_to_contributors(apps, schema_editor):
     contributors = Group.objects.filter(name='contributors')
     if contributors.exists():
         contr_obj = contributors.first()
-        perm = Permission.objects.get(codename='add_resourcebase')
+        perm, _ = Permission.objects.get_or_create(
+            name='Can add resources',
+            codename='add_resourcebase', 
+            content_type=ContentType.objects.get_for_model(ResourceBase)
+        )
         contr_obj.permissions.add(perm)
         perm_exists = contr_obj.permissions.filter(codename='base_addresourcebase')
         if perm_exists.exists():
