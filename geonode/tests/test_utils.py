@@ -138,7 +138,7 @@ class TestFixupShp(GeoNodeBaseTestSupport):
         # Cleanup temp dir
         shp_parent = os.path.dirname(layer_shp)
         if shp_parent.startswith(tempfile.gettempdir()):
-            shutil.rmtree(shp_parent)
+            shutil.rmtree(shp_parent, ignore_errors=True)
 
 
 class TestSetAttributes(GeoNodeBaseTestSupport):

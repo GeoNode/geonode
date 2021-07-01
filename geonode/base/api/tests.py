@@ -43,7 +43,7 @@ from geonode.base.models import (
     ResourceBase,
     TopicCategory,
     ThesaurusKeyword,
-    )
+)
 
 from geonode import geoserver
 from geonode.favorite.models import Favorite
