@@ -75,7 +75,7 @@
                                 <button id="btnClearFilter" type="button" class="btn btn-default">{% trans "Clear Filter" %}</button>
                                 <a class="btn btn-default"
                                    href="{% url "service_detail" service.id %}">{% trans "Back to service details" %}</a>
-                                {% if "add_resourcebase_from_service" in resource_perms or 'add_resourcebase_from_service' in permissions_list %}
+                                {% if can_add_resources or "add_resourcebase_from_service" in resource_perms or 'add_resourcebase_from_service' in permissions_list %}
                                 <input type="submit" class="btn btn-primary" value="{% trans "Import Resources" %}"/>
                                 {% endif %}
                             </div>

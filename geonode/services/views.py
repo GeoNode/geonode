@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-import json
+from guardian.shortcuts import assign_perm
 from geonode.security.utils import get_visible_resources
 import logging
 
@@ -64,23 +64,14 @@ def service_proxy(request, service_id):
     return proxy(request, url=service_url, sec_chk_hosts=False)
 
 
-@login_required
 def services(request):
     """This view shows the list of all registered services"""
-    queryset = Service.objects.all()
-    if not request.user.is_superuser:
-        queryset = queryset.filter(owner=request.user)
-    resources = get_visible_resources(
-        queryset=queryset,
-        user=request.user,
-        metadata_only=True
-    )
 
     return render(
         request,
         "services/service_list.html",
         {
-            "services": resources,
+            "services": Service.objects.all(),
             "can_add_resources": request.user.has_perm('base.add_resourcebase')
         }
     )
@@ -101,11 +92,6 @@ def register_service(request):
                 raise Http404(str(e))
             service.save()
             service.keywords.add(*service_handler.get_keywords())
-
-            perm_spec = json.loads(_perms_info_json(service))
-            if 'anonymous' in perm_spec.get('groups', []):
-                perm_spec['groups'].pop('anonymous')
-            service.set_permissions(perm_spec)
 
             if service_handler.indexing_method == enumerations.CASCADED:
                 service_handler.create_cascaded_store()
@@ -188,6 +174,7 @@ def harvest_resources_handle_get(request, service, handler):
             "requested": request.GET.getlist("resource_list"),
             "is_sync": is_sync,
             "errored_state": errored_state,
+            "can_add_resources": request.user.has_perm('base.add_resourcebase'),
             "filter_row": filter_row,
             "permissions_list": perms_list
 
@@ -216,6 +203,16 @@ def harvest_resources_handle_post(request, service, handler):
         else:
             logger.warning(
                 f"resource {id} already has a harvest job")
+        # assign permission of the resource to the user
+        perms = [
+            'view_resourcebase', 'download_resourcebase',
+            'change_resourcebase_metadata', 'change_resourcebase',
+            'delete_resourcebase'
+        ]
+        layer = Layer.objects.filter(alternate=id)
+        if layer.exists():
+            for perm in perms:
+                assign_perm(perm, request.user, layer.first().get_self_resource())
     msg_async = _("The selected resources are being imported")
     msg_sync = _("The selected resources have been imported")
     messages.add_message(
@@ -304,15 +301,8 @@ def rescan_service(request, service_id):
 @login_required
 def service_detail(request, service_id):
     """This view shows the details of a service"""
-    queryset = Service.objects.all()
-    if not request.user.is_superuser:
-        queryset = queryset.filter(owner=request.user)
 
-    services = get_visible_resources(
-        queryset=queryset,
-        user=request.user,
-        metadata_only=True
-    )
+    services = Service.objects.filter(resourcebase_ptr_id=service_id)
 
     if not services.exists():
         messages.add_message(
@@ -375,6 +365,7 @@ def service_detail(request, service_id):
                 r for r in resources if isinstance(r, HarvestJob)),
             "permissions_json": permissions_json,
             "permissions_list": perms_list,
+            "can_add_resorces": request.user.has_perm('base.add_resourcebase'),
             "resources": resources,
             "total_resources": len(already_imported_layers),
         }

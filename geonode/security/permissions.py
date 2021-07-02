@@ -28,6 +28,8 @@ LAYER_ADMIN_PERMISSIONS = [
 ]
 
 SERVICE_PERMISSIONS = [
+    "add_service",
+    "delete_service",
     "change_resourcebase_metadata",
     "add_resourcebase_from_service"
 ]
