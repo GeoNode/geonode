@@ -360,7 +360,6 @@ def service_detail(request, service_id):
         context={
             "service": service,
             "layers": already_imported_layers,
-            "services": services,
             "resource_jobs": (
                 r for r in resources if isinstance(r, HarvestJob)),
             "permissions_json": permissions_json,
