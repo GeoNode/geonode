@@ -55,12 +55,6 @@
                         {% endif %}
                     </tr>
                 {% endfor %}
-                {% for service in services %}
-                    <tr>
-                        <td><a href='{%  url "service_detail" service.id %}'>{{service.title|striptags}}</a></td>
-                        <td>{{service.abstract|striptags}}</td>
-                    </tr>
-                {% endfor %}
             </table>
             </div>
         {% endif %}
