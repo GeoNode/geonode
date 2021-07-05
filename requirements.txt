@@ -28,7 +28,7 @@ django-allauth==0.44.0
 django-appconf==1.0.4
 django-filter==2.4.0
 django-imagekit==4.0.2
-django-taggit==1.4.0
+django-taggit==1.5.0
 django-markdownify==0.9.0
 django-mptt==0.12.0
 django-modeltranslation>=0.11,<0.18.0
