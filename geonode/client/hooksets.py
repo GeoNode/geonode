@@ -140,4 +140,4 @@ class BaseHookSet:
 
     def add_limit_settings(self, url):
         CLIENT_RESULTS_LIMIT = settings.CLIENT_RESULTS_LIMIT
-        return url + '?limit={}'.format(CLIENT_RESULTS_LIMIT)
+        return f"{url}?limit={CLIENT_RESULTS_LIMIT}"

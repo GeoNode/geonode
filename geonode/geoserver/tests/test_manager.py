@@ -55,8 +55,8 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_append_should_add_expected_rows_in_the_catalog(self):
         layer = Layer.objects.get(name=self.sut.name)
-        _, import_session = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="append")
-        result = requests.get(f'{self.geoserver_url}/rest/imports/{import_session.id}')
+        _gs_import_session_info = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="append")
+        result = requests.get(f'{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}')
         self.assertEqual(result.status_code, 200)
         actual = result.json().get('import').get('state')
         self.assertEqual('COMPLETE', actual)
@@ -64,8 +64,8 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_add_expected_rows_in_the_catalog(self):
         layer = Layer.objects.get(name=self.sut.name)
-        _, import_session = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
-        result = requests.get(f'{self.geoserver_url}/rest/imports/{import_session.id}')
+        _gs_import_session_info = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
+        result = requests.get(f'{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}')
         self.assertEqual(result.status_code, 200)
         actual = result.json().get('import').get('state')
         self.assertEqual('COMPLETE', actual)

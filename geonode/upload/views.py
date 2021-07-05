@@ -61,6 +61,9 @@ from geonode.decorators import logged_in_or_basicauth
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
 
+from geonode.geoserver.helpers import (
+    select_relevant_files,
+    write_uploaded_files_to_disk)
 from .forms import (
     LayerUploadForm,
     SRSForm,
@@ -128,36 +131,6 @@ def data_upload_progress(req):
     return json_response({'state': 'NONE'})
 
 
-def _write_uploaded_files_to_disk(target_dir, files):
-    result = []
-    for django_file in files:
-        path = os.path.join(target_dir, django_file.name)
-        with open(path, 'wb') as fh:
-            for chunk in django_file.chunks():
-                fh.write(chunk)
-        result = path
-    return result
-
-
-def _select_relevant_files(allowed_extensions, files):
-    """Filter the input files list for relevant files only
-
-    Relevant files are those whose extension is in the ``allowed_extensions``
-    iterable.
-
-    :param allowed_extensions: list of strings with the extensions to keep
-    :param files: list of django files with the files to be filtered
-    """
-    result = []
-    for django_file in files:
-        extension = os.path.splitext(django_file.name)[-1].lower()[1:]
-        if extension in allowed_extensions or get_scan_hint(allowed_extensions):
-            already_selected = django_file.name in (f.name for f in result)
-            if not already_selected:
-                result.append(django_file)
-    return result
-
-
 def save_step_view(req, session):
     if req.method == 'GET':
         return render(
@@ -176,12 +149,12 @@ def save_step_view(req, session):
     if form.is_valid():
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         logger.debug(f"valid_extensions: {form.cleaned_data['valid_extensions']}")
-        relevant_files = _select_relevant_files(
+        relevant_files = select_relevant_files(
             form.cleaned_data["valid_extensions"],
             iter(req.FILES.values())
         )
         logger.debug(f"relevant_files: {relevant_files}")
-        _write_uploaded_files_to_disk(tempdir, relevant_files)
+        write_uploaded_files_to_disk(tempdir, relevant_files)
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
         name, ext = os.path.splitext(os.path.basename(base_file))
         logger.debug(f'Name: {name}, ext: {ext}')
