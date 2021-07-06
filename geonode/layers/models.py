@@ -139,7 +139,7 @@ class Layer(ResourceBase):
     objects = LayerManager()
     workspace = models.CharField(_('Workspace'), max_length=128)
     store = models.CharField(_('Store'), max_length=128)
-    storeType = models.CharField(_('Storetype'), max_length=128)
+
     name = models.CharField(_('Name'), max_length=128)
     typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
 
@@ -178,7 +178,7 @@ class Layer(ResourceBase):
         null=True)
 
     def is_vector(self):
-        return self.storeType == 'vector'
+        return self.storetype == 'vector'
 
     @property
     def processed(self):
@@ -190,9 +190,9 @@ class Layer(ResourceBase):
 
     @property
     def display_type(self):
-        if self.storeType == "vector":
+        if self.storetype == "vector":
             return "Vector Data"
-        elif self.storeType == "raster":
+        elif self.storetype == "raster":
             return "Raster Data"
         else:
             return "Data"
@@ -279,7 +279,7 @@ class Layer(ResourceBase):
 
         # we need to check, for shapefile, if column names are valid
         list_col = None
-        if self.storeType == 'vector':
+        if self.storetype == 'vector':
             valid_shp, wrong_column_name, list_col = check_shp_columnnames(
                 self)
             if wrong_column_name:
@@ -589,9 +589,9 @@ def pre_save_layer(instance, sender, **kwargs):
     if base_file is not None:
         extension = f'.{base_file.name}'
         if extension in vec_exts:
-            instance.storeType = 'vector'
+            instance.storetype = 'vector'
         elif extension in cov_exts:
-            instance.storeType = 'raster'
+            instance.storetype = 'raster'
 
     if instance.bbox_polygon is None:
         instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')

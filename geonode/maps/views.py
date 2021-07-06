@@ -935,7 +935,7 @@ def add_layers_to_map_config(
             "title": layer.title,
             "style": '',
             "queryable": True,
-            "storeType": layer.storeType,
+            "storetype": layer.storetype,
             "bbox": {
                 layer.srid: {
                     "srs": layer.srid,
@@ -1026,7 +1026,7 @@ def add_layers_to_map_config(
                         }
                     }
 
-        if layer.storeType in ['tileStore', 'remote']:
+        if layer.storetype in ['tileStore', 'remote']:
             service = layer.remote_service
             source_params = {}
             if service.type in ('REST_MAP', 'REST_IMG'):

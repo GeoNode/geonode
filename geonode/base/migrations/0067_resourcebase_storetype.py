@@ -17,6 +17,8 @@ def clone_storetypes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('documents', '0032_remove_document_doc_file'),
+        ('layers', '0035_auto_20210525_0847'),
         ('base', '0066_resourcebase_data'),
     ]
 

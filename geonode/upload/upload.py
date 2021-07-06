@@ -727,7 +727,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 resource_type=Layer,
                 defaults=dict(
                     store=target.name,
-                    storeType=get_layer_storetype(target.store_type),
+                    storetype=get_layer_storetype(target.store_type),
                     alternate=alternate,
                     workspace=target.workspace_name,
                     title=title,

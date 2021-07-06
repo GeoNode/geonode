@@ -49,7 +49,7 @@ class LayerForm(ResourceBaseForm):
         exclude = ResourceBaseForm.Meta.exclude + (
             'workspace',
             'store',
-            'storeType',
+            'storetype',
             'alternate',
             'default_style',
             'styles',

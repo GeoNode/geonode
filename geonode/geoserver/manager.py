@@ -95,7 +95,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         if instance:
             _real_instance = instance.get_real_instance()
-            if hasattr(_real_instance, 'storeType') and _real_instance.storeType not in ['tileStore', 'remote']:
+            if hasattr(_real_instance, 'storetype') and _real_instance.storetype not in ['tileStore', 'remote']:
                 try:
                     logger.debug(f"Searching GeoServer for layer '{_real_instance.alternate}'")
                     if gs_catalog.get_layer(_real_instance.alternate):
@@ -206,7 +206,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         kwargs['defaults']['alternate'] = _alternate
                         kwargs['defaults']['typename'] = _alternate
                         kwargs['defaults']['store'] = _gs_import_session_info.target_store or _gs_import_session_info.layer_name
-                        kwargs['defaults']['storeType'] = _gs_import_session_info.spatial_files_type.layer_type
+                        kwargs['defaults']['storetype'] = _gs_import_session_info.spatial_files_type.layer_type
                     instance.get_real_instance().name = _gs_import_session_info.layer_name
                     instance.get_real_instance().title = instance.title or _gs_import_session_info.layer_name
                     instance.get_real_instance().files = kwargs.get('files', None)
@@ -214,7 +214,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     instance.get_real_instance().alternate = _alternate
                     instance.get_real_instance().typename = _alternate
                     instance.get_real_instance().store = _gs_import_session_info.target_store or _gs_import_session_info.layer_name
-                    instance.get_real_instance().storeType = _gs_import_session_info.spatial_files_type.layer_type
+                    instance.get_real_instance().storetype = _gs_import_session_info.spatial_files_type.layer_type
                     if kwargs.get('action_type', 'create') == 'create':
                         set_styles(instance.get_real_instance(), gs_catalog)
                         set_attributes_from_geoserver(instance.get_real_instance(), overwrite=True)
@@ -257,7 +257,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         _workspace = None
         _target_store = None
         if gs_layer:
-            _target_store = gs_layer.resource.store.name if instance.get_real_instance().storeType == 'vector' else None
+            _target_store = gs_layer.resource.store.name if instance.get_real_instance().storetype == 'vector' else None
             _workspace = gs_layer.resource.workspace.name if gs_layer.resource.workspace else None
 
         if not _workspace:
@@ -267,7 +267,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 _workspace = instance.get_real_instance().workspace or settings.DEFAULT_WORKSPACE
 
         if not _target_store:
-            if instance.get_real_instance().storeType == 'vector' or spatial_files_type.layer_type == 'vector':
+            if instance.get_real_instance().storetype == 'vector' or spatial_files_type.layer_type == 'vector':
                 _dsname = ogc_server_settings.datastore_db['NAME']
                 _ds = create_geoserver_db_featurestore(store_name=_dsname, workspace=_workspace)
                 if _ds:

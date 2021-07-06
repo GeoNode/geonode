@@ -175,7 +175,7 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
 
     to_update = {}
     if isinstance(instance, Layer):
-        for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
+        for _key in ('name', 'workspace', 'store', 'storetype', 'alternate', 'typename'):
             if hasattr(instance, _key):
                 if _key in defaults:
                     to_update[_key] = defaults.pop(_key)
@@ -206,8 +206,8 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
 
     if hasattr(instance, 'charset') and 'charset' not in to_update:
         to_update['charset'] = defaults.pop('charset', instance.charset)
-    if hasattr(instance, 'storeType') and 'storeType' not in to_update:
-        to_update['storeType'] = defaults.pop('storeType', instance.storeType)
+    if hasattr(instance, 'storetype') and 'storetype' not in to_update:
+        to_update['storetype'] = defaults.pop('storetype', instance.storetype)
     if hasattr(instance, 'urlsuffix') and 'urlsuffix' not in to_update:
         to_update['urlsuffix'] = defaults.pop('urlsuffix', instance.urlsuffix)
 
