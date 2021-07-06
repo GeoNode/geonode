@@ -117,6 +117,7 @@ class FileType:
 
 
 TYPE_UNKNOWN = FileType("unknown", None, None)
+ALLOWED_EXTENSIONS = ['zip', 'shp', 'asc', 'ascii', 'csv', 'json', 'geojson', 'tif', 'tiff', 'geotif', 'geotiff']
 
 _keep_original_data = ('kmz', 'zip-mosaic')
 _tif_extensions = ("tif", "tiff", "geotif", "geotiff")
@@ -272,7 +273,10 @@ def scan_file(file_name, scan_hint=None, charset=None):
         paths = []
         for p in os.listdir(dirname):
             _f = os.path.join(dirname, p)
-            fixup_shp_columnnames(_f, charset)
+            try:
+                fixup_shp_columnnames(_f, charset)
+            except Exception as e:
+                logger.debug(e)
             paths.append(_f)
         archive = None
     if paths is not None:

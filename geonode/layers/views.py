@@ -106,11 +106,13 @@ from geonode.utils import (
     build_social_links,
     GXPLayer,
     GXPMap)
-from geonode.geoserver.helpers import ogc_server_settings
+from geonode.geoserver.helpers import (
+    ogc_server_settings,
+    select_relevant_files,
+    write_uploaded_files_to_disk)
 from geonode.geoserver.security import set_geowebcache_invalidate_cache
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
-from geonode.upload.views import _select_relevant_files, _write_uploaded_files_to_disk
 
 from celery.utils.log import get_logger
 
@@ -242,14 +244,14 @@ def layer_upload_metadata(request):
 
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
 
-        relevant_files = _select_relevant_files(
+        relevant_files = select_relevant_files(
             ['xml'],
             iter(request.FILES.values())
         )
 
         logger.debug(f"relevant_files: {relevant_files}")
 
-        _write_uploaded_files_to_disk(tempdir, relevant_files)
+        write_uploaded_files_to_disk(tempdir, relevant_files)
 
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
 

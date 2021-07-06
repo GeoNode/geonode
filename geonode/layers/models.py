@@ -633,11 +633,14 @@ def pre_delete_layer(instance, sender, **kwargs):
         content_type=ct,
         object_id=instance.id).delete()
 
-    default_style = instance.default_style
-    for style in instance.styles.all():
-        if style.layer_styles.all().count() == 1:
-            if style != default_style:
-                style.delete()
+    try:
+        default_style = instance.default_style
+        for style in instance.styles.all():
+            if style.layer_styles.all().count() == 1:
+                if style != default_style:
+                    style.delete()
+    except Exception as e:
+        logger.debug(f"Error occurred while trying to delete the Layer Default Style: {e}")
 
     if 'geonode.upload' in settings.INSTALLED_APPS and \
             settings.UPLOADER['BACKEND'] == 'geonode.importer':
@@ -680,9 +683,12 @@ def post_delete_layer(instance, sender, **kwargs):
     logger.debug(
         "Going to delete the default style for [%s]", instance.name)
 
-    if instance.default_style and Layer.objects.filter(
-            default_style__id=instance.default_style.id).count() == 0:
-        instance.default_style.delete()
+    try:
+        if instance.default_style and Layer.objects.filter(
+                default_style__id=instance.default_style.id).count() == 0:
+            instance.default_style.delete()
+    except Exception as e:
+        logger.debug(f"Error occurred while trying to delete the Layer default Style: {e}")
 
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
