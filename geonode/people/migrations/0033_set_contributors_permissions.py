@@ -11,10 +11,12 @@ def assign_permissions_to_contributors(apps, schema_editor):
     contributors = Group.objects.filter(name='contributors')
     if contributors.exists():
         contr_obj = contributors.first()
-        perm, _ = Permission.objects.get_or_create(
-            name='Can add resources',
-            codename='add_resourcebase', 
-            content_type=ContentType.objects.get_for_model(ResourceBase)
+        perm, _ = Permission.objects.update_or_create(
+            codename='add_resourcebase',
+            defaults=dict(
+                name='Can add resources',
+                content_type=ContentType.objects.get_for_model(ResourceBase)
+            )
         )
         contr_obj.permissions.add(perm)
         perm_exists = contr_obj.permissions.filter(codename='base_addresourcebase')
