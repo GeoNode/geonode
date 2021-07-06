@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from geonode.base.populate_test_data import create_single_layer
 from geonode.tests.base import GeoNodeLiveTestSupport
 
 from datetime import datetime, timedelta
@@ -29,7 +27,6 @@ import pytz
 import logging
 import os.path
 import xmljson
-import dj_database_url
 
 from decimal import Decimal  # noqa
 from importlib import import_module
@@ -66,19 +63,17 @@ from django.test.client import FakePayload, Client as DjangoTestClient
 
 from geoserver.catalog import Catalog
 
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models,
+    create_single_layer)
+
 GEONODE_USER = 'admin'
 GEONODE_PASSWD = 'admin'
 GEONODE_URL = settings.SITEURL.rstrip('/')
 GEOSERVER_URL = ogc_server_settings.LOCATION
 GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
-
-DB_HOST = settings.DATABASES['default']['HOST']
-DB_PORT = settings.DATABASES['default']['PORT']
-DB_NAME = settings.DATABASES['default']['NAME']
-DB_USER = settings.DATABASES['default']['USER']
-DB_PASSWORD = settings.DATABASES['default']['PASSWORD']
-DATASTORE_URL = f'postgis://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -164,12 +159,22 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
 
     type = 'layer'
 
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
     @classmethod
     def setUpClass(cls):
-        pass
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
 
     @classmethod
     def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
         if os.path.exists('integration_settings.py'):
             os.unlink('integration_settings.py')
 
@@ -196,9 +201,6 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
         )
 
         self.client = TestClient(REMOTE_ADDR='127.0.0.1')
-
-        settings.DATABASES['default']['NAME'] = DB_NAME
-        settings.OGC_SERVER['default']['DATASTORE'] = ''
 
         connections['default'].settings_dict['ATOMIC_REQUESTS'] = False
         connections['default'].connect()
