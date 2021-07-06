@@ -22,15 +22,11 @@ def assign_permissions_to_contributors(apps, schema_editor):
                 )
             )
             contr_obj.permissions.add(perm)
-            perm_exists = contr_obj.permissions.filter(codename='base_addresourcebase')
-            if perm_exists.exists():
-                contr_obj.permissions.remove(perm_exists.first())
             contr_obj.save()
+            contr_obj.permissions.filter(codename='base_addresourcebase').delete()
         except IntegrityError:
             pass
-    perm_to_remove = Permission.objects.filter(codename='base_addresourcebase')
-    if perm_to_remove.exists():
-        perm_to_remove.delete()
+    Permission.objects.filter(codename='base_addresourcebase').delete()
 
 
 class Migration(migrations.Migration):

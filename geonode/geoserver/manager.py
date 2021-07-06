@@ -290,6 +290,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         )
 
         _local_files = []
+        _temporary_files = []
         try:
             for _f in files:
                 if os.path.exists(_f) and os.path.isfile(_f):
@@ -305,6 +306,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         _tmp_file.seek(0)
                         _tmp_file_name = f'{_tmp_file.name}'
                         _local_files.append(os.path.abspath(_tmp_file_name))
+                        _temporary_files.append(os.path.abspath(_tmp_file_name))
                     try:
                         storage_manager.close(_f)
                     except Exception:
@@ -340,7 +342,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 _gs_import_session_info.import_session = import_session
                 _gs_import_session_info.layer_name = import_session.tasks[0].layer.name
             finally:
-                for _f in _local_files:
+                for _f in _temporary_files:
                     try:
                         os.remove(_f)
                     except Exception as e:

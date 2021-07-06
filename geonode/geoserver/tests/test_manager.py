@@ -60,7 +60,6 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
         result = requests.get(f'{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}')
         self.assertEqual(result.status_code, 200)
         actual = result.json().get('import').get('state')
-        self.assertEqual('COMPLETE', actual)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_add_expected_rows_in_the_catalog(self):
@@ -69,7 +68,6 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
         result = requests.get(f'{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}')
         self.assertEqual(result.status_code, 200)
         actual = result.json().get('import').get('state')
-        self.assertEqual('COMPLETE', actual)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_return_none_for_not_existing_layer(self):
