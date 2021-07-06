@@ -177,8 +177,8 @@ def facets(context):
         if not settings.SKIP_PERMS_FILTER:
             documents = documents.filter(id__in=authorized)
 
-        counts = documents.values('doc_type').annotate(count=Count('doc_type'))
-        facets = {count['doc_type']: count['count'] for count in counts}
+        counts = documents.values('storetype').annotate(count=Count('storetype'))
+        facets = {count['storetype']: count['count'] for count in counts}
 
         return facets
     else:

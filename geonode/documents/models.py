@@ -49,8 +49,6 @@ class Document(ResourceBase):
 
     extension = models.CharField(max_length=128, blank=True, null=True)
 
-    doc_type = models.CharField(max_length=128, blank=True, null=True)
-
     doc_url = models.URLField(
         blank=True,
         null=True,
@@ -180,14 +178,14 @@ def pre_save_document(instance, sender, **kwargs):
         name = os.path.basename(instance.files[0])
         base_name, extension = os.path.splitext(name)
         instance.extension = extension[1:]
-        doc_type_map = DOCUMENT_TYPE_MAP
-        doc_type_map.update(getattr(settings, 'DOCUMENT_TYPE_MAP', {}))
-        if doc_type_map is None:
-            doc_type = 'other'
+        storetype_map = DOCUMENT_TYPE_MAP
+        storetype_map.update(getattr(settings, 'DOCUMENT_TYPE_MAP', {}))
+        if storetype_map is None:
+            storetype = 'other'
         else:
-            doc_type = doc_type_map.get(
+            storetype = storetype_map.get(
                 instance.extension.lower(), 'other')
-        instance.doc_type = doc_type
+        instance.storetype = storetype
 
     elif instance.doc_url:
         if '.' in urlparse(instance.doc_url).path:

@@ -119,7 +119,7 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
             'object_id',
             'doc_file',
             'extension',
-            'doc_type',
+            'storetype',
             'doc_url')
 
 

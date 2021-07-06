@@ -332,6 +332,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             LicenseSerializer, embed=True, many=False)
         self.fields['spatial_representation_type'] = DynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False)
+        self.fields['storetype'] = serializers.CharField(read_only=True)
 
     class Meta:
         model = ResourceBase
@@ -350,7 +351,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
             'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed',
-            'data',
+            'data', 'storetype'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,

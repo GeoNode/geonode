@@ -939,6 +939,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     blob = JSONField(null=True, default=dict, blank=True)
 
+    storetype = models.CharField(max_length=128, null=True, blank=True)
+
     __is_approved = False
     __is_published = False
 
@@ -1289,8 +1291,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if hasattr(self.spatial_representation_type, 'identifier'):
             return self.spatial_representation_type.identifier
         else:
-            if hasattr(self, 'storeType'):
-                if self.storeType == 'raster':
+            if hasattr(self, 'storetype'):
+                if self.storetype == 'raster':
                     return 'grid'
                 return 'vector'
             else:
@@ -1456,7 +1458,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             else:
                 _link_type = 'WWW:DOWNLOAD-1.0-http--download'
                 try:
-                    _store_type = getattr(self.get_real_instance(), 'storeType', None)
+                    _store_type = getattr(self.get_real_instance(), 'storetype', None)
                     if _store_type and _store_type in ['tileStore', 'remote'] and link.extension in ('html'):
                         _remote_service = getattr(self.get_real_instance(), '_remote_service', None)
                         if _remote_service:

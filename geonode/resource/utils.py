@@ -195,7 +195,7 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
     if isinstance(instance, Document):
         if 'links' in defaults:
             defaults.pop('links')
-        for _key in ('doc_type', 'doc_url', 'doc_file', 'extension'):
+        for _key in ('storetype', 'doc_url', 'doc_file', 'extension'):
             if hasattr(instance, _key):
                 if _key in defaults:
                     to_update[_key] = defaults.pop(_key)
