@@ -425,6 +425,7 @@ def display_change_perms_button(resource, user, perms):
     else:
         return not getattr(settings, 'ADMIN_MODERATE_UPLOADS', False)
 
+
 @register.simple_tag
 def get_layer_count_by_services(service_id, user):
     return get_visible_resources(
