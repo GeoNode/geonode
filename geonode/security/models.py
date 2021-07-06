@@ -46,6 +46,7 @@ from .permissions import (
     ADMIN_PERMISSIONS,
     LAYER_ADMIN_PERMISSIONS,
     VIEW_PERMISSIONS,
+    SERVICE_PERMISSIONS
 )
 
 from .utils import (
@@ -432,7 +433,7 @@ class PermissionLevelMixin(object):
 
         config = Configuration.load()
         ctype = ContentType.objects.get_for_model(self)
-        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
+        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
 
         resource_perms = Permission.objects.filter(
             codename__in=PERMISSIONS_TO_FETCH,

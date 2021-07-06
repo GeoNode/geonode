@@ -18,6 +18,7 @@
 #
 #########################################################################
 import logging
+from geonode.services.enumerations import WMS, INDEXED
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import Client
 from selenium import webdriver
@@ -882,3 +883,29 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
                 self.selenium.find_element_by_id('btn-id-filter').click()
                 # self.selenium.find_element_by_id('option_atlantis:tiger_roads_tiger_roads').click()
                 # self.selenium.find_element_by_tag_name('form').submit()
+
+
+class TestServiceViews(GeoNodeBaseTestSupport):
+    def setUp(self):
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self.admin = get_user_model().objects.get(username='admin')
+        self.sut, _ = Service.objects.get_or_create(
+            type=WMS,
+            name='Bogus',
+            title='Pocus',
+            owner=self.admin,
+            method=INDEXED,
+            metadata_only=True,
+            base_url='http://bogus.pocus.com/ows')
+        self.sut.clear_dirty_state()
+
+    def test_user_admin_can_access_to_page(self):
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('services'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_invalid_user_cannot_access_to_page(self):
+        self.client.login(username='bobby', password='bobby')
+        response = self.client.get(reverse('services'))
+        self.assertEqual(response.status_code, 302)
