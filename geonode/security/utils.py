@@ -100,10 +100,10 @@ def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
     """
-    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
+    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
-    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
+    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
 
     for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
         permissions[perm.id] = perm.codename
@@ -129,7 +129,7 @@ def get_users_with_perms(obj):
 
 def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
-    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
+    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
         admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
@@ -149,6 +149,13 @@ def set_owner_permissions(resource, members=None):
                 if members:
                     for user in members:
                         assign_perm(perm, user, resource.layer)
+
+        if resource.polymorphic_ctype.name == 'service':
+            for perm in SERVICE_PERMISSIONS:
+                assign_perm(perm, resource.owner, resource.service)
+                if members:
+                    for user in members:
+                        assign_perm(perm, user, resource.service)
 
 
 def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):

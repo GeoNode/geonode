@@ -1,6 +1,6 @@
 # Permissions mapping
 PERMISSIONS = {
-    'base_addresourcebase': 'add_resource',
+    'add_resourcebase': 'add_resource',
 }
 
 # The following permissions will be filtered out when READ_ONLY mode is active
@@ -25,4 +25,11 @@ ADMIN_PERMISSIONS = [
 LAYER_ADMIN_PERMISSIONS = [
     'change_layer_data',
     'change_layer_style'
+]
+
+SERVICE_PERMISSIONS = [
+    "add_service",
+    "delete_service",
+    "change_resourcebase_metadata",
+    "add_resourcebase_from_service"
 ]

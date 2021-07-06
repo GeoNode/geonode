@@ -25,6 +25,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from geonode import geoserver
+from geonode.base import enumerations
 from geonode.layers.models import Layer
 from geonode.layers.utils import get_files
 from geonode.decorators import on_ogc_backend
@@ -73,5 +74,5 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_return_none_for_not_existing_layer(self):
         layer = create_single_layer('fake_layer')
-        with self.assertRaises(Exception):
-            self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
+        _gs_import_session_info = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
+        self.assertEqual(_gs_import_session_info.import_session.state, enumerations.STATE_PENDING)
