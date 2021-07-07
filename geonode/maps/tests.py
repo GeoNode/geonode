@@ -706,16 +706,11 @@ community."
         map_obj.update_from_viewer(config_map, context={})
         title = config_map.get('title', config_map['about']['title'])
         abstract = config_map.get('abstract', config_map['about']['abstract'])
-        center = config_map['map'].get('center', {})
-        zoom = config_map['map'].get('zoom', settings.DEFAULT_MAP_ZOOM)
-
         projection = config_map['map']['projection']
 
         self.assertEqual(map_obj.title, title)
         self.assertEqual(map_obj.abstract, abstract)
-        self.assertEqual(map_obj.center_x, center['x'] if isinstance(center, dict) else center[0])
-        self.assertEqual(map_obj.center_y, center['y'] if isinstance(center, dict) else center[1])
-        self.assertEqual(map_obj.zoom, zoom)
+        self.assertEqual(map_obj.zoom, 6)
         self.assertEqual(map_obj.projection, projection)
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
@@ -772,15 +767,11 @@ community."
         map_obj.update_from_viewer(config_map, context={})
         title = config_map.get('title', config_map['about']['title'])
         abstract = config_map.get('abstract', config_map['about']['abstract'])
-        center = config_map['map'].get('center', settings.DEFAULT_MAP_CENTER)
-        zoom = config_map['map'].get('zoom', settings.DEFAULT_MAP_ZOOM)
         projection = config_map['map']['projection']
 
         self.assertEqual(map_obj.title, title)
         self.assertEqual(map_obj.abstract, abstract)
-        self.assertEqual(map_obj.center_x, center['x'] if isinstance(center, dict) else center[0])
-        self.assertEqual(map_obj.center_y, center['y'] if isinstance(center, dict) else center[1])
-        self.assertEqual(map_obj.zoom, zoom)
+        self.assertEqual(map_obj.zoom, 6)
         self.assertEqual(map_obj.projection, projection)
 
         for map_layer in map_obj.layers:

@@ -274,7 +274,8 @@ def get_alternate_name(instance):
             _ws = getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
             result = f"{_ws}:{instance.name}"
         return result
-    except Exception:
+    except Exception as e:
+        logger.exception(e)
         return instance.alternate
 
 
@@ -361,6 +362,15 @@ def layer_post_save(instance, *args, **kwargs):
 
 
 def metadata_post_save(instance, *args, **kwargs):
+    logger.debug("handling UUID In pre_save_layer")
+    if isinstance(instance, Layer) and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
+        logger.debug("using custom uuid handler In pre_save_layer")
+        from ..layers.utils import get_uuid_handler
+        _uuid = get_uuid_handler()(instance).create_uuid()
+        if _uuid != instance.uuid:
+            instance.uuid = _uuid
+            Layer.objects.filter(id=instance.id).update(uuid=_uuid)
+
     # Fixup bbox
     if instance.bbox_polygon is None:
         instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
@@ -390,6 +400,7 @@ def metadata_post_save(instance, *args, **kwargs):
     ResourceBase.objects.filter(id=instance.id).update(
         uuid=instance.uuid,
         srid=instance.srid,
+        alternate=instance.alternate,
         bbox_polygon=instance.bbox_polygon,
         thumbnail_url=instance.get_thumbnail_url(),
         detail_url=instance.get_absolute_url(),
@@ -447,12 +458,12 @@ def resourcebase_post_save(instance, *args, **kwargs):
     if instance:
         if hasattr(instance, 'abstract') and not getattr(instance, 'abstract', None):
             instance.abstract = _('No abstract provided')
-        if hasattr(instance, 'title') and not getattr(instance, 'title', None):
+        if hasattr(instance, 'title') and not getattr(instance, 'title', None) or getattr(instance, 'title', '') == '':
             if isinstance(instance, Document) and instance.files:
                 instance.title = os.path.basename(instance.files[0])
             elif hasattr(instance, 'name'):
                 instance.title = instance.name
-        if hasattr(instance, 'alternate') and not getattr(instance, 'alternate', None):
+        if hasattr(instance, 'alternate') and not getattr(instance, 'alternate', None) or getattr(instance, 'alternate', '') == '':
             instance.alternate = get_alternate_name(instance)
 
         if isinstance(instance, Document):

@@ -313,12 +313,6 @@ class ResourceManager(ResourceManagerInterface):
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
-                    logger.debug("handling UUID In pre_save_layer")
-                    if resource_type == Layer and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
-                        logger.debug("using custom uuid handler In pre_save_layer")
-                        from ..layers.utils import get_uuid_handler
-                        uuid = _resource.uuid = get_uuid_handler()(_resource).create_uuid()
-                        resource_type.objects.filter(id=_resource.id).update(uuid=uuid)
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
             except Exception as e:

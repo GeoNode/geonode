@@ -1439,7 +1439,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.client.login(username=self.not_admin.username, password='very-secret')
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
             response = self.client.get(url)
-            self.assertTrue(response.context['form']['keywords'].field.disabled)
+            self.assertTrue(response.context['form']['keywords'].field.disabled, self.test_layer.alternate)
 
     def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
         """
@@ -1462,7 +1462,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.client.login(username=admin.username, password='very-secret')
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
             response = self.client.get(url)
-            self.assertFalse(response.context['form']['keywords'].field.disabled)
+            self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_layer.alternate)
 
     def test_that_non_admin_user_cannot_create_edit_keyword(self):
         """
@@ -1501,7 +1501,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.client.login(username=self.not_admin.username, password='very-secret')
         with self.settings(FREETEXT_KEYWORDS_READONLY=False):
             response = self.client.get(url)
-            self.assertFalse(response.context['form']['keywords'].field.disabled)
+            self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_layer.alternate)
 
     def test_that_anonymous_user_cannot_view_map_with_restricted_view(self):
         """
