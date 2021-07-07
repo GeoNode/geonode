@@ -1498,6 +1498,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             'mapstore2_adapter',
             'mapstore2_adapter.geoapps',
             'mapstore2_adapter.geoapps.geostories',
+            'mapstore2_adapter.geoapps.dashboards',
             'geonode_mapstore_client',)
 
     def get_geonode_catalogue_service():
