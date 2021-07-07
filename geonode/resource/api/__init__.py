@@ -16,18 +16,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.apps import AppConfig
-from django.conf.urls import url, include
-
-
-class GeoNodeResourceConfig(AppConfig):
-
-    name = "geonode.resource"
-    verbose_name = "GeoNode Resource Service and Manager"
-
-    def ready(self):
-        from geonode.urls import urlpatterns
-
-        urlpatterns += [
-            url(r'^api/v2/', include('geonode.resource.api.urls'))
-        ]

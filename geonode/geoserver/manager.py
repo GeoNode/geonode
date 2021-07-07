@@ -576,7 +576,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         if instance and isinstance(instance.get_real_instance(), Layer):
             try:
                 if kwargs.get('time_info', None):
-                    set_time_info(instance.get_real_instance(), kwargs['time_info'])
+                    set_time_info(instance.get_real_instance(), **kwargs['time_info'])
             except Exception as e:
                 logger.exception(e)
                 return None

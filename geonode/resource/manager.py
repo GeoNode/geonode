@@ -51,9 +51,9 @@ from geonode.security.utils import (
 
 from . import settings as rm_settings
 from .utils import (
+    update_resource,
     metadata_storers,
-    resourcebase_post_save,
-    update_resource)
+    resourcebase_post_save)
 
 from ..base import enumerations
 from ..base.models import ResourceBase
@@ -236,9 +236,66 @@ class ResourceManager(ResourceManagerInterface):
     @transaction.atomic
     def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
         _resource = instance or ResourceManager._get_instance(uuid)
-        if _resource:
+        if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
                 self._concrete_resource_manager.delete(uuid, instance=_resource)
+                if isinstance(_resource.get_real_instance(), Layer):
+                    """
+                    - Remove any associated style to the layer, if it is not used by other layers.
+                    - Default style will be deleted in post_delete_layer.
+                    - Remove the layer from any associated map, if any.
+                    - Remove the layer default style.
+                    """
+                    try:
+                        from ..services.enumerations import INDEXED
+                        if _resource.get_real_instance().remote_service is not None and _resource.get_real_instance().remote_service.method == INDEXED:
+                            from geonode.services.models import HarvestJob
+                            HarvestJob.objects.filter(
+                                service=_resource.get_real_instance().remote_service, resource_id=_resource.get_real_instance().alternate).delete()
+                            resource_id = _resource.get_real_instance().alternate.split(":")[-1] if len(_resource.get_real_instance().alternate.split(":")) else None
+                            if resource_id:
+                                HarvestJob.objects.filter(
+                                    service=_resource.get_real_instance().remote_service, resource_id=resource_id).delete()
+                    except Exception as e:
+                        logger.exception(e)
+
+                    try:
+                        from geonode.maps.models import MapLayer
+                        logger.debug(
+                            "Going to delete associated maplayers for [%s]", _resource.get_real_instance().name)
+                        MapLayer.objects.filter(
+                            name=_resource.get_real_instance().alternate,
+                            ows_url=_resource.get_real_instance().ows_url).delete()
+                    except Exception as e:
+                        logger.exception(e)
+
+                    try:
+                        from pinax.ratings.models import OverallRating
+                        ct = ContentType.objects.get_for_model(_resource.get_real_instance())
+                        OverallRating.objects.filter(
+                            content_type=ct,
+                            object_id=_resource.get_real_instance().id).delete()
+                    except Exception as e:
+                        logger.exception(e)
+
+                    try:
+                        if 'geonode.upload' in settings.INSTALLED_APPS and \
+                                settings.UPLOADER['BACKEND'] == 'geonode.importer':
+                            from geonode.upload.models import Upload
+                            # Need to call delete one by one in ordee to invoke the
+                            #  'delete' overridden method
+                            for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
+                                upload.delete()
+                    except Exception as e:
+                        logger.exception(e)
+
+                    try:
+                        _resource.get_real_instance().styles.delete()
+                        _resource.get_real_instance().default_style.delete()
+                    except Exception as e:
+                        logger.debug(f"Error occurred while trying to delete the Layer Styles: {e}")
+
+                self.remove_permissions(_resource.get_real_instance().uuid, instance=_resource.get_real_instance())
                 _resource.get_real_instance().delete()
                 return 1
             except Exception as e:
@@ -256,6 +313,12 @@ class ResourceManager(ResourceManagerInterface):
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
+                    logger.debug("handling UUID In pre_save_layer")
+                    if resource_type == Layer and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
+                        logger.debug("using custom uuid handler In pre_save_layer")
+                        from ..layers.utils import get_uuid_handler
+                        uuid = _resource.uuid = get_uuid_handler()(_resource).create_uuid()
+                        resource_type.objects.filter(id=_resource.id).update(uuid=uuid)
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
             except Exception as e:
@@ -264,7 +327,7 @@ class ResourceManager(ResourceManagerInterface):
                 raise e
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
-            resourcebase_post_save(_resource)
+            resourcebase_post_save(_resource.get_real_instance())
         return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
@@ -310,7 +373,7 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 _resource.save(notify=notify)
-            resourcebase_post_save(_resource)
+            resourcebase_post_save(_resource.get_real_instance())
         return _resource
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:

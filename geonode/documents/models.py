@@ -16,25 +16,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import os
-import uuid
 import logging
-from urllib.parse import urlparse, urljoin
+
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.db.models import signals
 from django.contrib.staticfiles import finders
-from django.contrib.gis.geos import MultiPolygon
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, Link
+from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 
@@ -162,90 +158,6 @@ def get_related_documents(resource):
         return None
 
 
-def get_related_resources(document):
-    if document.links:
-        try:
-            return [
-                link.content_type.get_object_for_this_type(id=link.object_id)
-                for link in document.links.all()
-            ]
-        except Exception:
-            return []
-    else:
-        return []
-
-
-def pre_save_document(instance, sender, **kwargs):
-    if instance.files:
-        name = os.path.basename(instance.files[0])
-        base_name, extension = os.path.splitext(name)
-        instance.extension = extension[1:]
-        doc_type_map = DOCUMENT_TYPE_MAP
-        doc_type_map.update(getattr(settings, 'DOCUMENT_TYPE_MAP', {}))
-        if doc_type_map is None:
-            doc_type = 'other'
-        else:
-            doc_type = doc_type_map.get(
-                instance.extension.lower(), 'other')
-        instance.doc_type = doc_type
-
-    elif instance.doc_url:
-        if '.' in urlparse(instance.doc_url).path:
-            instance.extension = urlparse(instance.doc_url).path.rsplit('.')[-1]
-
-    if not instance.uuid:
-        instance.uuid = str(uuid.uuid1())
-    instance.csw_type = 'document'
-
-    if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = 'No abstract provided'
-
-    if instance.title == '' or instance.title is None:
-        if instance.files:
-            name = os.path.basename(instance.files[0])
-            instance.title = name
-
-    resources = get_related_resources(instance)
-
-    # if there are (new) linked resources update the bbox computed by their bboxes
-    if resources:
-        bbox = MultiPolygon([r.bbox_polygon for r in resources])
-        instance.set_bbox_polygon(bbox.extent, instance.srid)
-    elif not instance.bbox_polygon:
-        instance.set_bbox_polygon((-180, -90, 180, 90), '4326')
-
-
-def post_save_document(instance, *args, **kwargs):
-    from geonode.resource.manager import resource_manager
-    resource_manager.set_thumbnail(instance.uuid, instance=instance)
-
-    name = None
-    ext = instance.extension
-    mime_type_map = DOCUMENT_MIMETYPE_MAP
-    mime_type_map.update(getattr(settings, 'DOCUMENT_MIMETYPE_MAP', {}))
-    mime = mime_type_map.get(ext, 'text/plain')
-    url = None
-
-    if instance.id and instance.files:
-        name = "Hosted Document"
-        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-        url = f"{site_url}{reverse('document_download', args=(instance.id,))}"
-    elif instance.doc_url:
-        name = "External Document"
-        url = instance.doc_url
-
-    if name and url and ext:
-        Link.objects.get_or_create(
-            resource=instance.resourcebase_ptr,
-            url=url,
-            defaults=dict(
-                extension=ext,
-                name=name,
-                mime=mime,
-                url=url,
-                link_type='data',))
-
-
 def update_documents_extent(sender, **kwargs):
     documents = get_related_documents(sender)
     if documents:
@@ -253,12 +165,4 @@ def update_documents_extent(sender, **kwargs):
             document.save()
 
 
-def pre_delete_document(instance, sender, **kwargs):
-    from geonode.resource.manager import resource_manager
-    resource_manager.remove_permissions(instance.uuid, instance=instance)
-
-
-signals.pre_save.connect(pre_save_document, sender=Document)
-signals.post_save.connect(post_save_document, sender=Document)
-signals.pre_delete.connect(pre_delete_document, sender=Document)
 map_changed_signal.connect(update_documents_extent)

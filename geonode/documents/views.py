@@ -52,6 +52,7 @@ from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
 from geonode.storage.manager import storage_manager
 from geonode.resource.manager import resource_manager
+from geonode.resource.utils import get_related_resources
 from geonode.decorators import check_keyword_write_perms
 from geonode.security.utils import get_visible_resources
 from geonode.base.utils import ManageResourceOwnerPermissions
@@ -67,9 +68,7 @@ from .utils import get_download_response
 from .enumerations import (
     DOCUMENT_TYPE_MAP,
     DOCUMENT_MIMETYPE_MAP)
-from .models import (
-    Document,
-    get_related_resources)
+from .models import Document
 from .forms import (
     DocumentForm,
     DocumentCreateForm,
