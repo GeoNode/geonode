@@ -106,7 +106,7 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         """
         Ensure we can access the Layers list.
         """
-        url = reverse('layers-list')
+        url = reverse('datasets-list')
         # Anonymous
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
@@ -136,7 +136,7 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
-        url = reverse('layers-detail', kwargs={'pk': layer.pk})
+        url = reverse('datasets-detail', kwargs={'pk': layer.pk})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(int(response.data['layer']['pk']), int(layer.pk))
