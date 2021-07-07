@@ -783,7 +783,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         rating = OverallRating.objects.all()
         self.assertEqual(rating.count(), 1)
         # Remove the layer
-        layer.delete()
+        resource_manager.delete(layer.uuid)
         # Check there are no ratings matching the remove layer
         rating = OverallRating.objects.all()
         self.assertEqual(rating.count(), 0)
@@ -1640,8 +1640,7 @@ class TestCustomUUidHandler(TestCase):
 
     @override_settings(LAYER_UUID_HANDLER="geonode.layers.tests.DummyUUIDHandler")
     def test_layer_will_override_the_uuid_if_handler_is_defined(self):
-        self.sut.keywords.add(*["updating", "values"])
-        self.sut.save()
+        resource_manager.update(None, instance=self.sut, keywords=["updating", "values"])
         expected = "abc:abc-1234-abc"
         actual = Layer.objects.get(id=self.sut.id)
         self.assertEqual(expected, actual.uuid)

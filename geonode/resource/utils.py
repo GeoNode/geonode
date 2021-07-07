@@ -450,7 +450,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
         if hasattr(instance, 'title') and not getattr(instance, 'title', None):
             if isinstance(instance, Document) and instance.files:
                 instance.title = os.path.basename(instance.files[0])
-            else:
+            elif hasattr(instance, 'name'):
                 instance.title = instance.name
         if hasattr(instance, 'alternate') and not getattr(instance, 'alternate', None):
             instance.alternate = get_alternate_name(instance)
