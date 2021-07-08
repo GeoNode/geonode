@@ -129,14 +129,14 @@ MAX_SEARCH_BATCH_SIZE = 25
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
-METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this layer's orginal metadata was \
+METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this dataset's orginal metadata was \
 populated and preserved by importing a metadata XML file. This metadata cannot be edited.")
 
-_PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
-_PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
-_PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
-_PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metadata")
-_PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
+_PERMISSION_MSG_DELETE = _("You are not permitted to delete this dataset")
+_PERMISSION_MSG_GENERIC = _('You do not have permissions for this dataset.')
+_PERMISSION_MSG_MODIFY = _("You are not permitted to modify this dataset")
+_PERMISSION_MSG_METADATA = _("You are not permitted to modify this dataset's metadata")
+_PERMISSION_MSG_VIEW = _("You are not permitted to view this dataset")
 
 
 def log_snippet(log_file):
@@ -289,7 +289,7 @@ def layer_upload_metadata(request):
                 status=status_code)
         else:
             out['success'] = False
-            out['errors'] = "Layer selected does not exists"
+            out['errors'] = "Dataset selected does not exists"
             status_code = 404
         return HttpResponse(
             json.dumps(out),
@@ -1386,7 +1386,7 @@ def layer_granule_remove(
             message = f'{_("Unable to delete layer")}: {layer.alternate}.'
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
-                    'This layer is a member of a layer group, you must remove the layer from the group '
+                    'This dataset is a member of a layer group, you must remove the dataset from the group '
                     'before deleting.')
 
             messages.error(request, message)

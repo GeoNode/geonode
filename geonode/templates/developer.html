@@ -47,7 +47,7 @@
     <p><code>var geonodeLayer = new OpenLayers.Layer.WMS("GeoNode Risk Data", "http://demo.geonode.org/geoserver/wms",{ layers: "risk:nicaragua_admin" });</code></p>
 
     <h3>Google Maps Example Code</h3>
-    <p>To include a GeoNode map layer in a Google Map, include the layer namein the URL template.</p>
+    <p>To include a GeoNode map layer in a Google Map, include the dataset name in the URL template.</p>
     <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>
 
     <h3>Shapefile/GeoJSON/GML Output</h3>

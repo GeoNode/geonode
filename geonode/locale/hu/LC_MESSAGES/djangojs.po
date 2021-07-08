@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:01+0200\n"
+"POT-Creation-Date: 2021-07-08 09:03+0300\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Hungarian (http://www.transifex.com/geonode/geonode/language/"
@@ -305,9 +305,17 @@ msgid ""
 "may need to update the server."
 msgstr ""
 
+#, fuzzy
+#| msgid "Unknown Map"
+msgid "Unknwon"
+msgstr "Ismeretlen Térkép"
+
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
+msgstr ""
+
+msgid "Additional info: "
 msgstr ""
 
 msgid "Finalizing"
@@ -473,6 +481,9 @@ msgstr ""
 msgid "'"
 msgstr ""
 
+msgid "-1"
+msgstr ""
+
 msgid "trailingComments"
 msgstr ""
 
@@ -492,10 +503,16 @@ msgstr ""
 msgid "SelectList"
 msgstr "Választ"
 
-msgid "error"
+msgid "show:"
 msgstr ""
 
-msgid "show:"
+msgid "DraftEditor/root"
+msgstr ""
+
+msgid "DraftEditor/editorContainer"
+msgstr ""
+
+msgid "-"
 msgstr ""
 
 msgid "uirevision"
@@ -564,34 +581,19 @@ msgstr ""
 msgid "bingroup"
 msgstr ""
 
-msgid "layerProperties.visibilityLimits.rangeError"
+msgid "Print configuration broken ("
 msgstr ""
 
-msgid "layerProperties.visibilityLimits.serverValuesError"
+msgid "Print configuration not available ("
 msgstr ""
 
-msgid "typed_constructor"
+msgid "go"
 msgstr ""
 
-msgid "def_constructor"
+msgid "goBack"
 msgstr ""
 
-msgid "POP"
-msgstr ""
-
-msgid "PUSH"
-msgstr ""
-
-msgid "layerdownload.exportResultsMessages.newExport"
-msgstr ""
-
-msgid "layerdownload.exportResultsMessages.exportSuccess"
-msgstr ""
-
-msgid "layerdownload.exportResultsMessages.exportFailure"
-msgstr ""
-
-msgid "data-grid"
+msgid "goForward"
 msgstr ""
 
 msgid "Abort"

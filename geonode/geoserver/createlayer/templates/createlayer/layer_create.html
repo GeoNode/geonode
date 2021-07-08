@@ -5,7 +5,7 @@
 {% load bootstrap_tags %}
 {% load client_lib_tags %}
 
-{% block title %} {% trans "Create Layer"  %} - {{ block.super }}  {% endblock %}
+{% block title %} {% trans "Create Dataset"  %} - {{ block.super }}  {% endblock %}
 
 {% block body_class %}layer create{% endblock %}
 
@@ -18,8 +18,8 @@
 {% block body_outer %}
 
 <div class="page-header">
-  <a href="{% layer_list_url %}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
-  <h2 class="page-title">{% trans "Create an empty layer" %}</h2>
+  <a href="{% layer_list_url %}" class="btn btn-primary pull-right">{% trans "Explore Datasets" %}</a>
+  <h2 class="page-title">{% trans "Create an empty dataset" %}</h2>
 </div>
 
 <div class="row">

@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Japanese (http://www.transifex.com/geonode/geonode/language/"
@@ -464,6 +464,12 @@ msgstr ""
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -679,6 +685,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "パスワードが正常に変更されました。"
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -1014,6 +1029,9 @@ msgstr ""
 msgid "Link to"
 msgstr "リンク"
 
+msgid "File"
+msgstr "ファイル"
+
 msgid "Document must be a file or url."
 msgstr "文書は、ファイルまたはURLでなければなりません。"
 
@@ -1025,9 +1043,6 @@ msgstr "このファイルタイプは許可されていません"
 
 msgid "Permissions must be valid JSON."
 msgstr "パーミッションは有効なJSONでなければなりません。"
-
-msgid "File"
-msgstr "ファイル"
 
 msgid "The URL of the document if it is external."
 msgstr "それが外部にある場合は、ドキュメントのURL。"
@@ -1084,6 +1099,9 @@ msgstr ""
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] ""
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr ""
@@ -1544,6 +1562,11 @@ msgstr ""
 "データ要素のサブセットをサポートしています。あなたのオリジナルのメタデータの"
 "一部が失われている可能性があります。"
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "地図検索"
+
 #, python-format
 msgid ""
 "\n"
@@ -1552,6 +1575,11 @@ msgid ""
 msgstr ""
 "\n"
 "の編集の詳細%(map_title)s"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "戻る"
 
 #, fuzzy
 #| msgid "View Map"
@@ -1640,14 +1668,14 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "レイヤ名"
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "データセット"
 
 #, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "レイヤータイトル"
+#| msgid "Attributes"
+msgid "Dataset title"
+msgstr "属性"
 
 #, fuzzy
 #| msgid "property type"
@@ -1655,16 +1683,18 @@ msgid "Geometry type"
 msgstr "プロパティタイプ"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "地図を作成"
+#| msgid "feature type"
+msgid "Create Dataset"
+msgstr "フィーチャータイプ"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "レイヤーを検索"
 
 #, fuzzy
 #| msgid "Create a map using this layer"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "このレイヤーを使用して地図を作成"
 
 #, fuzzy
@@ -1702,6 +1732,9 @@ msgstr ""
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr ""
 
@@ -1734,9 +1767,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "あなたは、この層のためのスタイルを変更する権限がありません"
@@ -1990,6 +2020,119 @@ msgstr "グループを作成"
 
 msgid "Save"
 msgstr "保存"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "リソース"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "収穫"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "引用されたリソースのバージョン"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "選択したリソース上でアクセス許可を設定する"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2278,11 +2421,13 @@ msgstr "属性値の最終更新日"
 
 #, fuzzy
 #| msgid "Edit Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "レイヤー編集"
 
-msgid "Return to Layer"
-msgstr ""
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Dataset"
+msgstr "戻る"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2301,7 +2446,7 @@ msgstr "連絡先の変更"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "レイヤーに関する連絡先をアサイン:"
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2362,14 +2507,18 @@ msgstr "中央値"
 msgid "Standard Deviation"
 msgstr "標準偏差"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "このレイヤーを評価"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "レイヤーダウンロード"
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "ダウンロード"
 
 msgid "Images"
 msgstr ""
@@ -2456,9 +2605,9 @@ msgid "Edit data"
 msgstr ""
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "レイヤー編集"
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "メタデータの編集"
 
 #, fuzzy
 #| msgid "format"
@@ -2471,27 +2620,37 @@ msgstr ""
 msgid "Legend"
 msgstr "凡例"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "このレイヤーを使用中の地図"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "このレイヤーを使用中の地図一覧"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "このレイヤーは全ての地図で現在使われていません。"
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "このレイヤーを使用して地図を作成"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr "ボタンをクリックすると、このレイヤーを背景とした地図が作成されます。"
 
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "ボタンをクリックすると、レイヤーのアクセス権が変更されます。"
 
 #, fuzzy
@@ -2531,7 +2690,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2548,22 +2707,16 @@ msgstr "このレイヤーを使用して地図を作成"
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "ボタンをクリックすると、レイヤーのアクセス権が変更されます。"
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr "ボタンをクリックすると、レイヤーのアクセス権が変更されます。"
 
-msgid "Change Layer Permissions"
-msgstr "レイヤーのアクセス権を変更"
-
-msgid "Processing..."
-msgstr ""
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "権限"
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
+msgstr "レイヤーのアクセス権を変更"
 
 msgid "Remove Mosaic Granules"
 msgstr ""
@@ -2582,8 +2735,10 @@ msgstr "この動作は次の地図に影響します:"
 msgid "No maps are using this layer"
 msgstr "このレイヤーには地図が使われていません"
 
-msgid "Upload Layers"
-msgstr "レイヤーアップロード"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "メタデータのダウンロード"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2637,14 +2792,16 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "レイヤーアップロード"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
-msgstr ""
+#, fuzzy
+#| msgid "feature type"
+msgid "Remove Datasets"
+msgstr "フィーチャータイプ"
 
 #, python-format
 msgid ""
@@ -2654,7 +2811,9 @@ msgid ""
 "        "
 msgstr ""
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "レイヤーを入れ替え"
 
 msgid "Manage Styles"
@@ -2672,7 +2831,9 @@ msgstr ""
 "イルを管理\n"
 "    "
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "レイヤーデフォルトスタイル"
 
 msgid "Available styles"
@@ -2688,9 +2849,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "利用可能なスタイルを更新"
 
+msgid "Return to Layer"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "レイヤーアップロード ステップ2"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2710,8 +2874,10 @@ msgstr "プレビュー"
 msgid "Dataset Attributes"
 msgstr "属性"
 
-msgid "Upload Layer"
-msgstr "レイヤーアップロード"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "メタデータのダウンロード"
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2762,7 +2928,7 @@ msgstr "このアップロードデータを削除してよろしいですか？
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "レイヤーアップロード ステップ2"
 
 msgid "Provide CRS for "
@@ -2783,9 +2949,9 @@ msgstr "座標系 (CRS)"
 #| "    "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2976,7 +3142,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "レイヤーアップロード ステップ2"
 
 msgid "Geospatial Data"
@@ -3035,7 +3201,7 @@ msgstr "アップロードフォーム"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "レイヤーアップロード ステップ2"
 
 msgid "Inspect data for "
@@ -3159,11 +3325,11 @@ msgstr "時系列を有効化"
 #| "valid period for the\n"
 #| "    feature."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3245,24 +3411,17 @@ msgstr "続行"
 msgid "now"
 msgstr "現在"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr ""
 
 #, python-brace-format
-msgid "You are attempting to {action_type} a vector layer with a raster."
-msgstr ""
-
-#, python-brace-format
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr ""
 
 #, python-brace-format
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr ""
 
 #, python-brace-format
@@ -3271,7 +3430,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3281,10 +3440,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3299,39 +3458,38 @@ msgstr ""
 "たは問題が解決しない場合、管理者に連絡してください。"
 
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
-
-msgid "You are not permitted to delete this layer"
-msgstr "このレイヤーを削除する権限がありません"
-
-msgid "You do not have permissions for this layer."
-msgstr "このレイヤーのための権限がありません。"
-
-msgid "You are not permitted to modify this layer"
-msgstr "このレイヤーを変更する権限がありません"
-
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "このレイヤーのメタデータを変更する権限がありません"
-
-msgid "You are not permitted to view this layer"
-msgstr "このレイヤーを閲覧する権限がありません"
 
 #, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "アップロード対象ファイル"
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
+msgstr "このレイヤーを削除する権限がありません"
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
+msgstr "このレイヤーのための権限がありません。"
 
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
+msgstr "このレイヤーを変更する権限がありません"
+
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
+msgstr "このレイヤーのメタデータを変更する権限がありません"
+
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
+msgstr "このレイヤーを閲覧する権限がありません"
 
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 
 #, fuzzy, python-format
@@ -4209,6 +4367,17 @@ msgstr "ドキュメント"
 msgid "Not Authorized"
 msgstr "提供されていない"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "GeoNodeヘルプ"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4389,8 +4558,10 @@ msgstr ""
 msgid "Services"
 msgstr "サービス"
 
-msgid "Register a new Service"
-msgstr "新しいサービスを登録します"
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Add Remote Service"
+msgstr "リモートサービス"
 
 msgid "Remote Services"
 msgstr "リモートサービス"
@@ -4494,6 +4665,11 @@ msgid "Service rescanned successfully"
 msgstr "パスワードが正常に変更されました。"
 
 #, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "あなたがこのマップを保存したり、編集することが許可されていません。"
+
+#, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "あなたはこのサービスを削除することはできません。"
@@ -4581,6 +4757,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "データセット"
+
 msgid "People"
 msgstr "人々"
 
@@ -4615,9 +4796,9 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#| msgid "Remote Services"
-msgid "Add Remote Service"
-msgstr "リモートサービス"
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "新しい地図を生成"
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4716,10 +4897,14 @@ msgstr "誰がそれをダウンロードすることができますか？"
 msgid "Who can change metadata for it?"
 msgstr "誰がそれのためのメタデータを変更できますか？"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "誰がこの層のためにデータを編集することができますか？"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "誰がこの層のためのスタイルを編集することができますか？"
 
 msgid ""
@@ -5347,6 +5532,9 @@ msgstr "アップロード"
 msgid "Upload in progress..."
 msgstr "ファイルアップロード"
 
+msgid "Processing..."
+msgstr ""
+
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
@@ -5356,6 +5544,11 @@ msgstr "Thumbnail"
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
 msgstr "あなたが削除してもよろしいですか"
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Processing Resource..."
+msgstr "リソース"
 
 msgid "Information for Developers"
 msgstr "開発者のための情報"
@@ -5439,8 +5632,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5637,11 +5830,15 @@ msgstr ""
 "他のユーザー、組織および公的な源泉によって公表地理空間データを検索するにはク"
 "リックしてください。標準フォーマットのデータをダウンロードしてください。"
 
-msgid "Add layers"
-msgstr ""
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "データセット"
 
-msgid "Explore layers"
-msgstr ""
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
+msgstr "レイヤーを検索"
 
 #, fuzzy
 #| msgid ""
@@ -6251,7 +6448,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "レイヤー"
 
 msgid "Maps found"
@@ -6293,6 +6490,11 @@ msgstr "人気順"
 
 msgid "Text"
 msgstr "テキスト"
+
+#, fuzzy
+#| msgid "feature type"
+msgid "Share This Dataset"
+msgstr "フィーチャータイプ"
 
 msgid "Share This"
 msgstr ""
@@ -6479,6 +6681,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6559,6 +6765,48 @@ msgstr "無効な権限レベル"
 
 msgid "Permission Denied"
 msgstr "アクセス拒否"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "レイヤ名"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "レイヤータイトル"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "地図を作成"
+
+#~ msgid "Download Layer"
+#~ msgstr "レイヤーダウンロード"
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "レイヤー編集"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "権限"
+
+#~ msgid "Upload Layers"
+#~ msgstr "レイヤーアップロード"
+
+#~ msgid "Upload Layer"
+#~ msgstr "レイヤーアップロード"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "アップロード対象ファイル"
+
+#~ msgid "Register a new Service"
+#~ msgstr "新しいサービスを登録します"
 
 #, fuzzy
 #~| msgid "Set permissions"

@@ -9,7 +9,7 @@
 {% load guardian_tags %}
 {% load client_lib_tags %}
 
-{% block title %} {% trans "Upload Layer Metadata"  %} - {{ block.super }}  {% endblock %}
+{% block title %} {% trans "Upload Dataset Metadata"  %} - {{ block.super }}  {% endblock %}
 
 {% block body_class %}layers upload{% endblock %}
 
@@ -22,9 +22,9 @@
 {% block body_outer %}
 
 <div class="page-header">
-  <a href="{% layer_list_url %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Explore Layers" %}</a>
+  <a href="{% layer_list_url %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Explore Datasets" %}</a>
   <a href="{% layer_detail_url resource %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Return to Layer" %}</a>
-  <h2 class="page-title">{% trans "Upload Layer Style" %} <small>{% trans "(SLD - Style Layer Descriptor 1.0, 1.1)" %}<small></h2>
+  <h2 class="page-title">{% trans "Upload Dataset Style" %} <small>{% trans "(SLD - Style Layer Descriptor 1.0, 1.1)" %}<small></h2>
 </div>
 
 <div class="row">
@@ -80,7 +80,7 @@
       <li class="list-group-item">
         <h4>{% trans "Permissions" %}</h4>
         <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
-        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Layer Permissions" %}</a></p>
+        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Dataset Permissions" %}</a></p>
       </li>
     {% endif %}
   {% endif %}
