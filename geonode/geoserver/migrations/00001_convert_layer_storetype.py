@@ -14,8 +14,12 @@ def change_value(apps, schema_editor):
     MyModel = apps.get_model('layers', 'Layer')
     for l in MyModel.objects.all():
         u = Layer.objects.filter(resourcebase_ptr_id=l.resourcebase_ptr_id)
-        store_type = get_layer_storetype(l.storeType)
-        u.update(**{"storeType": store_type})
+        if hasattr(l, 'storeType'):
+            store_type = get_layer_storetype(l.storeType)
+            u.update(**{"storeType": store_type})
+        elif hasattr(l, 'storetype'):
+            store_type = get_layer_storetype(l.storetype)
+            u.update(**{"storetype": store_type})
 
 
 def get_layer_storetype(element):
@@ -30,5 +34,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(change_value),
-
     ]
