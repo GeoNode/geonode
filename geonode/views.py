@@ -16,6 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.contrib.auth.decorators import login_required
+from geonode.client.hooks import hookset
 import json
 
 from django import forms
@@ -193,3 +195,10 @@ def moderator_contacted(request, inactive_user=None):
         template="account/admin_approval_sent.html",
         context={"email": user.email}
     )
+
+
+@login_required
+def metadata_update_redirect(request):
+    url = request.POST['url']
+    client_redirect_url = hookset.metadata_update_redirect(url)
+    return HttpResponse(content=client_redirect_url)

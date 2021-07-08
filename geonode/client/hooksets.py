@@ -141,3 +141,8 @@ class BaseHookSet:
     def add_limit_settings(self, url):
         CLIENT_RESULTS_LIMIT = settings.CLIENT_RESULTS_LIMIT
         return f"{url}?limit={CLIENT_RESULTS_LIMIT}"
+
+    def metadata_update_redirect(self, url):
+        if "metadata_uri" in url:
+            return url.replace('/metadata_uri', '')
+        return url.replace('/metadata', '')
