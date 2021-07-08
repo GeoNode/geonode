@@ -1274,7 +1274,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         files = ["/opt/file1.shp", "/opt/file2.ccc"]
         with self.assertRaises(Exception) as e:
             validate_input_source(layer, filename, files, action_type="append")
-        expected = "You are attempting to append a vector layer with a raster."
+        expected = "You are attempting to append a vector dataset with a raster."
         self.assertEqual(expected, e.exception.args[0])
 
     def test_will_raise_exception_for_replace_layer_with_unknown_format(self):
@@ -1283,7 +1283,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         files = ["/opt/file1.shp", "/opt/file2.ccc"]
         with self.assertRaises(Exception) as e:
             validate_input_source(layer, filename, files, action_type="append")
-        expected = "You are attempting to append a vector layer with an unknown format."
+        expected = "You are attempting to append a vector dataset with an unknown format."
         self.assertEqual(expected, e.exception.args[0])
 
     def test_will_raise_exception_for_replace_layer_with_different_file_name(self):
@@ -1320,7 +1320,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             validate_input_source(layer, filename, files, action_type="append")
         expected = (
             "Some error occurred while trying to access the uploaded schema: "
-            "The selected Layer does not exists in the catalog."
+            "The selected Dataset does not exists in the catalog."
         )
         self.assertEqual(expected, e.exception.args[0])
 
@@ -1343,7 +1343,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             validate_input_source(layer, filename, files, action_type="append")
         expected = (
             "Some error occurred while trying to access the uploaded schema: "
-            "Please ensure that the layer structure is consistent with the file you are trying to append."
+            "Please ensure that the dataset structure is consistent with the file you are trying to append."
         )
         self.assertEqual(expected, e.exception.args[0])
 
