@@ -74,7 +74,7 @@
           {% else %}
             <a href="{% url 'capabilities_layer' resource.id %}">
           {% endif %}
-          <i class="fa fa-map"></i> {% trans 'Layer WMS GetCapabilities document' %}</a></p>
+          <i class="fa fa-map"></i> {% trans 'Dataset WMS GetCapabilities document' %}</a></p>
         {% endif %}
       </article>
 
@@ -240,7 +240,7 @@
       <article id="rate" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         {% if request.user.is_authenticated %}
-        <h4>{% trans "Rate this layer" %}</h4>
+        <h4>{% trans "Rate this dataset" %}</h4>
         {% user_rating request.user resource "layer" as user_layer_rating %}
         <div id="user_rating" class="category-layer" data-score="{{ user_layer_rating }}"></div>
         {% endif %}
@@ -270,7 +270,7 @@
         {% endif %}
         <li class="list-group-item">
         {% if links_download %}
-           <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
+           <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Dataset" %}</button>
         {% else %}
           {% if request.user.is_authenticated %}
           <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
@@ -283,7 +283,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">{% trans "Download Layer" %}</h4>
+            <h4 class="modal-title" id="myModalLabel">{% trans "Download Dataset" %}</h4>
           </div>
           <div class="modal-body">
             <div class="tabbable">
@@ -533,7 +533,7 @@
     {% endif %}
 
     <li class="list-group-item">
-      <a href="{% url "new_map" %}?layer={{resource.service_typename}}&view=True" class="btn btn-default btn-md btn-block">{% trans "View Layer" %}</a>
+      <a href="{% url "new_map" %}?layer={{resource.service_typename}}&view=True" class="btn btn-default btn-md btn-block">{% trans "View Dataset" %}</a>
     </li>
 
     <li class="list-group-item">
@@ -614,28 +614,28 @@
     </li>
     {% endif %}
     <li class="list-group-item">
-      <h4>{% trans "Maps using this layer" %}</h4>
+      <h4>{% trans "Maps using this dataset" %}</h4>
         {% if map_layers %}
-        <p>{% trans "List of maps using this layer:" %}</p>
+        <p>{% trans "List of maps using this dataset:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
           {% for maplayer in map_layers %}
             <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
-            <li>{% trans "This layer is not currently used in any maps." %}</li>
+            <li>{% trans "This dataset is not currently used in any maps." %}</li>
           {% endfor %}
         </ul>
     </li>
     {% if user.is_authenticated and not READ_ONLY_MODE %}
       <li class="list-group-item">
-        <h4>{% trans "Create a map using this layer" %}</h4>
-        <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
+        <h4>{% trans "Create a map using this dataset" %}</h4>
+        <p>{% trans "Click the button below to generate a new map based on this dataset." %}</p>
           <a href="{% url "new_map" %}?layer={{resource.service_typename}}" class="btn btn-primary btn-block">{% trans "Create a Map" %}</a>
       </li>
     {% endif %}
     {% if maps %}
         <li class="list-group-item">
-            <h4>{% trans "Add the layer to an existing map" %}</h4>
+            <h4>{% trans "Add the dataset to an existing map" %}</h4>
             <form action="{% url "add_layer" %}" method="GET">
                 {% csrf_token %}
                 <select name="map_id">
@@ -643,7 +643,7 @@
                 <option value="{{ map.id }}">{{ map.title|truncatechars:40 }}</option>
                 {% endfor %}
                 </select>
-                <p>{% trans "Click the button below to add the layer to the selected map." %}</p>
+                <p>{% trans "Click the button below to add the dataset to the selected map." %}</p>
                 <input type="hidden" name="layer_name" value="{{ resource.alternate }}">
                 <input type="submit" class="btn btn-primary btn-block" value="{% trans "Add to Map" %}">
             </form>
@@ -701,14 +701,14 @@
         {% if not READ_ONLY_MODE %}
         <li class="list-group-item">
           <h4>{% trans "Refresh Attributes and Statistics of this layer" %}</h4>
-          <p>{% trans "Click the button below to allow GeoNode refreshing the list of available Layer Attributes. If the option 'WPS_ENABLED' has been also set on the backend, it will recalculate their statistics too." %}</p>
+          <p>{% trans "Click the button below to allow GeoNode refreshing the list of available Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the backend, it will recalculate their statistics too." %}</p>
             <a href="#" class="btn btn-primary btn-block" data-dismiss="modal" id="attributes_sats_refresh">{% trans "Refresh Attributes and Statistics" %}</a>
         </li>
         {% endif %}
         <li class="list-group-item">
           <h4>{% trans "Clear the Server Cache of this layer" %}</h4>
           <p>{% trans "Click the button below to wipe the tile-cache of this layer." %}</p>
-            <a href="#" class="btn btn-primary btn-block" data-dismiss="modal" id="tiledlayer_refresh">{% trans "Empty Tiled-Layer Cache" %}</a>
+            <a href="#" class="btn btn-primary btn-block" data-dismiss="modal" id="tiledlayer_refresh">{% trans "Empty Tiled-Dataset Cache" %}</a>
         </li>
       {% endif %}
     {% endif %}
@@ -719,7 +719,7 @@
           <li class="list-group-item">
             <h4>{% trans "Permissions" %}</h4>
             <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
-            <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Layer Permissions" %}</a></p>
+            <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Dataset Permissions" %}</a></p>
             {% if USE_GEOSERVER and DELAYED_SECURITY_SIGNALS %}
               <a href="#" class="btn btn-primary btn-block" data-dismiss="modal" id="security_refresh">{% trans "Sync permissions immediately" %}</a>
             {% endif %}

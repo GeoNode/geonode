@@ -55,12 +55,6 @@
                         {% endif %}
                     </tr>
                 {% endfor %}
-                {% for service in services %}
-                    <tr>
-                        <td><a href='{%  url "service_detail" service.id %}'>{{service.title|striptags}}</a></td>
-                        <td>{{service.abstract|striptags}}</td>
-                    </tr>
-                {% endfor %}
             </table>
             </div>
         {% endif %}
@@ -104,22 +98,22 @@
 {% endblock %}
 {% block sidebar %}
 
-
     {% get_obj_perms request.user for service as "resource_perms" %}
 
-    {% comment %}{% if "change_service" in resource_perms or "remove_service" in resource_perms or "change_service_permissions" in resource_perms %}{% endcomment %}
+    {% if can_add_resorces or "add_resourcebase" in resource_perms or "change_resourcebase_metadata" in resource_perms or "change_service_permissions" in resource_perms %}
     <ul class="list-group">
         <li class="list-group-item"><h3>{% trans "Manage" %}</h3></li>
-
-        {% comment %}{% if "change_service" in resource_perms %}{% endcomment %}
+        {% if "change_resourcebase_metadata" in resource_perms %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "edit_service" service.id %}">{% trans "Edit Service Metadata" %}</a></li>
+        {% endif %}
+        {% if can_add_resorces %}
             <li class="list-group-item"><a id="harvestResources" class="btn btn-default btn-md btn-block" href="{% url "harvest_resources" service.id %}">{% trans "Import Service Resources" %}</a></li>
-        {% comment %}{% endif %}{% endcomment %}
-        {% comment %}{% if "remove_service" or "delete_service" in resource_perms %}{% endcomment %}
+        {% endif %}
+        {% if "remove_service" in permissions_list or "delete_service" in permissions_list or 'delete_resourcebase' in permissions_list %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "remove_service" service.id %}">{% trans "Remove Service" %}</a></li>
-        {% comment %}{% endif %}{% endcomment %}
+        {% endif %}
       </ul>
-    {% comment %}{% endif %}{% endcomment %}
+    {% endif %}
 {% endblock %}
 {% block extra_script %}
     {{ block.super }}

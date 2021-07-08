@@ -21,17 +21,14 @@ import uuid
 import logging
 
 from deprecated import deprecated
-from pinax.ratings.models import OverallRating
 
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import signals
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
 
 from geonode import geoserver  # noqa
 from geonode.compat import ensure_string
@@ -605,15 +602,3 @@ class MapLayer(models.Model, GXPLayerBase):
 
     def __str__(self):
         return f'{self.ows_url}?layers={self.name}'
-
-
-def pre_delete_map(instance, sender, **kwrargs):
-    ct = ContentType.objects.get_for_model(instance)
-    OverallRating.objects.filter(
-        content_type=ct,
-        object_id=instance.id).delete()
-    from geonode.resource.manager import resource_manager
-    resource_manager.remove_permissions(instance.uuid, instance=instance)
-
-
-signals.pre_delete.connect(pre_delete_map, sender=Map)

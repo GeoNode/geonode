@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Indonesian (http://www.transifex.com/geonode/geonode/language/"
@@ -460,6 +460,12 @@ msgstr ""
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -675,6 +681,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "Sandi berhasil diubah."
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -1010,6 +1025,9 @@ msgstr ""
 msgid "Link to"
 msgstr "Tautan ke"
 
+msgid "File"
+msgstr "Berkas"
+
 msgid "Document must be a file or url."
 msgstr "Dokumen harus file atau url."
 
@@ -1021,9 +1039,6 @@ msgstr "Jenis file ini tidak diperbolehkan"
 
 msgid "Permissions must be valid JSON."
 msgstr "Perizinan harus JSON valid."
-
-msgid "File"
-msgstr "Berkas"
 
 msgid "The URL of the document if it is external."
 msgstr "URL dari dokumen jika eksternal."
@@ -1080,6 +1095,9 @@ msgstr ""
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] ""
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr ""
@@ -1538,6 +1556,11 @@ msgstr ""
 "GeoNode ini metadata impor mendukung subset dari elemen metadata ISO, FGDC, "
 "dan Dublin Core. Beberapa metadata asli Anda mungkin telah hilang."
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "Telusuri Peta"
+
 #, python-format
 msgid ""
 "\n"
@@ -1546,6 +1569,11 @@ msgid ""
 msgstr ""
 "\n"
 "Rincian editing untuk %(map_title)s"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "Kembali ke"
 
 #, fuzzy
 #| msgid "View Map"
@@ -1634,14 +1662,14 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "Lapisan Nama"
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "dataset"
 
 #, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "Lapisan Judul"
+#| msgid "Attributes"
+msgid "Dataset title"
+msgstr "Atribut"
 
 #, fuzzy
 #| msgid "property type"
@@ -1649,16 +1677,18 @@ msgid "Geometry type"
 msgstr "Tipe properti"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "Buat Peta"
+#| msgid "feature type"
+msgid "Create Dataset"
+msgstr "tipe feature"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "Telusuri Layer"
 
 #, fuzzy
 #| msgid "Create a map using this layer"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "Buat peta menggunakan layer ini"
 
 #, fuzzy
@@ -1696,6 +1726,9 @@ msgstr ""
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr ""
 
@@ -1728,9 +1761,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "Anda tidak memiliki izin untuk mengubah gaya untuk lapisan ini"
@@ -1987,6 +2017,119 @@ msgstr "Buat Grup"
 
 msgid "Save"
 msgstr "Simpan"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "Sumber"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "Panen"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "versi sumber"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "Mengatur hak akses pada sumber daya yang dipilih"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2275,11 +2418,13 @@ msgstr "tanggal ketika statistik atribut diperbaharui"
 
 #, fuzzy
 #| msgid "Edit Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "Ubah Layer"
 
-msgid "Return to Layer"
-msgstr ""
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Dataset"
+msgstr "Kembali ke"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2298,7 +2443,7 @@ msgstr "Ubah Kontak"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Kontak baru untuk penanggungjawab layer berikut:"
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2359,14 +2504,18 @@ msgstr "Nilai tengah"
 msgid "Standard Deviation"
 msgstr "Standar Deviasi"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "Nilai layer ini"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "Unduh Layer"
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "Unduh"
 
 msgid "Images"
 msgstr ""
@@ -2453,9 +2602,9 @@ msgid "Edit data"
 msgstr ""
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "Ubah Layer"
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "Ubah metadata"
 
 #, fuzzy
 #| msgid "format"
@@ -2468,27 +2617,37 @@ msgstr ""
 msgid "Legend"
 msgstr "Legenda"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "Peta yang menggunakan layer ini"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "Daftar peta yang menggunakan layer ini"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "Layer ini tidak digunakan pada peta manapun"
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "Buat peta menggunakan layer ini"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr "Klik tombol berikut untuk membuat peta baru menggunakan layer ini"
 
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "Klik tombol berikut untuk mengubah izin layer ini"
 
 #, fuzzy
@@ -2528,7 +2687,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2545,22 +2704,16 @@ msgstr "Buat peta menggunakan layer ini"
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "Klik tombol berikut untuk mengubah izin layer ini"
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Klik tombol berikut untuk mengubah izin layer ini"
 
-msgid "Change Layer Permissions"
-msgstr "Ubah kepemilikan layer"
-
-msgid "Processing..."
-msgstr ""
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "Izin"
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
+msgstr "Ubah kepemilikan layer"
 
 msgid "Remove Mosaic Granules"
 msgstr ""
@@ -2579,8 +2732,10 @@ msgstr "Proses ini mempengaruhi peta berikut:"
 msgid "No maps are using this layer"
 msgstr "Tidak ada peta yang menggunakan layer ini"
 
-msgid "Upload Layers"
-msgstr "Unggah Layer"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "Mengunduh Metadata"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2634,14 +2789,16 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "Unggah Layer"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
-msgstr ""
+#, fuzzy
+#| msgid "feature type"
+msgid "Remove Datasets"
+msgstr "tipe feature"
 
 #, python-format
 msgid ""
@@ -2651,7 +2808,9 @@ msgid ""
 "        "
 msgstr ""
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "Ubah Layer"
 
 msgid "Manage Styles"
@@ -2669,7 +2828,9 @@ msgstr ""
 "a>\n"
 "    "
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "Style Default Layer"
 
 msgid "Available styles"
@@ -2685,9 +2846,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "Ubah tamplan layer"
 
+msgid "Return to Layer"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "Unggah Layer Langkah ke-2"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2707,8 +2871,10 @@ msgstr "Tampilan Cetak"
 msgid "Dataset Attributes"
 msgstr "Atribut"
 
-msgid "Upload Layer"
-msgstr "Unggah Layer"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "Mengunduh Metadata"
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2759,7 +2925,7 @@ msgstr "Anda yakin untuk menghapus unggahan ini?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "Unggah Layer Langkah ke-2"
 
 msgid "Provide CRS for "
@@ -2780,9 +2946,9 @@ msgstr "Coordinate Reference System"
 #| "    "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2973,7 +3139,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "Unggah Layer Langkah ke-2"
 
 msgid "Geospatial Data"
@@ -3034,7 +3200,7 @@ msgstr "Unggah form"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "Unggah Layer Langkah ke-2"
 
 msgid "Inspect data for "
@@ -3160,11 +3326,11 @@ msgstr "Mengaktifkan Waktu"
 #| "valid period for the\n"
 #| "    feature."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3247,24 +3413,17 @@ msgstr "Atau langsung saja"
 msgid "now"
 msgstr "sekarang"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr ""
 
 #, python-brace-format
-msgid "You are attempting to {action_type} a vector layer with a raster."
-msgstr ""
-
-#, python-brace-format
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr ""
 
 #, python-brace-format
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr ""
 
 #, python-brace-format
@@ -3273,7 +3432,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3283,10 +3442,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3301,39 +3460,38 @@ msgstr ""
 "hubungi administrator jika permasalahan masih berlanjut"
 
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
-
-msgid "You are not permitted to delete this layer"
-msgstr "Anda tidak diijinkan untuk menghapus peta ini"
-
-msgid "You do not have permissions for this layer."
-msgstr "Anda tidak memiliki izin untuk layer ini"
-
-msgid "You are not permitted to modify this layer"
-msgstr "Anda tidak diijinkan untuk mengubah layer peta ini"
-
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "Anda tidak diizinkan untuk memodifikasi metadata layer ini"
-
-msgid "You are not permitted to view this layer"
-msgstr "Anda tidak diijinkan untuk melihat layer peta ini"
 
 #, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "File yang akan diunggah"
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
+msgstr "Anda tidak diijinkan untuk menghapus peta ini"
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
+msgstr "Anda tidak memiliki izin untuk layer ini"
 
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
+msgstr "Anda tidak diijinkan untuk mengubah layer peta ini"
+
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
+msgstr "Anda tidak diizinkan untuk memodifikasi metadata layer ini"
+
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
+msgstr "Anda tidak diijinkan untuk melihat layer peta ini"
 
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 
 #, fuzzy, python-format
@@ -4211,6 +4369,17 @@ msgstr "Dokumen"
 msgid "Not Authorized"
 msgstr "Tidak tersedia"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "Bantuan GeoNode"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4391,8 +4560,10 @@ msgstr ""
 msgid "Services"
 msgstr "Layanan"
 
-msgid "Register a new Service"
-msgstr "Daftarkan Layanan baru"
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Add Remote Service"
+msgstr "Jauh Layanan"
 
 msgid "Remote Services"
 msgstr "Jauh Layanan"
@@ -4496,6 +4667,11 @@ msgid "Service rescanned successfully"
 msgstr "Sandi berhasil diubah."
 
 #, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "Anda tidak diizinkan untuk menyimpan atau mengedit peta ini."
+
+#, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "Anda tidak diizinkan untuk menghapus layanan ini."
@@ -4583,6 +4759,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "dataset"
+
 msgid "People"
 msgstr "Pengguna"
 
@@ -4617,9 +4798,9 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#| msgid "Remote Services"
-msgid "Add Remote Service"
-msgstr "Jauh Layanan"
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "Buat peta baru"
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4718,10 +4899,14 @@ msgstr "Siapa yang bisa download?"
 msgid "Who can change metadata for it?"
 msgstr "Siapa yang bisa mengubah metadata untuk itu?"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "Siapa yang bisa mengedit data untuk lapisan ini?"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "Siapa yang dapat mengedit gaya untuk lapisan ini?"
 
 msgid ""
@@ -5348,6 +5533,9 @@ msgstr "unggah"
 msgid "Upload in progress..."
 msgstr "Unggah file"
 
+msgid "Processing..."
+msgstr ""
+
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
@@ -5357,6 +5545,11 @@ msgstr "Thumbnail"
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
 msgstr "Apakah Anda yakin ingin menghapus"
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Processing Resource..."
+msgstr "Sumber"
 
 msgid "Information for Developers"
 msgstr "Informasi untuk Pengembang"
@@ -5440,8 +5633,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5638,11 +5831,15 @@ msgstr ""
 "Klik untuk mencari data geospasial yang diterbitkan oleh pengguna lain, "
 "organisasi dan sumber-sumber publik. Download data dalam format standar."
 
-msgid "Add layers"
-msgstr ""
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "dataset"
 
-msgid "Explore layers"
-msgstr ""
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
+msgstr "Telusuri Layer"
 
 #, fuzzy
 #| msgid ""
@@ -6255,7 +6452,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "Layer"
 
 msgid "Maps found"
@@ -6297,6 +6494,11 @@ msgstr "Yang terpopuler"
 
 msgid "Text"
 msgstr "Teks"
+
+#, fuzzy
+#| msgid "feature type"
+msgid "Share This Dataset"
+msgstr "tipe feature"
 
 msgid "Share This"
 msgstr ""
@@ -6483,6 +6685,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6563,6 +6769,48 @@ msgstr "Ijin level tidak benar"
 
 msgid "Permission Denied"
 msgstr "Tidak diizinkan"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "Lapisan Nama"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "Lapisan Judul"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "Buat Peta"
+
+#~ msgid "Download Layer"
+#~ msgstr "Unduh Layer"
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "Ubah Layer"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "Izin"
+
+#~ msgid "Upload Layers"
+#~ msgstr "Unggah Layer"
+
+#~ msgid "Upload Layer"
+#~ msgstr "Unggah Layer"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "File yang akan diunggah"
+
+#~ msgid "Register a new Service"
+#~ msgstr "Daftarkan Layanan baru"
 
 #, fuzzy
 #~| msgid "Set permissions"

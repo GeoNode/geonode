@@ -377,5 +377,13 @@ class ResourceBaseAdminForm(autocomplete.FutureModelForm):
 
     keywords = TagField(widget=TaggitSelect2Custom('autocomplete_hierachical_keyword'))
 
+    def delete_queryset(self, request, queryset):
+        """
+        We need to invoke the 'ResourceBase.delete' method even when deleting
+        through the admin batch action
+        """
+        for obj in queryset:
+            obj.delete()
+
     class Meta:
         pass

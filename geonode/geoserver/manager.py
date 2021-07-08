@@ -221,7 +221,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 elif kwargs.get('action_type', 'create') == 'create':
                     raise Exception(f"Importer Session not valid - STATE: {import_session.state}")
             except Exception as e:
-                logger.error(e)
+                logger.exception(e)
                 if kwargs.get('action_type', 'create') == 'create':
                     instance.delete()
                     instance = None
@@ -280,38 +280,73 @@ class GeoServerResourceManager(ResourceManagerInterface):
             target_store=_target_store
         )
 
-        # TODO: guess we need to check the storage manager files and make a local copy eventually
-        import_session.upload_task(files)
-        task = import_session.tasks[0]
-        #  Changing layer name, mode and target
-        task.layer.set_target_layer_name(_name)
-        task.set_update_mode(action_type.upper())
-        task.set_target(
-            store_name=_target_store,
-            workspace=_workspace
-        )
-        #  Starting import process
-        import_session.commit()
-
-        # Updating Resource with the files replaced
-        if action_type.lower() == 'replace':
-            updated_files_list = storage_manager.replace(instance, files)
-            # Using update instead of save in order to avoid calling
-            # side-effect function of the resource
-            r = ResourceBase.objects.filter(id=instance.id)
-            r.update(**updated_files_list)
-        else:
-            instance.files = files
-
-        import_session = gs_uploader.get_session(import_session.id)
         _gs_import_session_info = GeoServerImporterSessionInfo(
             upload_session=upload_session,
             import_session=import_session,
             spatial_files_type=spatial_files_type,
-            layer_name=import_session.tasks[0].layer.name,
+            layer_name=None,
             workspace=_workspace,
             target_store=_target_store
         )
+
+        _local_files = []
+        _temporary_files = []
+        try:
+            for _f in files:
+                if os.path.exists(_f) and os.path.isfile(_f):
+                    _local_files.append(os.path.abspath(_f))
+                    try:
+                        os.close(_f)
+                    except Exception:
+                        pass
+                else:
+                    _suffix = os.path.splitext(os.path.basename(_f))[1] if len(os.path.splitext(os.path.basename(_f))) else None
+                    with tempfile.NamedTemporaryFile(mode="wb+", delete=False, dir=settings.MEDIA_ROOT, suffix=_suffix) as _tmp_file:
+                        _tmp_file.write(storage_manager.open(_f, 'rb+').read())
+                        _tmp_file.seek(0)
+                        _tmp_file_name = f'{_tmp_file.name}'
+                        _local_files.append(os.path.abspath(_tmp_file_name))
+                        _temporary_files.append(os.path.abspath(_tmp_file_name))
+                    try:
+                        storage_manager.close(_f)
+                    except Exception:
+                        pass
+        except Exception as e:
+            logger.exception(e)
+
+        if _local_files:
+            try:
+                import_session.upload_task(_local_files)
+                task = import_session.tasks[0]
+                #  Changing layer name, mode and target
+                task.layer.set_target_layer_name(_name)
+                task.set_update_mode(action_type.upper())
+                task.set_target(
+                    store_name=_target_store,
+                    workspace=_workspace
+                )
+                #  Starting import process
+                import_session.commit()
+
+                # Updating Resource with the files replaced
+                if action_type.lower() == 'replace':
+                    updated_files_list = storage_manager.replace(instance, files)
+                    # Using update instead of save in order to avoid calling
+                    # side-effect function of the resource
+                    r = ResourceBase.objects.filter(id=instance.id)
+                    r.update(**updated_files_list)
+                else:
+                    instance.files = files
+
+                import_session = gs_uploader.get_session(import_session.id)
+                _gs_import_session_info.import_session = import_session
+                _gs_import_session_info.layer_name = import_session.tasks[0].layer.name
+            finally:
+                for _f in _temporary_files:
+                    try:
+                        os.remove(_f)
+                    except Exception as e:
+                        logger.debug(e)
 
         return _gs_import_session_info
 
@@ -541,7 +576,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         if instance and isinstance(instance.get_real_instance(), Layer):
             try:
                 if kwargs.get('time_info', None):
-                    set_time_info(instance.get_real_instance(), kwargs['time_info'])
+                    set_time_info(instance.get_real_instance(), **kwargs['time_info'])
             except Exception as e:
                 logger.exception(e)
                 return None

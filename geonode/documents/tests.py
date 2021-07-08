@@ -158,10 +158,14 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """Tests creating an external document instead of a file."""
 
         superuser = get_user_model().objects.get(pk=2)
-        c = Document.objects.create(doc_url="http://geonode.org/map.pdf",
-                                    owner=superuser,
-                                    title="GeoNode Map",
-                                    )
+        c = resource_manager.create(
+            None,
+            resource_type=Document,
+            defaults=dict(
+                doc_url="http://geonode.org/map.pdf",
+                owner=superuser,
+                title="GeoNode Map",
+            ))
         doc = Document.objects.get(pk=c.id)
         self.assertEqual(doc.title, "GeoNode Map")
         self.assertEqual(doc.extension, "pdf")

@@ -117,18 +117,18 @@ class StorageManager(StorageManagerInterface):
     def replace(self, resource, files: Union[list, BinaryIO]):
         updated_files = {}
         if isinstance(files, list):
-            updated_files['files'] = self._replace_files_list(resource.files, files)
+            updated_files['files'] = self.replace_files_list(resource.files, files)
         elif len(resource.files):
-            updated_files['files'] = [self._replace_single_file(resource.files[0], files)]
+            updated_files['files'] = [self.replace_single_file(resource.files[0], files)]
         return updated_files
 
     def copy(self, resource):
         updated_files = {}
         if len(resource.files):
-            updated_files['files'] = self._copy_files_list(resource.files)
+            updated_files['files'] = self.copy_files_list(resource.files)
         return updated_files
 
-    def _copy_files_list(self, files: List[str]):
+    def copy_files_list(self, files: List[str]):
         out = []
         for f in files:
             with self.open(f, 'rb+') as open_file:
@@ -137,22 +137,22 @@ class StorageManager(StorageManagerInterface):
                 _, ext = os.path.splitext(open_file.name)
                 path = os.path.join(old_path, f'{uuid1().hex[:8]}')
                 new_file = f"{path}/{self.generate_filename(old_file_name)}{ext}"
-                out.append(self._copy_single_file(open_file, new_file))
+                out.append(self.copy_single_file(open_file, new_file))
         return out
 
-    def _copy_single_file(self, old_file: BinaryIO, new_file: str):
+    def copy_single_file(self, old_file: BinaryIO, new_file: str):
         filepath = self.save(new_file, old_file)
         return self.path(filepath)
 
-    def _replace_files_list(self, old_files: List[str], new_files: List[str]):
+    def replace_files_list(self, old_files: List[str], new_files: List[str]):
         out = []
         if len(old_files) and old_files[0]:
             for f in new_files:
                 with self.open(f, 'rb+') as open_file:
-                    out.append(self._replace_single_file(old_files[0], open_file))
+                    out.append(self.replace_single_file(old_files[0], open_file))
         return out
 
-    def _replace_single_file(self, old_file: str, new_file: BinaryIO):
+    def replace_single_file(self, old_file: str, new_file: BinaryIO):
         old_path = str(os.path.basename(Path(old_file).parent.absolute()))
         old_file_name, _ = os.path.splitext(os.path.basename(old_file))
         _, ext = os.path.splitext(new_file.name)

@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-from geonode.base.populate_test_data import create_single_layer
 from geonode.tests.base import GeoNodeLiveTestSupport
 
 from datetime import datetime, timedelta
@@ -29,7 +28,6 @@ import pytz
 import logging
 import os.path
 import xmljson
-import dj_database_url
 
 from decimal import Decimal  # noqa
 from importlib import import_module
@@ -54,10 +52,13 @@ from geonode.compat import ensure_string
 from geonode.monitoring.collector import CollectorAPI
 from geonode.monitoring.utils import generate_periods, align_period_start
 from geonode.base.models import ResourceBase
-from geonode.maps.models import Map
 from geonode.layers.models import Layer
-from geonode.documents.models import Document
 from geonode.monitoring.models import *  # noqa
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models,
+    create_single_layer)
 
 from geonode.tests.utils import Client
 from geonode.geoserver.helpers import ogc_server_settings
@@ -71,14 +72,6 @@ GEONODE_PASSWD = 'admin'
 GEONODE_URL = settings.SITEURL.rstrip('/')
 GEOSERVER_URL = ogc_server_settings.LOCATION
 GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
-
-DB_HOST = settings.DATABASES['default']['HOST']
-DB_PORT = settings.DATABASES['default']['PORT']
-DB_NAME = settings.DATABASES['default']['NAME']
-DB_USER = settings.DATABASES['default']['USER']
-DB_PASSWORD = settings.DATABASES['default']['PASSWORD']
-DATASTORE_URL = f'postgis://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -164,16 +157,31 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
 
     type = 'layer'
 
+    #  loading test thesausuri and initial data
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json',
+        "test_thesaurus.json"
+    ]
+
     @classmethod
     def setUpClass(cls):
-        pass
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
 
     @classmethod
     def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
         if os.path.exists('integration_settings.py'):
             os.unlink('integration_settings.py')
 
     def setUp(self):
+        super().setUp()
+
         ResourceBase.objects.all().update(dirty_state=False)
         # await startup
         cl = Client(
@@ -196,45 +204,10 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
         )
 
         self.client = TestClient(REMOTE_ADDR='127.0.0.1')
-
-        settings.DATABASES['default']['NAME'] = DB_NAME
         settings.OGC_SERVER['default']['DATASTORE'] = ''
-
         connections['default'].settings_dict['ATOMIC_REQUESTS'] = False
-        connections['default'].connect()
-
+        # connections['default'].connect()
         self._tempfiles = []
-
-    def _post_teardown(self):
-        pass
-
-    def tearDown(self):
-        connections.databases['default']['ATOMIC_REQUESTS'] = False
-
-        for temp_file in self._tempfiles:
-            os.unlink(temp_file)
-
-        # Cleanup
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
-
-        MetricValue.objects.all().delete()
-        ExceptionEvent.objects.all().delete()
-        RequestEvent.objects.all().delete()
-        MonitoredResource.objects.all().delete()
-        try:
-            NotificationCheck.objects.all().delete()
-        except Exception:
-            pass
-        Service.objects.all().delete()
-        Host.objects.all().delete()
-
-        from django.conf import settings
-        if settings.OGC_SERVER['default'].get(
-                "GEOFENCE_SECURITY_ENABLED", False):
-            from geonode.geoserver.security import purge_geofence_all
-            purge_geofence_all()
 
 
 @override_settings(USE_TZ=True)

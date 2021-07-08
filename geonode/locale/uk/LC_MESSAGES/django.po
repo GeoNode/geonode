@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/geonode/geonode/language/"
@@ -465,6 +465,12 @@ msgstr ""
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -680,6 +686,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "Пароль успішно змінений."
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -1015,6 +1030,9 @@ msgstr ""
 msgid "Link to"
 msgstr "Посилання на"
 
+msgid "File"
+msgstr "Файл"
+
 msgid "Document must be a file or url."
 msgstr "Документ повинен бути файл або URL."
 
@@ -1026,9 +1044,6 @@ msgstr "Цей тип файлу не допускається"
 
 msgid "Permissions must be valid JSON."
 msgstr "Дозволи повинні бути дійсні JSON."
-
-msgid "File"
-msgstr "Файл"
 
 msgid "The URL of the document if it is external."
 msgstr "Посилання на документ, якщо він є зовнішнім."
@@ -1087,6 +1102,9 @@ msgid_plural "Documents"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr ""
@@ -1545,6 +1563,11 @@ msgstr ""
 "файлу. Імпорт метаданих GeoNode підтримує підмножина елементів ISO, FGDC, і "
 "метаданих Dublin Core. Деякі з оригінального метаданих можуть бути втрачені."
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "Досліджуйте Maps"
+
 #, python-format
 msgid ""
 "\n"
@@ -1553,6 +1576,11 @@ msgid ""
 msgstr ""
 "\n"
 "Детальніше редагування для %(map_title)s"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "Повернутися до"
 
 #, fuzzy
 #| msgid "View Map"
@@ -1641,14 +1669,14 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "Ім'я шару"
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "набір даних"
 
 #, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "Шар Назва"
+#| msgid "Attributes"
+msgid "Dataset title"
+msgstr "Атрибути"
 
 #, fuzzy
 #| msgid "property type"
@@ -1656,16 +1684,18 @@ msgid "Geometry type"
 msgstr "тип нерухомості"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "Створення карти"
+#| msgid "feature type"
+msgid "Create Dataset"
+msgstr "тип об'єкту"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "Досліджуйте Layers"
 
 #, fuzzy
 #| msgid "Create a map using this layer"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "Створіть карту, використовуючи цей шар"
 
 #, fuzzy
@@ -1703,6 +1733,9 @@ msgstr ""
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr ""
 
@@ -1735,9 +1768,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "Ви не маєте прав на зміну стилю для цього шару"
@@ -1994,6 +2024,119 @@ msgstr "Створити групу"
 
 msgid "Save"
 msgstr "Зберегти"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "Ресурси"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "Зібрані"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "версія ресурсу цитованої"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "Установка дозволів на обраних ресурсів"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2286,11 +2429,13 @@ msgstr "Дата, коли статистика атрибутів оновле�
 
 #, fuzzy
 #| msgid "Edit Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "Редагувати Layer"
 
-msgid "Return to Layer"
-msgstr ""
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Dataset"
+msgstr "Повернутися до"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2309,7 +2454,7 @@ msgstr "Змініть точку контакту"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Призначити нову точку контакту нижче шарів:"
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2370,14 +2515,18 @@ msgstr "Медіана"
 msgid "Standard Deviation"
 msgstr "Стандартне відхилення"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "Оцінити цей шар"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "Скачати шар"
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "Завантажити"
 
 msgid "Images"
 msgstr ""
@@ -2466,9 +2615,9 @@ msgid "Edit data"
 msgstr ""
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "Редагувати Layer"
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "Зміна метаданих"
 
 #, fuzzy
 #| msgid "format"
@@ -2481,28 +2630,38 @@ msgstr ""
 msgid "Legend"
 msgstr "Легенда"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "Карти, що використовують цей шар"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "Список карт, що використовують цей шар:"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "Цей шар в даний час не використовуються в будь-якому карт."
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "Створіть карту, використовуючи цей шар"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr ""
 "Натисніть на кнопку нижче, щоб створити нову карту, засновану на цьому шарі."
 
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "Натисніть на кнопку нижче, щоб змінити права доступу цього шару."
 
 #, fuzzy
@@ -2542,7 +2701,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2559,22 +2718,16 @@ msgstr "Створіть карту, використовуючи цей шар"
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "Натисніть на кнопку нижче, щоб змінити права доступу цього шару."
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Натисніть на кнопку нижче, щоб змінити права доступу цього шару."
 
-msgid "Change Layer Permissions"
-msgstr "Зміна Layer Дозволи"
-
-msgid "Processing..."
-msgstr ""
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "Дозволи"
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
+msgstr "Зміна Layer Дозволи"
 
 msgid "Remove Mosaic Granules"
 msgstr ""
@@ -2593,8 +2746,10 @@ msgstr "Ця дія впливає на наступні карти:"
 msgid "No maps are using this layer"
 msgstr "Немає карти не використовуєте цей шар"
 
-msgid "Upload Layers"
-msgstr "Завантажити Шари"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "Завантажити метаданих"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2647,14 +2802,16 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "Завантажити Layer"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
-msgstr ""
+#, fuzzy
+#| msgid "feature type"
+msgid "Remove Datasets"
+msgstr "тип об'єкту"
 
 #, python-format
 msgid ""
@@ -2664,7 +2821,9 @@ msgid ""
 "        "
 msgstr ""
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "Замінити шар"
 
 msgid "Manage Styles"
@@ -2681,7 +2840,9 @@ msgstr ""
 "Управління доступних стилів для <a href=\"/layers/%(layer_title)s\">"
 "%(layer_title)s</a>"
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "Шар Звичайний стиль"
 
 msgid "Available styles"
@@ -2697,9 +2858,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "Доступно оновлення Стилі"
 
+msgid "Return to Layer"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "Завантажити Layer Крок 2"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2719,8 +2883,10 @@ msgstr "Попередній перегляд"
 msgid "Dataset Attributes"
 msgstr "Атрибути"
 
-msgid "Upload Layer"
-msgstr "Завантажити Layer"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "Завантажити метаданих"
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2771,7 +2937,7 @@ msgstr "Ви впевнені, що хочете видалити цей зав�
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "Завантажити Layer Крок 2"
 
 msgid "Provide CRS for "
@@ -2792,9 +2958,9 @@ msgstr "Контрольна система координат"
 #| "    "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2983,7 +3149,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "Завантажити Layer Крок 2"
 
 msgid "Geospatial Data"
@@ -3043,7 +3209,7 @@ msgstr "Форма для завантаження"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "Завантажити Layer Крок 2"
 
 msgid "Inspect data for "
@@ -3167,11 +3333,11 @@ msgstr "Включення Час"
 #| "valid period for the\n"
 #| "    feature."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3254,24 +3420,17 @@ msgstr "Або просто піти"
 msgid "now"
 msgstr "зараз"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr ""
 
 #, python-brace-format
-msgid "You are attempting to {action_type} a vector layer with a raster."
-msgstr ""
-
-#, python-brace-format
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr ""
 
 #, python-brace-format
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr ""
 
 #, python-brace-format
@@ -3280,7 +3439,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3290,10 +3449,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3308,39 +3467,38 @@ msgstr ""
 "або зв'яжіться та адміністратор, якщо проблема не усунена."
 
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
-
-msgid "You are not permitted to delete this layer"
-msgstr "Вам не дозволяється видаляти цей шар"
-
-msgid "You do not have permissions for this layer."
-msgstr "Ви не маєте прав для цього шару."
-
-msgid "You are not permitted to modify this layer"
-msgstr "Вам не дозволяється змінювати цей шар"
-
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "Вам не дозволяється змінювати метадані цього шару"
-
-msgid "You are not permitted to view this layer"
-msgstr "Вам не дозволяється, щоб подивитися цей шар"
 
 #, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "Файли для завантаження"
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
+msgstr "Вам не дозволяється видаляти цей шар"
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
+msgstr "Ви не маєте прав для цього шару."
 
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
+msgstr "Вам не дозволяється змінювати цей шар"
+
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
+msgstr "Вам не дозволяється змінювати метадані цього шару"
+
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
+msgstr "Вам не дозволяється, щоб подивитися цей шар"
 
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 
 #, fuzzy, python-format
@@ -4222,6 +4380,17 @@ msgstr "Документи"
 msgid "Not Authorized"
 msgstr "Не передбачено"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "GeoNode Допомога"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4402,8 +4571,10 @@ msgstr ""
 msgid "Services"
 msgstr "Послуги"
 
-msgid "Register a new Service"
-msgstr "Реєстрація нового служба"
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Add Remote Service"
+msgstr "Дистанційні послуги"
 
 msgid "Remote Services"
 msgstr "Дистанційні послуги"
@@ -4507,6 +4678,11 @@ msgid "Service rescanned successfully"
 msgstr "Пароль успішно змінений."
 
 #, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "Вам не дозволяється, щоб зберегти або створити карту."
+
+#, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "Вам не дозволяється видаляти цю послугу."
@@ -4593,6 +4769,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "набір даних"
+
 msgid "People"
 msgstr "Люди"
 
@@ -4627,9 +4808,9 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#| msgid "Remote Services"
-msgid "Add Remote Service"
-msgstr "Дистанційні послуги"
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "Створіть нову карту"
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4728,10 +4909,14 @@ msgstr "Хто може скачати?"
 msgid "Who can change metadata for it?"
 msgstr "Хто може змінити метадані для нього?"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "Хто може редагувати дані для цього шару?"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "Хто може редагувати стилі для цього шару?"
 
 msgid ""
@@ -5358,6 +5543,9 @@ msgstr "завантажено"
 msgid "Upload in progress..."
 msgstr "Завантаження файлів"
 
+msgid "Processing..."
+msgstr ""
+
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
@@ -5367,6 +5555,11 @@ msgstr "Thumbnail"
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
 msgstr "Ви впевнені, що хочете видалити"
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Processing Resource..."
+msgstr "Ресурси"
 
 msgid "Information for Developers"
 msgstr "Інформація для розробників"
@@ -5450,8 +5643,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5649,11 +5842,15 @@ msgstr ""
 "користувачами, організаціями та з відкритих джерел. Завантаження даних в "
 "стандартних форматах."
 
-msgid "Add layers"
-msgstr ""
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "набір даних"
 
-msgid "Explore layers"
-msgstr ""
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
+msgstr "Досліджуйте Layers"
 
 #, fuzzy
 #| msgid ""
@@ -6263,7 +6460,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "Шари"
 
 msgid "Maps found"
@@ -6305,6 +6502,11 @@ msgstr "Найпопулярніші"
 
 msgid "Text"
 msgstr "Текст"
+
+#, fuzzy
+#| msgid "feature type"
+msgid "Share This Dataset"
+msgstr "тип об'єкту"
 
 msgid "Share This"
 msgstr ""
@@ -6491,6 +6693,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6571,6 +6777,48 @@ msgstr "Невірний рівень дозволів."
 
 msgid "Permission Denied"
 msgstr "Доступ заборонений"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "Ім'я шару"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "Шар Назва"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "Створення карти"
+
+#~ msgid "Download Layer"
+#~ msgstr "Скачати шар"
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "Редагувати Layer"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "Дозволи"
+
+#~ msgid "Upload Layers"
+#~ msgstr "Завантажити Шари"
+
+#~ msgid "Upload Layer"
+#~ msgstr "Завантажити Layer"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Файли для завантаження"
+
+#~ msgid "Register a new Service"
+#~ msgstr "Реєстрація нового служба"
 
 #, fuzzy
 #~| msgid "Set permissions"

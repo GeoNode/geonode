@@ -5,7 +5,7 @@
 
 {% block body_class %}data data-list upload{% endblock %}
 
-{% block title %} {% trans "Upload Layer Step: Time" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Upload Dataset Step: Time" %} - {{ block.super }} {% endblock %}
 
 {% block head %}
 {{ block.super }}
@@ -228,9 +228,9 @@
                 <div id="collapse_id_help" class="panel-collapse collapse">
                     <div id="timehelp" class="panel-body">
                         <h4>{% trans "Enabling Time" %}</h4>
-                        <p>{% blocktrans %}A layer can support one or two time attributes. If a single
-                        attribute is used, the layer is considered to contain data that is valid at single points in time. If two
-                        attributes are used, the second attribute represents the end of a valid period  hence the layer is considered
+                        <p>{% blocktrans %}A dataset can support one or two time attributes. If a single
+                        attribute is used, the dataset is considered to contain data that is valid at single points in time. If two
+                        attributes are used, the second attribute represents the end of a valid period  hence the dataset is considered
                         to contain data that is valid at certain periods in time.{% endblocktrans %}</p>
                         <h4>{% trans "Selecting an Attribute" %}</h4>
                         <p>{% trans "A time attribute can be" %}:</p>

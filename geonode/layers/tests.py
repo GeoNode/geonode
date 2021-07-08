@@ -783,7 +783,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         rating = OverallRating.objects.all()
         self.assertEqual(rating.count(), 1)
         # Remove the layer
-        layer.delete()
+        resource_manager.delete(layer.uuid)
         # Check there are no ratings matching the remove layer
         rating = OverallRating.objects.all()
         self.assertEqual(rating.count(), 0)
@@ -1274,7 +1274,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         files = ["/opt/file1.shp", "/opt/file2.ccc"]
         with self.assertRaises(Exception) as e:
             validate_input_source(layer, filename, files, action_type="append")
-        expected = "You are attempting to append a vector layer with a raster."
+        expected = "You are attempting to append a vector dataset with a raster."
         self.assertEqual(expected, e.exception.args[0])
 
     def test_will_raise_exception_for_replace_layer_with_unknown_format(self):
@@ -1283,7 +1283,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         files = ["/opt/file1.shp", "/opt/file2.ccc"]
         with self.assertRaises(Exception) as e:
             validate_input_source(layer, filename, files, action_type="append")
-        expected = "You are attempting to append a vector layer with an unknown format."
+        expected = "You are attempting to append a vector dataset with an unknown format."
         self.assertEqual(expected, e.exception.args[0])
 
     def test_will_raise_exception_for_replace_layer_with_different_file_name(self):
@@ -1320,7 +1320,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             validate_input_source(layer, filename, files, action_type="append")
         expected = (
             "Some error occurred while trying to access the uploaded schema: "
-            "The selected Layer does not exists in the catalog."
+            "The selected Dataset does not exists in the catalog."
         )
         self.assertEqual(expected, e.exception.args[0])
 
@@ -1343,7 +1343,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             validate_input_source(layer, filename, files, action_type="append")
         expected = (
             "Some error occurred while trying to access the uploaded schema: "
-            "Please ensure that the layer structure is consistent with the file you are trying to append."
+            "Please ensure that the dataset structure is consistent with the file you are trying to append."
         )
         self.assertEqual(expected, e.exception.args[0])
 
@@ -1439,7 +1439,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.client.login(username=self.not_admin.username, password='very-secret')
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
             response = self.client.get(url)
-            self.assertTrue(response.context['form']['keywords'].field.disabled)
+            self.assertTrue(response.context['form']['keywords'].field.disabled, self.test_layer.alternate)
 
     def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
         """
@@ -1462,7 +1462,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.client.login(username=admin.username, password='very-secret')
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
             response = self.client.get(url)
-            self.assertFalse(response.context['form']['keywords'].field.disabled)
+            self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_layer.alternate)
 
     def test_that_non_admin_user_cannot_create_edit_keyword(self):
         """
@@ -1501,7 +1501,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.client.login(username=self.not_admin.username, password='very-secret')
         with self.settings(FREETEXT_KEYWORDS_READONLY=False):
             response = self.client.get(url)
-            self.assertFalse(response.context['form']['keywords'].field.disabled)
+            self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_layer.alternate)
 
     def test_that_anonymous_user_cannot_view_map_with_restricted_view(self):
         """
@@ -1640,8 +1640,7 @@ class TestCustomUUidHandler(TestCase):
 
     @override_settings(LAYER_UUID_HANDLER="geonode.layers.tests.DummyUUIDHandler")
     def test_layer_will_override_the_uuid_if_handler_is_defined(self):
-        self.sut.keywords.add(*["updating", "values"])
-        self.sut.save()
+        resource_manager.update(None, instance=self.sut, keywords=["updating", "values"])
         expected = "abc:abc-1234-abc"
         actual = Layer.objects.get(id=self.sut.id)
         self.assertEqual(expected, actual.uuid)

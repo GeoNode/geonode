@@ -35,6 +35,7 @@ from rest_framework.test import APITestCase, URLPatternsTestCase
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.api.urls import router
+from geonode.base import enumerations
 from geonode.base.models import (
     CuratedThumbnail,
     HierarchicalKeyword,
@@ -304,6 +305,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
         # Admin
         response = self.client.get(f"{url}/{resource.id}/", format='json')
+        self.assertEqual(response.data['resource']['state'], enumerations.STATE_PROCESSED)
         self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
         # Annonymous
         self.assertIsNone(self.client.logout())

@@ -1,11 +1,12 @@
 {% extends "services/services_base.html" %}
 {% load i18n %}
+{% load base_tags %}
 
 {% block title %} {% trans "Services" %} -- {{ block.super }} {% endblock %}
 
 {% block body_outer %}
 <div class="page-header">
-  {% if user.is_authenticated and not READ_ONLY_MODE %}
+  {% if user.is_authenticated and not READ_ONLY_MODE and can_add_resources %}
     <a href="{% url "register_service" %}" class="btn btn-primary pull-right">{% trans "Add Remote Service" %}</a>
   {% endif %}
   <h2>{% trans "Remote Services" %}</h2>
@@ -20,9 +21,13 @@
   </thead>
   {% for service in services %}
   <tr>
-	<td><a href='{% url "service_detail" service.id %}'>{{ service.title }} <span class="badge">{{ service.layer_set.count }}</span></a></td>
-	<td><a href='{{ service.base_url }}' target="_blank" rel="noopener noreferrer">{{ service.base_url }}</a></td>
-    <td>{{ service.service_type }}</td>
+	  <td>
+      <a href='{% url "service_detail" service.id %}'>{{ service.title }} <span class="badge">{% get_layer_count_by_services service.id request.user %}</span></a>
+    </td>
+	  <td>
+      <a href='{{ service.base_url }}' target="_blank" rel="noopener noreferrer">{{ service.base_url }}</a>
+      </td>
+      <td>{{ service.service_type }}</td>
   </tr>
   {% endfor %}
 </table>
