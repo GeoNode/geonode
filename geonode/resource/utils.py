@@ -366,9 +366,7 @@ def layer_post_save(instance, *args, **kwargs):
         elif extension in cov_exts:
             instance.storeType = 'raster'
 
-    Layer.objects.filter(id=instance.id).update(
-        storeType=instance.storeType,
-        info=instance.info)
+    Layer.objects.filter(id=instance.id).update(storeType=instance.storeType)
 
 
 def metadata_post_save(instance, *args, **kwargs):
