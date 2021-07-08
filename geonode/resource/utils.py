@@ -302,11 +302,11 @@ def document_post_save(instance, *args, **kwargs):
         doc_type_map = DOCUMENT_TYPE_MAP
         doc_type_map.update(getattr(settings, 'DOCUMENT_TYPE_MAP', {}))
         if doc_type_map is None:
-            doc_type = 'other'
+            storetype = 'other'
         else:
-            doc_type = doc_type_map.get(
+            storetype = doc_type_map.get(
                 instance.extension.lower(), 'other')
-        instance.doc_type = doc_type
+        instance.storetype = storetype
     elif instance.doc_url:
         if '.' in urlparse(instance.doc_url).path:
             instance.extension = urlparse(instance.doc_url).path.rsplit('.')[-1]
@@ -328,7 +328,7 @@ def document_post_save(instance, *args, **kwargs):
 
     Document.objects.filter(id=instance.id).update(
         extension=instance.extension,
-        doc_type=instance.doc_type,
+        storetype=instance.storetype,
         doc_url=instance.doc_url,
         csw_type=instance.csw_type)
 

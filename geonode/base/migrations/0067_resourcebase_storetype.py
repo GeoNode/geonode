@@ -6,12 +6,12 @@ from django.db.migrations.operations import RunPython
 
 
 def clone_storetypes(apps, schema_editor):
-    layers = apps.get_model('layers', 'Layer')
-    documents = apps.get_model('documents', 'Document')
-    for layer in layers.objects.all():
-        ResourceBase.objects.filter(id=layer.resourcebase_ptr_id).update(storetype=layer.storeType)
-    for doc in documents.objects.all():
-        ResourceBase.objects.filter(id=doc.resourcebase_ptr_id).update(storetype=doc.storetype)
+    layers = apps.get_model('layers', 'Layer').objects.all()
+    documents = apps.get_model('documents', 'Document').objects.all()
+    ResourceBase.objects.filter(
+        id__in=layers.values_list('resourcebase_ptr_id', flat=True)).update(storetype=models.F('storeType'))
+    ResourceBase.objects.filter(
+        id__in=documents.values_list('resourcebase_ptr_id', flat=True)).update(storetype=models.F('doc_type'))
 
 
 class Migration(migrations.Migration):
