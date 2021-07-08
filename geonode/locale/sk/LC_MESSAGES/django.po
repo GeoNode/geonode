@@ -2846,11 +2846,11 @@ msgstr "Spravujte štýly"
 #, fuzzy, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"      Manage Available Styles for <a href=\"{{ layer_url }}\">"
 "%(layer_title)s</a>\n"
 "    "
 msgstr ""
-"Spravujte dostupné štýly pre <a href=\"/layers/%(layer_title)s\">% "
+"Spravujte dostupné štýly pre <a href=\"{{ layer_url }}\">% "
 "(layer_title) s</a>"
 
 #, fuzzy
