@@ -452,7 +452,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             },
             'groups': []
         }
-        layer = Layer.objects.filter(storeType='vector').first()
+        layer = Layer.objects.filter(storetype='vector').first()
         layer.set_permissions(perm_spec)
         # Test user has permission with read_only=False
         self.assertTrue(layer.user_can(bobby, 'change_layer_style'))
@@ -472,7 +472,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             4. Try to sync a layer from GeoServer
         """
         bobby = get_user_model().objects.get(username='bobby')
-        layer = Layer.objects.filter(storeType='vector').exclude(owner=bobby).first()
+        layer = Layer.objects.filter(storetype='vector').exclude(owner=bobby).first()
         self.client.login(username='admin', password='admin')
 
         # Reset GeoFence Rules
@@ -681,9 +681,9 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     self.assertTrue(_limit_rule_position < cnt)
 
         # Change Layer Type and SRID in order to force GeoFence allowed-area reprojection
-        _original_storeType = layer.storeType
+        _original_storetype = layer.storetype
         _original_srid = layer.srid
-        layer.storeType = 'raster'
+        layer.storetype = 'raster'
         layer.srid = 'EPSG:3857'
         layer.save()
 
@@ -716,7 +716,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     # When there's a limit rule, "*" must be the first one
                     self.assertTrue(_limit_rule_position < cnt)
 
-        layer.storeType = _original_storeType
+        layer.storetype = _original_storetype
         layer.srid = _original_srid
         layer.save()
 
@@ -1134,7 +1134,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 layer.get_self_resource()))
 
         # Test that the owner user can edit data if is vector type
-        if layer.storeType == 'vector':
+        if layer.storetype == 'vector':
             self.assertTrue(
                 layer.owner.has_perm(
                     'change_layer_data',

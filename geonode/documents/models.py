@@ -45,8 +45,6 @@ class Document(ResourceBase):
 
     extension = models.CharField(max_length=128, blank=True, null=True)
 
-    doc_type = models.CharField(max_length=128, blank=True, null=True)
-
     doc_url = models.URLField(
         blank=True,
         null=True,

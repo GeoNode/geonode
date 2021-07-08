@@ -177,8 +177,8 @@ def facets(context):
         if not settings.SKIP_PERMS_FILTER:
             documents = documents.filter(id__in=authorized)
 
-        counts = documents.values('doc_type').annotate(count=Count('doc_type'))
-        facets = {count['doc_type']: count['count'] for count in counts}
+        counts = documents.values('storetype').annotate(count=Count('storetype'))
+        facets = {count['storetype']: count['count'] for count in counts}
 
         return facets
     else:
@@ -226,19 +226,19 @@ def facets(context):
         if not settings.SKIP_PERMS_FILTER:
             layers = layers.filter(id__in=authorized)
 
-        counts = layers.values('storeType').annotate(count=Count('storeType'))
+        counts = layers.values('storetype').annotate(count=Count('storetype'))
 
         counts_array = []
         try:
             for count in counts:
-                counts_array.append((count['storeType'], count['count']))
+                counts_array.append((count['storetype'], count['count']))
         except Exception:
             pass
 
         count_dict = dict(counts_array)
 
-        vector_time_series = layers.exclude(has_time=False).filter(storeType='vector'). \
-            values('storeType').annotate(count=Count('storeType'))
+        vector_time_series = layers.exclude(has_time=False).filter(storetype='vector'). \
+            values('storetype').annotate(count=Count('storetype'))
 
         if vector_time_series:
             count_dict['vectorTimeSeries'] = vector_time_series[0]['count']

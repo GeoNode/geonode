@@ -82,7 +82,7 @@ class LayerSerializer(ResourceBaseSerializer):
         name = 'layer'
         view_name = 'layers-list'
         fields = (
-            'pk', 'uuid', 'name', 'workspace', 'store', 'storeType', 'charset',
+            'pk', 'uuid', 'name', 'workspace', 'store', 'storetype', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',
             'use_featureinfo_custom_template', 'featureinfo_custom_template',
             'default_style', 'styles', 'attribute_set'
@@ -91,7 +91,6 @@ class LayerSerializer(ResourceBaseSerializer):
     name = serializers.CharField(read_only=True)
     workspace = serializers.CharField(read_only=True)
     store = serializers.CharField(read_only=True)
-    storeType = serializers.CharField(read_only=True)
     charset = serializers.CharField(read_only=True)
 
     default_style = DynamicRelationField(StyleSerializer, embed=True, many=False, read_only=True)

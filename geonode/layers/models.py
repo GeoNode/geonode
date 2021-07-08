@@ -125,7 +125,7 @@ class Layer(ResourceBase):
     objects = LayerManager()
     workspace = models.CharField(_('Workspace'), max_length=128)
     store = models.CharField(_('Store'), max_length=128)
-    storeType = models.CharField(_('Storetype'), max_length=128)
+
     name = models.CharField(_('Name'), max_length=128)
     typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
 
@@ -164,7 +164,7 @@ class Layer(ResourceBase):
         null=True)
 
     def is_vector(self):
-        return self.storeType == 'vector'
+        return self.storetype == 'vector'
 
     @property
     def processed(self):
@@ -176,9 +176,9 @@ class Layer(ResourceBase):
 
     @property
     def display_type(self):
-        if self.storeType == "vector":
+        if self.storetype == "vector":
             return "Vector Data"
-        elif self.storeType == "raster":
+        elif self.storetype == "raster":
             return "Raster Data"
         else:
             return "Data"
@@ -265,7 +265,7 @@ class Layer(ResourceBase):
 
         # we need to check, for shapefile, if column names are valid
         list_col = None
-        if self.storeType == 'vector':
+        if self.storetype == 'vector':
             valid_shp, wrong_column_name, list_col = check_shp_columnnames(
                 self)
             if wrong_column_name:
