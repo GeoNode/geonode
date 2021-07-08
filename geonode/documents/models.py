@@ -140,6 +140,10 @@ class Document(ResourceBase):
     def class_name(self):
         return self.__class__.__name__
 
+    @property
+    def embed_url(self):
+        return reverse('document_link', args=(self.id,))
+
     class Meta(ResourceBase.Meta):
         pass
 
