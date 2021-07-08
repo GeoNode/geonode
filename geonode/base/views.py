@@ -29,6 +29,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
 
 from dal import views, autocomplete
 from user_messages.models import Message
@@ -58,6 +59,14 @@ from geonode.base.models import (
 )
 
 
+def get_url_for_app_model(model, model_class):
+    return reverse(f'{model_class._meta.app_label}_{model}_changelist')
+    # was: return f'/admin/{model_class._meta.app_label}/{model}/'
+
+def get_url_for_model(model):
+    return reverse(f'{model.lower()}s_{model.lower()}_changelist')
+    # was: f'/admin/{model.lower()}s/{model.lower()}/'
+
 def user_and_group_permission(request, model):
     if not request.user.is_superuser:
         raise PermissionDenied
@@ -72,8 +81,7 @@ def user_and_group_permission(request, model):
     ids = request.POST.get("ids")
     if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
-            f'/admin/{model_class._meta.app_label}/{model}/'
-        )
+            get_url_for_app_model(model, model_class))
 
     if request.method == 'POST':
         form = UserAndGroupPermissionsForm(request.POST)
@@ -104,8 +112,7 @@ def user_and_group_permission(request, model):
                     (permissions_names, resources_names, users_usernames, groups_names, delete_flag))
 
         return HttpResponseRedirect(
-            f'/admin/{model_class._meta.app_label}/{model}/'
-        )
+            get_url_for_app_model(model, model_class))
 
     form = UserAndGroupPermissionsForm({
         'permission_type': ('r', ),
@@ -135,8 +142,7 @@ def batch_modify(request, model):
 
     if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
-            f'/admin/{model.lower()}s/{model.lower()}/'
-        )
+            get_url_for_model(model))
 
     if request.method == 'POST':
         form = BatchEditForm(request.POST)
@@ -177,8 +183,8 @@ def batch_modify(request, model):
                 keywords_through.objects.bulk_create(new_keywords, ignore_conflicts=True)
 
             return HttpResponseRedirect(
-                f'/admin/{model.lower()}s/{model.lower()}/'
-            )
+                get_url_for_model(model))
+
         return render(
             request,
             template,
