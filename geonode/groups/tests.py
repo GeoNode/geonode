@@ -819,9 +819,10 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
         response = self.client.get("/groups/group/bar/activity/")
         self.assertEqual(200, response.status_code)
+        logger.error(response.content)
         self.assertContains(response,
                             'Layers',
-                            count=3,
+                            count=1,
                             status_code=200,
                             msg_prefix='',
                             html=False)
