@@ -34,7 +34,7 @@ from geonode.documents.models import Document
 from geonode.maps.views import map_embed
 from geonode.geoapps.views import geoapp_edit
 from geonode.layers.views import layer_upload, layer_embed
-from geonode.documents.views import document_download
+from geonode.documents.views import document_download, document_link
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -91,6 +91,9 @@ class DocumentsApiTests(APITestCase, URLPatternsTestCase):
         url(r'^(?P<mapid>[^/]+)/embed$', map_embed, name='map_embed'),
         url(r'^(?P<layername>[^/]+)/embed$', layer_embed, name='layer_embed'),
         url(r'^(?P<geoappid>[^/]+)/embed$', geoapp_edit, {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
+        url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
+        url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
+        url(r'^(?P<docid>\d+)/link/?$', document_link, name='document_link'),
     ]
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -117,6 +120,10 @@ class DocumentsApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 9)
+
+        # Test embed_url is provided
+        self.assertIn('link', response.data['documents'][0]['embed_url'])
+
         # Pagination
         self.assertEqual(len(response.data['documents']), 9)
         logger.debug(response.data)
