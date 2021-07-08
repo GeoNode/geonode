@@ -73,10 +73,14 @@
       
       var mandatoryMissing = $('#mandatory').find('.input-empty:not([class^="select2"])').length > 0;
           if (mandatoryMissing) {
+            var not_tinymce = true
             var inputs = $('#mandatory').find('.input-empty:not([class^="select2"])');
             var empty = inputs.length;
             for (var i=0; i<inputs.length; i++) {
-              if (typeof inputs[i].value !== undefined && inputs[i].value !== '') {
+              if (tinymce.get(inputs[i].id) !== null && tinymce.get(inputs[i].id).getContent().length == 0) {
+                  empty++;
+                  not_tinymce = false
+              } else if (typeof inputs[i].value !== undefined && inputs[i].value !== '' && not_tinymce) {
                 empty--;
               }
             }
@@ -88,10 +92,14 @@
         }
       var advancedMissing = $('#advanced').find('.input-empty').length > 0;
           if (advancedMissing) {
+            var not_tinymce = true
             var inputs = $('#advanced').find('.input-empty');
             var empty = inputs.length;
             for (var i=0; i<inputs.length; i++) {
-              if (typeof inputs[i].value !== undefined && inputs[i].value !== '') {
+              if (tinymce.get(inputs[i].id) !== null && tinymce.get(inputs[i].id).getContent().length == 0) {
+                  empty++;
+                  not_tinymce = false
+              } else if (typeof inputs[i].value !== undefined && inputs[i].value !== '' && not_tinymce) {
                 empty--;
               }
             }
@@ -224,16 +232,9 @@
         });
     });
 
-    $(document).ready(function() {
-        var prevNum = 0, totalNum = 0;
-        var empty = 0;
-        {% block hints %}
-
-        $('#completeness-hints .mandatory-hint').click(getTab.bind(null, 1));
-        $('#completeness-hints .advanced-hint').click(getTab.bind(null, 2));
-        {% endblock hints %}
-
-        // set proper classes to count empty fields and display them
+    var prevNum = 0, totalNum = 0;
+    var empty = 0;
+    // set proper classes to count empty fields and display them
         var setInputEmpty = function( target, empty ) {
           if($(target).hasClass('value-select')) {
             // tkeywords
@@ -343,37 +344,51 @@
             }
 
             return is_mandatory;
-        }
-        
-        {% block onInputChange %}
+        };
+
+    {% block onInputChange %}
         var onInputChange = function(e){
+            var e_target = null;
+            var e_target_value = null;
+            if (e.target.id == 'tinymce') {
+                e_target = $('#' + $(e.target).data().id)[0];
+                e_target_value = tinymce.get($(e.target).data().id).getContent();
+            }
+            else {
+                e_target = e.target;
+                e_target_value = e.target.value;
+            }
             toggleRestrictionsConstraints(e);
-            if(e.target.value !== undefined && e.target.value.trim() === ''){
-                if(!$(e.target).hasClass("input-empty")){
+            if(e_target_value !== undefined && e_target_value.trim() === ''){
+                if(!$(e_target).hasClass("input-empty")){
                     if(isMandatoryField(this)) {
-                        setInputEmpty(e.target, true);
+                        setInputEmpty(e_target, true);
                         var mandatoryWarning = "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>{% trans "* Field declared Mandatory by the Metadata Schema" %}</strong></p>"
                         if (!!$(this).closest('.date').length) {
-                            $(e.target).parent().parent().append(gettext(mandatoryWarning));
+                            $(e_target).parent().parent().append(gettext(mandatoryWarning));
                         } else if (!!$(this).closest('.check-select').length ) {
-                            $(e.target).parent().parent().append(gettext(mandatoryWarning));
+                            $(e_target).parent().parent().append(gettext(mandatoryWarning));
                         } else if (!!$(this).closest('#mdinfo').length || !!$(this).closest('#basicDescriptiveInfo').length || !!$(this).closest('#tadv_req').length || !!$(this).closest('#adv_req').length ) {
-                            $(e.target).parent().append(gettext(mandatoryWarning));
+                            $(e_target).parent().append(gettext(mandatoryWarning));
+                        } else if (e.target.id == 'tinymce') {
+                            $(e_target).parent().append(gettext(mandatoryWarning));
+
                         }
                         empty++;
                     }
                 }
             }
             else {
-                if($(e.target).hasClass("input-empty")) {
+                if($(e_target).hasClass("input-empty")) {
+                    console.log(e_target);
                     if(isMandatoryField(this)) {
                         empty--;
                     }
-                    setInputEmpty(e.target, false);
-                    if (!!$(e.target).closest('.date').length) { 
-                        $(e.target).parent().parent().find(".mandatory-warning").remove();
+                    setInputEmpty(e_target, false);
+                    if (!!$(e_target).closest('.date').length) { 
+                        $(e_target).parent().parent().find(".mandatory-warning").remove();
                     } else {
-                        $(e.target).parent().find(".mandatory-warning").remove();
+                        $(e_target).parent().find(".mandatory-warning").remove();
                     }
                     
                 }
@@ -391,6 +406,17 @@
             }
         };
         {% endblock onInputChange %}
+
+    $(document).ready(function() {
+        {% block hints %}
+
+        $('#completeness-hints .mandatory-hint').click(getTab.bind(null, 1));
+        $('#completeness-hints .advanced-hint').click(getTab.bind(null, 2));
+        {% endblock hints %}
+
+        
+        
+        
         {% block trigger_onInputChange %}
 
         {{UI_REQUIRED_FIELDS}}.forEach(element => $('#' + element).change(onInputChange).change());
