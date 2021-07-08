@@ -32,7 +32,7 @@
 <div class="row">
   <div class="col-md-8">
     {% if "download_resourcebase" in perms_list %}
-      {% if resource.extension|lower in audiotypes and resource.doc_file %}
+      {% if resource.extension|lower in audiotypes and resource.files %}
         {% get_mime_type mimetypemap resource.extension as mimetype %}
         <div id="embedded_map" width="500px">
             <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
@@ -42,13 +42,13 @@
                 </audio>
             </a>
         </div>
-      {% elif resource.extension|lower in imgtypes and resource.doc_file %}
+      {% elif resource.extension|lower in imgtypes and resource.files %}
         <div id="embedded_map" width="500px">
             <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
                 <img src="{% url "document_download" resource.id %}" width='100%' class="img-responsive" />
             </a>
         </div>
-      {% elif resource.extension|lower in videotypes and resource.doc_file %}
+      {% elif resource.extension|lower in videotypes and resource.files %}
         {% get_mime_type mimetypemap resource.extension as mimetype %}
         <div id="embedded_map" width="500px">
             <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
@@ -58,7 +58,7 @@
                 </video>
             </a>
         </div>
-      {% elif resource.doc_file %}
+      {% elif resource.files %}
       <p><a href="{% url "document_link" resource.id %}" target="_blank">{% trans "Download the" %} {{ resource }} {% trans "document" %}</a></p>
       {% elif  resource.doc_url %}
       <p><a href="{{ resource.doc_url }}" target="_blank">{% trans "Download the" %} {{ resource }} {% trans "document" %}.</a> <small>({% trans 'External Resource' %})</small></p>
@@ -128,9 +128,9 @@
     <ul class="list-group">
       <li class="list-group-item">
       {% if "download_resourcebase" in perms_list %}
-        {% if resource.extension|lower in imgtypes and resource.doc_file %}
+        {% if resource.extension|lower in imgtypes and resource.files %}
           <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
-        {% elif resource.doc_file %}
+        {% elif resource.files %}
           <a style="text-decoration:none;" target="_blank" href="{% url "document_download" resource.id %}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
         {% elif  resource.doc_url %}
           <a style="text-decoration:none;" target="_blank" href="{{ resource.doc_url }}"><button class="btn btn-primary btn-md btn-block">{% trans "Download Document" %}</button></a>
@@ -185,6 +185,9 @@
                   <div class="col-sm-3">
                     <i class="fa fa-file-text-o fa-3x"></i>
                     <h4>{% trans "Document" %}</h4>
+                    {% if "change_resourcebase" in perms_list %}
+                    <a href="#" class="btn btn-default btn-block btn-xs" data-dismiss="modal" id="resource_clone_action">{% trans "Clone" %}</a>
+                    {% endif %}
                     {% if "change_resourcebase" in perms_list %}
                     <a class="btn btn-default btn-block btn-xs" href="{% url "document_replace" resource.id %}">{% trans "Replace" %}</a>
                     {% endif %}
@@ -289,4 +292,62 @@
     {% if FAVORITE_ENABLED %}
     {% include "favorite/_favorite_js.html" %}
     {% endif %}
+
+    <script type="text/javascript">
+        $("#resource_clone_action").click(function(){
+            $.ajax(
+            {
+                type: "POST",
+                url: "{% url 'resource_clone' %}",
+                dataType: 'json',
+                data: { uuid: "{{ resource.uuid }}" },
+                beforeSend: function(){
+                    $("#edit-document").modal("toggle")
+                    // Handle the beforeSend event
+                    try {
+                        $(".lmask").modal("show");
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    $("#_perms_processing").modal("show");
+                },
+                complete: function(){
+                    // Handle the complete event
+                    try {
+                        $(".lmask").modal("hide");
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    $("#_perms_processing").modal("hide");
+                },
+                success: function(data) {
+                var message = data;
+                var title = "";
+                var body = message.message;
+                if (message.success) {
+                    title = "OK";
+                } else {
+                    title = "Warning";
+                }
+                $("#_permissions_feedbacks").find('.modal-title').text(title);
+                $("#_permissions_feedbacks").find('.modal-body').text(body);
+                $("#_permissions_feedbacks").modal("show");
+                $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
+                },
+                cache: false
+            }
+            ).fail(function (jqXHR, textStatus, error) {
+                // Handle error here
+                var message = JSON.parse(jqXHR.responseText);
+                var body = message.message;
+                var title = "Error";
+                $("#_permissions_feedbacks").find('.modal-title').text(title);
+                $("#_permissions_feedbacks").find('.modal-body').text(body);
+                $("#_permissions_feedbacks").modal("show");
+                $('#_permissions_feedbacks').on('hidden.bs.modal', function () { location.reload(); });
+            });
+            return false;
+        });
+    </script>
+
 {% endblock extra_script %}

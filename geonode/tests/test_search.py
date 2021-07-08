@@ -26,11 +26,17 @@ class ResourceBaseSearchTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
         self.p = Profile.objects.create(username='test')
-        self.d1 = Document.objects.create(title='word', purpose='this is a test', abstract='a brief document about...',
-                                          owner=self.p)
-        self.d1 = Document.objects.create(title='a word', purpose='this is a test',
-                                          abstract='a brief document about...',
-                                          owner=self.p)
+        self.d1 = Document.objects.create(
+            title='word',
+            purpose='this is a test',
+            abstract='a brief document about...',
+            owner=self.p)
+        self.d2 = Document.objects.create(
+            title='a word', purpose='this is a test',
+            abstract='a brief document about...',
+            owner=self.p)
+        self.d1.set_default_permissions()
+        self.d2.set_default_permissions()
 
     def test_or_search(self):
         url = f'{settings.SITEURL}api/base/?title__icontains=word&abstract__icontains=word&\
@@ -44,12 +50,14 @@ class ResourceBaseSearchTest(GeoNodeBaseTestSupport):
         url = f'{settings.SITEURL}api/base/?title__icontains=a&abstract__icontains=a&purpose__icontains=a'
         self.client.force_login(self.p)
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json().get('objects')), 1)
 
     def test_and_empty_search(self):
         url = f'{settings.SITEURL}api/base/?title__icontains=test&abstract__icontains=test&purpose__icontains=test'
         self.client.force_login(self.p)
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json().get('objects')), 0)
 
     def test_bad_filter(self):

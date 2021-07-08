@@ -6,7 +6,7 @@ from geonode.people import adapters
 try:
     import unittest.mock as mock
 except ImportError:
-    import mock
+    from unittest import mock
 
 
 class GetDataExtractorTestCase(TestCase):

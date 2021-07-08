@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -24,9 +23,8 @@
 # Standard Modules
 import os
 import logging
-
+from geonode.storage.manager import storage_manager
 # Django functionality
-from django.core.files.storage import default_storage as storage
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template import loader
@@ -47,13 +45,13 @@ def delete_orphaned_document_files():
     Deletes orphaned files of deleted documents.
     """
     deleted = []
-    _, files = storage.listdir(os.path.join("documents", "document"))
+    _, files = storage_manager.listdir(os.path.join("documents", "document"))
 
     for filename in files:
         if Document.objects.filter(doc_file__contains=filename).count() == 0:
             logger.debug(f"Deleting orphaned document {filename}")
             try:
-                storage.delete(os.path.join(
+                storage_manager.delete(os.path.join(
                     os.path.join("documents", "document"), filename))
                 deleted.append(filename)
             except NotImplementedError as e:
@@ -80,8 +78,14 @@ def get_download_response(request, docid, attachment=False):
     if attachment:
         register_event(request, EventType.EVENT_DOWNLOAD, document)
     filename = slugify(os.path.splitext(os.path.basename(document.title))[0])
-    return DownloadResponse(
-        document.doc_file,
-        basename=f'{filename}.{document.extension}',
-        attachment=attachment
+
+    if document.files and storage_manager.exists(document.files[0]):
+        return DownloadResponse(
+            storage_manager.open(document.files[0]).file,
+            basename=f'{filename}.{document.extension}',
+            attachment=attachment
+        )
+    return HttpResponse(
+        "File is not available",
+        status=404
     )

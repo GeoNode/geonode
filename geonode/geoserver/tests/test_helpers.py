@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2019 OSGeo
@@ -17,26 +16,25 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.contrib.auth import get_user_model
-from geonode.tests.base import GeoNodeBaseTestSupport
-
-import os
 import re
-import gisdata
+import logging
+
 from urllib.parse import urljoin
 
 from django.conf import settings
 
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
-
-from geonode.layers.models import Layer
-from geonode.layers.utils import file_upload
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.geoserver.views import _response_callback
+from geonode.geoserver.helpers import get_layer_storetype
 from geonode.layers.populate_layers_data import create_layer_data
 
-from geonode.geoserver.views import _response_callback
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -44,45 +42,28 @@ class HelperTest(GeoNodeBaseTestSupport):
 
     type = 'layer'
 
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
     def setUp(self):
-        super(HelperTest, self).setUp()
+        super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
         create_layer_data()
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_replace_layer(self):
-        """
-        Ensures the layer_style_manage route returns a 200.
-        """
-        admin = get_user_model().objects.get(username="admin")
-        layer = Layer.objects.all()[0]
-        logger.debug(Layer.objects.all())
-        self.assertIsNotNone(layer)
-
-        logger.debug("Attempting to replace a vector layer with a raster.")
-        filename = filename = os.path.join(
-            gisdata.GOOD_DATA,
-            'vector/san_andres_y_providencia_administrative.shp')
-        vector_layer = file_upload(filename, user=admin)
-        self.assertTrue(vector_layer.is_vector())
-        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
-        with self.assertRaisesRegex(Exception, "You are attempting to replace a vector layer with a raster."):
-            file_upload(filename, layer=vector_layer, overwrite=True)
-
-        logger.debug("Attempting to replace a raster layer with a vector.")
-        raster_layer = file_upload(filename, user=admin)
-        self.assertFalse(raster_layer.is_vector())
-        filename = filename = os.path.join(
-            gisdata.GOOD_DATA,
-            'vector/san_andres_y_providencia_administrative.shp')
-        with self.assertRaisesRegex(Exception, "You are attempting to replace a raster layer with a vector."):
-            file_upload(filename, layer=raster_layer, overwrite=True)
-
-        logger.debug("Attempting to replace a vector layer.")
-        replaced = file_upload(filename, layer=vector_layer, overwrite=True, gtype='LineString')
-        self.assertIsNotNone(replaced)
-        self.assertTrue(replaced.is_vector())
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_replace_callback(self):
@@ -196,3 +177,19 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         }
         _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))
+
+    def test_return_element_if_not_exists_in_the_subtypes(self):
+        el = get_layer_storetype('not-existing-type')
+        self.assertEqual('not-existing-type', el)
+
+    def test_datastore_should_return_vector(self):
+        el = get_layer_storetype('dataStore')
+        self.assertEqual('vector', el)
+
+    def test_coverageStore_should_return_raster(self):
+        el = get_layer_storetype('coverageStore')
+        self.assertEqual('raster', el)
+
+    def test_remoteStore_should_return_remote(self):
+        el = get_layer_storetype('remoteStore')
+        self.assertEqual('remote', el)

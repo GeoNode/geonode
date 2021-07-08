@@ -1,5 +1,6 @@
 {% load i18n avatar_tags %}
 {% load static %}
+{% load client_lib_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -53,7 +54,7 @@
           <ul class="nav navbar-nav">
             {% block tabs %}
             <li id="nav_layers">
-              <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a>
+              <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a>
             </li>
             <li id="nav_maps">
               <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
@@ -63,7 +64,7 @@
             </li>
             {% if GEONODE_APPS_ENABLE and GEONODE_APPS_NAV_MENU_ENABLE %}
             <li id="nav_maps">
-              <a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
+              <a href="{% geoapp_list_url %}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
             </li>
             {% endif %}
            {% block extra_tab %}
@@ -156,14 +157,14 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Data" %}</li>
-            <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
+            <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
             {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
                 <li role="separator" class="divider"></li>
-                <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
+                <li><a href="{% url "layer_upload" %}">{% trans "Upload Dataset" %}</a></li>
                 {% if USE_GEOSERVER and CREATE_LAYER %}
-                  <li><a href="{% url "layer_create" %}">{% trans "Create a new layer" %}</a></li>
+                  <li><a href="{% url "layer_create" %}">{% trans "Create a new dataset" %}</a></li>
                 {% endif %}
                 <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
             {% endif %}
@@ -177,7 +178,7 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
-            <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
+            <li><a href="{% map_list_url %}">{% trans "Explore Maps" %}</a></li>
             {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
             <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
             {% endif %}
@@ -270,7 +271,7 @@
           </div>
           <div class="modal-body">
             <ul class="list-unstyled">
-              <li><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload Layers" %}</a></li>
+              <li><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload Datasets" %}</a></li>
               <li class="modal-divider"></li>
               <li><a href="{{ user.get_absolute_url }}"><i class="fa fa-user"></i> {% trans "Profile" %}</a></li>
               <li><a href="{% url "recent-activity" %}"><i class="fa fa-fire"></i> {% trans "Recent Activity" %}</a></li>

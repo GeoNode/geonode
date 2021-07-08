@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load bootstrap_tags %}
 {% load guardian_tags %}
+{% load client_lib_tags %}
 
 {% block title %}{{ map.title }} — {{ block.super }}{% endblock %}
 
@@ -26,7 +27,7 @@
 <script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
 
 <div class="page-header">
-  <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Maps" %}</a>
+  <a href="{% map_list_url %}" class="btn btn-primary pull-right">{% trans "Explore Maps" %}</a>
   <h2 class="page-title">{% trans "Edit Metadata" %}</h2>
 </div>
 <div class="row">
@@ -60,7 +61,7 @@
       </div>
       {% endif %}
       <div class="form-actions">
-        <a href="{% url 'map_detail' mapid=map.id %}" class="btn btn-primary">{% trans "Return to Map" %}</a>
+        <a href="{% map_detail_url map %}" class="btn btn-primary">{% trans "Return to Map" %}</a>
         <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update" %}"/>
       </div>
       {% csrf_token %}
@@ -134,7 +135,7 @@
 
               {% block form_actions %}
               <div class="form-actions">
-                <a href="{% url 'map_detail' mapid=map.id %}" class="btn btn-primary">{% trans "Return to Map" %}</a>
+                <a href="{% map_detail_url map %}" class="btn btn-primary">{% trans "Return to Map" %}</a>
                 <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
               </div>
               {% endblock form_actions %}

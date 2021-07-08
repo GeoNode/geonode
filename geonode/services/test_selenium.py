@@ -1,19 +1,41 @@
-from django.contrib.auth import get_user_model
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+#########################################################################
+#
+# Copyright (C) 2021 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+from selenium import webdriver
+
 from django.test import Client
 from django.urls import reverse
-from selenium import webdriver
+from django.contrib.auth import get_user_model
+
+from geonode.tests.base import GeoNodeLiveTestSupport
+
 # from selenium.webdriver.chrome.webdriver import WebDriver
 # from webdriver_manager.chrome import ChromeDriverManager
 from . import enumerations, forms
 
 
-class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
+class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
+
     selenium = None
 
     @classmethod
     def setUpClass(cls):
-        super(WmsServiceHarvestingTestCase, cls).setUpClass()
+        super().setUpClass()
 
         try:
             cls.client = Client()
@@ -49,9 +71,9 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
 
     @classmethod
     def tearDownClass(cls):
+        super().tearDownClass()
         if cls.selenium:
             cls.selenium.quit()
-            super(WmsServiceHarvestingTestCase, cls).tearDownClass()
 
     def test_harvest_resources(self):
         if self.selenium:

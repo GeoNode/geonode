@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -46,7 +45,7 @@ from collections import defaultdict
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from requests.packages.urllib3.util.retry import Retry
-
+from geonode.storage.manager import storage_manager
 from django.conf import settings
 from django.core.cache import cache
 from django.db.models import signals
@@ -59,7 +58,6 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.files.storage import default_storage as storage
 from django.db import models, connection, transaction
 from django.utils.translation import ugettext_lazy as _
 
@@ -541,7 +539,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
     return _model
 
 
-class GXPMapBase(object):
+class GXPMapBase:
 
     def viewer_json(self, request, *added_layers):
         """
@@ -707,7 +705,7 @@ class GXPMap(GXPMapBase):
         self.layers = []
 
 
-class GXPLayerBase(object):
+class GXPLayerBase:
 
     def source_config(self, access_token):
         """
@@ -1399,7 +1397,7 @@ def check_ogc_backend(backend_package):
     return False
 
 
-class HttpClient(object):
+class HttpClient:
 
     def __init__(self):
         self.timeout = 5
@@ -1790,7 +1788,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                                     name=ugettext(name),
                                     link_type='image').update(**_d)
 
-        if instance.storeType == "dataStore":
+        if instance.storetype == "vector":
             links = wfs_links(f"{ogc_server_settings.public_url}ows?",
                               instance.alternate,
                               bbox=None,  # bbox filter should be set at runtime otherwise conflicting with CQL
@@ -1813,7 +1811,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         )
                     )
 
-        elif instance.storeType == 'coverageStore':
+        elif instance.storetype == 'raster':
             links = wcs_links(f"{ogc_server_settings.public_url}wcs?",
                               instance.alternate,
                               bbox,
@@ -1857,7 +1855,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
         try:
-            if instance.storeType != 'remoteStore':
+            if instance.storetype not in ['tileStore', 'remote']:
                 for style in set(list(instance.styles.all()) + [instance.default_style, ]):
                     if style:
                         style_name = os.path.basename(
@@ -1879,7 +1877,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 from geonode.services.serviceprocessors.handler import get_service_handler
                 handler = get_service_handler(
                     instance.remote_service.base_url, service_type=instance.remote_service.type)
-                if hasattr(handler, '_create_layer_legend_link'):
+                if handler and hasattr(handler, '_create_layer_legend_link'):
                     handler._create_layer_legend_link(instance)
 
             logger.debug(" -- Resource Links[Legend link]...done!")
@@ -1921,7 +1919,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 )
             )
 
-        if instance.storeType == "dataStore":
+        if instance.storetype == "vector":
             # ogc_wfs_path = '%s/wfs' % instance.workspace
             ogc_wfs_path = 'ows'
             ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
@@ -1939,7 +1937,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     )
                 )
 
-        if instance.storeType == "coverageStore":
+        if instance.storetype == "raster":
             # ogc_wcs_path = '%s/wcs' % instance.workspace
             ogc_wcs_path = 'ows'
             ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
@@ -2010,7 +2008,6 @@ json_serializer_k_map = {
     'spatial_representation_type': 'base.SpatialRepresentationType',
     'group': 'auth.Group',
     'default_style': 'layers.Style',
-    'upload_session': 'layers.UploadSession'
 }
 
 
@@ -2084,8 +2081,8 @@ def is_monochromatic_image(image_url, image_data=None):
     def get_thumb_handler(url):
         _index = url.find(settings.STATIC_URL)
         _thumb_path = urlparse(url[_index + len(settings.STATIC_URL):]).path
-        if storage.exists(_thumb_path):
-            return storage.open(_thumb_path)
+        if storage_manager.exists(_thumb_path):
+            return storage_manager.open(_thumb_path)
         return None
 
     def verify_image(stream):

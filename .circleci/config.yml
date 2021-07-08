@@ -93,11 +93,6 @@ jobs:
           command: docker logs django4geonode --tail 500
           when: on_fail
 
-      - run:
-          name: Invoke logs (debug)
-          command: docker exec -it django4geonode sh -c 'tail -1000 /usr/src/geonode/invoke.log'
-          when: on_fail
-
       - when:
           condition: <<parameters.test_suite>>
           steps:
@@ -126,44 +121,24 @@ workflows:
     jobs:
       - build:
           name: geonode_test_suite_smoke
-          load_docker_cache: true
-          save_docker_cache: true
+          load_docker_cache: false
+          save_docker_cache: false
           test_suite: ./test.sh geonode.tests.smoke geonode.tests.test_message_notifications geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils
       - build:
           name: geonode_test_suite
-          load_docker_cache: true
+          load_docker_cache: false
           save_docker_cache: false
           test_suite: ./test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS]))") geonode.catalogue.backends.tests geonode.thumbs.tests
-          requires:
-            - geonode_test_suite_smoke
       - build:
           name: geonode_test_rest_apis
-          load_docker_cache: true
+          load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./test.sh geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests
-          requires:
-            - geonode_test_suite_smoke
+          test_suite: ./test.sh geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests geonode.upload.api.tests
       - build:
           name: geonode_test_integration_csw
-          load_docker_cache: true
+          load_docker_cache: false
           save_docker_cache: false
           test_suite: ./test_csw.sh
-          requires:
-            - geonode_test_suite_smoke
-      - build:
-          name: geonode_test_integration_monitoring
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: ./test.sh geonode.tests.smoke geonode.monitoring.tests.integration
-          requires:
-            - geonode_test_suite_smoke
-      - build:
-          name: geonode_test_integration_upload
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: ./test.sh geonode.upload.api.tests
-          requires:
-            - geonode_test_suite_smoke
 
       # TODO
       # - build:
@@ -184,7 +159,7 @@ workflows:
       #     name: tests_geoserver_integration
       #     load_docker_cache: true
       #     save_docker_cache: false
-      #     test_suite: 'geonode.geoserver.tests.integration'
+      #     test_suite: 'geonode.geoserver.tests.integration geonode.monitoring.tests.integration'
       #     requires:
       #       - geonode_test_suite_smoke
 

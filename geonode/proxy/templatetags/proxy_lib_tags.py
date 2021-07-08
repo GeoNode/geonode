@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2019 OSGeo
@@ -18,22 +17,20 @@
 #
 #########################################################################
 
+from geonode.base.models import ResourceBase
 import traceback
 
 from django import template
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-from django.core.files.storage import FileSystemStorage
+from geonode.storage.manager import storage_manager
 
 from urllib.parse import urlsplit, urljoin
 
 from geonode.utils import resolve_object
-from geonode.layers.models import Layer, LayerFile
 
 register = template.Library()
-
-storage = FileSystemStorage()
 
 
 @register.simple_tag(takes_context=True)
@@ -42,7 +39,7 @@ def original_link_available(context, resourceid, url):
     request = context['request']
     instance = resolve_object(
         request,
-        Layer,
+        ResourceBase,
         {'pk': resourceid},
         permission='base.download_resourcebase',
         permission_msg=_not_permitted)
@@ -53,16 +50,12 @@ def original_link_available(context, resourceid, url):
         return True
 
     layer_files = []
-    if isinstance(instance, Layer):
+    if isinstance(instance, ResourceBase):
         try:
-            upload_session = instance.get_upload_session()
-            if upload_session:
-                layer_files = [
-                    item for item in LayerFile.objects.filter(upload_session=upload_session)]
-                if layer_files:
-                    for lyr in layer_files:
-                        if not storage.exists(str(lyr.file)):
-                            return False
+            for file in instance.files:
+                layer_files.append(file)
+                if not storage_manager.exists(file):
+                    return False
         except Exception:
             traceback.print_exc()
             return False

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -115,6 +114,9 @@ urlpatterns += [
 
     # Group Profiles views
     url(r'^groups/', include('geonode.groups.urls')),
+
+    # Harvesting views
+    url(r'^harvesters/', include('geonode.harvesting.urls')),
 
     # ident
     url(r'^ident.json$',
@@ -264,3 +266,9 @@ if settings.MONITORING_ENABLED:
     urlpatterns += [url(r'^monitoring/',
                         include(('geonode.monitoring.urls', 'geonode.monitoring'),
                                 namespace='monitoring'))]
+
+
+# Internationalization Javascript
+urlpatterns += [
+    url(r'^metadata_update_redirect$', views.metadata_update_redirect, name='metadata_update_redirect'),
+]

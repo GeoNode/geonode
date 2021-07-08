@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -18,31 +17,23 @@
 #
 #########################################################################
 import re
-import uuid
 import logging
 
-from django.db import models
-from django.db.models import signals
-from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.db import models
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from django.urls import reverse
-from django.core.files.storage import FileSystemStorage
 
-from pinax.ratings.models import OverallRating
 from tinymce.models import HTMLField
 
-from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
-from geonode.people.utils import get_valid_user
+from geonode.base import enumerations
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
-from geonode.security.utils import remove_object_permissions
-from geonode.notifications_helper import (
-    send_notification,
-    get_notification_recipients)
+from geonode.base.models import (
+    ResourceBase,
+    ResourceBaseManager)
 
-from ..services.enumerations import CASCADED
 from ..services.enumerations import INDEXED
 
 logger = logging.getLogger("geonode.layers.models")
@@ -51,7 +42,6 @@ shp_exts = ['.shp', ]
 csv_exts = ['.csv']
 kml_exts = ['.kml']
 vec_exts = shp_exts + csv_exts + kml_exts
-
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif', '.asc']
 
 TIME_REGEX = (
@@ -65,10 +55,6 @@ TIME_REGEX_FORMAT = {
     '[0-9]{8}T[0-9]{6}': '%Y%m%dT%H%M%S',
     '[0-9]{8}T[0-9]{6}Z': '%Y%m%dT%H%M%SZ'
 }
-
-# these are only used if there is no user-configured value in the settings
-_DEFAULT_CASCADE_WORKSPACE = "cascaded-services"
-_DEFAULT_WORKSPACE = "cascaded-services"
 
 
 class Style(models.Model, PermissionLevelMixin):
@@ -122,33 +108,6 @@ class LayerManager(ResourceBaseManager):
         models.Manager.__init__(self)
 
 
-class UploadSession(models.Model):
-
-    """Helper class to keep track of uploads.
-    """
-    resource = models.ForeignKey(ResourceBase, blank=True, null=True, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    processed = models.BooleanField(default=False)
-    error = models.TextField(blank=True, null=True)
-    traceback = models.TextField(blank=True, null=True)
-    context = models.TextField(blank=True, null=True)
-
-    def successful(self):
-        return self.processed and self.errors is None
-
-    def __str__(self):
-        _s = f"[Upload session-id: {self.id}]"
-        try:
-            _s += f" - {self.resource.title}"
-        except Exception:
-            pass
-        return str(_s)
-
-    def __unicode__(self):
-        return str(self.__str__())
-
-
 class Layer(ResourceBase):
 
     """
@@ -166,7 +125,7 @@ class Layer(ResourceBase):
     objects = LayerManager()
     workspace = models.CharField(_('Workspace'), max_length=128)
     store = models.CharField(_('Store'), max_length=128)
-    storeType = models.CharField(_('Storetype'), max_length=128)
+
     name = models.CharField(_('Name'), max_length=128)
     typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
 
@@ -192,8 +151,6 @@ class Layer(ResourceBase):
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
-    upload_session = models.ForeignKey(UploadSession, blank=True, null=True, on_delete=models.CASCADE)
-
     use_featureinfo_custom_template = models.BooleanField(
         _('use featureinfo custom template?'),
         help_text=_('specifies wether or not use a custom GetFeatureInfo template.'),
@@ -207,28 +164,21 @@ class Layer(ResourceBase):
         null=True)
 
     def is_vector(self):
-        return self.storeType == 'dataStore'
-
-    def get_upload_session(self):
-        return self.upload_session
+        return self.storetype == 'vector'
 
     @property
     def processed(self):
-        self.upload_session = UploadSession.objects.filter(resource=self).first()
-        if self.upload_session:
-            if self.upload_session.processed:
-                self.clear_dirty_state()
-            else:
-                self.set_dirty_state()
-        else:
+        if self.state == enumerations.STATE_PROCESSED:
             self.clear_dirty_state()
+        else:
+            self.set_dirty_state()
         return not self.dirty_state
 
     @property
     def display_type(self):
-        if self.storeType == "dataStore":
+        if self.storetype == "vector":
             return "Vector Data"
-        elif self.storeType == "coverageStore":
+        elif self.storetype == "raster":
             return "Raster Data"
         else:
             return "Data"
@@ -315,7 +265,7 @@ class Layer(ResourceBase):
 
         # we need to check, for shapefile, if column names are valid
         list_col = None
-        if self.storeType == 'dataStore':
+        if self.storetype == 'vector':
             valid_shp, wrong_column_name, list_col = check_shp_columnnames(
                 self)
             if wrong_column_name:
@@ -398,20 +348,6 @@ class Layer(ResourceBase):
         else:
             Layer.objects.filter(id=self.id)\
                          .update(popular_count=models.F('popular_count') + 1)
-
-
-class LayerFile(models.Model):
-
-    """Helper class to store original files.
-    """
-    upload_session = models.ForeignKey(UploadSession, on_delete=models.CASCADE)
-    name = models.CharField(max_length=4096)
-    base = models.BooleanField(default=False)
-    file = models.FileField(
-        upload_to='layers/%Y/%m/%d',
-        storage=FileSystemStorage(
-            base_url=settings.LOCAL_MEDIA_URL),
-        max_length=4096)
 
 
 class AttributeManager(models.Manager):
@@ -583,176 +519,3 @@ class Attribute(models.Model):
 
     def unique_values_as_list(self):
         return self.unique_values.split(',')
-
-
-def _get_alternate_name(instance):
-    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
-        result = instance.name
-    elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
-        _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
-        result = f"{_ws}:{instance.name}"
-    else:  # we are not dealing with a service-related instance
-        _ws = getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
-        result = f"{_ws}:{instance.name}"
-    return result
-
-
-def pre_save_layer(instance, sender, **kwargs):
-    if kwargs.get('raw', False):
-        try:
-            _resourcebase_ptr = instance.resourcebase_ptr
-            instance.owner = _resourcebase_ptr.owner
-            instance.uuid = _resourcebase_ptr.uuid
-            instance.bbox_polygon = _resourcebase_ptr.bbox_polygon
-            instance.srid = _resourcebase_ptr.srid
-        except Exception as e:
-            logger.exception(e)
-
-    if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = 'No abstract provided'
-    if instance.title == '' or instance.title is None:
-        instance.title = instance.name
-
-    # Set a default user for accountstream to work correctly.
-    if instance.owner is None:
-        instance.owner = get_valid_user()
-
-    logger.debug("handling UUID In pre_save_layer")
-    if hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
-        logger.debug("using custom uuid handler In pre_save_layer")
-        from geonode.layers.utils import get_uuid_handler
-        instance.uuid = get_uuid_handler()(instance).create_uuid()
-    else:
-        if instance.uuid == '':
-            instance.uuid = str(uuid.uuid1())
-
-    logger.debug("In pre_save_layer")
-    if instance.alternate is None:
-        instance.alternate = _get_alternate_name(instance)
-    logger.debug(f"instance.alternate is: {instance.alternate}")
-
-    base_file, info = instance.get_base_file()
-
-    if info:
-        instance.info = info
-
-    if base_file is not None:
-        extension = f'.{base_file.name}'
-        if extension in vec_exts:
-            instance.storeType = 'dataStore'
-        elif extension in cov_exts:
-            instance.storeType = 'coverageStore'
-
-    if instance.bbox_polygon is None:
-        instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
-    instance.set_bounds_from_bbox(
-        instance.bbox_polygon,
-        instance.srid or instance.bbox_polygon.srid
-    )
-
-    # Send a notification when a layer is created
-    if instance.pk is None and instance.title:
-        # Resource Created
-        notice_type_label = f'{instance.class_name.lower()}_created'
-        recipients = get_notification_recipients(notice_type_label, resource=instance)
-        send_notification(recipients, notice_type_label, {'resource': instance})
-
-
-def pre_delete_layer(instance, sender, **kwargs):
-    """
-    Remove any associated style to the layer, if it is not used by other layers.
-    Default style will be deleted in post_delete_layer
-    """
-    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
-        # we need to delete the maplayers here because in the post save layer.remote_service is not available anymore
-        # REFACTOR
-        from geonode.maps.models import MapLayer
-        logger.debug(
-            "Going to delete associated maplayers for [%s]",
-            instance.alternate)
-        MapLayer.objects.filter(
-            name=instance.alternate,
-            ows_url=instance.ows_url).delete()
-        return
-
-    logger.debug(
-        "Going to delete the styles associated for [%s]",
-        instance.alternate)
-    ct = ContentType.objects.get_for_model(instance)
-    OverallRating.objects.filter(
-        content_type=ct,
-        object_id=instance.id).delete()
-
-    default_style = instance.default_style
-    for style in instance.styles.all():
-        if style.layer_styles.all().count() == 1:
-            if style != default_style:
-                style.delete()
-
-    if 'geonode.upload' in settings.INSTALLED_APPS and \
-            settings.UPLOADER['BACKEND'] == 'geonode.importer':
-        from geonode.upload.models import Upload
-        # Need to call delete one by one in ordee to invoke the
-        #  'delete' overridden method
-        for upload in Upload.objects.filter(layer_id=instance.id):
-            upload.delete()
-
-    # Delete object permissions
-    remove_object_permissions(instance)
-
-
-def post_delete_layer(instance, sender, **kwargs):
-    """
-    Removed the layer from any associated map, if any.
-    Remove the layer default style.
-    """
-    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
-        try:
-            from geonode.services.models import HarvestJob
-            HarvestJob.objects.filter(
-                service=instance.remote_service, resource_id=instance.alternate).delete()
-            resource_id = instance.alternate.split(":")[-1] if len(instance.alternate.split(":")) else None
-            if resource_id:
-                HarvestJob.objects.filter(
-                    service=instance.remote_service, resource_id=resource_id).delete()
-        except Exception as e:
-            logger.exception(e)
-        return
-
-    from geonode.maps.models import MapLayer
-    logger.debug(
-        "Going to delete associated maplayers for [%s]", instance.name)
-    MapLayer.objects.filter(
-        name=instance.alternate,
-        ows_url=instance.ows_url).delete()
-
-    logger.debug(
-        "Going to delete the default style for [%s]", instance.name)
-
-    if instance.default_style and Layer.objects.filter(
-            default_style__id=instance.default_style.id).count() == 0:
-        instance.default_style.delete()
-
-    try:
-        if instance.upload_session:
-            for lf in instance.upload_session.layerfile_set.all():
-                lf.file.delete()
-            instance.upload_session.delete()
-    except UploadSession.DoesNotExist:
-        pass
-
-
-def post_delete_layer_file(instance, sender, **kwargs):
-    """Delete associated file.
-
-    :param instance: LayerFile instance
-    :type instance: LayerFile
-    """
-    instance.file.delete(save=False)
-
-
-signals.pre_save.connect(pre_save_layer, sender=Layer)
-signals.post_save.connect(resourcebase_post_save, sender=Layer)
-signals.pre_delete.connect(pre_delete_layer, sender=Layer)
-signals.post_delete.connect(post_delete_layer, sender=Layer)
-signals.post_delete.connect(post_delete_layer_file, sender=LayerFile)

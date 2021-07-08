@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -49,7 +48,7 @@ def load_backend(backend_name):
         try:
             available_backends = sorted([f for f in os.listdir(backend_dir) if os.path.isdir(os.path.join(backend_dir, f)) and
                                          not f.startswith('.')])
-        except EnvironmentError:
+        except OSError:
             available_backends = []
 
         if backend_name not in available_backends:

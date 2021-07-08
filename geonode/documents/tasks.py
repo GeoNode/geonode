@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -17,18 +16,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import os
 
-from django.core.files.storage import default_storage as storage
-
-from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 
-from geonode.documents.models import Document
-from geonode.documents.renderers import render_document
-from geonode.documents.renderers import generate_thumbnail_content
-from geonode.documents.renderers import ConversionError
+from geonode.celery_app import app
+from geonode.storage.manager import storage_manager
+
+from .models import Document
+from .renderers import (
+    render_document,
+    generate_thumbnail_content,
+    ConversionError)
 
 logger = get_task_logger(__name__)
 
@@ -40,7 +39,7 @@ logger = get_task_logger(__name__)
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -60,21 +59,19 @@ def create_document_thumbnail(self, object_id):
     image_file = None
 
     if document.is_image:
-        if not os.path.exists(storage.path(document.doc_file.name)):
-            from shutil import copyfile
-            copyfile(
-                document.doc_file.path,
-                storage.path(document.doc_file.name)
-            )
-        image_file = storage.open(document.doc_file.name, 'rb')
+        dname = storage_manager.path(document.files[0])
+        if storage_manager.exists(dname):
+            image_file = storage_manager.open(dname, 'rb')
     elif document.is_video or document.is_audio:
         image_file = open(document.find_placeholder(), 'rb')
     elif document.is_file:
+        dname = storage_manager.path(document.files[0])
         try:
-            document_location = storage.path(document.doc_file.name)
+            document_location = storage_manager.path(dname)
         except NotImplementedError as e:
             logger.debug(e)
-            document_location = storage.url(document.doc_file.name)
+
+            document_location = storage_manager.url(dname)
 
         try:
             image_path = render_document(document_location)
@@ -95,7 +92,7 @@ def create_document_thumbnail(self, object_id):
         try:
             thumbnail_content = generate_thumbnail_content(image_file)
         except Exception as e:
-            logger.error(f"Could not generate thumbnail, falling back to 'placeholder': {e}")
+            logger.debug(f"Could not generate thumbnail, falling back to 'placeholder': {e}")
             thumbnail_content = generate_thumbnail_content(document.find_placeholder())
     except Exception as e:
         logger.error(f"Could not generate thumbnail: {e}")
@@ -121,7 +118,7 @@ def create_document_thumbnail(self, object_id):
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -137,7 +134,7 @@ def delete_orphaned_document_files(self):
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)

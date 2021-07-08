@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -42,7 +41,7 @@ class MultiEmailField(forms.Field):
         "Check if value consists only of valid emails."
 
         # Use the parent's handling of required fields, etc.
-        super(MultiEmailField, self).validate(value)
+        super().validate(value)
         try:
             for email in value:
                 validate_email(email)

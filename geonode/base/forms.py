@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -218,7 +217,7 @@ class RegionsSelect(forms.Select):
             else:
                 return choice.id
 
-        selected_choices = set(force_text(_region_id_from_choice(v)) for v in selected_choices)
+        selected_choices = {force_text(_region_id_from_choice(v)) for v in selected_choices}
         output = []
 
         output.append(format_html('<optgroup label="{}">', 'Global'))
@@ -316,7 +315,7 @@ class TKeywordForm(forms.ModelForm):
 
 class ThesaurusAvailableForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        super(ThesaurusAvailableForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         lang = get_language()
         for item in Thesaurus.objects.all().order_by('order', 'id'):
             tname = self._get_thesauro_title_label(item, lang)
@@ -387,7 +386,7 @@ class ResourceBaseDateTimePicker(DateTimePicker):
         if extra_attrs:
             base_attrs.update(extra_attrs)
         base_attrs.update(kwargs)
-        return super(ResourceBaseDateTimePicker, self).build_attrs(base_attrs)
+        return super().build_attrs(base_attrs)
         # return base_attrs
 
 
@@ -397,22 +396,27 @@ class ResourceBaseForm(TranslationModelForm):
         label=_("Abstract"),
         required=False,
         widget=TinyMCE())
+
     purpose = forms.CharField(
         label=_("Purpose"),
         required=False,
         widget=TinyMCE())
+
     constraints_other = forms.CharField(
         label=_("Other constraints"),
         required=False,
         widget=TinyMCE())
+
     supplemental_information = forms.CharField(
         label=_('Supplemental information'),
         required=False,
         widget=TinyMCE())
+
     data_quality_statement = forms.CharField(
         label=_("Data quality statement"),
         required=False,
         widget=TinyMCE())
+
     owner = forms.ModelChoiceField(
         empty_label=_("Owner"),
         label=_("Owner"),
@@ -426,6 +430,7 @@ class ResourceBaseForm(TranslationModelForm):
         input_formats=['%Y-%m-%d %H:%M %p'],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
+
     temporal_extent_start = forms.DateTimeField(
         label=_("temporal extent start"),
         required=False,
@@ -433,6 +438,7 @@ class ResourceBaseForm(TranslationModelForm):
         input_formats=['%Y-%m-%d %H:%M %p'],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
+
     temporal_extent_end = forms.DateTimeField(
         label=_("temporal extent end"),
         required=False,
@@ -480,7 +486,7 @@ class ResourceBaseForm(TranslationModelForm):
     regions.widget.attrs = {"size": 20}
 
     def __init__(self, *args, **kwargs):
-        super(ResourceBaseForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for field in self.fields:
             help_text = self.fields[field].help_text
             if help_text != '':
@@ -546,7 +552,10 @@ class ResourceBaseForm(TranslationModelForm):
             'tkeywords',
             'users_geolimits',
             'groups_geolimits',
-            'dirty_state'
+            'dirty_state',
+            'state',
+            'blob',
+            'files',
         )
 
 
@@ -634,7 +643,7 @@ class BatchPermissionsForm(forms.Form):
 
 class UserAndGroupPermissionsForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        super(UserAndGroupPermissionsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['layers'].label_from_instance = self.label_from_instance
 
     layers = forms.ModelMultipleChoiceField(

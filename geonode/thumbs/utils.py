@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2021 OSGeo
@@ -203,7 +202,6 @@ def get_map(
 
     # prepare authorization for WMS service
     headers = {}
-
     if thumbnail_url.startswith(ogc_server_settings.LOCATION):
         if "access_token" not in additional_kwargs.keys():
             # for the Geoserver backend, use Basic Auth, if access_token is not provided

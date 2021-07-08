@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -32,9 +31,10 @@ from django.db import models
 from django.conf import settings
 from django.http import Http404
 
-from django.utils.translation import ugettext_noop as _
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.db.models.fields.json import JSONField
+from django.utils.translation import ugettext_noop as _
 
 try:
     from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
@@ -532,7 +532,7 @@ class RequestEvent(models.Model):
         Returns event type based on events
         """
         rqmeta = getattr(request, '_monitoring', {})
-        events = set(e[0] for e in rqmeta['events'])
+        events = {e[0] for e in rqmeta['events']}
         event_name = default_event_type
         if len(events) == 1:
             event_name = events.pop()
@@ -928,7 +928,7 @@ class MetricValue(models.Model):
     value_raw = models.TextField(null=True, default=None, blank=True)
     samples_count = models.PositiveIntegerField(
         null=False, default=0, blank=False)
-    data = models.JSONField(null=False, default={})
+    data = JSONField(null=False, default=dict)
 
     class Meta:
         unique_together = (
@@ -1093,10 +1093,8 @@ class NotificationCheck(models.Model):
         null=False,
         blank=False,
         help_text="Description of the alert")
-    user_threshold = models.JSONField(
-        default={}, null=False, blank=False,
-        help_text=_("Expected min/max values for user configuration")
-    )
+    user_threshold = JSONField(default=dict, null=False, blank=False,
+                               help_text=_("Expected min/max values for user configuration"))
     metrics = models.ManyToManyField(
         Metric,
         through='NotificationMetricDefinition',
@@ -1288,7 +1286,7 @@ class NotificationCheck(models.Model):
                     'active': this.active,
                     'grace_period': this.grace_period}
                 kwargs['initial'] = initial
-                super(F, self).__init__(*args, **kwargs)
+                super().__init__(*args, **kwargs)
                 fields = self.fields
                 for d in defs:
                     # def.get_fields() can return several fields,
@@ -1379,7 +1377,7 @@ class NotificationReceiver(models.Model):
     def save(self, *args, **kwargs):
         if not (self.user or self.email):
             raise ValueError("Cannot save empty notification receiver")
-        super(NotificationReceiver, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class NotificationMetricDefinition(models.Model):
@@ -1701,7 +1699,7 @@ class MetricNotificationCheck(models.Model):
         return True
 
 
-class BuiltIns(object):
+class BuiltIns:
     service_types = (ServiceType.TYPE_GEONODE, ServiceType.TYPE_GEOSERVER,)
     host_service_types = (ServiceType.TYPE_HOST_GN, ServiceType.TYPE_HOST_GS,)
 

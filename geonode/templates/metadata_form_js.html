@@ -752,7 +752,13 @@
                           $('#preview_pleaseWaitDialog').modal('hide');
                           if(textStatus === 'success' && metadata_update_done && !metadata_preview) {
                               if(new RegExp(".*/metadata$").test(e.target.action)) {
-                                  window.location.replace(e.target.action.replace('/metadata',''));
+                                  $.ajax({
+                                    type: "POST",
+                                    url: "{% url 'metadata_update_redirect' %}",
+                                    data: { url: e.target.action },
+                                    }).done(function(redirect_url){
+                                        window.location.replace(redirect_url)
+                                     })
                               } else if(new RegExp(".*/"+metadata_uri+"$").test(e.target.action)) {
                                   window.location.replace(e.target.action.replace('/'+metadata_uri,''));
                               }

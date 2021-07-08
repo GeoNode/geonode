@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -53,7 +52,7 @@ from geonode.utils import parse_datetime
 log = logging.getLogger(__name__)
 
 
-class CollectorAPI(object):
+class CollectorAPI:
 
     def __init__(self):
         pass

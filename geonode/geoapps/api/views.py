@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -47,6 +46,6 @@ class GeoAppViewSet(DynamicModelViewSet):
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, GeoAppPermissionsFilter
     ]
-    queryset = GeoApp.objects.all()
+    queryset = GeoApp.objects.all().order_by('-date')
     serializer_class = GeoAppSerializer
     pagination_class = GeoNodeApiPagination
