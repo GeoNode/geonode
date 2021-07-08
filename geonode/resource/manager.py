@@ -17,6 +17,7 @@
 #
 #########################################################################
 import copy
+import typing
 import logging
 import importlib
 
@@ -50,9 +51,9 @@ from geonode.security.utils import (
 
 from . import settings as rm_settings
 from .utils import (
+    update_resource,
     metadata_storers,
-    resourcebase_post_save,
-    update_resource)
+    resourcebase_post_save)
 
 from ..base import enumerations
 from ..base.models import ResourceBase
@@ -67,56 +68,135 @@ logger = logging.getLogger(__name__)
 class ResourceManagerInterface(metaclass=ABCMeta):
 
     @abstractmethod
-    def search(self, filter: dict, /, type: object = None) -> QuerySet:
+    def search(self, filter: dict, /, resource_type: typing.Optional[object]) -> QuerySet:
+        """Returns a QuerySet of the filtered resources into the DB.
+
+         - The 'filter' parameter should be an dictionary with the filtering criteria;
+           - 'filter' = None won't return any result
+           - 'filter' = {} will return the whole set
+         - The 'resource_type' parameter allows to specify the concrete resource model (e.g. Layer, Document, Map, ...)
+           - 'resource_type' must be a class
+           - 'resource_type' = Layer will return a set of the only available Layers
+        """
         pass
 
     @abstractmethod
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+        """Returns 'True' or 'False' if the resource exists or not.
+
+         - If 'instance' is provided, it will take precedence on 'uuid'
+         - The existance criteria might be subject to the 'concrete resource manager' one, dependent on the resource type
+           e.g.: a local Layer existance check will be constrained by the existance of the layer on the GIS backend
+        """
         pass
 
     @abstractmethod
     def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
+        """Deletes a resource from the DB.
+
+         - If 'instance' is provided, it will take precedence on 'uuid'
+         - It will also fallback to the 'concrete resource manager' delete model.
+         - This will eventually delete the related resources on the GIS backend too.
+        """
         pass
 
     @abstractmethod
-    def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
+    def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
+        """The method will just create a new 'resource_type' on the DB model and invoke the 'post save' triggers.
+
+         - It assumes any GIS backend resource (e.g. layers on GeoServer) already exist.
+         - It is possible to pass initial default values, like the 'files' from the 'storage_manager' trhgouh the 'defaults' dictionary
+        """
         pass
 
     @abstractmethod
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
                vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
+        """The method will update an existing 'resource_type' on the DB model and invoke the 'post save' triggers.
+
+         - It assumes any GIS backend resource (e.g. layers on GeoServer) already exist.
+         - It is possible to pass initial default values, like the 'files' from the 'storage_manager' trhgouh the 'vals' dictionary
+         - The 'xml_file' parameter allows to fetch metadata values from a file
+         - The 'notify' parameter allows to notify the members that the resource has been updated
+        """
+        pass
+
+    @abstractmethod
+    def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
+        """The method allows to create a resource by providing the list of files.
+
+        e.g.:
+            In [1]: from geonode.resource.manager import resource_manager
+
+            In [2]: from geonode.layers.models import Layer
+
+            In [3]: from django.contrib.auth import get_user_model
+
+            In [4]: admin = get_user_model().objects.get(username='admin')
+
+            In [5]: files = ["/.../san_andres_y_providencia_administrative.dbf", "/.../san_andres_y_providencia_administrative.prj",
+            ...:  "/.../san_andres_y_providencia_administrative.shx", "/.../san_andres_y_providencia_administrative.sld", "/.../san_andres_y_providencia_administrative.shp"]
+
+            In [6]: resource_manager.ingest(files, resource_type=Layer, defaults={'owner': admin})
+        """
         pass
 
     @abstractmethod
     def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+        """The method makes a copy of the existing resource.
+
+         - It makes a copy of the files
+         - It creates a new layer on the GIS backend in the case the ResourceType is a Layer
+        """
         pass
 
     @abstractmethod
     def append(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
+        """The method appends data to an existing resource.
+
+         - It assumes any GIS backend resource (e.g. layers on GeoServer) already exist.
+        """
         pass
 
     @abstractmethod
     def replace(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
+        """The method replaces data of an existing resource.
+
+         - It assumes any GIS backend resource (e.g. layers on GeoServer) already exist.
+        """
         pass
 
     @abstractmethod
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
+        """A generic 'exec' method allowing to invoke specific methods of the concrete resource manager not exposed by the interface.
+
+         - The parameter 'method' represents the actual name of the concrete method to invoke.
+        """
         pass
 
     @abstractmethod
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+        """Completely cleans the permissions of a resource, resetting it to the default state (owner only)
+        """
         pass
 
     @abstractmethod
     def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner=None, permissions: dict = {}, created: bool = False) -> bool:
+        """Sets the permissions of a resource.
+
+         - It optionally gets a JSON 'perm_spec' through the 'permissions' parameter
+         - If no 'perm_spec' is provided, it will set the default permissions (owner only)
+        """
         pass
 
     @abstractmethod
     def set_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, approved: bool = False, published: bool = False) -> bool:
+        """Fix-up the permissions of a Resource accordingly to the currently active advanced workflow configuraiton"""
         pass
 
     @abstractmethod
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
+        """Allows to generate or re-generate the Thumbnail of a Resource."""
         pass
 
 
@@ -139,10 +219,10 @@ class ResourceManager(ResourceManagerInterface):
             return _resources.get()
         return None
 
-    def search(self, filter: dict, /, type: object = None) -> QuerySet:
-        _class = type or ResourceBase
+    def search(self, filter: dict, /, resource_type: typing.Optional[object]) -> QuerySet:
+        _class = resource_type or ResourceBase
         _resources_queryset = _class.objects.filter(**filter)
-        _filter = self._concrete_resource_manager.search(filter, type=_class)
+        _filter = self._concrete_resource_manager.search(filter, resource_type=_class)
         if _filter:
             _resources_queryset.filter(_filter)
         return _resources_queryset
@@ -156,16 +236,76 @@ class ResourceManager(ResourceManagerInterface):
     @transaction.atomic
     def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
         _resource = instance or ResourceManager._get_instance(uuid)
-        if _resource:
+        if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
                 self._concrete_resource_manager.delete(uuid, instance=_resource)
-                _resource.get_real_instance().delete()
+                if isinstance(_resource.get_real_instance(), Layer):
+                    """
+                    - Remove any associated style to the layer, if it is not used by other layers.
+                    - Default style will be deleted in post_delete_layer.
+                    - Remove the layer from any associated map, if any.
+                    - Remove the layer default style.
+                    """
+                    try:
+                        from ..services.enumerations import INDEXED
+                        if _resource.get_real_instance().remote_service is not None and _resource.get_real_instance().remote_service.method == INDEXED:
+                            from geonode.services.models import HarvestJob
+                            HarvestJob.objects.filter(
+                                service=_resource.get_real_instance().remote_service, resource_id=_resource.get_real_instance().alternate).delete()
+                            resource_id = _resource.get_real_instance().alternate.split(":")[-1] if len(_resource.get_real_instance().alternate.split(":")) else None
+                            if resource_id:
+                                HarvestJob.objects.filter(
+                                    service=_resource.get_real_instance().remote_service, resource_id=resource_id).delete()
+                    except Exception as e:
+                        logger.exception(e)
+
+                    try:
+                        from geonode.maps.models import MapLayer
+                        logger.debug(
+                            "Going to delete associated maplayers for [%s]", _resource.get_real_instance().name)
+                        MapLayer.objects.filter(
+                            name=_resource.get_real_instance().alternate,
+                            ows_url=_resource.get_real_instance().ows_url).delete()
+                    except Exception as e:
+                        logger.exception(e)
+
+                    try:
+                        from pinax.ratings.models import OverallRating
+                        ct = ContentType.objects.get_for_model(_resource.get_real_instance())
+                        OverallRating.objects.filter(
+                            content_type=ct,
+                            object_id=_resource.get_real_instance().id).delete()
+                    except Exception as e:
+                        logger.exception(e)
+
+                    try:
+                        if 'geonode.upload' in settings.INSTALLED_APPS and \
+                                settings.UPLOADER['BACKEND'] == 'geonode.importer':
+                            from geonode.upload.models import Upload
+                            # Need to call delete one by one in ordee to invoke the
+                            #  'delete' overridden method
+                            for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
+                                upload.delete()
+                    except Exception as e:
+                        logger.exception(e)
+
+                    try:
+                        _resource.get_real_instance().styles.delete()
+                        _resource.get_real_instance().default_style.delete()
+                    except Exception as e:
+                        logger.debug(f"Error occurred while trying to delete the Layer Styles: {e}")
+
+                self.remove_permissions(_resource.get_real_instance().uuid, instance=_resource.get_real_instance())
+                try:
+                    _resource.get_real_instance().delete()
+                except ResourceBase.DoesNotExist:
+                    pass
                 return 1
             except Exception as e:
                 logger.exception(e)
         return 0
 
-    def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
+    def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
         if resource_type.objects.filter(uuid=uuid).exists():
             raise ValidationError(f'Object of type {resource_type} with uuid [{uuid}] already exists.')
         uuid = uuid or str(uuid1())
@@ -179,11 +319,12 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
             except Exception as e:
+                logger.exception(e)
                 _resource.delete()
                 raise e
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
-            resourcebase_post_save(_resource)
+            resourcebase_post_save(_resource.get_real_instance())
         return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
@@ -229,33 +370,78 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 _resource.save(notify=notify)
-            resourcebase_post_save(_resource)
+            resourcebase_post_save(_resource.get_real_instance())
         return _resource
+
+    def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
+        instance = None
+        to_update = defaults.copy()
+        if 'files' in to_update:
+            to_update.pop('files')
+        try:
+            with transaction.atomic():
+                if resource_type == Document:
+                    if files:
+                        to_update['files'] = files
+                    instance = self.create(
+                        uuid,
+                        resource_type=Document,
+                        defaults=to_update
+                    )
+                elif resource_type == Layer:
+                    if files:
+                        instance = self.create(
+                            uuid,
+                            resource_type=Layer,
+                            defaults=to_update)
+                instance = self._concrete_resource_manager.ingest(files, uuid=instance.uuid, resource_type=resource_type, defaults=to_update, **kwargs)
+        except Exception as e:
+            logger.exception(e)
+        finally:
+            instance.set_processing_state(enumerations.STATE_PROCESSED)
+            instance.save(notify=False)
+        resourcebase_post_save(instance.get_real_instance())
+        # Finalize Upload
+        if 'user' in to_update:
+            to_update.pop('user')
+        instance = self.update(instance.uuid, instance=instance, vals=to_update)
+        self.set_thumbnail(instance.uuid, instance=instance)
+        return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
         if instance:
-            _owner = instance.owner
-            _perms = instance.get_all_level_info()
-            _resource = copy.copy(instance)
-            _resource.pk = _resource.id = None
-            _resource.uuid = uuid or str(uuid1())
-            _resource.save()
-            to_update = defaults.copy()
-            to_update.update(storage_manager.copy(_resource))
-            self._concrete_resource_manager.copy(_resource, uuid=_resource.uuid, defaults=to_update)
-            if 'user' in to_update:
-                to_update.pop('user')
-            self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
-            return self.update(_resource.uuid, _resource, vals=to_update)
+            try:
+                with transaction.atomic():
+                    _owner = instance.owner
+                    _perms = instance.get_all_level_info()
+                    _resource = copy.copy(instance)
+                    _resource.pk = _resource.id = None
+                    _resource.uuid = uuid or str(uuid1())
+                    _resource.save()
+                    to_update = defaults.copy()
+                    to_update.update(storage_manager.copy(_resource))
+                    self._concrete_resource_manager.copy(_resource, uuid=_resource.uuid, defaults=to_update)
+                    if _resource:
+                        if 'user' in to_update:
+                            to_update.pop('user')
+                        self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                        return self.update(_resource.uuid, _resource, vals=to_update)
+            except Exception as e:
+                logger.exception(e)
+            finally:
+                instance.set_processing_state(enumerations.STATE_PROCESSED)
+                instance.save(notify=False)
+            resourcebase_post_save(instance.get_real_instance())
         return instance
 
     def append(self, instance: ResourceBase, vals: dict = {}):
         if self._validate_resource(instance, 'append'):
             self._concrete_resource_manager.append(instance, vals=vals)
             to_update = vals.copy()
-            if 'user' in to_update:
-                to_update.pop('user')
-            return self.update(instance.uuid, instance, vals=to_update)
+            if instance:
+                if 'user' in to_update:
+                    to_update.pop('user')
+                return self.update(instance.uuid, instance, vals=to_update)
         return instance
 
     def replace(self, instance: ResourceBase, vals: dict = {}):
@@ -264,9 +450,10 @@ class ResourceManager(ResourceManagerInterface):
                 vals.update(storage_manager.replace(instance, vals.get('files')))
             self._concrete_resource_manager.replace(instance, vals=vals)
             to_update = vals.copy()
-            if 'user' in to_update:
-                to_update.pop('user')
-            return self.update(instance.uuid, instance, vals=to_update)
+            if instance:
+                if 'user' in to_update:
+                    to_update.pop('user')
+                return self.update(instance.uuid, instance, vals=to_update)
         return instance
 
     def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:

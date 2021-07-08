@@ -23,20 +23,20 @@ import re
 import json
 import logging
 
-from django import forms
-from django.utils.translation import ugettext as _
-from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
-from django.forms import HiddenInput
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.documents.models import (
-    Document,
-    DocumentResourceLink,
-    get_related_resources,
-)
+from django import forms
+from django.conf import settings
+from django.forms import HiddenInput
+from django.utils.translation import ugettext as _
+from django.contrib.contenttypes.models import ContentType
+
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
+from geonode.resource.utils import get_related_resources
+from geonode.documents.models import (
+    Document,
+    DocumentResourceLink)
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +119,7 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
             'object_id',
             'doc_file',
             'extension',
-            'doc_type',
+            'storetype',
             'doc_url')
 
 

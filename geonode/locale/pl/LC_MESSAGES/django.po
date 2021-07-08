@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2020-07-31 13:58+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Polish (http://www.transifex.com/geonode/geonode/language/"
@@ -438,6 +438,12 @@ msgstr "Czy ten zasób jest zatwierdzony przez wydawcę lub edytora?"
 msgid "Thumbnail url"
 msgstr "Adres URL miniaturki"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -638,6 +644,17 @@ msgid ""
 msgstr ""
 "Aby zezwolić na zmianę, ustaw zasób na nie \"Zatwierdzono” w ustawieniach "
 "metadanych i napisz wiadomość do właściciela, aby go powiadomić"
+
+#, fuzzy
+#| msgid "Service rescanned successfully"
+msgid "Resource Cloned Successfully!"
+msgstr "Pomyślnie ponwnie przeskanowano usługę"
+
+#, fuzzy, python-brace-format
+#| msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "Error Occurred while Cloning the Resource: {e}"
+msgstr ""
+"Wystąpił błąd podczas próby uzyskania dostępu do przesłanego schematu: %s"
 
 msgid "Resource Metadata"
 msgstr "Metadane zasobu"
@@ -998,6 +1015,9 @@ msgstr "Ocena prędkości"
 msgid "Link to"
 msgstr "Link do"
 
+msgid "File"
+msgstr "Plik"
+
 msgid "Document must be a file or url."
 msgstr "Dokument musi być plikiem lub adresem URL."
 
@@ -1009,9 +1029,6 @@ msgstr "Ten typ pliku nie jest dozwolony"
 
 msgid "Permissions must be valid JSON."
 msgstr "Uprawnienia muszą być poprawnym plikiem JSON."
-
-msgid "File"
-msgstr "Plik"
 
 msgid "The URL of the document if it is external."
 msgstr "Adres URL dokumentu, jeśli jest zewnętrzny."
@@ -1066,6 +1083,9 @@ msgid_plural "Documents"
 msgstr[0] "Dokument"
 msgstr[1] "Dokumenty"
 msgstr[2] "Dokumentów"
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr "Zastąp"
@@ -1488,6 +1508,11 @@ msgstr ""
 "ISO, FGDC i Dublin Core.\n"
 "        Niektóre z oryginalnych metadanych mogły zostać utracone."
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "Przeglądaj Mapy"
+
 #, python-format
 msgid ""
 "\n"
@@ -1497,6 +1522,11 @@ msgstr ""
 "\n"
 "        Szczegóły edycji dla %(map_title)s\n"
 "      "
+
+#, fuzzy
+#| msgid "Return to Map"
+msgid "Return to GeoApp"
+msgstr "Wróć do mapy"
 
 msgid "New Map"
 msgstr "Nowa mapa"
@@ -1583,22 +1613,32 @@ msgstr ""
 msgid "Polygons"
 msgstr ""
 
-msgid "Layer name"
-msgstr "Nazwa warstwy"
+#, fuzzy
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "zbiór danych"
 
-msgid "Layer title"
-msgstr "Tytuł warstwy"
+#, fuzzy
+#| msgid "Dataset Attributes"
+msgid "Dataset title"
+msgstr "Atrybuty zbioru danych"
 
 msgid "Geometry type"
 msgstr "Typ geometrii"
 
-msgid "Create Layer"
-msgstr "Stwórz warstwę"
+#, fuzzy
+#| msgid "Featured Datasets"
+msgid "Create Dataset"
+msgstr "Wyróżnione zbiory danych"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "Przeglądaj warstwy"
 
-msgid "Create an empty layer"
+#, fuzzy
+#| msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "Stwórz pustą warstwę"
 
 msgid "Add Attribute"
@@ -1632,6 +1672,9 @@ msgstr "Wystąpił wyjątek podczas ładowania danych do PostGIS"
 msgid " Additionally an error occured during database cleanup"
 msgstr " Ponadto wystąpił błąd podczas czyszczenia bazy danych"
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr "GZIP"
 
@@ -1664,9 +1707,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "Nie masz uprawnień, aby zmienić styl dla tej warstwy"
@@ -1898,6 +1938,121 @@ msgstr "Edytuj kategorię grupy"
 
 msgid "Save"
 msgstr "Zapisz"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "harvesting-resources"
+msgstr "Harwestowanie zasobów..."
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "Harwestowane"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "wersja cytowanego zasobu"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "Ustaw uprawnienia do wybranych zasobów"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "harvesting-resource"
+msgstr "Harwestowanie zasobów..."
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, fuzzy, python-brace-format
 #| msgid "The e-mail address '%(email)s' has already been invited."
@@ -2159,10 +2314,12 @@ msgstr "data ostatniej aktualizacji statystyk atrybutu"
 
 #, fuzzy
 #| msgid "Return to Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "Wróć do warstwy"
 
-msgid "Return to Layer"
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Return to Dataset"
 msgstr "Wróć do warstwy"
 
 msgid "Preserve Metadata XML"
@@ -2180,7 +2337,9 @@ msgstr "Zmień osobę kontaktową"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Przypisz nową osobę kontaktową do poniższej warstwy:"
 
-msgid "Layer WMS GetCapabilities document"
+#, fuzzy
+#| msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr "Dokument WMS GetCapabilities warstwy"
 
 msgid "Filter Granules"
@@ -2237,14 +2396,18 @@ msgstr "Mediana"
 msgid "Standard Deviation"
 msgstr "Odchylenie standardowe"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "Oceń tę warstwę"
 
 msgid "Analyze with"
 msgstr "Zbadaj"
 
-msgid "Download Layer"
-msgstr "Pobierz warstwę"
+#, fuzzy
+#| msgid "Download the"
+msgid "Download Dataset"
+msgstr "Pobierz"
 
 msgid "Images"
 msgstr "Obrazy"
@@ -2322,8 +2485,10 @@ msgstr ""
 msgid "Edit data"
 msgstr "Edytuj dane"
 
-msgid "View Layer"
-msgstr "Zobacz warstwę"
+#, fuzzy
+#| msgid "View Metadata"
+msgid "View Dataset"
+msgstr "Zobacz metadane"
 
 msgid "Attribute Information"
 msgstr "Informacje o atrybucie"
@@ -2334,26 +2499,40 @@ msgstr "Katalog funkcji ISO"
 msgid "Legend"
 msgstr "Legenda"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "Mapy korzystające z tej warstwy"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "Lista map korzystających z tej warstwy:"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "Ta warstwa nie jest obecnie używana w żadnej z map."
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "Stwórz mapę za pomocą tej warstwy"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr ""
 "Kliknij przycisk poniżej, aby wygenerować nową mapę opartą na tej warstwie."
 
-msgid "Add the layer to an existing map"
+#, fuzzy
+#| msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr "Dodaj warstwę do istniejącej mapy"
 
-msgid "Click the button below to add the layer to the selected map."
+#, fuzzy
+#| msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "Kliknij przycisk poniżej, aby dodać warstwę do wybranej mapy."
 
 msgid "Add to Map"
@@ -2387,9 +2566,14 @@ msgstr "Źródło"
 msgid "Refresh Attributes and Statistics of this layer"
 msgstr "Odśwież atrybuty i statystyki tej warstwy"
 
+#, fuzzy
+#| msgid ""
+#| "Click the button below to allow GeoNode refreshing the list of available "
+#| "Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+#| "backend, it will recalculate their statistics too."
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 "Kliknij przycisk poniżej, aby zezwolić GeoNode na odświeżenie listy "
@@ -2407,20 +2591,18 @@ msgstr ""
 "Kliknij przycisk poniżej, aby wyczyścić pamięć podręczną kafelków tej "
 "warstwy."
 
-msgid "Empty Tiled-Layer Cache"
+#, fuzzy
+#| msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr "Opróżnij pamięć podręczną warstw kafelkowych"
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Kliknij przycisk poniżej, aby zmienić uprawnienia tej warstwy."
 
-msgid "Change Layer Permissions"
+#, fuzzy
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
 msgstr "Zmień uprawnienia warstwy"
-
-msgid "Processing..."
-msgstr "Przetwarzanie..."
-
-msgid "Updating Permissions..."
-msgstr "Aktualizowanie uprawnień..."
 
 msgid "Remove Mosaic Granules"
 msgstr "Usuń granulki mozaiki"
@@ -2443,8 +2625,10 @@ msgstr "To działanie to ma wpływ na następujące mapy:"
 msgid "No maps are using this layer"
 msgstr "Brak map korzystających z tej warstwy"
 
-msgid "Upload Layers"
-msgstr "Prześlij warstwy"
+#, fuzzy
+#| msgid "Upload Metadata"
+msgid "Upload Datasets"
+msgstr "Prześlij metadane"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2503,13 +2687,17 @@ msgstr "BŁĄD"
 msgid "Following items are required:"
 msgstr ""
 
-msgid "Upload Layer Metadata"
+#, fuzzy
+#| msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "Prześlij metadane warstwy"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 
-msgid "Remove Layers"
+#, fuzzy
+#| msgid "Remove Layers"
+msgid "Remove Datasets"
 msgstr "Usuń warstwy"
 
 #, python-format
@@ -2524,7 +2712,9 @@ msgstr ""
 "%(layer_title)s</a>?\n"
 "        "
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "Zastąp warstwę"
 
 msgid "Manage Styles"
@@ -2542,7 +2732,9 @@ msgstr ""
 "%(layer_title)s</a>\n"
 "     "
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "Domyślny styl warstwy"
 
 msgid "Available styles"
@@ -2558,7 +2750,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "Zaktualizuj dostępne style"
 
-msgid "Upload Layer Style"
+msgid "Return to Layer"
+msgstr "Wróć do warstwy"
+
+#, fuzzy
+#| msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "Prześlij styl warstwy"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2576,8 +2773,10 @@ msgstr "Podgląd"
 msgid "Dataset Attributes"
 msgstr "Atrybuty zbioru danych"
 
-msgid "Upload Layer"
-msgstr "Prześlij warstwę"
+#, fuzzy
+#| msgid "Upload Metadata"
+msgid "Upload Dataset"
+msgstr "Prześlij metadane"
 
 #, fuzzy
 #| msgid "Upload Metadata"
@@ -2626,7 +2825,9 @@ msgstr "Niekompletnie przesłane pliki"
 msgid "Are you sure you want to remove this incomplete upload?"
 msgstr "Czy na pewno chcesz usunąć ten plik?"
 
-msgid "Upload Layer Step: Set SRS"
+#, fuzzy
+#| msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "Przesyłanie warstwy: określ układ współrzędnych"
 
 msgid "Provide CRS for "
@@ -2635,11 +2836,23 @@ msgstr "Zdefiniuj CRS dla "
 msgid "Coordinate Reference System"
 msgstr "Układ współrzędnych"
 
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "                A coordinate reference system for this layer could not be "
+#| "determined.\n"
+#| "                Locate or enter the appropriate ESPG code for this layer "
+#| "below.\n"
+#| "                One way to do this is do visit:\n"
+#| "                <a href=\"http://prj2epsg.org/search\" target=\"_"
+#| "\">prj2epsg</a>\n"
+#| "                and enter the following:\n"
+#| "            "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2835,7 +3048,9 @@ msgid ""
 "                        "
 msgstr ""
 
-msgid "Upload Layer Step: CSV Field Mapping"
+#, fuzzy
+#| msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "Przesyłanie warstwy: mapowanie pól CSV"
 
 msgid "Geospatial Data"
@@ -2881,7 +3096,9 @@ msgstr "Wróć do"
 msgid "Upload Form"
 msgstr "Formularz przesyłania"
 
-msgid "Upload Layer Step: Time"
+#, fuzzy
+#| msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "Przesyłanie warstwy: czas"
 
 msgid "Inspect data for "
@@ -3001,12 +3218,21 @@ msgstr "Rozdzielczość atrybutu czasu"
 msgid "Enabling Time"
 msgstr "Włączanie czasu"
 
+#, fuzzy
+#| msgid ""
+#| "A layer can support one or two time attributes. If a single\n"
+#| "                        attribute is used, the layer is considered to "
+#| "contain data that is valid at single points in time. If two\n"
+#| "                        attributes are used, the second attribute "
+#| "represents the end of a valid period  hence the layer is considered\n"
+#| "                        to contain data that is valid at certain periods "
+#| "in time."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3093,27 +3319,20 @@ msgstr " Lub przejdź do "
 msgid "now"
 msgstr "teraz"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr "Próbujesz zastąpić warstwę wektorową nieznanym formatem."
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
-
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with a raster."
-msgid "You are attempting to {action_type} a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr "Próbujesz zastąpić warstwę wektorową rastrem."
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a raster layer with a vector."
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr "Próbujesz zastąpić warstwę rastrową wektorem."
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with an unknown format."
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr "Próbujesz zastąpić warstwę wektorową nieznanym formatem."
 
 #, fuzzy, python-brace-format
@@ -3126,7 +3345,9 @@ msgid ""
 msgstr ""
 "Proszę upewnić się, że nazwa jest zgodna z plikiem, który chcesz zastąpić."
 
-msgid "Local GeoNode layer has no geometry type."
+#, fuzzy
+#| msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr "Warstwa lokalna GeoNode nie ma typu geometrii."
 
 #, fuzzy, python-brace-format
@@ -3143,10 +3364,10 @@ msgstr ""
 "geometrii                                 zgodny z plikiem, który chcesz "
 "zastąpić."
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 #, fuzzy
@@ -3163,40 +3384,49 @@ msgstr ""
 "Wystąpił błąd podczas próby przesyłania danych. Spróbuj ponownie lub "
 "skontaktuj się z administratorem, jeśli problem nadal występuje."
 
+#, fuzzy
+#| msgid ""
+#| "Note: this layer's orginal metadata was populated and preserved by "
+#| "importing a metadata XML file. This metadata cannot be edited."
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
 "Uwaga: metadane tej warstwy zostały wypełnione i zapisane poprzez import z "
 "pliku XML. Te metadane nie mogą być edytowane."
 
-msgid "You are not permitted to delete this layer"
+#, fuzzy
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
 msgstr "Nie masz uprawnień, aby usunąć tę warstwę"
 
-msgid "You do not have permissions for this layer."
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
 msgstr "Nie masz uprawnień do tej warstwy."
 
-msgid "You are not permitted to modify this layer"
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
 msgstr "Nie masz uprawnień, aby zmodyfikować tę warstwę"
 
-msgid "You are not permitted to modify this layer's metadata"
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
 msgstr "Nie masz uprawnień, aby zmodyfikować metadane tej warstwy"
 
-msgid "You are not permitted to view this layer"
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
 msgstr "Nie masz uprawnień, aby zobaczyć tę warstwę"
 
-msgid "Failed to upload the layer"
-msgstr "Nie udało się przesłać warstwy"
-
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr "Próbujesz zastąpić warstwę wektorową rastrem."
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr "Próbujesz zastąpić warstwę rastrową wektorem."
-
+#, fuzzy
+#| msgid ""
+#| "This layer is a member of a layer group, you must remove the layer from "
+#| "the group before deleting."
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 "Ta warstwa należy do grupy warstw, przed jej usunięciem musisz usunąć "
 "warstwę z grupy."
@@ -4011,6 +4241,17 @@ msgstr "Nie znaleziono plików."
 msgid "Not Authorized"
 msgstr "Nieautoryzowany"
 
+#, fuzzy
+#| msgid "GeoNode Themes Library"
+msgid "GeoNode Resource Processing Library"
+msgstr "Biblioteka motywów GeoNode"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr "Sesja wygasła. Proszę, zaloguj się ponownie!"
 
@@ -4171,8 +4412,8 @@ msgstr "Edytuj usługę"
 msgid "Services"
 msgstr "Usługi"
 
-msgid "Register a new Service"
-msgstr "Zarejestruj nowę usługę"
+msgid "Add Remote Service"
+msgstr "Dodaj usługę zdalną"
 
 msgid "Remote Services"
 msgstr "Usługi zdalne"
@@ -4257,6 +4498,11 @@ msgstr "Zasób {} jest przetwarzany"
 msgid "Service rescanned successfully"
 msgstr "Pomyślnie ponwnie przeskanowano usługę"
 
+#, fuzzy
+#| msgid "You are not permitted to save or edit this resource."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "Nie masz uprawnień, aby zapisać lub edytować ten zasób."
+
 msgid "You are not permitted to change this service."
 msgstr "Nie masz uprawnień, aby zmienić tę usługę."
 
@@ -4330,6 +4576,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr "Przełącz nawigację"
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "zbiór danych"
+
 msgid "People"
 msgstr "Ludzie"
 
@@ -4373,8 +4624,10 @@ msgstr ""
 "com/GeoNode/geonode/issues\">GeoNode issue tracker</a>\n"
 "            "
 
-msgid "Add Remote Service"
-msgstr "Dodaj usługę zdalną"
+#, fuzzy
+#| msgid "Create a new layer"
+msgid "Create a new dataset"
+msgstr "Stwórz nową warstwę"
 
 msgid "Create Map"
 msgstr "Stwórz mapę"
@@ -4469,10 +4722,14 @@ msgstr "Kto może pobrać zasób?"
 msgid "Who can change metadata for it?"
 msgstr "Kto może edytować metadane zasobu?"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "Kto może edytować dane tej warstwy?"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "Kto może edytować style tej warstwy?"
 
 msgid ""
@@ -5120,11 +5377,19 @@ msgstr "Przesyłanie..."
 msgid "Upload in progress..."
 msgstr "Trwa przesyłanie..."
 
+msgid "Processing..."
+msgstr "Przetwarzanie..."
+
 msgid "Updating Thumbnail..."
 msgstr "Aktualizuję miniaturę..."
 
 msgid "Message. Do you want to proceed?"
 msgstr "Wiadomość. Czy chcesz kontynuować?"
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "Processing Resource..."
+msgstr "Harwestowanie zasobów..."
 
 msgid "Information for Developers"
 msgstr "Informacje dla deweloperów"
@@ -5208,8 +5473,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5403,10 +5668,14 @@ msgstr ""
 "użytkowników, organizacje i źródła publiczne. Pobierz dane w standardowych "
 "formatach."
 
-msgid "Add layers"
-msgstr "Dodaj warstwy"
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "zbiór danych"
 
-msgid "Explore layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
 msgstr "Przeglądaj warstwy"
 
 msgid ""
@@ -5892,7 +6161,9 @@ msgstr ""
 msgid "Filters"
 msgstr "Filtry"
 
-msgid "Layers found"
+#, fuzzy
+#| msgid "Layers found"
+msgid "Datasets found"
 msgstr "Warstwy"
 
 msgid "Maps found"
@@ -5934,6 +6205,11 @@ msgstr "Najbardziej popularne"
 
 msgid "Text"
 msgstr "Tekst"
+
+#, fuzzy
+#| msgid "Share This"
+msgid "Share This Dataset"
+msgstr "Udostępnij"
 
 msgid "Share This"
 msgstr "Udostępnij"
@@ -6113,6 +6389,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6199,6 +6479,51 @@ msgstr "Nieprawidłowy poziom uprawnień."
 
 msgid "Permission Denied"
 msgstr "Odmowa dostępu"
+
+#~ msgid "Layer name"
+#~ msgstr "Nazwa warstwy"
+
+#~ msgid "Layer title"
+#~ msgstr "Tytuł warstwy"
+
+#~ msgid "Create Layer"
+#~ msgstr "Stwórz warstwę"
+
+#~ msgid "Download Layer"
+#~ msgstr "Pobierz warstwę"
+
+#~ msgid "View Layer"
+#~ msgstr "Zobacz warstwę"
+
+#~ msgid "Updating Permissions..."
+#~ msgstr "Aktualizowanie uprawnień..."
+
+#~ msgid "Upload Layers"
+#~ msgstr "Prześlij warstwy"
+
+#~ msgid "Upload Layer"
+#~ msgstr "Prześlij warstwę"
+
+#~ msgid "You are attempting to replace a vector layer with an unknown format."
+#~ msgstr "Próbujesz zastąpić warstwę wektorową nieznanym formatem."
+
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Nie udało się przesłać warstwy"
+
+#~ msgid "You are attempting to replace a vector layer with a raster."
+#~ msgstr "Próbujesz zastąpić warstwę wektorową rastrem."
+
+#~ msgid "You are attempting to replace a raster layer with a vector."
+#~ msgstr "Próbujesz zastąpić warstwę rastrową wektorem."
+
+#~ msgid "Register a new Service"
+#~ msgstr "Zarejestruj nowę usługę"
+
+#~ msgid "Add layers"
+#~ msgstr "Dodaj warstwy"
+
+#~ msgid "Explore layers"
+#~ msgstr "Przeglądaj warstwy"
 
 #~ msgid "batch edit"
 #~ msgstr "edycja zbiorcza"

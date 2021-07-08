@@ -33,7 +33,6 @@ from django.contrib.gis.geos import Polygon
 from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission, Group
-from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from geonode.maps.models import Map
@@ -160,12 +159,7 @@ def create_models(type=None, integration=False):
         map_data, user_data, people_data, layer_data, document_data = create_fixtures()
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
         cont_group, created = Group.objects.get_or_create(name='contributors')
-        ctype = ContentType.objects.get_for_model(cont_group)
-        perm, created = Permission.objects.get_or_create(
-            codename='base_addresourcebase',
-            name='Can add resources',
-            content_type=ctype
-        )
+        perm = Permission.objects.get(codename='add_resourcebase')
         cont_group.permissions.add(perm)
         logger.debug("[SetUp] Get or create user admin")
         u, created = get_user_model().objects.get_or_create(username='admin')
@@ -246,7 +240,7 @@ def create_models(type=None, integration=False):
                         m.save()
 
             if not type or ensure_string(type) == 'layer':
-                for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('raster', 'vector'))):
+                for ld, owner, storetype in zip(layer_data, cycle(users), cycle(('raster', 'vector'))):
                     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                     end = start + timedelta(days=365)
                     logger.debug(f"[SetUp] Add layer {title}")
@@ -263,7 +257,7 @@ def create_models(type=None, integration=False):
                         temporal_extent_start=start,
                         temporal_extent_end=end,
                         date=start,
-                        storeType=storeType,
+                        storetype=storetype,
                         category=category,
                         metadata_only=title == 'layer metadata true'
                     )
@@ -352,7 +346,7 @@ def create_single_layer(name):
         temporal_extent_start=test_datetime,
         temporal_extent_end=test_datetime,
         date=start,
-        storeType="vector",
+        storetype="vector",
         resource_type="layer",
         typename=f"geonode:{title}"
     )

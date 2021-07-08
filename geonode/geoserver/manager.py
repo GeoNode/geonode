@@ -16,8 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
+import typing
 import logging
 import tempfile
+import dataclasses
+
+from gsimporter.api import Session
 
 from django.conf import settings
 from django.db.models.query import QuerySet
@@ -50,13 +55,17 @@ from .tasks import (
     geoserver_create_style,
     geoserver_cascading_delete,
     geoserver_create_thumbnail)
-from .signals import geoserver_post_save_local
 from .helpers import (
+    SpatialFilesLayerType,
     gs_catalog,
     gs_uploader,
     set_styles,
     set_time_info,
-    ogc_server_settings)
+    ogc_server_settings,
+    get_spatial_files_layer_type,
+    sync_instance_with_geoserver,
+    set_attributes_from_geoserver,
+    create_geoserver_db_featurestore)
 from .security import (
     _get_gf_services,
     get_user_geolimits,
@@ -68,15 +77,25 @@ from .security import (
 logger = logging.getLogger(__name__)
 
 
+@dataclasses.dataclass()
+class GeoServerImporterSessionInfo:
+    upload_session: Upload
+    import_session: Session
+    spatial_files_type: SpatialFilesLayerType
+    layer_name: typing.AnyStr
+    workspace: typing.AnyStr
+    target_store: typing.AnyStr
+
+
 class GeoServerResourceManager(ResourceManagerInterface):
 
-    def search(self, filter: dict, /, type: object = None) -> QuerySet:
-        return type.objects.none()
+    def search(self, filter: dict, /, resource_type: typing.Optional[object]) -> QuerySet:
+        return resource_type.objects.none()
 
     def exists(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         if instance:
             _real_instance = instance.get_real_instance()
-            if hasattr(_real_instance, 'storeType') and _real_instance.storeType not in ['tileStore', 'remote']:
+            if hasattr(_real_instance, 'storetype') and _real_instance.storetype not in ['tileStore', 'remote']:
                 try:
                     logger.debug(f"Searching GeoServer for layer '{_real_instance.alternate}'")
                     if gs_catalog.get_layer(_real_instance.alternate):
@@ -100,19 +119,31 @@ class GeoServerResourceManager(ResourceManagerInterface):
             elif isinstance(_real_instance, Map):
                 geoserver_delete_map.apply_async((_real_instance.id, ))
 
-    def create(self, uuid: str, /, resource_type: object = None, defaults: dict = {}) -> ResourceBase:
-        if resource_type:
-            _resource = resource_type.objects.get(uuid=uuid)
-            if resource_type == Layer:
-                geoserver_post_save_local(_resource)
-            return _resource
-        return None
+    def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
+        _resource = resource_type.objects.get(uuid=uuid)
+        if resource_type == Layer:
+            return sync_instance_with_geoserver(_resource.id)
+        return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
                vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
         if instance:
             if isinstance(instance.get_real_instance(), Layer):
-                geoserver_post_save_local(instance.get_real_instance())
+                return sync_instance_with_geoserver(instance.id)
+        return instance
+
+    def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
+        instance = ResourceManager._get_instance(uuid)
+        if instance and isinstance(instance.get_real_instance(), Layer):
+            instance = self.import_layer(
+                'import_layer',
+                instance.uuid,
+                instance=instance,
+                files=files,
+                user=defaults.get('user', instance.owner),
+                defaults=defaults,
+                action_type='create',
+                importer_session_opts=kwargs)
         return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
@@ -124,7 +155,8 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 files=defaults.get('files', None),
                 user=defaults.get('user', instance.owner),
                 defaults=defaults,
-                action_type='create')
+                action_type='create',
+                importer_session_opts=defaults.get('importer_session_opts', None))
         return instance
 
     def append(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
@@ -135,7 +167,8 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 instance=instance,
                 files=vals.get('files', None),
                 user=vals.get('user', instance.owner),
-                action_type='append')
+                action_type='append',
+                importer_session_opts=vals.get('importer_session_opts', None))
         return instance
 
     def replace(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
@@ -146,68 +179,176 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 instance=instance,
                 files=vals.get('files', None),
                 user=vals.get('user', instance.owner),
-                action_type='replace')
+                action_type='replace',
+                importer_session_opts=vals.get('importer_session_opts', None))
         return instance
 
     def import_layer(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         instance = instance or ResourceManager._get_instance(uuid)
 
         if instance and isinstance(instance.get_real_instance(), Layer):
-            upload_session, import_session = self._revise_resource_value(
-                instance,
-                kwargs.get('files', None),
-                kwargs.get('user', instance.owner),
-                action_type=kwargs.get('action_type', 'create'))
-            upload_session.save()
-            if import_session and import_session.state == enumerations.STATE_COMPLETE:
-                _alternate = f'{instance.workspace}:{import_session.tasks[0].layer.name}'
-                instance.name = import_session.tasks[0].layer.name
-                instance.alternate = _alternate
-                if 'defaults' in kwargs:
-                    kwargs['defaults']['name'] = import_session.tasks[0].layer.name
-                    kwargs['defaults']['alternate'] = _alternate
+            try:
+                _gs_import_session_info = self._revise_resource_value(
+                    instance,
+                    kwargs.get('files', None),
+                    kwargs.get('user', instance.owner),
+                    action_type=kwargs.get('action_type', 'create'))
+                upload_session = _gs_import_session_info.upload_session
+                upload_session.save()
+                import_session = _gs_import_session_info.import_session
+                if import_session and import_session.state == enumerations.STATE_COMPLETE:
+                    _alternate = f'{_gs_import_session_info.workspace}:{_gs_import_session_info.layer_name}'
+                    if 'defaults' in kwargs:
+                        kwargs['defaults']['name'] = _gs_import_session_info.layer_name
+                        kwargs['defaults']['title'] = instance.title or _gs_import_session_info.layer_name
+                        kwargs['defaults']['files'] = kwargs.get('files', None)
+                        kwargs['defaults']['workspace'] = _gs_import_session_info.workspace
+                        kwargs['defaults']['alternate'] = _alternate
+                        kwargs['defaults']['typename'] = _alternate
+                        kwargs['defaults']['store'] = _gs_import_session_info.target_store or _gs_import_session_info.layer_name
+                        kwargs['defaults']['storetype'] = _gs_import_session_info.spatial_files_type.layer_type
+                    instance.get_real_instance().name = _gs_import_session_info.layer_name
+                    instance.get_real_instance().title = instance.title or _gs_import_session_info.layer_name
+                    instance.get_real_instance().files = kwargs.get('files', None)
+                    instance.get_real_instance().workspace = _gs_import_session_info.workspace
+                    instance.get_real_instance().alternate = _alternate
+                    instance.get_real_instance().typename = _alternate
+                    instance.get_real_instance().store = _gs_import_session_info.target_store or _gs_import_session_info.layer_name
+                    instance.get_real_instance().storetype = _gs_import_session_info.spatial_files_type.layer_type
+                    if kwargs.get('action_type', 'create') == 'create':
+                        set_styles(instance.get_real_instance(), gs_catalog)
+                        set_attributes_from_geoserver(instance.get_real_instance(), overwrite=True)
+                elif kwargs.get('action_type', 'create') == 'create':
+                    raise Exception(f"Importer Session not valid - STATE: {import_session.state}")
+            except Exception as e:
+                logger.exception(e)
                 if kwargs.get('action_type', 'create') == 'create':
-                    set_styles(instance.get_real_instance(), gs_catalog)
+                    instance.delete()
+                    instance = None
         return instance
 
-    def _revise_resource_value(self, instance, files: list, user, action_type: str):
-        upload_session, _ = Upload.objects.get_or_create(resource=instance.resourcebase_ptr, user=user)
-        upload_session.resource = instance.resourcebase_ptr
+    def _revise_resource_value(self, instance, files: list, user, action_type: str, importer_session_opts: dict = {}):
+        from geonode.upload.files import ALLOWED_EXTENSIONS
+
+        spatial_files_type = get_spatial_files_layer_type(ALLOWED_EXTENSIONS, files)
+
+        if not spatial_files_type:
+            raise Exception("No suitable Spatial Files avaialable for 'ALLOWED_EXTENSIONS' = {ALLOWED_EXTENSIONS}.")
+        if importer_session_opts:
+            # TODO: not supported yet
+            pass
+
+        upload_session, _ = Upload.objects.get_or_create(resource=instance.get_real_instance().resourcebase_ptr, user=user)
+        upload_session.resource = instance.get_real_instance().resourcebase_ptr
         upload_session.processed = False
         upload_session.save()
-        gs_layer = gs_catalog.get_layer(instance.name)
-        #  opening Import session for the selected layer
-        if not gs_layer:
-            raise Exception("Layer is not available in GeoServer")
 
-        _target_store = gs_layer.resource.store.name if instance.storeType == 'vector' else None
+        _name = instance.get_real_instance().name
+        if not _name:
+            _name = importer_session_opts.get('name', None) or os.path.splitext(os.path.basename(spatial_files_type.base_file))[0]
+        instance.get_real_instance().name = _name
+
+        gs_layer = None
+        try:
+            gs_layer = gs_catalog.get_layer(_name)
+        except Exception as e:
+            logger.debug(e)
+
+        _workspace = None
+        _target_store = None
+        if gs_layer:
+            _target_store = gs_layer.resource.store.name if instance.get_real_instance().storetype == 'vector' else None
+            _workspace = gs_layer.resource.workspace.name if gs_layer.resource.workspace else None
+
+        if not _workspace:
+            if importer_session_opts:
+                _workspace = importer_session_opts.get('workspace', instance.get_real_instance().workspace)
+            if not _workspace:
+                _workspace = instance.get_real_instance().workspace or settings.DEFAULT_WORKSPACE
+
+        if not _target_store:
+            if instance.get_real_instance().storetype == 'vector' or spatial_files_type.layer_type == 'vector':
+                _dsname = ogc_server_settings.datastore_db['NAME']
+                _ds = create_geoserver_db_featurestore(store_name=_dsname, workspace=_workspace)
+                if _ds:
+                    _target_store = importer_session_opts.get('target_store', None) or _dsname
+
+        #  opening Import session for the selected layer
         import_session = gs_uploader.start_import(
             import_id=upload_session.id,
-            name=instance.name,
+            name=_name,
             target_store=_target_store
         )
 
-        import_session.upload_task(files)
-        task = import_session.tasks[0]
-        #  Changing layer name, mode and target
-        task.layer.set_target_layer_name(instance.name)
-        task.set_update_mode(action_type.upper())
-        task.set_target(
-            store_name=_target_store,
-            workspace=gs_layer.resource.workspace.name
+        _gs_import_session_info = GeoServerImporterSessionInfo(
+            upload_session=upload_session,
+            import_session=import_session,
+            spatial_files_type=spatial_files_type,
+            layer_name=None,
+            workspace=_workspace,
+            target_store=_target_store
         )
-        #  Starting import process
-        import_session.commit()
 
-        # Updating Resource with the files replaced
-        if action_type.lower() == 'replace':
-            updated_files_list = storage_manager.replace(instance, files)
-            # Using update instead of save in order to avoid calling
-            # side-effect function of the resource
-            r = ResourceBase.objects.filter(id=instance.id)
-            r.update(**updated_files_list)
+        _local_files = []
+        _temporary_files = []
+        try:
+            for _f in files:
+                if os.path.exists(_f) and os.path.isfile(_f):
+                    _local_files.append(os.path.abspath(_f))
+                    try:
+                        os.close(_f)
+                    except Exception:
+                        pass
+                else:
+                    _suffix = os.path.splitext(os.path.basename(_f))[1] if len(os.path.splitext(os.path.basename(_f))) else None
+                    with tempfile.NamedTemporaryFile(mode="wb+", delete=False, dir=settings.MEDIA_ROOT, suffix=_suffix) as _tmp_file:
+                        _tmp_file.write(storage_manager.open(_f, 'rb+').read())
+                        _tmp_file.seek(0)
+                        _tmp_file_name = f'{_tmp_file.name}'
+                        _local_files.append(os.path.abspath(_tmp_file_name))
+                        _temporary_files.append(os.path.abspath(_tmp_file_name))
+                    try:
+                        storage_manager.close(_f)
+                    except Exception:
+                        pass
+        except Exception as e:
+            logger.exception(e)
 
-        return upload_session, gs_uploader.get_session(import_session.id)
+        if _local_files:
+            try:
+                import_session.upload_task(_local_files)
+                task = import_session.tasks[0]
+                #  Changing layer name, mode and target
+                task.layer.set_target_layer_name(_name)
+                task.set_update_mode(action_type.upper())
+                task.set_target(
+                    store_name=_target_store,
+                    workspace=_workspace
+                )
+                #  Starting import process
+                import_session.commit()
+
+                # Updating Resource with the files replaced
+                if action_type.lower() == 'replace':
+                    updated_files_list = storage_manager.replace(instance, files)
+                    # Using update instead of save in order to avoid calling
+                    # side-effect function of the resource
+                    r = ResourceBase.objects.filter(id=instance.id)
+                    r.update(**updated_files_list)
+                else:
+                    instance.files = files
+
+                import_session = gs_uploader.get_session(import_session.id)
+                _gs_import_session_info.import_session = import_session
+                _gs_import_session_info.layer_name = import_session.tasks[0].layer.name
+            finally:
+                for _f in _temporary_files:
+                    try:
+                        os.remove(_f)
+                    except Exception as e:
+                        logger.debug(e)
+
+        return _gs_import_session_info
 
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         instance = instance or ResourceManager._get_instance(uuid)
@@ -435,7 +576,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         if instance and isinstance(instance.get_real_instance(), Layer):
             try:
                 if kwargs.get('time_info', None):
-                    set_time_info(instance.get_real_instance(), kwargs['time_info'])
+                    set_time_info(instance.get_real_instance(), **kwargs['time_info'])
             except Exception as e:
                 logger.exception(e)
                 return None

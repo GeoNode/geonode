@@ -16,33 +16,24 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.base import enumerations
 import re
-import uuid
 import logging
 
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.db.models import signals
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
 
 from tinymce.models import HTMLField
-from pinax.ratings.models import OverallRating
 
-from geonode.people.utils import get_valid_user
+from geonode.base import enumerations
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.base.models import (
     ResourceBase,
     ResourceBaseManager)
-from geonode.notifications_helper import (
-    send_notification,
-    get_notification_recipients)
 
-from ..services.enumerations import CASCADED
 from ..services.enumerations import INDEXED
 
 logger = logging.getLogger("geonode.layers.models")
@@ -51,7 +42,6 @@ shp_exts = ['.shp', ]
 csv_exts = ['.csv']
 kml_exts = ['.kml']
 vec_exts = shp_exts + csv_exts + kml_exts
-
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif', '.asc']
 
 TIME_REGEX = (
@@ -65,10 +55,6 @@ TIME_REGEX_FORMAT = {
     '[0-9]{8}T[0-9]{6}': '%Y%m%dT%H%M%S',
     '[0-9]{8}T[0-9]{6}Z': '%Y%m%dT%H%M%SZ'
 }
-
-# these are only used if there is no user-configured value in the settings
-_DEFAULT_CASCADE_WORKSPACE = "cascaded-services"
-_DEFAULT_WORKSPACE = "cascaded-services"
 
 
 class Style(models.Model, PermissionLevelMixin):
@@ -139,7 +125,7 @@ class Layer(ResourceBase):
     objects = LayerManager()
     workspace = models.CharField(_('Workspace'), max_length=128)
     store = models.CharField(_('Store'), max_length=128)
-    storeType = models.CharField(_('Storetype'), max_length=128)
+
     name = models.CharField(_('Name'), max_length=128)
     typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
 
@@ -178,7 +164,7 @@ class Layer(ResourceBase):
         null=True)
 
     def is_vector(self):
-        return self.storeType == 'vector'
+        return self.storetype == 'vector'
 
     @property
     def processed(self):
@@ -190,9 +176,9 @@ class Layer(ResourceBase):
 
     @property
     def display_type(self):
-        if self.storeType == "vector":
+        if self.storetype == "vector":
             return "Vector Data"
-        elif self.storeType == "raster":
+        elif self.storetype == "raster":
             return "Raster Data"
         else:
             return "Data"
@@ -279,7 +265,7 @@ class Layer(ResourceBase):
 
         # we need to check, for shapefile, if column names are valid
         list_col = None
-        if self.storeType == 'vector':
+        if self.storetype == 'vector':
             valid_shp, wrong_column_name, list_col = check_shp_columnnames(
                 self)
             if wrong_column_name:
@@ -533,158 +519,3 @@ class Attribute(models.Model):
 
     def unique_values_as_list(self):
         return self.unique_values.split(',')
-
-
-def _get_alternate_name(instance):
-    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
-        result = instance.name
-    elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
-        _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
-        result = f"{_ws}:{instance.name}"
-    else:  # we are not dealing with a service-related instance
-        _ws = getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
-        result = f"{_ws}:{instance.name}"
-    return result
-
-
-def pre_save_layer(instance, sender, **kwargs):
-    if kwargs.get('raw', False):
-        try:
-            _resourcebase_ptr = instance.resourcebase_ptr
-            instance.owner = _resourcebase_ptr.owner
-            instance.uuid = _resourcebase_ptr.uuid
-            instance.bbox_polygon = _resourcebase_ptr.bbox_polygon
-            instance.srid = _resourcebase_ptr.srid
-        except Exception as e:
-            logger.exception(e)
-
-    if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = 'No abstract provided'
-    if instance.title == '' or instance.title is None:
-        instance.title = instance.name
-
-    # Set a default user for accountstream to work correctly.
-    if instance.owner is None:
-        instance.owner = get_valid_user()
-
-    logger.debug("handling UUID In pre_save_layer")
-    if hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
-        logger.debug("using custom uuid handler In pre_save_layer")
-        from geonode.layers.utils import get_uuid_handler
-        instance.uuid = get_uuid_handler()(instance).create_uuid()
-    else:
-        if instance.uuid == '':
-            instance.uuid = str(uuid.uuid1())
-
-    logger.debug("In pre_save_layer")
-    if instance.alternate is None:
-        instance.alternate = _get_alternate_name(instance)
-    logger.debug(f"instance.alternate is: {instance.alternate}")
-
-    base_file, info = instance.get_base_file()
-
-    if info:
-        instance.info = info
-
-    if base_file is not None:
-        extension = f'.{base_file.name}'
-        if extension in vec_exts:
-            instance.storeType = 'vector'
-        elif extension in cov_exts:
-            instance.storeType = 'raster'
-
-    if instance.bbox_polygon is None:
-        instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
-    instance.set_bounds_from_bbox(
-        instance.bbox_polygon,
-        instance.srid or instance.bbox_polygon.srid
-    )
-
-    # Send a notification when a layer is created
-    if instance.pk is None and instance.title:
-        # Resource Created
-        notice_type_label = f'{instance.class_name.lower()}_created'
-        recipients = get_notification_recipients(notice_type_label, resource=instance)
-        send_notification(recipients, notice_type_label, {'resource': instance})
-
-
-def pre_delete_layer(instance, sender, **kwargs):
-    """
-    Remove any associated style to the layer, if it is not used by other layers.
-    Default style will be deleted in post_delete_layer
-    """
-    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
-        # we need to delete the maplayers here because in the post save layer.remote_service is not available anymore
-        # REFACTOR
-        from geonode.maps.models import MapLayer
-        logger.debug(
-            "Going to delete associated maplayers for [%s]",
-            instance.alternate)
-        MapLayer.objects.filter(
-            name=instance.alternate,
-            ows_url=instance.ows_url).delete()
-        return
-
-    logger.debug(
-        "Going to delete the styles associated for [%s]",
-        instance.alternate)
-    ct = ContentType.objects.get_for_model(instance)
-    OverallRating.objects.filter(
-        content_type=ct,
-        object_id=instance.id).delete()
-
-    default_style = instance.default_style
-    for style in instance.styles.all():
-        if style.layer_styles.all().count() == 1:
-            if style != default_style:
-                style.delete()
-
-    if 'geonode.upload' in settings.INSTALLED_APPS and \
-            settings.UPLOADER['BACKEND'] == 'geonode.importer':
-        from geonode.upload.models import Upload
-        # Need to call delete one by one in ordee to invoke the
-        #  'delete' overridden method
-        for upload in Upload.objects.filter(resource_id=instance.id):
-            upload.delete()
-
-    # Delete object permissions
-    from geonode.resource.manager import resource_manager
-    resource_manager.remove_permissions(instance.uuid, instance=instance)
-
-
-def post_delete_layer(instance, sender, **kwargs):
-    """
-    Removed the layer from any associated map, if any.
-    Remove the layer default style.
-    """
-    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
-        try:
-            from geonode.services.models import HarvestJob
-            HarvestJob.objects.filter(
-                service=instance.remote_service, resource_id=instance.alternate).delete()
-            resource_id = instance.alternate.split(":")[-1] if len(instance.alternate.split(":")) else None
-            if resource_id:
-                HarvestJob.objects.filter(
-                    service=instance.remote_service, resource_id=resource_id).delete()
-        except Exception as e:
-            logger.exception(e)
-        return
-
-    from geonode.maps.models import MapLayer
-    logger.debug(
-        "Going to delete associated maplayers for [%s]", instance.name)
-    MapLayer.objects.filter(
-        name=instance.alternate,
-        ows_url=instance.ows_url).delete()
-
-    logger.debug(
-        "Going to delete the default style for [%s]", instance.name)
-
-    if instance.default_style and Layer.objects.filter(
-            default_style__id=instance.default_style.id).count() == 0:
-        instance.default_style.delete()
-
-
-signals.pre_save.connect(pre_save_layer, sender=Layer)
-signals.pre_delete.connect(pre_delete_layer, sender=Layer)
-signals.post_delete.connect(post_delete_layer, sender=Layer)

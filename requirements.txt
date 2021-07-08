@@ -81,7 +81,7 @@ pinax-notifications==6.0.0
 pinax-ratings==4.0.0
 
 # GeoNode org maintained apps.
-# django-geonode-mapstore-client>=2.1.1
+# django-geonode-mapstore-client>=4.0.0
 -e git+https://github.com/geosolutions-it/geonode-mapstore-client.git@nexus_master#egg=django_geonode_mapstore_client
 geonode-avatar==5.0.7
 geonode-oauth-toolkit==2.2.1
@@ -91,7 +91,7 @@ geonode-django-activity-stream==0.10.0
 gn-arcrest==10.5.4
 geonode-dialogos==3.0.1
 geoserver-restconfig==2.0.4.9
-gn-gsimporter==2.0.1
+gn-gsimporter>=2.0.2
 gisdata==0.5.4
 
 # haystack/elasticsearch

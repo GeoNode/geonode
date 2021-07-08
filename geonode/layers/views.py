@@ -106,11 +106,13 @@ from geonode.utils import (
     build_social_links,
     GXPLayer,
     GXPMap)
-from geonode.geoserver.helpers import ogc_server_settings
+from geonode.geoserver.helpers import (
+    ogc_server_settings,
+    select_relevant_files,
+    write_uploaded_files_to_disk)
 from geonode.geoserver.security import set_geowebcache_invalidate_cache
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
-from geonode.upload.views import _select_relevant_files, _write_uploaded_files_to_disk
 
 from celery.utils.log import get_logger
 
@@ -127,14 +129,14 @@ MAX_SEARCH_BATCH_SIZE = 25
 GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
-METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this layer's orginal metadata was \
+METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this dataset's orginal metadata was \
 populated and preserved by importing a metadata XML file. This metadata cannot be edited.")
 
-_PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
-_PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
-_PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
-_PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metadata")
-_PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
+_PERMISSION_MSG_DELETE = _("You are not permitted to delete this dataset")
+_PERMISSION_MSG_GENERIC = _('You do not have permissions for this dataset.')
+_PERMISSION_MSG_MODIFY = _("You are not permitted to modify this dataset")
+_PERMISSION_MSG_METADATA = _("You are not permitted to modify this dataset's metadata")
+_PERMISSION_MSG_VIEW = _("You are not permitted to view this dataset")
 
 
 def log_snippet(log_file):
@@ -161,7 +163,7 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
         if len(service_typename) > 1:
             query['store'] = service_typename[0]
         else:
-            query['storeType'] = 'remote'
+            query['storetype'] = 'remote'
         return resolve_object(
             request,
             Layer,
@@ -183,9 +185,9 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
         else:
             query = {'alternate': alternate}
         test_query = Layer.objects.filter(**query)
-        if test_query.count() > 1 and test_query.exclude(storeType='remote').count() == 1:
+        if test_query.count() > 1 and test_query.exclude(storetype='remote').count() == 1:
             query = {
-                'id': test_query.exclude(storeType='remote').last().id
+                'id': test_query.exclude(storetype='remote').last().id
             }
         elif test_query.count() > 1:
             query = {
@@ -242,14 +244,14 @@ def layer_upload_metadata(request):
 
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
 
-        relevant_files = _select_relevant_files(
+        relevant_files = select_relevant_files(
             ['xml'],
             iter(request.FILES.values())
         )
 
         logger.debug(f"relevant_files: {relevant_files}")
 
-        _write_uploaded_files_to_disk(tempdir, relevant_files)
+        write_uploaded_files_to_disk(tempdir, relevant_files)
 
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
 
@@ -287,7 +289,7 @@ def layer_upload_metadata(request):
                 status=status_code)
         else:
             out['success'] = False
-            out['errors'] = "Layer selected does not exists"
+            out['errors'] = "Dataset selected does not exists"
             status_code = 404
         return HttpResponse(
             json.dumps(out),
@@ -430,7 +432,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "title": layer.title,
         "style": '',
         "queryable": True,
-        "storeType": layer.storeType,
+        "storetype": layer.storetype,
         "bbox": {
             layer.srid: {
                 "srs": layer.srid,
@@ -567,7 +569,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if 'show_popup' in request.GET and request.GET["show_popup"]:
         show_popup = True
 
-    if layer.storeType in ['tileStore', 'remote']:
+    if layer.storetype in ['tileStore', 'remote']:
         service = layer.remote_service
         source_params = {}
         if service.type in ('REST_MAP', 'REST_IMG'):
@@ -628,8 +630,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "all_times": all_times,
         "show_popup": show_popup,
         "filter": filter,
-        "storeType": layer.storeType,
-        "online": (layer.remote_service.probe == 200) if layer.storeType in ['tileStore', 'remote'] else True,
+        "storetype": layer.storetype,
+        "online": (layer.remote_service.probe == 200) if layer.storetype in ['tileStore', 'remote'] else True,
         "processed": layer.processed
     }
 
@@ -644,7 +646,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'DEFAULT_MAP_CRS',
         'EPSG:3857')
 
-    if layer.storeType == 'vector':
+    if layer.storetype == 'vector':
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
             Q(link_type='original'))
@@ -673,9 +675,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     context_dict["layer_name"] = json.dumps(layers_names)
     try:
         # get type of layer (raster or vector)
-        if layer.storeType == 'raster':
+        if layer.storetype == 'raster':
             context_dict["layer_type"] = "raster"
-        elif layer.storeType == 'vector':
+        elif layer.storetype == 'vector':
             if layer.has_time:
                 context_dict["layer_type"] = "vector_time"
             else:
@@ -774,7 +776,7 @@ def layer_feature_catalogue(
     if not layer:
         raise Http404(_("Not found"))
 
-    if layer.storeType != 'vector':
+    if layer.storetype != 'vector':
         out = {
             'success': False,
             'errors': 'layer is not a feature type'
@@ -859,7 +861,7 @@ def layer_metadata(
     config["title"] = layer.title
     config["queryable"] = True
 
-    if layer.storeType in ['tileStore', 'remote']:
+    if layer.storetype in ['tileStore', 'remote']:
         service = layer.remote_service
         source_params = {}
         if service.type in ('REST_MAP', 'REST_IMG'):
@@ -1384,7 +1386,7 @@ def layer_granule_remove(
             message = f'{_("Unable to delete layer")}: {layer.alternate}.'
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
-                    'This layer is a member of a layer group, you must remove the layer from the group '
+                    'This dataset is a member of a layer group, you must remove the dataset from the group '
                     'before deleting.')
 
             messages.error(request, message)
