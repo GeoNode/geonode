@@ -325,6 +325,12 @@ def document_post_save(instance, *args, **kwargs):
         name = "External Document"
         url = instance.doc_url
 
+    Document.objects.filter(id=instance.id).update(
+        extension=instance.extension,
+        doc_type=instance.doc_type,
+        doc_url=instance.doc_url,
+        csw_type=instance.csw_type)
+
     if name and url and ext:
         Link.objects.get_or_create(
             resource=instance.resourcebase_ptr,
@@ -359,6 +365,10 @@ def layer_post_save(instance, *args, **kwargs):
             instance.storeType = 'vector'
         elif extension in cov_exts:
             instance.storeType = 'raster'
+
+    Layer.objects.filter(id=instance.id).update(
+        storeType=instance.storeType,
+        info=instance.info)
 
 
 def metadata_post_save(instance, *args, **kwargs):
