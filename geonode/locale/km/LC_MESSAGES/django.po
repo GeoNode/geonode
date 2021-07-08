@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/geonode/geonode/language/"
@@ -457,6 +457,12 @@ msgstr ""
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -672,6 +678,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "ផ្លាស់​ប្តូ​រ​ពាក្យ​សម្ងាត់​ដោយ​ជោគជ័យ​។"
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -1005,6 +1020,9 @@ msgstr ""
 msgid "Link to"
 msgstr "តំណ​ទៅ"
 
+msgid "File"
+msgstr "ឯកសារ"
+
 msgid "Document must be a file or url."
 msgstr "ឯកសារ​ត្រូវ​តែ​ជា​ឯកសារ​ឬ URL ។"
 
@@ -1016,9 +1034,6 @@ msgstr "ប្រភេទ​ឯកសារ​នេះ​មិន​ត្រ
 
 msgid "Permissions must be valid JSON."
 msgstr "សិទ្ធិ​ត្រូវ​តែ​ជា JSON ត្រឹមត្រូវ​។"
-
-msgid "File"
-msgstr "ឯកសារ"
 
 msgid "The URL of the document if it is external."
 msgstr "URL របស់​ឯកសារ​នេះ​ប្រសិន​បើ​វា​គឺ​ជា​ការ​ខាង​ក្រៅ​។"
@@ -1075,6 +1090,9 @@ msgstr ""
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] ""
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr ""
@@ -1533,6 +1551,11 @@ msgstr ""
 "XML ។ ការ​នាំ​ចូល​ទិន្នន័យ​មេតា GeoNode គាំទ្រ​របស់​សំណុំ​រង​របស់​អាយ​អេ​ស​អូ​, FGDC​, និង​ទីក្រុង Dublin ស្នូល​"
 "ធាតុ​ទិន្នន័យ​មេតា​មួយ​។ មួយ​ចំនួន​នៃ​ទិន្នន័យ​មេតា​ដើម​របស់​អ្នក​អាច​ត្រូវ​បាន​បាត់​បង់​។"
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "ស្វែងរក​ផែនទី"
+
 #, python-format
 msgid ""
 "\n"
@@ -1541,6 +1564,11 @@ msgid ""
 msgstr ""
 "\n"
 "ការ​កែ​សម្រួល​ព័ត៌មាន​លម្អិត​សម្រាប់​ %(map_title)s"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "ត្រឡប់​ទៅ"
 
 #, fuzzy
 #| msgid "View Map"
@@ -1629,14 +1657,14 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "ឈ្មោះ​ស្រទាប់"
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "ទិន្នន័យ"
 
 #, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "ចំណងជើង​ស្រទាប់"
+#| msgid "Attributes"
+msgid "Dataset title"
+msgstr "គុណលក្ខណៈ"
 
 #, fuzzy
 #| msgid "property type"
@@ -1644,16 +1672,18 @@ msgid "Geometry type"
 msgstr "ប្រភេទ​អចលន​ទ្រព្យ"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "បង្កើត​ផែនទី​មួយ"
+#| msgid "feature type"
+msgid "Create Dataset"
+msgstr "ប្រភេទ​លក្ខណៈ​ពិសេស"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "រុករក​ស្រទាប់"
 
 #, fuzzy
 #| msgid "Create a map using this layer"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "បង្កើត​ផែនទី​ដោយ​ប្រើ​ស្រទាប់​នេះ"
 
 #, fuzzy
@@ -1691,6 +1721,9 @@ msgstr ""
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr ""
 
@@ -1723,9 +1756,6 @@ msgstr "ជា PDF"
 
 msgid "PNG"
 msgstr "PNG & ‧​;"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "អ្នក​មិន​មាន​សិទ្ធិ​ដើម្បី​ផ្លាស់​ប្តូ​រ​រចនាប័ទ្ម​សម្រាប់​ស្រទាប់​នេះ"
@@ -1977,6 +2007,119 @@ msgstr "បង្កើត​ក្រុម"
 
 msgid "Save"
 msgstr "រក្សា​ទុក"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "ធនធាន"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "ប្រមូល​ផល"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "កំណែ​របស់​ធនធាន​បាន​លើក​ឡើង​នោះ"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "កំណត់​សិទ្ធិ​នៅ​លើ​ធនធាន​ដែល​បាន​ជ្រើសរើស"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2265,11 +2408,13 @@ msgstr "កាលបរិច្ឆេទ​នៅពេល​ដែល​ស្
 
 #, fuzzy
 #| msgid "Edit Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "កែសម្រួល​ស្រទាប់"
 
-msgid "Return to Layer"
-msgstr ""
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Dataset"
+msgstr "ត្រឡប់​ទៅ"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2288,7 +2433,7 @@ msgstr "ផ្លាស់​ប្តូ​រ​ចំណុច​នៃ​ក
 msgid "Assign a new point of contact to the layers below:"
 msgstr "កំណត់​ចំណុច​ថ្មី​មួយ​នៃ​ទំនាក់​ទំនង​ទៅ​នឹង​ស្រទាប់​ខាងក្រោម​:"
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2349,14 +2494,18 @@ msgstr "មធ្យម"
 msgid "Standard Deviation"
 msgstr "ងាក​ស្តង់​ដា"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "វាយតម្លៃ​ស្រទាប់​នេះ"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "ស្រទាប់​ទាញ​យក"
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "ទាញ​យក"
 
 msgid "Images"
 msgstr ""
@@ -2443,9 +2592,9 @@ msgid "Edit data"
 msgstr ""
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "កែសម្រួល​ស្រទាប់"
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "កែសម្រួល​ទិន្នន័យ​មេតា"
 
 #, fuzzy
 #| msgid "format"
@@ -2458,27 +2607,37 @@ msgstr ""
 msgid "Legend"
 msgstr "តាង"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "ផែនទី​ការ​ប្រើ​ស្រទាប់​នេះ"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "បញ្ជី​នៃ​ផែនទី​ការ​ប្រើ​ស្រទាប់​នេះ​:"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "ស្រទាប់​នេះ​ត្រូវ​បាន​បច្ចុប្បន្ន​មិន​ត្រូវ​បាន​ប្រើ​ក្នុង​ផែន​ទី​ណា​មួយ​ឡើយ​។"
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "បង្កើត​ផែនទី​ដោយ​ប្រើ​ស្រទាប់​នេះ"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr "សូម​ចុច​ប៊ូតុង​ខាង​ក្រោម​ដើម្បី​បង្កើត​ផែនទី​ថ្មី​ដែល​មាន​មូលដ្ឋាន​នៅ​លើ​ស្រទាប់​នេះ​។"
 
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "សូម​ចុច​ប៊ូតុង​ខាង​ក្រោម​ដើម្បី​ផ្លាស់​ប្តូ​រ​សិទ្ធិ​របស់​ស្រទាប់​នេះ​។"
 
 #, fuzzy
@@ -2518,7 +2677,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2535,22 +2694,16 @@ msgstr "បង្កើត​ផែនទី​ដោយ​ប្រើ​ស្
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "សូម​ចុច​ប៊ូតុង​ខាង​ក្រោម​ដើម្បី​ផ្លាស់​ប្តូ​រ​សិទ្ធិ​របស់​ស្រទាប់​នេះ​។"
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr "សូម​ចុច​ប៊ូតុង​ខាង​ក្រោម​ដើម្បី​ផ្លាស់​ប្តូ​រ​សិទ្ធិ​របស់​ស្រទាប់​នេះ​។"
 
-msgid "Change Layer Permissions"
-msgstr "សិទ្ធិ​ផ្លាស់​ប្តូ​រ​ស្រទាប់"
-
-msgid "Processing..."
-msgstr ""
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "សិទ្ធិ"
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
+msgstr "សិទ្ធិ​ផ្លាស់​ប្តូ​រ​ស្រទាប់"
 
 msgid "Remove Mosaic Granules"
 msgstr ""
@@ -2569,8 +2722,10 @@ msgstr "សកម្មភាព​នេះ​ប៉ះពាល់​ដល់
 msgid "No maps are using this layer"
 msgstr "គ្មាន​ផែនទី​កំពុង​ប្រើ​ស្រទាប់​នេះ"
 
-msgid "Upload Layers"
-msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "ទិន្នន័យ​មេតា​ទាញ​យក"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2623,14 +2778,16 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
-msgstr ""
+#, fuzzy
+#| msgid "feature type"
+msgid "Remove Datasets"
+msgstr "ប្រភេទ​លក្ខណៈ​ពិសេស"
 
 #, python-format
 msgid ""
@@ -2640,7 +2797,9 @@ msgid ""
 "        "
 msgstr ""
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "ជំនួស​ស្រទាប់"
 
 msgid "Manage Styles"
@@ -2657,7 +2816,9 @@ msgstr ""
 "គ្រប់គ្រង​រចនាប័ទ្ម​ដែល​អាច​ប្រើ​បាន​សម្រាប់ <a href=\"/layers/%(layer_title)s\">"
 "%(layer_title)s</a>"
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "រចនាប័ទ្ម​លំនាំដើម​ស្រទាប់"
 
 msgid "Available styles"
@@ -2673,9 +2834,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "ធ្វើ​ឱ្យ​ទាន់សម័យ​រចនាប័ទ្ម​ដែល​អាច​រក​បាន"
 
+msgid "Return to Layer"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង​ជំហាន​ទី 2"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2695,8 +2859,10 @@ msgstr "មើល​ជា​មុន"
 msgid "Dataset Attributes"
 msgstr "គុណលក្ខណៈ"
 
-msgid "Upload Layer"
-msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "ទិន្នន័យ​មេតា​ទាញ​យក"
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2747,7 +2913,7 @@ msgstr "តើ​អ្នក​ប្រាកដ​ជា​ចង់​លុ
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង​ជំហាន​ទី 2"
 
 msgid "Provide CRS for "
@@ -2768,9 +2934,9 @@ msgstr "សំ​រប​សំ​រួល​យោង​ប្រព័ន្
 #| "    "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2958,7 +3124,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង​ជំហាន​ទី 2"
 
 msgid "Geospatial Data"
@@ -3014,7 +3180,7 @@ msgstr "សំណុំ​បែបបទ​ផ្ទុក​ឡើង"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "ស្រទាប់​ផ្ទុក​ឡើង​ជំហាន​ទី 2"
 
 msgid "Inspect data for "
@@ -3140,11 +3306,11 @@ msgstr "បើក​ការ​ពេល​វេលា"
 #| "valid period for the\n"
 #| "    feature."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3224,24 +3390,17 @@ msgstr "ឬ​គ្រាន់​តែ​ទៅ"
 msgid "now"
 msgstr "ឥឡូវ​នេះ"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr ""
 
 #, python-brace-format
-msgid "You are attempting to {action_type} a vector layer with a raster."
-msgstr ""
-
-#, python-brace-format
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr ""
 
 #, python-brace-format
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr ""
 
 #, python-brace-format
@@ -3250,7 +3409,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3260,10 +3419,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3278,39 +3437,38 @@ msgstr ""
 "បញ្ហា​នេះ​នៅ​តែ​បន្ត​។"
 
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
-
-msgid "You are not permitted to delete this layer"
-msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​លុប​ស្រទាប់​នេះ"
-
-msgid "You do not have permissions for this layer."
-msgstr "អ្នក​មិន​មាន​សិទ្ធិ​សម្រាប់​ស្រទាប់​នេះ​។"
-
-msgid "You are not permitted to modify this layer"
-msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែប្រែ​ស្រទាប់​នេះ"
-
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែប្រែ​ទិន្នន័យ​មេតា​ស្រទាប់​នេះ"
-
-msgid "You are not permitted to view this layer"
-msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​មើល​ស្រទាប់​នេះ"
 
 #, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "ឯកសារ​នឹង​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
+msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​លុប​ស្រទាប់​នេះ"
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
+msgstr "អ្នក​មិន​មាន​សិទ្ធិ​សម្រាប់​ស្រទាប់​នេះ​។"
 
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
+msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែប្រែ​ស្រទាប់​នេះ"
+
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
+msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​កែប្រែ​ទិន្នន័យ​មេតា​ស្រទាប់​នេះ"
+
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
+msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​មើល​ស្រទាប់​នេះ"
 
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 
 #, fuzzy, python-format
@@ -4181,6 +4339,17 @@ msgstr "ឯកសារ"
 msgid "Not Authorized"
 msgstr "មិន​បាន​ផ្ដល់"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "GeoNode ជំនួយ"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4361,8 +4530,10 @@ msgstr ""
 msgid "Services"
 msgstr "សេវាកម្ម"
 
-msgid "Register a new Service"
-msgstr "ចុះ​ឈ្មោះ​ជា​មួយ​សេវាកម្ម​ថ្មី"
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Add Remote Service"
+msgstr "សេវាកម្ម​ពី​ចម្ងាយ"
 
 msgid "Remote Services"
 msgstr "សេវាកម្ម​ពី​ចម្ងាយ"
@@ -4466,6 +4637,11 @@ msgid "Service rescanned successfully"
 msgstr "ផ្លាស់​ប្តូ​រ​ពាក្យ​សម្ងាត់​ដោយ​ជោគជ័យ​។"
 
 #, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ឱ្យ​រក្សា​ទុក​ឬ​កែសម្រួល​ផែនទី​នេះ​។"
+
+#, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "អ្នក​មិន​ត្រូវ​បាន​អនុញ្ញាត​ក្នុង​ការ​យក​សេវា​នេះ​។"
@@ -4550,6 +4726,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "ទិន្នន័យ"
+
 msgid "People"
 msgstr "ប្រជាជន"
 
@@ -4584,9 +4765,9 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#| msgid "Remote Services"
-msgid "Add Remote Service"
-msgstr "សេវាកម្ម​ពី​ចម្ងាយ"
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "បង្កើត​ផែនទី​ថ្មី​មួយ"
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4685,10 +4866,14 @@ msgstr "តើ​នរណា​ជា​អ្នក​អាច​ទាញ​
 msgid "Who can change metadata for it?"
 msgstr "តើ​នរណា​អាច​ផ្លាស់​ប្តូ​រ​ទិន្នន័យ​មេតា​សម្រាប់​វា​?"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "តើ​នរណា​អាច​កែសម្រួល​ទិន្នន័យ​សម្រាប់​ស្រទាប់​នេះ​?"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "តើ​នរណា​អាច​កែសម្រួល​រចនាប័ទ្ម​សម្រាប់​ស្រទាប់​នេះ​?"
 
 msgid ""
@@ -5310,6 +5495,9 @@ msgstr "ផ្ទុក​ឡើង"
 msgid "Upload in progress..."
 msgstr "ផ្ទុក​ឯកសារ​ឡើង"
 
+msgid "Processing..."
+msgstr ""
+
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
@@ -5319,6 +5507,11 @@ msgstr "Thumbnail"
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
 msgstr "តើ​អ្នក​ពិត​ជា​ចង់​យក"
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Processing Resource..."
+msgstr "ធនធាន"
 
 msgid "Information for Developers"
 msgstr "ព័ត៌មាន​សម្រាប់​អ្នក​អភិវឌ្ឍន៍"
@@ -5402,8 +5595,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5600,11 +5793,15 @@ msgstr ""
 "ចុច​ដើម្បី​ស្វែងរក​ទិន្នន័យ​ភូមិ​សា​ស្ដ្រ​ដែល​បាន​ចេញ​ផ្សាយ​ដោយ​អ្នក​ប្រើ​ផ្សេង​ទៀត​អង្គការ​និង​ប្រភព​សាធារណៈ​។ ទាញ​"
 "យក​ទិន្នន័យ​នៅ​ក្នុង​ទ្រង់ទ្រាយ​ស្តង់ដារ​។"
 
-msgid "Add layers"
-msgstr ""
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "ទិន្នន័យ"
 
-msgid "Explore layers"
-msgstr ""
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
+msgstr "រុករក​ស្រទាប់"
 
 #, fuzzy
 #| msgid ""
@@ -6214,7 +6411,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "ស្រទាប់"
 
 msgid "Maps found"
@@ -6256,6 +6453,11 @@ msgstr "ពេញ​និយម​បំផុត"
 
 msgid "Text"
 msgstr "អត្ថបទ"
+
+#, fuzzy
+#| msgid "feature type"
+msgid "Share This Dataset"
+msgstr "ប្រភេទ​លក្ខណៈ​ពិសេស"
 
 msgid "Share This"
 msgstr ""
@@ -6442,6 +6644,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6522,6 +6728,48 @@ msgstr "កម្រិត​នៃ​ការ​អនុ​ញ្ញា​ត
 
 msgid "Permission Denied"
 msgstr "សិទ្ធិ​ត្រូវ​បាន​បដិសេធ"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "ឈ្មោះ​ស្រទាប់"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "ចំណងជើង​ស្រទាប់"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "បង្កើត​ផែនទី​មួយ"
+
+#~ msgid "Download Layer"
+#~ msgstr "ស្រទាប់​ទាញ​យក"
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "កែសម្រួល​ស្រទាប់"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "សិទ្ធិ"
+
+#~ msgid "Upload Layers"
+#~ msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
+
+#~ msgid "Upload Layer"
+#~ msgstr "ស្រទាប់​ផ្ទុក​ឡើង"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "ឯកសារ​នឹង​ត្រូវ​បាន​ផ្ទុក​ឡើង"
+
+#~ msgid "Register a new Service"
+#~ msgstr "ចុះ​ឈ្មោះ​ជា​មួយ​សេវាកម្ម​ថ្មី"
 
 #, fuzzy
 #~| msgid "Set permissions"

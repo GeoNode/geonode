@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:01+0200\n"
+"POT-Creation-Date: 2021-07-08 09:03+0300\n"
 "PO-Revision-Date: 2021-04-07 15:07+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
@@ -394,12 +394,20 @@ msgstr ""
 "associata alla richiesta HTTP non è supportata dal server Web. Per risolvere "
 "il problema, potrebbe essere necessario aggiornare il server."
 
+#, fuzzy
+#| msgid "<br>Unknown."
+msgid "Unknwon"
+msgstr "<br>Sconosciuto."
+
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
 msgstr ""
 "  Error Code. Contattare l'amministratore di sistema per ulteriori "
 "informazioni su questo messaggio di errore."
+
+msgid "Additional info: "
+msgstr ""
 
 msgid "Finalizing"
 msgstr "Finalizzazione"
@@ -568,6 +576,9 @@ msgstr ""
 msgid "'"
 msgstr "'"
 
+msgid "-1"
+msgstr ""
+
 msgid "trailingComments"
 msgstr "trailingComments"
 
@@ -583,11 +594,17 @@ msgstr "Multiselect"
 msgid "SelectList"
 msgstr "SelectList"
 
-msgid "error"
-msgstr "error"
-
 msgid "show:"
 msgstr "show:"
+
+msgid "DraftEditor/root"
+msgstr ""
+
+msgid "DraftEditor/editorContainer"
+msgstr ""
+
+msgid "-"
+msgstr ""
 
 msgid "uirevision"
 msgstr "uirevision"
@@ -655,35 +672,20 @@ msgstr "range"
 msgid "bingroup"
 msgstr "bingroup"
 
-msgid "layerProperties.visibilityLimits.rangeError"
-msgstr "layerProperties.visibilityLimits.rangeError"
+msgid "Print configuration broken ("
+msgstr ""
 
-msgid "layerProperties.visibilityLimits.serverValuesError"
-msgstr "layerProperties.visibilityLimits.serverValuesError"
+msgid "Print configuration not available ("
+msgstr ""
 
-msgid "typed_constructor"
-msgstr "typed_constructor"
+msgid "go"
+msgstr ""
 
-msgid "def_constructor"
-msgstr "def_constructor"
+msgid "goBack"
+msgstr ""
 
-msgid "POP"
-msgstr "POP"
-
-msgid "PUSH"
-msgstr "PUSH"
-
-msgid "layerdownload.exportResultsMessages.newExport"
-msgstr "layerdownload.exportResultsMessages.newExport"
-
-msgid "layerdownload.exportResultsMessages.exportSuccess"
-msgstr "layerdownload.exportResultsMessages.exportSuccess"
-
-msgid "layerdownload.exportResultsMessages.exportFailure"
-msgstr "layerdownload.exportResultsMessages.exportFailure"
-
-msgid "data-grid"
-msgstr "data-grid"
+msgid "goForward"
+msgstr ""
 
 msgid "Abort"
 msgstr "Abort"
@@ -693,6 +695,39 @@ msgstr "As Sibling"
 
 msgid "As child"
 msgstr "As child"
+
+#~ msgid "error"
+#~ msgstr "error"
+
+#~ msgid "layerProperties.visibilityLimits.rangeError"
+#~ msgstr "layerProperties.visibilityLimits.rangeError"
+
+#~ msgid "layerProperties.visibilityLimits.serverValuesError"
+#~ msgstr "layerProperties.visibilityLimits.serverValuesError"
+
+#~ msgid "typed_constructor"
+#~ msgstr "typed_constructor"
+
+#~ msgid "def_constructor"
+#~ msgstr "def_constructor"
+
+#~ msgid "POP"
+#~ msgstr "POP"
+
+#~ msgid "PUSH"
+#~ msgstr "PUSH"
+
+#~ msgid "layerdownload.exportResultsMessages.newExport"
+#~ msgstr "layerdownload.exportResultsMessages.newExport"
+
+#~ msgid "layerdownload.exportResultsMessages.exportSuccess"
+#~ msgstr "layerdownload.exportResultsMessages.exportSuccess"
+
+#~ msgid "layerdownload.exportResultsMessages.exportFailure"
+#~ msgstr "layerdownload.exportResultsMessages.exportFailure"
+
+#~ msgid "data-grid"
+#~ msgstr "data-grid"
 
 #~ msgid " - "
 #~ msgstr " - "

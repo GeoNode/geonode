@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-29 10:38+0300\n"
+"POT-Creation-Date: 2021-07-08 09:03+0300\n"
 "PO-Revision-Date: 2020-12-23 16:22+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -657,6 +657,21 @@ msgid "range"
 msgstr ""
 
 msgid "bingroup"
+msgstr ""
+
+msgid "Print configuration broken ("
+msgstr ""
+
+msgid "Print configuration not available ("
+msgstr ""
+
+msgid "go"
+msgstr ""
+
+msgid "goBack"
+msgstr ""
+
+msgid "goForward"
 msgstr ""
 
 msgid "Abort"

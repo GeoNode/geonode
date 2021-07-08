@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Thai (http://www.transifex.com/geonode/geonode/language/th/)\n"
@@ -443,6 +443,12 @@ msgstr ""
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -662,6 +668,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "เปลี่ยนรหัสผ่านเสร็จแล้ว"
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -979,6 +994,9 @@ msgstr ""
 msgid "Link to"
 msgstr "เชื่อมโยงกับ"
 
+msgid "File"
+msgstr "ไฟล์"
+
 msgid "Document must be a file or url."
 msgstr "เอกสารจะต้องเป็นไฟล์หรือ url ของไฟล์"
 
@@ -990,9 +1008,6 @@ msgstr "ไฟล์ชนิดนี้ไม่ได้รับอนุญ
 
 msgid "Permissions must be valid JSON."
 msgstr "สิทธิ์จะต้องอยู่ในรูปแบบ JSON ที่ถูกต้อง"
-
-msgid "File"
-msgstr "ไฟล์"
 
 msgid "The URL of the document if it is external."
 msgstr "URL ของเอกสาร ถ้าหากมาจากภายนอก"
@@ -1053,6 +1068,9 @@ msgstr ""
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] "เอกสาร"
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr "แทนที่"
@@ -1510,6 +1528,11 @@ msgstr ""
 "คำอธิบายข้อมูลของ GeoNode รองรับบางส่วนของมาตรฐาน ISO, FGDC, และ Dublin Core\n"
 "อาจจะทำให้มีบางส่วนของคำอธิบายต้นฉบับของคุณสูญเสียไป"
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "สำรวจแผนที่"
+
 #, python-format
 msgid ""
 "\n"
@@ -1518,6 +1541,11 @@ msgid ""
 msgstr ""
 "\n"
 "รายละเอียดการแก้ไขของ %(map_title)s"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "ย้อนกลับไปยัง"
 
 #, fuzzy
 #| msgid "View Map"
@@ -1608,14 +1636,14 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "ชื่อชั้นข้อมูล"
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "ชุดข้อมูล"
 
 #, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "ชื่อเรื่องของชั้นข้อมูล"
+#| msgid "Attributes"
+msgid "Dataset title"
+msgstr "แอตทริบิวต์"
 
 #, fuzzy
 #| msgid "property type"
@@ -1623,16 +1651,18 @@ msgid "Geometry type"
 msgstr "ประเภทคุณสมบัติ"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "สร้างแผนที่"
+#| msgid "Featured"
+msgid "Create Dataset"
+msgstr "ฟีเจอร์"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "สำรวจชั้นข้อมูล"
 
 #, fuzzy
 #| msgid "Create a map using this layer"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "สร้างแผนที่ด้วยชั้นข้อมูลนี้"
 
 #, fuzzy
@@ -1670,6 +1700,9 @@ msgstr "เกิดข้อผิดพลาดระหว่างโหล
 msgid " Additionally an error occured during database cleanup"
 msgstr "เกิดข้อผิดพลาดในระหว่างการทำความสะอาดฐานข้อมูล"
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr ""
 
@@ -1702,9 +1735,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "คุณไม่มีสิทธิ์แก้ไขสไตล์ของชั้นข้อมูลนี้"
@@ -1952,6 +1982,119 @@ msgstr "สร้างกลุ่ม"
 
 msgid "Save"
 msgstr "บันทึก"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "แหล่งข้อมูล"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "การเก็บเกี่ยว"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "รุ่นของแหล่งที่มา"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "ตั้งค่าสิทธิ์ในแหล่งข้อมูลที่เลือก"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2228,11 +2371,13 @@ msgstr "วันที่สถิติเกี่ยวกับแอตท
 
 #, fuzzy
 #| msgid "Edit Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "แก้ไขชั้นข้อมูล"
 
-msgid "Return to Layer"
-msgstr ""
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Dataset"
+msgstr "ย้อนกลับไปยัง"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2251,7 +2396,7 @@ msgstr "เปลี่ยนที่อยู่สำหรับติดต
 msgid "Assign a new point of contact to the layers below:"
 msgstr "เพิ่มที่อยู่ที่ติดต่อได้ให้กับชั้นข้อมูลด้านล่างนี้:"
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2312,14 +2457,18 @@ msgstr "มัธยฐาน"
 msgid "Standard Deviation"
 msgstr "ค่าเบี่ยงเบนมาตรฐาน"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "ให้คะแนนชั้นข้อมูลนี้"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "ดาวน์โหลดชั้นข้อมูล"
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "ดาวน์โหลด"
 
 msgid "Images"
 msgstr ""
@@ -2408,9 +2557,9 @@ msgid "Edit data"
 msgstr "แก้ไขข้อมูล"
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "แก้ไขชั้นข้อมูล"
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "แก้ไขคำอธิบายข้อมูล"
 
 #, fuzzy
 #| msgid "format"
@@ -2423,27 +2572,37 @@ msgstr ""
 msgid "Legend"
 msgstr "สัญลักษณ์"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "แผนที่ที่ใช้ชั้นข้อมูลนี้"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "รายชื่อแผนที่ที่ใช้ชั้นข้อมูลนี้"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "ชั้นข้อมูลนี้ยังไม่ถูกนำไปใช้ในแผนที่ใดๆในขณะนี้"
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "สร้างแผนที่ด้วยชั้นข้อมูลนี้"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr "คลิกปุ่มด้านล่างเพื่อสร้างแผนที่ใหม่โดยใช้ชั้นข้อมูลนี้เป็นฐาน"
 
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "คลิกปุ่มด้านล่างเพื่อเปลี่ยนแปลงสิทธิ์ในชั้นข้อมูลนี้"
 
 #, fuzzy
@@ -2481,7 +2640,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2498,22 +2657,16 @@ msgstr "สร้างแผนที่ด้วยชั้นข้อมู
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "คลิกปุ่มด้านล่างเพื่อเปลี่ยนแปลงสิทธิ์ในชั้นข้อมูลนี้"
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr "คลิกปุ่มด้านล่างเพื่อเปลี่ยนแปลงสิทธิ์ในชั้นข้อมูลนี้"
 
-msgid "Change Layer Permissions"
-msgstr "เปลี่ยนแปลงสิทธิ์ชั้นข้อมูล"
-
-msgid "Processing..."
-msgstr ""
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "สิทธิ์"
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
+msgstr "เปลี่ยนแปลงสิทธิ์ชั้นข้อมูล"
 
 msgid "Remove Mosaic Granules"
 msgstr ""
@@ -2532,8 +2685,10 @@ msgstr "การกระทำนี้ส่งผลต่อแผนที
 msgid "No maps are using this layer"
 msgstr "ไม่มีแผนที่ใดใช้ชั้นข้อมูลนี้"
 
-msgid "Upload Layers"
-msgstr "อัพโหลดชั้นข้อมูล"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "ดาวน์โหลดคำอธิบายข้อมูล"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2589,13 +2744,15 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "อัพโหลดชั้นข้อมูล"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
+#, fuzzy
+#| msgid "Remove Layers"
+msgid "Remove Datasets"
 msgstr "ลบชั้นข้อมูล"
 
 #, python-format
@@ -2609,7 +2766,9 @@ msgstr ""
 "คุณแน่ใจแล้วหรือว่าต้องการลบ <a href=\"%(layer.get_absolute_url)s\">"
 "%(layer_title)s</a>?"
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "แทนที่ชั้นข้อมูล"
 
 msgid "Manage Styles"
@@ -2626,7 +2785,9 @@ msgstr ""
 "จัดการสไตล์ที่สามารถใช้งานได้สำหรับ <a href=\"/layers/%(layer_title)s\">"
 "%(layer_title)s</a>"
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "สไตล์เริ่มต้นของชั้นข้อมูล"
 
 msgid "Available styles"
@@ -2641,9 +2802,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "แก้ไขสไตล์ที่สามารถใช้ได้"
 
+msgid "Return to Layer"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "อัพโหลดชั้นข้อมูล ขั้นตอนที่ 2"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2663,8 +2827,10 @@ msgstr "ดูตัวอย่าง"
 msgid "Dataset Attributes"
 msgstr "แอตทริบิวต์"
 
-msgid "Upload Layer"
-msgstr "อัพโหลดชั้นข้อมูล"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "ดาวน์โหลดคำอธิบายข้อมูล"
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2715,7 +2881,7 @@ msgstr "คุณแน่ใจแล้วหรือว่าต้องก
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "อัพโหลดชั้นข้อมูล ขั้นตอนที่ 2"
 
 msgid "Provide CRS for "
@@ -2736,9 +2902,9 @@ msgstr "ระบบพิกัดอ้างอิง"
 #| "    "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2928,7 +3094,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "อัพโหลดชั้นข้อมูล ขั้นตอนที่ 2"
 
 msgid "Geospatial Data"
@@ -2985,7 +3151,7 @@ msgstr "แบบฟอร์มอัพโหลด"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "อัพโหลดชั้นข้อมูล ขั้นตอนที่ 2"
 
 msgid "Inspect data for "
@@ -3109,11 +3275,11 @@ msgstr "เปิดใช้เวลา"
 #| "valid period for the\n"
 #| "    feature."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3193,29 +3359,20 @@ msgstr "หรือเพียงแค่ไป"
 msgid "now"
 msgstr "เดี๋ยวนี้"
 
-#, fuzzy
-#| msgid "You are attempting to replace a vector layer with a raster."
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลเวกเตอร์ด้วยชั้นข้อมูลแรสเตอร์"
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
-
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with a raster."
-msgid "You are attempting to {action_type} a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลเวกเตอร์ด้วยชั้นข้อมูลแรสเตอร์"
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a raster layer with a vector."
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลแรสเตอร์ด้วยชั้นข้อมูลเวกเตอร์"
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with a raster."
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลเวกเตอร์ด้วยชั้นข้อมูลแรสเตอร์"
 
 #, python-brace-format
@@ -3224,7 +3381,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3234,10 +3391,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3251,39 +3408,42 @@ msgstr ""
 "เกิดปัญหาขณะอัพโหลดข้อมูลของคุณ กรุณาลองอีกครั้ง หรือติดต่อผู้ดูแลระบบถ้าหากยังคงพบปัญหาอยู่"
 
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
 
-msgid "You are not permitted to delete this layer"
+#, fuzzy
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
 msgstr "คุณไม่มีสิทธิ์ลบชั้นข้อมูลนี้"
 
-msgid "You do not have permissions for this layer."
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
 msgstr "คุณไม่มีสิทธิ์ในชั้นข้อมูลนี้"
 
-msgid "You are not permitted to modify this layer"
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
 msgstr "คุณไม่มีสิทธิ์แก้ไขชั้นข้อมูลนี้"
 
-msgid "You are not permitted to modify this layer's metadata"
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
 msgstr "คุณไม่มีสิทธิ์แก้ไขคำอธิบายข้อมูลของชั้นข้อมูลนี้"
 
-msgid "You are not permitted to view this layer"
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
 msgstr "คุณไม่มีสิทธิ์ดูชั้นข้อมูลนี้"
 
 #, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "ไฟล์ที่ต้องการอัพโหลด"
-
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลเวกเตอร์ด้วยชั้นข้อมูลแรสเตอร์"
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลแรสเตอร์ด้วยชั้นข้อมูลเวกเตอร์"
-
+#| msgid ""
+#| "This layer is a member of a layer group, you must remove the layer from "
+#| "the group before deleting."
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr "ชั้นข้อมูลนี้เป็นสมาชิกของกลุ่มชั้นข้อมูล คุณต้องนำชั้นข้อมูลออกจากกลุ่มก่อนที่จะทำการลบ"
 
 #, fuzzy, python-format
@@ -4149,6 +4309,17 @@ msgstr "เอกสาร"
 msgid "Not Authorized"
 msgstr "ไม่มีการระบุ"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "วิธีใช้ GeoNode"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4333,8 +4504,10 @@ msgstr "แก้ไขเซอร์วิส"
 msgid "Services"
 msgstr "เซอร์วิส"
 
-msgid "Register a new Service"
-msgstr "ลงทะเบียนเซอร์วิสใหม่"
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Add Remote Service"
+msgstr "บริการระยะไกล"
 
 msgid "Remote Services"
 msgstr "บริการระยะไกล"
@@ -4446,6 +4619,11 @@ msgid "Service rescanned successfully"
 msgstr "เปลี่ยนรหัสผ่านเสร็จแล้ว"
 
 #, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "คุณไม่มีสิทธิ์บันทึกหรือแก้ไขแผนที่นี้"
+
+#, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "คุณไม่มีสิทธิ์ลบเซอร์วิสนี้"
@@ -4528,6 +4706,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "ชุดข้อมูล"
+
 msgid "People"
 msgstr "ผู้คน"
 
@@ -4576,9 +4759,9 @@ msgstr ""
 "\"http://github.com/GeoNode/geonode/issues\">GeoNode's issue tracker</a>"
 
 #, fuzzy
-#| msgid "Remote Services"
-msgid "Add Remote Service"
-msgstr "บริการระยะไกล"
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "สร้างแผนที่"
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4677,10 +4860,14 @@ msgstr "ใครสามารถดาวน์โหลดได้บ้า
 msgid "Who can change metadata for it?"
 msgstr "ใครสามารถแก้ไขคำอธิบายข้อมูลได้บ้าง?"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "ใครสามารถแก้ไขข้อมูลของชั้นข้อมูลนี้ได้บ้าง?"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "ใครสามารถแก้ไขสไตล์ของชั้นข้อมูลนี้ได้บ้าง?"
 
 msgid ""
@@ -5324,6 +5511,9 @@ msgstr "อัพโหลดแล้ว"
 msgid "Upload in progress..."
 msgstr "อัพโหลดไฟล์"
 
+msgid "Processing..."
+msgstr ""
+
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
@@ -5333,6 +5523,11 @@ msgstr "Thumbnail"
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
 msgstr "คุณแน่ใจแล้วหรือว่าต้องการลบ"
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Processing Resource..."
+msgstr "แหล่งข้อมูล"
 
 msgid "Information for Developers"
 msgstr "ข้อมูลสำหรับนักพัฒนา"
@@ -5416,8 +5611,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5777,10 +5972,14 @@ msgstr ""
 "คลิกเพื่อค้นหาข้อมูลเชิงพื้นที่ซึ่งเผยแพร่โดยผู้ใช้คนอื่น องค์กร และแหล่งข้อมูลสาธารณะ\n"
 "สามารถดาวน์โหลดข้อมูลได้ในรูปแบบมาตรฐาน"
 
-msgid "Add layers"
-msgstr "เพิ่มชั้นข้อมูล"
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "ชุดข้อมูล"
 
-msgid "Explore layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
 msgstr "สำรวจชั้นข้อมูล"
 
 #, fuzzy
@@ -6333,7 +6532,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "ชั้นข้อมูล"
 
 msgid "Maps found"
@@ -6375,6 +6574,11 @@ msgstr "ความนิยมสูงสุด"
 
 msgid "Text"
 msgstr "ข้อความ"
+
+#, fuzzy
+#| msgid "Share This"
+msgid "Share This Dataset"
+msgstr "แบ่งปันสิ่งนี้"
 
 msgid "Share This"
 msgstr "แบ่งปันสิ่งนี้"
@@ -6561,6 +6765,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6641,6 +6849,65 @@ msgstr "ระดับการอนุญาตไม่ถูกต้อง
 
 msgid "Permission Denied"
 msgstr "ไม่ได้รับอนุญาต"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "ชื่อชั้นข้อมูล"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "ชื่อเรื่องของชั้นข้อมูล"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "สร้างแผนที่"
+
+#~ msgid "Download Layer"
+#~ msgstr "ดาวน์โหลดชั้นข้อมูล"
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "แก้ไขชั้นข้อมูล"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "สิทธิ์"
+
+#~ msgid "Upload Layers"
+#~ msgstr "อัพโหลดชั้นข้อมูล"
+
+#~ msgid "Upload Layer"
+#~ msgstr "อัพโหลดชั้นข้อมูล"
+
+#, fuzzy
+#~| msgid "You are attempting to replace a vector layer with a raster."
+#~ msgid "You are attempting to replace a vector layer with an unknown format."
+#~ msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลเวกเตอร์ด้วยชั้นข้อมูลแรสเตอร์"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "ไฟล์ที่ต้องการอัพโหลด"
+
+#~ msgid "You are attempting to replace a vector layer with a raster."
+#~ msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลเวกเตอร์ด้วยชั้นข้อมูลแรสเตอร์"
+
+#~ msgid "You are attempting to replace a raster layer with a vector."
+#~ msgstr "คุณกำลังพยายามที่จะแทนที่ชั้นข้อมูลแรสเตอร์ด้วยชั้นข้อมูลเวกเตอร์"
+
+#~ msgid "Register a new Service"
+#~ msgstr "ลงทะเบียนเซอร์วิสใหม่"
+
+#~ msgid "Add layers"
+#~ msgstr "เพิ่มชั้นข้อมูล"
+
+#~ msgid "Explore layers"
+#~ msgstr "สำรวจชั้นข้อมูล"
 
 #, fuzzy
 #~| msgid "Set permissions"
