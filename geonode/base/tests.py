@@ -19,6 +19,7 @@
 #########################################################################
 
 import os
+import json
 from unittest.mock import patch, Mock
 from urllib.parse import urlparse
 
@@ -57,7 +58,7 @@ from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
-from geonode.base.models import CuratedThumbnail
+from geonode.base.models import CuratedThumbnail, HierarchicalKeyword
 from geonode.base.templatetags.base_tags import get_visibile_resources, facets
 from geonode.base.templatetags.thesaurus import (
     get_name_translation, get_thesaurus_localized_label, get_thesaurus_translation_by_id, get_unique_thesaurus_set,
@@ -72,6 +73,10 @@ from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from geonode.base.forms import ThesaurusAvailableForm
+from rest_framework.test import APITestCase
+from rest_framework import status
+from geonode.base.factories import UserFactory, LayerFactory, MapFactory, DocumentFactory
+from geonode.base.utils import make_public
 
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
@@ -1103,3 +1108,118 @@ class TestGenerateThesaurusReference(TestCase):
         '''
         self.assertEqual(expected, actual)
         self.assertEqual(expected, keyword.about)
+
+
+class DumpBulkTreeTests(APITestCase):
+    def setUp(self):
+        # Create Initial Test Data: HierarchicalKeyword, Layer & User
+        self.hkw1 = HierarchicalKeyword.add_root(name="Parent 1")
+        self.hkw2 = HierarchicalKeyword.add_root(name="Parent 2")
+        self.hkw1child = self.hkw1.add_child(name="Child 1 of Parent 1")
+        self.keywords = [self.hkw1, self.hkw2, self.hkw1child]
+        self.keyword_texts = [k.name for k in self.keywords]
+
+        self.user = UserFactory()
+        self.user2 = UserFactory()
+
+        self.layer = LayerFactory(owner=self.user, keywords=self.keywords)
+        make_public(self.layer)
+
+        self.url = "h_keywords_api"
+
+    def test_h_keywords_api_returns_all_parents_or_children_keywords(self):
+        res = self.client.get(reverse(self.url))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        response_keywords = json.loads(res.content)
+        response_keyword_texts = [k["text"] for k in response_keywords]
+        self.assertEqual(set(response_keyword_texts), set(self.keyword_texts))
+
+    def test_the_method_response_with_initial_layer(self):
+        response_keywords = HierarchicalKeyword.dump_bulk_tree(self.user, type='layer')
+        response_keyword_texts = [k["text"] for k in response_keywords]
+        self.assertEqual(set(response_keyword_texts), set(self.keyword_texts))
+
+    def test_the_method_response_with_additional_layer_but_same_keywords(self):
+        """ Layers with no new keys should have the same result """
+
+        # Layers with some of the same keyword as in initial layer
+        new_layer = LayerFactory(owner=self.user, keywords=[self.hkw1, self.hkw1child])
+        make_public(new_layer)
+
+        response_keywords = HierarchicalKeyword.dump_bulk_tree(self.user, type='layer')
+        response_keyword_texts = [k["text"] for k in response_keywords]
+        self.assertEqual(len(response_keyword_texts), len(self.keyword_texts))
+        self.assertEqual(set(response_keyword_texts), set(self.keyword_texts))
+
+    def test_the_method_response_with_additional_layer_and_new_keywords(self):
+        """ Confirm that users and anonymous users see ALL keywords """
+        new_hkw1 = HierarchicalKeyword.add_root(name="Different Keyword Syed")
+        new_hkw1child = new_hkw1.add_child(name="Syed's Child")
+
+        # Test exotic encoding Keywords, which failed in earlier tests
+        exotic_words = ['ß', 'ä', 'ö', 'ü', '論語']
+
+        # Adding with a different user
+        new_layer = LayerFactory(owner=self.user2, keywords=[new_hkw1, new_hkw1child] + exotic_words)
+        make_public(new_layer)
+
+        response_keywords = HierarchicalKeyword.dump_bulk_tree(self.user, type='layer')
+        response_keyword_texts = [k["text"] for k in response_keywords]
+        self.assertEqual(len(response_keyword_texts), len(self.keyword_texts) + new_layer.keywords.count())
+        self.assertIn(new_hkw1.name, response_keyword_texts)
+        self.assertIn(new_hkw1child.name, response_keyword_texts)
+        self.assertIn('論語', response_keyword_texts)
+
+        # For anonymous user
+        response_keywords = HierarchicalKeyword.dump_bulk_tree(None, type='layer')
+        response_keyword_texts = [k["text"] for k in response_keywords]
+        self.assertEqual(len(response_keyword_texts), len(self.keyword_texts) + new_layer.keywords.count())
+        self.assertIn(new_hkw1.name, response_keyword_texts)
+        self.assertIn(new_hkw1child.name, response_keyword_texts)
+        self.assertIn('論語', response_keyword_texts)
+
+    def test_the_method_response_with_different_types(self):
+        """
+        Our method should return only the target resource type if a type input
+        is provided, otherwise all these types will be included: layer, map
+        or document.
+        """
+
+        map_hkw1 = HierarchicalKeyword.add_root(name="Map-Keyword 1")
+        map_hkw2 = HierarchicalKeyword.add_root(name="Map-Keyword 2")
+        doc_hkw = HierarchicalKeyword.add_root(name="Document-Keyword")
+
+        # We already have layer created in setup. Now create map & document
+        map1 = MapFactory(owner=self.user, keywords=[map_hkw1, map_hkw2])
+        make_public(map1)
+        map_keyword_texts = [k.name for k in map1.keywords.all()]
+
+        document = DocumentFactory(owner=self.user, keywords=[doc_hkw])
+        make_public(document)
+        doc_keyword_texts = [k.name for k in document.keywords.all()]
+
+        cases = (
+            {
+                "type": None,
+                "keyword_texts": self.keyword_texts + map_keyword_texts + doc_keyword_texts,
+            },
+            {
+                "type": "layer",
+                "keyword_texts": self.keyword_texts,
+            },
+            {
+                "type": "map",
+                "keyword_texts": map_keyword_texts,
+            },
+            {
+                "type": "document",
+                "keyword_texts": doc_keyword_texts,
+            }
+        )
+
+        for case in cases:
+            with self.subTest(case=case):
+                response_keywords = HierarchicalKeyword.dump_bulk_tree(self.user, type=case["type"])
+                response_keyword_texts = [k["text"] for k in response_keywords]
+                self.assertEqual(len(response_keyword_texts), len(case["keyword_texts"]))
+                self.assertEqual(set(response_keyword_texts), set(case["keyword_texts"]))
