@@ -296,7 +296,10 @@ class ResourceManager(ResourceManagerInterface):
                         logger.debug(f"Error occurred while trying to delete the Layer Styles: {e}")
 
                 self.remove_permissions(_resource.get_real_instance().uuid, instance=_resource.get_real_instance())
-                _resource.get_real_instance().delete()
+                try:
+                    _resource.get_real_instance().delete()
+                except ResourceBase.DoesNotExist:
+                    pass
                 return 1
             except Exception as e:
                 logger.exception(e)

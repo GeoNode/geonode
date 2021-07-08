@@ -258,25 +258,26 @@ def metadata_storers(instance, custom={}):
 
 def get_alternate_name(instance):
     try:
-        from ..services.enumerations import CASCADED
-        from ..services.enumerations import INDEXED
+        if isinstance(instance, Layer):
+            from ..services.enumerations import CASCADED
+            from ..services.enumerations import INDEXED
 
-        # these are only used if there is no user-configured value in the settings
-        _DEFAULT_CASCADE_WORKSPACE = "cascaded-services"
-        _DEFAULT_WORKSPACE = "cascaded-services"
+            # these are only used if there is no user-configured value in the settings
+            _DEFAULT_CASCADE_WORKSPACE = "cascaded-services"
+            _DEFAULT_WORKSPACE = "cascaded-services"
 
-        if instance.remote_service is not None and instance.remote_service.method == INDEXED:
-            result = instance.name
-        elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
-            _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
-            result = f"{_ws}:{instance.name}"
-        else:  # we are not dealing with a service-related instance
-            _ws = getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
-            result = f"{_ws}:{instance.name}"
-        return result
+            if instance.remote_service is not None and instance.remote_service.method == INDEXED:
+                result = instance.name
+            elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
+                _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
+                result = f"{_ws}:{instance.name}"
+            else:  # we are not dealing with a service-related instance
+                _ws = getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
+                result = f"{_ws}:{instance.name}"
+            return result
     except Exception as e:
-        logger.exception(e)
-        return instance.alternate
+        logger.debug(e)
+    return instance.alternate
 
 
 def get_related_resources(document):
