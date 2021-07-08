@@ -177,12 +177,12 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         expected_locations = [
             [
                 settings.GEOSERVER_LOCATION,
-                ["geonode:theaters_nyc", "geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1"],
-            ],
-            [
-                "http://www502.regione.toscana.it/wmsraster/com.rt.wms.RTmap/wms?map=wmsgeologia&map_resolution=91&",
-                ["rt_geologia.dbg_risorse_minerarie"],
-            ],
+                [
+                    'geonode:theaters_nyc',
+                    'geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1',
+                    'rt_geologia.dbg_risorse_minerarie'
+                ]
+            ]
         ]
 
         map = Map.objects.get(title_en="composition_map")
