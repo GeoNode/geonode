@@ -159,7 +159,7 @@
             <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-            {% if user.is_authenticated and not READ_ONLY_MODE %}
+            {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
                 {% if USE_GEOSERVER and CREATE_LAYER %}
@@ -168,7 +168,7 @@
                 <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
             {% endif %}
             {% if user.is_superuser or user.is_staff %}
-              {% if not READ_ONLY_MODE %}
+              {% if not READ_ONLY_MODE or "add_resource" in user.perms %}
                 <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
               {% endif %}
             {% endif %}
@@ -178,7 +178,7 @@
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
             <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
-            {% if user.is_authenticated and not READ_ONLY_MODE %}
+            {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
             <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
             {% endif %}
           </ul>
