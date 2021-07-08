@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -17,48 +16,63 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 import json
+import shutil
 import logging
-import traceback
-from itertools import chain
+import tempfile
 import warnings
+import traceback
 
+from itertools import chain
+from dal import autocomplete
 from guardian.shortcuts import get_objects_for_user
 
+from django.db.models import F
+from django.urls import reverse
+from django.conf import settings
+from django.contrib import messages
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.forms.utils import ErrorList
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from django.urls import reverse
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.views.generic.edit import UpdateView, CreateView
-from django.db.models import F
-from django.forms.utils import ErrorList
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
-from geonode.base.utils import ManageResourceOwnerPermissions
-from geonode.decorators import check_keyword_write_perms
-from geonode.documents.utils import get_download_response
 from geonode.utils import resolve_object
-from geonode.security.views import _perms_info_json
+from geonode.base.views import batch_modify
+from geonode.utils import build_social_links
 from geonode.people.forms import ProfileForm
-from geonode.base.auth import get_or_create_token
+from geonode.monitoring import register_event
 from geonode.base.bbox_utils import BBOXHelper
-from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
+from geonode.groups.models import GroupProfile
+from geonode.monitoring.models import EventType
+from geonode.base.auth import get_or_create_token
+from geonode.security.views import _perms_info_json
+from geonode.storage.manager import storage_manager
+from geonode.resource.manager import resource_manager
+from geonode.resource.utils import get_related_resources
+from geonode.decorators import check_keyword_write_perms
+from geonode.security.utils import get_visible_resources
+from geonode.base.utils import ManageResourceOwnerPermissions
+from geonode.base.forms import (
+    CategoryForm,
+    TKeywordForm,
+    ThesaurusAvailableForm)
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
-from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
-from geonode.documents.models import Document, get_related_resources
-from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
-from geonode.utils import build_social_links
-from geonode.groups.models import GroupProfile
-from geonode.base.views import batch_modify
-from geonode.monitoring import register_event
-from geonode.monitoring.models import EventType
-from geonode.security.utils import get_visible_resources
 
-from dal import autocomplete
+from .utils import get_download_response
+from .enumerations import (
+    DOCUMENT_TYPE_MAP,
+    DOCUMENT_MIMETYPE_MAP)
+from .models import Document
+from .forms import (
+    DocumentForm,
+    DocumentCreateForm,
+    DocumentReplaceForm)
 
 logger = logging.getLogger("geonode.documents.views")
 
@@ -167,7 +181,7 @@ def document_detail(request, docid):
             if exif:
                 context_dict['exif_data'] = exif
         except Exception:
-            logger.error("Exif extraction failed.")
+            logger.debug("Exif extraction failed.")
 
     if request.user.is_authenticated:
         if getattr(settings, 'FAVORITE_ENABLED', False):
@@ -197,14 +211,15 @@ class DocumentUploadView(CreateView):
     form_class = DocumentCreateForm
 
     def get_context_data(self, **kwargs):
-        context = super(DocumentUploadView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
         return context
 
     def form_invalid(self, form):
+        messages.error(self.request, f"{form.errors}")
         if self.request.GET.get('no__redirect', False):
             out = {'success': False}
-            out['message'] = ""
+            out['message'] = f"{form.errors}"
             status_code = 400
             return HttpResponse(
                 json.dumps(out),
@@ -215,22 +230,50 @@ class DocumentUploadView(CreateView):
             form.title = None
             form.doc_file = None
             form.doc_url = None
-            return self.render_to_response(self.get_context_data(form=form))
+            return self.render_to_response(
+                self.get_context_data(request=self.request, form=form))
 
     def form_valid(self, form):
         """
         If the form is valid, save the associated model.
         """
-        self.object = form.save(commit=False)
-        self.object.owner = self.request.user
+        doc_form = form.cleaned_data
+
+        file = doc_form.pop('doc_file', None)
+        if file:
+            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+            dirname = os.path.basename(tempdir)
+            filepath = storage_manager.save(f"{dirname}/{file.name}", file)
+            storage_path = storage_manager.path(filepath)
+            self.object = resource_manager.create(
+                None,
+                resource_type=Document,
+                defaults=dict(
+                    owner=self.request.user,
+                    doc_url=doc_form.pop('doc_url', None),
+                    title=doc_form.pop('title', file.name),
+                    files=[storage_path])
+            )
+            if tempdir != os.path.dirname(storage_path):
+                shutil.rmtree(tempdir, ignore_errors=True)
+        else:
+            self.object = resource_manager.create(
+                None,
+                resource_type=Document,
+                defaults=dict(
+                    owner=self.request.user,
+                    doc_url=doc_form.pop('doc_url', None),
+                    title=doc_form.pop('title', None))
+            )
 
         if settings.ADMIN_MODERATE_UPLOADS:
             self.object.is_approved = False
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
-        self.object.save()
-        form.save_many2many()
-        self.object.set_permissions(form.cleaned_data['permissions'])
+
+        resource_manager.set_permissions(
+            None, instance=self.object, permissions=form.cleaned_data["permissions"], created=True
+        )
 
         abstract = None
         date = None
@@ -250,26 +293,22 @@ class DocumentUploadView(CreateView):
                     bbox = exif_metadata.get('bbox', None)
                     abstract = exif_metadata.get('abstract', None)
             except Exception:
-                logger.error("Exif extraction failed.")
+                logger.debug("Exif extraction failed.")
 
-        if abstract:
-            self.object.abstract = abstract
+        resource_manager.update(
+            self.object.uuid,
+            instance=self.object,
+            keywords=keywords,
+            regions=regions,
+            vals=dict(
+                abstract=abstract,
+                date=date,
+                date_type="Creation",
+                bbox_polygon=BBOXHelper.from_xy(bbox).as_polygon() if bbox else None
+            ),
+            notify=True)
+        resource_manager.set_thumbnail(self.object.uuid, instance=self.object, overwrite=False)
 
-        if date:
-            self.object.date = date
-            self.object.date_type = "Creation"
-
-        if len(regions) > 0:
-            self.object.regions.add(*regions)
-
-        if len(keywords) > 0:
-            self.object.keywords.add(*keywords)
-
-        if bbox:
-            bbox = BBOXHelper.from_xy(bbox)
-            self.object.bbox_polygon = bbox.as_polygon()
-
-        self.object.save(notify=True)
         register_event(self.request, EventType.EVENT_UPLOAD, self.object)
 
         if self.request.GET.get('no__redirect', False):
@@ -304,7 +343,7 @@ class DocumentUpdateView(UpdateView):
     context_object_name = 'document'
 
     def get_context_data(self, **kwargs):
-        context = super(DocumentUpdateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
         return context
 
@@ -312,8 +351,16 @@ class DocumentUpdateView(UpdateView):
         """
         If the form is valid, save the associated model.
         """
-        self.object = form.save()
+        self.object = resource_manager.replace(
+            self.object,
+            vals={
+                'files': form.cleaned_data.get('doc_file'),
+                'doc_url': form.cleaned_data.get('doc_url'),
+                'user': self.request.user
+            })
+
         register_event(self.request, EventType.EVENT_CHANGE, self.object)
+
         return HttpResponseRedirect(
             reverse(
                 'document_detail',
@@ -453,15 +500,18 @@ def document_metadata(
                 new_author = author_form.save()
 
         document = document_form.instance
-        if new_poc is not None and new_author is not None:
-            document.poc = new_poc
-            document.metadata_author = new_author
-        document.keywords.clear()
-        document.keywords.add(*new_keywords)
-        document.regions.clear()
-        document.regions.add(*new_regions)
-        document.category = new_category
-        document.save(notify=True)
+        resource_manager.update(
+            document.uuid,
+            instance=document,
+            keywords=new_keywords,
+            regions=new_regions,
+            vals=dict(
+                poc=new_poc or document.poc,
+                metadata_author=new_author or document.metadata_author,
+                category=new_category
+            ),
+            notify=True)
+        resource_manager.set_thumbnail(document.uuid, instance=document, overwrite=False)
         document_form.save_many2many()
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, document)
@@ -604,7 +654,8 @@ def document_remove(request, docid, template='documents/document_remove.html'):
             "document": document
         })
     if request.method == 'POST':
-        document.delete()
+        resource_manager.delete(document.uuid, instance=document)
+
         register_event(request, EventType.EVENT_REMOVE, document)
         return HttpResponseRedirect(reverse("document_browse"))
     else:

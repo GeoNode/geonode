@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -18,24 +17,21 @@
 #
 #########################################################################
 import logging
+
 from uuid import uuid4
 from PIL import Image
 from io import BytesIO
 from unittest.mock import patch
 from urllib.parse import urljoin
 
-import django
 from django.urls import reverse
 from django.core.files import File
-from django.conf.urls import url, include
-from django.views.generic import TemplateView
 from django.contrib.auth import get_user_model
-from django.views.i18n import JavaScriptCatalog
-from rest_framework.test import APITestCase, URLPatternsTestCase
+from rest_framework.test import APITestCase
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.api.urls import router
+from geonode.base import enumerations
 from geonode.base.models import (
     CuratedThumbnail,
     HierarchicalKeyword,
@@ -45,14 +41,8 @@ from geonode.base.models import (
     ThesaurusKeyword,
 )
 
-from geonode import geoserver
 from geonode.favorite.models import Favorite
-from geonode.utils import check_ogc_backend
-from geonode.services.views import services
-from geonode.maps.views import map_embed
 from geonode.layers.models import Layer
-from geonode.layers.views import layer_embed, layer_detail
-from geonode.geoapps.views import geoapp_edit
 from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
 from geonode.security.utils import get_resources_with_perms
@@ -62,7 +52,7 @@ logger = logging.getLogger(__name__)
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 
 
-class BaseApiTests(APITestCase, URLPatternsTestCase):
+class BaseApiTests(APITestCase):
 
     fixtures = [
         'initial_data.json',
@@ -70,56 +60,6 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         'default_oauth_apps.json',
         "test_thesaurus.json"
     ]
-
-    urlpatterns = [
-        url(r'^home/$',
-            TemplateView.as_view(template_name='index.html'),
-            name='home'),
-        url(r'^help/$',
-            TemplateView.as_view(template_name='help.html'),
-            name='help'),
-        url(r"^account/", include("allauth.urls")),
-        url(r'^people/', include('geonode.people.urls')),
-        url(r'^api/v2/', include(router.urls)),
-        url(r'^api/v2/', include('geonode.api.urls')),
-        url(r'^api/v2/api-auth/', include('rest_framework.urls', namespace='geonode_rest_framework')),
-        url(r'^$',
-            TemplateView.as_view(template_name='layers/layer_list.html'),
-            {'facet_type': 'layers', 'is_layer': True},
-            name='layer_browse'),
-        url(r'^$',
-            TemplateView.as_view(template_name='maps/map_list.html'),
-            {'facet_type': 'maps', 'is_map': True},
-            name='maps_browse'),
-        url(r'^$',
-            TemplateView.as_view(template_name='documents/document_list.html'),
-            {'facet_type': 'documents', 'is_document': True},
-            name='document_browse'),
-        url(r'^$',
-            TemplateView.as_view(template_name='groups/group_list.html'),
-            name='group_list'),
-        url(r'^search/$',
-            TemplateView.as_view(template_name='search/search.html'),
-            name='search'),
-        url(r'^$', services, name='services'),
-        url(r'^invitations/', include(
-            'geonode.invitations.urls', namespace='geonode.invitations')),
-        url(r'^i18n/', include(django.conf.urls.i18n), name="i18n"),
-        url(r'^jsi18n/$', JavaScriptCatalog.as_view(), {}, name='javascript-catalog'),
-        url(r'^(?P<mapid>[^/]+)/embed$', map_embed, name='map_embed'),
-        url(r'^(?P<layername>[^/]+)/embed$', layer_embed, name='layer_embed'),
-        url(r'^(?P<geoappid>[^/]+)/embed$', geoapp_edit, {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
-        url(r'^(?P<layername>[^/]*)$', layer_detail, name="layer_detail"),
-    ]
-
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import layer_acls, resolve_user
-        urlpatterns += [
-            url(r'^acls/?$', layer_acls, name='layer_acls'),
-            url(r'^acls_dep/?$', layer_acls, name='layer_acls_dep'),
-            url(r'^resolve_user/?$', resolve_user, name='layer_resolve_user'),
-            url(r'^resolve_user_dep/?$', resolve_user, name='layer_resolve_user_dep'),
-        ]
 
     def setUp(self):
         create_models(b'document')
@@ -254,7 +194,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 18)
+        self.assertEqual(response.data['total'], 26)
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
 
@@ -263,7 +203,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 18)
+        self.assertEqual(response.data['total'], 26)
         # response has link to the response
         self.assertTrue('link' in response.data['resources'][0].keys())
         # Pagination
@@ -275,7 +215,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 18)
+        self.assertEqual(response.data['total'], 26)
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
         logger.debug(response.data)
@@ -285,7 +225,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 18)
+        self.assertEqual(response.data['total'], 26)
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
         logger.debug(response.data)
@@ -297,7 +237,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(f"{url}?page_size=17", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 18)
+        self.assertEqual(response.data['total'], 26)
         # Pagination
         self.assertEqual(len(response.data['resources']), 17)
 
@@ -305,6 +245,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
         # Admin
         response = self.client.get(f"{url}/{resource.id}/", format='json')
+        self.assertEqual(response.data['resource']['state'], enumerations.STATE_PROCESSED)
         self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
         # Annonymous
         self.assertIsNone(self.client.logout())
@@ -328,7 +269,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
             alternate='Test Remove User',
             uuid=str(uuid4()),
             owner=owner,
-            storeType='coverageStore',
+            storetype='raster',
             category=TopicCategory.objects.get(identifier='elevation')
         ).save()
         # Delete user and check if default user is updated
@@ -410,9 +351,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
             f"{url}?filter{{category.identifier}}=elevation", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 9)
+        self.assertEqual(response.data['total'], 6)
         # Pagination
-        self.assertEqual(len(response.data['resources']), 9)
+        self.assertEqual(len(response.data['resources']), 6)
 
         # Extent Filter
         response = self.client.get(f"{url}?page_size=26&extent=-180,-90,180,90", format='json')

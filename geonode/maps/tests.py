@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -20,31 +19,34 @@
 import json
 import logging
 
-from mock import patch
+from unittest.mock import patch
 from owslib.etree import etree as dlxml
-from django.test.utils import override_settings
-
 from pinax.ratings.models import OverallRating
 
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.test.utils import override_settings
 from django.contrib.contenttypes.models import ContentType
 
-from geonode.maps.models import Map, MapLayer
+from geonode import geoserver
 from geonode.settings import on_travis
 from geonode.maps import MapsAppConfig
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
-from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.maps.utils import fix_baselayers
+from geonode.maps.models import Map, MapLayer
 from geonode.base.models import License, Region
-from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.utils import default_map_config, check_ogc_backend
 from geonode.maps.tests_populate_maplayers import create_maplayers
+
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
 
 logger = logging.getLogger(__name__)
 
@@ -79,13 +81,30 @@ VIEWER_CONFIG = """
 """
 
 
-class MapsTest(GeoNodeBaseTestSupport):
+class MapsTest(NotificationsTestsHelper):
 
     """Tests geonode.maps app/module
     """
 
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
     def setUp(self):
-        super(MapsTest, self).setUp()
+        super().setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -93,6 +112,18 @@ class MapsTest(GeoNodeBaseTestSupport):
         self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
         self.not_admin.set_password('very-secret')
         self.not_admin.save()
+
+        self.u = get_user_model().objects.get(username=self.user)
+        self.u.email = 'test@email.com'
+        self.u.is_active = True
+        self.u.save()
+        self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.u)
+
+        self.norman = get_user_model().objects.get(username='norman')
+        self.norman.email = 'norman@email.com'
+        self.norman.is_active = True
+        self.norman.save()
+        self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.norman)
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \
@@ -444,6 +475,7 @@ community."
         test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
+        test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
             response = self.client.get(url)
@@ -458,8 +490,8 @@ community."
         test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
+        test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
-
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
             response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
             self.assertFalse(self.not_admin.is_superuser)
@@ -474,8 +506,8 @@ community."
         test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
+        test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
-
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
             response = self.client.post(url)
             self.assertFalse(self.not_admin.is_superuser)
@@ -489,6 +521,7 @@ community."
         test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
+        test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
         with self.settings(FREETEXT_KEYWORDS_READONLY=False):
             response = self.client.get(url)
@@ -503,8 +536,8 @@ community."
         test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
+        test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
-
         with self.settings(FREETEXT_KEYWORDS_READONLY=False):
             response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
             self.assertFalse(self.not_admin.is_superuser)
@@ -673,16 +706,11 @@ community."
         map_obj.update_from_viewer(config_map, context={})
         title = config_map.get('title', config_map['about']['title'])
         abstract = config_map.get('abstract', config_map['about']['abstract'])
-        center = config_map['map'].get('center', {})
-        zoom = config_map['map'].get('zoom', settings.DEFAULT_MAP_ZOOM)
-
         projection = config_map['map']['projection']
 
         self.assertEqual(map_obj.title, title)
         self.assertEqual(map_obj.abstract, abstract)
-        self.assertEqual(map_obj.center_x, center['x'] if isinstance(center, dict) else center[0])
-        self.assertEqual(map_obj.center_y, center['y'] if isinstance(center, dict) else center[1])
-        self.assertEqual(map_obj.zoom, zoom)
+        self.assertEqual(map_obj.zoom, 6)
         self.assertEqual(map_obj.projection, projection)
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
@@ -739,15 +767,11 @@ community."
         map_obj.update_from_viewer(config_map, context={})
         title = config_map.get('title', config_map['about']['title'])
         abstract = config_map.get('abstract', config_map['about']['abstract'])
-        center = config_map['map'].get('center', settings.DEFAULT_MAP_CENTER)
-        zoom = config_map['map'].get('zoom', settings.DEFAULT_MAP_ZOOM)
         projection = config_map['map']['projection']
 
         self.assertEqual(map_obj.title, title)
         self.assertEqual(map_obj.abstract, abstract)
-        self.assertEqual(map_obj.center_x, center['x'] if isinstance(center, dict) else center[0])
-        self.assertEqual(map_obj.center_y, center['y'] if isinstance(center, dict) else center[1])
-        self.assertEqual(map_obj.zoom, zoom)
+        self.assertEqual(map_obj.zoom, 6)
         self.assertEqual(map_obj.projection, projection)
 
         for map_layer in map_obj.layers:
@@ -977,25 +1001,12 @@ community."
 
     def test_get_legend(self):
         layer = Layer.objects.all().first()
-        map_layer = MapLayer.objects.filter(name=layer.alternate).exclude(layer_params=u'').first()
+        map_layer = MapLayer.objects.filter(name=layer.alternate).exclude(layer_params='').first()
         if map_layer and layer.default_style:
             self.assertIsNone(map_layer.get_legend)
         elif map_layer:
             # when there is no style in layer_params
             self.assertIsNone(map_layer.get_legend)
-
-
-class MapModerationTestCase(GeoNodeBaseTestSupport):
-
-    def setUp(self):
-        super(MapModerationTestCase, self).setUp()
-
-        self.user = 'admin'
-        self.passwd = 'admin'
-        self.u = get_user_model().objects.get(username=self.user)
-        self.u.email = 'test@email.com'
-        self.u.is_active = True
-        self.u.save()
 
     def test_moderated_upload(self):
         """
@@ -1030,25 +1041,6 @@ class MapModerationTestCase(GeoNodeBaseTestSupport):
             _l = Map.objects.get(id=map_id)
             self.assertFalse(_l.is_approved)
             self.assertTrue(_l.is_published)
-
-
-class MapsNotificationsTestCase(NotificationsTestsHelper):
-
-    def setUp(self):
-        super(MapsNotificationsTestCase, self).setUp()
-
-        self.user = 'admin'
-        self.passwd = 'admin'
-        self.u = get_user_model().objects.get(username=self.user)
-        self.u.email = 'test@email.com'
-        self.u.is_active = True
-        self.u.save()
-        self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.u)
-        self.norman = get_user_model().objects.get(username='norman')
-        self.norman.email = 'norman@email.com'
-        self.norman.is_active = True
-        self.norman.save()
-        self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.norman)
 
     def testMapsNotifications(self):
         with self.settings(

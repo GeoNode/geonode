@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2019 OSGeo
@@ -42,6 +41,11 @@ from geonode.decorators import on_ogc_backend
 
 from geonode.layers.models import Layer, Style
 from geonode.layers.populate_layers_data import create_layer_data
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models,
+    create_single_layer)
 from geonode.geoserver.helpers import (
     gs_catalog,
     get_sld_for,
@@ -547,12 +551,57 @@ class LayerTests(GeoNodeBaseTestSupport):
 
     type = 'layer'
 
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
     def setUp(self):
-        super(LayerTests, self).setUp()
+        super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
         create_layer_data()
         self.config = Configuration.load()
+
+        self.OGC_DEFAULT_SETTINGS = {
+            'default': {
+                'BACKEND': 'geonode.geoserver',
+                'LOCATION': 'http://localhost:8080/geoserver/',
+                'USER': 'admin',
+                'PASSWORD': 'geoserver',
+                'MAPFISH_PRINT_ENABLED': True,
+                'PRINT_NG_ENABLED': True,
+                'GEONODE_SECURITY_ENABLED': True,
+                'GEOFENCE_SECURITY_ENABLED': True,
+                'WMST_ENABLED': False,
+                'BACKEND_WRITE_ENABLED': True,
+                'WPS_ENABLED': False,
+                'DATASTORE': '',
+            }
+        }
+
+        self.UPLOADER_DEFAULT_SETTINGS = {
+            'BACKEND': 'geonode.importer',
+            'OPTIONS': {
+                'TIME_ENABLED': False,
+                'MOSAIC_ENABLED': False}}
+
+        self.DATABASE_DEFAULT_SETTINGS = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': 'development.db'}}
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_manager(self):
@@ -765,41 +814,6 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.assertEqual('admin', response_json['fullname'])
         self.assertEqual('ad@m.in', response_json['email'])
 
-
-class UtilsTests(GeoNodeBaseTestSupport):
-
-    type = 'layer'
-
-    def setUp(self):
-        super(UtilsTests, self).setUp()
-        self.OGC_DEFAULT_SETTINGS = {
-            'default': {
-                'BACKEND': 'geonode.geoserver',
-                'LOCATION': 'http://localhost:8080/geoserver/',
-                'USER': 'admin',
-                'PASSWORD': 'geoserver',
-                'MAPFISH_PRINT_ENABLED': True,
-                'PRINT_NG_ENABLED': True,
-                'GEONODE_SECURITY_ENABLED': True,
-                'GEOFENCE_SECURITY_ENABLED': True,
-                'WMST_ENABLED': False,
-                'BACKEND_WRITE_ENABLED': True,
-                'WPS_ENABLED': False,
-                'DATASTORE': str(),
-            }
-        }
-
-        self.UPLOADER_DEFAULT_SETTINGS = {
-            'BACKEND': 'geonode.rest',
-            'OPTIONS': {
-                'TIME_ENABLED': False,
-                'MOSAIC_ENABLED': False}}
-
-        self.DATABASE_DEFAULT_SETTINGS = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': 'development.db'}}
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_ogc_server_settings(self):
         """
@@ -822,7 +836,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
                 default.get('PUBLIC_LOCATION'))
             self.assertEqual(ogc_settings.USER, default.get('USER'))
             self.assertEqual(ogc_settings.PASSWORD, default.get('PASSWORD'))
-            self.assertEqual(ogc_settings.DATASTORE, str())
+            self.assertEqual(ogc_settings.DATASTORE, '')
             self.assertEqual(ogc_settings.credentials, ('admin', 'geoserver'))
             self.assertTrue(ogc_settings.MAPFISH_PRINT_ENABLED)
             self.assertTrue(ogc_settings.PRINT_NG_ENABLED)
@@ -922,18 +936,21 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         # Test OWS Download Links
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-        instance = Layer.objects.all()[0]
+        instance = create_single_layer("san_andres_y_providencia_water")
+        instance.name = 'san_andres_y_providencia_water'
+        instance.save()
         bbox = instance.bbox
         srid = instance.srid
         height = 512
         width = 512
 
         # Default Style (expect exception since we are offline)
-        try:
-            style = get_sld_for(gs_catalog, instance)
-        except Exception:
-            style = gs_catalog.get_style("line")
+        style = get_sld_for(gs_catalog, instance)
+        logger.error(f" style -------------------------------------------> {style}")
+        if isinstance(style, str):
+            style = gs_catalog.get_style(instance.name, workspace=instance.workspace)
         self.assertIsNotNone(style)
+        self.assertFalse(isinstance(style, str))
         instance.default_style, _ = Style.objects.get_or_create(
             name=style.name,
             defaults=dict(
@@ -1021,9 +1038,6 @@ class UtilsTests(GeoNodeBaseTestSupport):
         # database, no exceptions should be thrown.
         with self.settings(UPLOADER=uploader_settings, OGC_SERVER=ogc_server_settings, DATABASES=database_settings):
             OGC_Servers_Handler(ogc_server_settings)['default']
-
-
-class SignalsTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_resources_links(self):

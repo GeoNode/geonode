@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -17,14 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
+
 from rest_framework import serializers
 
 from dynamic_rest.serializers import DynamicModelSerializer
 
 from geonode.maps.models import Map, MapLayer
 from geonode.base.api.serializers import ResourceBaseSerializer
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +48,7 @@ class MapSerializer(ResourceBaseSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
-        super(MapSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = Map
@@ -58,5 +57,5 @@ class MapSerializer(ResourceBaseSerializer):
         fields = (
             'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
-            'urlsuffix', 'featuredurl'
+            'urlsuffix', 'featuredurl', 'data',
         )

@@ -2,7 +2,7 @@
 Pillow==8.2.0
 lxml==4.6.3
 psycopg2==2.9.1
-Django==3.2
+Django==3.2.4
 
 # Other
 amqp==5.0.6
@@ -17,7 +17,6 @@ decorator==5.0.9
 celery==5.1.1
 kombu==5.1.0
 vine==5.0.0
-boto3==1.17.97
 tqdm==4.61.1
 Deprecated==1.2.12
 wrapt==1.12.1
@@ -26,6 +25,8 @@ jsonschema==3.2.0
 # Django Apps
 django-allauth==0.44.0
 django-appconf==1.0.4
+django-celery-beat==2.2.0
+django-celery-results==2.1.0
 django-filter==2.4.0
 django-imagekit==4.0.2
 django-taggit==1.4.0
@@ -41,6 +42,7 @@ django-tinymce==3.3.0
 django-grappelli==2.15.1
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.8
+django-sequences==2.6
 oauthlib==3.1.1
 pyopenssl==20.0.1
 
@@ -66,7 +68,7 @@ django-invitations<1.9.4
 django-recaptcha==2.0.6
 
 # REST
-djangorestframework==3.11.2
+djangorestframework<3.12.0,>=3.8.0
 djangorestframework-gis==0.17
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.0
@@ -79,8 +81,8 @@ pinax-notifications==6.0.0
 pinax-ratings==4.0.0
 
 # GeoNode org maintained apps.
-# django-geonode-mapstore-client>=2.1.1
--e git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
+# django-geonode-mapstore-client>=4.0.0
+-e git+https://github.com/geosolutions-it/geonode-mapstore-client.git@nexus_master#egg=django_geonode_mapstore_client
 geonode-avatar==5.0.7
 geonode-oauth-toolkit==2.2.1
 geonode-user-messages==2.0.2
@@ -89,7 +91,7 @@ geonode-django-activity-stream==0.10.0
 gn-arcrest==10.5.4
 geonode-dialogos==3.0.1
 geoserver-restconfig==2.0.4.9
-gn-gsimporter==2.0.1
+gn-gsimporter>=2.0.2
 gisdata==0.5.4
 
 # haystack/elasticsearch
@@ -99,8 +101,12 @@ elasticsearch>=2.0.0,<8.0.0
 # datetimepicker widget
 django-bootstrap3-datetimepicker-2==2.8.2
 
-# AWS S3 dependencies
+# storage manager dependencies
 django-storages==1.11.1
+dropbox==11.9.0
+google-cloud-storage==1.38.0
+google-cloud-core==1.6.0
+boto3==1.17.97
 
 # Django Caches
 python-memcached<=1.59

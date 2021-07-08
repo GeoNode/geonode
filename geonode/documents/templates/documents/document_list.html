@@ -15,7 +15,7 @@
   </div>
   {% with include_type_filter='true' %}
     {% with header='Document Type' %}
-      {% with filter='doc_type__in' %}
+      {% with filter='storetype__in' %}
         {% include "search/_search_content.html" %}
       {% endwith %}
     {% endwith %}

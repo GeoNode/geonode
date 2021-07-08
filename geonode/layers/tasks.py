@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -21,9 +20,9 @@
 """celery tasks for geonode.layers."""
 from geonode.celery_app import app
 from celery.utils.log import get_task_logger
-from django.db import IntegrityError, transaction
 
 from geonode.layers.models import Layer
+from geonode.resource.manager import resource_manager
 
 logger = get_task_logger(__name__)
 
@@ -49,8 +48,4 @@ def delete_layer(self, layer_id):
         logger.warning(f"Layers {layer_id} does not exist!")
         return
     logger.debug(f'Deleting Layer {layer}')
-    try:
-        with transaction.atomic():
-            layer.delete()
-    except IntegrityError:
-        raise
+    resource_manager.delete(uuid=layer.uuid, instance=layer)

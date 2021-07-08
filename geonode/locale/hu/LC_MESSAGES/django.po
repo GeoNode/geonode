@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Hungarian (http://www.transifex.com/geonode/geonode/language/"
@@ -466,6 +466,12 @@ msgstr ""
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -681,6 +687,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "Jelszó sikeresen megváltoztatva."
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -1016,6 +1031,9 @@ msgstr ""
 msgid "Link to"
 msgstr "Link"
 
+msgid "File"
+msgstr "Akta"
+
 msgid "Document must be a file or url."
 msgstr "Dokumentum kell, hogy legyen egy fájlt vagy URL-t."
 
@@ -1027,9 +1045,6 @@ msgstr "Ez a fájl típus nem engedélyezett"
 
 msgid "Permissions must be valid JSON."
 msgstr "Engedélyek érvényesnek kell lennie JSON."
-
-msgid "File"
-msgstr "Akta"
 
 msgid "The URL of the document if it is external."
 msgstr "Az URL a dokumentum, ha a külső."
@@ -1087,6 +1102,9 @@ msgid "Document"
 msgid_plural "Documents"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr ""
@@ -1549,6 +1567,11 @@ msgstr ""
 "XML fájl. GeoNode metaadat import egy részét támogatja az ISO, FGDC, és "
 "Dublin Core metaadat elemek. Néhány eredeti metaadatok esetleg elveszett."
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "Fedezze Maps"
+
 #, python-format
 msgid ""
 "\n"
@@ -1557,6 +1580,11 @@ msgid ""
 msgstr ""
 "\n"
 "Szerkesztése adatai %(map_title)s"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "Vissza a"
 
 #, fuzzy
 #| msgid "View Map"
@@ -1645,14 +1673,14 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "Réteg neve"
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "adatbázisba"
 
 #, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "Réteg címe"
+#| msgid "Attributes"
+msgid "Dataset title"
+msgstr "Attribútumok"
 
 #, fuzzy
 #| msgid "property type"
@@ -1660,16 +1688,18 @@ msgid "Geometry type"
 msgstr "ingatlan típus"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "Hozzon létre egy Map"
+#| msgid "feature type"
+msgid "Create Dataset"
+msgstr "jellemző típus"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "Fedezze fel a Rétegek"
 
 #, fuzzy
 #| msgid "Create a map using this layer"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "Hozzon létre egy térkép segítségével ez a réteg"
 
 #, fuzzy
@@ -1707,6 +1737,9 @@ msgstr ""
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr ""
 
@@ -1739,9 +1772,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "Ön nem jogosult módosítani stílust ezt a réteget"
@@ -1996,6 +2026,119 @@ msgstr "Csoport létrehozása"
 
 msgid "Save"
 msgstr "Mentés"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "Erőforrás"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "Betakarított"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "változata az idézett forrás"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "Set jogosultságokat kiválasztott erőforrások"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2286,11 +2429,13 @@ msgstr "időpont, amikor az attribútum statisztika utolsó frissítés"
 
 #, fuzzy
 #| msgid "Edit Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "Szerkesztés réteg"
 
-msgid "Return to Layer"
-msgstr ""
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Dataset"
+msgstr "Vissza a"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2309,7 +2454,7 @@ msgstr "Kapcsolattartási forma megváltoztatása"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Rendeljen új kapcsolattartó pontot, hogy a rétegek az alábbi:"
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2370,14 +2515,18 @@ msgstr "Középső"
 msgid "Standard Deviation"
 msgstr "Szabvány eltérés"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "Értékelje ezt a réteget"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "Download réteg"
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "Download"
 
 msgid "Images"
 msgstr ""
@@ -2465,9 +2614,9 @@ msgid "Edit data"
 msgstr ""
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "Szerkesztés réteg"
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "Metaadatok szerkesztése"
 
 #, fuzzy
 #| msgid "format"
@@ -2480,28 +2629,38 @@ msgstr ""
 msgid "Legend"
 msgstr "Legenda"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "Térképek segítségével ez a réteg"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "Listája térképeket e réteg:"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "Ez a réteg jelenleg nem használható olyan térképeket."
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "Hozzon létre egy térkép segítségével ez a réteg"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr ""
 "Kattintson az alábbi gombra, hogy létrehoz egy új térkép alapján ez a réteg."
 
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr ""
 "Kattintson az alábbi gombra, hogy az engedélyek módosításához ez a réteg."
 
@@ -2542,7 +2701,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2560,23 +2719,17 @@ msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr ""
 "Kattintson az alábbi gombra, hogy az engedélyek módosításához ez a réteg."
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr ""
 "Kattintson az alábbi gombra, hogy az engedélyek módosításához ez a réteg."
 
-msgid "Change Layer Permissions"
-msgstr "Változás réteg Engedélyek"
-
-msgid "Processing..."
-msgstr ""
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "Engedélyek"
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
+msgstr "Változás réteg Engedélyek"
 
 msgid "Remove Mosaic Granules"
 msgstr ""
@@ -2595,8 +2748,10 @@ msgstr "Ez a művelet érinti a következő térképek:"
 msgid "No maps are using this layer"
 msgstr "Nem térképeket használja ezt a réteget"
 
-msgid "Upload Layers"
-msgstr "Feltöltés Rétegek"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "Download Metadata"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2649,14 +2804,16 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "Feltöltés réteg"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
-msgstr ""
+#, fuzzy
+#| msgid "feature type"
+msgid "Remove Datasets"
+msgstr "jellemző típus"
 
 #, python-format
 msgid ""
@@ -2666,7 +2823,9 @@ msgid ""
 "        "
 msgstr ""
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "Cserélje réteg"
 
 msgid "Manage Styles"
@@ -2683,7 +2842,9 @@ msgstr ""
 "Elérhető kezelése Stílusok <a href=\"/layers/%(layer_title)s\">"
 "%(layer_title)s</a>"
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "Réteg Default Style"
 
 msgid "Available styles"
@@ -2699,9 +2860,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "Frissítés álló stílusok"
 
+msgid "Return to Layer"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "Feltöltés réteg 2. lépés"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2721,8 +2885,10 @@ msgstr "Preview"
 msgid "Dataset Attributes"
 msgstr "Attribútumok"
 
-msgid "Upload Layer"
-msgstr "Feltöltés réteg"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "Download Metadata"
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2773,7 +2939,7 @@ msgstr "Biztosan törölni szeretné ezt a feltöltést?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "Feltöltés réteg 2. lépés"
 
 msgid "Provide CRS for "
@@ -2794,9 +2960,9 @@ msgstr "Koordinátareferenciarendszer"
 #| "    "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2985,7 +3151,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "Feltöltés réteg 2. lépés"
 
 msgid "Geospatial Data"
@@ -3045,7 +3211,7 @@ msgstr "Feltöltés Form"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "Feltöltés réteg 2. lépés"
 
 msgid "Inspect data for "
@@ -3169,11 +3335,11 @@ msgstr "Engedélyezése idő"
 #| "valid period for the\n"
 #| "    feature."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3257,24 +3423,17 @@ msgstr "Vagy csak megy"
 msgid "now"
 msgstr "most"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr ""
 
 #, python-brace-format
-msgid "You are attempting to {action_type} a vector layer with a raster."
-msgstr ""
-
-#, python-brace-format
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr ""
 
 #, python-brace-format
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr ""
 
 #, python-brace-format
@@ -3283,7 +3442,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3293,10 +3452,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3312,39 +3471,38 @@ msgstr ""
 "fennáll."
 
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
-
-msgid "You are not permitted to delete this layer"
-msgstr "Ön nem jogosult törölni ezt a réteget"
-
-msgid "You do not have permissions for this layer."
-msgstr "Nem rendelkezik engedélyekkel ezt a réteget."
-
-msgid "You are not permitted to modify this layer"
-msgstr "Ön nem jogosult módosítani ezt a réteget"
-
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "Ön nem jogosult módosítani ezt a réteget a metaadatok"
-
-msgid "You are not permitted to view this layer"
-msgstr "Ön nem jogosult megtekinteni ezt a réteget"
 
 #, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "Fájlok feltöltését"
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
+msgstr "Ön nem jogosult törölni ezt a réteget"
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
+msgstr "Nem rendelkezik engedélyekkel ezt a réteget."
 
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
+msgstr "Ön nem jogosult módosítani ezt a réteget"
+
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
+msgstr "Ön nem jogosult módosítani ezt a réteget a metaadatok"
+
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
+msgstr "Ön nem jogosult megtekinteni ezt a réteget"
 
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 
 #, fuzzy, python-format
@@ -4220,6 +4378,17 @@ msgstr "Dokumentumok"
 msgid "Not Authorized"
 msgstr "Nem biztosított"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "GeoNode Segítség"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4400,8 +4569,10 @@ msgstr ""
 msgid "Services"
 msgstr "Szolgáltatások"
 
-msgid "Register a new Service"
-msgstr "Regisztráljon egy új szolgáltatás"
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Add Remote Service"
+msgstr "Távoli szolgáltatások"
 
 msgid "Remote Services"
 msgstr "Távoli szolgáltatások"
@@ -4505,6 +4676,11 @@ msgid "Service rescanned successfully"
 msgstr "Jelszó sikeresen megváltoztatva."
 
 #, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "Nem megengedett, hogy menteni vagy szerkeszteni ezt a térképet."
+
+#, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "Nem megengedett, hogy távolítsa el ezt a szolgáltatást."
@@ -4590,6 +4766,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "adatbázisba"
+
 msgid "People"
 msgstr "Emberek"
 
@@ -4624,9 +4805,9 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#| msgid "Remote Services"
-msgid "Add Remote Service"
-msgstr "Távoli szolgáltatások"
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "Hozzon létre egy új térképet"
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4725,10 +4906,14 @@ msgstr "Ki lehet letölteni?"
 msgid "Who can change metadata for it?"
 msgstr "Ki tudja változtatni metaadatok ez?"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "Ki tudja szerkeszteni adatokat ez a réteg?"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "Ki tudja szerkeszteni stílusokat ezt a réteget?"
 
 msgid ""
@@ -5355,6 +5540,9 @@ msgstr "feltöltve"
 msgid "Upload in progress..."
 msgstr "Fájlok feltöltése"
 
+msgid "Processing..."
+msgstr ""
+
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
@@ -5364,6 +5552,11 @@ msgstr "Thumbnail"
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
 msgstr "Biztos, hogy el akarja távolítani"
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Processing Resource..."
+msgstr "Erőforrás"
 
 msgid "Information for Developers"
 msgstr "Információ fejlesztők számára"
@@ -5447,8 +5640,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5646,11 +5839,15 @@ msgstr ""
 "szervezetek és az állami forrásokból. Töltse le az adatokat szabványos "
 "formátumban."
 
-msgid "Add layers"
-msgstr ""
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "adatbázisba"
 
-msgid "Explore layers"
-msgstr ""
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
+msgstr "Fedezze fel a Rétegek"
 
 #, fuzzy
 #| msgid ""
@@ -6263,7 +6460,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "Rétegek"
 
 msgid "Maps found"
@@ -6305,6 +6502,11 @@ msgstr "Legnépszerűbb"
 
 msgid "Text"
 msgstr "Szöveg"
+
+#, fuzzy
+#| msgid "feature type"
+msgid "Share This Dataset"
+msgstr "jellemző típus"
 
 msgid "Share This"
 msgstr ""
@@ -6491,6 +6693,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6571,6 +6777,48 @@ msgstr "Érvénytelen jogosultsági szint."
 
 msgid "Permission Denied"
 msgstr "Engedély megtagadva"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "Réteg neve"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "Réteg címe"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "Hozzon létre egy Map"
+
+#~ msgid "Download Layer"
+#~ msgstr "Download réteg"
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "Szerkesztés réteg"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "Engedélyek"
+
+#~ msgid "Upload Layers"
+#~ msgstr "Feltöltés Rétegek"
+
+#~ msgid "Upload Layer"
+#~ msgstr "Feltöltés réteg"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Fájlok feltöltését"
+
+#~ msgid "Register a new Service"
+#~ msgstr "Regisztráljon egy új szolgáltatás"
 
 #, fuzzy
 #~| msgid "Set permissions"

@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Romanian (http://www.transifex.com/geonode/geonode/language/"
@@ -467,6 +467,12 @@ msgstr ""
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -682,6 +688,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "Parola a fost schimbata cu succes."
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -1017,6 +1032,9 @@ msgstr ""
 msgid "Link to"
 msgstr "Link catre"
 
+msgid "File"
+msgstr "Fișier"
+
 msgid "Document must be a file or url."
 msgstr "Document trebuie să fie un fișier sau URL."
 
@@ -1028,9 +1046,6 @@ msgstr "Acest tip de fișier nu este permis"
 
 msgid "Permissions must be valid JSON."
 msgstr "Permisiuni trebuie să fie JSON valid."
-
-msgid "File"
-msgstr "Fișier"
 
 msgid "The URL of the document if it is external."
 msgstr "Adresa URL a documentului în cazul în care este extern."
@@ -1089,6 +1104,9 @@ msgid_plural "Documents"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr ""
@@ -1552,6 +1570,11 @@ msgstr ""
 "elemente de metadate ISO, FGDC, și Dublin Core. Unele dintre metadate "
 "original ar fi fost pierdut."
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "Exploreaza hărți"
+
 #, python-format
 msgid ""
 "\n"
@@ -1560,6 +1583,11 @@ msgid ""
 msgstr ""
 "\n"
 "Detalii editare de %(map_title)s"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "Revino la"
 
 #, fuzzy
 #| msgid "View Map"
@@ -1648,14 +1676,14 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "Strat Nume"
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "CCD"
 
 #, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "Strat Titlu"
+#| msgid "Attributes"
+msgid "Dataset title"
+msgstr "Atribute"
 
 #, fuzzy
 #| msgid "property type"
@@ -1663,16 +1691,18 @@ msgid "Geometry type"
 msgstr "Tipul de proprietate"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "Creați un Hartă"
+#| msgid "feature type"
+msgid "Create Dataset"
+msgstr "tip de caracteristică"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "Exploreaza Straturi"
 
 #, fuzzy
 #| msgid "Create a map using this layer"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "Creați o hartă cu ajutorul acestui strat"
 
 #, fuzzy
@@ -1710,6 +1740,9 @@ msgstr ""
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr ""
 
@@ -1742,9 +1775,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "Nu aveți permisiunea de a schimba stilul de acest strat"
@@ -1999,6 +2029,119 @@ msgstr "Creare grup"
 
 msgid "Save"
 msgstr "Salvați"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "Resurse"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "Recoltate"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "versiune a resursei citat"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "Setarea permisiunilor pentru resursele selectate"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2293,11 +2436,13 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Edit Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "Edit Layer"
 
-msgid "Return to Layer"
-msgstr ""
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Dataset"
+msgstr "Revino la"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2316,7 +2461,7 @@ msgstr "Punct de contact se schimbe"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Atribui un nou punct de contact pentru straturile de mai jos:"
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2377,14 +2522,18 @@ msgstr "Mediană"
 msgid "Standard Deviation"
 msgstr "Abaterea standard"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "Noteaza acest strat"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "Descărcare Layer"
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "Descărcare"
 
 msgid "Images"
 msgstr ""
@@ -2473,9 +2622,9 @@ msgid "Edit data"
 msgstr ""
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "Edit Layer"
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "Editează metadatele"
 
 #, fuzzy
 #| msgid "format"
@@ -2488,29 +2637,39 @@ msgstr ""
 msgid "Legend"
 msgstr "Legendă"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "Hărți folosind acest strat"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "Listă de hărți care folosesc acest strat:"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "Acest strat nu este utilizat în prezent în orice hărți."
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "Creați o hartă cu ajutorul acestui strat"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr ""
 "Faceți clic pe butonul de mai jos pentru a genera o nouă hartă pe baza "
 "acestui strat."
 
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr ""
 "Faceți clic pe butonul de mai jos pentru a schimba permisiunile acest strat."
 
@@ -2551,7 +2710,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2569,23 +2728,17 @@ msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr ""
 "Faceți clic pe butonul de mai jos pentru a schimba permisiunile acest strat."
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr ""
 "Faceți clic pe butonul de mai jos pentru a schimba permisiunile acest strat."
 
-msgid "Change Layer Permissions"
-msgstr "Permisiuni schimbare Layer"
-
-msgid "Processing..."
-msgstr ""
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "Permisiuni"
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
+msgstr "Permisiuni schimbare Layer"
 
 msgid "Remove Mosaic Granules"
 msgstr ""
@@ -2604,8 +2757,10 @@ msgstr "Această acțiune afectează următoarele hărți:"
 msgid "No maps are using this layer"
 msgstr "Nu există hărți folosesc acest strat"
 
-msgid "Upload Layers"
-msgstr "Straturi de încărcare"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "Descărcare metadate"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2658,14 +2813,16 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "Încărcați Layer"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
-msgstr ""
+#, fuzzy
+#| msgid "feature type"
+msgid "Remove Datasets"
+msgstr "tip de caracteristică"
 
 #, python-format
 msgid ""
@@ -2675,7 +2832,9 @@ msgid ""
 "        "
 msgstr ""
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "Înlocuiți Layer"
 
 msgid "Manage Styles"
@@ -2692,7 +2851,9 @@ msgstr ""
 "Gestionare stiluri disponibile pentru <a href=\"/layers/%(layer_title)s\">"
 "%(layer_title)s</a>"
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "Strat Stil prestabilit"
 
 msgid "Available styles"
@@ -2708,9 +2869,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "Stiluri de actualizare disponibile"
 
+msgid "Return to Layer"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "Încărcați Layer Pasul 2"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2730,8 +2894,10 @@ msgstr "Avanpremieră"
 msgid "Dataset Attributes"
 msgstr "Atribute"
 
-msgid "Upload Layer"
-msgstr "Încărcați Layer"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "Descărcare metadate"
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2782,7 +2948,7 @@ msgstr "Sunteți sigur că doriți să ștergeți această încărcare?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "Încărcați Layer Pasul 2"
 
 msgid "Provide CRS for "
@@ -2803,9 +2969,9 @@ msgstr "Sistemul de coordonate de referință"
 #| "    "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2996,7 +3162,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "Încărcați Layer Pasul 2"
 
 msgid "Geospatial Data"
@@ -3056,7 +3222,7 @@ msgstr "Încărcați Forma"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "Încărcați Layer Pasul 2"
 
 msgid "Inspect data for "
@@ -3182,11 +3348,11 @@ msgstr "Activarea Timp"
 #| "valid period for the\n"
 #| "    feature."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3272,24 +3438,17 @@ msgstr "Sau du-te"
 msgid "now"
 msgstr "acum"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr ""
 
 #, python-brace-format
-msgid "You are attempting to {action_type} a vector layer with a raster."
-msgstr ""
-
-#, python-brace-format
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr ""
 
 #, python-brace-format
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr ""
 
 #, python-brace-format
@@ -3298,7 +3457,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3308,10 +3467,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3326,39 +3485,38 @@ msgstr ""
 "încercați din nou, sau contactați și administrator dacă problema persistă."
 
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
-
-msgid "You are not permitted to delete this layer"
-msgstr "Tu nu sunt permise pentru a șterge acest strat"
-
-msgid "You do not have permissions for this layer."
-msgstr "Nu aveți permisiuni pentru acest strat."
-
-msgid "You are not permitted to modify this layer"
-msgstr "Tu nu sunt permise de a modifica acest strat"
-
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "Tu nu sunt permise de a modifica metadatele acest strat de"
-
-msgid "You are not permitted to view this layer"
-msgstr "Tu nu sunt permise pentru a vizualiza acest strat"
 
 #, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "Fișiere pentru a fi încărcate"
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
+msgstr "Tu nu sunt permise pentru a șterge acest strat"
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
+msgstr "Nu aveți permisiuni pentru acest strat."
 
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
+msgstr "Tu nu sunt permise de a modifica acest strat"
+
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
+msgstr "Tu nu sunt permise de a modifica metadatele acest strat de"
+
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
+msgstr "Tu nu sunt permise pentru a vizualiza acest strat"
 
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 
 #, fuzzy, python-format
@@ -4246,6 +4404,17 @@ msgstr "Documente"
 msgid "Not Authorized"
 msgstr "Care nu sunt prevăzute"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "GeoNode Ajutor"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4426,8 +4595,10 @@ msgstr ""
 msgid "Services"
 msgstr "Servicii"
 
-msgid "Register a new Service"
-msgstr "Înregistrează-o nouă Serviciu"
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Add Remote Service"
+msgstr "Servicii de la distanță"
 
 msgid "Remote Services"
 msgstr "Servicii de la distanță"
@@ -4531,6 +4702,11 @@ msgid "Service rescanned successfully"
 msgstr "Parola a fost schimbata cu succes."
 
 #, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "Tu nu sunt permise pentru a salva sau edita această hartă."
+
+#, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "Tu nu sunt permise pentru a elimina acest serviciu."
@@ -4616,6 +4792,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "CCD"
+
 msgid "People"
 msgstr "Oameni"
 
@@ -4650,9 +4831,9 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#| msgid "Remote Services"
-msgid "Add Remote Service"
-msgstr "Servicii de la distanță"
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "Creați o nouă hartă"
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4751,10 +4932,14 @@ msgstr "Cine puteți descărca?"
 msgid "Who can change metadata for it?"
 msgstr "Cine poate schimba metadate pentru ea?"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "Cine poate edita datele pentru acest strat?"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "Cine poate edita stiluri pentru acest strat?"
 
 msgid ""
@@ -5380,6 +5565,9 @@ msgstr "încărcat"
 msgid "Upload in progress..."
 msgstr "Încărcați fișiere"
 
+msgid "Processing..."
+msgstr ""
+
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
@@ -5389,6 +5577,11 @@ msgstr "Thumbnail"
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
 msgstr "Sunteți sigur că doriți să eliminați"
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Processing Resource..."
+msgstr "Resurse"
 
 msgid "Information for Developers"
 msgstr "Informații pentru dezvoltatori"
@@ -5472,8 +5665,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5672,11 +5865,15 @@ msgstr ""
 "utilizatori, organizații și din surse publice. De descărcare a datelor în "
 "formate standard."
 
-msgid "Add layers"
-msgstr ""
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "CCD"
 
-msgid "Explore layers"
-msgstr ""
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
+msgstr "Exploreaza Straturi"
 
 #, fuzzy
 #| msgid ""
@@ -6287,7 +6484,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "Straturi"
 
 msgid "Maps found"
@@ -6329,6 +6526,11 @@ msgstr "Cele mai populare"
 
 msgid "Text"
 msgstr "Text"
+
+#, fuzzy
+#| msgid "feature type"
+msgid "Share This Dataset"
+msgstr "tip de caracteristică"
 
 msgid "Share This"
 msgstr ""
@@ -6515,6 +6717,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6595,6 +6801,48 @@ msgstr "Nivel de permisiune invalid."
 
 msgid "Permission Denied"
 msgstr "Permission denied"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "Strat Nume"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "Strat Titlu"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "Creați un Hartă"
+
+#~ msgid "Download Layer"
+#~ msgstr "Descărcare Layer"
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "Edit Layer"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "Permisiuni"
+
+#~ msgid "Upload Layers"
+#~ msgstr "Straturi de încărcare"
+
+#~ msgid "Upload Layer"
+#~ msgstr "Încărcați Layer"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Fișiere pentru a fi încărcate"
+
+#~ msgid "Register a new Service"
+#~ msgstr "Înregistrează-o nouă Serviciu"
 
 #, fuzzy
 #~| msgid "Set permissions"

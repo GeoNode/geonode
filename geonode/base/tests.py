@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -19,25 +18,26 @@
 #########################################################################
 
 import os
-from unittest.mock import patch, Mock
-from urllib.parse import urlparse
-
 import requests
+
+from urllib.parse import urlparse
+from unittest.mock import patch, Mock
 from django.core.exceptions import ObjectDoesNotExist
 
-from guardian.shortcuts import assign_perm, get_perms
-from imagekit.cachefiles.backends import Simple
 from io import BytesIO
 from PIL import Image
+from imagekit.cachefiles.backends import Simple
+from guardian.shortcuts import assign_perm, get_perms
 
-from geonode.base.utils import OwnerRightsRequestViewUtils, ManageResourceOwnerPermissions
-from geonode.base.templatetags.base_tags import display_change_perms_button
-from geonode.documents.models import Document
-from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.services.models import Service
-from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base import thumb_utils
+from geonode.base import enumerations
+from geonode.layers.models import Layer
+from geonode.services.models import Service
+from geonode.documents.models import Document
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base.templatetags.base_tags import display_change_perms_button
+from geonode.base.utils import OwnerRightsRequestViewUtils, ManageResourceOwnerPermissions
 from geonode.base.models import (
     ResourceBase,
     MenuPlaceholder,
@@ -52,7 +52,7 @@ from geonode.base.models import (
 from django.conf import settings
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
-from django.core.files.storage import default_storage as storage
+from geonode.storage.manager import storage_manager
 from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
 
@@ -80,7 +80,7 @@ test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 class ThumbnailTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(ThumbnailTests, self).setUp()
+        super().setUp()
         self.rb = ResourceBase.objects.create(owner=get_user_model().objects.get(username='admin'))
 
     def tearDown(self):
@@ -129,7 +129,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         self.assertFalse(thumb_utils.thumb_exists(filename))
         f = BytesIO(test_image.tobytes())
         f.name = filename
-        storage.save(upload_path, File(f))
+        storage_manager.save(upload_path, File(f))
         self.assertTrue(thumb_utils.thumb_exists(filename))
         self.assertEqual(thumb_utils.thumb_size(upload_path), 10000)
 
@@ -141,7 +141,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 class TestThumbnailUrl(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(TestThumbnailUrl, self).setUp()
+        super().setUp()
         rb = ResourceBase.objects.create(owner=get_user_model().objects.get(username='admin'))
         f = BytesIO(test_image.tobytes())
         f.name = 'test_image.jpeg'
@@ -183,7 +183,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
     """
 
     def setUp(self):
-        super(RenderMenuTagTest, self).setUp()
+        super().setUp()
         self.placeholder_0 = MenuPlaceholder.objects.create(
             name='test_menu_placeholder_0'
         )
@@ -603,7 +603,7 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         config.save()
 
         # get user
-        user = get_user_model().objects.get(username='user1')
+        user, _ = get_user_model().objects.get_or_create(username='user1')
         web_client.force_login(user)
 
         # post not whitelisted URL as superuser
@@ -788,6 +788,7 @@ class TestOwnerRightsRequestUtils(TestCase):
 
 
 class TestGetVisibleResource(TestCase):
+
     def setUp(self):
         self.user = get_user_model().objects.create(username='mikel_arteta')
         self.category = TopicCategory.objects.create(identifier='biota')
@@ -857,6 +858,7 @@ class TestHtmlTagRemoval(SimpleTestCase):
 
 
 class TestTagThesaurus(TestCase):
+
     #  loading test thesausurs
     fixtures = [
         "test_thesaurus.json"
@@ -927,6 +929,7 @@ class TestTagThesaurus(TestCase):
 
 @override_settings(THESAURUS_DEFAULT_LANG="en")
 class TestThesaurusAvailableForm(TestCase):
+
     #  loading test thesausurs
     fixtures = [
         "test_thesaurus.json"
@@ -983,38 +986,42 @@ class TestThesaurusAvailableForm(TestCase):
 
 
 class TestFacets(TestCase):
+
     def setUp(self):
         self.user = get_user_model().objects.create(username='test', email='test@test.com')
         Layer.objects.create(
-            owner=self.user, title='test_boxes', abstract='nothing', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_boxes', abstract='nothing', storetype='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_1', abstract='contains boxes', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_1', abstract='contains boxes', storetype='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_2', purpose='contains boxes', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_2', purpose='contains boxes', storetype='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_3', storeType='dataStore', is_approved=True
+            owner=self.user, title='test_3', storetype='vector', is_approved=True
         )
 
         Layer.objects.create(
-            owner=self.user, title='test_boxes', abstract='nothing', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_boxes', abstract='nothing', storetype='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_1', abstract='contains boxes', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_1', abstract='contains boxes', storetype='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_2', purpose='contains boxes', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_2', purpose='contains boxes', storetype='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_boxes', storeType='coverageStore', is_approved=True
+            owner=self.user, title='test_boxes', storetype='raster', is_approved=True
         )
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
 
     def test_facets_filter_layers_returns_correctly(self):
-        ResourceBase.objects.all().update(dirty_state=False)
+        for _l in Layer.objects.all():
+            _l.set_default_permissions()
+            _l.clear_dirty_state()
+            _l.set_processing_state(enumerations.STATE_PROCESSED)
         self.request_mock.GET.get.side_effect = lambda key, self: {
             'title__icontains': 'boxes',
             'abstract__icontains': 'boxes',
@@ -1032,6 +1039,7 @@ class TestFacets(TestCase):
 
 
 class TestGenerateThesaurusReference(TestCase):
+
     fixtures = [
         "test_thesaurus.json"
     ]

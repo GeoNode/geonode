@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -91,14 +90,14 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
         return "layer"
 
     def prepare_subtype(self, obj):
-        if obj.storeType == "dataStore":
+        if obj.storetype == "vector":
             if obj.has_time:
                 return "vector_time"
             else:
                 return "vector"
-        elif obj.storeType == "coverageStore":
+        elif obj.storetype == "raster":
             return "raster"
-        elif obj.storeType == "remoteStore":
+        elif obj.storetype in ['tileStore', 'remote']:
             return "remote"
 
     def prepare_rating(self, obj):

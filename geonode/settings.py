@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -421,6 +420,7 @@ GEONODE_CORE_APPS = (
     'geonode.security',
     'geonode.catalogue',
     'geonode.catalogue.metadataxsl',
+    'geonode.harvesting',
 )
 
 # GeoNode Apps
@@ -438,10 +438,15 @@ GEONODE_INTERNAL_APPS = (
     'geonode.groups',
     'geonode.services',
 
+    'geonode.resource',
+    'geonode.resource.processing',
+    'geonode.storage',
+
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
     'geonode.geoserver',
+    'geonode.geoserver.processing',
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
@@ -476,6 +481,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.gis',
+    'sequences.apps.SequencesConfig',
 
     # Utility
     'dj_pagination',
@@ -488,6 +494,9 @@ INSTALLED_APPS = (
     'floppyforms',
     'tinymce',
     'widget_tweaks',
+    'django_celery_beat',
+    'django_celery_results',
+    'markdownify',
 
     # REST APIs
     'rest_framework',
@@ -521,8 +530,6 @@ INSTALLED_APPS = (
     'geonode',
 )
 
-INSTALLED_APPS += ('markdownify',)
-
 markdown_white_listed_tags = [
     'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'ul', 'li', 'span', 'blockquote', 'strong', 'code'
 ]
@@ -548,6 +555,9 @@ REST_FRAMEWORK = {
         'dynamic_rest.renderers.DynamicBrowsableAPIRenderer',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+REST_FRAMEWORK_EXTENSIONS = {
+    'DEFAULT_PARENT_LOOKUP_KWARG_NAME_PREFIX': '',
 }
 
 REST_API_DEFAULT_PAGE = os.getenv('REST_API_DEFAULT_PAGE', 1)
@@ -714,6 +724,22 @@ INTEGRATION = 'geonode.tests.integration' in sys.argv
 #
 
 # Django automatically includes the "templates" dir in all the INSTALLED_APPS.
+CONTEXT_PROCESSORS = [
+    'django.template.context_processors.debug',
+    'django.template.context_processors.i18n',
+    'django.template.context_processors.tz',
+    'django.template.context_processors.request',
+    'django.template.context_processors.media',
+    'django.template.context_processors.static',
+    'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
+    'django.contrib.auth.context_processors.auth',
+    'geonode.context_processors.resource_urls',
+    'geonode.themes.context_processors.custom_theme'
+]
+if 'geonode.geoserver' in INSTALLED_APPS:
+    CONTEXT_PROCESSORS += ['geonode.geoserver.context_processors.geoserver_urls', ]
+
 TEMPLATES = [
     {
         'NAME': 'GeoNode Project Templates',
@@ -721,20 +747,7 @@ TEMPLATES = [
         'DIRS': [os.path.join(PROJECT_ROOT, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.tz',
-                'django.template.context_processors.request',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'django.contrib.auth.context_processors.auth',
-                'geonode.context_processors.resource_urls',
-                'geonode.geoserver.context_processors.geoserver_urls',
-                'geonode.themes.context_processors.custom_theme'
-            ],
+            'context_processors': CONTEXT_PROCESSORS,
             # Either remove APP_DIRS or remove the 'loaders' option.
             # 'loaders': [
             #      'django.template.loaders.filesystem.Loader',
@@ -1034,10 +1047,10 @@ USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS and OGC_SERVER['default'][
 # Uploader Settings
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 """
-    DEFAULT_BACKEND_UPLOADER = {'geonode.rest', 'geonode.importer'}
+    DEFAULT_BACKEND_UPLOADER = {'geonode.importer'}
 """
 UPLOADER = {
-    'BACKEND': os.getenv('DEFAULT_BACKEND_UPLOADER', 'geonode.rest'),
+    'BACKEND': os.getenv('DEFAULT_BACKEND_UPLOADER', 'geonode.importer'),
     'OPTIONS': {
         'TIME_ENABLED': ast.literal_eval(os.getenv('TIME_ENABLED', 'False')),
         'MOSAIC_ENABLED': ast.literal_eval(os.getenv('MOSAIC_ENABLED', 'False')),
@@ -1635,14 +1648,9 @@ LOCAL_SIGNALS_BROKER_URL = 'memory://'
 
 if ASYNC_SIGNALS:
     _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
-    CELERY_RESULT_BACKEND = 'rpc://'
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
-    CELERY_RESULT_BACKEND_PATH = os.getenv(
-        'CELERY_RESULT_BACKEND_PATH', os.path.join(PROJECT_ROOT, '.celery_results'))
-    if not os.path.exists(CELERY_RESULT_BACKEND_PATH):
-        os.makedirs(CELERY_RESULT_BACKEND_PATH)
-    CELERY_RESULT_BACKEND = f'file:///{CELERY_RESULT_BACKEND_PATH}'
+CELERY_RESULT_BACKEND = 'django-db'
 
 CELERY_BROKER_URL = os.environ.get('BROKER_URL', _BROKER_URL)
 CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get('CELERY_RESULT_PERSISTENT', 'False'))
@@ -1717,6 +1725,7 @@ if USE_GEOSERVER:
 #          'task': 'my_app.tasks.send_notification',
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_SCHEDULE = {}
 
 if 'geonode.services' in INSTALLED_APPS:

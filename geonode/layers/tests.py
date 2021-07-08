@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -17,14 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from collections import namedtuple
-from geonode.geoserver.createlayer.utils import create_layer
-
-from django.test.client import RequestFactory
-from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
-
-from geonode.tests.base import GeoNodeBaseTestSupport
-from django.test import TestCase
 import io
 import os
 import shutil
@@ -33,13 +24,16 @@ import logging
 import zipfile
 import tempfile
 
-from mock import patch
+from unittest.mock import patch
+from collections import namedtuple
 from pinax.ratings.models import OverallRating
 
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.forms import ValidationError
-from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
+from django.test import TestCase
+from django.forms import ValidationError
+from django.test.client import RequestFactory
+from django.contrib.contenttypes.models import ContentType
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import Polygon
 from django.db.models import Count
@@ -48,12 +42,28 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.test.utils import override_settings
 
-from guardian.shortcuts import get_anonymous_user
-from guardian.shortcuts import assign_perm, remove_perm
-
-from geonode import GeoNodeException, geoserver
+from geonode.layers import utils
+from geonode.layers import LayersAppConfig
 from geonode.decorators import on_ogc_backend
+from geonode.maps.models import Map, MapLayer
+from geonode.utils import DisableDjangoSignals
+from geonode.layers.views import _resolve_layer
+from geonode import GeoNodeException, geoserver
+from geonode.people.utils import get_valid_user
+from guardian.shortcuts import get_anonymous_user
+from geonode.base.forms import BatchPermissionsForm
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.resource.manager import resource_manager
+from guardian.shortcuts import assign_perm, remove_perm
+from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Layer, Style, Attribute
+from geonode.layers.forms import JSONField, LayerUploadForm
+from geonode.maps.tests_populate_maplayers import maplayers as ml
+from geonode.layers.populate_layers_data import create_layer_data
+from geonode.base.models import TopicCategory, License, Region, Link
+from geonode.utils import check_ogc_backend, set_resource_default_links
+from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
+
 from geonode.layers.utils import (
     is_sld_upload_only,
     is_xml_upload_only,
@@ -62,21 +72,12 @@ from geonode.layers.utils import (
     get_valid_name,
     get_valid_layer_name,
     surrogate_escape_string, validate_input_source)
-from geonode.people.utils import get_valid_user
-from geonode.base.populate_test_data import all_public, create_single_layer
-from geonode.base.models import TopicCategory, License, Region, Link
-from geonode.layers.forms import JSONField, LayerUploadForm
-from geonode.utils import check_ogc_backend, set_resource_default_links
-from geonode.layers import LayersAppConfig
-from geonode.tests.utils import NotificationsTestsHelper
-from geonode.layers.populate_layers_data import create_layer_data
-from geonode.layers import utils
-from geonode.layers.views import _resolve_layer
-from geonode.maps.models import Map, MapLayer
-from geonode.utils import DisableDjangoSignals
-from geonode.maps.tests_populate_maplayers import maplayers as ml
-from geonode.security.utils import remove_object_permissions
-from geonode.base.forms import BatchPermissionsForm
+
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models,
+    create_single_layer)
 
 logger = logging.getLogger(__name__)
 
@@ -87,12 +88,35 @@ class LayersTest(GeoNodeBaseTestSupport):
     """
     type = 'layer'
 
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
     def setUp(self):
-        super(LayersTest, self).setUp()
-        create_layer_data()
+        super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
         self.anonymous_user = get_anonymous_user()
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
+        self.maxDiff = None
+        self.sut = create_single_layer("single_point")
+        create_layer_data(self.sut.resourcebase_ptr_id)
+        create_layer_data(Layer.objects.first().resourcebase_ptr_id)
+        self.r = namedtuple('GSCatalogRes', ['resource'])
 
     # Data Tests
 
@@ -142,14 +166,14 @@ class LayersTest(GeoNodeBaseTestSupport):
             owner=get_user_model().objects.get(username=self.user),
             name='states',
             store='geonode_data',
-            storeType="dataStore",
+            storetype="vector",
             alternate="geonode:states"
         )
         _ll_2 = Layer.objects.create(
             owner=get_user_model().objects.get(username=self.user),
             name='geonode:states',
             store='httpfooremoteservce',
-            storeType="remoteStore",
+            storetype="remote",
             alternate="geonode:states"
         )
         _ll_1.set_permissions({'users': {"bobby": ['base.view_resourcebase']}})
@@ -339,8 +363,8 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(len(keywords), 13)
 
     def test_layer_links(self):
-        lyr = Layer.objects.filter(storeType="dataStore").first()
-        self.assertEqual(lyr.storeType, "dataStore")
+        lyr = Layer.objects.filter(storetype="vector").first()
+        self.assertEqual(lyr.storetype, "vector")
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
             self.assertIsNotNone(links)
@@ -366,8 +390,8 @@ class LayersTest(GeoNodeBaseTestSupport):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
 
-        lyr = Layer.objects.filter(storeType="coverageStore").first()
-        self.assertEqual(lyr.storeType, "coverageStore")
+        lyr = Layer.objects.filter(storetype="raster").first()
+        self.assertEqual(lyr.storetype, "raster")
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
             self.assertIsNotNone(links)
@@ -420,82 +444,82 @@ class LayersTest(GeoNodeBaseTestSupport):
 
     def testShapefileValidation(self):
         files = dict(
-            base_file=SimpleUploadedFile('foo.shp', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.dbf', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.prj', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.shp', b' '),
+            shx_file=SimpleUploadedFile('foo.shx', b' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', b' '),
+            prj_file=SimpleUploadedFile('foo.prj', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.SHP', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.SHX', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.DBF', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.PRJ', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.SHP', b' '),
+            shx_file=SimpleUploadedFile('foo.SHX', b' '),
+            dbf_file=SimpleUploadedFile('foo.DBF', b' '),
+            prj_file=SimpleUploadedFile('foo.PRJ', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.SHP', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.dbf', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.SHP', b' '),
+            shx_file=SimpleUploadedFile('foo.shx', b' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.SHP', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.dbf', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.PRJ', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.SHP', b' '),
+            shx_file=SimpleUploadedFile('foo.shx', b' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', b' '),
+            prj_file=SimpleUploadedFile('foo.PRJ', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.SHP', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('bar.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('bar.dbf', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('bar.PRJ', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.SHP', b' '),
+            shx_file=SimpleUploadedFile('bar.shx', b' '),
+            dbf_file=SimpleUploadedFile('bar.dbf', b' '),
+            prj_file=SimpleUploadedFile('bar.PRJ', b' '))
         self.assertFalse(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.shp', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.dbf', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.PRJ', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.shp', b' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', b' '),
+            prj_file=SimpleUploadedFile('foo.PRJ', b' '))
         self.assertFalse(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.txt', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.sld', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.prj', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.txt', b' '),
+            shx_file=SimpleUploadedFile('foo.shx', b' '),
+            dbf_file=SimpleUploadedFile('foo.sld', b' '),
+            prj_file=SimpleUploadedFile('foo.prj', b' '))
         self.assertFalse(LayerUploadForm(dict(), files).is_valid())
 
     def testGeoTiffValidation(self):
-        files = dict(base_file=SimpleUploadedFile('foo.tif', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.tif', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.TIF', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.TIF', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.tiff', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.tiff', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.TIF', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.TIF', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.geotif', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.geotif', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.geotiff', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.geotiff', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
     def testASCIIValidation(self):
-        files = dict(base_file=SimpleUploadedFile('foo.asc', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.asc', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.ASC', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.ASC', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
     def testZipValidation(self):
@@ -514,10 +538,10 @@ class LayersTest(GeoNodeBaseTestSupport):
 
     def testWriteFiles(self):
         files = dict(
-            base_file=SimpleUploadedFile('foo.shp', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.dbf', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.prj', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.shp', b' '),
+            shx_file=SimpleUploadedFile('foo.shx', b' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', b' '),
+            prj_file=SimpleUploadedFile('foo.prj', b' '))
         form = LayerUploadForm(dict(), files)
         self.assertTrue(form.is_valid())
 
@@ -759,7 +783,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         rating = OverallRating.objects.all()
         self.assertEqual(rating.count(), 1)
         # Remove the layer
-        layer.delete()
+        resource_manager.delete(layer.uuid)
         # Check there are no ratings matching the remove layer
         rating = OverallRating.objects.all()
         self.assertEqual(rating.count(), 0)
@@ -814,7 +838,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(Layer.objects.filter(pk=layer.pk).count(), 0)
 
         # test that all styles associated to the layer are removed
-        self.assertEqual(Style.objects.count(), 0)
+        self.assertGreaterEqual(Style.objects.count(), 1)
 
     def test_non_cascading(self):
         """
@@ -844,7 +868,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(Layer.objects.filter(pk=layer2.pk).count(), 1)
 
         # test that all styles associated to the layer are removed
-        self.assertEqual(Style.objects.count(), 1)
+        self.assertGreaterEqual(Style.objects.count(), 1)
 
     def test_category_counts(self):
         topics = TopicCategory.objects.all()
@@ -1052,21 +1076,6 @@ class LayersTest(GeoNodeBaseTestSupport):
             "layers.utils.surrogate_escape_string did not produce expected result. "
             f"Expected {surrogate_escape_expected}, received {surrogate_escape_result}")
 
-
-class UnpublishedObjectTests(GeoNodeBaseTestSupport):
-
-    """Test the is_published base attribute"""
-    type = 'layer'
-
-    def setUp(self):
-        super(UnpublishedObjectTests, self).setUp()
-        self.list_url = reverse(
-            'api_dispatch_list',
-            kwargs={
-                'api_name': 'api',
-                'resource_name': 'layers'})
-        all_public()
-
     def test_published_layer(self):
         """Test unpublished layer behaviour"""
 
@@ -1120,16 +1129,418 @@ class UnpublishedObjectTests(GeoNodeBaseTestSupport):
         layer.is_published = True
         layer.save()
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_assign_remove_permissions(self):
+        # Assing
+        layer = Layer.objects.all().first()
+        perm_spec = layer.get_all_level_info()
+        self.assertNotIn(get_user_model().objects.get(username="norman"), perm_spec["users"])
+
+        utils.set_layers_permissions("write", resources_names=[layer.name], users_usernames=["norman"], delete_flag=False, verbose=True)
+        perm_spec = layer.get_all_level_info()
+        _c = 0
+        if "users" in perm_spec:
+            for _u in perm_spec["users"]:
+                if _u == "norman" or _u == get_user_model().objects.get(username="norman"):
+                    _c += 1
+        # "norman" has both read & write permissions
+        self.assertEqual(_c, 1)
+
+        # Remove
+        utils.set_layers_permissions("read", resources_names=[layer.name], users_usernames=["norman"], delete_flag=True, verbose=True)
+        perm_spec = layer.get_all_level_info()
+        _c = 0
+        if "users" in perm_spec:
+            for _u in perm_spec["users"]:
+                if _u == "norman" or _u == get_user_model().objects.get(username="norman"):
+                    _c += 1
+        # "norman" has no permissions
+        self.assertEqual(_c, 0)
+
+    def test_xml_form_without_files_should_raise_500(self):
+        files = dict()
+        files['permissions'] = '{}'
+        files['charset'] = 'utf-8'
+        self.client.login(username="admin", password="admin")
+        resp = self.client.post(reverse('layer_upload'), data=files)
+        self.assertEqual(500, resp.status_code)
+
+    def test_xml_should_return_404_if_the_layer_does_not_exists(self):
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.exml_path),
+            "xml_file": open(self.exml_path),
+            "layer_title": "Fake layer title",
+            "metadata_upload_form": True,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(404, resp.status_code)
+
+    def test_xml_should_update_the_layer_with_the_expected_values(self):
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.exml_path),
+            "xml_file": open(self.exml_path),
+            "layer_title": "geonode:single_point",
+            "metadata_upload_form": True,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        prev_layer = Layer.objects.get(typename="geonode:single_point")
+        self.assertEqual(0, prev_layer.keywords.count())
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(404, resp.status_code)
+        self.assertEqual(resp.json()["errors"], "The UUID identifier from the XML Metadata, is different from the one saved")
+
+    def test_sld_should_raise_500_if_is_invalid(self):
+        layer = Layer.objects.get(typename="geonode:single_point")
+
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.sld_path),
+            "sld_file": open(self.sld_path),
+            "layer_title": "random",
+            "metadata_upload_form": False,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        self.assertGreaterEqual(layer.styles.count(), 1)
+        self.assertIsNotNone(layer.styles.first())
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(500, resp.status_code)
+        self.assertFalse(resp.json().get('success'))
+        self.assertEqual('No Layer matches the given query.', resp.json().get('errors'))
+
+    def test_sld_should_update_the_layer_with_the_expected_values(self):
+        layer = Layer.objects.get(typename="geonode:single_point")
+
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.sld_path),
+            "sld_file": open(self.sld_path),
+            "layer_title": f"geonode:{layer.name}",
+            "metadata_upload_form": False,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        self.assertGreaterEqual(layer.styles.count(), 1)
+        self.assertIsNotNone(layer.styles.first())
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(200, resp.status_code)
+        updated_layer = Layer.objects.get(alternate=f"geonode:{layer.name}")
+        # just checking some values if are updated
+        self.assertEqual(1, updated_layer.styles.all().count())
+        self.assertIsNotNone(updated_layer.styles.first().sld_title)
+
+    def test_xml_should_raise_an_error_if_the_uuid_is_changed(self):
+        '''
+        If the UUID coming from the XML and the one saved in the DB are different
+        The system should raise an error
+        '''
+        params = {
+            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "base_file": open(self.exml_path),
+            "xml_file": open(self.exml_path),
+            "layer_title": "geonode:single_point",
+            "metadata_upload_form": True,
+            "time": False,
+            "charset": "UTF-8"
+        }
+
+        self.client.login(username="admin", password="admin")
+        prev_layer = Layer.objects.get(typename="geonode:single_point")
+        self.assertEqual(0, prev_layer.keywords.count())
+        resp = self.client.post(reverse('layer_upload'), params)
+        self.assertEqual(404, resp.status_code)
+        expected = {
+            "success": False,
+            "errors": "The UUID identifier from the XML Metadata, is different from the one saved"
+        }
+        self.assertDictEqual(expected, resp.json())
+
+    def test_will_raise_exception_for_replace_vector_layer_with_raster(self):
+        layer = Layer.objects.get(name="single_point")
+        filename = "/tpm/filename.tif"
+        files = ["/opt/file1.shp", "/opt/file2.ccc"]
+        with self.assertRaises(Exception) as e:
+            validate_input_source(layer, filename, files, action_type="append")
+        expected = "You are attempting to append a vector dataset with a raster."
+        self.assertEqual(expected, e.exception.args[0])
+
+    def test_will_raise_exception_for_replace_layer_with_unknown_format(self):
+        layer = Layer.objects.get(name="single_point")
+        filename = "/tpm/filename.ccc"
+        files = ["/opt/file1.shp", "/opt/file2.ccc"]
+        with self.assertRaises(Exception) as e:
+            validate_input_source(layer, filename, files, action_type="append")
+        expected = "You are attempting to append a vector dataset with an unknown format."
+        self.assertEqual(expected, e.exception.args[0])
+
+    def test_will_raise_exception_for_replace_layer_with_different_file_name(self):
+        layer = Layer.objects.get(name="single_point")
+        file_path = gisdata.VECTOR_DATA
+        filename = os.path.join(file_path, "san_andres_y_providencia_highway.shp")
+        files = {
+            "shp": filename,
+            "dbf": f"{file_path}/san_andres_y_providencia_highway.sbf",
+            "prj": f"{file_path}/san_andres_y_providencia_highway.prj",
+            "shx": f"{file_path}/san_andres_y_providencia_highway.shx",
+        }
+        with self.assertRaises(Exception) as e:
+            validate_input_source(layer, filename, files, action_type="append")
+        expected = (
+            "Some error occurred while trying to access the uploaded schema: "
+            "Please ensure the name is consistent with the file you are trying to append."
+        )
+        self.assertEqual(expected, e.exception.args[0])
+
+    @patch("geonode.layers.utils.gs_catalog")
+    def test_will_raise_exception_for_not_existing_layer_in_the_catalog(self, catalog):
+        catalog.get_layer.return_value = None
+        layer = Layer.objects.get(name="single_point")
+        file_path = gisdata.VECTOR_DATA
+        filename = os.path.join(file_path, "single_point.shp")
+        files = {
+            "shp": filename,
+            "dbf": f"{file_path}/single_point.sbf",
+            "prj": f"{file_path}/single_point.prj",
+            "shx": f"{file_path}/single_point.shx",
+        }
+        with self.assertRaises(Exception) as e:
+            validate_input_source(layer, filename, files, action_type="append")
+        expected = (
+            "Some error occurred while trying to access the uploaded schema: "
+            "The selected Dataset does not exists in the catalog."
+        )
+        self.assertEqual(expected, e.exception.args[0])
+
+    @patch("geonode.layers.utils.gs_catalog")
+    def test_will_raise_exception_if_schema_is_not_equal_between_catalog_and_file(self, catalog):
+        attr = namedtuple('GSCatalogAttr', ['attributes'])
+        attr.attributes = []
+        self.r.resource = attr
+        catalog.get_layer.return_value = self.r
+        layer = Layer.objects.filter(name="single_point")[0]
+        file_path = gisdata.VECTOR_DATA
+        filename = os.path.join(file_path, "single_point.shp")
+        files = {
+            "shp": filename,
+            "dbf": f"{file_path}/single_point.sbf",
+            "prj": f"{file_path}/single_point.prj",
+            "shx": f"{file_path}/single_point.shx",
+        }
+        with self.assertRaises(Exception) as e:
+            validate_input_source(layer, filename, files, action_type="append")
+        expected = (
+            "Some error occurred while trying to access the uploaded schema: "
+            "Please ensure that the dataset structure is consistent with the file you are trying to append."
+        )
+        self.assertEqual(expected, e.exception.args[0])
+
+    @patch("geonode.layers.utils.gs_catalog")
+    def test_validation_will_pass_for_valid_append(self, catalog):
+        attr = namedtuple('GSCatalogAttr', ['attributes'])
+        attr.attributes = ['label']
+        self.r.resource = attr
+        catalog.get_layer.return_value = self.r
+        layer = Layer.objects.filter(name="single_point")[0]
+        file_path = gisdata.VECTOR_DATA
+        filename = os.path.join(file_path, "single_point.shp")
+        files = {
+            "shp": filename,
+            "dbf": f"{file_path}/single_point.sbf",
+            "prj": f"{file_path}/single_point.prj",
+            "shx": f"{file_path}/single_point.shx",
+        }
+        actual = validate_input_source(layer, filename, files, action_type="append")
+        self.assertTrue(actual)
+
+
+class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
+
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+        create_single_layer('single_point')
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
+    def setUp(self):
+        super().setUp()
+        self.user = get_user_model().objects.create(username='dybala', email='dybala@gmail.com')
+        self.user.set_password('very-secret')
+        self.admin = get_user_model().objects.get(username='admin')
+        self.map = Map.objects.create(owner=self.admin, title='test', is_approved=True, zoom=0, center_x=0.0, center_y=0.0)
+        self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
+        self.not_admin.set_password('very-secret')
+        self.not_admin.save()
+
+        self.layer = Layer.objects.all().first()
+        create_layer_data(self.layer.resourcebase_ptr_id)
+        with DisableDjangoSignals():
+            self.map_layer = MapLayer.objects.create(
+                fixed=ml[0]['fixed'],
+                group=ml[0]['group'],
+                name=self.layer.alternate,
+                layer_params=ml[0]['layer_params'],
+                map=self.map,
+                source_params=ml[0]['source_params'],
+                stack_order=ml[0]['stack_order'],
+                opacity=ml[0]['opacity'],
+                transparent=True,
+                visibility=True
+            )
+
+    def test_that_authenticated_user_without_permissions_cannot_view_map_in_layer_detail(self):
+        """
+        Test that an authenticated user without permissions to view a map does not see the map under
+        'Maps using this layer' in layer_detail when map is not viewable by 'anyone'
+        """
+        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+
+        self.client.login(username='dybala', password='very-secret')
+        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
+        self.assertEqual(response.context['map_layers'], [])
+
+    def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
+        """
+        Test that keyword multiselect widget is disabled when the user is not an admin
+        """
+        self.test_layer = resource_manager.create(
+            None,
+            resource_type=Layer,
+            defaults=dict(
+                owner=self.not_admin,
+                title='test',
+                is_approved=True))
+
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
+            response = self.client.get(url)
+            self.assertTrue(response.context['form']['keywords'].field.disabled, self.test_layer.alternate)
+
+    def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
+        """
+        Test that only admin users can create/edit keywords  when FREETEXT_KEYWORDS_READONLY=True
+        """
+        admin = self.not_admin
+        admin.is_superuser = True
+        admin.save()
+
+        self.test_layer = resource_manager.create(
+            None,
+            resource_type=Layer,
+            defaults=dict(
+                owner=admin,
+                title='test',
+                is_approved=True))
+
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+
+        self.client.login(username=admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
+            response = self.client.get(url)
+            self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_layer.alternate)
+
+    def test_that_non_admin_user_cannot_create_edit_keyword(self):
+        """
+        Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
+        """
+        self.test_layer = resource_manager.create(
+            None,
+            resource_type=Layer,
+            defaults=dict(
+                owner=self.not_admin,
+                title='test',
+                is_approved=True))
+
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
+            response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
+            self.assertEqual(response.status_code, 401)
+            self.assertEqual(response.content, b'Unauthorized: Cannot edit/create Free-text Keywords')
+
+    def test_that_keyword_multiselect_is_enabled_for_non_admin_users_when_freetext_keywords_readonly_istrue(self):
+        """
+        Test that keyword multiselect widget is not disabled when the user is not an admin
+        and FREETEXT_KEYWORDS_READONLY=False
+        """
+        self.test_layer = resource_manager.create(
+            None,
+            resource_type=Layer,
+            defaults=dict(
+                owner=self.not_admin,
+                title='test',
+                is_approved=True))
+
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=False):
+            response = self.client.get(url)
+            self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_layer.alternate)
+
+    def test_that_anonymous_user_cannot_view_map_with_restricted_view(self):
+        """
+        Test that anonymous user cannot view map that are not viewable by 'anyone'
+        """
+        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+
+        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
+        self.assertEqual(response.context['map_layers'], [])
+
+    def test_that_only_users_with_permissions_can_view_maps_in_layer_view(self):
+        """
+        Test only users with view permissions to a map can view them in layer detail view
+        """
+        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
+        self.assertEqual(response.context['map_layers'], [self.map_layer])
+
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):
 
     type = 'layer'
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
     def setUp(self):
-        super(LayerNotificationsTestCase, self).setUp()
+        super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
-        create_layer_data()
         self.anonymous_user = get_anonymous_user()
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
@@ -1150,11 +1561,18 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
                 PINAX_NOTIFICATIONS_QUEUE_ALL=False):
             self.clear_notifications_queue()
             self.client.login(username=self.user, password=self.passwd)
-            _l = Layer.objects.create(
-                name='test notifications',
-                bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
-                srid='EPSG:4326',
-                owner=self.norman)
+
+            _l = resource_manager.create(
+                None,
+                resource_type=Layer,
+                defaults=dict(
+                    name='test notifications',
+                    title='test notifications',
+                    bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
+                    srid='EPSG:4326',
+                    owner=self.norman)
+            )
+
             self.assertTrue(self.check_notification_out('layer_created', self.u))
             # Ensure "resource.owner" won't be notified for having uploaded its own resource
             self.assertFalse(self.check_notification_out('layer_created', self.norman))
@@ -1191,198 +1609,6 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
                 self.assertTrue(self.check_notification_out('layer_rated', self.u))
 
 
-class SetLayersPermissions(GeoNodeBaseTestSupport):
-
-    type = 'layer'
-
-    def setUp(self):
-        super(SetLayersPermissions, self).setUp()
-        create_layer_data()
-        self.username = 'test_username'
-        self.passwd = 'test_password'
-        self.user = get_user_model().objects.create(
-            username=self.username
-        )
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_assign_remove_permissions(self):
-        # Assing
-        layer = Layer.objects.all().first()
-        perm_spec = layer.get_all_level_info()
-        self.assertNotIn(self.user, perm_spec["users"])
-        utils.set_layers_permissions("write", None, [self.user], None, None)
-        layer_after = Layer.objects.get(name=layer.name)
-        perm_spec = layer_after.get_all_level_info()
-        for perm in utils.WRITE_PERMISSIONS:
-            self.assertIn(perm, perm_spec["users"][self.user])
-            _c = 0
-            for _u in perm_spec["users"]:
-                if _u == self.user:
-                    _c += 1
-            self.assertEqual(_c, 1)
-        # Remove
-        utils.set_layers_permissions("write", None, [self.user], None, True)
-        layer_after = Layer.objects.get(name=layer.name)
-        perm_spec = layer_after.get_all_level_info()
-        for perm in utils.WRITE_PERMISSIONS:
-            if self.user in perm_spec["users"]:
-                self.assertNotIn(perm, perm_spec["users"][self.user])
-
-
-class LayersUploaderTests(GeoNodeBaseTestSupport):
-
-    GEONODE_REST_UPLOADER = {
-        'BACKEND': 'geonode.rest',
-        'OPTIONS': {
-            'TIME_ENABLED': True,
-            'MOSAIC_ENABLED': False,
-            'GEOGIG_ENABLED': False,
-        },
-        'SUPPORTED_CRS': [
-            'EPSG:4326',
-            'EPSG:3785',
-            'EPSG:3857',
-            'EPSG:32647',
-            'EPSG:32736'
-        ],
-        'SUPPORTED_EXT': [
-            '.shp',
-            '.csv',
-            '.kml',
-            '.kmz',
-            '.json',
-            '.geojson',
-            '.tif',
-            '.tiff',
-            '.geotiff',
-            '.gml',
-            '.xml'
-        ]
-    }
-
-    def setUp(self):
-        super(LayersUploaderTests, self).setUp()
-        create_layer_data()
-        self.user = 'admin'
-        self.passwd = 'admin'
-        self.anonymous_user = get_anonymous_user()
-
-
-class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
-    def setUp(self):
-        super(TestLayerDetailMapViewRights, self).setUp()
-        create_layer_data()
-        self.user = get_user_model().objects.create(username='dybala', email='dybala@gmail.com')
-        self.user.set_password('very-secret')
-        admin = get_user_model().objects.get(username='admin')
-        self.map = Map.objects.create(owner=admin, title='test', is_approved=True, zoom=0, center_x=0.0, center_y=0.0)
-        self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
-        self.not_admin.set_password('very-secret')
-        self.not_admin.save()
-
-        self.layer = Layer.objects.all().first()
-        with DisableDjangoSignals():
-            self.map_layer = MapLayer.objects.create(
-                fixed=ml[0]['fixed'],
-                group=ml[0]['group'],
-                name=self.layer.alternate,
-                layer_params=ml[0]['layer_params'],
-                map=self.map,
-                source_params=ml[0]['source_params'],
-                stack_order=ml[0]['stack_order'],
-                opacity=ml[0]['opacity'],
-                transparent=True,
-                visibility=True
-            )
-
-    def test_that_authenticated_user_without_permissions_cannot_view_map_in_layer_detail(self):
-        """
-        Test that an authenticated user without permissions to view a map does not see the map under
-        'Maps using this layer' in layer_detail when map is not viewable by 'anyone'
-        """
-        remove_object_permissions(self.map.get_self_resource())
-        self.client.login(username='dybala', password='very-secret')
-        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_layers'], [])
-
-    def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
-        """
-        Test that keyword multiselect widget is disabled when the user is not an admin
-        """
-        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
-        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
-
-        self.client.login(username=self.not_admin.username, password='very-secret')
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.get(url)
-            self.assertTrue(response.context['form']['keywords'].field.disabled)
-
-    def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
-        """
-        Test that only admin users can create/edit keywords  when FREETEXT_KEYWORDS_READONLY=True
-        """
-        admin = self.not_admin
-        admin.is_superuser = True
-        admin.save()
-        self.test_layer = Layer.objects.create(owner=admin, title='test', is_approved=True)
-        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
-
-        self.client.login(username=admin.username, password='very-secret')
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.get(url)
-            self.assertFalse(response.context['form']['keywords'].field.disabled)
-
-    def test_that_non_admin_user_cannot_create_edit_keyword(self):
-        """
-        Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
-        """
-        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
-        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
-
-        self.client.login(username=self.not_admin.username, password='very-secret')
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
-            self.assertEqual(response.status_code, 401)
-            self.assertEqual(response.content, b'Unauthorized: Cannot edit/create Free-text Keywords')
-
-    def test_that_keyword_multiselect_is_enabled_for_non_admin_users_when_freetext_keywords_readonly_istrue(self):
-        """
-        Test that keyword multiselect widget is not disabled when the user is not an admin
-        and FREETEXT_KEYWORDS_READONLY=False
-        """
-        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
-        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
-
-        self.client.login(username=self.not_admin.username, password='very-secret')
-        with self.settings(FREETEXT_KEYWORDS_READONLY=False):
-            response = self.client.get(url)
-            self.assertFalse(response.context['form']['keywords'].field.disabled)
-
-    def test_that_anonymous_user_can_view_map_available_to_anyone(self):
-        """
-        Test that anonymous user can view map that has view permissions to 'anyone'
-        """
-        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_layers'], [self.map_layer])
-
-    def test_that_anonymous_user_cannot_view_map_with_restricted_view(self):
-        """
-        Test that anonymous user cannot view map that are not viewable by 'anyone'
-        """
-        remove_object_permissions(self.map.get_self_resource())
-        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_layers'], [])
-
-    def test_that_only_users_with_permissions_can_view_maps_in_layer_view(self):
-        """
-        Test only users with view permissions to a map can view them in layer detail view
-        """
-        remove_object_permissions(self.map.get_self_resource())
-        self.client.login(username='admin', password='admin')
-        response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_layers'], [self.map_layer])
-
-
 '''
 Smoke test to explain how the uuidhandler will override the uuid for the layers
 Documentation of the handler is available here:
@@ -1391,6 +1617,7 @@ https://github.com/GeoNode/documentation/blob/703cc6ba92b7b7a83637a874fb449420a9
 
 
 class DummyUUIDHandler():
+
     def __init__(self, instance):
         self.instance = instance
 
@@ -1399,6 +1626,7 @@ class DummyUUIDHandler():
 
 
 class TestCustomUUidHandler(TestCase):
+
     def setUp(self):
         User = get_user_model()
         self.user = User.objects.create(username='test', email='test@test.com')
@@ -1412,122 +1640,14 @@ class TestCustomUUidHandler(TestCase):
 
     @override_settings(LAYER_UUID_HANDLER="geonode.layers.tests.DummyUUIDHandler")
     def test_layer_will_override_the_uuid_if_handler_is_defined(self):
-        self.sut.keywords.add(*["updating", "values"])
-        self.sut.save()
+        resource_manager.update(None, instance=self.sut, keywords=["updating", "values"])
         expected = "abc:abc-1234-abc"
         actual = Layer.objects.get(id=self.sut.id)
         self.assertEqual(expected, actual.uuid)
 
 
-class TestalidateInputSource(TestCase):
-
-    def setUp(self):
-        self.maxDiff = None
-        self.layer = create_single_layer('single_point')
-        self.r = namedtuple('GSCatalogRes', ['resource'])
-
-    def tearDown(self):
-        self.layer.delete()
-
-    def test_will_raise_exception_for_replace_vector_layer_with_raster(self):
-        layer = Layer.objects.filter(name="single_point")[0]
-        filename = "/tpm/filename.tif"
-        files = ["/opt/file1.shp", "/opt/file2.ccc"]
-        with self.assertRaises(Exception) as e:
-            validate_input_source(layer, filename, files, action_type="append")
-        expected = "You are attempting to append a vector layer with a raster."
-        self.assertEqual(expected, e.exception.args[0])
-
-    def test_will_raise_exception_for_replace_layer_with_unknown_format(self):
-        layer = Layer.objects.filter(name="single_point")[0]
-        filename = "/tpm/filename.ccc"
-        files = ["/opt/file1.shp", "/opt/file2.ccc"]
-        with self.assertRaises(Exception) as e:
-            validate_input_source(layer, filename, files, action_type="append")
-        expected = "You are attempting to append a vector layer with an unknown format."
-        self.assertEqual(expected, e.exception.args[0])
-
-    def test_will_raise_exception_for_replace_layer_with_different_file_name(self):
-        layer = Layer.objects.get(name="single_point")
-        file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "san_andres_y_providencia_highway.shp")
-        files = {
-            "shp": filename,
-            "dbf": f"{file_path}/san_andres_y_providencia_highway.sbf",
-            "prj": f"{file_path}/san_andres_y_providencia_highway.prj",
-            "shx": f"{file_path}/san_andres_y_providencia_highway.shx",
-        }
-        with self.assertRaises(Exception) as e:
-            validate_input_source(layer, filename, files, action_type="append")
-        expected = (
-            "Some error occurred while trying to access the uploaded schema: "
-            "Please ensure the name is consistent with the file you are trying to append."
-        )
-        self.assertEqual(expected, e.exception.args[0])
-
-    @patch("geonode.layers.utils.gs_catalog")
-    def test_will_raise_exception_for_not_existing_layer_in_the_catalog(self, catalog):
-        catalog.get_layer.return_value = None
-        layer = Layer.objects.filter(name="single_point")[0]
-        file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "single_point.shp")
-        files = {
-            "shp": filename,
-            "dbf": f"{file_path}/single_point.sbf",
-            "prj": f"{file_path}/single_point.prj",
-            "shx": f"{file_path}/single_point.shx",
-        }
-        with self.assertRaises(Exception) as e:
-            validate_input_source(layer, filename, files, action_type="append")
-        expected = (
-            "Some error occurred while trying to access the uploaded schema: "
-            "The selected Layer does not exists in the catalog."
-        )
-        self.assertEqual(expected, e.exception.args[0])
-
-    @patch("geonode.layers.utils.gs_catalog")
-    def test_will_raise_exception_if_schema_is_not_equal_between_catalog_and_file(self, catalog):
-        attr = namedtuple('GSCatalogAttr', ['attributes'])
-        attr.attributes = []
-        self.r.resource = attr
-        catalog.get_layer.return_value = self.r
-        layer = Layer.objects.filter(name="single_point")[0]
-        file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "single_point.shp")
-        files = {
-            "shp": filename,
-            "dbf": f"{file_path}/single_point.sbf",
-            "prj": f"{file_path}/single_point.prj",
-            "shx": f"{file_path}/single_point.shx",
-        }
-        with self.assertRaises(Exception) as e:
-            validate_input_source(layer, filename, files, action_type="append")
-        expected = (
-            "Some error occurred while trying to access the uploaded schema: "
-            "Please ensure that the layer structure is consistent with the file you are trying to append."
-        )
-        self.assertEqual(expected, e.exception.args[0])
-
-    @patch("geonode.layers.utils.gs_catalog")
-    def test_validation_will_pass_for_valid_append(self, catalog):
-        attr = namedtuple('GSCatalogAttr', ['attributes'])
-        attr.attributes = ['label']
-        self.r.resource = attr
-        catalog.get_layer.return_value = self.r
-        layer = Layer.objects.filter(name="single_point")[0]
-        file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "single_point.shp")
-        files = {
-            "shp": filename,
-            "dbf": f"{file_path}/single_point.sbf",
-            "prj": f"{file_path}/single_point.prj",
-            "shx": f"{file_path}/single_point.shx",
-        }
-        actual = validate_input_source(layer, filename, files, action_type="append")
-        self.assertTrue(actual)
-
-
 class TestSetMetadata(TestCase):
+
     def setUp(self):
         self.maxDiff = None
         self.invalid_xml = "xml"
@@ -1616,6 +1736,7 @@ Is required to define a fuction that takes 1 parameters (the metadata xml) and r
 
 
 class TestCustomMetadataParser(TestCase):
+
     def setUp(self):
         import datetime
         self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
@@ -1723,146 +1844,6 @@ class TestIsXmlUploadOnly(TestCase):
             request.FILES['base_file'] = f
         actual = is_xml_upload_only(request)
         self.assertFalse(actual)
-
-
-class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
-
-    fixtures = ["group_test_data.json", "default_oauth_apps.json"]
-
-    def setUp(self):
-        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
-        self.sld_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
-        self.sut = create_single_layer("single_point")
-
-    def test_xml_form_without_files_should_raise_500(self):
-        files = dict()
-        files['permissions'] = '{}'
-        files['charset'] = 'utf-8'
-        self.client.login(username="admin", password="admin")
-        resp = self.client.post(reverse('layer_upload'), data=files)
-        self.assertEqual(500, resp.status_code)
-
-    def test_xml_should_return_404_if_the_layer_does_not_exists(self):
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.exml_path),
-            "xml_file": open(self.exml_path),
-            "layer_title": "Fake layer title",
-            "metadata_upload_form": True,
-            "time": False,
-            "charset": "UTF-8"
-        }
-
-        self.client.login(username="admin", password="admin")
-        resp = self.client.post(reverse('layer_upload'), params)
-        self.assertEqual(404, resp.status_code)
-
-    def test_xml_should_raise_an_error_if_the_uuid_is_changed(self):
-        '''
-        If the UUID coming from the XML and the one saved in the DB are different
-        The system should raise an error
-        '''
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.exml_path),
-            "xml_file": open(self.exml_path),
-            "layer_title": "geonode:single_point",
-            "metadata_upload_form": True,
-            "time": False,
-            "charset": "UTF-8"
-        }
-
-        self.client.login(username="admin", password="admin")
-        prev_layer = Layer.objects.get(typename="geonode:single_point")
-        self.assertEqual(0, prev_layer.keywords.count())
-        resp = self.client.post(reverse('layer_upload'), params)
-        self.assertEqual(404, resp.status_code)
-        expected = {
-            "success": False,
-            "errors": "The UUID identifier from the XML Metadata, is different from the one saved"
-        }
-        self.assertDictEqual(expected, resp.json())
-
-    def test_xml_should_update_the_layer_with_the_expected_values(self):
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.exml_path),
-            "xml_file": open(self.exml_path),
-            "layer_title": "geonode:single_point",
-            "metadata_upload_form": True,
-            "time": False,
-            "charset": "UTF-8"
-        }
-
-        self.client.login(username="admin", password="admin")
-        prev_layer = Layer.objects.get(typename="geonode:single_point")
-        # updating the layer with the same uuid of the xml uploaded
-        # otherwise will rase an error
-        prev_layer.uuid = '7cfbc42c-efa7-431c-8daa-1399dff4cd19'
-        prev_layer.save()
-
-        self.assertEqual(0, prev_layer.keywords.count())
-        resp = self.client.post(reverse('layer_upload'), params)
-        self.assertEqual(200, resp.status_code)
-        updated_layer = Layer.objects.get(typename="geonode:single_point")
-        # just checking some values if are updated
-        self.assertEqual(6, updated_layer.keywords.all().count())
-
-    def test_sld_should_raise_500_if_is_invalid(self):
-        user = get_user_model().objects.get(username="admin")
-        layer = create_layer(
-            "single_point",
-            "single_point",
-            user,
-            'Point'
-        )
-
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.sld_path),
-            "sld_file": open(self.sld_path),
-            "layer_title": "random",
-            "metadata_upload_form": False,
-            "time": False,
-            "charset": "UTF-8"
-        }
-
-        self.client.login(username="admin", password="admin")
-        self.assertEqual(1, layer.styles.count())
-        self.assertEqual("Default Point", layer.styles.first().sld_title)
-        resp = self.client.post(reverse('layer_upload'), params)
-        self.assertEqual(500, resp.status_code)
-        self.assertFalse(resp.json().get('success'))
-        self.assertEqual('No Layer matches the given query.', resp.json().get('errors'))
-
-    def test_sld_should_update_the_layer_with_the_expected_values(self):
-        user = get_user_model().objects.get(username="admin")
-        layer = create_layer(
-            "single_point",
-            "single_point",
-            user,
-            'Point'
-        )
-
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.sld_path),
-            "sld_file": open(self.sld_path),
-            "layer_title": f"geonode:{layer.name}",
-            "metadata_upload_form": False,
-            "time": False,
-            "charset": "UTF-8"
-        }
-
-        self.client.login(username="admin", password="admin")
-        self.assertEqual(1, layer.styles.count())
-        self.assertEqual("Default Point", layer.styles.first().sld_title)
-        resp = self.client.post(reverse('layer_upload'), params)
-        self.assertEqual(200, resp.status_code)
-        updated_layer = Layer.objects.get(alternate=f"geonode:{layer.name}")
-        # just checking some values if are updated
-        self.assertEqual(1, updated_layer.styles.all().count())
-        self.assertEqual("SLD Cook Book: Simple Point", updated_layer.styles.first().sld_title)
 
 
 class TestIsSldUploadOnly(TestCase):

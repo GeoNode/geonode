@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -29,7 +28,6 @@ import pytz
 import logging
 import os.path
 import xmljson
-import dj_database_url
 
 from decimal import Decimal  # noqa
 from importlib import import_module
@@ -54,33 +52,26 @@ from geonode.compat import ensure_string
 from geonode.monitoring.collector import CollectorAPI
 from geonode.monitoring.utils import generate_periods, align_period_start
 from geonode.base.models import ResourceBase
-from geonode.maps.models import Map
 from geonode.layers.models import Layer
-from geonode.documents.models import Document
 from geonode.monitoring.models import *  # noqa
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models,
+    create_single_layer)
 
 from geonode.tests.utils import Client
 from geonode.geoserver.helpers import ogc_server_settings
 
 from django.test.client import FakePayload, Client as DjangoTestClient
 
-import gisdata
 from geoserver.catalog import Catalog
-from geonode.layers.utils import file_upload
 
 GEONODE_USER = 'admin'
 GEONODE_PASSWD = 'admin'
 GEONODE_URL = settings.SITEURL.rstrip('/')
 GEOSERVER_URL = ogc_server_settings.LOCATION
 GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
-
-DB_HOST = settings.DATABASES['default']['HOST']
-DB_PORT = settings.DATABASES['default']['PORT']
-DB_NAME = settings.DATABASES['default']['NAME']
-DB_USER = settings.DATABASES['default']['USER']
-DB_PASSWORD = settings.DATABASES['default']['PASSWORD']
-DATASTORE_URL = f'postgis://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -97,9 +88,9 @@ res_dir = os.path.join(os.path.dirname(__file__), 'resources')
 req_err_path = os.path.join(res_dir, 'req_err.xml')
 req_path = os.path.join(res_dir, 'req.xml')
 
-with open(req_err_path, 'rt') as req_err_xml_file:
+with open(req_err_path) as req_err_xml_file:
     req_err_xml = req_err_xml_file.read()
-with open(req_path, 'rt') as req_xml_file:
+with open(req_path) as req_xml_file:
     req_xml = req_xml_file.read()
 
 req_big = xmljson.yahoo.data(dlxml.fromstring(req_xml))
@@ -121,15 +112,15 @@ class TestClient(DjangoTestClient):
                 f'{morsel.key}={morsel.coded_value}'
                 for morsel in self.cookies.values()
             )),
-            'PATH_INFO': str('/'),
-            'REMOTE_ADDR': str('127.0.0.1'),
-            'REQUEST_METHOD': str('GET'),
-            'SCRIPT_NAME': str(''),
-            'SERVER_NAME': str('testserver'),
-            'SERVER_PORT': str('80'),
-            'SERVER_PROTOCOL': str('HTTP/1.1'),
+            'PATH_INFO': '/',
+            'REMOTE_ADDR': '127.0.0.1',
+            'REQUEST_METHOD': 'GET',
+            'SCRIPT_NAME': '',
+            'SERVER_NAME': 'testserver',
+            'SERVER_PORT': '80',
+            'SERVER_PROTOCOL': 'HTTP/1.1',
             'wsgi.version': (1, 0),
-            'wsgi.url_scheme': str('http'),
+            'wsgi.url_scheme': 'http',
             'wsgi.input': FakePayload(b''),
             'wsgi.errors': self.errors,
             'wsgi.multiprocess': True,
@@ -166,16 +157,31 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
 
     type = 'layer'
 
+    #  loading test thesausuri and initial data
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json',
+        "test_thesaurus.json"
+    ]
+
     @classmethod
     def setUpClass(cls):
-        pass
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
 
     @classmethod
     def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
         if os.path.exists('integration_settings.py'):
             os.unlink('integration_settings.py')
 
     def setUp(self):
+        super().setUp()
+
         ResourceBase.objects.all().update(dirty_state=False)
         # await startup
         cl = Client(
@@ -198,52 +204,17 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
         )
 
         self.client = TestClient(REMOTE_ADDR='127.0.0.1')
-
-        settings.DATABASES['default']['NAME'] = DB_NAME
         settings.OGC_SERVER['default']['DATASTORE'] = ''
-
         connections['default'].settings_dict['ATOMIC_REQUESTS'] = False
-        connections['default'].connect()
-
+        # connections['default'].connect()
         self._tempfiles = []
-
-    def _post_teardown(self):
-        pass
-
-    def tearDown(self):
-        connections.databases['default']['ATOMIC_REQUESTS'] = False
-
-        for temp_file in self._tempfiles:
-            os.unlink(temp_file)
-
-        # Cleanup
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
-
-        MetricValue.objects.all().delete()
-        ExceptionEvent.objects.all().delete()
-        RequestEvent.objects.all().delete()
-        MonitoredResource.objects.all().delete()
-        try:
-            NotificationCheck.objects.all().delete()
-        except Exception:
-            pass
-        Service.objects.all().delete()
-        Host.objects.all().delete()
-
-        from django.conf import settings
-        if settings.OGC_SERVER['default'].get(
-                "GEOFENCE_SECURITY_ENABLED", False):
-            from geonode.security.utils import purge_geofence_all
-            purge_geofence_all()
 
 
 @override_settings(USE_TZ=True)
 class RequestsTestCase(MonitoringTestBase):
 
     def setUp(self):
-        super(RequestsTestCase, self).setUp()
+        super().setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -291,14 +262,7 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_poi.shp"),
-            name="san_andres_y_providencia_poi",
-            user=self.u,
-            overwrite=True,
-        )
+        _l = create_single_layer('san_andres_y_providencia_poi')
 
         self.client.get(
             reverse('layer_detail',
@@ -320,14 +284,8 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_poi.shp"),
-            name="san_andres_y_providencia_poi",
-            user=self.u,
-            overwrite=True,
-        )
+        _l = create_single_layer('san_andres_y_providencia_poi')
+
         self.assertIsNotNone(_l)
         self.client.get(
             reverse('layer_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
@@ -342,14 +300,7 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_poi.shp"),
-            name="san_andres_y_providencia_poi",
-            user=self.u,
-            overwrite=True,
-        )
+        _l = create_single_layer('san_andres_y_providencia_poi')
 
         for idx, _l in enumerate(Layer.objects.all()):
             for inum in range(0, idx + 1):
@@ -411,7 +362,7 @@ class RequestsTestCase(MonitoringTestBase):
 class MonitoringUtilsTestCase(MonitoringTestBase):
 
     def setUp(self):
-        super(MonitoringUtilsTestCase, self).setUp()
+        super().setUp()
 
     def test_time_periods(self):
         """
@@ -483,7 +434,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
     reserved_fields = ('emails', 'severity', 'active', 'grace_period',)
 
     def setUp(self):
-        super(MonitoringChecksTestCase, self).setUp()
+        super().setUp()
 
         populate()
 
@@ -813,10 +764,10 @@ class MonitoringChecksTestCase(MonitoringTestBase):
                 _emails = data['emails'].split('\n')[-1:]
                 _users = data['emails'].split('\n')[:-1]
                 self.assertEqual(
-                    set(u.email for u in nc.get_users()),
+                    {u.email for u in nc.get_users()},
                     set(_users))
                 self.assertEqual(
-                    set(email for email in nc.get_emails()),
+                    {email for email in nc.get_emails()},
                     set(_emails))
 
         metric_rq_count = Metric.objects.get(name='request.count')
@@ -864,7 +815,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         self.assertIsNotNone(nresp)
         self.assertEqual(nresp.status_code, 200)
         ndata = json.loads(ensure_string(nresp.content))
-        self.assertEqual(set(n['id'] for n in ndata['data']),
+        self.assertEqual({n['id'] for n in ndata['data']},
                          set(NotificationCheck.objects.all().values_list('id', flat=True)))
         mail.outbox = []
         self.assertEqual(len(mail.outbox), 0)
@@ -891,7 +842,7 @@ class AutoConfigTestCase(MonitoringTestBase):
                   }
 
     def setUp(self):
-        super(AutoConfigTestCase, self).setUp()
+        super().setUp()
 
         self.user = 'admin'
         self.passwd = 'admin'
@@ -936,7 +887,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
     # fixtures = ['metric_data']
 
     def setUp(self):
-        super(MonitoringAnalyticsTestCase, self).setUp()
+        super().setUp()
 
         call_command('loaddata', 'metric_data', verbosity=0)
 

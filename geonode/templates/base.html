@@ -21,6 +21,7 @@
 {% load static %}
 {% load account socialaccount %}
 {% load base_tags %}
+{% load client_lib_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -294,14 +295,14 @@
           <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
-                <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
+                <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
                 <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
                 <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
                 {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
                     <li role="separator" class="divider"></li>
-                    <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
+                    <li><a href="{% url "layer_upload" %}">{% trans "Upload Dataset" %}</a></li>
                     {% if USE_GEOSERVER and CREATE_LAYER %}
-                        <li><a href="{% url "layer_create" %}">{% trans "Create Layer" %}</a></li>
+                        <li><a href="{% url "layer_create" %}">{% trans "Create Dataset" %}</a></li>
                     {% endif %}
                     <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
                 {% endif %}
@@ -316,7 +317,7 @@
               {% if user.is_authenticated %}
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
                 <ul class="dropdown-menu">
-                  <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
+                  <li><a href="{% map_list_url %}">{% trans "Explore Maps" %}</a></li>
                   {% if not READ_ONLY_MODE or "add_resource" in user.perms %}
                     <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
                   {% endif %}
@@ -330,10 +331,10 @@
             {% if user.is_authenticated %}
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
-                  <li><a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a></li>
+                  <li><a href="{% geoapp_list_url %}">{% trans "Explore" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a></li>
                 </ul>
             {% else %}
-              <a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
+              <a href="{% geoapp_list_url %}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
             {% endif %}
           </li>
           {% endif %}
@@ -480,14 +481,14 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Data" %}</li>
-            <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
+            <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
             {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
                 <li role="separator" class="divider"></li>
-                <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
+                <li><a href="{% url "layer_upload" %}">{% trans "Upload Dataset" %}</a></li>
                 {% if USE_GEOSERVER and CREATE_LAYER %}
-                    <li><a href="{% url "layer_create" %}">{% trans "Create Layer" %}</a></li>
+                    <li><a href="{% url "layer_create" %}">{% trans "Create Dataset" %}</a></li>
                 {% endif %}
                 <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
             {% endif %}
@@ -501,7 +502,7 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
-            <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
+            <li><a href="{% map_list_url %}">{% trans "Explore Maps" %}</a></li>
             {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
               <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
             {% endif %}
@@ -764,5 +765,23 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" style="width: 100%; height: 100%;" id="_perms_processing" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>{% trans "Processing..." %}</h1>
+                </div>
+                <div class="modal-body">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                        {% trans "Processing Resource..." %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
   </body>
 </html>

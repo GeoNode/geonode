@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import migrations, models
 import taggit.managers
 
@@ -118,10 +115,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='thesauruskeywordlabel',
-            unique_together=set([('keyword', 'lang')]),
+            unique_together={('keyword', 'lang')},
         ),
         migrations.AlterUniqueTogether(
             name='thesauruskeyword',
-            unique_together=set([('thesaurus', 'alt_label')]),
+            unique_together={('thesaurus', 'alt_label')},
         ),
     ]

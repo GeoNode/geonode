@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -111,14 +110,14 @@ class GroupProfile(models.Model):
     def save(self, *args, **kwargs):
         group, created = Group.objects.get_or_create(name=self.slug)
         self.group = group
-        super(GroupProfile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         try:
             Group.objects.filter(name=str(self.slug)).delete()
         except Exception as e:
             logger.exception(e)
-        super(GroupProfile, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     @classmethod
     def groups_for_user(cls, user):
@@ -160,8 +159,7 @@ class GroupProfile(models.Model):
                 except Exception as e:
                     logger.debug(e)
         queryset = _queryset if _queryset else queryset
-        for resource in queryset:
-            yield resource
+        yield from queryset
 
     def member_queryset(self):
         return self.groupmember_set.all()
@@ -261,11 +259,11 @@ class GroupMember(models.Model):
     def save(self, *args, **kwargs):
         # add django.contrib.auth.group to user
         self.user.groups.add(self.group.group)
-        super(GroupMember, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         self.user.groups.remove(self.group.group)
-        super(GroupMember, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def promote(self, *args, **kwargs):
         self.role = "manager"
@@ -276,7 +274,7 @@ class GroupMember(models.Model):
             for _r in queryset.exclude(owner=self.user):
                 for perm in ADMIN_PERMISSIONS:
                     assign_perm(perm, self.user, _r.get_self_resource())
-        super(GroupMember, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def demote(self, *args, **kwargs):
         self.role = "member"
@@ -287,7 +285,7 @@ class GroupMember(models.Model):
             for _r in queryset.exclude(owner=self.user):
                 for perm in ADMIN_PERMISSIONS:
                     remove_perm(perm, self.user, _r.get_self_resource())
-        super(GroupMember, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 def group_pre_delete(instance, sender, **kwargs):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -22,27 +21,30 @@ import os
 import re
 import html
 import math
-import uuid
 import logging
 import traceback
+from sequences.models import Sequence
+
+from sequences import get_next_value
 
 from django.db import models
+from django.db.models import Max
 from django.conf import settings
 from django.core import serializers
-from django.utils.functional import cached_property
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.db.models import Q, signals
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import GEOSGeometry, Polygon, Point
+from django.db.models.fields.json import JSONField
+from django.utils.functional import cached_property
+from django.contrib.gis.geos import Polygon, Point
 from django.contrib.gis.db.models import PolygonField
-from django.core.exceptions import ValidationError
+from django.core.exceptions import SuspiciousFileOperation, ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.templatetags.static import static
-from django.core.files.storage import default_storage as storage
 from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -61,18 +63,12 @@ from taggit.managers import TaggableManager, _TaggableManager
 from guardian.shortcuts import get_anonymous_user, get_objects_for_user
 from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 
+from geonode.base import enumerations
 from geonode.singleton import SingletonModel
-from geonode.base.enumerations import (
-    LINK_TYPES,
-    ALL_LANGUAGES,
-    HIERARCHY_LEVELS,
-    UPDATE_FREQUENCIES,
-    DEFAULT_SUPPLEMENTAL_INFORMATION)
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
 from geonode.utils import (
-    is_monochromatic_image,
-    add_url_params,
-    bbox_to_wkt)
+    bbox_to_wkt,
+    is_monochromatic_image)
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources
 from geonode.security.models import PermissionLevelMixin
@@ -88,8 +84,9 @@ from geonode.base.thumb_utils import (
 
 from pyproj import transform, Proj
 
-from urllib.parse import urlparse, urlsplit, urljoin
+from urllib.parse import urlsplit, urljoin
 from imagekit.cachefiles.backends import Simple
+from geonode.storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
 
@@ -326,7 +323,7 @@ class HierarchicalKeywordQuerySet(MP_NodeQuerySet):
     def create(self, **kwargs):
         if 'depth' not in kwargs:
             return self.model.add_root(**kwargs)
-        return super(HierarchicalKeywordQuerySet, self).create(**kwargs)
+        return super().create(**kwargs)
 
 
 class HierarchicalKeywordManager(MP_NodeManager):
@@ -427,11 +424,11 @@ class TaggedContentItem(ItemBase):
 
 class _HierarchicalTagManager(_TaggableManager):
     def add(self, *tags):
-        str_tags = set([
+        str_tags = {
             t
             for t in tags
             if not isinstance(t, self.through.tag_model())
-        ])
+        }
         tag_objs = set(tags) - str_tags
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
@@ -439,7 +436,7 @@ class _HierarchicalTagManager(_TaggableManager):
             name__in=str_tags
         )
         tag_objs.update(existing)
-        for new_tag in str_tags - set(t.name for t in existing):
+        for new_tag in str_tags - {t.name for t in existing}:
             if new_tag:
                 new_tag = escape(new_tag)
                 tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
@@ -588,12 +585,30 @@ class ResourceBaseManager(PolymorphicManager):
         return superusers[0]
 
     def get_queryset(self):
-        return super(
-            ResourceBaseManager,
-            self).get_queryset().non_polymorphic()
+        return super().get_queryset().non_polymorphic()
 
     def polymorphic_queryset(self):
-        return super(ResourceBaseManager, self).get_queryset()
+        return super().get_queryset()
+
+    @staticmethod
+    def upload_files(resource_id, files):
+        try:
+            out = []
+            for f in files:
+                if os.path.isfile(f) and os.path.exists(f):
+
+                    with open(f, 'rb') as ff:
+                        folder = os.path.basename(os.path.dirname(f))
+                        filename = os.path.basename(f)
+                        file_uploaded_path = storage_manager.save(f'{folder}/{filename}', ff)
+                        out.append(storage_manager.path(file_uploaded_path))
+
+            # making an update instead of save in order to avoid others
+            # signal like post_save and commiunication with geoserver
+            ResourceBase.objects.filter(id=resource_id).update(files=out)
+            return out
+        except Exception as e:
+            logger.exception(e)
 
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
@@ -714,7 +729,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     maintenance_frequency = models.CharField(
         _('maintenance frequency'),
         max_length=255,
-        choices=UPDATE_FREQUENCIES,
+        choices=enumerations.UPDATE_FREQUENCIES,
         blank=True,
         null=True,
         help_text=maintenance_frequency_help_text)
@@ -759,7 +774,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     language = models.CharField(
         _('language'),
         max_length=3,
-        choices=ALL_LANGUAGES,
+        choices=enumerations.ALL_LANGUAGES,
         default='eng',
         help_text=language_help_text)
     category = models.ForeignKey(
@@ -792,7 +807,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     supplemental_information = models.TextField(
         _('supplemental information'),
         max_length=2000,
-        default=DEFAULT_SUPPLEMENTAL_INFORMATION,
+        default=enumerations.DEFAULT_SUPPLEMENTAL_INFORMATION,
         help_text=_('any other descriptive information about the dataset'))
 
     # Section 8
@@ -846,7 +861,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         max_length=32,
         default='dataset',
         null=False,
-        choices=HIERARCHY_LEVELS)
+        choices=enumerations.HIERARCHY_LEVELS)
     csw_anytext = models.TextField(_('CSW anytext'), null=True, blank=True)
     csw_wkt_geometry = models.TextField(
         _('CSW WKT geometry'),
@@ -862,8 +877,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True)
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
-    featured = models.BooleanField(_("Featured"), default=False, help_text=_(
-        'Should this resource be advertised in home page?'))
+    featured = models.BooleanField(
+        _("Featured"),
+        default=False,
+        help_text=_('Should this resource be advertised in home page?'))
     is_published = models.BooleanField(
         _("Is Published"),
         default=True,
@@ -879,6 +896,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     rating = models.IntegerField(default=0, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    state = models.CharField(
+        _("State"),
+        max_length=16,
+        null=False,
+        blank=False,
+        default=enumerations.STATE_READY,
+        choices=enumerations.PROCESSING_STATES,
+        help_text=_('Hold the resource processing state.'))
 
     # fields controlling security state
     dirty_state = models.BooleanField(
@@ -909,6 +935,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         default=False,
         help_text=_('If true, will be excluded from search'))
 
+    files = JSONField(null=True, default=list, blank=True)
+
+    blob = JSONField(null=True, default=dict, blank=True)
+
+    storetype = models.CharField(max_length=128, null=True, blank=True)
+
     __is_approved = False
     __is_published = False
 
@@ -931,7 +963,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if all(bbox):
             kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
             kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
-        super(ResourceBase, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __str__(self):
         return str(self.title)
@@ -977,9 +1009,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.resource_type = self.polymorphic_ctype.model.lower()
 
         if hasattr(self, 'class_name') and (self.pk is None or notify):
-            if self.pk is None and self.title:
+            if self.pk is None and (self.title or getattr(self, 'name', None)):
                 # Resource Created
-
+                if not self.title and getattr(self, 'name', None):
+                    self.title = getattr(self, 'name', None)
                 notice_type_label = f'{self.class_name.lower()}_created'
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
@@ -1017,7 +1050,22 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
-        super(ResourceBase, self).save(*args, **kwargs)
+        if self.pk is None:
+            _initial_value = ResourceBase.objects.aggregate(Max("pk"))['pk__max']
+            if not _initial_value:
+                _initial_value = 1
+            else:
+                _initial_value += 1
+            _next_value = get_next_value(
+                "ResourceBase",  # type(self).__name__,
+                initial_value=_initial_value)
+            if _initial_value > _next_value:
+                Sequence.objects.filter(name='ResourceBase').update(last=_initial_value)
+                _next_value = _initial_value
+
+            self.pk = self.id = _next_value
+
+        super().save(*args, **kwargs)
         self.__is_approved = self.is_approved
         self.__is_published = self.is_published
 
@@ -1025,12 +1073,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Send a notification when a layer, map or document is deleted
         """
+        from geonode.resource.manager import resource_manager
+        resource_manager.remove_permissions(self.uuid, instance=self.get_real_instance())
+
         if hasattr(self, 'class_name') and notify:
             notice_type_label = f'{self.class_name.lower()}_deleted'
             recipients = get_notification_recipients(notice_type_label, resource=self)
             send_notification(recipients, notice_type_label, {'resource': self})
 
-        super(ResourceBase, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def get_upload_session(self):
         raise NotImplementedError()
@@ -1243,8 +1294,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if hasattr(self.spatial_representation_type, 'identifier'):
             return self.spatial_representation_type.identifier
         else:
-            if hasattr(self, 'storeType'):
-                if self.storeType == 'coverageStore':
+            if hasattr(self, 'storetype'):
+                if self.storetype == 'raster':
                     return 'grid'
                 return 'vector'
             else:
@@ -1257,6 +1308,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def clear_dirty_state(self):
         self.dirty_state = False
         ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
+
+    def set_processing_state(self, state):
+        self.state = state
+        ResourceBase.objects.filter(id=self.id).update(state=state)
+        if state == enumerations.STATE_PROCESSED:
+            self.clear_dirty_state()
+        else:
+            self.set_dirty_state()
 
     @property
     def processed(self):
@@ -1402,8 +1461,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             else:
                 _link_type = 'WWW:DOWNLOAD-1.0-http--download'
                 try:
-                    _store_type = getattr(self.get_real_instance(), 'storeType', None)
-                    if _store_type and _store_type == 'remoteStore' and link.extension in ('html'):
+                    _store_type = getattr(self.get_real_instance(), 'storetype', None)
+                    if _store_type and _store_type in ['tileStore', 'remote'] and link.extension in ('html'):
                         _remote_service = getattr(self.get_real_instance(), '_remote_service', None)
                         if _remote_service:
                             _link_type = f'WWW:DOWNLOAD-{_remote_service.type}'
@@ -1486,12 +1545,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _thumbnail_url = self.thumbnail_url or static(settings.MISSING_THUMBNAIL)
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
-        if local_thumbnails.count() > 0:
-            _thumbnail_url = add_url_params(
-                local_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
-        elif remote_thumbnails.count() > 0:
-            _thumbnail_url = add_url_params(
-                remote_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
+        if local_thumbnails.exists():
+            _thumbnail_url = local_thumbnails.first().url
+        elif remote_thumbnails.exists():
+            _thumbnail_url = remote_thumbnails.first().url
         return _thumbnail_url
 
     def has_thumbnail(self):
@@ -1502,7 +1559,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_path = thumb_path(filename)
-
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
@@ -1515,31 +1571,30 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if upload_path and image:
                 name, ext = os.path.splitext(filename)
                 remove_thumbs(name)
-                actual_name = storage.save(upload_path, ContentFile(image))
-                url = storage.url(actual_name)
-                _url = urlparse(url)
-                _upload_path = thumb_path(os.path.basename(_url.path))
-                if upload_path != _upload_path:
-                    if storage.exists(_upload_path):
-                        storage.delete(_upload_path)
-                    try:
-                        os.rename(
-                            storage.path(upload_path),
-                            storage.path(_upload_path)
-                        )
-                    except Exception as e:
-                        logger.exception(e)
+                actual_name = storage_manager.save(upload_path, ContentFile(image))
+                url = storage_manager.url(actual_name)
 
                 try:
                     # Optimize the Thumbnail size and resolution
                     _default_thumb_size = getattr(
                         settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
-                    im = Image.open(open(storage.path(_upload_path), mode='rb'))
+                    im = Image.open(storage_manager.open(actual_name))
                     im.thumbnail(
                         (_default_thumb_size['width'], _default_thumb_size['height']),
                         resample=Image.ANTIALIAS)
                     cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
-                    cover.save(storage.path(_upload_path), format='PNG')
+
+                    # Saving the thumb into a temporary directory on file system
+                    tmp_location = f"{settings.MEDIA_ROOT}/{upload_path}"
+                    cover.save(tmp_location, format='PNG')
+
+                    with open(tmp_location, 'rb+') as img:
+                        # Saving the img via storage manager
+                        storage_manager.save(storage_manager.path(upload_path), img)
+
+                    # If we use a remote storage, the local img is deleted
+                    if tmp_location != storage_manager.path(upload_path):
+                        os.remove(tmp_location)
                 except Exception as e:
                     logger.exception(e)
 
@@ -1550,7 +1605,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                     url = urljoin(site_url, url)
 
-                if thumb_size(_upload_path) == 0:
+                if thumb_size(upload_path) == 0:
                     raise Exception("Generated thumbnail image is zero size")
 
                 # should only have one 'Thumbnail' link
@@ -1635,10 +1690,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.set_default_permissions(owner=user)
 
     def maintenance_frequency_title(self):
-        return [v for v in UPDATE_FREQUENCIES if v[0] == self.maintenance_frequency][0][1].title()
+        return [v for v in enumerations.UPDATE_FREQUENCIES if v[0] == self.maintenance_frequency][0][1].title()
 
     def language_title(self):
-        return [v for v in ALL_LANGUAGES if v[0] == self.language][0][1].title()
+        return [v for v in enumerations.ALL_LANGUAGES if v[0] == self.language][0][1].title()
 
     def _set_poc(self, poc):
         # reset any poc assignation to this resource
@@ -1745,7 +1800,7 @@ class Link(models.Model):
         help_text=_('For example "kml"'))
     link_type = models.CharField(
         max_length=255, choices=[
-            (x, x) for x in LINK_TYPES])
+            (x, x) for x in enumerations.LINK_TYPES])
     name = models.CharField(max_length=255, help_text=_(
         'For example "View in Google Earth"'))
     mime = models.CharField(max_length=255,
@@ -1851,9 +1906,10 @@ class MenuItem(models.Model):
 
 class CuratedThumbnail(models.Model):
     resource = models.OneToOneField(ResourceBase, on_delete=models.CASCADE)
-    img = models.ImageField(upload_to='curated_thumbs')
+    img = models.ImageField(upload_to='curated_thumbs', storage=storage_manager)
     # TOD read thumb size from settings
     img_thumbnail = ImageSpecField(source='img',
+                                   cachefile_storage=storage_manager,
                                    processors=[ResizeToFill(240, 180)],
                                    format='PNG',
                                    options={'quality': 60})
@@ -1863,15 +1919,15 @@ class CuratedThumbnail(models.Model):
         try:
             if not Simple()._exists(self.img_thumbnail):
                 Simple().generate(self.img_thumbnail, force=True)
-            upload_path = storage.path(self.img_thumbnail.name)
-            actual_name = os.path.basename(storage.url(upload_path))
-            _upload_path = os.path.join(os.path.dirname(upload_path), actual_name)
-            if not os.path.exists(_upload_path):
-                os.rename(upload_path, _upload_path)
-            return self.img_thumbnail.url
+        except SuspiciousFileOperation:
+            '''
+            we must rely to the storage_manager, if the storage is changed, we will ignore this
+            '''
+            return ''
         except Exception as e:
             logger.exception(e)
-        return ''
+
+        return self.img_thumbnail.url or ''
 
 
 class Configuration(SingletonModel):
@@ -1923,75 +1979,6 @@ class GroupGeoLimit(models.Model):
     wkt = models.TextField(
         db_column='wkt',
         blank=True)
-
-
-def resourcebase_post_save(instance, *args, **kwargs):
-    """
-    Used to fill any additional fields after the save.
-    Has to be called by the children
-    """
-    try:
-        # set default License if no specified
-        if instance.license is None:
-            license = License.objects.filter(name="Not Specified")
-
-            if license and len(license) > 0:
-                instance.license = license[0]
-
-        ResourceBase.objects.filter(id=instance.id).update(
-            thumbnail_url=instance.get_thumbnail_url(),
-            detail_url=instance.get_absolute_url(),
-            csw_insert_date=now(),
-            license=instance.license)
-        instance.refresh_from_db()
-    except Exception:
-        tb = traceback.format_exc()
-        if tb:
-            logger.debug(tb)
-    finally:
-        instance.set_missing_info()
-
-    try:
-        if not instance.regions or instance.regions.count() == 0:
-            srid1, wkt1 = instance.geographic_bounding_box.split(";")
-            srid1 = re.findall(r'\d+', srid1)
-
-            poly1 = GEOSGeometry(wkt1, srid=int(srid1[0]))
-            poly1.transform(4326)
-
-            queryset = Region.objects.all().order_by('name')
-            global_regions = []
-            regions_to_add = []
-            for region in queryset:
-                try:
-                    srid2, wkt2 = region.geographic_bounding_box.split(";")
-                    srid2 = re.findall(r'\d+', srid2)
-
-                    poly2 = GEOSGeometry(wkt2, srid=int(srid2[0]))
-                    poly2.transform(4326)
-
-                    if poly2.intersection(poly1):
-                        regions_to_add.append(region)
-                    if region.level == 0 and region.parent is None:
-                        global_regions.append(region)
-                except Exception:
-                    tb = traceback.format_exc()
-                    if tb:
-                        logger.debug(tb)
-            if regions_to_add or global_regions:
-                if regions_to_add and len(
-                        regions_to_add) > 0 and len(regions_to_add) <= 30:
-                    instance.regions.add(*regions_to_add)
-                else:
-                    instance.regions.add(*global_regions)
-    except Exception:
-        tb = traceback.format_exc()
-        if tb:
-            logger.debug(tb)
-    finally:
-        # refresh catalogue metadata records
-        from geonode.catalogue.models import catalogue_post_save
-        catalogue_post_save(instance=instance, sender=instance.__class__)
 
 
 def rating_post_save(instance, *args, **kwargs):

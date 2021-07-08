@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -33,27 +32,24 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
+from geonode.layers.models import Layer
 import os
 import re
 import json
 import logging
 import zipfile
 import tempfile
-import traceback
 import gsimporter
 
 from http.client import BadStatusLine
 
 from django.contrib import auth
-from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render
 from django.utils.html import escape
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import CreateView, DeleteView
 from django.contrib.auth.decorators import login_required
 
 from geonode.upload import UploadException
@@ -65,16 +61,19 @@ from geonode.decorators import logged_in_or_basicauth
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
 
+from geonode.geoserver.helpers import (
+    select_relevant_files,
+    write_uploaded_files_to_disk)
 from .forms import (
     LayerUploadForm,
     SRSForm,
-    TimeForm,
-    UploadFileForm,
+    TimeForm
 )
-from .models import Upload, UploadFile
-from .files import (get_scan_hint,
-                    scan_file
-                    )
+from .models import (
+    Upload)
+from .files import (
+    get_scan_hint,
+    scan_file)
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
@@ -86,14 +85,18 @@ from .utils import (
     is_async_step,
     is_latitude,
     is_longitude,
-    JSONResponse,
     json_response,
     get_previous_step,
     layer_eligible_for_time_dimension,
-    next_step_response,
-)
-from .upload import (save_step, srs_step, time_step, csv_step, final_step,
-                     LayerNotReady, UploaderSession)
+    next_step_response)
+from .upload import (
+    save_step,
+    srs_step,
+    time_step,
+    csv_step,
+    final_step,
+    LayerNotReady,
+    UploaderSession)
 
 logger = logging.getLogger(__name__)
 
@@ -128,36 +131,6 @@ def data_upload_progress(req):
     return json_response({'state': 'NONE'})
 
 
-def _write_uploaded_files_to_disk(target_dir, files):
-    result = []
-    for django_file in files:
-        path = os.path.join(target_dir, django_file.name)
-        with open(path, 'wb') as fh:
-            for chunk in django_file.chunks():
-                fh.write(chunk)
-        result = path
-    return result
-
-
-def _select_relevant_files(allowed_extensions, files):
-    """Filter the input files list for relevant files only
-
-    Relevant files are those whose extension is in the ``allowed_extensions``
-    iterable.
-
-    :param allowed_extensions: list of strings with the extensions to keep
-    :param files: list of django files with the files to be filtered
-    """
-    result = []
-    for django_file in files:
-        extension = os.path.splitext(django_file.name)[-1].lower()[1:]
-        if extension in allowed_extensions or get_scan_hint(allowed_extensions):
-            already_selected = django_file.name in (f.name for f in result)
-            if not already_selected:
-                result.append(django_file)
-    return result
-
-
 def save_step_view(req, session):
     if req.method == 'GET':
         return render(
@@ -170,15 +143,18 @@ def save_step_view(req, session):
             }
         )
     form = LayerUploadForm(req.POST, req.FILES)
+
+    overwrite = req.path_info.endswith('/replace')
+    target_store = None
     if form.is_valid():
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         logger.debug(f"valid_extensions: {form.cleaned_data['valid_extensions']}")
-        relevant_files = _select_relevant_files(
+        relevant_files = select_relevant_files(
             form.cleaned_data["valid_extensions"],
             iter(req.FILES.values())
         )
         logger.debug(f"relevant_files: {relevant_files}")
-        _write_uploaded_files_to_disk(tempdir, relevant_files)
+        write_uploaded_files_to_disk(tempdir, relevant_files)
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
         name, ext = os.path.splitext(os.path.basename(base_file))
         logger.debug(f'Name: {name}, ext: {ext}')
@@ -190,11 +166,18 @@ def save_step_view(req, session):
             charset=form.cleaned_data["charset"]
         )
         logger.debug(f"spatial_files: {spatial_files}")
+
+        if overwrite:
+            layer = Layer.objects.filter(id=req.GET['layer_id'])
+            if layer.exists():
+                name = layer.first().name
+                target_store = layer.first().store
+
         import_session, upload = save_step(
             req.user,
             name,
             spatial_files,
-            overwrite=False,
+            overwrite=overwrite,
             mosaic=form.cleaned_data['mosaic'] or scan_hint == 'zip-mosaic',
             append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
             append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
@@ -204,7 +187,8 @@ def save_step_view(req, session):
             time_presentation_res=form.cleaned_data['time_presentation_res'],
             time_presentation_default_value=form.cleaned_data['time_presentation_default_value'],
             time_presentation_reference_value=form.cleaned_data['time_presentation_reference_value'],
-            charset_encoding=form.cleaned_data["charset"]
+            charset_encoding=form.cleaned_data["charset"],
+            target_store=target_store
         )
         import_session.tasks[0].set_charset(form.cleaned_data["charset"])
         sld = None
@@ -436,8 +420,9 @@ def check_step_view(request, upload_session):
                 upload_session.error_msg = 'Could not access/read the uploaded file!'
             else:
                 (has_time_dim, layer_values) = \
-                    layer_eligible_for_time_dimension(request,
-                                                      import_session.tasks[0].layer, upload_session=upload_session)
+                    layer_eligible_for_time_dimension(
+                        request,
+                        import_session.tasks[0].layer, upload_session=upload_session)
                 if has_time_dim:
                     upload_session.completed_step = 'check'
                 else:
@@ -585,7 +570,15 @@ def final_step_view(req, upload_session):
             return _json_response
         else:
             try:
-                saved_layer = final_step(upload_session, upload_session.user)
+                layer_id = None
+                if req and 'layer_id' in req.GET:
+                    layer = Layer.objects.filter(id=req.GET['layer_id'])
+                    if layer.exists():
+                        layer_id = layer.first().resourcebase_ptr_id
+
+                saved_layer = final_step(upload_session, upload_session.user, layer_id)
+
+                assert saved_layer
 
                 # this response is different then all of the other views in the
                 # upload as it does not return a response as a json object
@@ -648,7 +641,7 @@ _steps = {
     'csv': csv_step_view,
     'check': check_step_view,
     'time': time_step_view,
-    'final': final_step_view,
+    'final': final_step_view
 }
 
 
@@ -697,16 +690,22 @@ def view(req, step=None):
                 upload_session = session
             else:
                 upload_session = _get_upload_session(req)
-        except Exception:
-            traceback.print_exc()
+        except Exception as e:
+            logger.exception(e)
     try:
         if req.method == 'GET' and upload_session:
             # set the current step to match the requested page - this
             # could happen if the form is ajax w/ progress monitoring as
             # the advance would have already happened @hacky
-            upload_session.completed_step = get_previous_step(
-                upload_session,
-                step)
+            _completed_step = upload_session.completed_step
+            try:
+                _completed_step = get_previous_step(
+                    upload_session,
+                    step)
+                upload_session.completed_step = _completed_step
+            except Exception as e:
+                logger.warning(e)
+                return error_response(req, errors=e.args)
 
         resp = _steps[step](req, upload_session)
         # must be put back to update object in session
@@ -722,8 +721,6 @@ def view(req, step=None):
 
                     if delete_session:
                         # we're done with this session, wax it
-                        if resp_js.get('status') != 'error':
-                            Upload.objects.update_from_session(upload_session)
                         upload_session = None
                         del req.session[upload_id]
                         req.session.modified = True
@@ -763,55 +760,8 @@ def delete(req, id):
     ))
 
 
-class UploadFileCreateView(CreateView):
-    form_class = UploadFileForm
-    model = UploadFile
-
-    def form_valid(self, form):
-        self.object = form.save()
-        f = self.request.FILES.get('file')
-        data = [
-            {
-                'name': f.name,
-                'url': f"{settings.MEDIA_URL}uploads/{f.name.replace(' ', '_')}",
-                'thumbnail_url': f"{settings.MEDIA_URL}pictures/{f.name.replace(' ', '_')}",
-                'delete_url': reverse(
-                    'data_upload_remove',
-                    args=[
-                        self.object.id]),
-                'delete_type': "DELETE"}]
-        response = JSONResponse(data, {}, response_content_type(self.request))
-        response['Content-Disposition'] = 'inline; filename=files.json'
-        return response
-
-    def form_invalid(self, form):
-        data = [{}]
-        response = JSONResponse(data, {}, response_content_type(self.request))
-        response['Content-Disposition'] = 'inline; filename=files.json'
-        return response
-
-
 def response_content_type(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
         return "application/json"
     else:
         return "text/plain"
-
-
-class UploadFileDeleteView(DeleteView):
-    model = UploadFile
-
-    def delete(self, request, *args, **kwargs):
-        """
-        This does not actually delete the file, only the database record.  But
-        that is easy to implement.
-        """
-        self.object = self.get_object()
-        self.object.delete()
-        if request.is_ajax():
-            response = JSONResponse(
-                True, {}, response_content_type(self.request))
-            response['Content-Disposition'] = 'inline; filename=files.json'
-            return response
-        else:
-            return HttpResponseRedirect(reverse('data_upload_new'))

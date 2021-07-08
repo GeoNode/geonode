@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -28,6 +27,6 @@ class MetadataXSLTest(GeoNodeBaseTestSupport):
     """
 
     def setUp(self):
-        super(MetadataXSLTest, self).setUp()
+        super().setUp()
         self.adm_un = "admin"
         self.adm_pw = "admin"

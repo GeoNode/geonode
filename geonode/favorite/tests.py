@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -42,7 +41,7 @@ class FavoriteTest(GeoNodeBaseTestSupport):
     """
 
     def setUp(self):
-        super(FavoriteTest, self).setUp()
+        super().setUp()
         self.adm_un = "admin"
         self.adm_pw = "admin"
 
