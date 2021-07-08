@@ -115,7 +115,7 @@
 
     {% if resource.group %}
     <dt>{% trans "Group" %}</dt>
-    <dd><a href="/groups/group/{{ resource.group.name }}/activity/">{{ group }}</a> </dd>
+    <dd><a href="{% url 'group_activity' resource.group.name %}">{{ group }}</a> </dd>
     {% endif %}
 
     {% if resource.doi %}
