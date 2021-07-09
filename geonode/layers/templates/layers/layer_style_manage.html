@@ -13,8 +13,9 @@
 <div class="page-header">
   <h2>{% trans "Manage Styles" %}</h2>
 </div>
-<h4>{% blocktrans with layer.alternate as layer_title %}
-      Manage Available Styles for <a href="/layers/{{ layer_title }}">{{ layer_title }}</a>
+{% url 'layer_detail' layer.alternate as layer_url %}
+<h4>{% blocktrans with layer_title=layer.alternate  %}
+      Manage Available Styles for <a href="{{ layer_url }}">{{ layer_title }}</a>
     {% endblocktrans %}</h4>
 <form action="{% url "layer_style_manage" layer.service_typename %}" method="POST">
   <div class="row grid-spacer">
