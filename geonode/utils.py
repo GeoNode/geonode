@@ -1616,7 +1616,7 @@ def slugify_zh(text, separator='_'):
 
 
 def get_legend_url(
-        instance, style_name, /,
+        instance, style_name,
         service_url=None,
         layer_name=None,
         version='1.3.0',

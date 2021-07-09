@@ -1667,6 +1667,7 @@ TINYMCE_DEFAULT_CONFIG = {
     ],
     "template_cdate_format": '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
     "template_mdate_format": '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+    "setup": 'function(editor) {editor.on("input", onInputChange)}'
 }
 
 # Make Free-Text Kaywords writable from users or read-only
