@@ -74,18 +74,6 @@ class ForgotUsernameForm(forms.Form):
                              label=_('Email Address'))
 
 
-class RoleForm(forms.ModelForm):
-
-    class Meta:
-        model = ContactRole
-        exclude = ('contact', 'layer')
-
-
-class PocForm(forms.Form):
-    contact = forms.ModelChoiceField(label="New point of contact",
-                                     queryset=get_user_model().objects.all())
-
-
 class ProfileForm(forms.ModelForm):
     keywords = taggit.forms.TagField(
         label=_("Keywords"),

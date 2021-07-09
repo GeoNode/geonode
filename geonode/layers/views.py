@@ -92,7 +92,11 @@ from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
+<<<<<<< HEAD
 from geonode.security.utils import get_visible_resources
+=======
+from geonode.people.forms import ProfileForm
+>>>>>>> f68276ac6... complete issue 7768 - drop unused forms
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import (
     PocForm,
