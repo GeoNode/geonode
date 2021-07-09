@@ -39,7 +39,6 @@ from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, Topic
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.security.utils import (
-    get_geoapp_subtypes,
     get_visible_resources,
     get_resources_with_perms)
 
