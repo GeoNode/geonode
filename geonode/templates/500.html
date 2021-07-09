@@ -196,7 +196,7 @@
               <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
             {% endif %}
             {% if user.is_superuser and not READ_ONLY_MODE %}
-              <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+              <li><a href="{% url 'people_profile_add' %}">{% trans "Add User" %}</a></li>
               <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
           </ul>
@@ -293,7 +293,7 @@
               {% block extra_user_menu %}
               {% endblock %}
               <li class="modal-divider"></li>
-              <li><a title="{% trans "Help" %}" rel="tooltip" href="/help/"><i class="fa fa-question-circle"></i> {% trans "Help" %}</a></li>
+              <li><a title="{% trans "Help" %}" rel="tooltip" href="{% url 'help' %}"><i class="fa fa-question-circle"></i> {% trans "Help" %}</a></li>
             </ul>
           </div>
           <div class="modal-footer">
