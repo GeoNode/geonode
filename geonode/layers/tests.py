@@ -166,14 +166,14 @@ class LayersTest(GeoNodeBaseTestSupport):
             owner=get_user_model().objects.get(username=self.user),
             name='states',
             store='geonode_data',
-            storetype="vector",
+            subtype="vector",
             alternate="geonode:states"
         )
         _ll_2 = Layer.objects.create(
             owner=get_user_model().objects.get(username=self.user),
             name='geonode:states',
             store='httpfooremoteservce',
-            storetype="remote",
+            subtype="remote",
             alternate="geonode:states"
         )
         _ll_1.set_permissions({'users': {"bobby": ['base.view_resourcebase']}})
@@ -363,8 +363,8 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(len(keywords), 13)
 
     def test_layer_links(self):
-        lyr = Layer.objects.filter(storetype="vector").first()
-        self.assertEqual(lyr.storetype, "vector")
+        lyr = Layer.objects.filter(subtype="vector").first()
+        self.assertEqual(lyr.subtype, "vector")
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
             self.assertIsNotNone(links)
@@ -390,8 +390,8 @@ class LayersTest(GeoNodeBaseTestSupport):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
 
-        lyr = Layer.objects.filter(storetype="raster").first()
-        self.assertEqual(lyr.storetype, "raster")
+        lyr = Layer.objects.filter(subtype="raster").first()
+        self.assertEqual(lyr.subtype, "raster")
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
             self.assertIsNotNone(links)
