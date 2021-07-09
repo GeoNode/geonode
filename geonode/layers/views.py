@@ -1212,6 +1212,7 @@ def layer_metadata_advanced(request, layername):
 
 
 @login_required
+<<<<<<< HEAD
 def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
 
@@ -1233,6 +1234,8 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
 
 
 @login_required
+=======
+>>>>>>> 5beb6bfba... [Fixes #7768] Drop layer_change_poc unused method and template
 def layer_replace(request, layername, template='layers/layer_replace.html'):
     return layer_append_replace_view(request, layername, template, action_type='replace')
 
