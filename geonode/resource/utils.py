@@ -187,7 +187,7 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
 
     to_update = {}
     if isinstance(instance, Layer):
-        for _key in ('name', 'workspace', 'store', 'storetype', 'alternate', 'typename'):
+        for _key in ('name', 'workspace', 'store', 'subtype', 'alternate', 'typename'):
             if hasattr(instance, _key):
                 if _key in defaults:
                     to_update[_key] = defaults.pop(_key)
@@ -207,7 +207,7 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
     if isinstance(instance, Document):
         if 'links' in defaults:
             defaults.pop('links')
-        for _key in ('storetype', 'doc_url', 'doc_file', 'extension'):
+        for _key in ('subtype', 'doc_url', 'doc_file', 'extension'):
             if hasattr(instance, _key):
                 if _key in defaults:
                     to_update[_key] = defaults.pop(_key)
@@ -218,8 +218,8 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
 
     if hasattr(instance, 'charset') and 'charset' not in to_update:
         to_update['charset'] = defaults.pop('charset', instance.charset)
-    if hasattr(instance, 'storetype') and 'storetype' not in to_update:
-        to_update['storetype'] = defaults.pop('storetype', instance.storetype)
+    if hasattr(instance, 'subtype') and 'subtype' not in to_update:
+        to_update['subtype'] = defaults.pop('subtype', instance.subtype)
     if hasattr(instance, 'urlsuffix') and 'urlsuffix' not in to_update:
         to_update['urlsuffix'] = defaults.pop('urlsuffix', instance.urlsuffix)
 
@@ -302,11 +302,11 @@ def document_post_save(instance, *args, **kwargs):
         doc_type_map = DOCUMENT_TYPE_MAP
         doc_type_map.update(getattr(settings, 'DOCUMENT_TYPE_MAP', {}))
         if doc_type_map is None:
-            storetype = 'other'
+            subtype = 'other'
         else:
-            storetype = doc_type_map.get(
+            subtype = doc_type_map.get(
                 instance.extension.lower(), 'other')
-        instance.storetype = storetype
+        instance.subtype = subtype
     elif instance.doc_url:
         if '.' in urlparse(instance.doc_url).path:
             instance.extension = urlparse(instance.doc_url).path.rsplit('.')[-1]
@@ -328,7 +328,7 @@ def document_post_save(instance, *args, **kwargs):
 
     Document.objects.filter(id=instance.id).update(
         extension=instance.extension,
-        storetype=instance.storetype,
+        subtype=instance.subtype,
         doc_url=instance.doc_url,
         csw_type=instance.csw_type)
 
@@ -363,11 +363,11 @@ def layer_post_save(instance, *args, **kwargs):
     if base_file is not None:
         extension = f'.{base_file.name}'
         if extension in vec_exts:
-            instance.storetype = 'vector'
+            instance.subtype = 'vector'
         elif extension in cov_exts:
-            instance.storetype = 'raster'
+            instance.subtype = 'raster'
 
-    Layer.objects.filter(id=instance.id).update(storetype=instance.storetype)
+    Layer.objects.filter(id=instance.id).update(subtype=instance.subtype)
 
 
 def metadata_post_save(instance, *args, **kwargs):
