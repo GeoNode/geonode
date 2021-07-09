@@ -218,3 +218,8 @@ class ManageResourceOwnerPermissions:
                     assign_perm(perm, self.resource.owner, self.resource)
                 elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
                     assign_perm(perm, self.resource.owner, self.resource)
+
+
+def make_public(resource):
+    resource.set_default_permissions()
+    resource.clear_dirty_state()
