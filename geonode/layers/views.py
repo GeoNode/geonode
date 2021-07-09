@@ -1208,28 +1208,6 @@ def layer_metadata_advanced(request, layername):
 
 
 @login_required
-def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
-    layers = Layer.objects.filter(id__in=ids.split('_'))
-
-    if request.method == 'POST':
-        form = PocForm(request.POST)
-        if form.is_valid():
-            for layer in layers:
-                layer.poc = form.cleaned_data['contact']
-                layer.save()
-
-            # Process the data in form.cleaned_data
-            # ...
-            # Redirect after POST
-            # Pls fix following url, it seems not bound
-            return HttpResponseRedirect('/admin/maps/layer')
-    else:
-        form = PocForm()  # An unbound form
-    return render(
-        request, template, context={'layers': layers, 'form': form})
-
-
-@login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
     try:
         layer = _resolve_layer(
