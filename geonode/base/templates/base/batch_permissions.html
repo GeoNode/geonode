@@ -11,7 +11,8 @@
 <div class="page-header">
   <h2 class="page-title">{% trans "Set Permissions" %}</h2>
 </div>
-<form action="/{{ model|lower }}s/permissions/batch/" method="post">
+
+<form action="{% url model|lower|add:'s_batch_permissions' %}" method="post">
   {% csrf_token %}
   {{ form|as_bootstrap }}
   <div>

@@ -62,12 +62,8 @@ from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import (
-    CategoryForm,
-    TKeywordForm,
-    BatchPermissionsForm,
-    ThesaurusAvailableForm)
-from geonode.base.views import batch_modify
+from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
+from geonode.base.views import batch_modify, get_url_for_model
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
@@ -1573,7 +1569,7 @@ def batch_permissions(request, model):
 
     if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
-            f'/admin/{model.lower()}s/{model.lower()}/'
+            get_url_for_model(model)
         )
 
     if request.method == 'POST':
@@ -1608,7 +1604,7 @@ def batch_permissions(request, model):
                 except set_permissions.OperationalError as exc:
                     celery_logger.exception('Sending task raised: %r', exc)
             return HttpResponseRedirect(
-                f'/admin/{model.lower()}s/{model.lower()}/'
+                get_url_for_model(model)
             )
         return render(
             request,
