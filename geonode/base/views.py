@@ -67,12 +67,12 @@ logger = logging.getLogger(__name__)
 
 
 def get_url_for_app_model(model, model_class):
-    return reverse(f'{model_class._meta.app_label}_{model}_changelist')
+    return reverse(f'admin:{model_class._meta.app_label}_{model}_changelist')
     # was: return f'/admin/{model_class._meta.app_label}/{model}/'
 
 
 def get_url_for_model(model):
-    return reverse(f'{model.lower()}s_{model.lower()}_changelist')
+    return reverse(f'admin:{model.lower()}s_{model.lower()}_changelist')
     # was: f'/admin/{model.lower()}s/{model.lower()}/'
 
 
