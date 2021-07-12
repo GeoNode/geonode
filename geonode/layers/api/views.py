@@ -57,7 +57,7 @@ class LayerViewSet(DynamicModelViewSet):
     pagination_class = GeoNodeApiPagination
 
     @extend_schema(
-        methods=["post"], responses={200}, description="API endpoint allowing to retrieve the favorite Resources."
+        methods=["post"], responses={200}, description="API endpoint allowing to set the thumbnail url for an existing dataset."
     )
     @action(
         detail=False,
