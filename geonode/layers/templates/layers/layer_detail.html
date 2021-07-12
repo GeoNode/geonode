@@ -553,8 +553,8 @@
                 {% trans "Full metadata" %}
                 </h5>
                 <ul>
-                    <li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title | slugify }}.txt"> {% trans "Text format" %} </a></li>
-                    <li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title | slugify }}.html"> {% trans "HTML format" %} </a></li>
+                    <li><a target="_blank" href="{% url 'csw_render_extra_format_txt'  resource.uuid resource.title|slugify %}"> {% trans "Text format" %} </a></li>
+                    <li><a target="_blank" href="{% url 'csw_render_extra_format_html' resource.uuid resource.title|slugify %}"> {% trans "HTML format" %} </a></li>
                 </ul>
             </div>
             <div style="margin-bottom:20px">
@@ -690,7 +690,7 @@
     {% if resource.storetype == "remote" %}
     <li class="list-group-item">
       <h4>{% trans "External service layer" %}</h4>
-      <div>{% trans "Source" %}: <a href="/services/{{resource.remote_service.id}}">{{ resource.remote_service.title }}</a>
+      <div>{% trans "Source" %}: <a href="{% url 'service_detail' resource.remote_service.id %}">{{ resource.remote_service.title }}</a>
       </div>
       <div>{% trans "Type" %}: {{ resource.remote_service.type }}</div>
     </li>
