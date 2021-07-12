@@ -332,10 +332,13 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                         _types.append(_m.__name__.lower())
 
         if settings.GEONODE_APPS_ENABLE and 'geoapp' in _types:
-            from geonode.geoapps.models import GeoApp
-            geoapp_types = [x for x in GeoApp.objects.values_list('resource_type', flat=True).all().distinct()]
             _types.remove('geoapp')
-            _types += geoapp_types
+            if hasattr(settings, 'MAPSTORE_CLIENT_APP_LIST') and settings.MAPSTORE_CLIENT_APP_LIST:
+                _types += settings.MAPSTORE_CLIENT_APP_LIST
+            else:
+                from geonode.geoapps.models import GeoApp
+                geoapp_types = [x for x in GeoApp.objects.values_list('resource_type', flat=True).all().distinct()]
+                _types += geoapp_types
 
         for _type in _types:
             resource_types.append({
