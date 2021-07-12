@@ -2121,3 +2121,10 @@ def is_monochromatic_image(image_url, image_data=None):
     except Exception as e:
         logger.debug(e)
         return False
+
+
+def find_by_attr(lst, val, attr="id"):
+    """ Returns an object if the id matches in any list of objects """
+    for item in lst:
+        if item[attr] == val:
+            return item

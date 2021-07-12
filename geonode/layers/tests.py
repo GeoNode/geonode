@@ -334,7 +334,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
 
         from geonode.base.models import HierarchicalKeyword as hk
-        keywords = hk.dump_bulk_tree(get_user_model().objects.get(username='admin'), type='layer')
+        keywords = hk.resource_keywords_tree(get_user_model().objects.get(username='admin'), type='layer')
 
         self.assertEqual(len(keywords), 13)
 

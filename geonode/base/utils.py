@@ -220,6 +220,9 @@ class ManageResourceOwnerPermissions:
                     assign_perm(perm, self.resource.owner, self.resource)
 
 
-def make_public(resource):
-    resource.set_default_permissions()
-    resource.clear_dirty_state()
+def add_keywords_to_resource(resource, keywords):
+    for keyword in keywords:
+        resource.keywords.add(keyword)
+
+    resource.save()
+    return resource
