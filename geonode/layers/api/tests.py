@@ -119,13 +119,12 @@ class LayersApiTests(APITestCase):
             "srid": "EPSG:3857"
         }
         response = self.client.post(url, data=payload, format='json')
-        
+
         expected = {
             "thumbnail_url": "http://localhost:8000/mocked_url.jpg"
         }
         self.assertEqual(response.status_code, 200)
         self.assertEqual(expected, response.json())
-
 
     def test_datasets_set_thumbnail_from_bbox_from_logged_user_for_not_existing_layer(self):
         """
@@ -145,7 +144,7 @@ class LayersApiTests(APITestCase):
             "srid": "EPSG:3857"
         }
         response = self.client.post(url, data=payload, format='json')
-        
+
         expected = {
             "message": f"Dataset selected with id {dataset_id} does not exists"
         }

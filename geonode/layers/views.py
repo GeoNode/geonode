@@ -49,7 +49,6 @@ from django.forms.models import inlineformset_factory
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.decorators.http import require_http_methods
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from guardian.shortcuts import get_objects_for_user
@@ -58,7 +57,6 @@ from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_layer_style
-from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
