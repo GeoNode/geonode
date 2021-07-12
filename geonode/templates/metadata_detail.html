@@ -121,7 +121,7 @@
         {% block category %}
         {% if resource.category %}
         <dt>{% trans "Category" %}</dt>
-        <dd><a href="/search/?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
+        <dd><a href="{% url 'search' %}/?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
         {% if resource.category.description %}
         <dd class="category-more collapse">
             {{ resource.category.description }}
@@ -155,7 +155,7 @@
         {% block group %}
         {% if resource.group %}
         <dt>{% trans "Group" %}</dt>
-        <dd><a href="/groups/group/{{ resource.group.name }}/activity/">{{ group }}</a> </dd>
+        <dd><a href="{% url 'group_activity' resource.group.name %}">{{ group }}</a> </dd>
         {% endif %}
         {% endblock group %}
 
