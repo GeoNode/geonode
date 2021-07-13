@@ -25,8 +25,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import ugettext as _
 
-from geonode.base.models import ContactRole
-
 from captcha.fields import ReCaptchaField
 
 # Ported in from django-registration
@@ -73,18 +71,6 @@ class ForgotUsernameForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
                                                                maxlength=75)),
                              label=_('Email Address'))
-
-
-class RoleForm(forms.ModelForm):
-
-    class Meta:
-        model = ContactRole
-        exclude = ('contact', 'layer')
-
-
-class PocForm(forms.Form):
-    contact = forms.ModelChoiceField(label="New point of contact",
-                                     queryset=get_user_model().objects.all())
 
 
 class ProfileForm(forms.ModelForm):
