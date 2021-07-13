@@ -29,6 +29,7 @@ var createMapThumbnail = function(obj_id) {
     $.ajax({
         type: "POST",
         url: thumbnailUpdateUrl,
+        contentType: "application/json",
         data: JSON.stringify(body),
         async: true,
         cache: false,
@@ -51,7 +52,7 @@ var createMapThumbnail = function(obj_id) {
         success: function (data, status, jqXHR) {
             try {
                 $("#_thumbnail_feedbacks").find('.modal-title').text(status);
-                $("#_thumbnail_feedbacks").find('.modal-body').text(data);
+                $("#_thumbnail_feedbacks").find('.modal-body').text("Thumbnail saved");
                 $("#_thumbnail_feedbacks").modal("show");
             } catch (err) {
                 console.log(err);

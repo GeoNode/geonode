@@ -206,6 +206,7 @@ def create_thumbnail(
 
     # save thumbnail
     instance.save_thumbnail(default_thumbnail_name, image=content)
+    return instance.thumbnail_url
 
 
 def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
