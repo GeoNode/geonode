@@ -269,7 +269,7 @@ class BaseApiTests(APITestCase):
             alternate='Test Remove User',
             uuid=str(uuid4()),
             owner=owner,
-            storetype='raster',
+            subtype='raster',
             category=TopicCategory.objects.get(identifier='elevation')
         ).save()
         # Delete user and check if default user is updated

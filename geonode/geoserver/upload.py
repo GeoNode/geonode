@@ -249,7 +249,7 @@ def geoserver_upload(
     layer_uuid = str(uuid.uuid1())
 
     defaults = dict(store=gs_resource.store.name,
-                    storetype=gs_resource.store.resource_type,
+                    subtype=gs_resource.store.resource_type,
                     alternate=alternate,
                     title=title or gs_resource.title,
                     uuid=layer_uuid,

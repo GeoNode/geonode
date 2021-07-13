@@ -695,7 +695,7 @@ def gs_slurp(
                     name=name,
                     workspace=workspace.name,
                     store=the_store.name,
-                    storetype=get_layer_storetype(the_store.resource_type),
+                    subtype=get_layer_storetype(the_store.resource_type),
                     alternate=f"{workspace.name}:{resource.name}",
                     title=resource.title or _('No title provided'),
                     abstract=resource.abstract or _('No abstract provided'),
@@ -965,8 +965,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     then store in GeoNode database using Attribute model
     """
     attribute_map = []
-    server_url = ogc_server_settings.LOCATION if layer.storetype not in ['tileStore', 'remote'] else layer.remote_service.service_url
-    if layer.storetype in ['tileStore', 'remote'] and layer.remote_service.ptype == "gxp_arcrestsource":
+    server_url = ogc_server_settings.LOCATION if layer.subtype not in ['tileStore', 'remote'] else layer.remote_service.service_url
+    if layer.subtype in ['tileStore', 'remote'] and layer.remote_service.ptype == "gxp_arcrestsource":
         dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
         try:
             # The code below will fail if http_client cannot be imported
@@ -978,7 +978,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.storetype in {"vector", "tileStore", "remote", "wmsStore"}:
+    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url = re.sub(r"\/wms\/?$",
                          "/",
@@ -1028,7 +1028,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 tb = traceback.format_exc()
                 logger.debug(tb)
                 attribute_map = []
-    elif layer.storetype in ["coverageStore"]:
+    elif layer.subtype in ["coverageStore"]:
         typename = layer.alternate if layer.alternate else layer.typename
         dc_url = server_url + "wcs?" + urlencode({
             "service": "wcs",
@@ -1055,7 +1055,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             if Attribute.objects.filter(layer=layer, attribute=field).exists():
                 continue
             elif is_layer_attribute_aggregable(
-                    layer.storetype,
+                    layer.subtype,
                     field,
                     ftype):
                 logger.debug("Generating layer attribute statistics")
@@ -1627,7 +1627,7 @@ def fetch_gs_resource(instance, values, tries):
         else:
             values = {}
         values.update(dict(store=gs_resource.store.name,
-                           storetype=gs_resource.store.resource_type,
+                           subtype=gs_resource.store.resource_type,
                            alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
                            title=gs_resource.title or gs_resource.store.name,
                            abstract=gs_resource.abstract or '',
@@ -1671,7 +1671,7 @@ def sync_instance_with_geoserver(
 
     # Don't run this signal handler if it is a tile layer or a remote store (Service)
     #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-    if hasattr(instance, 'storetype') and getattr(instance, 'storetype') in ['tileStore', 'remote']:
+    if hasattr(instance, 'subtype') and getattr(instance, 'subtype') in ['tileStore', 'remote']:
         return instance
 
     gs_resource = None
@@ -1729,7 +1729,7 @@ def sync_instance_with_geoserver(
             gs_resource.attribution_link = site_url + profile.get_absolute_url()
 
         # Iterate over values from geoserver.
-        for key in ['alternate', 'store', 'storetype']:
+        for key in ['alternate', 'store', 'subtype']:
             # attr_name = key if 'typename' not in key else 'alternate'
             # print attr_name
             setattr(instance, key, get_layer_storetype(values[key]))
@@ -1797,7 +1797,7 @@ def sync_instance_with_geoserver(
                 # to_update['name'] = instance.name,
                 to_update['workspace'] = gs_resource.store.workspace.name
                 to_update['store'] = gs_resource.store.name
-                to_update['storetype'] = instance.storetype
+                to_update['subtype'] = instance.subtype
                 to_update['typename'] = instance.alternate
 
                 Layer.objects.filter(id=instance.id).update(**to_update)

@@ -990,29 +990,29 @@ class TestFacets(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create(username='test', email='test@test.com')
         Layer.objects.create(
-            owner=self.user, title='test_boxes', abstract='nothing', storetype='vector', is_approved=True
+            owner=self.user, title='test_boxes', abstract='nothing', subtype='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_1', abstract='contains boxes', storetype='vector', is_approved=True
+            owner=self.user, title='test_1', abstract='contains boxes', subtype='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_2', purpose='contains boxes', storetype='vector', is_approved=True
+            owner=self.user, title='test_2', purpose='contains boxes', subtype='vector', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_3', storetype='vector', is_approved=True
+            owner=self.user, title='test_3', subtype='vector', is_approved=True
         )
 
         Layer.objects.create(
-            owner=self.user, title='test_boxes', abstract='nothing', storetype='raster', is_approved=True
+            owner=self.user, title='test_boxes', abstract='nothing', subtype='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_1', abstract='contains boxes', storetype='raster', is_approved=True
+            owner=self.user, title='test_1', abstract='contains boxes', subtype='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_2', purpose='contains boxes', storetype='raster', is_approved=True
+            owner=self.user, title='test_2', purpose='contains boxes', subtype='raster', is_approved=True
         )
         Layer.objects.create(
-            owner=self.user, title='test_boxes', storetype='raster', is_approved=True
+            owner=self.user, title='test_boxes', subtype='raster', is_approved=True
         )
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())

@@ -82,7 +82,7 @@ class LayerSerializer(ResourceBaseSerializer):
         name = 'layer'
         view_name = 'datasets-list'
         fields = (
-            'pk', 'uuid', 'name', 'workspace', 'store', 'storetype', 'charset',
+            'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',
             'use_featureinfo_custom_template', 'featureinfo_custom_template',
             'default_style', 'styles', 'attribute_set'

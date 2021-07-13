@@ -493,14 +493,14 @@
    </gmd:identificationInfo>
 
    <gmd:contentInfo>
-     {% if layer.storetype == 'raster' %}
+     {% if layer.subtype == 'raster' %}
      <gmd:MD_CoverageDescription>
        <gmd:attributeDescription gco:nilReason="inapplicable"/>
        <gmd:contentType>
          <gmd:MD_CoverageContentTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml" codeListValue="image">image</gmd:MD_CoverageContentTypeCode>
        </gmd:contentType>
      </gmd:MD_CoverageDescription>
-     {% elif layer.storetype == 'vector' %}
+     {% elif layer.subtype == 'vector' %}
      <gmd:includedWithDataset>
        <gco:Boolean>0</gco:Boolean>
      </gmd:includedWithDataset>
