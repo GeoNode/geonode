@@ -333,7 +333,6 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             LicenseSerializer, embed=True, many=False)
         self.fields['spatial_representation_type'] = DynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False)
-        self.fields['storeType'] = serializers.CharField(read_only=True)
 
     class Meta:
         model = ResourceBase
@@ -366,8 +365,6 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             _data = data.pop('data')
             if self.is_valid():
                 data['blob'] = _data
-        if 'storeType' in data:
-            data['subtype'] = data.pop('storeType')
         return data
 
     def to_representation(self, instance):
@@ -380,8 +377,6 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             if not request.user.is_anonymous:
                 favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
                 data['favorite'] = favorite > 0
-        if 'subtype' in data:
-            data['storeType'] = data.pop('subtype')
         # Adding links to resource_base api
         obj_id = data.get('pk', None)
         if obj_id:
