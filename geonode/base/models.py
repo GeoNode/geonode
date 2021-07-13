@@ -377,7 +377,8 @@ class HierarchicalKeyword(TagBase, MP_Node):
 
             tags = TaggedContentItem.objects.filter(
                     content_object__in=resources,
-                    tag=HierarchicalKeyword.objects.get(slug=slug))
+                    tag=hkw
+                    )
 
             if tags.exists():
                 tags_count = tags.count()
@@ -386,8 +387,8 @@ class HierarchicalKeyword(TagBase, MP_Node):
                 newobj = {"id": hkw.pk, "text": hkw.name, "href": slug, 'tags': [tags_count]}
                 depth = hkw.depth or 1
 
-                # Purpose of 'parent' param is not clear a there is no usage
-                # TODO! So following first 'if' statement is left unchanged
+                # No use case, so purpose of 'parent' param is not clear.
+                # So following first 'if' statement is left unchanged
                 if (not parent and depth == 1) or \
                         (parent and depth == parent.depth):
                     if hkw.pk not in tree:
