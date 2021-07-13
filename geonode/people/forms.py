@@ -25,8 +25,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import ugettext as _
 
-from geonode.base.models import ContactRole
-
 from captcha.fields import ReCaptchaField
 
 # Ported in from django-registration
