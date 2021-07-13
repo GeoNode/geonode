@@ -218,11 +218,3 @@ class ManageResourceOwnerPermissions:
                     assign_perm(perm, self.resource.owner, self.resource)
                 elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
                     assign_perm(perm, self.resource.owner, self.resource)
-
-
-def add_keywords_to_resource(resource, keywords):
-    for keyword in keywords:
-        resource.keywords.add(keyword)
-
-    resource.save()
-    return resource

@@ -2126,5 +2126,7 @@ def is_monochromatic_image(image_url, image_data=None):
 def find_by_attr(lst, val, attr="id"):
     """ Returns an object if the id matches in any list of objects """
     for item in lst:
-        if item[attr] == val:
+        if attr in item and item[attr] == val:
             return item
+
+    return None

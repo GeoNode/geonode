@@ -75,7 +75,7 @@ from geonode.utils import (
     find_by_attr
     )
 from geonode.groups.models import GroupProfile
-from geonode.security.utils import get_visible_resources
+from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
 
 from geonode.notifications_helper import (
@@ -344,7 +344,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
     def resource_keywords_tree(cls, user, parent=None, resource_type=None, resource_name=None):
         """ Returns resource keywords tree as a dict object. """
         user = user or get_anonymous_user()
-        resource_types = [resource_type] if resource_type else ['layer', 'map', 'document']
+        resource_types = [resource_type] if resource_type else ['layer', 'map', 'document'] + get_geoapp_subtypes()
         qset = cls.get_tree(parent)
 
         if settings.SKIP_PERMS_FILTER:
@@ -375,13 +375,10 @@ class HierarchicalKeyword(TagBase, MP_Node):
             slug = hkw.slug
             tags_count = 0
 
-            tags = TaggedContentItem.objects.filter(
+            tags_count = TaggedContentItem.objects.filter(
                     content_object__in=resources,
                     tag=hkw
-                    )
-
-            if tags.exists():
-                tags_count = tags.count()
+                    ).count()
 
             if tags_count > 0:
                 newobj = {"id": hkw.pk, "text": hkw.name, "href": slug, 'tags': [tags_count]}

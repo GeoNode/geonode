@@ -1110,7 +1110,7 @@ class TestGenerateThesaurusReference(TestCase):
         self.assertEqual(expected, keyword.about)
 
 
-class DumpBulkTreeTests(APITestCase):
+class ResourceKeywordsTreeTests(APITestCase):
     def setUp(self):
         # Create Initial Test Data: HierarchicalKeyword, Layer & User
         self.hkw1 = HierarchicalKeyword.add_root(name="Parent 1")
@@ -1124,25 +1124,25 @@ class DumpBulkTreeTests(APITestCase):
 
         self.layer = create_single_layer(name="Test Layer", keywords=self.keywords)
 
-        self.initial_data = json.dumps([
+        self.initial_data = [
             {'id': self.hkw1.id, 'text': self.hkw1.name, 'href': self.hkw1.slug, 'tags': [1], 'nodes':
                 [
                     {'id': self.hkw1child.id, 'text': self.hkw1child.name, 'href': self.hkw1child.slug, 'tags': [1]}
                 ]
             },
             {'id': self.hkw2.id, 'text': self.hkw2.name, 'href': self.hkw2.slug, 'tags': [1], 'nodes': []}
-        ])
+        ]
         self.url = "h_keywords_api"
 
     def test_h_keywords_api_returns_all_parents_or_children_keywords(self):
         res = self.client.get(reverse(self.url))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         response_keywords = json.dumps(json.loads(res.content))
-        self.assertEqual(response_keywords, self.initial_data)
+        self.assertEqual(response_keywords, json.dumps(self.initial_data))
 
     def test_the_method_response_with_initial_layer(self):
         response_keywords = json.dumps(HierarchicalKeyword.resource_keywords_tree(self.user, resource_type='layer'))
-        self.assertEqual(response_keywords, self.initial_data)
+        self.assertEqual(response_keywords, json.dumps(self.initial_data))
 
     def test_the_method_response_with_additional_layer_but_same_keywords(self):
         """ Layers with no new keys should have the same keywords, but
@@ -1233,15 +1233,15 @@ class DumpBulkTreeTests(APITestCase):
 
         # We already have layer created in setup. Now create map & document
         create_single_map(name="Test Map", keywords=[map_hkw1, map_hkw2])
-        map_expected_data = json.dumps([
+        map_expected_data = [
                     {'id': map_hkw1.id, 'text': map_hkw1.name, 'href': map_hkw1.slug, 'tags': [1], 'nodes': []},
                     {'id': map_hkw2.id, 'text': map_hkw2.name, 'href': map_hkw2.slug, 'tags': [1], 'nodes': []}
-                    ])
+                    ]
 
         create_single_doc(name="Test Document", keywords=[doc_hkw])
-        doc_expected_data = json.dumps([
+        doc_expected_data = [
                     {'id': doc_hkw.id, 'text': doc_hkw.name, 'href': doc_hkw.slug, 'tags': [1], 'nodes': []}
-                    ])
+                    ]
 
         cases = (
             {
@@ -1261,4 +1261,11 @@ class DumpBulkTreeTests(APITestCase):
         for case in cases:
             with self.subTest(case=case):
                 response_keywords = json.dumps(HierarchicalKeyword.resource_keywords_tree(self.user, resource_type=case["type"]))
-                self.assertEqual(response_keywords, case["data"])
+                self.assertEqual(response_keywords, json.dumps(case["data"]))
+
+        # Ensure all types are there when resource type is None (Not Provided)
+        all_ids = [item["id"] for item in self.initial_data + map_expected_data + doc_expected_data]
+        response_keywords = HierarchicalKeyword.resource_keywords_tree(self.user, resource_type=None)
+
+        for case in all_ids:
+            self.assertIsNotNone(find_by_attr(response_keywords, case))

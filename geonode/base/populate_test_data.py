@@ -41,7 +41,6 @@ from geonode.layers.models import Layer
 from geonode.compat import ensure_string
 from geonode.base.models import ResourceBase, TopicCategory
 from geonode.documents.models import Document
-from geonode.base.utils import add_keywords_to_resource
 
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
@@ -422,6 +421,14 @@ def create_single_doc(name, keywords=None):
     m.set_default_permissions()
     m.clear_dirty_state()
     return m
+
+
+def add_keywords_to_resource(resource, keywords):
+    for keyword in keywords:
+        resource.keywords.add(keyword)
+
+    resource.save()
+    return resource
 
 
 if __name__ == '__main__':
