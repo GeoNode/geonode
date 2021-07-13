@@ -88,9 +88,7 @@ from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import get_visible_resources
 from geonode.documents.models import get_related_documents
-from geonode.people.forms import (
-    PocForm,
-    ProfileForm)
+from geonode.people.forms import ProfileForm
 from geonode.utils import (
     resolve_object,
     default_map_config,
@@ -1203,28 +1201,6 @@ def layer_metadata_advanced(request, layername):
         request,
         layername,
         template='layers/layer_metadata_advanced.html')
-
-
-@login_required
-def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
-    layers = Layer.objects.filter(id__in=ids.split('_'))
-
-    if request.method == 'POST':
-        form = PocForm(request.POST)
-        if form.is_valid():
-            for layer in layers:
-                layer.poc = form.cleaned_data['contact']
-                layer.save()
-
-            # Process the data in form.cleaned_data
-            # ...
-            # Redirect after POST
-            # Pls fix following url, it seems not bound
-            return HttpResponseRedirect('/admin/maps/layer')
-    else:
-        form = PocForm()  # An unbound form
-    return render(
-        request, template, context={'layers': layers, 'form': form})
 
 
 @login_required
