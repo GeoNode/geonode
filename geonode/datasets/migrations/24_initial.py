@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Layer',
+            name='Dataset',
             fields=[
                 ('resourcebase_ptr', models.OneToOneField(parent_link=True, on_delete=models.CASCADE,
                                                           auto_created=True, primary_key=True, serialize=False, to='base.ResourceBase')),
@@ -94,27 +94,27 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='layerfile',
             name='upload_session',
-            field=models.ForeignKey(to='layers.UploadSession', on_delete=models.CASCADE),
+            field=models.ForeignKey(to='datasets.UploadSession', on_delete=models.CASCADE),
         ),
         migrations.AddField(
-            model_name='layer',
+            model_name='Dataset',
             name='default_style',
             field=models.ForeignKey(related_name='layer_default_style', blank=True,
-                                    on_delete=models.CASCADE, to='layers.Style', null=True),
+                                    on_delete=models.CASCADE, to='datasets.Style', null=True),
         ),
         migrations.AddField(
-            model_name='layer',
+            model_name='Dataset',
             name='styles',
-            field=models.ManyToManyField(related_name='layer_styles', to='layers.Style'),
+            field=models.ManyToManyField(related_name='layer_styles', to='datasets.Style'),
         ),
         migrations.AddField(
-            model_name='layer',
+            model_name='Dataset',
             name='upload_session',
-            field=models.ForeignKey(blank=True, on_delete=models.CASCADE, to='layers.UploadSession', null=True),
+            field=models.ForeignKey(blank=True, on_delete=models.CASCADE, to='datasets.UploadSession', null=True),
         ),
         migrations.AddField(
             model_name='attribute',
-            name='layer',
-            field=models.ForeignKey(related_name='attribute_set', on_delete=models.CASCADE, to='layers.Layer'),
+            name='Dataset',
+            field=models.ForeignKey(related_name='attribute_set', on_delete=models.CASCADE, to='datasets.Dataset'),
         ),
     ]

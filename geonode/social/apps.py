@@ -27,7 +27,7 @@ class SocialConfig(AppConfig):
     def ready(self):
         from django.apps import apps
         from actstream import registry
-        registry.register(apps.get_app_config('layers').get_model('Dataset'))
+        registry.register(apps.get_app_config('datasets').get_model('Dataset'))
         registry.register(apps.get_app_config('maps').get_model('Map'))
         registry.register(apps.get_app_config('documents').get_model('Document'))
         registry.register(apps.get_app_config('services').get_model('Service'))

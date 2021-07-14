@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('layers', '0033_merge_20200618_2150'),
+        ('datasets', '0033_merge_20200618_2150'),
     ]
 
     operations = [

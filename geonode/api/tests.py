@@ -72,7 +72,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
         resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 8)
@@ -86,7 +86,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         layer = Dataset.objects.all()[0]
         layer.set_permissions(self.perm_spec)
@@ -104,7 +104,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         self.api_client.client.login(username=self.user, password=self.passwd)
         layer = Dataset.objects.all()[0]
@@ -123,7 +123,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
         layer = Dataset.objects.all()[0]
@@ -163,7 +163,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         layer = Dataset.objects.all()[0]
         layer.set_permissions(self.perm_spec)
@@ -211,7 +211,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         self.api_client.client.login(username='imnew', password='thepwd')
         resp = self.api_client.get(list_url)
@@ -255,7 +255,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         with self.settings(SESSION_EXPIRED_CONTROL_ENABLED=False, DELAYED_SECURITY_SIGNALS=False):
             # all public
@@ -512,7 +512,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         # check we get the correct layers number returnered filtering on one
         # and then two different categories
@@ -534,7 +534,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         # check we get the correct layers number returnered filtering on one
         # and then two different keywords
@@ -556,7 +556,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         # check we get the correct layers number returnered filtering on one
         # and then two different owners
@@ -578,7 +578,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         # check we get the correct layers number returnered filtering on the
         # title
@@ -594,7 +594,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         # check we get the correct layers number returnered filtering on the
         # dates
@@ -632,7 +632,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         filter_url = f"{list_url}?title__icontains=layer2&abstract__icontains=layer2&purpose__icontains=layer2&f_method=or"
 
@@ -645,7 +645,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
         user = get_user_model().objects.get(username="admin")
         token = get_or_create_token(user)
         auth_header = f'Bearer {token}'
@@ -659,7 +659,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
         user = get_user_model().objects.get(username="admin")
         token = get_or_create_token(user)
         auth_header = f'Bearer {token}'

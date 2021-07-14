@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('layers', '0028_auto_20200610_0759'),
+        ('datasets', '0028_auto_20200610_0759'),
     ]
 
     operations = [

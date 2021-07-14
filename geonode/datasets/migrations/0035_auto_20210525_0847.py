@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('layers', '0034_auto_20210329_1458'),
+        ('datasets', '0034_auto_20210329_1458'),
     ]
 
     operations = [
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             name='user',
         ),
         migrations.RemoveField(
-            model_name='layer',
+            model_name='Dataset',
             name='upload_session',
         ),
         migrations.DeleteModel(

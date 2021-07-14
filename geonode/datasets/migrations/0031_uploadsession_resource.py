@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('base', '0033_auto_20180330_0951'),
-        ('layers', '0030_auto_20180228_0812'),
+        ('datasets', '0030_auto_20180228_0812'),
     ]
 
     operations = [

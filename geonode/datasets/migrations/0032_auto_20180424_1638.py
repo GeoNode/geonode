@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('layers', '0031_uploadsession_resource'),
+        ('datasets', '0031_uploadsession_resource'),
     ]
 
     operations = [

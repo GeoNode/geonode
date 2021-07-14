@@ -8,16 +8,16 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('services', '0030_auto_20171212_0518'),
-        ('layers', '0029_layer_service'),
+        ('datasets', '0029_layer_service'),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='layer',
+            model_name='Dataset',
             name='service',
         ),
         migrations.AddField(
-            model_name='layer',
+            model_name='Dataset',
             name='remote_service',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='services.Service'),
         ),

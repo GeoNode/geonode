@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('layers', '__first__'),
+        ('datasets', '__first__'),
     ]
 
     operations = [
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('mosaic_time_value', models.CharField(max_length=128, null=True)),
                 ('mosaic_elev_regex', models.CharField(max_length=128, null=True)),
                 ('mosaic_elev_value', models.CharField(max_length=128, null=True)),
-                ('layer', models.ForeignKey(to='layers.Layer', on_delete=models.SET_NULL, null=True)),
+                ('layer', models.ForeignKey(to='datasets.Dataset', on_delete=models.SET_NULL, null=True)),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)),
             ],
             options={

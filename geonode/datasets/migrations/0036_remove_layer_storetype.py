@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('layers', '0035_auto_20210525_0847'),
+        ('datasets', '0035_auto_20210525_0847'),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='layer',
+            model_name='Dataset',
             name='storeType',
         ),
     ]

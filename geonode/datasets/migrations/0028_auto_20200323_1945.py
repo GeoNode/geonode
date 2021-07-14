@@ -5,7 +5,7 @@ from django.contrib.gis.geos import Polygon
 
 
 def populate_polygon(apps, schema_editor):
-    Dataset = apps.get_model('layers', 'Dataset')
+    Dataset = apps.get_model('datasets', 'Dataset')
     for layer in Dataset.objects.all():
         bbox = [getattr(layer, key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
         if all(bbox):
@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('base', '0044_resourcebase_bbox_polygon'),
-        ('layers', '0027_auto_20170801_1228_squashed_0033_auto_20180606_1543'),
+        ('datasets', '0027_auto_20170801_1228_squashed_0033_auto_20180606_1543'),
     ]
 
     operations = [

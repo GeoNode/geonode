@@ -26,7 +26,7 @@ WHERE base_resourcebase.id=subquery.resourcebase_ptr_id;
 
 
 def update_storetype_value(apps, schema_editor):
-    MyModel = apps.get_model('layers', 'Layer')
+    MyModel = apps.get_model('datasets', 'Layer')
     for l in MyModel.objects.filter(storetype__in=(LAYERS_SUBTYPES.keys())):
         u = MyModel.objects.filter(resourcebase_ptr_id=l.resourcebase_ptr_id)
         store_type = (lambda element: LAYERS_SUBTYPES.get(element, element))(l.storetype)
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('documents', '0032_remove_document_doc_file'),
-        ('layers', '0035_auto_20210525_0847'),
+        ('datasets', '0035_auto_20210525_0847'),
         ('base', '0066_resourcebase_data'),
     ]
 

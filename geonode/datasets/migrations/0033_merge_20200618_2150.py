@@ -6,8 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('layers', '0028_auto_20200323_1945'),
-        ('layers', '0032_auto_20200612_1544'),
+        ('datasets', '0028_auto_20200323_1945'),
+        ('datasets', '0032_auto_20200612_1544'),
     ]
 
     operations = [

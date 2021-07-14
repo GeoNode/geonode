@@ -2,7 +2,7 @@ from django.db import migrations, models
 from django.db.models import F
 
 def copy_typename(apps, schema_editor):
-    Dataset = apps.get_model('layers', 'layer')
+    Dataset = apps.get_model('datasets', 'layer')
     ResourceBase = apps.get_model('base', 'resourcebase')
     for row in Dataset.objects.all():
         row.alternate = row.typename
@@ -11,7 +11,7 @@ def copy_typename(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('layers', '24_to_26'),
+        ('datasets', '24_to_26'),
     ]
 
     operations = [

@@ -24,6 +24,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='upload',
             name='layer',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='layers.Layer'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='datasets.Dataset'),
         ),
     ]
