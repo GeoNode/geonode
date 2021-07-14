@@ -315,7 +315,7 @@ def dump_models(path=None):
         f.write(result)
 
 
-def create_single_layer(name):
+def create_single_layer(name, keywords=None):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -344,13 +344,18 @@ def create_single_layer(name):
         resource_type="layer",
         typename=f"geonode:{title}"
     )
+
     layer.save()
+
+    if isinstance(keywords, list):
+        layer = add_keywords_to_resource(layer, keywords)
+
     layer.set_default_permissions()
     layer.clear_dirty_state()
     return layer
 
 
-def create_single_map(name):
+def create_single_map(name, keywords=None):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -376,12 +381,16 @@ def create_single_map(name):
         resource_type="map"
     )
     m.save()
+
+    if isinstance(keywords, list):
+        m = add_keywords_to_resource(m, keywords)
+
     m.set_default_permissions()
     m.clear_dirty_state()
     return m
 
 
-def create_single_doc(name):
+def create_single_doc(name, keywords=None):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -405,9 +414,21 @@ def create_single_doc(name):
         resource_type="document"
     )
     m.save()
+
+    if isinstance(keywords, list):
+        m = add_keywords_to_resource(m, keywords)
+
     m.set_default_permissions()
     m.clear_dirty_state()
     return m
+
+
+def add_keywords_to_resource(resource, keywords):
+    for keyword in keywords:
+        resource.keywords.add(keyword)
+
+    resource.save()
+    return resource
 
 
 if __name__ == '__main__':

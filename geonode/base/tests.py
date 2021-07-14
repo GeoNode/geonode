@@ -19,6 +19,7 @@
 #########################################################################
 
 import os
+import json
 from unittest.mock import patch, Mock
 from urllib.parse import urlparse
 
@@ -57,7 +58,7 @@ from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
-from geonode.base.models import CuratedThumbnail
+from geonode.base.models import CuratedThumbnail, HierarchicalKeyword
 from geonode.base.templatetags.base_tags import get_visibile_resources, facets
 from geonode.base.templatetags.thesaurus import (
     get_name_translation, get_thesaurus_localized_label, get_thesaurus_translation_by_id, get_unique_thesaurus_set,
@@ -72,6 +73,10 @@ from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from geonode.base.forms import ThesaurusAvailableForm
+from geonode.base.populate_test_data import create_single_layer, create_single_doc, create_single_map
+from rest_framework.test import APITestCase
+from rest_framework import status
+from geonode.utils import find_by_attr
 
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
@@ -1103,3 +1108,164 @@ class TestGenerateThesaurusReference(TestCase):
         '''
         self.assertEqual(expected, actual)
         self.assertEqual(expected, keyword.about)
+
+
+class ResourceKeywordsTreeTests(APITestCase):
+    def setUp(self):
+        # Create Initial Test Data: HierarchicalKeyword, Layer & User
+        self.hkw1 = HierarchicalKeyword.add_root(name="Parent 1")
+        self.hkw2 = HierarchicalKeyword.add_root(name="Parent 2")
+        self.hkw1child = self.hkw1.add_child(name="Child 1 of Parent 1")
+        self.keywords = [self.hkw1, self.hkw2, self.hkw1child]
+        self.keyword_texts = [k.name for k in self.keywords]
+
+        self.user = get_user_model().objects.create(username='test_user_1')
+        self.user2 = get_user_model().objects.create(username='test_user_2')
+
+        self.layer = create_single_layer(name="Test Layer", keywords=self.keywords)
+
+        self.initial_data = [
+            {'id': self.hkw1.id, 'text': self.hkw1.name, 'href': self.hkw1.slug, 'tags': [1], 'nodes':
+                [
+                    {'id': self.hkw1child.id, 'text': self.hkw1child.name, 'href': self.hkw1child.slug, 'tags': [1]}
+                ]
+            },
+            {'id': self.hkw2.id, 'text': self.hkw2.name, 'href': self.hkw2.slug, 'tags': [1], 'nodes': []}
+        ]
+        self.url = "h_keywords_api"
+
+    def test_h_keywords_api_returns_all_parents_or_children_keywords(self):
+        res = self.client.get(reverse(self.url))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        response_keywords = json.dumps(json.loads(res.content))
+        self.assertEqual(response_keywords, json.dumps(self.initial_data))
+
+    def test_the_method_response_with_initial_layer(self):
+        response_keywords = json.dumps(HierarchicalKeyword.resource_keywords_tree(self.user, resource_type='layer'))
+        self.assertEqual(response_keywords, json.dumps(self.initial_data))
+
+    def test_the_method_response_with_additional_layer_but_same_keywords(self):
+        """ Layers with no new keys should have the same keywords, but
+        different tag count. """
+
+        # Layers with some of the same keyword as in initial_data
+        create_single_layer(name="Test Layer", keywords=[self.hkw1, self.hkw1child])
+
+        cases = [
+                {"id": self.hkw1.id, "nodes": [self.hkw1child.id]},
+                {"id": self.hkw2.id, "nodes": []},
+            ]
+
+        response_keywords = HierarchicalKeyword.resource_keywords_tree(self.user, resource_type='layer')
+        for case in cases:
+            with self.subTest(case=case):
+                # Ensure parent keyword is there
+                case_obj = find_by_attr(response_keywords, case["id"])
+                self.assertIsNotNone(case_obj)
+
+                # Ensure are children are there
+                if case["nodes"]:
+                    for node_id in case["nodes"]:
+                        self.assertIsNotNone(find_by_attr(case_obj["nodes"], node_id))
+
+        # Now hkw and hkw1child are used in two layers
+        # So ensure, now these have 2 tag counts, not 1 as in the initial_data
+        hkw1 = find_by_attr(response_keywords, self.hkw1.id)
+        self.assertEqual(hkw1["tags"], [2])
+        hkw1child = find_by_attr(hkw1["nodes"], self.hkw1child.id)
+        self.assertEqual(hkw1child["tags"], [2])
+
+    def test_the_method_response_with_additional_layer_and_new_keywords(self):
+        """ Confirm that users and anonymous users see ALL keywords """
+
+        # New Keywords
+        new_hkw1 = HierarchicalKeyword.add_root(name="Different Keyword Syed")
+        new_hkw1child = new_hkw1.add_child(name="Syed's Child")
+
+        # Test exotic encoding Keywords, which failed in earlier tests
+        exotic_words = ['ß', 'ä', 'ö', 'ü', '論語']
+        exotic_keywords = [HierarchicalKeyword.add_root(name=wrd) for wrd in exotic_words]
+
+        # Adding new layer with these keywords
+        create_single_layer(name="Test Layer", keywords=[new_hkw1, new_hkw1child] + exotic_keywords)
+
+        response_keywords = HierarchicalKeyword.resource_keywords_tree(self.user, resource_type='layer')
+
+        cases = [
+                {"id": self.hkw1.id, "nodes": [self.hkw1child.id]},
+                {"id": self.hkw2.id, "nodes": []},
+                {"id": new_hkw1.id, "nodes": [new_hkw1child.id]}
+            ]
+
+        for kw in exotic_keywords:
+            cases.append({"id": kw.id, "nodes": []})
+
+        for case in cases:
+            with self.subTest(case=case):
+                # Ensure parent keyword is there
+                case_obj = find_by_attr(response_keywords, case["id"])
+                self.assertIsNotNone(case_obj)
+
+                # Ensure all its children are there
+                if case["nodes"]:
+                    for node_id in case["nodes"]:
+                        self.assertIsNotNone(find_by_attr(case_obj["nodes"], node_id))
+
+        # For anonymous user
+        response_keywords = HierarchicalKeyword.resource_keywords_tree(None, resource_type='layer')
+        for case in cases:
+            with self.subTest(case=case):
+                # Ensure parent keyword is there
+                case_obj = find_by_attr(response_keywords, case["id"])
+                self.assertIsNotNone(case_obj)
+
+                # Ensure all its children are there
+                if case["nodes"]:
+                    for node_id in case["nodes"]:
+                        self.assertIsNotNone(find_by_attr(case_obj["nodes"], node_id))
+
+    def test_the_method_response_with_different_types(self):
+        """ Our method should return only the target resource type """
+
+        map_hkw1 = HierarchicalKeyword.add_root(name="Map-Keyword 1")
+        map_hkw2 = HierarchicalKeyword.add_root(name="Map-Keyword 2")
+        doc_hkw = HierarchicalKeyword.add_root(name="Document-Keyword")
+
+        # We already have layer created in setup. Now create map & document
+        create_single_map(name="Test Map", keywords=[map_hkw1, map_hkw2])
+        map_expected_data = [
+                    {'id': map_hkw1.id, 'text': map_hkw1.name, 'href': map_hkw1.slug, 'tags': [1], 'nodes': []},
+                    {'id': map_hkw2.id, 'text': map_hkw2.name, 'href': map_hkw2.slug, 'tags': [1], 'nodes': []}
+                    ]
+
+        create_single_doc(name="Test Document", keywords=[doc_hkw])
+        doc_expected_data = [
+                    {'id': doc_hkw.id, 'text': doc_hkw.name, 'href': doc_hkw.slug, 'tags': [1], 'nodes': []}
+                    ]
+
+        cases = (
+            {
+                "type": "layer",
+                "data": self.initial_data
+            },
+            {
+                "type": "map",
+                "data": map_expected_data
+            },
+            {
+                "type": "document",
+                "data": doc_expected_data
+            }
+        )
+
+        for case in cases:
+            with self.subTest(case=case):
+                response_keywords = json.dumps(HierarchicalKeyword.resource_keywords_tree(self.user, resource_type=case["type"]))
+                self.assertEqual(response_keywords, json.dumps(case["data"]))
+
+        # Ensure all types are there when resource type is None (Not Provided)
+        all_ids = [item["id"] for item in self.initial_data + map_expected_data + doc_expected_data]
+        response_keywords = HierarchicalKeyword.resource_keywords_tree(self.user, resource_type=None)
+
+        for case in all_ids:
+            self.assertIsNotNone(find_by_attr(response_keywords, case))

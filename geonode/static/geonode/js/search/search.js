@@ -105,6 +105,8 @@
                 multiSelect: true,
                 showIcon: true,
                 showCheckbox: false,
+                collapseIcon: false,
+                expandIcon: false,
                 showTags: true,
                 tagsClass: 'badge',
                 onNodeSelected: function ($event, node) {
