@@ -24,7 +24,7 @@ from urllib.parse import urljoin
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from geonode.layers.models import Dataset
+from geonode.datasets.models import Dataset
 from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
@@ -107,7 +107,7 @@ class LayersApiTests(APITestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(expected, response.json())
 
-    @patch("geonode.layers.api.views.create_thumbnail")
+    @patch("geonode.datasets.api.views.create_thumbnail")
     def test_datasets_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_create_thumbnail):
         """
         Given a logged User and an existing dataset, should create the expected thumbnail url.

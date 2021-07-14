@@ -23,7 +23,7 @@ from django.db.models import Prefetch
 from modeltranslation.admin import TabbedTranslationAdmin
 
 from geonode.base.admin import ResourceBaseAdminForm
-from geonode.layers.models import Dataset, Attribute, Style
+from geonode.datasets.models import Dataset, Attribute, Style
 from geonode.base.admin import metadata_batch_edit, set_batch_permissions
 
 from geonode.base.fields import MultiThesauriField

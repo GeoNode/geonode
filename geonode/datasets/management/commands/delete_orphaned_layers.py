@@ -19,7 +19,7 @@
 
 from django.core.management.base import BaseCommand
 
-from geonode.layers.utils import delete_orphaned_datasets
+from geonode.datasets.utils import delete_orphaned_datasets
 
 
 class Command(BaseCommand):

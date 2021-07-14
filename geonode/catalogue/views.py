@@ -279,7 +279,7 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
     content = content[:-1]
     content += sc
 
-    if resource.detail_url.find('/layers/') > -1:
+    if resource.detail_url.find('/datasets/') > -1:
         layer = Dataset.objects.get(resourcebase_ptr_id=resource.id)
         content += f"attribute data{sc}"
         content += 'attribute name;label;description\n'
@@ -316,7 +316,7 @@ def csw_render_extra_format_html(request, layeruuid, resname):
     else:
         extra_res_md['keywords'] = get_keywords(resource)
 
-    if resource.detail_url.find('/layers/') > -1:
+    if resource.detail_url.find('/datasets/') > -1:
         layer = Dataset.objects.get(resourcebase_ptr_id=resource.id)
         extra_res_md['atrributes'] = ''
         for attr in layer.attribute_set.all():

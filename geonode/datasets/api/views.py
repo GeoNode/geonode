@@ -31,7 +31,7 @@ from rest_framework.response import Response
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.layers.models import Dataset
+from geonode.datasets.models import Dataset
 
 from .serializers import LayerSerializer, LayerListSerializer
 from .permissions import LayerPermissionsFilter

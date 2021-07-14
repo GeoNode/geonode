@@ -42,12 +42,12 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.test.utils import override_settings
 
-from geonode.layers import utils
-from geonode.layers import LayersAppConfig
+from geonode.datasets import utils
+from geonode.datasets import DatasetAppConfig
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import DisableDjangoSignals
-from geonode.layers.views import _resolve_dataset
+from geonode.datasets.views import _resolve_dataset
 from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
 from guardian.shortcuts import get_anonymous_user
@@ -56,15 +56,15 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
 from guardian.shortcuts import assign_perm, remove_perm
 from geonode.tests.utils import NotificationsTestsHelper
-from geonode.layers.models import Dataset, Style, Attribute
-from geonode.layers.forms import JSONField, LayerUploadForm
+from geonode.datasets.models import Dataset, Style, Attribute
+from geonode.datasets.forms import JSONField, LayerUploadForm
 from geonode.maps.tests_populate_maplayers import maplayers as ml
-from geonode.layers.populate_datasets_data import create_dataset_data
+from geonode.datasets.populate_datasets_data import create_dataset_data
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.utils import check_ogc_backend, set_resource_default_links
-from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
+from geonode.datasets.metadata import convert_keyword, set_metadata, parse_metadata
 
-from geonode.layers.utils import (
+from geonode.datasets.utils import (
     is_sld_upload_only,
     is_xml_upload_only,
     dataset_type,
@@ -84,7 +84,7 @@ logger = logging.getLogger(__name__)
 
 class LayersTest(GeoNodeBaseTestSupport):
 
-    """Tests geonode.layers app/module
+    """Tests geonode.datasets app/module
     """
     type = 'layer'
 
@@ -832,7 +832,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         # test the post method that actually removes the layer and redirects
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue('/layers/' in response['Location'])
+        self.assertTrue('/datasets/' in response['Location'])
 
         # test that the layer is actually removed
         self.assertEqual(Dataset.objects.filter(pk=layer.pk).count(), 0)
@@ -860,7 +860,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         # test the post method that actually removes the layer and redirects
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue('/layers/' in response['Location'])
+        self.assertTrue('/datasets/' in response['Location'])
 
         # test that the layer is actually removed
 
@@ -1304,7 +1304,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         )
         self.assertEqual(expected, e.exception.args[0])
 
-    @patch("geonode.layers.utils.gs_catalog")
+    @patch("geonode.datasets.utils.gs_catalog")
     def test_will_raise_exception_for_not_existing_dataset_in_the_catalog(self, catalog):
         catalog.get_dataset.return_value = None
         layer = Dataset.objects.get(name="single_point")
@@ -1324,7 +1324,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         )
         self.assertEqual(expected, e.exception.args[0])
 
-    @patch("geonode.layers.utils.gs_catalog")
+    @patch("geonode.datasets.utils.gs_catalog")
     def test_will_raise_exception_if_schema_is_not_equal_between_catalog_and_file(self, catalog):
         attr = namedtuple('GSCatalogAttr', ['attributes'])
         attr.attributes = []
@@ -1347,7 +1347,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         )
         self.assertEqual(expected, e.exception.args[0])
 
-    @patch("geonode.layers.utils.gs_catalog")
+    @patch("geonode.datasets.utils.gs_catalog")
     def test_validation_will_pass_for_valid_append(self, catalog):
         attr = namedtuple('GSCatalogAttr', ['attributes'])
         attr.attributes = ['label']
@@ -1546,12 +1546,12 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
         self.u.email = 'test@email.com'
         self.u.is_active = True
         self.u.save()
-        self.setup_notifications_for(LayersAppConfig.NOTIFICATIONS, self.u)
+        self.setup_notifications_for(DatasetAppConfig.NOTIFICATIONS, self.u)
         self.norman = get_user_model().objects.get(username='norman')
         self.norman.email = 'norman@email.com'
         self.norman.is_active = True
         self.norman.save()
-        self.setup_notifications_for(LayersAppConfig.NOTIFICATIONS, self.norman)
+        self.setup_notifications_for(DatasetAppConfig.NOTIFICATIONS, self.norman)
 
     def testLayerNotifications(self):
         with self.settings(
@@ -1638,7 +1638,7 @@ class TestCustomUUidHandler(TestCase):
         expected = "abc-1234-abc"
         self.assertEqual(expected, self.sut.uuid)
 
-    @override_settings(LAYER_UUID_HANDLER="geonode.layers.tests.DummyUUIDHandler")
+    @override_settings(LAYER_UUID_HANDLER="geonode.datasets.tests.DummyUUIDHandler")
     def test_dataset_will_override_the_uuid_if_handler_is_defined(self):
         resource_manager.update(None, instance=self.sut, keywords=["updating", "values"])
         expected = "abc:abc-1234-abc"
@@ -1788,7 +1788,7 @@ class TestCustomMetadataParser(TestCase):
         self.assertListEqual(self.keywords, keywords)
         self.assertDictEqual(self.expected_vals, vals)
 
-    @override_settings(METADATA_PARSERS=['__DEFAULT__', 'geonode.layers.tests.dummy_metadata_parser'])
+    @override_settings(METADATA_PARSERS=['__DEFAULT__', 'geonode.datasets.tests.dummy_metadata_parser'])
     def test_will_use_both_parsers_defined(self):
         identifier, vals, regions, keywords, _ = parse_metadata(open(self.exml_path).read())
         self.assertEqual('7cfbc42c-efa7-431c-8daa-1399dff4cd19', identifier)

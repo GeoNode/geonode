@@ -36,7 +36,7 @@ from geonode.base.models import (
 
 from ..services.enumerations import INDEXED
 
-logger = logging.getLogger("geonode.layers.models")
+logger = logging.getLogger("geonode.datasets.models")
 
 shp_exts = ['.shp', ]
 csv_exts = ['.csv']

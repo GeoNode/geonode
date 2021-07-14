@@ -450,7 +450,7 @@
        <gco:Boolean>0</gco:Boolean>
      </gmd:includedWithDataset>
      <gmd:MD_FeatureCatalogueDescription>
-       <gmd:featureCatalogueCitation uuidref="7cfbc42c-efa7-431c-8daa-1399dff4cd19" xlink:href="http://localhost:8000/layers/geonode_data:geonode:test_layer/feature_catalogue"/>
+       <gmd:featureCatalogueCitation uuidref="7cfbc42c-efa7-431c-8daa-1399dff4cd19" xlink:href="http://localhost:8000/datasets/geonode_data:geonode:test_layer/feature_catalogue"/>
      </gmd:MD_FeatureCatalogueDescription>
      
    </gmd:contentInfo>
@@ -461,7 +461,7 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                   <gmd:URL>http://localhost:8000/layers/geonode_data:geonode:test_layer</gmd:URL>
+                   <gmd:URL>http://localhost:8000/datasets/geonode_data:geonode:test_layer</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>

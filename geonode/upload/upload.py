@@ -58,10 +58,10 @@ from geonode.datasets.models import TIME_REGEX_FORMAT
 from geonode.resource.manager import resource_manager
 from geonode.upload import UploadException, LayerNotReady
 
-from ..layers.models import Dataset
-from ..layers.metadata import parse_metadata
+from ..datasets.models import Dataset
+from ..datasets.metadata import parse_metadata
 from ..people.utils import get_default_user
-from ..layers.utils import get_valid_dataset_name
+from ..datasets.utils import get_valid_dataset_name
 from ..geoserver.helpers import (
     gs_catalog,
     gs_uploader

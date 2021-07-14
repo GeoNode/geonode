@@ -2332,7 +2332,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
     def test_hostgeonode_mem_endpoints(self):
         mem_data = [
             {
-                'label': '/layers/upload',
+                'label': '/datasets/upload',
                 'max': '88.7119',
                 'metric_count': 3,
                 'min': '75.1172',
@@ -2371,7 +2371,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
     def test_hostgeoserver_mem_endpoints(self):
         mem_data = [
             {
-                'label': '/layers/upload',
+                'label': '/datasets/upload',
                 'max': '95.5952',
                 'metric_count': 3,
                 'min': '81.1286',

@@ -252,7 +252,7 @@ def dataset_style_manage(request, layername):
 
             return render(
                 request,
-                'layers/dataset_style_manage.html',
+                'datasets/dataset_style_manage.html',
                 context={
                     "layer": layer,
                     "gs_styles": gs_styles,
@@ -270,7 +270,7 @@ def dataset_style_manage(request, layername):
             # If geoserver is not online, return an error
             return render(
                 request,
-                'layers/dataset_style_manage.html',
+                'datasets/dataset_style_manage.html',
                 context={
                     "layer": layer,
                     "error": msg
@@ -334,7 +334,7 @@ def dataset_style_manage(request, layername):
             logger.warn(msg)
             return render(
                 request,
-                'layers/dataset_style_manage.html',
+                'datasets/dataset_style_manage.html',
                 context={
                     "layer": layer,
                     "error": msg

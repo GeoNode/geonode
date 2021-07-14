@@ -570,7 +570,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         url = urlsplit(self.url)
         base_url = f'{url.scheme}://{url.netloc}/'
         response = requests.get(
-            f'{base_url}api/layers/?name={layername}', {},
+            f'{base_url}api/datasets/?name={layername}', {},
             timeout=10,
             verify=False)
         content = response.content

@@ -26,7 +26,7 @@ class BaseHookSet:
 
     # Layers
     def dataset_list_template(self, context=None):
-        return 'layers/dataset_list_default.html'
+        return 'datasets/dataset_list_default.html'
 
     def dataset_detail_template(self, context=None):
         return NotImplemented

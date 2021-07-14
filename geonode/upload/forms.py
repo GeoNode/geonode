@@ -24,7 +24,7 @@ from django.core.exceptions import ValidationError
 
 from .. import geoserver
 from ..utils import check_ogc_backend
-from ..layers.forms import JSONField
+from ..datasets.forms import JSONField
 
 from .upload_validators import validate_uploaded_files
 

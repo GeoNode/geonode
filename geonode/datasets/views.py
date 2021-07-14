@@ -54,7 +54,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from guardian.shortcuts import get_objects_for_user
 
 from geonode import geoserver
-from geonode.layers.metadata import parse_metadata
+from geonode.datasets.metadata import parse_metadata
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_dataset_style
 from geonode.resource.utils import update_resource
@@ -67,15 +67,15 @@ from geonode.base.models import (
     TopicCategory)
 from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
-from geonode.layers.forms import (
+from geonode.datasets.forms import (
     LayerForm,
     LayerUploadForm,
     LayerAttributeForm,
     NewLayerUploadForm)
-from geonode.layers.models import (
+from geonode.datasets.models import (
     Dataset,
     Attribute)
-from geonode.layers.utils import (
+from geonode.datasets.utils import (
     get_files,
     is_sld_upload_only,
     is_xml_upload_only,
@@ -113,7 +113,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
 
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
-logger = logging.getLogger("geonode.layers.views")
+logger = logging.getLogger("geonode.datasets.views")
 celery_logger = get_logger(__name__)
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
@@ -346,7 +346,7 @@ def dataset_style_upload(request):
         status=status_code)
 
 
-def dataset_detail(request, layername, template='layers/dataset_detail.html'):
+def dataset_detail(request, layername, template='datasets/dataset_detail.html'):
     try:
         layer = _resolve_dataset(
             request,
@@ -701,7 +701,7 @@ def dataset_detail(request, layername, template='layers/dataset_detail.html'):
 
 # Loads the data using the OWS lib when the "Do you want to filter it"
 # button is clicked.
-def load_dataset_data(request, template='layers/dataset_detail.html'):
+def load_dataset_data(request, template='datasets/dataset_detail.html'):
     context_dict = {}
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['dataset_name']
@@ -805,7 +805,7 @@ def dataset_feature_catalogue(
 def dataset_metadata(
         request,
         layername,
-        template='layers/dataset_metadata.html',
+        template='datasets/dataset_metadata.html',
         ajax=True):
     try:
         layer = _resolve_dataset(
@@ -1200,16 +1200,16 @@ def dataset_metadata_advanced(request, layername):
     return dataset_metadata(
         request,
         layername,
-        template='layers/dataset_metadata_advanced.html')
+        template='datasets/dataset_metadata_advanced.html')
 
 
 @login_required
-def dataset_replace(request, layername, template='layers/dataset_replace.html'):
+def dataset_replace(request, layername, template='datasets/dataset_replace.html'):
     return dataset_append_replace_view(request, layername, template, action_type='replace')
 
 
 @login_required
-def dataset_append(request, layername, template='layers/dataset_append.html'):
+def dataset_append(request, layername, template='datasets/dataset_append.html'):
     return dataset_append_replace_view(request, layername, template, action_type='append')
 
 
@@ -1288,7 +1288,7 @@ def dataset_append_replace_view(request, layername, template, action_type):
 
 
 @login_required
-def dataset_remove(request, layername, template='layers/dataset_remove.html'):
+def dataset_remove(request, layername, template='datasets/dataset_remove.html'):
     try:
         layer = _resolve_dataset(
             request,
@@ -1325,7 +1325,7 @@ def dataset_granule_remove(
         request,
         granule_id,
         layername,
-        template='layers/dataset_granule_remove.html'):
+        template='datasets/dataset_granule_remove.html'):
     try:
         layer = _resolve_dataset(
             request,
@@ -1415,7 +1415,7 @@ def get_dataset(request, layername):
 def dataset_metadata_detail(
         request,
         layername,
-        template='layers/dataset_metadata_detail.html'):
+        template='datasets/dataset_metadata_detail.html'):
     try:
         layer = _resolve_dataset(
             request,
@@ -1454,7 +1454,7 @@ def dataset_metadata_detail(
 def dataset_metadata_upload(
         request,
         layername,
-        template='layers/dataset_metadata_upload.html'):
+        template='datasets/dataset_metadata_upload.html'):
     try:
         layer = _resolve_dataset(
             request,
@@ -1479,7 +1479,7 @@ def dataset_metadata_upload(
 def dataset_sld_upload(
         request,
         layername,
-        template='layers/dataset_style_upload.html'):
+        template='datasets/dataset_style_upload.html'):
     try:
         layer = _resolve_dataset(
             request,
@@ -1504,7 +1504,7 @@ def dataset_sld_upload(
 def dataset_sld_edit(
         request,
         layername,
-        template='layers/dataset_style_edit.html'):
+        template='datasets/dataset_style_edit.html'):
     return dataset_detail(request, layername, template)
 
 
@@ -1512,7 +1512,7 @@ def dataset_sld_edit(
 def dataset_embed(
         request,
         layername,
-        template='layers/dataset_embed.html'):
+        template='datasets/dataset_embed.html'):
     return dataset_detail(request, layername, template)
 
 

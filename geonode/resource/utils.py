@@ -44,14 +44,14 @@ from ..base.models import (
     SpatialRepresentationType)
 
 from ..maps.models import Map
-from ..layers.models import Dataset
+from ..datasets.models import Dataset
 from ..documents.models import Document
 from ..documents.enumerations import (
     DOCUMENT_TYPE_MAP,
     DOCUMENT_MIMETYPE_MAP)
 from ..people.utils import get_valid_user
-from ..layers.utils import resolve_regions
-from ..layers.metadata import convert_keyword
+from ..datasets.utils import resolve_regions
+from ..datasets.metadata import convert_keyword
 
 logger = logging.getLogger(__name__)
 
@@ -359,7 +359,7 @@ def dataset_post_save(instance, *args, **kwargs):
     if info:
         instance.info = info
 
-    from ..layers.models import vec_exts, cov_exts
+    from ..datasets.models import vec_exts, cov_exts
     if base_file is not None:
         extension = f'.{base_file.name}'
         if extension in vec_exts:
@@ -374,7 +374,7 @@ def metadata_post_save(instance, *args, **kwargs):
     logger.debug("handling UUID In pre_save_dataset")
     if isinstance(instance, Dataset) and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
         logger.debug("using custom uuid handler In pre_save_dataset")
-        from ..layers.utils import get_uuid_handler
+        from ..datasets.utils import get_uuid_handler
         _uuid = get_uuid_handler()(instance).create_uuid()
         if _uuid != instance.uuid:
             instance.uuid = _uuid

@@ -17,11 +17,11 @@
 #
 #########################################################################
 
-"""celery tasks for geonode.layers."""
+"""celery tasks for geonode.datasets."""
 from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 
-from geonode.layers.models import Dataset
+from geonode.datasets.models import Dataset
 from geonode.resource.manager import resource_manager
 
 logger = get_task_logger(__name__)
@@ -29,7 +29,7 @@ logger = get_task_logger(__name__)
 
 @app.task(
     bind=True,
-    name='geonode.layers.tasks.delete_dataset',
+    name='geonode.datasets.tasks.delete_dataset',
     queue='cleanup',
     expires=600,
     acks_late=False,

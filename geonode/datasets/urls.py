@@ -26,13 +26,13 @@ from geonode.monitoring import register_url_event
 from . import views
 
 js_info_dict = {
-    'packages': ('geonode.layers',),
+    'packages': ('geonode.datasets',),
 }
 
-layers_list = register_url_event()(TemplateView.as_view(template_name='layers/dataset_list.html'))
+layers_list = register_url_event()(TemplateView.as_view(template_name='datasets/dataset_list.html'))
 
 urlpatterns = [
-    # 'geonode.layers.views',
+    # 'geonode.datasets.views',
     url(r'^$',
         layers_list,
         {'facet_type': 'layers', 'is_dataset': True},
@@ -73,7 +73,7 @@ urlpatterns = [
         views.dataset_batch_permissions, name='dataset_batch_permissions'),
     url(r'^autocomplete/$',
         views.LayerAutocomplete.as_view(), name='autocomplete_dataset'),
-    url(r'^', include('geonode.layers.api.urls')),
+    url(r'^', include('geonode.datasets.api.urls')),
 ]
 
 # -- Deprecated url routes for Geoserver authentication -- remove after GeoNode 2.1

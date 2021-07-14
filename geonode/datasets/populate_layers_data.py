@@ -19,7 +19,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from geonode.layers.models import Style, Attribute, Dataset
+from geonode.datasets.models import Style, Attribute, Dataset
 
 ogc_location = settings.OGC_SERVER['default']['LOCATION']
 

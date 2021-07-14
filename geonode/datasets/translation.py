@@ -18,7 +18,7 @@
 #########################################################################
 
 from modeltranslation.translator import translator, TranslationOptions
-from geonode.layers.models import Dataset
+from geonode.datasets.models import Dataset
 
 
 class LayerTranslationOptions(TranslationOptions):

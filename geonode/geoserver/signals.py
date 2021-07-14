@@ -20,7 +20,7 @@ import errno
 import logging
 
 from deprecated import deprecated
-from geoserver.layer import Dataset as GsLayer
+from geoserver.layer import Layer as GsLayer
 
 from django.conf import settings
 from django.templatetags.static import static

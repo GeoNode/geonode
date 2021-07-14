@@ -25,7 +25,7 @@ from django.conf import settings
 from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField
 
-from geonode.layers.models import Dataset, Style, Attribute
+from geonode.datasets.models import Dataset, Style, Attribute
 from geonode.base.api.serializers import ResourceBaseSerializer
 
 import logging

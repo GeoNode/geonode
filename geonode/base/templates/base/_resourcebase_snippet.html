@@ -77,7 +77,7 @@
                 {% endverbatim %}
                   {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
                     {% verbatim %}
-                    <li><a ng-if="item.detail_url.indexOf('/layers/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
+                    <li><a ng-if="item.detail_url.indexOf('/datasets/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
                       {% endverbatim %}
                       <i class="fa fa-map-marker"></i>{% trans "Create a Map" %}</a>
                     </li>

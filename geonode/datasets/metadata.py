@@ -252,7 +252,7 @@ def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[], custom={}):
     available_parsers = ['__DEFAULT__'] if len(available_parsers) == 0 else available_parsers
     for parser_path in available_parsers:
         if parser_path == '__DEFAULT__':
-            parser_path = "geonode.layers.metadata.set_metadata"
+            parser_path = "geonode.datasets.metadata.set_metadata"
         parser = import_string(parser_path)
         uuid, vals, regions, keywords, custom = parser(exml, uuid, vals, regions, keywords, custom)
     return uuid, vals, regions, keywords, custom

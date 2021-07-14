@@ -231,7 +231,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         endpoint_suffix = {
             GeoNodeResourceType.DOCUMENT.value: (
                 f"/documents/{resource_unique_identifier}/"),
-            GeoNodeResourceType.LAYER.value: f"/layers/{resource_unique_identifier}/",
+            GeoNodeResourceType.LAYER.value: f"/datasets/{resource_unique_identifier}/",
             GeoNodeResourceType.MAP.value: f"/maps/{resource_unique_identifier}/",
         }[harvestable_resource.remote_resource_type.lower()]
         response = self.http_session.get(f"{self.base_api_url}/{endpoint_suffix}")

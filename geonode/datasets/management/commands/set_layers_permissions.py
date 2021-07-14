@@ -19,7 +19,7 @@
 
 from django.core.management.base import BaseCommand
 from argparse import RawTextHelpFormatter
-from geonode.layers.utils import set_datasets_permissions
+from geonode.datasets.utils import set_datasets_permissions
 
 
 class Command(BaseCommand):

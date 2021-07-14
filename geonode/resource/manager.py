@@ -57,8 +57,8 @@ from .utils import (
 
 from ..base import enumerations
 from ..base.models import ResourceBase
-from ..layers.metadata import parse_metadata
-from ..layers.models import Dataset
+from ..datasets.metadata import parse_metadata
+from ..datasets.models import Dataset
 
 from ..storage.manager import storage_manager
 

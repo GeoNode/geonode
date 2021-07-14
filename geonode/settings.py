@@ -876,7 +876,7 @@ AUTH_EXEMPT_URLS = (
     f'{FORCE_SCRIPT_NAME}/api/roles',
     f'{FORCE_SCRIPT_NAME}/api/adminRole',
     f'{FORCE_SCRIPT_NAME}/api/users',
-    f'{FORCE_SCRIPT_NAME}/api/layers',
+    f'{FORCE_SCRIPT_NAME}/api/datasets',
     f'{FORCE_SCRIPT_NAME}/monitoring',
     r'^/i18n/setlang/?$',
 )
@@ -911,8 +911,8 @@ PINAX_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {
         "map": "How good is this map?"
     },
-    "layers.Dataset": {
-        "layer": "How good is this layer?"
+    "datasets.Dataset": {
+        "dataset": "How good is this dataset?"
     },
     "documents.Document": {
         "document": "How good is this document?"

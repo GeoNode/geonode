@@ -47,7 +47,7 @@ from geonode.base.models import Region
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
 from geonode.geoserver.helpers import gs_catalog
-from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Dataset
+from geonode.datasets.models import shp_exts, csv_exts, vec_exts, cov_exts, Dataset
 
 READ_PERMISSIONS = [
     'view_resourcebase'
@@ -67,7 +67,7 @@ OWNER_PERMISSIONS = [
     'publish_resourcebase'
 ]
 
-logger = logging.getLogger('geonode.layers.utils')
+logger = logging.getLogger('geonode.datasets.utils')
 
 _separator = f"\n{'-' * 100}\n"
 

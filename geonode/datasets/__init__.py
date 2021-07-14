@@ -21,8 +21,8 @@ from django.utils.translation import ugettext_noop as _
 from geonode.notifications_helper import NotificationsAppConfigBase
 
 
-class LayersAppConfig(NotificationsAppConfigBase):
-    name = 'geonode.layers'
+class DatasetAppConfig(NotificationsAppConfigBase):
+    name = 'geonode.datasets'
     NOTIFICATIONS = (
         ("dataset_created", _("Dataset Created"), _("A Dataset was created"),),
         ("dataset_updated", _("Dataset Updated"), _("A Dataset was updated"),),
@@ -33,4 +33,4 @@ class LayersAppConfig(NotificationsAppConfigBase):
         ("dataset_rated", _("Rating for Dataset"), _("A rating was given to a layer"),),)
 
 
-default_app_config = 'geonode.layers.LayersAppConfig'
+default_app_config = 'geonode.datasets.DatasetAppConfig'
