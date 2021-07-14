@@ -423,30 +423,54 @@ class TaggedContentItem(ItemBase):
 
 
 class _HierarchicalTagManager(_TaggableManager):
-    def add(self, *tags):
-        str_tags = {
+    def add(self, *tags, through_defaults=None, tag_kwargs=None):
+        if tag_kwargs is None:
+            tag_kwargs = {}
+
+        str_tags = set([
             t
             for t in tags
             if not isinstance(t, self.through.tag_model())
-        }
+        ])
         tag_objs = set(tags) - str_tags
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
         existing = self.through.tag_model().objects.filter(
-            name__in=str_tags
+            name__in=str_tags, **tag_kwargs
         )
         tag_objs.update(existing)
-        for new_tag in str_tags - {t.name for t in existing}:
+        new_ids = set()
+        for new_tag in str_tags - set(t.name for t in existing):
             if new_tag:
                 new_tag = escape(new_tag)
-                tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
+                new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
+                tag_objs.add(new_tag_obj)
+                new_ids.add(new_tag_obj.id)
+
+        signals.m2m_changed.send(
+            sender=self.through,
+            action="pre_add",
+            instance=self.instance,
+            reverse=False,
+            model=self.through.tag_model(),
+            pk_set=new_ids,
+        )
 
         for tag in tag_objs:
             try:
                 self.through.objects.get_or_create(
-                    tag=tag, **self._lookup_kwargs())
+                    tag=tag, **self._lookup_kwargs(), defaults=through_defaults)
             except Exception as e:
                 logger.exception(e)
+
+        signals.m2m_changed.send(
+            sender=self.through,
+            action="post_add",
+            instance=self.instance,
+            reverse=False,
+            model=self.through.tag_model(),
+            pk_set=new_ids,
+        )
 
 
 class Thesaurus(models.Model):
