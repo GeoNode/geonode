@@ -24,18 +24,14 @@ from io import BytesIO
 from unittest.mock import patch
 from urllib.parse import urljoin
 
-import django
 from django.urls import reverse
 from django.core.files import File
-from django.conf.urls import url, include
-from django.views.generic import TemplateView
+from django.conf.urls import url
 from django.contrib.auth import get_user_model
-from django.views.i18n import JavaScriptCatalog
 from rest_framework.test import APITestCase, URLPatternsTestCase
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.api.urls import router
 from geonode.base.models import (
     CuratedThumbnail,
     HierarchicalKeyword,
@@ -48,11 +44,7 @@ from geonode.base.models import (
 from geonode import geoserver
 from geonode.favorite.models import Favorite
 from geonode.utils import check_ogc_backend
-from geonode.services.views import services
-from geonode.maps.views import map_embed
 from geonode.layers.models import Layer
-from geonode.layers.views import layer_embed, layer_detail
-from geonode.geoapps.views import geoapp_edit
 from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
 from geonode.security.utils import get_resources_with_perms
@@ -71,46 +63,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         "test_thesaurus.json"
     ]
 
-    urlpatterns = [
-        url(r'^home/$',
-            TemplateView.as_view(template_name='index.html'),
-            name='home'),
-        url(r'^help/$',
-            TemplateView.as_view(template_name='help.html'),
-            name='help'),
-        url(r"^account/", include("allauth.urls")),
-        url(r'^people/', include('geonode.people.urls')),
-        url(r'^api/v2/', include(router.urls)),
-        url(r'^api/v2/', include('geonode.api.urls')),
-        url(r'^api/v2/api-auth/', include('rest_framework.urls', namespace='geonode_rest_framework')),
-        url(r'^$',
-            TemplateView.as_view(template_name='layers/layer_list.html'),
-            {'facet_type': 'layers', 'is_layer': True},
-            name='layer_browse'),
-        url(r'^$',
-            TemplateView.as_view(template_name='maps/map_list.html'),
-            {'facet_type': 'maps', 'is_map': True},
-            name='maps_browse'),
-        url(r'^$',
-            TemplateView.as_view(template_name='documents/document_list.html'),
-            {'facet_type': 'documents', 'is_document': True},
-            name='document_browse'),
-        url(r'^$',
-            TemplateView.as_view(template_name='groups/group_list.html'),
-            name='group_list'),
-        url(r'^search/$',
-            TemplateView.as_view(template_name='search/search.html'),
-            name='search'),
-        url(r'^$', services, name='services'),
-        url(r'^invitations/', include(
-            'geonode.invitations.urls', namespace='geonode.invitations')),
-        url(r'^i18n/', include(django.conf.urls.i18n), name="i18n"),
-        url(r'^jsi18n/$', JavaScriptCatalog.as_view(), {}, name='javascript-catalog'),
-        url(r'^(?P<mapid>[^/]+)/embed$', map_embed, name='map_embed'),
-        url(r'^(?P<layername>[^/]+)/embed$', layer_embed, name='layer_embed'),
-        url(r'^(?P<geoappid>[^/]+)/embed$', geoapp_edit, {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
-        url(r'^(?P<layername>[^/]*)$', layer_detail, name="layer_detail"),
-    ]
+    from geonode.urls import urlpatterns
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.views import layer_acls, resolve_user
