@@ -69,7 +69,7 @@ class RecentActivity(ListView):
 
         context['action_list'] = Action.objects.filter(
             id__in=_filter_actions('all', self.request))[:15]
-        context['action_list_layers'] = Action.objects.filter(
+        context['action_list_datasets'] = Action.objects.filter(
             id__in=_filter_actions('layer', self.request))[:15]
         context['action_list_maps'] = Action.objects.filter(
             id__in=_filter_actions('map', self.request))[:15]

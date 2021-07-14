@@ -1017,7 +1017,7 @@ class TestFacets(TestCase):
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
 
-    def test_facets_filter_layers_returns_correctly(self):
+    def test_facets_filter_datasets_returns_correctly(self):
         for _l in Dataset.objects.all():
             _l.set_default_permissions()
             _l.clear_dirty_state()

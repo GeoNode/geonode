@@ -73,7 +73,7 @@ class MapsApiTests(APITestCase):
         self.assertIsNotNone(layers_data)
 
         # Get Local-Layers List (GeoNode)
-        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", 'local_layers/')
+        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", 'local_datasets/')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         layers_data = response.data

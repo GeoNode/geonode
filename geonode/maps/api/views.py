@@ -66,9 +66,9 @@ class MapViewSet(DynamicModelViewSet):
     @extend_schema(methods=['get'], responses={200: LayerSerializer(many=True)},
                    description="API endpoint allowing to retrieve the local MapLayers.")
     @action(detail=True, methods=['get'])
-    def local_layers(self, request, pk=None):
+    def local_datasets(self, request, pk=None):
         map = self.get_object()
-        resources = map.local_layers
+        resources = map.local_datasets
         return Response(LayerSerializer(embed=True, many=True).to_representation(resources))
 
     def perform_create(self, serializer):

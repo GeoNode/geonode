@@ -274,13 +274,13 @@ def download(request, resourceid, sender=Dataset):
         if not os.path.exists(target_folder):
             os.makedirs(target_folder)
 
-        layer_files = []
+        dataset_files = []
         try:
             files = instance.resourcebase_ptr.files
             # Copy all Dataset related files into a temporary folder
             for file_path in files:
                 if storage_manager.exists(file_path):
-                    layer_files.append(file_path)
+                    dataset_files.append(file_path)
                     filename = os.path.basename(file_path)
                     with open(f"{target_folder}/{filename}", 'wb+') as f:
                         f.write(storage_manager.open(file_path).read())
@@ -295,7 +295,7 @@ def download(request, resourceid, sender=Dataset):
                             request=request), status=404)
 
             # Check we can access the original files
-            if not layer_files:
+            if not dataset_files:
                 return HttpResponse(
                     loader.render_to_string(
                         '401.html',

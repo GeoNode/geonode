@@ -42,7 +42,7 @@ BBOX = [-180, 180, -90, 90]
 DATA_QUALITY_MESSAGE = "Created with GeoNode"
 
 
-def create_layer(name, title, owner_name, geometry_type, attributes=None):
+def create_dataset(name, title, owner_name, geometry_type, attributes=None):
     """
     Create an empty layer in GeoServer and register it in GeoNode.
     """
@@ -54,12 +54,12 @@ def create_layer(name, title, owner_name, geometry_type, attributes=None):
     name = get_valid_name(name)
     # we can proceed
     logger.debug('Creating the layer in GeoServer')
-    workspace, datastore = create_gs_layer(name, title, geometry_type, attributes)
+    workspace, datastore = create_gs_dataset(name, title, geometry_type, attributes)
     logger.debug('Creating the layer in GeoNode')
-    return create_gn_layer(workspace, datastore, name, title, owner_name)
+    return create_gn_dataset(workspace, datastore, name, title, owner_name)
 
 
-def create_gn_layer(workspace, datastore, name, title, owner_name):
+def create_gn_dataset(workspace, datastore, name, title, owner_name):
     """
     Associate a layer in GeoNode for a given layer in GeoServer.
     """
@@ -155,7 +155,7 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
     return ds
 
 
-def create_gs_layer(name, title, geometry_type, attributes=None):
+def create_gs_dataset(name, title, geometry_type, attributes=None):
     """
     Create an empty PostGIS layer in GeoServer with a given name, title,
     geometry_type and attributes.

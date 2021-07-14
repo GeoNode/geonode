@@ -221,7 +221,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         url(r'^upload/', include('geonode.upload.urls')),
         # capabilities
         url(r'^capabilities/layer/(?P<layerid>\d+)/$',
-            get_capabilities, name='capabilities_layer'),
+            get_capabilities, name='capabilities_dataset'),
         url(r'^capabilities/map/(?P<mapid>\d+)/$',
             get_capabilities, name='capabilities_map'),
         url(r'^capabilities/user/(?P<user>[\w.@+-]+)/$',

@@ -136,7 +136,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 except Exception as e:
                     logger.exception(e)
 
-        return self._layer_meta(ll) if ll else None
+        return self._dataset_meta(ll) if ll else None
 
     def get_resources(self):
         """Return an iterable with the service's resources.
@@ -146,19 +146,19 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
         """
         try:
-            return self._parse_layers(self.parsed_service.layers)
+            return self._parse_datasets(self.parsed_service.layers)
         except Exception:
             traceback.print_exc()
             return None
 
-    def _parse_layers(self, layers):
-        map_layers = []
+    def _parse_datasets(self, layers):
+        map_datasets = []
         for lyr in layers:
-            map_layers.append(self._layer_meta(lyr))
-            map_layers.extend(self._parse_layers(lyr.subLayers))
-        return map_layers
+            map_datasets.append(self._dataset_meta(lyr))
+            map_datasets.extend(self._parse_datasets(lyr.subLayers))
+        return map_datasets
 
-    def _layer_meta(self, layer):
+    def _dataset_meta(self, layer):
         _ll_keys = [
             'id',
             'title',
@@ -182,8 +182,8 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             _ll['title'] = getattr(layer, 'name')
         return MapLayer(**_ll)
 
-    def _harvest_resource(self, layer_meta, geonode_service):
-        resource_fields = self._get_indexed_layer_fields(layer_meta)
+    def _harvest_resource(self, dataset_meta, geonode_service):
+        resource_fields = self._get_indexed_dataset_fields(dataset_meta)
         keywords = resource_fields.pop("keywords")
         existance_test_qs = Dataset.objects.filter(
             name=resource_fields["name"],
@@ -199,11 +199,11 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
             resource_fields["is_approved"] = False
             resource_fields["is_published"] = False
-        geonode_layer = self._create_layer(
+        geonode_dataset = self._create_dataset(
             geonode_service, **resource_fields)
-        # self._enrich_layer_metadata(geonode_layer)
-        self._create_layer_service_link(geonode_layer)
-        # self._create_layer_legend_link(geonode_layer)
+        # self._enrich_dataset_metadata(geonode_dataset)
+        self._create_dataset_service_link(geonode_dataset)
+        # self._create_dataset_legend_link(geonode_dataset)
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
@@ -217,9 +217,9 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         :type geonode_service: geonode.services.models.Service
 
         """
-        layer_meta = self.get_resource(resource_id)
-        if layer_meta:
-            self._harvest_resource(layer_meta, geonode_service)
+        dataset_meta = self.get_resource(resource_id)
+        if dataset_meta:
+            self._harvest_resource(dataset_meta, geonode_service)
         else:
             raise RuntimeError(
                 f"Resource {resource_id} cannot be harvested")
@@ -235,35 +235,35 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
         return geonode_projection in f"EPSG:{srs}"
 
-    def _get_indexed_layer_fields(self, layer_meta):
-        srs = f"EPSG:{layer_meta.extent.spatialReference.wkid}"
-        bbox = utils.decimal_encode([layer_meta.extent.xmin,
-                                     layer_meta.extent.ymin,
-                                     layer_meta.extent.xmax,
-                                     layer_meta.extent.ymax])
-        typename = slugify(f"{layer_meta.id}-{''.join(c for c in layer_meta.title if ord(c) < 128)}")
+    def _get_indexed_dataset_fields(self, dataset_meta):
+        srs = f"EPSG:{dataset_meta.extent.spatialReference.wkid}"
+        bbox = utils.decimal_encode([dataset_meta.extent.xmin,
+                                     dataset_meta.extent.ymin,
+                                     dataset_meta.extent.xmax,
+                                     dataset_meta.extent.ymax])
+        typename = slugify(f"{dataset_meta.id}-{''.join(c for c in dataset_meta.title if ord(c) < 128)}")
         return {
-            "name": layer_meta.title,
+            "name": dataset_meta.title,
             "store": self.name,
             "subtype": "remote",
             "workspace": "remoteWorkspace",
             "typename": typename,
-            "alternate": f"{slugify(self.url)}:{layer_meta.id}",
-            "title": layer_meta.title,
-            "abstract": layer_meta.abstract,
+            "alternate": f"{slugify(self.url)}:{dataset_meta.id}",
+            "title": dataset_meta.title,
+            "abstract": dataset_meta.abstract,
             "bbox_polygon": BBOXHelper.from_xy([bbox[0], bbox[2], bbox[1], bbox[3]]).as_polygon(),
             "srid": srs,
-            "keywords": ['ESRI', 'ArcGIS REST MapServer', layer_meta.title],
+            "keywords": ['ESRI', 'ArcGIS REST MapServer', dataset_meta.title],
         }
 
-    def _create_layer(self, geonode_service, **resource_fields):
+    def _create_dataset(self, geonode_service, **resource_fields):
         # bear in mind that in ``geonode.datasets.models`` there is a
-        # ``pre_save_layer`` function handler that is connected to the
+        # ``pre_save_dataset`` function handler that is connected to the
         # ``pre_save`` signal for the Dataset model. This handler does a check
         # for common fields (such as abstract and title) and adds
         # sensible default values
         keywords = resource_fields.pop("keywords", [])
-        geonode_layer = resource_manager.create(
+        geonode_dataset = resource_manager.create(
             None,
             resource_type=Dataset,
             defaults=dict(
@@ -272,29 +272,29 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 **resource_fields
             )
         )
-        resource_manager.update(geonode_layer.uuid, instance=geonode_layer, keywords=keywords, notify=True)
-        resource_manager.set_permissions(geonode_layer.uuid, instance=geonode_layer)
+        resource_manager.update(geonode_dataset.uuid, instance=geonode_dataset, keywords=keywords, notify=True)
+        resource_manager.set_permissions(geonode_dataset.uuid, instance=geonode_dataset)
 
-        return geonode_layer
+        return geonode_dataset
 
-    def _create_layer_thumbnail(self, geonode_layer):
+    def _create_dataset_thumbnail(self, geonode_dataset):
         """Create a thumbnail with a WMS request."""
         # The thumbnail generation implementation relies on WMS image retrieval, which fails for layers from ESRI
         # services (not all of them support GetCapabilities or GetCapabilities path is different from the service's
         # URL); in order to create a thumbnail for ESRI layer, a user must upload one.
         logger.debug("Skipping thumbnail execution for layer from ESRI service.")
 
-    def _create_layer_service_link(self, geonode_layer):
+    def _create_dataset_service_link(self, geonode_dataset):
         Link.objects.get_or_create(
-            resource=geonode_layer.resourcebase_ptr,
-            url=geonode_layer.ows_url,
-            name=f"ESRI {geonode_layer.remote_service.type}: {geonode_layer.store} Service",
+            resource=geonode_dataset.resourcebase_ptr,
+            url=geonode_dataset.ows_url,
+            name=f"ESRI {geonode_dataset.remote_service.type}: {geonode_dataset.store} Service",
             defaults={
                 "extension": "html",
-                "name": f"ESRI {geonode_layer.remote_service.type}: {geonode_layer.store} Service",
-                "url": geonode_layer.ows_url,
+                "name": f"ESRI {geonode_dataset.remote_service.type}: {geonode_dataset.store} Service",
+                "url": geonode_dataset.ows_url,
                 "mime": "text/html",
-                "link_type": f"ESRI:{geonode_layer.remote_service.type}",
+                "link_type": f"ESRI:{geonode_dataset.remote_service.type}",
             }
         )
 

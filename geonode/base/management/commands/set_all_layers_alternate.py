@@ -58,14 +58,14 @@ class Command(BaseCommand):
         else:
             username = options.get('username')
 
-        all_layers = Dataset.objects.all().order_by('name')
+        all_datasets = Dataset.objects.all().order_by('name')
         if filter:
-            all_layers = all_layers.filter(name__icontains=filter)
+            all_datasets = all_datasets.filter(name__icontains=filter)
         if username:
-            all_layers = all_layers.filter(owner__username=username)
+            all_datasets = all_datasets.filter(owner__username=username)
 
-        for index, layer in enumerate(all_layers):
-            logger.info(f"[{(index + 1)} / {len(all_layers)}] Checking 'alternate' of Dataset [{layer.name}] ...")
+        for index, layer in enumerate(all_datasets):
+            logger.info(f"[{(index + 1)} / {len(all_datasets)}] Checking 'alternate' of Dataset [{layer.name}] ...")
             try:
                 if not layer.alternate:
                     layer.alternate = layer.typename

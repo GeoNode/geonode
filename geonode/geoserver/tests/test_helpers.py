@@ -27,8 +27,8 @@ from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.views import _response_callback
-from geonode.geoserver.helpers import get_layer_storetype
-from geonode.datasets.populate_layers_data import create_layer_data
+from geonode.geoserver.helpers import get_dataset_storetype
+from geonode.datasets.populate_datasets_data import create_dataset_data
 
 from geonode.base.populate_test_data import (
     all_public,
@@ -63,7 +63,7 @@ class HelperTest(GeoNodeBaseTestSupport):
         super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
-        create_layer_data()
+        create_dataset_data()
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_replace_callback(self):
@@ -179,17 +179,17 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))
 
     def test_return_element_if_not_exists_in_the_subtypes(self):
-        el = get_layer_storetype('not-existing-type')
+        el = get_dataset_storetype('not-existing-type')
         self.assertEqual('not-existing-type', el)
 
     def test_datastore_should_return_vector(self):
-        el = get_layer_storetype('dataStore')
+        el = get_dataset_storetype('dataStore')
         self.assertEqual('vector', el)
 
     def test_coverageStore_should_return_raster(self):
-        el = get_layer_storetype('coverageStore')
+        el = get_dataset_storetype('coverageStore')
         self.assertEqual('raster', el)
 
     def test_remoteStore_should_return_remote(self):
-        el = get_layer_storetype('remoteStore')
+        el = get_dataset_storetype('remoteStore')
         self.assertEqual('remote', el)

@@ -31,7 +31,7 @@ from geonode.maps.models import Map
 from geonode.datasets.models import Dataset
 from geonode.base.thumb_utils import thumb_exists
 from geonode.geoserver.helpers import OGC_Servers_Handler
-from geonode.utils import get_layer_name, get_layer_workspace
+from geonode.utils import get_dataset_name, get_dataset_workspace
 from geonode.thumbs import utils
 from geonode.thumbs.exceptions import ThumbnailError
 
@@ -106,7 +106,7 @@ def create_thumbnail(
     # --- determine target CRS and bbox ---
     target_crs = forced_crs.upper() if forced_crs is not None else "EPSG:3857"
 
-    compute_bbox_from_layers = False
+    compute_bbox_from_datasets = False
     if bbox:
         # make sure BBOX is provided with the CRS in a correct format
         source_crs = bbox[-1]
@@ -124,12 +124,12 @@ def create_thumbnail(
 
         bbox = utils.transform_bbox(bbox, target_crs=target_crs)
     else:
-        compute_bbox_from_layers = True
+        compute_bbox_from_datasets = True
 
     # --- define layer locations ---
-    locations, layers_bbox = _layers_locations(instance, compute_bbox=compute_bbox_from_layers, target_crs=target_crs)
+    locations, layers_bbox = _datasets_locations(instance, compute_bbox=compute_bbox_from_datasets, target_crs=target_crs)
 
-    if compute_bbox_from_layers:
+    if compute_bbox_from_datasets:
         if not layers_bbox:
             raise ThumbnailError(f"Thumbnail generation couldn't determine a BBOX for: {instance}.")
         else:
@@ -236,7 +236,7 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
     return file_name
 
 
-def _layers_locations(
+def _datasets_locations(
     instance: Union[Dataset, Map], compute_bbox: bool = False, target_crs: str = "EPSG:3857"
 ) -> Tuple[List[List], List]:
     """
@@ -282,26 +282,26 @@ def _layers_locations(
 
     elif isinstance(instance, Map):
 
-        map_layers = instance.layers.copy()
+        map_datasets = instance.layers.copy()
         # ensure correct order of layers in the map (higher stack_order are printed on top of lower)
-        map_layers.sort(key=lambda l: l.stack_order)
+        map_datasets.sort(key=lambda l: l.stack_order)
 
-        for map_layer in map_layers:
+        for map_dataset in map_datasets:
 
-            if not map_layer.visibility:
+            if not map_dataset.visibility:
                 logger.debug("Skipping not visible layer in the thumbnail generation.")
                 continue
 
-            if not map_layer.local and not map_layer.ows_url:
+            if not map_dataset.local and not map_dataset.ows_url:
                 logger.warning(
                     "Incorrectly defined remote layer encountered (no OWS URL defined)."
                     "Skipping it in the thumbnail generation."
                 )
                 continue
 
-            name = get_layer_name(map_layer)
-            store = map_layer.store
-            workspace = get_layer_workspace(map_layer)
+            name = get_dataset_name(map_dataset)
+            store = map_dataset.store
+            workspace = get_dataset_workspace(map_dataset)
 
             if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
                 layer = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()
@@ -309,8 +309,8 @@ def _layers_locations(
             elif workspace and Dataset.objects.filter(workspace=workspace, name=name).count() > 0:
                 layer = Dataset.objects.filter(workspace=workspace, name=name).first()
 
-            elif Dataset.objects.filter(alternate=map_layer.name).count() > 0:
-                layer = Dataset.objects.filter(alternate=map_layer.name).first()
+            elif Dataset.objects.filter(alternate=map_dataset.name).count() > 0:
+                layer = Dataset.objects.filter(alternate=map_dataset.name).first()
 
             else:
                 logger.warning(f"Dataset for MapLayer {name} was not found. Skipping it in the thumbnail.")
@@ -338,19 +338,19 @@ def _layers_locations(
                         and target_crs.upper() == 'EPSG:3857'
                         and utils.exceeds_epsg3857_area_of_use(layer.bbox)
                 ):
-                    layer_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(layer.bbox), target_crs.lower())
+                    dataset_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(layer.bbox), target_crs.lower())
                 else:
-                    layer_bbox = utils.transform_bbox(layer.bbox, target_crs.lower())
+                    dataset_bbox = utils.transform_bbox(layer.bbox, target_crs.lower())
 
                 if not bbox:
-                    bbox = layer_bbox
+                    bbox = dataset_bbox
                 else:
                     # layer's BBOX: (left, right, bottom, top)
                     bbox = [
-                        min(bbox[0], layer_bbox[0]),
-                        max(bbox[1], layer_bbox[1]),
-                        min(bbox[2], layer_bbox[2]),
-                        max(bbox[3], layer_bbox[3]),
+                        min(bbox[0], dataset_bbox[0]),
+                        max(bbox[1], dataset_bbox[1]),
+                        min(bbox[2], dataset_bbox[2]),
+                        max(bbox[3], dataset_bbox[3]),
                     ]
 
     if bbox and len(bbox) < 5:

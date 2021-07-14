@@ -17,8 +17,8 @@
 #
 #########################################################################
 
-from geonode.datasets.populate_layers_data import create_layer_data
-from geonode.geoserver.createlayer.utils import create_layer
+from geonode.datasets.populate_datasets_data import create_dataset_data
+from geonode.geoserver.createlayer.utils import create_dataset
 from geonode.tests.base import GeoNodeLiveTestSupport
 
 import timeout_decorator
@@ -38,7 +38,7 @@ from django.test.utils import override_settings
 from geonode import geoserver
 from geonode.datasets.models import Dataset
 from geonode.compat import ensure_string
-from geonode.tests.utils import check_layer
+from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend
 from geonode.base.models import TopicCategory, Link
 from geonode.geoserver.helpers import set_attributes_from_geoserver
@@ -72,7 +72,7 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
         """Test attributes syncronization
         """
         layer = Dataset.objects.all().first()
-        create_layer_data(layer.resourcebase_ptr_id)
+        create_dataset_data(layer.resourcebase_ptr_id)
         try:
             # set attributes for resource
             for attribute in layer.attribute_set.all():
@@ -134,13 +134,13 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
         admin = get_user_model().objects.get(username="admin")
 
         # create 3 layers, 2 with norman as an owner an 2 with category as a category
-        layer1 = create_layer(
+        layer1 = create_dataset(
             name='layer1',
             title="san_andres_y_providencia_poi",
             owner_name=norman,
             geometry_type="Point"
         )
-        layer2 = create_layer(
+        layer2 = create_dataset(
             name='layer2',
             title="single_point",
             owner_name=norman,
@@ -148,7 +148,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
         )
         layer2.category = category
         layer2.save()
-        layer3 = create_layer(
+        layer3 = create_dataset(
             name='layer3',
             title="san_andres_y_providencia_administrative",
             owner_name=admin,
@@ -161,8 +161,8 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
                           'xlink': 'http://www.w3.org/1999/xlink',
                           'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
 
-            # 0. test capabilities_layer
-            url = reverse('capabilities_layer', args=[layer1.id])
+            # 0. test capabilities_dataset
+            url = reverse('capabilities_dataset', args=[layer1.id])
             resp = self.client.get(url)
             layercap = dlxml.fromstring(resp.content)
             rootdoc = etree.ElementTree(layercap)
@@ -238,7 +238,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
         """
         layer = Dataset.objects.first()
         layer.set_default_permissions()
-        check_layer(layer)
+        check_dataset(layer)
 
         # we need some time to have the service up and running
         # time.sleep(20)
@@ -269,7 +269,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
             layer.is_published = False
             layer.save()
             layer.set_default_permissions()
-            check_layer(layer)
+            check_dataset(layer)
 
             # we need some time to have the service up and running
             time.sleep(20)
@@ -307,7 +307,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
             self.client.login(username='norman', password='norman')
             norman = get_user_model().objects.get(username="norman")
 
-            saved_layer = create_layer(
+            saved_dataset = create_dataset(
                 name='san_andres_y_providencia_poi_by_norman',
                 title='san_andres_y_providencia_poi',
                 owner_name=norman,
@@ -318,7 +318,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 namespaces = {'wms': 'http://www.opengis.net/wms',
                               'xlink': 'http://www.w3.org/1999/xlink',
                               'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-                url = urljoin(settings.SITEURL, reverse('capabilities_layer', args=[saved_layer.id]))
+                url = urljoin(settings.SITEURL, reverse('capabilities_dataset', args=[saved_dataset.id]))
                 resp = self.client.get(url)
                 content = resp.content
                 self.assertTrue(content)
@@ -328,11 +328,11 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 layernode = layernodes[0]
                 self.assertEqual(1, len(layernodes))
                 self.assertEqual(layernode.find('wms:Name', namespaces).text,
-                                 saved_layer.name)
+                                 saved_dataset.name)
                 self.client.logout()
                 resp = self.client.get(url)
                 layercap = dlxml.fromstring(resp.content)
                 self.assertIsNotNone(layercap)
             finally:
                 # Cleanup
-                saved_layer.delete()
+                saved_dataset.delete()

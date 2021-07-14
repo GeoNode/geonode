@@ -53,8 +53,8 @@ READ_PERMISSIONS = [
     'view_resourcebase'
 ]
 WRITE_PERMISSIONS = [
-    'change_layer_data',
-    'change_layer_style',
+    'change_dataset_data',
+    'change_dataset_style',
     'change_resourcebase_metadata'
 ]
 DOWNLOAD_PERMISSIONS = [
@@ -221,7 +221,7 @@ def get_files(filename):
     return files, tempdir
 
 
-def layer_type(filename):
+def dataset_type(filename):
     """Finds out if a filename is a Feature or a Vector
        returns a gsconfig resource_type string
        that can be either 'featureType' or 'coverage'
@@ -255,38 +255,38 @@ def layer_type(filename):
         raise GeoNodeException(msg)
 
 
-def get_valid_name(layer_name):
+def get_valid_name(dataset_name):
     """
     Create a brand new name
     """
-    name = _clean_string(layer_name)
+    name = _clean_string(dataset_name)
     proposed_name = name
     while Dataset.objects.filter(name=proposed_name).exists():
         possible_chars = string.ascii_lowercase + string.digits
         suffix = "".join([choice(possible_chars) for i in range(4)])
         proposed_name = f'{name}_{suffix}'
         logger.debug('Requested name already used; adjusting name '
-                     f'[{layer_name}] => [{proposed_name}]')
+                     f'[{dataset_name}] => [{proposed_name}]')
 
     return proposed_name
 
 
-def get_valid_layer_name(layer, overwrite):
+def get_valid_dataset_name(layer, overwrite):
     """Checks if the layer is a string and fetches it from the database.
     """
     # The first thing we do is get the layer name string
     if isinstance(layer, Dataset):
-        layer_name = layer.name
+        dataset_name = layer.name
     elif isinstance(layer, str):
-        layer_name = str(layer)
+        dataset_name = str(layer)
     else:
         msg = ('You must pass either a filename or a GeoNode dataset object')
         raise GeoNodeException(msg)
 
     if overwrite:
-        return layer_name
+        return dataset_name
     else:
-        return get_valid_name(layer_name)
+        return get_valid_name(dataset_name)
 
 
 def get_default_user():
@@ -404,7 +404,7 @@ def get_bbox(filename):
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, f"EPSG:{str(srid)}"]
 
 
-def delete_orphaned_layers():
+def delete_orphaned_datasets():
     """Delete orphaned layer files."""
     deleted = []
     _, files = storage_manager.listdir("layers")
@@ -431,7 +431,7 @@ def surrogate_escape_string(input_string, source_character_set):
     return input_string.encode(source_character_set, "surrogateescape").decode("utf-8", "surrogateescape")
 
 
-def set_layers_permissions(permissions_name, resources_names=None,
+def set_datasets_permissions(permissions_name, resources_names=None,
                            users_usernames=None, groups_names=None,
                            delete_flag=False, verbose=False):
     # Processing information
@@ -677,14 +677,14 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
                             that is consistent with the file you are trying to {action_type}."))
 
                 new_schema_fields = [field.name for field in lyr.schema]
-                gs_layer = gs_catalog.get_layer(layer.name)
+                gs_dataset = gs_catalog.get_layer(layer.name)
 
-                if not gs_layer:
+                if not gs_dataset:
                     raise Exception(
                         _("The selected Dataset does not exists in the catalog."))
 
-                gs_layer = gs_layer.resource.attributes
-                schema_is_compliant = all([x.replace("-", '_') in gs_layer for x in new_schema_fields])
+                gs_dataset = gs_dataset.resource.attributes
+                schema_is_compliant = all([x.replace("-", '_') in gs_dataset for x in new_schema_fields])
 
                 if not schema_is_compliant:
                     raise Exception(

@@ -72,7 +72,7 @@ class Command(BaseCommand):
         layers_count = layers.count()
         count = 0
 
-        layer_errors = []
+        dataset_errors = []
         for layer in layers:
             count += 1
             try:
@@ -81,13 +81,13 @@ class Command(BaseCommand):
                 )
                 if not is_gs_resource_valid(layer):
                     print(f"Dataset {layer.alternate} is broken!")
-                    layer_errors.append(layer)
+                    dataset_errors.append(layer)
                     if options['remove']:
                         print("Removing this layer...")
                         layer.delete()
             except Exception:
                 print("Unexpected error:", sys.exc_info()[0])
 
-        print(f"\n***** Layers with errors: {len(layer_errors)} in a total of {layers_count} *****")
-        for layer_error in layer_errors:
-            print(f"{layer_error.alternate} by {layer_error.owner.username}")
+        print(f"\n***** Layers with errors: {len(dataset_errors)} in a total of {layers_count} *****")
+        for dataset_error in dataset_errors:
+            print(f"{dataset_error.alternate} by {dataset_error.owner.username}")

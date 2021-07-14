@@ -308,12 +308,12 @@ class GroupActivityView(ListView):
         actions = Action.objects.filter(
             public=True,
             action_object_content_type__model='layer')
-        context['action_list_layers'] = [
+        context['action_list_datasets'] = [
             action
             for action in actions
             if action.action_object and action.action_object.group == self.group.group][
             :15]
-        action_list.extend(context['action_list_layers'])
+        action_list.extend(context['action_list_datasets'])
         actions = Action.objects.filter(
             public=True,
             action_object_content_type__model='map')[:15]

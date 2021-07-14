@@ -95,7 +95,7 @@ class Style(models.Model, PermissionLevelMixin):
         """Get associated resource base."""
         # Associate this model with resource
         try:
-            layer = self.layer_styles.first()
+            layer = self.dataset_styles.first()
             """:type: Dataset"""
             return layer.get_self_resource()
         except Exception:
@@ -116,8 +116,8 @@ class Dataset(ResourceBase):
 
     PERMISSIONS = {
         'write': [
-            'change_layer_data',
-            'change_layer_style',
+            'change_dataset_data',
+            'change_dataset_style',
         ]
     }
 
@@ -143,10 +143,10 @@ class Dataset(ResourceBase):
     default_style = models.ForeignKey(
         Style,
         on_delete=models.SET_NULL,
-        related_name='layer_default_style',
+        related_name='dataset_default_style',
         null=True,
         blank=True)
-    styles = models.ManyToManyField(Style, related_name='layer_styles')
+    styles = models.ManyToManyField(Style, related_name='dataset_styles')
     remote_service = models.ForeignKey("services.Service", null=True, blank=True, on_delete=models.CASCADE)
 
     charset = models.CharField(max_length=255, default='UTF-8')
@@ -281,13 +281,13 @@ class Dataset(ResourceBase):
 
     def get_absolute_url(self):
         return reverse(
-            'layer_detail',
+            'dataset_detail',
             args=(f"{self.store}:{self.alternate}",)
         )
 
     @property
     def embed_url(self):
-        return reverse('layer_embed', kwargs={'layername': self.service_typename})
+        return reverse('dataset_embed', kwargs={'layername': self.service_typename})
 
     def attribute_config(self):
         # Get custom attribute sort order and labels if any
@@ -312,15 +312,15 @@ class Dataset(ResourceBase):
         # custom permissions,
         # change and delete are standard in django-guardian
         permissions = (
-            ('change_layer_data', 'Can edit layer data'),
-            ('change_layer_style', 'Can change layer style'),
+            ('change_dataset_data', 'Can edit layer data'),
+            ('change_dataset_style', 'Can change layer style'),
         )
 
     # Permission Level Constants
     # LEVEL_NONE inherited
-    LEVEL_READ = 'layer_readonly'
-    LEVEL_WRITE = 'layer_readwrite'
-    LEVEL_ADMIN = 'layer_admin'
+    LEVEL_READ = 'dataset_readonly'
+    LEVEL_WRITE = 'dataset_readwrite'
+    LEVEL_ADMIN = 'dataset_admin'
 
     def maps(self):
         from geonode.maps.models import MapLayer
@@ -343,7 +343,7 @@ class Dataset(ResourceBase):
             return
         if not do_local:
             from geonode.messaging import producer
-            producer.viewing_layer(str(user), str(self.owner), self.id)
+            producer.viewing_dataset(str(user), str(self.owner), self.id)
 
         else:
             Dataset.objects.filter(id=self.id)\

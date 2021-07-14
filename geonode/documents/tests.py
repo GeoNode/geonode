@@ -374,7 +374,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         assert('permissions' in ensure_string(response.content))
 
         # Test that a user is required to have
-        # documents.change_layer_permissions
+        # documents.change_dataset_permissions
 
         # First test un-authenticated
         response = self.client.post(

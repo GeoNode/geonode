@@ -58,7 +58,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
         self.layers = Dataset.objects.all()[:3]
-        self.layer_ids = [layer.pk for layer in self.layers]
+        self.dataset_ids = [layer.pk for layer in self.layers]
         self.user_ids = ','.join(str(element.pk) for element in get_user_model().objects.all()[:3])
         self.permission_type = ('r', 'w', 'd')
         self.groups = Group.objects.all()[:3]
@@ -70,7 +70,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         page of origin when no IDS are supplied
         """
         self.client.login(username="admin", password="admin")
-        response = self.client.get(reverse('set_user_layer_permissions'))
+        response = self.client.get(reverse('set_user_dataset_permissions'))
         self.assertEqual(response.status_code, 302)
 
     def test_admin_only_access(self):
@@ -78,28 +78,28 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         Test that only admin users can access the routes
         """
         self.client.logout()
-        response = self.client.get(reverse('set_user_layer_permissions'))
+        response = self.client.get(reverse('set_user_dataset_permissions'))
         self.assertEqual(response.status_code, 302)
 
     @override_settings(ASYNC_SIGNALS=False)
-    def test_set_unset_user_layer_permissions(self):
+    def test_set_unset_user_dataset_permissions(self):
         """
         Test that user permissions are set for layers
         """
         self.client.login(username="admin", password="admin")
-        response = self.client.post(reverse('set_user_layer_permissions'), data={
+        response = self.client.post(reverse('set_user_dataset_permissions'), data={
             'ids': self.user_ids,
-            'layers': self.layer_ids,
+            'layers': self.dataset_ids,
             'permission_type': self.permission_type,
             'mode': 'set'
         })
         self.assertEqual(response.status_code, 302)
         with transaction.atomic():
             for permissions_name in self.permission_type:
-                utils.set_layers_permissions(
+                utils.set_datasets_permissions(
                     permissions_name,
                     [resource.name for resource in Dataset.objects.filter(
-                        id__in=[int(_id) for _id in self.layer_ids])],
+                        id__in=[int(_id) for _id in self.dataset_ids])],
                     [user.username for user in get_user_model().objects.filter(id__in=self.user_ids.split(","))],
                     [],
                     False,
@@ -110,24 +110,24 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
             self.assertTrue(get_user_model().objects.all()[0] in perm_spec["users"])
 
     @override_settings(ASYNC_SIGNALS=False)
-    def test_set_unset_group_layer_permissions(self):
+    def test_set_unset_group_dataset_permissions(self):
         """
         Test that group permissions are set for layers
         """
         self.client.login(username="admin", password="admin")
-        response = self.client.post(reverse('set_group_layer_permissions'), data={
+        response = self.client.post(reverse('set_group_dataset_permissions'), data={
             'ids': self.group_ids,
-            'layers': self.layer_ids,
+            'layers': self.dataset_ids,
             'permission_type': self.permission_type,
             'mode': 'set'
         })
         self.assertEqual(response.status_code, 302)
         with transaction.atomic():
             for permissions_name in self.permission_type:
-                utils.set_layers_permissions(
+                utils.set_datasets_permissions(
                     permissions_name,
                     [resource.name for resource in Dataset.objects.filter(
-                        id__in=[int(_id) for _id in self.layer_ids])],
+                        id__in=[int(_id) for _id in self.dataset_ids])],
                     [],
                     [group.name for group in Group.objects.filter(id__in=self.group_ids.split(","))],
                     False,
@@ -138,30 +138,30 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
             self.assertTrue(self.groups[0] in perm_spec["groups"])
 
     @override_settings(ASYNC_SIGNALS=False)
-    def test_unset_group_layer_perms(self):
+    def test_unset_group_dataset_perms(self):
         """
         Test that group permissions are unset for layers
         """
         user = get_user_model().objects.all()[0]
         for layer in self.layers:
             layer.set_permissions({'users': {user.username: [
-                                  'change_layer_data', 'view_resourcebase',
+                                  'change_dataset_data', 'view_resourcebase',
                                   'download_resourcebase', 'change_resourcebase_metadata']}})
 
         self.client.login(username="admin", password="admin")
-        response = self.client.post(reverse('set_user_layer_permissions'), data={
+        response = self.client.post(reverse('set_user_dataset_permissions'), data={
             'ids': self.user_ids,
-            'layers': self.layer_ids,
+            'layers': self.dataset_ids,
             'permission_type': self.permission_type,
             'mode': 'unset'
         })
         self.assertEqual(response.status_code, 302)
         with transaction.atomic():
             for permissions_name in self.permission_type:
-                utils.set_layers_permissions(
+                utils.set_datasets_permissions(
                     permissions_name,
                     [resource.name for resource in Dataset.objects.filter(
-                        id__in=[int(_id) for _id in self.layer_ids])],
+                        id__in=[int(_id) for _id in self.dataset_ids])],
                     [user.username for user in get_user_model().objects.filter(id__in=self.user_ids.split(","))],
                     [],
                     True,

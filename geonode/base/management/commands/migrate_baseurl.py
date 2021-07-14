@@ -88,9 +88,9 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                 _cnt = MapLayer.objects.filter(ows_url__icontains=source_address).update(
                     ows_url=Func(
                         F('ows_url'), Value(source_address), Value(target_address), function='replace'))
-                MapLayer.objects.filter(layer_params__icontains=source_address).update(
-                    layer_params=Func(
-                        F('layer_params'), Value(source_address), Value(target_address), function='replace'))
+                MapLayer.objects.filter(dataset_params__icontains=source_address).update(
+                    dataset_params=Func(
+                        F('dataset_params'), Value(source_address), Value(target_address), function='replace'))
                 logger.info(f"Updated {_cnt} MapLayers")
 
                 _cnt = Dataset.objects.filter(thumbnail_url__icontains=source_address).update(

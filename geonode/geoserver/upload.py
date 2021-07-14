@@ -27,7 +27,7 @@ from geoserver.resource import FeatureType, Coverage
 from django.conf import settings
 
 from geonode import GeoNodeException
-from geonode.datasets.utils import layer_type, get_files
+from geonode.datasets.utils import dataset_type, get_files
 from .helpers import (
     GEOSERVER_LAYER_TYPES,
     gs_catalog,
@@ -41,8 +41,8 @@ from .helpers import (
 logger = logging.getLogger(__name__)
 
 
-def geoserver_layer_type(filename):
-    the_type = layer_type(filename)
+def geoserver_dataset_type(filename):
+    the_type = dataset_type(filename)
     return GEOSERVER_LAYER_TYPES[the_type]
 
 
@@ -62,7 +62,7 @@ def geoserver_upload(
     # the existing resource
     logger.debug('>>> Step 2. Make sure we are not trying to overwrite a '
                  'existing resource named [%s] with the wrong type', name)
-    the_layer_type = geoserver_layer_type(base_file)
+    the_dataset_type = geoserver_dataset_type(base_file)
 
     # Get a short handle to the gsconfig geoserver catalog
     cat = gs_catalog
@@ -87,8 +87,8 @@ def geoserver_upload(
                     msg = 'Name already in use and overwrite is False'
                     assert overwrite, msg
                     existing_type = resource.resource_type
-                    if existing_type != the_layer_type:
-                        msg = (f'Type of uploaded file {name} ({the_layer_type}) '
+                    if existing_type != the_dataset_type:
+                        msg = (f'Type of uploaded file {name} ({the_dataset_type}) '
                                'does not match type of existing '
                                f'resource type {existing_type}')
                         logger.debug(msg)
@@ -98,17 +98,17 @@ def geoserver_upload(
     # are needed.
     logger.debug('>>> Step 3. Identifying if [%s] is vector or raster and '
                  'gathering extra files', name)
-    if the_layer_type == FeatureType.resource_type:
+    if the_dataset_type == FeatureType.resource_type:
         logger.debug('Uploading vector layer: [%s]', base_file)
         if ogc_server_settings.DATASTORE:
             create_store_and_resource = _create_db_featurestore
         else:
             create_store_and_resource = _create_featurestore
-    elif the_layer_type == Coverage.resource_type:
+    elif the_dataset_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
         create_store_and_resource = _create_coveragestore
     else:
-        msg = (f'The layer type for name {name} is {the_layer_type}. It should be '
+        msg = (f'The layer type for name {name} is {the_dataset_type}. It should be '
                f'{FeatureType.resource_type} or {Coverage.resource_type},')
         logger.warn(msg)
         raise GeoNodeException(msg)
@@ -213,12 +213,12 @@ def geoserver_upload(
             cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=workspace)
             cat.reset()
         except geoserver.catalog.ConflictingDataError as e:
-            msg = (f'There was already a style named {name}_layer in GeoServer, '
+            msg = (f'There was already a style named {name}_dataset in GeoServer, '
                    f'try to use: "{e}"')
             logger.warn(msg)
             e.args = (msg,)
         except geoserver.catalog.UploadError as e:
-            msg = (f'Error while trying to upload style named {name}_layer in GeoServer, '
+            msg = (f'Error while trying to upload style named {name}_dataset in GeoServer, '
                    f'try to use: "{e}"')
             e.args = (msg,)
             logger.exception(e)
@@ -246,13 +246,13 @@ def geoserver_upload(
     # Step 8. Create the Django record for the layer
     logger.debug('>>> Step 8. Creating Django record for [%s]', name)
     alternate = f"{workspace.name}:{gs_resource.name}"
-    layer_uuid = str(uuid.uuid1())
+    dataset_uuid = str(uuid.uuid1())
 
     defaults = dict(store=gs_resource.store.name,
                     subtype=gs_resource.store.resource_type,
                     alternate=alternate,
                     title=title or gs_resource.title,
-                    uuid=layer_uuid,
+                    uuid=dataset_uuid,
                     abstract=abstract or gs_resource.abstract or '',
                     owner=user)
 

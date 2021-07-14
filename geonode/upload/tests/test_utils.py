@@ -21,7 +21,7 @@
 
 
 from django.test.utils import override_settings
-from geonode.base.populate_test_data import create_single_layer
+from geonode.base.populate_test_data import create_single_dataset
 from django.test import TestCase
 from geonode.tests.base import GeoNodeBaseTestSupport
 from lxml import etree
@@ -73,7 +73,7 @@ class TestHandleMetadataKeyword(TestCase):
     def setUp(self):
         self.keyword = [
             {
-                "keywords": ["features", "test_layer"],
+                "keywords": ["features", "test_dataset"],
                 "thesaurus": {"date": None, "datetype": None, "title": None},
                 "type": "theme",
             },
@@ -97,7 +97,7 @@ class TestHandleMetadataKeyword(TestCase):
             },
             {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
         ]
-        self.layer = create_single_layer('keyword-handler')
+        self.layer = create_single_dataset('keyword-handler')
         self.sut = utils.KeywordHandler(
             instance=self.layer,
             keywords=self.keyword
@@ -111,14 +111,14 @@ class TestHandleMetadataKeyword(TestCase):
 
     def test_should_return_the_expected_keyword_extracted_from_raw_and_the_thesaurus_keyword(self):
         keyword, thesaurus_keyword = self.sut.handle_metadata_keywords()
-        self.assertSetEqual({"features", "test_layer", "no conditions to access and use"}, set(keyword))
+        self.assertSetEqual({"features", "test_dataset", "no conditions to access and use"}, set(keyword))
         self.assertListEqual(["ad", "af"], [x.alt_label for x in thesaurus_keyword])
 
-    def test_should_assign_correclty_the_keyword_to_the_layer_object(self):
+    def test_should_assign_correclty_the_keyword_to_the_dataset_object(self):
         self.sut.set_keywords()
         current_keywords = [keyword.name for keyword in self.layer.keywords.all()]
         current_tkeyword = [t.alt_label for t in self.layer.tkeywords.all()]
-        self.assertSetEqual({"features", "test_layer", "no conditions to access and use"}, set(current_keywords))
+        self.assertSetEqual({"features", "test_dataset", "no conditions to access and use"}, set(current_keywords))
         self.assertSetEqual({"ad", "af"}, set(current_tkeyword))
 
     def test_is_thesaurus_available_should_return_queryset_with_existing_thesaurus(self):
@@ -148,7 +148,7 @@ Is required to define a fuction that takes 2 parametersand return 2 parameters.
 
 class TestMetadataStorers(TestCase):
     def setUp(self):
-        self.layer = create_single_layer('metadata-storer')
+        self.layer = create_single_dataset('metadata-storer')
         self.uuid = self.layer.uuid
         self.abstract = self.layer.abstract
         self.custom = {

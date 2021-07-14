@@ -183,8 +183,8 @@ class BaseApiTests(APITestCase):
         logger.debug(response.data)
 
         # Remove public permissions to Layers
-        from geonode.datasets.utils import set_layers_permissions
-        set_layers_permissions(
+        from geonode.datasets.utils import set_datasets_permissions
+        set_datasets_permissions(
             "read",  # permissions_name
             None,  # resources_names == None (all layers)
             [get_anonymous_user()],  # users_usernames

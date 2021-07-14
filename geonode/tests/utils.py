@@ -329,7 +329,7 @@ def get_web_page(url, username=None, password=None, login_url=None):
     return page
 
 
-def check_layer(uploaded):
+def check_dataset(uploaded):
     """Verify if an object is a valid Dataset.
     """
     msg = (f'Was expecting layer object, got {type(uploaded)}')

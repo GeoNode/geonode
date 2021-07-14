@@ -65,7 +65,7 @@ def metadata_batch_edit(modeladmin, request, queryset):
         'ids': ids
     })
     name_space_mapper = {
-        'layer': 'layer_batch_metadata',
+        'layer': 'dataset_batch_metadata',
         'map': 'map_batch_metadata',
         'document': 'document_batch_metadata'
     }
@@ -113,7 +113,7 @@ def set_batch_permissions(modeladmin, request, queryset):
 set_batch_permissions.short_description = 'Set permissions'
 
 
-def set_user_and_group_layer_permission(modeladmin, request, queryset):
+def set_user_and_group_dataset_permission(modeladmin, request, queryset):
     ids = ','.join(str(element.pk) for element in queryset)
     resource = queryset[0].__class__.__name__.lower()
 
@@ -138,7 +138,7 @@ def set_user_and_group_layer_permission(modeladmin, request, queryset):
     )
 
 
-set_user_and_group_layer_permission.short_description = 'Set layer permissions'
+set_user_and_group_dataset_permission.short_description = 'Set layer permissions'
 
 
 class LicenseAdmin(TabbedTranslationAdmin):

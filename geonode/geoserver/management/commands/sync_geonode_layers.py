@@ -30,7 +30,7 @@ from geonode.geoserver.helpers import (
 )
 
 
-def sync_geonode_layers(ignore_errors,
+def sync_geonode_datasets(ignore_errors,
                         filter,
                         username,
                         removeduplicates,
@@ -44,7 +44,7 @@ def sync_geonode_layers(ignore_errors,
         layers = layers.filter(owner__username=username)
     layers_count = layers.count()
     count = 0
-    layer_errors = []
+    dataset_errors = []
     for layer in layers:
         try:
             count += 1
@@ -66,7 +66,7 @@ def sync_geonode_layers(ignore_errors,
                 print("Removing duplicate links...")
                 remove_duplicate_links(layer)
         except Exception:
-            layer_errors.append(layer.alternate)
+            dataset_errors.append(layer.alternate)
             exception_type, error, traceback = sys.exc_info()
             print(exception_type, error, traceback)
             if ignore_errors:
@@ -76,9 +76,9 @@ def sync_geonode_layers(ignore_errors,
                 traceback.print_exc()
                 print("Stopping process because --ignore-errors was not set and an error was found.")
                 return
-    print(f"There are {len(layer_errors)} layers which could not be updated because of errors")
-    for layer_error in layer_errors:
-        print(layer_error)
+    print(f"There are {len(dataset_errors)} layers which could not be updated because of errors")
+    for dataset_error in dataset_errors:
+        print(dataset_error)
 
 
 class Command(BaseCommand):
@@ -143,7 +143,7 @@ class Command(BaseCommand):
             username = None
         else:
             username = options.get('username')
-        sync_geonode_layers(
+        sync_geonode_datasets(
             ignore_errors,
             filter,
             username,

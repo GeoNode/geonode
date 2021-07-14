@@ -353,7 +353,7 @@ def document_post_save(instance, *args, **kwargs):
         instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
 
 
-def layer_post_save(instance, *args, **kwargs):
+def dataset_post_save(instance, *args, **kwargs):
     base_file, info = instance.get_base_file()
 
     if info:
@@ -371,9 +371,9 @@ def layer_post_save(instance, *args, **kwargs):
 
 
 def metadata_post_save(instance, *args, **kwargs):
-    logger.debug("handling UUID In pre_save_layer")
+    logger.debug("handling UUID In pre_save_dataset")
     if isinstance(instance, Dataset) and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
-        logger.debug("using custom uuid handler In pre_save_layer")
+        logger.debug("using custom uuid handler In pre_save_dataset")
         from ..layers.utils import get_uuid_handler
         _uuid = get_uuid_handler()(instance).create_uuid()
         if _uuid != instance.uuid:
@@ -478,6 +478,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
         if isinstance(instance, Document):
             document_post_save(instance, *args, **kwargs)
         if isinstance(instance, Dataset):
-            layer_post_save(instance, *args, **kwargs)
+            dataset_post_save(instance, *args, **kwargs)
 
         metadata_post_save(instance, *args, **kwargs)

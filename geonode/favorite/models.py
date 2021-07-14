@@ -46,7 +46,7 @@ class FavoriteManager(models.Manager):
     def favorite_maps_for_user(self, user):
         return self._favorite_ct_for_user(user, Map)
 
-    def favorite_layers_for_user(self, user):
+    def favorite_datasets_for_user(self, user):
         return self._favorite_ct_for_user(user, Dataset)
 
     def favorite_users_for_user(self, user):

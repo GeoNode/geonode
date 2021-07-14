@@ -203,11 +203,11 @@ community."
         map_obj = Map.objects.all().first()
         self.assertEqual(map_obj.title, "Title2")
         self.assertEqual(map_obj.abstract, "Abstract2")
-        self.assertEqual(map_obj.layer_set.all().count(), 1)
+        self.assertEqual(map_obj.dataset_set.all().count(), 1)
 
-        for map_layer in map_obj.layers:
+        for map_dataset in map_obj.layers:
             self.assertEqual(
-                map_layer.layer_title,
+                map_dataset.dataset_title,
                 "base:nic_admin")
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
@@ -240,7 +240,7 @@ community."
         map_obj = Map.objects.get(id=map_id)
         self.assertEqual(map_obj.title, "Title")
         self.assertEqual(map_obj.abstract, "Abstract")
-        self.assertEqual(map_obj.layer_set.all().count(), 1)
+        self.assertEqual(map_obj.dataset_set.all().count(), 1)
         self.assertEqual(map_obj.keyword_list(), ["keywords", "saving"])
         self.assertNotEqual(map_obj.bbox_polygon, None)
 
@@ -283,12 +283,12 @@ community."
             'GeoNode default map abstract')
         self.assertEqual(cfg['about']['title'], 'GeoNode Default Map')
 
-        def is_wms_layer(x):
+        def is_wms_dataset(x):
             if 'source' in x:
                 return cfg['sources'][x['source']]['ptype'] == 'gxp_wmscsource'
             return False
         layernames = [x['name']
-                      for x in cfg['map']['layers'] if is_wms_layer(x)]
+                      for x in cfg['map']['layers'] if is_wms_dataset(x)]
         self.assertEqual(layernames, ['geonode:CA', ])
 
     def test_map_to_wmc(self):
@@ -353,15 +353,15 @@ community."
         map_obj.group = None
         map_obj.save()
 
-    def test_new_map_without_layers(self):
+    def test_new_map_without_datasets(self):
         # TODO: Should this test have asserts in it?
         self.client.get(reverse('new_map'))
 
-    def test_new_map_with_layer(self):
+    def test_new_map_with_dataset(self):
         layer = Dataset.objects.all().first()
         self.client.get(f"{reverse('new_map')}?layer={layer.alternate}")
 
-    def test_new_map_with_layer_view(self):
+    def test_new_map_with_dataset_view(self):
         layer = Dataset.objects.all().first()
         # anonymous user
         response = self.client.get(f"{reverse('new_map')}?layer={layer.alternate}&view=True")
@@ -375,34 +375,34 @@ community."
         response = self.client.get(f"{reverse('new_map')}?layer=invalid_name&view=True")
         self.assertListEqual([], response.context.get('perms_list', []))
 
-    def test_new_map_with_empty_bbox_layer(self):
+    def test_new_map_with_empty_bbox_dataset(self):
         layer = Dataset.objects.all().first()
         self.client.get(f"{reverse('new_map')}?layer={layer.alternate}")
 
-    def test_add_layer_to_existing_map(self):
+    def test_add_dataset_to_existing_map(self):
         layer = Dataset.objects.all().first()
         map_obj = Map.objects.all().first()
-        self.client.get(f"{reverse('add_layer')}?layer_name={layer.alternate}&map_id={map_obj.id}")
+        self.client.get(f"{reverse('add_dataset')}?dataset_name={layer.alternate}&map_id={map_obj.id}")
 
         map_obj = Map.objects.get(id=map_obj.id)
-        for map_layer in map_obj.layers:
-            layer_title = map_layer.layer_title
-            local_link = map_layer.local_link
-            if map_layer.name == layer.alternate:
+        for map_dataset in map_obj.layers:
+            dataset_title = map_dataset.dataset_title
+            local_link = map_dataset.local_link
+            if map_dataset.name == layer.alternate:
                 self.assertTrue(
-                    layer_title in layer.alternate)
+                    dataset_title in layer.alternate)
                 self.assertTrue(
-                    map_layer.name in local_link)
-            if Dataset.objects.filter(alternate=map_layer.name).exists():
-                attribute_cfg = Dataset.objects.get(alternate=map_layer.name).attribute_config()
+                    map_dataset.name in local_link)
+            if Dataset.objects.filter(alternate=map_dataset.name).exists():
+                attribute_cfg = Dataset.objects.get(alternate=map_dataset.name).attribute_config()
                 if "getFeatureInfo" in attribute_cfg:
                     self.assertIsNotNone(attribute_cfg["getFeatureInfo"])
-                    cfg = map_layer.layer_config()
+                    cfg = map_dataset.dataset_config()
                     self.assertIsNotNone(cfg["getFeatureInfo"])
                     self.assertEqual(cfg["getFeatureInfo"], attribute_cfg["getFeatureInfo"])
 
     def test_ajax_map_permissions(self):
-        """Verify that the ajax_layer_permissions view is behaving as expected
+        """Verify that the ajax_dataset_permissions view is behaving as expected
         """
 
         # Setup some layer names to work with
@@ -637,7 +637,7 @@ community."
         """
         try:
             map_obj = Map.objects.get(id=map_id)
-            map_obj.layer_set.all().delete()
+            map_obj.dataset_set.all().delete()
             map_obj.delete()
         except Map.DoesNotExist:
             pass
@@ -774,9 +774,9 @@ community."
         self.assertEqual(map_obj.zoom, 6)
         self.assertEqual(map_obj.projection, projection)
 
-        for map_layer in map_obj.layers:
-            if Dataset.objects.filter(alternate=map_layer.name).exists():
-                cfg = map_layer.layer_config()
+        for map_dataset in map_obj.layers:
+            if Dataset.objects.filter(alternate=map_dataset.name).exists():
+                cfg = map_dataset.dataset_config()
                 self.assertIsNotNone(cfg["getFeatureInfo"])
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
@@ -788,8 +788,8 @@ community."
         # Test successful new map creation
         m = Map()
         admin_user = get_user_model().objects.get(username='admin')
-        layer_name = Dataset.objects.all().first().alternate
-        m.create_from_layer_list(admin_user, [layer_name], "title", "abstract")
+        dataset_name = Dataset.objects.all().first().alternate
+        m.create_from_dataset_list(admin_user, [dataset_name], "title", "abstract")
         map_id = m.id
 
         url = reverse('new_map_json')
@@ -823,7 +823,7 @@ community."
             response_config_dict['about']['title'])
 
         # Test GET method no COPY but with layer in params
-        response = self.client.get(url, {'layer': layer_name})
+        response = self.client.get(url, {'layer': dataset_name})
         self.assertEqual(response.status_code, 200)
         content = response.content
         if isinstance(content, bytes):
@@ -833,14 +833,14 @@ community."
 
         # Test POST method without authentication
         self.client.logout()
-        response = self.client.post(url, {'layer': layer_name})
+        response = self.client.post(url, {'layer': dataset_name})
         self.assertEqual(response.status_code, 401)
 
         # Test POST method with authentication and a layer in params
         self.client.login(username='admin', password='admin')
 
         try:
-            response = self.client.post(url, {'layer': layer_name})
+            response = self.client.post(url, {'layer': dataset_name})
             # Should not accept the request
             self.assertEqual(response.status_code, 400)
 
@@ -924,7 +924,7 @@ community."
             # number of base layers (we remove the local geoserver entry from the total)
             n_baselayers = len(settings.MAP_BASELAYERS) - 1
             # number of local layers
-            n_locallayers = map_obj.layer_set.filter(local=True).count()
+            n_locallayers = map_obj.dataset_set.filter(local=True).count()
             fix_baselayers(map_id)
             self.assertEqual(1, n_baselayers + n_locallayers)
 
@@ -1001,12 +1001,12 @@ community."
 
     def test_get_legend(self):
         layer = Dataset.objects.all().first()
-        map_layer = MapLayer.objects.filter(name=layer.alternate).exclude(layer_params='').first()
-        if map_layer and layer.default_style:
-            self.assertIsNone(map_layer.get_legend)
-        elif map_layer:
-            # when there is no style in layer_params
-            self.assertIsNone(map_layer.get_legend)
+        map_dataset = MapLayer.objects.filter(name=layer.alternate).exclude(dataset_params='').first()
+        if map_dataset and layer.default_style:
+            self.assertIsNone(map_dataset.get_legend)
+        elif map_dataset:
+            # when there is no style in dataset_params
+            self.assertIsNone(map_dataset.get_legend)
 
     def test_moderated_upload(self):
         """

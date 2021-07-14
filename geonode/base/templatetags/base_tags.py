@@ -251,7 +251,7 @@ def facets(context):
             'wms': count_dict.get('wmsStore', 0),
         }
 
-        # Break early if only_layers is set.
+        # Break early if only_datasets is set.
         if facet_type == 'layers':
             return facets
 
@@ -426,7 +426,7 @@ def display_change_perms_button(resource, user, perms):
 
 
 @register.simple_tag
-def get_layer_count_by_services(service_id, user):
+def get_dataset_count_by_services(service_id, user):
     return get_visible_resources(
         queryset=Dataset.objects.filter(remote_service=service_id),
         user=user

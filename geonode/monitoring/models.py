@@ -416,7 +416,7 @@ class RequestEvent(models.Model):
     request_path = models.TextField(blank=False, default='')
 
     # resources is a list of affected resources. it is buld as a pair of type and name:
-    #  layer=geonode:sample_layer01
+    #  layer=geonode:sample_dataset01
     # or
     #  document=documents/id
     # or

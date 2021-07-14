@@ -256,7 +256,7 @@ def validate_raster(contents, allow_multiple=False):
         return {x for x in _a if _a.count(x) > 1}
 
     valid_extensions = None
-    raster_types = [t for t in files.types if t.layer_type == files.raster]
+    raster_types = [t for t in files.types if t.dataset_type == files.raster]
     raster_exts = [f".{t.code}" for t in raster_types]
     raster_aliases = []
     for alias in [aliases for aliases in [t.aliases for t in raster_types] if aliases]:

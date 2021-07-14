@@ -25,38 +25,38 @@ from django.urls.base import reverse
 class BaseHookSet:
 
     # Layers
-    def layer_list_template(self, context=None):
-        return 'layers/layer_list_default.html'
+    def dataset_list_template(self, context=None):
+        return 'layers/dataset_list_default.html'
 
-    def layer_detail_template(self, context=None):
+    def dataset_detail_template(self, context=None):
         return NotImplemented
 
-    def layer_new_template(self, context=None):
+    def dataset_new_template(self, context=None):
         return NotImplemented
 
-    def layer_view_template(self, context=None):
+    def dataset_view_template(self, context=None):
         return NotImplemented
 
-    def layer_edit_template(self, context=None):
+    def dataset_edit_template(self, context=None):
         return NotImplemented
 
-    def layer_update_template(self, context=None):
+    def dataset_update_template(self, context=None):
         return NotImplemented
 
-    def layer_embed_template(self, context=None):
+    def dataset_embed_template(self, context=None):
         return NotImplemented
 
-    def layer_download_template(self, context=None):
+    def dataset_download_template(self, context=None):
         return NotImplemented
 
-    def layer_style_edit_template(self, context=None):
+    def dataset_style_edit_template(self, context=None):
         return NotImplemented
 
-    def layer_list_url(self):
-        return self.add_limit_settings(reverse('layer_browse'))
+    def dataset_list_url(self):
+        return self.add_limit_settings(reverse('dataset_browse'))
 
-    def layer_detail_url(self, layer):
-        return reverse('layer_detail', args=(layer.alternate,))
+    def dataset_detail_url(self, layer):
+        return reverse('dataset_detail', args=(layer.alternate,))
 
     # Maps
     def map_list_template(self, context=None):

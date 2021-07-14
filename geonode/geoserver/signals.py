@@ -35,7 +35,7 @@ from geonode.geoserver.tasks import geoserver_create_thumbnail
 from geonode.services.enumerations import CASCADED
 
 from . import BACKEND_PACKAGE
-from .tasks import geoserver_cascading_delete, geoserver_post_save_layers
+from .tasks import geoserver_cascading_delete, geoserver_post_save_datasets
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
@@ -72,7 +72,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    geoserver_post_save_layers.apply_async(
+    geoserver_post_save_datasets.apply_async(
         (instance.id, args, kwargs))
 
 

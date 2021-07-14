@@ -71,15 +71,15 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
 
     # Dataset Pages #
 
-    def test_layer_page(self):
+    def test_dataset_page(self):
         'Test if the data home page renders.'
-        response = self.client.get(reverse('layer_browse'))
+        response = self.client.get(reverse('dataset_browse'))
         self.assertEqual(response.status_code, 200)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_layer_acls(self):
+    def test_dataset_acls(self):
         'Test if the data/acls endpoint renders.'
-        response = self.client.get(reverse('layer_acls'))
+        response = self.client.get(reverse('dataset_acls'))
         self.assertEqual(response.status_code, 401)
 
     # Maps Pages #

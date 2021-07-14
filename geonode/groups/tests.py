@@ -43,7 +43,7 @@ from geonode.base.populate_test_data import (
     all_public,
     create_models,
     remove_models,
-    create_single_layer)
+    create_single_dataset)
 
 logger = logging.getLogger(__name__)
 
@@ -850,7 +850,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                             status_code=200,
                             msg_prefix='',
                             html=False)
-        layer = create_single_layer('single_point.shp')
+        layer = create_single_dataset('single_point.shp')
         try:
             # Add test to test perms being sent to the front end.
             layer.set_default_permissions()

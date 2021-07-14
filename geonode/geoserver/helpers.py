@@ -221,36 +221,36 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
         raise Exception(
             "The uploaded SLD file is not valid XML")
 
-    named_layer = dom.findall(
+    named_dataset = dom.findall(
         "{http://www.opengis.net/sld}NamedLayer")
-    user_layer = dom.findall(
+    user_dataset = dom.findall(
         "{http://www.opengis.net/sld}UserLayer")
 
     el = None
-    if named_layer and len(named_layer) > 0:
-        user_style = named_layer[0].findall("{http://www.opengis.net/sld}UserStyle")
+    if named_dataset and len(named_dataset) > 0:
+        user_style = named_dataset[0].findall("{http://www.opengis.net/sld}UserStyle")
         if user_style and len(user_style) > 0:
             el = user_style[0].findall("{http://www.opengis.net/sld}Name")
             if len(el) == 0:
                 el = user_style[0].findall("{http://www.opengis.net/se}Name")
 
         if len(el) == 0:
-            el = named_layer[0].findall("{http://www.opengis.net/sld}Name")
+            el = named_dataset[0].findall("{http://www.opengis.net/sld}Name")
         if len(el) == 0:
-            el = named_layer[0].findall("{http://www.opengis.net/se}Name")
+            el = named_dataset[0].findall("{http://www.opengis.net/se}Name")
 
     if not el or len(el) == 0:
-        if user_layer and len(user_layer) > 0:
-            user_style = user_layer[0].findall("{http://www.opengis.net/sld}UserStyle")
+        if user_dataset and len(user_dataset) > 0:
+            user_style = user_dataset[0].findall("{http://www.opengis.net/sld}UserStyle")
             if user_style and len(user_style) > 0:
                 el = user_style[0].findall("{http://www.opengis.net/sld}Name")
                 if len(el) == 0:
                     el = user_style[0].findall("{http://www.opengis.net/se}Name")
 
             if len(el) == 0:
-                el = user_layer[0].findall("{http://www.opengis.net/sld}Name")
+                el = user_dataset[0].findall("{http://www.opengis.net/sld}Name")
             if len(el) == 0:
-                el = user_layer[0].findall("{http://www.opengis.net/se}Name")
+                el = user_dataset[0].findall("{http://www.opengis.net/se}Name")
 
     if not el or len(el) == 0:
         if sld_file:
@@ -264,34 +264,34 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
 
 def get_sld_for(gs_catalog, layer):
     name = None
-    gs_layer = None
+    gs_dataset = None
     gs_style = None
 
     _default_style = None
     _max_retries, _tries = getattr(ogc_server_settings, "MAX_RETRIES", 2), 0
     try:
-        gs_layer = gs_catalog.get_layer(layer.name)
-        if gs_layer.default_style:
-            gs_style = gs_layer.default_style.sld_body
-            set_layer_style(layer,
+        gs_dataset = gs_catalog.get_layer(layer.name)
+        if gs_dataset.default_style:
+            gs_style = gs_dataset.default_style.sld_body
+            set_dataset_style(layer,
                             layer.alternate,
                             gs_style)
-        name = gs_layer.default_style.name
-        _default_style = gs_layer.default_style
+        name = gs_dataset.default_style.name
+        _default_style = gs_dataset.default_style
     except Exception as e:
         logger.debug(e)
         name = None
 
     while not name and _tries < _max_retries:
         try:
-            gs_layer = gs_catalog.get_layer(layer.name)
-            if gs_layer:
-                if gs_layer.default_style:
-                    gs_style = gs_layer.default_style.sld_body
-                    set_layer_style(layer,
+            gs_dataset = gs_catalog.get_layer(layer.name)
+            if gs_dataset:
+                if gs_dataset.default_style:
+                    gs_style = gs_dataset.default_style.sld_body
+                    set_dataset_style(layer,
                                     layer.alternate,
                                     gs_style)
-                name = gs_layer.default_style.name
+                name = gs_dataset.default_style.name
                 if name:
                     break
         except Exception as e:
@@ -313,7 +313,7 @@ def get_sld_for(gs_catalog, layer):
         raise GeoNodeException(msg)
 
     # Detect geometry type if it is a FeatureType
-    res = gs_layer.resource if gs_layer else None
+    res = gs_dataset.resource if gs_dataset else None
     if res and res.resource_type == 'featureType':
         res.fetch()
         ft = res.store.get_resources(name=res.name)
@@ -342,7 +342,7 @@ def get_sld_for(gs_catalog, layer):
         return gs_style
 
 
-def set_layer_style(saved_layer, title, sld, base_file=None):
+def set_dataset_style(saved_dataset, title, sld, base_file=None):
     # Check SLD is valid
     try:
         if sld:
@@ -364,32 +364,32 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
 
     # Check Dataset's available styles
     match = None
-    styles = list(saved_layer.styles.all()) + [
-        saved_layer.default_style]
+    styles = list(saved_dataset.styles.all()) + [
+        saved_dataset.default_style]
     for style in styles:
-        if style and style.name == saved_layer.name:
+        if style and style.name == saved_dataset.name:
             match = style
             break
     layer = gs_catalog.get_layer(title)
     style = None
     if match is None:
         try:
-            style = gs_catalog.get_style(saved_layer.name, workspace=saved_layer.workspace) or \
-                gs_catalog.get_style(saved_layer.name)
+            style = gs_catalog.get_style(saved_dataset.name, workspace=saved_dataset.workspace) or \
+                gs_catalog.get_style(saved_dataset.name)
             if not style:
                 style = gs_catalog.create_style(
-                    saved_layer.name, sld, overwrite=False, raw=True, workspace=saved_layer.workspace)
+                    saved_dataset.name, sld, overwrite=False, raw=True, workspace=saved_dataset.workspace)
         except Exception as e:
             logger.exception(e)
     else:
-        style = gs_catalog.get_style(saved_layer.name, workspace=saved_layer.workspace) or \
-            gs_catalog.get_style(saved_layer.name)
+        style = gs_catalog.get_style(saved_dataset.name, workspace=saved_dataset.workspace) or \
+            gs_catalog.get_style(saved_dataset.name)
         try:
             if not style:
                 style = gs_catalog.create_style(
-                    saved_layer.name, sld,
+                    saved_dataset.name, sld,
                     overwrite=True, raw=True,
-                    workspace=saved_layer.workspace)
+                    workspace=saved_dataset.workspace)
             elif sld:
                 style.update_body(sld)
         except Exception as e:
@@ -398,9 +398,9 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
     if layer and style:
         _old_styles = []
         _old_styles.append(gs_catalog.get_style(
-            name=saved_layer.name))
+            name=saved_dataset.name))
         _old_styles.append(gs_catalog.get_style(
-            name=f"{saved_layer.workspace}_{saved_layer.name}"))
+            name=f"{saved_dataset.workspace}_{saved_dataset.name}"))
         _old_styles.append(gs_catalog.get_style(
             name=layer.default_style.name))
         _old_styles.append(gs_catalog.get_style(
@@ -412,23 +412,23 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
             try:
                 gs_catalog.delete(_s)
                 Link.objects.filter(
-                    resource=saved_layer.resourcebase_ptr,
+                    resource=saved_dataset.resourcebase_ptr,
                     name='Legend',
                     url__contains=f'STYLE={_s.name}').delete()
             except Exception as e:
                 logger.debug(e)
-        set_styles(saved_layer, gs_catalog)
+        set_styles(saved_dataset, gs_catalog)
 
 
-def cascading_delete(layer_name=None, catalog=None):
-    if not layer_name:
+def cascading_delete(dataset_name=None, catalog=None):
+    if not dataset_name:
         return
     cat = catalog or gs_catalog
     resource = None
     workspace = None
     try:
-        if layer_name.find(':') != -1 and len(layer_name.split(':')) == 2:
-            workspace, name = layer_name.split(':')
+        if dataset_name.find(':') != -1 and len(dataset_name.split(':')) == 2:
+            workspace, name = dataset_name.split(':')
             ws = cat.get_workspace(workspace)
             store = None
             try:
@@ -436,7 +436,7 @@ def cascading_delete(layer_name=None, catalog=None):
             except FailedRequestError:
                 if ogc_server_settings.DATASTORE:
                     try:
-                        layers = Dataset.objects.filter(alternate=layer_name)
+                        layers = Dataset.objects.filter(alternate=dataset_name)
                         for layer in layers:
                             store = get_store(cat, layer.store, workspace=ws)
                     except FailedRequestError:
@@ -450,11 +450,11 @@ def cascading_delete(layer_name=None, catalog=None):
                     'cascading delete was called on a layer where the workspace was not found')
             resource = cat.get_resource(name=name, store=store, workspace=workspace)
         else:
-            resource = cat.get_resource(name=layer_name)
+            resource = cat.get_resource(name=dataset_name)
     except OSError as e:
         if e.errno == errno.ECONNREFUSED:
             msg = (f'Could not connect to geoserver at "{ogc_server_settings.LOCATION}"'
-                   f'to save information for layer "{layer_name}"')
+                   f'to save information for layer "{dataset_name}"')
             logger.error(msg)
             return None
         else:
@@ -529,7 +529,7 @@ def cascading_delete(layer_name=None, catalog=None):
                     logger.debug(e)
 
 
-def delete_from_postgis(layer_name, store):
+def delete_from_postgis(dataset_name, store):
     """
     Delete a table from PostGIS (because Geoserver won't do it yet);
     to be used after deleting a layer from the system.
@@ -548,19 +548,19 @@ def delete_from_postgis(layer_name, store):
     try:
         conn = psycopg2.connect(dbname=db_name, user=user, host=host, port=port, password=password)
         cur = conn.cursor()
-        cur.execute(f"SELECT DropGeometryTable ('{layer_name}')")
+        cur.execute(f"SELECT DropGeometryTable ('{dataset_name}')")
         conn.commit()
     except Exception as e:
         logger.error(
             "Error deleting PostGIS table %s:%s",
-            layer_name,
+            dataset_name,
             str(e))
     finally:
         try:
             if conn:
                 conn.close()
         except Exception as e:
-            logger.error("Error closing PostGIS conn %s:%s", layer_name, str(e))
+            logger.error("Error closing PostGIS conn %s:%s", dataset_name, str(e))
 
 
 def gs_slurp(
@@ -653,11 +653,11 @@ def gs_slurp(
                 raise
 
     # filter out layers already registered in geonode
-    layer_names = Dataset.objects.all().values_list('alternate', flat=True)
+    dataset_names = Dataset.objects.all().values_list('alternate', flat=True)
     if skip_geonode_registered:
         try:
             resources = [k for k in resources
-                         if f'{k.workspace.name}:{k.name}' not in layer_names]
+                         if f'{k.workspace.name}:{k.name}' not in dataset_names]
         except Exception:
             if ignore_errors:
                 pass
@@ -680,7 +680,7 @@ def gs_slurp(
             'deleted': 0,
         },
         'layers': [],
-        'deleted_layers': []
+        'deleted_datasets': []
     }
     start = datetime.datetime.now(timezone.get_current_timezone())
     for i, resource in enumerate(resources):
@@ -695,7 +695,7 @@ def gs_slurp(
                     name=name,
                     workspace=workspace.name,
                     store=the_store.name,
-                    subtype=get_layer_storetype(the_store.resource_type),
+                    subtype=get_dataset_storetype(the_store.resource_type),
                     alternate=f"{workspace.name}:{resource.name}",
                     title=resource.title or _('No title provided'),
                     abstract=resource.abstract or _('No abstract provided'),
@@ -785,16 +785,16 @@ def gs_slurp(
 
         # compare the list of GeoNode layers obtained via query/filter with valid resources found in GeoServer
         # filtered per options passed to updatelayers: --workspace, --store, --skip-unadvertised
-        # add any layers not found in GeoServer to deleted_layers (must match
+        # add any layers not found in GeoServer to deleted_datasets (must match
         # workspace and store as well):
-        deleted_layers = []
+        deleted_datasets = []
         for layer in q:
             logger.debug(
                 "GeoNode Dataset info: name: %s, workspace: %s, store: %s",
                 layer.name,
                 layer.workspace,
                 layer.store)
-            layer_found_in_geoserver = False
+            dataset_found_in_geoserver = False
             for resource in resources_for_delete_compare:
                 # if layer.name matches a GeoServer resource, check also that
                 # workspace and store match, mark valid:
@@ -805,20 +805,20 @@ def gs_slurp(
                             resource.name,
                             resource.workspace.name,
                             resource.store.name)
-                        layer_found_in_geoserver = True
-            if not layer_found_in_geoserver:
+                        dataset_found_in_geoserver = True
+            if not dataset_found_in_geoserver:
                 logger.debug(
                     "----- Dataset %s not matched, marked for deletion ---------------",
                     layer.name)
-                deleted_layers.append(layer)
+                deleted_datasets.append(layer)
 
-        number_deleted = len(deleted_layers)
+        number_deleted = len(deleted_datasets)
         if verbosity > 0:
             msg = "\nFound %d layers to delete, starting processing" % number_deleted if number_deleted > 0 else \
                 "\nFound %d layers to delete" % number_deleted
             print(msg, file=console)
 
-        for i, layer in enumerate(deleted_layers):
+        for i, layer in enumerate(deleted_datasets):
             logger.debug(
                 "GeoNode Dataset to delete: name: %s, workspace: %s, store: %s",
                 layer.name,
@@ -848,7 +848,7 @@ def gs_slurp(
                 info['traceback'] = traceback
                 info['exception_type'] = exception_type
                 info['error'] = error
-            output['deleted_layers'].append(info)
+            output['deleted_datasets'].append(info)
             if verbosity > 0:
                 print(msg, file=console)
 
@@ -883,7 +883,7 @@ def set_attributes(
             example: [ ['id', 'Integer'], ... ]
         *overwrite*: replace existing attributes with new values if name/type matches.
         *attribute_stats*: dictionary of return values from get_attribute_statistics(),
-            of the form to get values by referencing attribute_stats[<layer_name>][<field_name>].
+            of the form to get values by referencing attribute_stats[<dataset_name>][<field_name>].
     """
     # we need 3 more items; description, attribute_label, and display_order
     attribute_map_dict = {
@@ -1054,7 +1054,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         if field is not None:
             if Attribute.objects.filter(layer=layer, attribute=field).exists():
                 continue
-            elif is_layer_attribute_aggregable(
+            elif is_dataset_attribute_aggregable(
                     layer.subtype,
                     field,
                     ftype):
@@ -1070,33 +1070,33 @@ def set_attributes_from_geoserver(layer, overwrite=False):
 
 def set_styles(layer, gs_catalog):
     style_set = []
-    gs_layer = None
+    gs_dataset = None
     try:
-        gs_layer = gs_catalog.get_layer(layer.name)
+        gs_dataset = gs_catalog.get_layer(layer.name)
     except Exception:
         tb = traceback.format_exc()
         logger.exception(tb)
 
-    if not gs_layer:
+    if not gs_dataset:
         try:
-            gs_layer = gs_catalog.get_layer(layer.alternate or layer.typename)
+            gs_dataset = gs_catalog.get_layer(layer.alternate or layer.typename)
         except Exception:
             tb = traceback.format_exc()
             logger.error(tb)
             logger.exception("No GeoServer Dataset found!")
 
-    if gs_layer:
+    if gs_dataset:
         default_style = gs_catalog.get_style(
-            name=gs_layer.default_style.name,
-            workspace=gs_layer.default_style.workspace)
+            name=gs_dataset.default_style.name,
+            workspace=gs_dataset.default_style.workspace)
         if default_style:
             # make sure we are not using a default SLD (which won't be editable)
             layer.default_style = save_style(default_style, layer)
             style_set.append(layer.default_style)
 
         try:
-            if gs_layer.styles:
-                alt_styles = gs_layer.styles
+            if gs_dataset.styles:
+                alt_styles = gs_dataset.styles
                 for alt_style in alt_styles:
                     if alt_style and alt_style:
                         _s = save_style(alt_style, layer)
@@ -1122,13 +1122,13 @@ def set_styles(layer, gs_catalog):
     logger.debug(" -- Resource Links[Legend link]...")
     try:
         from geonode.base.models import Link
-        layer_legends = Link.objects.filter(resource=layer.resourcebase_ptr, name='Legend')
+        dataset_legends = Link.objects.filter(resource=layer.resourcebase_ptr, name='Legend')
         for style in set(list(layer.styles.all()) + [layer.default_style, ]):
             if style:
                 style_name = os.path.basename(
                     urlparse(style.sld_url).path).split('.')[0]
                 legend_url = get_legend_url(layer, style_name)
-                if layer_legends.filter(resource=layer.resourcebase_ptr,
+                if dataset_legends.filter(resource=layer.resourcebase_ptr,
                                         name='Legend',
                                         url=legend_url).count() < 2:
                     Link.objects.update_or_create(
@@ -1179,7 +1179,7 @@ def save_style(gs_style, layer):
     return style
 
 
-def is_layer_attribute_aggregable(store_type, field_name, field_type):
+def is_dataset_attribute_aggregable(store_type, field_name, field_type):
     """
     Decipher whether layer attribute is suitable for statistical derivation
     """
@@ -1197,7 +1197,7 @@ def is_layer_attribute_aggregable(store_type, field_name, field_type):
     return True
 
 
-def get_attribute_statistics(layer_name, field):
+def get_attribute_statistics(dataset_name, field):
     """
     Generate statistics (range, mean, median, standard deviation, unique values)
     for layer attribute
@@ -1208,7 +1208,7 @@ def get_attribute_statistics(layer_name, field):
     if not ogc_server_settings.WPS_ENABLED:
         return None
     try:
-        return wps_execute_layer_attribute_statistics(layer_name, field)
+        return wps_execute_dataset_attribute_statistics(dataset_name, field)
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
@@ -1266,27 +1266,27 @@ def cleanup(name, uuid):
 
     cat = gs_catalog
     gs_store = None
-    gs_layer = None
+    gs_dataset = None
     gs_resource = None
     # FIXME: Could this lead to someone deleting for example a postgis db
     # with the same name of the uploaded file?.
     try:
         gs_store = cat.get_store(name)
         if gs_store is not None:
-            gs_layer = cat.get_layer(name)
-            if gs_layer is not None:
-                gs_resource = gs_layer.resource
+            gs_dataset = cat.get_layer(name)
+            if gs_dataset is not None:
+                gs_resource = gs_dataset.resource
         else:
-            gs_layer = None
+            gs_dataset = None
             gs_resource = None
     except FailedRequestError as e:
         msg = ('Couldn\'t connect to GeoServer while cleaning up layer '
                '[%s] !!', str(e))
         logger.warning(msg)
 
-    if gs_layer is not None:
+    if gs_dataset is not None:
         try:
-            cat.delete(gs_layer)
+            cat.delete(gs_dataset)
         except Exception:
             logger.warning("Couldn't delete GeoServer layer during cleanup()")
     if gs_resource is not None:
@@ -1732,7 +1732,7 @@ def sync_instance_with_geoserver(
         for key in ['alternate', 'store', 'subtype']:
             # attr_name = key if 'typename' not in key else 'alternate'
             # print attr_name
-            setattr(instance, key, get_layer_storetype(values[key]))
+            setattr(instance, key, get_dataset_storetype(values[key]))
 
         try:
             if settings.RESOURCE_PUBLISHING:
@@ -1857,8 +1857,8 @@ def sync_instance_with_geoserver(
 
         # Invalidate GeoWebCache for the updated resource
         try:
-            _stylefilterparams_geowebcache_layer(instance.alternate)
-            _invalidate_geowebcache_layer(instance.alternate)
+            _stylefilterparams_geowebcache_dataset(instance.alternate)
+            _invalidate_geowebcache_dataset(instance.alternate)
         except Exception:
             pass
 
@@ -1872,14 +1872,14 @@ def get_wms():
     return _wms
 
 
-def wps_execute_layer_attribute_statistics(layer_name, field):
+def wps_execute_dataset_attribute_statistics(dataset_name, field):
     """Derive aggregate statistics from WPS endpoint"""
 
     # generate statistics using WPS
     url = urljoin(ogc_server_settings.LOCATION, 'ows')
 
     request = render_to_string('layers/wps_execute_gs_aggregate.xml', {
-                               'layer_name': layer_name,
+                               'dataset_name': dataset_name,
                                'field': field
                                })
     u = urlsplit(url)
@@ -1924,11 +1924,11 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
     return result
 
 
-def _stylefilterparams_geowebcache_layer(layer_name):
+def _stylefilterparams_geowebcache_dataset(dataset_name):
     headers = {
         "Content-Type": "text/xml"
     }
-    url = f'{ogc_server_settings.LOCATION}gwc/rest/layers/{layer_name}.xml'
+    url = f'{ogc_server_settings.LOCATION}gwc/rest/layers/{dataset_name}.xml'
 
     # read GWC configuration
     req, content = http_client.get(
@@ -1964,13 +1964,13 @@ def _stylefilterparams_geowebcache_layer(layer_name):
             )
 
 
-def _invalidate_geowebcache_layer(layer_name, url=None):
+def _invalidate_geowebcache_dataset(dataset_name, url=None):
     # http.add_credentials(username, password)
     headers = {
         "Content-Type": "text/xml",
     }
     body = f"""
-        <truncateLayer><layerName>{layer_name}</layerName></truncateLayer>
+        <truncateLayer><layerName>{dataset_name}</layerName></truncateLayer>
         """.strip()
     if not url:
         url = f'{ogc_server_settings.LOCATION}gwc/rest/masstruncate'
@@ -1997,7 +1997,7 @@ def style_update(request, url, workspace=None):
     In case of a POST or PUT, we need to parse the xml from
     request.body, which is in this format:
     """
-    affected_layers = []
+    affected_datasets = []
     if request.method in ('POST', 'PUT', 'DELETE'):  # we need to parse xml
         # Need to remove NSx from IE11
         if "HTTP_USER_AGENT" in request.META:
@@ -2010,7 +2010,7 @@ def style_update(request, url, workspace=None):
         sld_title = style_name
         sld_body = None
         sld_url = url
-        layer_name = None
+        dataset_name = None
         if 'name' in request.GET:
             style_name = request.GET['name']
             sld_body = request.body
@@ -2026,13 +2026,13 @@ def style_update(request, url, workspace=None):
             else:
                 try:
                     tree = ET.ElementTree(dlxml.fromstring(request.body))
-                    elm_namedlayer_name = tree.findall(
+                    elm_nameddataset_name = tree.findall(
                         './/{http://www.opengis.net/sld}Name')[0]
                     elm_user_style_name = tree.findall(
                         './/{http://www.opengis.net/sld}Name')[1]
                     elm_user_style_title = tree.find(
                         './/{http://www.opengis.net/sld}Title')
-                    layer_name = elm_namedlayer_name.text
+                    dataset_name = elm_nameddataset_name.text
                     if elm_user_style_title is None:
                         sld_title = elm_user_style_name.text
                     else:
@@ -2055,19 +2055,19 @@ def style_update(request, url, workspace=None):
                 style.sld_title = sld_title
                 style.save()
             layer = None
-            if layer_name:
+            if dataset_name:
                 try:
-                    layer = Dataset.objects.get(name=layer_name)
+                    layer = Dataset.objects.get(name=dataset_name)
                 except Exception:
                     try:
-                        layer = Dataset.objects.get(alternate=layer_name)
+                        layer = Dataset.objects.get(alternate=dataset_name)
                     except Exception:
                         pass
             if layer:
                 if style:
-                    style.layer_styles.add(layer)
+                    style.dataset_styles.add(layer)
                     style.save()
-                affected_layers.append(layer)
+                affected_datasets.append(layer)
         elif request.method == 'PUT':  # update style in GN
             if style_name and not re.match(temp_style_name_regex, style_name):
                 style, created = Style.objects.get_or_create(name=style_name)
@@ -2076,17 +2076,17 @@ def style_update(request, url, workspace=None):
                 style.sld_url = sld_url
                 style.sld_title = sld_title
                 style.save()
-                for layer in style.layer_styles.all():
-                    affected_layers.append(layer)
+                for layer in style.dataset_styles.all():
+                    affected_datasets.append(layer)
 
         # Invalidate GeoWebCache so it doesn't retain old style in tiles
         try:
-            if layer_name:
-                _stylefilterparams_geowebcache_layer(layer_name)
-                _invalidate_geowebcache_layer(layer_name)
+            if dataset_name:
+                _stylefilterparams_geowebcache_dataset(dataset_name)
+                _invalidate_geowebcache_dataset(dataset_name)
         except Exception:
             pass
-    return affected_layers
+    return affected_datasets
 
 
 def set_time_info(layer, attribute, end_attribute, presentation,
@@ -2293,7 +2293,7 @@ def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
     return implementation(instance, overwrite, check_bbox)
 
 
-def get_layer_storetype(element):
+def get_dataset_storetype(element):
     return LAYER_SUBTYPES.get(element, element)
 
 
@@ -2335,10 +2335,10 @@ class SpatialFilesLayerType:
     base_file: str
     scan_hint: str
     spatial_files: typing.List
-    layer_type: typing.Optional[str] = None
+    dataset_type: typing.Optional[str] = None
 
 
-def get_spatial_files_layer_type(allowed_extensions, files, charset='UTF-8') -> SpatialFilesLayerType:
+def get_spatial_files_dataset_type(allowed_extensions, files, charset='UTF-8') -> SpatialFilesLayerType:
     """Reutnrs 'vector' or 'raster' whether a file from the allowed extensins has been identified.
     """
     from geonode.upload.files import get_scan_hint, scan_file
@@ -2353,23 +2353,23 @@ def get_spatial_files_layer_type(allowed_extensions, files, charset='UTF-8') -> 
         scan_hint=scan_hint,
         charset=charset
     )
-    the_layer_type = get_layer_type(spatial_files)
-    if the_layer_type not in (FeatureType.resource_type, Coverage.resource_type):
+    the_dataset_type = get_dataset_type(spatial_files)
+    if the_dataset_type not in (FeatureType.resource_type, Coverage.resource_type):
         return None
     spatial_files_type = SpatialFilesLayerType(
         base_file=base_file,
         scan_hint=scan_hint,
         spatial_files=spatial_files,
-        layer_type='vector' if the_layer_type == FeatureType.resource_type else 'raster')
+        dataset_type='vector' if the_dataset_type == FeatureType.resource_type else 'raster')
 
     return spatial_files_type
 
 
-def get_layer_type(spatial_files):
+def get_dataset_type(spatial_files):
     """Returns 'FeatureType.resource_type' or 'Coverage.resource_type' accordingly to the provided SpatialFiles
     """
     if spatial_files.archive is not None:
-        the_layer_type = FeatureType.resource_type
+        the_dataset_type = FeatureType.resource_type
     else:
-        the_layer_type = spatial_files[0].file_type.layer_type
-    return the_layer_type
+        the_dataset_type = spatial_files[0].file_type.dataset_type
+    return the_dataset_type

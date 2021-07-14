@@ -44,10 +44,10 @@ def set_resource_links(*args, **kwargs):
     from geonode.datasets.models import Dataset
 
     if settings.UPDATE_RESOURCE_LINKS_AT_MIGRATE:
-        _all_layers = Dataset.objects.all()
-        for index, layer in enumerate(_all_layers, start=1):
+        _all_datasets = Dataset.objects.all()
+        for index, layer in enumerate(_all_datasets, start=1):
             _lyr_name = layer.name
-            message = f"[{index} / {len(_all_layers)}] Updating Dataset [{_lyr_name}] ..."
+            message = f"[{index} / {len(_all_datasets)}] Updating Dataset [{_lyr_name}] ..."
             logger.debug(message)
             try:
                 set_resource_default_links(layer, layer)
@@ -60,9 +60,9 @@ def set_resource_links(*args, **kwargs):
 
 class GeoserverAppConfig(NotificationsAppConfigBase):
     name = 'geonode.geoserver'
-    NOTIFICATIONS = (("layer_uploaded", _("Dataset Uploaded"), _("A layer was uploaded"),),
-                     ("layer_comment", _("Comment on Dataset"), _("A layer was commented on"),),
-                     ("layer_rated", _("Rating for Dataset"), _("A rating was given to a layer"),),
+    NOTIFICATIONS = (("dataset_uploaded", _("Dataset Uploaded"), _("A layer was uploaded"),),
+                     ("dataset_comment", _("Comment on Dataset"), _("A layer was commented on"),),
+                     ("dataset_rated", _("Rating for Dataset"), _("A rating was given to a layer"),),
                      )
 
     def ready(self):

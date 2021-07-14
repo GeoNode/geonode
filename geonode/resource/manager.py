@@ -242,7 +242,7 @@ class ResourceManager(ResourceManagerInterface):
                 if isinstance(_resource.get_real_instance(), Dataset):
                     """
                     - Remove any associated style to the layer, if it is not used by other layers.
-                    - Default style will be deleted in post_delete_layer.
+                    - Default style will be deleted in post_delete_dataset.
                     - Remove the layer from any associated map, if any.
                     - Remove the layer default style.
                     """
@@ -494,19 +494,19 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     logger.debug(f'Removing all permissions on {_resource}')
                     from geonode.datasets.models import Dataset
-                    _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Dataset) else None
-                    if not _layer:
+                    _dataset = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Dataset) else None
+                    if not _dataset:
                         try:
-                            _layer = _resource.layer if hasattr(_resource, "layer") else None
+                            _dataset = _resource.layer if hasattr(_resource, "layer") else None
                         except Exception:
-                            _layer = None
-                    if _layer:
+                            _dataset = None
+                    if _dataset:
                         UserObjectPermission.objects.filter(
-                            content_type=ContentType.objects.get_for_model(_layer),
+                            content_type=ContentType.objects.get_for_model(_dataset),
                             object_pk=instance.id
                         ).delete()
                         GroupObjectPermission.objects.filter(
-                            content_type=ContentType.objects.get_for_model(_layer),
+                            content_type=ContentType.objects.get_for_model(_dataset),
                             object_pk=instance.id
                         ).delete()
                     UserObjectPermission.objects.filter(
@@ -564,8 +564,8 @@ class ResourceManager(ResourceManagerInterface):
                             anonymous_group = Group.objects.get(name='anonymous')
                             for perm in permissions['users']['AnonymousUser']:
                                 if _resource.polymorphic_ctype.name == 'layer' and perm in (
-                                        'change_layer_data', 'change_layer_style',
-                                        'add_layer', 'change_layer', 'delete_layer',):
+                                        'change_dataset_data', 'change_dataset_style',
+                                        'add_dataset', 'change_dataset', 'delete_dataset',):
                                     assign_perm(perm, anonymous_group, _resource.layer)
                                 else:
                                     assign_perm(perm, anonymous_group, _resource.get_self_resource())
@@ -577,8 +577,8 @@ class ResourceManager(ResourceManagerInterface):
                                 if _user != _resource.owner and user != "AnonymousUser":
                                     for perm in perms:
                                         if _resource.polymorphic_ctype.name == 'layer' and perm in (
-                                                'change_layer_data', 'change_layer_style',
-                                                'add_layer', 'change_layer', 'delete_layer',):
+                                                'change_dataset_data', 'change_dataset_style',
+                                                'add_dataset', 'change_dataset', 'delete_dataset',):
                                             assign_perm(perm, _user, _resource.layer)
                                         else:
                                             assign_perm(perm, _user, _resource.get_self_resource())
@@ -589,8 +589,8 @@ class ResourceManager(ResourceManagerInterface):
                                 _group = Group.objects.get(name=group)
                                 for perm in perms:
                                     if _resource.polymorphic_ctype.name == 'layer' and perm in (
-                                            'change_layer_data', 'change_layer_style',
-                                            'add_layer', 'change_layer', 'delete_layer',):
+                                            'change_dataset_data', 'change_dataset_style',
+                                            'add_dataset', 'change_dataset', 'delete_dataset',):
                                         assign_perm(perm, _group, _resource.layer)
                                     else:
                                         assign_perm(perm, _group, _resource.get_self_resource())
@@ -602,8 +602,8 @@ class ResourceManager(ResourceManagerInterface):
                                 perms = permissions['users']["AnonymousUser"]
                                 for perm in perms:
                                     if _resource.polymorphic_ctype.name == 'layer' and perm in (
-                                            'change_layer_data', 'change_layer_style',
-                                            'add_layer', 'change_layer', 'delete_layer',):
+                                            'change_dataset_data', 'change_dataset_style',
+                                            'add_dataset', 'change_dataset', 'delete_dataset',):
                                         assign_perm(perm, _user, _resource.layer)
                                     else:
                                         assign_perm(perm, _user, _resource.get_self_resource())
@@ -643,8 +643,8 @@ class ResourceManager(ResourceManagerInterface):
 
                         if _resource.__class__.__name__ == 'Dataset':
                             # only for layer owner
-                            assign_perm('change_layer_data', _owner, _resource)
-                            assign_perm('change_layer_style', _owner, _resource)
+                            assign_perm('change_dataset_data', _owner, _resource)
+                            assign_perm('change_dataset_style', _owner, _resource)
 
                     _resource.handle_moderated_uploads()
                     return self._concrete_resource_manager.set_permissions(uuid, instance=_resource, owner=owner, permissions=permissions, created=created)

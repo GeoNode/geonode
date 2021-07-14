@@ -277,7 +277,7 @@ class TopicCategoryResource(TypeFilteredResource):
     """Category api"""
     layers_count = fields.IntegerField(default=0)
 
-    def dehydrate_layers_count(self, bundle):
+    def dehydrate_datasets_count(self, bundle):
         request = bundle.request
         obj_with_perms = get_objects_for_user(request.user,
                                               'base.view_resourcebase').filter(polymorphic_ctype__model='layer')
@@ -499,7 +499,7 @@ class ProfileResource(TypeFilteredResource):
 
         return email
 
-    def dehydrate_layers_count(self, bundle):
+    def dehydrate_datasets_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').filter(polymorphic_ctype__model='layer')
         return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)\
@@ -639,11 +639,11 @@ class GeoserverStyleResource(ModelResource):
         use_in='detail')
     name = fields.CharField(attribute='name')
     title = fields.CharField(attribute='sld_title')
-    # layer_default_style is polymorphic, so it will have many to many
+    # dataset_default_style is polymorphic, so it will have many to many
     # relation
     layer = fields.ManyToManyField(
         'geonode.api.resourcebase_api.LayerResource',
-        attribute='layer_default_style',
+        attribute='dataset_default_style',
         null=True)
     version = fields.CharField(
         attribute='sld_version',
@@ -671,10 +671,10 @@ class GeoserverStyleResource(ModelResource):
         """Apply custom filters for layer."""
         filters = super().build_filters(
             filters, **kwargs)
-        # Convert layer__ filters into layer_styles__layer__
+        # Convert dataset__ filters into dataset_styles__dataset__
         updated_filters = {}
         for key, value in filters.items():
-            key = key.replace('layer__', 'layer_default_style__')
+            key = key.replace('dataset__', 'dataset_default_style__')
             updated_filters[key] = value
         return updated_filters
 

@@ -106,7 +106,7 @@ attributes = [
 ]
 
 
-def create_layer_data(object_id=None, owner=None):
+def create_dataset_data(object_id=None, owner=None):
     layer = Dataset.objects.get(pk=object_id) if object_id else\
         Dataset.objects.all().first()
     if not owner:

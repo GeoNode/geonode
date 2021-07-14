@@ -40,12 +40,12 @@ from geonode.base.models import Configuration
 from geonode.decorators import on_ogc_backend
 
 from geonode.datasets.models import Dataset, Style
-from geonode.datasets.populate_layers_data import create_layer_data
+from geonode.datasets.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
     remove_models,
-    create_single_layer)
+    create_single_dataset)
 from geonode.geoserver.helpers import (
     gs_catalog,
     get_sld_for,
@@ -572,7 +572,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
-        create_layer_data()
+        create_dataset_data()
         self.config = Configuration.load()
 
         self.OGC_DEFAULT_SETTINGS = {
@@ -606,25 +606,25 @@ class LayerTests(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_manager(self):
         """
-        Ensures the layer_style_manage route returns a 200.
+        Ensures the dataset_style_manage route returns a 200.
         """
         layer = Dataset.objects.all()[0]
 
         bob = get_user_model().objects.get(username='bobby')
-        assign_perm('change_layer_style', bob, layer)
+        assign_perm('change_dataset_style', bob, layer)
 
         logged_in = self.client.login(username='bobby', password='bob')
         self.assertEqual(logged_in, True)
         response = self.client.get(
             reverse(
-                'layer_style_manage', args=(
+                'dataset_style_manage', args=(
                     layer.alternate,)))
         self.assertEqual(response.status_code, 200)
 
         form_data = {'default_style': 'polygon'}
         response = self.client.post(
             reverse(
-                'layer_style_manage', args=(
+                'dataset_style_manage', args=(
                     layer.alternate,)), data=form_data)
         self.assertEqual(response.status_code, 302)
 
@@ -698,8 +698,8 @@ class LayerTests(GeoNodeBaseTestSupport):
                 shutil.rmtree(d, ignore_errors=True)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_layer_acls(self):
-        """ Verify that the layer_acls view is behaving as expected
+    def test_dataset_acls(self):
+        """ Verify that the dataset_acls view is behaving as expected
         """
 
         # Test that HTTP_AUTHORIZATION in request.META is working properly
@@ -715,8 +715,8 @@ class LayerTests(GeoNodeBaseTestSupport):
         }
 
         bob = get_user_model().objects.get(username='bobby')
-        layer_ca = Dataset.objects.get(alternate='geonode:CA')
-        assign_perm('change_layer_data', bob, layer_ca)
+        dataset_ca = Dataset.objects.get(alternate='geonode:CA')
+        assign_perm('change_dataset_data', bob, dataset_ca)
 
         # Test that requesting when supplying the geoserver credentials returns
         # the expected json
@@ -736,7 +736,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                      'geonode:fleem'],
             'rw': ['geonode:CA']
         }
-        response = self.client.get(reverse('layer_acls'), **valid_auth_headers)
+        response = self.client.get(reverse('dataset_acls'), **valid_auth_headers)
         content = response.content
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
@@ -747,7 +747,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         # Test that requesting when supplying invalid credentials returns the
         # appropriate error code
         response = self.client.get(
-            reverse('layer_acls'),
+            reverse('dataset_acls'),
             **invalid_auth_headers)
         self.assertEqual(response.status_code, 401)
 
@@ -755,7 +755,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.client.login(username='admin', password='admin')
 
         # Basic check that the returned content is at least valid json
-        response = self.client.get(reverse('layer_acls'))
+        response = self.client.get(reverse('dataset_acls'))
         content = response.content
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
@@ -781,7 +781,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         }
 
         response = self.client.get(
-            reverse('layer_resolve_user'),
+            reverse('dataset_resolve_user'),
             **valid_auth_headers)
         content = response.content
         if isinstance(content, bytes):
@@ -796,7 +796,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         # Test that requesting when supplying invalid credentials returns the
         # appropriate error code
         response = self.client.get(
-            reverse('layer_acls'),
+            reverse('dataset_acls'),
             **invalid_auth_headers)
         self.assertEqual(response.status_code, 401)
 
@@ -804,7 +804,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.client.login(username='admin', password='admin')
 
         # Basic check that the returned content is at least valid json
-        response = self.client.get(reverse('layer_resolve_user'))
+        response = self.client.get(reverse('dataset_resolve_user'))
         content = response.content
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
@@ -936,7 +936,7 @@ class LayerTests(GeoNodeBaseTestSupport):
 
         # Test OWS Download Links
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-        instance = create_single_layer("san_andres_y_providencia_water")
+        instance = create_single_dataset("san_andres_y_providencia_water")
         instance.name = 'san_andres_y_providencia_water'
         instance.save()
         bbox = instance.bbox
@@ -1060,22 +1060,22 @@ class LayerTests(GeoNodeBaseTestSupport):
             _links.delete()
             self.assertFalse(_links.count() > 0, "No links have been deleted")
             # Delete resources metadata
-            _layers = Dataset.objects.exclude(
+            _datasets = Dataset.objects.exclude(
                 Q(metadata_xml__isnull=True) |
                 Q(metadata_xml__exact='') |
                 Q(csw_anytext__isnull=True) |
                 Q(csw_anytext__exact='')
             )
-            count = _layers.count()
+            count = _datasets.count()
             if count:
-                _layers.update(metadata_xml=None)
-                _updated_layers = Dataset.objects.exclude(
+                _datasets.update(metadata_xml=None)
+                _updated_datasets = Dataset.objects.exclude(
                     Q(metadata_xml__isnull=True) |
                     Q(metadata_xml__exact='') |
                     Q(csw_anytext__isnull=True) |
                     Q(csw_anytext__exact='')
                 )
-                updated_count = _updated_layers.count()
+                updated_count = _updated_datasets.count()
                 self.assertTrue(
                     updated_count == 0,
                     "Metadata have not been updated (deleted) correctly"
@@ -1090,14 +1090,14 @@ class LayerTests(GeoNodeBaseTestSupport):
                 "No links have been restored"
             )
             # Check layers
-            _post_migrate_layers = Dataset.objects.exclude(
+            _post_migrate_datasets = Dataset.objects.exclude(
                 Q(metadata_xml__isnull=True) |
                 Q(metadata_xml__exact='') |
                 Q(csw_anytext__isnull=True) |
                 Q(csw_anytext__exact='')
             )
 
-            for _lyr in _post_migrate_layers:
+            for _lyr in _post_migrate_datasets:
                 # Check original links in csw_anytext
                 _post_migrate_links_orig = Link.objects.filter(
                     resource=_lyr.resourcebase_ptr,

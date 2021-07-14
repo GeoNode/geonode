@@ -43,7 +43,7 @@ class LayersApiTests(APITestCase):
         create_models(b'map')
         create_models(b'layer')
 
-    def test_layers(self):
+    def test_datasets(self):
         """
         Ensure we can access the Layers list.
         """
@@ -108,15 +108,15 @@ class LayersApiTests(APITestCase):
         self.assertEqual(expected, response.json())
 
     @patch("geonode.layers.api.views.create_thumbnail")
-    def test_datasets_set_thumbnail_from_bbox_from_logged_user_for_existing_layer(self, mock_create_thumbnail):
+    def test_datasets_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_create_thumbnail):
         """
         Given a logged User and an existing dataset, should create the expected thumbnail url.
         """
         mock_create_thumbnail.return_value = "http://localhost:8000/mocked_url.jpg"
         # Admin
         self.client.login(username="admin", password="admin")
-        layer_id = Dataset.objects.first().resourcebase_ptr_id
-        url = reverse('datasets-set-thumb-from-bbox', args=[layer_id])
+        dataset_id = Dataset.objects.first().resourcebase_ptr_id
+        url = reverse('datasets-set-thumb-from-bbox', args=[dataset_id])
         payload = {
             "bbox": [
                 -9072629.904175375,
@@ -134,7 +134,7 @@ class LayersApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(expected, response.json())
 
-    def test_datasets_set_thumbnail_from_bbox_from_logged_user_for_not_existing_layer(self):
+    def test_datasets_set_thumbnail_from_bbox_from_logged_user_for_not_existing_dataset(self):
         """
         Given a logged User and an not existing dataset, should raise a 404 error.
         """

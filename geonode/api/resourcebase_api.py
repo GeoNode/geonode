@@ -890,9 +890,9 @@ class MapResource(CommonModelApi):
             formatted_obj['online'] = True
 
             # get map layers
-            map_layers = obj.layers
-            formatted_layers = []
-            map_layer_fields = [
+            map_datasets = obj.layers
+            formatted_datasets = []
+            map_dataset_fields = [
                 'id',
                 'stack_order',
                 'format',
@@ -902,15 +902,15 @@ class MapResource(CommonModelApi):
                 'visibility',
                 'transparent',
                 'ows_url',
-                'layer_params',
+                'dataset_params',
                 'source_params',
                 'local'
             ]
-            for layer in map_layers:
-                formatted_map_layer = model_to_dict(
-                    layer, fields=map_layer_fields)
-                formatted_layers.append(formatted_map_layer)
-            formatted_obj['layers'] = formatted_layers
+            for layer in map_datasets:
+                formatted_map_dataset = model_to_dict(
+                    layer, fields=map_dataset_fields)
+                formatted_datasets.append(formatted_map_dataset)
+            formatted_obj['layers'] = formatted_datasets
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):

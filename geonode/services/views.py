@@ -321,14 +321,14 @@ def service_detail(request, service_id):
         .union(service.get_user_perms(request.user))
     )
 
-    already_imported_layers = get_visible_resources(
+    already_imported_datasets = get_visible_resources(
         queryset=Dataset.objects.filter(remote_service=service),
         user=request.user
     )
     resources_being_harvested = HarvestJob.objects.filter(service=service)
 
     service_list = service.service_set.all()
-    all_resources = (list(resources_being_harvested) + list(already_imported_layers) + list(service_list))
+    all_resources = (list(resources_being_harvested) + list(already_imported_datasets) + list(service_list))
 
     paginator = Paginator(
         all_resources,
@@ -358,14 +358,14 @@ def service_detail(request, service_id):
         template_name="services/service_detail.html",
         context={
             "service": service,
-            "layers": already_imported_layers,
+            "layers": already_imported_datasets,
             "resource_jobs": (
                 r for r in resources if isinstance(r, HarvestJob)),
             "permissions_json": permissions_json,
             "permissions_list": perms_list,
             "can_add_resorces": request.user.has_perm('base.add_resourcebase'),
             "resources": resources,
-            "total_resources": len(already_imported_layers),
+            "total_resources": len(already_imported_datasets),
         }
     )
 
@@ -415,7 +415,7 @@ def remove_service(request, service_id):
         return render(request, "services/service_remove.html",
                       {"service": service})
     elif request.method == 'POST':
-        service.layer_set.all().delete()
+        service.dataset_set.all().delete()
         service.delete()
         messages.add_message(
             request,

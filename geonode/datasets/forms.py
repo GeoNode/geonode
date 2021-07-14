@@ -214,7 +214,7 @@ class NewLayerUploadForm(LayerUploadForm):
     xml_file = forms.FileField(required=False)
 
     abstract = forms.CharField(required=False)
-    layer_title = forms.CharField(required=False)
+    dataset_title = forms.CharField(required=False)
     permissions = JSONField()
     charset = forms.CharField(required=False)
     metadata_uploaded_preserve = forms.BooleanField(required=False)

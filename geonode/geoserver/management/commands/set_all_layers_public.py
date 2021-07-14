@@ -32,10 +32,10 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        all_layers = Dataset.objects.all()
+        all_datasets = Dataset.objects.all()
 
-        for index, layer in enumerate(all_layers):
-            print(f"[{(index + 1)} / {len(all_layers)}] Setting public permissions to Dataset [{layer.name}] ...")
+        for index, layer in enumerate(all_datasets):
+            print(f"[{(index + 1)} / {len(all_datasets)}] Setting public permissions to Dataset [{layer.name}] ...")
             try:
                 use_geofence = settings.OGC_SERVER['default'].get(
                     "GEOFENCE_SECURITY_ENABLED", False)

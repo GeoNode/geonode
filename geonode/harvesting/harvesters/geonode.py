@@ -54,7 +54,7 @@ class GeoNodeResourceType(enum.Enum):
 
 class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     harvest_documents: bool
-    harvest_layers: bool
+    harvest_datasets: bool
     harvest_maps: bool
     copy_documents: bool
     resource_title_filter: typing.Optional[str]
@@ -69,7 +69,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             self,
             *args,
             harvest_documents: typing.Optional[bool] = True,
-            harvest_layers: typing.Optional[bool] = True,
+            harvest_datasets: typing.Optional[bool] = True,
             harvest_maps: typing.Optional[bool] = True,
             copy_documents: typing.Optional[bool] = False,
             resource_title_filter: typing.Optional[str] = None,
@@ -80,7 +80,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         self.http_session = requests.Session()
         self.harvest_documents = (
             harvest_documents if harvest_documents is not None else True)
-        self.harvest_layers = harvest_layers if harvest_layers is not None else True
+        self.harvest_datasets = harvest_datasets if harvest_datasets is not None else True
         self.harvest_maps = harvest_maps if harvest_maps is not None else True
         self.copy_documents = copy_documents
         self.resource_title_filter = resource_title_filter
@@ -102,9 +102,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 record.harvester_type_specific_configuration.get(
                     "harvest_documents", True)
             ),
-            harvest_layers=(
+            harvest_datasets=(
                 record.harvester_type_specific_configuration.get(
-                    "harvest_layers", True)
+                    "harvest_datasets", True)
             ),
             harvest_maps=(
                 record.harvester_type_specific_configuration.get(
@@ -137,7 +137,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                     "type": "boolean",
                     "default": False
                 },
-                "harvest_layers": {
+                "harvest_datasets": {
                     "type": "boolean",
                     "default": True
                 },
@@ -156,7 +156,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         result = 0
         if self.harvest_documents:
             result += self._get_total_records(GeoNodeResourceType.DOCUMENT)
-        if self.harvest_layers:
+        if self.harvest_datasets:
             result += self._get_total_records(GeoNodeResourceType.LAYER)
         if self.harvest_maps:
             result += self._get_total_records(GeoNodeResourceType.MAP)
@@ -174,8 +174,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         if offset < total_resources[GeoNodeResourceType.DOCUMENT]:
             document_list = self._list_document_resources(offset)
             if len(document_list) < self.page_size:
-                layer_list = self._list_layer_resources(0)
-                added = document_list + layer_list
+                dataset_list = self._list_dataset_resources(0)
+                added = document_list + dataset_list
                 if len(added) < self.page_size:
                     map_list = self._list_map_resources(0)
                     result = (added + map_list)[:self.page_size]
@@ -187,13 +187,13 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 total_resources[GeoNodeResourceType.DOCUMENT] +
                 total_resources[GeoNodeResourceType.LAYER]
         ):
-            layer_offset = offset - total_resources[GeoNodeResourceType.DOCUMENT]
-            layer_list = self._list_layer_resources(layer_offset)
-            if len(layer_list) < self.page_size:
+            dataset_offset = offset - total_resources[GeoNodeResourceType.DOCUMENT]
+            dataset_list = self._list_dataset_resources(dataset_offset)
+            if len(dataset_list) < self.page_size:
                 map_list = self._list_map_resources(0)
-                result = (layer_list + map_list)[:self.page_size]
+                result = (dataset_list + map_list)[:self.page_size]
             else:
-                result = layer_list
+                result = dataset_list
         else:
             map_offset = offset - (
                 total_resources[GeoNodeResourceType.DOCUMENT] +
@@ -280,7 +280,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         if self.harvest_documents:
             result[GeoNodeResourceType.DOCUMENT] = self._get_total_records(
                 GeoNodeResourceType.DOCUMENT)
-        if self.harvest_layers:
+        if self.harvest_datasets:
             result[GeoNodeResourceType.LAYER] = self._get_total_records(
                 GeoNodeResourceType.LAYER)
         if self.harvest_maps:
@@ -295,10 +295,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             result = self._list_resources_by_type(GeoNodeResourceType.DOCUMENT, offset)
         return result
 
-    def _list_layer_resources(
+    def _list_dataset_resources(
             self, offset: int) -> typing.List[base.BriefRemoteResource]:
         result = []
-        if self.harvest_layers:
+        if self.harvest_datasets:
             result = self._list_resources_by_type(GeoNodeResourceType.LAYER, offset)
         return result
 

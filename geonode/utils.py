@@ -150,7 +150,7 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
     return absolute_base_file
 
 
-def get_layer_name(layer):
+def get_dataset_name(layer):
     """Get the workspace where the input layer belongs"""
     _name = layer.name
     if _name and ':' in _name:
@@ -166,7 +166,7 @@ def get_layer_name(layer):
     return _name
 
 
-def get_layer_workspace(layer):
+def get_dataset_workspace(layer):
     """Get the workspace where the input layer belongs"""
     alternate = None
     workspace = None
@@ -471,7 +471,7 @@ def inverse_mercator(xy):
     return (lon, lat)
 
 
-def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=True):
+def dataset_from_viewer_config(map_id, model, layer, source, ordering, save_map=True):
     """
     Parse an object out of a parsed layer configuration from a GXP
     viewer.
@@ -482,14 +482,14 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
     ``ordering`` is the index of the layer within the map's layer list
     ``save_map`` if map should be saved (default: True)
     """
-    layer_cfg = dict(layer)
+    dataset_cfg = dict(layer)
     for k in ["format", "name", "opacity", "styles", "transparent",
               "fixed", "group", "visibility", "source"]:
-        if k in layer_cfg:
-            del layer_cfg[k]
-    layer_cfg["id"] = 1
-    layer_cfg["wrapDateLine"] = True
-    layer_cfg["displayOutsideMaxExtent"] = True
+        if k in dataset_cfg:
+            del dataset_cfg[k]
+    dataset_cfg["id"] = 1
+    dataset_cfg["wrapDateLine"] = True
+    dataset_cfg["displayOutsideMaxExtent"] = True
 
     source_cfg = dict(source) if source else {}
     if source_cfg:
@@ -499,8 +499,8 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
 
     # We don't want to hardcode 'access_token' into the storage
     styles = []
-    if 'capability' in layer_cfg:
-        _capability = layer_cfg['capability']
+    if 'capability' in dataset_cfg:
+        _capability = dataset_cfg['capability']
         if 'styles' in _capability:
             for style in _capability['styles']:
                 if 'name' in style:
@@ -530,7 +530,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
         group=layer.get('group', None),
         visibility=layer.get("visibility", True),
         ows_url=source.get("url", None) if source else None,
-        layer_params=json.dumps(layer_cfg),
+        dataset_params=json.dumps(dataset_cfg),
         source_params=json.dumps(source_cfg)
     )
     if map_id and save_map:
@@ -541,15 +541,15 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
 
 class GXPMapBase:
 
-    def viewer_json(self, request, *added_layers):
+    def viewer_json(self, request, *added_datasets):
         """
         Convert this map to a nested dictionary structure matching the JSON
         configuration for GXP Viewers.
 
-        The ``added_layers`` parameter list allows a list of extra MapLayer
+        The ``added_datasets`` parameter list allows a list of extra MapLayer
         instances to append to the Map's layer list when generating the
         configuration. These are not persisted; if you want to add layers you
-        should use ``.layer_set.create()``.
+        should use ``.dataset_set.create()``.
         """
 
         user = request.user if request else None
@@ -557,13 +557,13 @@ class GXPMapBase:
         if access_token and not access_token.is_expired():
             access_token = access_token.token
 
-        if self.id and len(added_layers) == 0:
+        if self.id and len(added_datasets) == 0:
             cfg = cache.get(f"viewer_json_{str(self.id)}_{str(0 if user is None else user.id)}")
             if cfg is not None:
                 return cfg
 
         layers = list(self.layers)
-        layers.extend(added_layers)
+        layers.extend(added_datasets)
 
         server_lookup = {}
         sources = {}
@@ -597,8 +597,8 @@ class GXPMapBase:
                     return k
             return None
 
-        def layer_config(lyr, user=None):
-            cfg = lyr.layer_config(user=user)
+        def dataset_config(lyr, user=None):
+            cfg = lyr.dataset_config(user=user)
             src_cfg = lyr.source_config(access_token)
             source = source_lookup(src_cfg)
             if source:
@@ -661,7 +661,7 @@ class GXPMapBase:
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
-                'layers': [layer_config(lyr, user=user) for lyr in layers],
+                'layers': [dataset_config(lyr, user=user) for lyr in layers],
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
@@ -672,7 +672,7 @@ class GXPMapBase:
             # Mark the last added layer as selected - important for data page
             config["map"]["layers"][len(layers) - 1]["selected"] = True
         else:
-            (def_map_config, def_map_layers) = default_map_config(None)
+            (def_map_config, def_map_datasets) = default_map_config(None)
             config = def_map_config
 
         config["map"].update(_get_viewer_projection_info(self.projection))
@@ -748,7 +748,7 @@ class GXPLayerBase:
 
         return cfg
 
-    def layer_config(self, user=None):
+    def dataset_config(self, user=None):
         """
         Generate a dict that can be serialized to a GXP layer configuration
         suitable for loading this layer.
@@ -759,7 +759,7 @@ class GXPLayerBase:
         generating a full map configuration.
         """
         try:
-            cfg = json.loads(self.layer_params)
+            cfg = json.loads(self.dataset_params)
         except Exception:
             cfg = dict()
 
@@ -803,7 +803,7 @@ class GXPLayer(GXPLayerBase):
         self.wrapDateLine = True
         self.displayOutsideMaxExtent = True
         self.ows_url = ows_url
-        self.layer_params = ""
+        self.dataset_params = ""
         self.source_params = ""
         for k in kw:
             setattr(self, k, kw[k])
@@ -825,7 +825,7 @@ def default_map_config(request):
     )
 
     def _baselayer(lyr, order):
-        return layer_from_viewer_config(
+        return dataset_from_viewer_config(
             None,
             GXPLayer,
             layer=lyr,
@@ -952,8 +952,8 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                                 'delete_resourcebase', user, obj_to_check)
 
     allowed = True
-    if permission.split('.')[-1] in ['change_layer_data',
-                                     'change_layer_style']:
+    if permission.split('.')[-1] in ['change_dataset_data',
+                                     'change_dataset_style']:
         if obj.__class__.__name__ == 'Dataset':
             obj_to_check = obj
     if permission:
@@ -1616,7 +1616,7 @@ def slugify_zh(text, separator='_'):
 def get_legend_url(
         instance, style_name, /,
         service_url=None,
-        layer_name=None,
+        dataset_name=None,
         version='1.3.0',
         sld_version='1.1.0',
         width=20,
@@ -1625,11 +1625,11 @@ def get_legend_url(
     from geonode.geoserver.helpers import ogc_server_settings
 
     _service_url = service_url or f"{ogc_server_settings.PUBLIC_LOCATION}ows"
-    _layer_name = layer_name or instance.alternate
+    _dataset_name = dataset_name or instance.alternate
     _params = f"&{params}" if params else ""
     return(f"{_service_url}?"
            f"service=WMS&request=GetLegendGraphic&format=image/png&WIDTH={width}&HEIGHT={height}&"
-           f"LAYER={_layer_name}&STYLE={style_name}&version={version}&"
+           f"LAYER={_dataset_name}&STYLE={style_name}&version={version}&"
            f"sld_version={sld_version}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on{_params}")
 
 
@@ -1877,8 +1877,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 from geonode.services.serviceprocessors.handler import get_service_handler
                 handler = get_service_handler(
                     instance.remote_service.base_url, service_type=instance.remote_service.type)
-                if handler and hasattr(handler, '_create_layer_legend_link'):
-                    handler._create_layer_legend_link(instance)
+                if handler and hasattr(handler, '_create_dataset_legend_link'):
+                    handler._create_dataset_legend_link(instance)
 
             logger.debug(" -- Resource Links[Legend link]...done!")
         except Exception as e:

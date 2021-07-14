@@ -29,7 +29,7 @@ logger = get_task_logger(__name__)
 
 @app.task(
     bind=True,
-    name='geonode.layers.tasks.delete_layer',
+    name='geonode.layers.tasks.delete_dataset',
     queue='cleanup',
     expires=600,
     acks_late=False,
@@ -38,14 +38,14 @@ logger = get_task_logger(__name__)
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
-def delete_layer(self, layer_id):
+def delete_dataset(self, dataset_id):
     """
     Deletes a layer.
     """
     try:
-        layer = Dataset.objects.get(id=layer_id)
+        layer = Dataset.objects.get(id=dataset_id)
     except Dataset.DoesNotExist:
-        logger.warning(f"Layers {layer_id} does not exist!")
+        logger.warning(f"Layers {dataset_id} does not exist!")
         return
     logger.debug(f'Deleting Dataset {layer}')
     resource_manager.delete(uuid=layer.uuid, instance=layer)

@@ -101,22 +101,22 @@ class PermissionLevelMixin:
 
         try:
             if hasattr(self, "layer"):
-                info_layer = {
+                info_dataset = {
                     'users': get_users_with_perms(
                         self.layer),
                     'groups': get_groups_with_perms(
                         self.layer,
                         attach_perms=True)}
-                for user in info_layer['users']:
+                for user in info_dataset['users']:
                     if user in info['users']:
-                        info['users'][user] = info['users'][user] + info_layer['users'][user]
+                        info['users'][user] = info['users'][user] + info_dataset['users'][user]
                     else:
-                        info['users'][user] = info_layer['users'][user]
-                for group in info_layer['groups']:
+                        info['users'][user] = info_dataset['users'][user]
+                for group in info_dataset['groups']:
                     if group in info['groups']:
-                        info['groups'][group] = list(dict.fromkeys(info['groups'][group] + info_layer['groups'][group]))
+                        info['groups'][group] = list(dict.fromkeys(info['groups'][group] + info_dataset['groups'][group]))
                     else:
-                        info['groups'][group] = info_layer['groups'][group]
+                        info['groups'][group] = info_dataset['groups'][group]
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)

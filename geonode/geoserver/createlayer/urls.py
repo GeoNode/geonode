@@ -21,5 +21,5 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'$', views.layer_create, name='layer_create')
+    url(r'$', views.dataset_create, name='dataset_create')
 ]

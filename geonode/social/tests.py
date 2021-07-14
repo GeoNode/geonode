@@ -35,7 +35,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from geonode.datasets.models import Dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.datasets.populate_layers_data import create_layer_data
+from geonode.datasets.populate_datasets_data import create_dataset_data
 from geonode.social.templatetags.social_tags import activity_item
 
 from geonode.base.populate_test_data import (
@@ -71,10 +71,10 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         registry.register(Dataset)
         registry.register(Comment)
         registry.register(get_user_model())
-        create_layer_data()
+        create_dataset_data()
         self.user = get_user_model().objects.filter(username='admin')[0]
 
-    def test_layer_activity(self):
+    def test_dataset_activity(self):
         """
         Tests the activity functionality when a layer is saved.
         """
@@ -106,7 +106,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         self.assertEqual(template_tag.get('action'), action)
         self.assertEqual(template_tag.get('activity_class'), 'upload')
 
-        layer_name = layer.name
+        dataset_name = layer.name
         layer.delete()
 
         # <user> deleted <object_name>
@@ -115,7 +115,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         if isinstance(data, (str, bytes)):
             data = json.loads(data)
         self.assertEqual(data.get('raw_action'), 'deleted')
-        self.assertEqual(data.get('object_name'), layer_name)
+        self.assertEqual(data.get('object_name'), dataset_name)
 
         # objects are literally deleted so no action object or target should be related to a delete action.
         self.assertIsNone(action.action_object)
@@ -129,7 +129,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         self.assertEqual(template_tag.get('activity_class'), 'delete')
 
         # The layer's name should be returned
-        self.assertEqual(template_tag.get('object_name'), layer_name)
+        self.assertEqual(template_tag.get('object_name'), dataset_name)
         self.assertEqual(template_tag.get('verb'), _('deleted'))
 
         content_type = ContentType.objects.get_for_model(Dataset)

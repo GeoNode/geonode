@@ -53,15 +53,15 @@ from geonode.base.auth import get_or_create_token
 from geonode.decorators import logged_in_or_basicauth
 from geonode.datasets.forms import LayerStyleUploadForm
 from geonode.datasets.models import Dataset, Style
-from geonode.datasets.views import _resolve_layer, _PERMISSION_MSG_MODIFY
+from geonode.datasets.views import _resolve_dataset, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
 from geonode.proxy.views import proxy
-from .tasks import geoserver_update_layers
+from .tasks import geoserver_update_datasets
 from geonode.utils import (
     json_response,
     _get_basic_auth_info,
     http_client,
-    get_layer_workspace)
+    get_dataset_workspace)
 from geoserver.catalog import FailedRequestError
 from geonode.geoserver.signals import (
     gs_catalog,
@@ -72,10 +72,10 @@ from .helpers import (
     extract_name_from_sld,
     set_styles,
     style_update,
-    set_layer_style,
+    set_dataset_style,
     temp_style_name_regex,
-    _stylefilterparams_geowebcache_layer,
-    _invalidate_geowebcache_layer)
+    _stylefilterparams_geowebcache_dataset,
+    _invalidate_geowebcache_dataset)
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
@@ -100,19 +100,19 @@ def updatelayers(request):
     workspace = params.get('workspace', None)
     store = params.get('store', None)
     filter = params.get('filter', None)
-    result = geoserver_update_layers.delay(
+    result = geoserver_update_datasets.delay(
         ignore_errors=False, owner=owner, workspace=workspace,
         store=store, filter=filter)
     # Attempt to run task synchronously
     result.get()
 
-    return HttpResponseRedirect(reverse('layer_browse'))
+    return HttpResponseRedirect(reverse('dataset_browse'))
 
 
 @login_required
 @require_POST
-def layer_style(request, layername):
-    layer = _resolve_layer(
+def dataset_style(request, layername):
+    layer = _resolve_dataset(
         request,
         layername,
         'base.change_resourcebase',
@@ -143,8 +143,8 @@ def layer_style(request, layername):
 
     # Invalidate GeoWebCache for the updated resource
     try:
-        _stylefilterparams_geowebcache_layer(layer.alternate)
-        _invalidate_geowebcache_layer(layer.alternate)
+        _stylefilterparams_geowebcache_dataset(layer.alternate)
+        _invalidate_geowebcache_dataset(layer.alternate)
     except Exception:
         pass
 
@@ -153,7 +153,7 @@ def layer_style(request, layername):
 
 
 @login_required
-def layer_style_upload(request, layername):
+def dataset_style_upload(request, layername):
     def respond(*args, **kw):
         kw['content_type'] = 'text/html'
         return json_response(*args, **kw)
@@ -162,7 +162,7 @@ def layer_style_upload(request, layername):
         return respond(errors="Please provide an SLD file.")
 
     data = form.cleaned_data
-    layer = _resolve_layer(
+    layer = _resolve_dataset(
         request,
         layername,
         'base.change_resourcebase',
@@ -190,7 +190,7 @@ def layer_style_upload(request, layername):
 
     name = data.get('name') or sld_name
 
-    set_layer_style(layer, data.get('title') or name, sld)
+    set_dataset_style(layer, data.get('title') or name, sld)
 
     return respond(
         body={
@@ -200,11 +200,11 @@ def layer_style_upload(request, layername):
 
 
 @login_required
-def layer_style_manage(request, layername):
-    layer = _resolve_layer(
+def dataset_style_manage(request, layername):
+    layer = _resolve_dataset(
         request,
         layername,
-        'layers.change_layer_style',
+        'layers.change_dataset_style',
         _PERMISSION_MSG_MODIFY)
 
     if request.method == 'GET':
@@ -223,9 +223,9 @@ def layer_style_manage(request, layername):
             Style.objects.filter(name__iregex=r'\w{8}-\w{4}-\w{4}-\w{4}-\w{12}_(ms)_\d{13}').delete()
             for style in Style.objects.values('name', 'sld_title'):
                 gs_styles.append((style['name'], style['sld_title']))
-            current_layer_styles = layer.styles.all()
-            layer_styles = []
-            for style in current_layer_styles:
+            current_dataset_styles = layer.styles.all()
+            dataset_styles = []
+            for style in current_dataset_styles:
                 sld_title = style.name
                 try:
                     if style.sld_title:
@@ -233,7 +233,7 @@ def layer_style_manage(request, layername):
                 except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
-                layer_styles.append((style.name, sld_title))
+                dataset_styles.append((style.name, sld_title))
 
             # Render the form
             def_sld_name = None  # noqa
@@ -252,12 +252,12 @@ def layer_style_manage(request, layername):
 
             return render(
                 request,
-                'layers/layer_style_manage.html',
+                'layers/dataset_style_manage.html',
                 context={
                     "layer": layer,
                     "gs_styles": gs_styles,
-                    "layer_styles": layer_styles,
-                    "layer_style_names": [s[0] for s in layer_styles],
+                    "dataset_styles": dataset_styles,
+                    "dataset_style_names": [s[0] for s in dataset_styles],
                     "default_style": default_style
                 }
             )
@@ -270,7 +270,7 @@ def layer_style_manage(request, layername):
             # If geoserver is not online, return an error
             return render(
                 request,
-                'layers/layer_style_manage.html',
+                'layers/dataset_style_manage.html',
                 context={
                     "layer": layer,
                     "error": msg
@@ -278,27 +278,27 @@ def layer_style_manage(request, layername):
             )
     elif request.method in ('POST', 'PUT', 'DELETE'):
         try:
-            workspace = get_layer_workspace(layer) or settings.DEFAULT_WORKSPACE
+            workspace = get_dataset_workspace(layer) or settings.DEFAULT_WORKSPACE
             selected_styles = request.POST.getlist('style-select')
             default_style = request.POST['default_style']
 
             # Save to GeoServer
             cat = gs_catalog
             try:
-                gs_layer = cat.get_layer(layer.name)
+                gs_dataset = cat.get_layer(layer.name)
             except Exception:
-                gs_layer = None
+                gs_dataset = None
 
-            if not gs_layer:
-                gs_layer = cat.get_layer(layer.alternate)
+            if not gs_dataset:
+                gs_dataset = cat.get_layer(layer.alternate)
 
-            if gs_layer:
+            if gs_dataset:
                 _default_style = cat.get_style(default_style) or \
                     cat.get_style(default_style, workspace=workspace)
                 if _default_style:
-                    gs_layer.default_style = _default_style
+                    gs_dataset.default_style = _default_style
                 elif cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE):
-                    gs_layer.default_style = cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE)
+                    gs_dataset.default_style = cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE)
                 styles = []
                 for style in selected_styles:
                     _gs_sld = cat.get_style(style) or cat.get_style(style, workspace=workspace)
@@ -308,22 +308,22 @@ def layer_style_manage(request, layername):
                         styles.append(cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE))
                     else:
                         Style.objects.filter(name=style).delete()
-                gs_layer.styles = styles
-                cat.save(gs_layer)
+                gs_dataset.styles = styles
+                cat.save(gs_dataset)
 
             # Save to Django
             set_styles(layer, cat)
 
             # Invalidate GeoWebCache for the updated resource
             try:
-                _stylefilterparams_geowebcache_layer(layer.alternate)
-                _invalidate_geowebcache_layer(layer.alternate)
+                _stylefilterparams_geowebcache_dataset(layer.alternate)
+                _invalidate_geowebcache_dataset(layer.alternate)
             except Exception:
                 pass
 
             return HttpResponseRedirect(
                 reverse(
-                    'layer_detail',
+                    'dataset_detail',
                     args=(
                         layer.service_typename,
                     )))
@@ -334,7 +334,7 @@ def layer_style_manage(request, layername):
             logger.warn(msg)
             return render(
                 request,
-                'layers/layer_style_manage.html',
+                'layers/dataset_style_manage.html',
                 context={
                     "layer": layer,
                     "error": msg
@@ -344,7 +344,7 @@ def layer_style_manage(request, layername):
 
 def style_change_check(request, path):
     """
-    If the layer has not change_layer_style permission, return a status of
+    If the layer has not change_dataset_style permission, return a status of
     401 (unauthorized)
     """
     # a new style is created with a POST and then a PUT,
@@ -367,7 +367,7 @@ def style_change_check(request, path):
             # style new/update
             # we will iterate all layers (should be just one if not using GS)
             # to which the posted style is associated
-            # and check if the user has change_style_layer permissions on each
+            # and check if the user has change_style_dataset permissions on each
             # of them
             style_name = os.path.splitext(request.path)[0].split('/')[-1]
             if style_name == 'styles' and 'raw' in request.GET:
@@ -377,9 +377,9 @@ def style_change_check(request, path):
             else:
                 try:
                     style = Style.objects.get(name=style_name)
-                    for layer in style.layer_styles.all():
+                    for layer in style.dataset_styles.all():
                         if not request.user.has_perm(
-                                'change_layer_style', obj=layer):
+                                'change_dataset_style', obj=layer):
                             authorized = False
                 except Exception:
                     authorized = (request.method == 'POST')  # The user is probably trying to create a new style
@@ -475,7 +475,7 @@ def geoserver_proxy(request,
         _url = str("".join([ogc_server_settings.LOCATION, '', path[1:]]))
         raw_url = _url
     url = urlsplit(raw_url)
-    affected_layers = None
+    affected_datasets = None
 
     if f'{ws}/layers' in path:
         downstream_path = 'rest/layers'
@@ -503,18 +503,18 @@ def geoserver_proxy(request,
                     _style_name, _style_ext = os.path.splitext(_style_name)
                 if _style_name != 'style-check' and (_style_ext == '.json' or _parsed_get_args.get('raw')) and \
                         not re.match(temp_style_name_regex, _style_name):
-                    affected_layers = style_update(request, raw_url, workspace)
+                    affected_datasets = style_update(request, raw_url, workspace)
             elif downstream_path == 'rest/layers':
                 logger.debug(
                     f"[geoserver_proxy] Updating Dataset ---> url {url.geturl()}")
                 try:
-                    _layer_name = os.path.splitext(os.path.basename(request.path))[0]
-                    _layer = Dataset.objects.get(name=_layer_name)
-                    affected_layers = [_layer]
+                    _dataset_name = os.path.splitext(os.path.basename(request.path))[0]
+                    _dataset = Dataset.objects.get(name=_dataset_name)
+                    affected_datasets = [_dataset]
                 except Exception:
                     logger.warn(f"Could not find any Dataset {os.path.basename(request.path)} on DB")
 
-    kwargs = {'affected_layers': affected_layers}
+    kwargs = {'affected_datasets': affected_datasets}
     raw_url = unquote(raw_url)
     timeout = getattr(ogc_server_settings, 'TIMEOUT') or 60
     allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
@@ -556,8 +556,8 @@ def _response_callback(**kwargs):
         except Exception as e:
             logger.exception(e)
 
-    if 'affected_layers' in kwargs and kwargs['affected_layers']:
-        for layer in kwargs['affected_layers']:
+    if 'affected_datasets' in kwargs and kwargs['affected_datasets']:
+        for layer in kwargs['affected_datasets']:
             geoserver_post_save_local(layer)
 
     return HttpResponse(
@@ -603,13 +603,13 @@ def resolve_user(request):
 
 
 @logged_in_or_basicauth(realm="GeoNode")
-def layer_acls(request):
+def dataset_acls(request):
     """
     returns json-encoded lists of layer identifiers that
     represent the sets of read-write and read-only layers
     for the currently authenticated user.
     """
-    # the layer_acls view supports basic auth, and a special
+    # the dataset_acls view supports basic auth, and a special
     # user which represents the geoserver administrator that
     # is not present in django.
     acl_user = request.user
@@ -646,8 +646,8 @@ def layer_acls(request):
     resources_readable = get_objects_for_user(
         acl_user, 'view_resourcebase',
         ResourceBase.objects.filter(polymorphic_ctype__model='layer')).values_list('id', flat=True)
-    layer_writable = get_objects_for_user(
-        acl_user, 'change_layer_data',
+    dataset_writable = get_objects_for_user(
+        acl_user, 'change_dataset_data',
         Dataset.objects.all())
 
     _read = set(
@@ -655,7 +655,7 @@ def layer_acls(request):
             id__in=resources_readable).values_list(
             'alternate',
             flat=True))
-    _write = set(layer_writable.values_list('alternate', flat=True))
+    _write = set(dataset_writable.values_list('alternate', flat=True))
 
     read_only = _read ^ _write
     read_write = _read & _write
@@ -675,7 +675,7 @@ def layer_acls(request):
 
 
 # capabilities
-def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=False):
+def get_dataset_capabilities(layer, version='1.3.0', access_token=None, tolerant=False):
     """
     Retrieve a layer-specific GetCapabilities document
     """
@@ -738,8 +738,8 @@ def get_capabilities(request, layerid=None, user=None,
     layers = None
     cap_name = ' Capabilities - '
     if layerid is not None:
-        layer_obj = Dataset.objects.get(id=layerid)
-        cap_name += layer_obj.title
+        dataset_obj = Dataset.objects.get(id=layerid)
+        cap_name += dataset_obj.title
         layers = Dataset.objects.filter(id=layerid)
     elif user is not None:
         layers = Dataset.objects.filter(owner__username=user)
@@ -766,7 +766,7 @@ def get_capabilities(request, layerid=None, user=None,
                 access_token = None
             try:
                 workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
-                layercap = get_layer_capabilities(layer,
+                layercap = get_dataset_capabilities(layer,
                                                   access_token=access_token,
                                                   tolerant=tolerant)
                 if layercap is not None:  # 1st one, seed with real GetCapabilities doc

@@ -269,7 +269,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
         LayerESRIExtent = namedtuple('LayerESRIExtent', 'spatialReference xmin ymin ymax xmax')
         LayerESRIExtentSpatialReference = namedtuple('LayerESRIExtentSpatialReference', 'wkid latestWkid')
 
-        layer_meta = MapLayer(
+        dataset_meta = MapLayer(
             id=0,
             title='Droits pétroliers et gaziers / Oil and Gas Rights',
             abstract='Droits pétroliers et gaziers / Oil and Gas Rights',
@@ -375,8 +375,8 @@ class ModuleFunctionsTestCase(StandardTestCase):
             minScale=0,
             maxScale=0
         )
-        resource_fields = handler._get_indexed_layer_fields(layer_meta)
-        self.assertEqual(resource_fields['alternate'], f'{slugify(phony_url)}:{layer_meta.id}')
+        resource_fields = handler._get_indexed_dataset_fields(dataset_meta)
+        self.assertEqual(resource_fields['alternate'], f'{slugify(phony_url)}:{dataset_meta.id}')
 
     @mock.patch("arcrest.MapService",
                 autospec=True)
@@ -480,11 +480,11 @@ class ModuleFunctionsTestCase(StandardTestCase):
         handler = arcgis.ArcImageServiceHandler(phony_url)
         self.assertEqual(handler.url, phony_url)
 
-        layer_meta = handler._layer_meta(mock_parsed_arcgis.layers[0])
-        self.assertIsNotNone(layer_meta)
-        self.assertEqual(layer_meta.id, 1)
-        resource_fields = handler._get_indexed_layer_fields(layer_meta)
-        self.assertEqual(resource_fields['alternate'], f'{slugify(phony_url)}:{layer_meta.id}')
+        dataset_meta = handler._dataset_meta(mock_parsed_arcgis.layers[0])
+        self.assertIsNotNone(dataset_meta)
+        self.assertEqual(dataset_meta.id, 1)
+        resource_fields = handler._get_indexed_dataset_fields(dataset_meta)
+        self.assertEqual(resource_fields['alternate'], f'{slugify(phony_url)}:{dataset_meta.id}')
 
         test_user, created = get_user_model().objects.get_or_create(username="serviceowner")
         if created:
@@ -497,18 +497,18 @@ class ModuleFunctionsTestCase(StandardTestCase):
                 owner=test_user)
             Dataset.objects.filter(remote_service=geonode_service).delete()
             HarvestJob.objects.filter(service=geonode_service).delete()
-            handler._harvest_resource(layer_meta, geonode_service)
-            geonode_layer = Dataset.objects.filter(remote_service=geonode_service).get()
-            self.assertIsNotNone(geonode_layer)
-            self.assertNotEqual(geonode_layer.srid, "EPSG:4326")
+            handler._harvest_resource(dataset_meta, geonode_service)
+            geonode_dataset = Dataset.objects.filter(remote_service=geonode_service).get()
+            self.assertIsNotNone(geonode_dataset)
+            self.assertNotEqual(geonode_dataset.srid, "EPSG:4326")
             harvest_job, created = HarvestJob.objects.get_or_create(
                 service=geonode_service,
-                resource_id=geonode_layer.alternate
+                resource_id=geonode_dataset.alternate
             )
             self.assertIsNotNone(harvest_job)
             Dataset.objects.filter(remote_service=geonode_service).delete()
             self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
-                                                       resource_id=geonode_layer.alternate).count(), 0)
+                                                       resource_id=geonode_dataset.alternate).count(), 0)
         except (Service.DoesNotExist, HTTPError) as e:
             # In the case the Service URL becomes inaccessible for some reason
             logger.error(e)
@@ -523,7 +523,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
                           "we-use-it-in-tests")
         self.phony_title = "a generic title"
         self.phony_version = "s.version"
-        self.phony_layer_name = "phony_name"
+        self.phony_dataset_name = "phony_name"
         self.phony_keywords = ["first", "second"]
         mock_parsed_wms = mock.MagicMock(OwsWebMapService).return_value
         (url, mock_parsed_wms) = mock.MagicMock(WebMapService,
@@ -534,16 +534,16 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_parsed_wms.identification.title = self.phony_title
         mock_parsed_wms.identification.version = self.phony_version
         mock_parsed_wms.identification.keywords = self.phony_keywords
-        mock_layer_meta = mock.MagicMock(ContentMetadata)
-        mock_layer_meta.name = self.phony_layer_name
-        mock_layer_meta.title = self.phony_layer_name
-        mock_layer_meta.abstract = ""
-        mock_layer_meta.keywords = []
-        mock_layer_meta.children = []
-        mock_layer_meta.crsOptions = ["EPSG:3857"]
-        mock_layer_meta.boundingBox = [-5000, -5000, 5000, 5000, "EPSG:3857"]
+        mock_dataset_meta = mock.MagicMock(ContentMetadata)
+        mock_dataset_meta.name = self.phony_dataset_name
+        mock_dataset_meta.title = self.phony_dataset_name
+        mock_dataset_meta.abstract = ""
+        mock_dataset_meta.keywords = []
+        mock_dataset_meta.children = []
+        mock_dataset_meta.crsOptions = ["EPSG:3857"]
+        mock_dataset_meta.boundingBox = [-5000, -5000, 5000, 5000, "EPSG:3857"]
         mock_parsed_wms.contents = {
-            mock_layer_meta.name: mock_layer_meta,
+            mock_dataset_meta.name: mock_dataset_meta,
         }
         self.parsed_wms = mock_parsed_wms
 
@@ -604,12 +604,12 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
                 autospec=True)
     def test_detects_cascaded_service(self, mock_settings, mock_wms):
         mock_settings.DEFAULT_MAP_CRS = "EPSG:3857"
-        mock_layer_meta = mock.MagicMock(ContentMetadata)
-        mock_layer_meta.name = "phony_name"
-        mock_layer_meta.children = []
-        mock_layer_meta.crsOptions = ["epsg:4326"]
+        mock_dataset_meta = mock.MagicMock(ContentMetadata)
+        mock_dataset_meta.name = "phony_name"
+        mock_dataset_meta.children = []
+        mock_dataset_meta.crsOptions = ["epsg:4326"]
         self.parsed_wms.contents = {
-            mock_layer_meta.name: mock_layer_meta,
+            mock_dataset_meta.name: mock_dataset_meta,
         }
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         handler = wms.WmsServiceHandler(self.phony_url)
@@ -644,8 +644,8 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     def test_get_resource(self, mock_wms):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         handler = wms.WmsServiceHandler(self.phony_url)
-        result = handler.get_resource(self.phony_layer_name)
-        self.assertEqual(result.name, self.phony_layer_name)
+        result = handler.get_resource(self.phony_dataset_name)
+        self.assertEqual(result.name, self.phony_dataset_name)
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)
@@ -653,7 +653,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         handler = wms.WmsServiceHandler(self.phony_url)
         result = list(handler.get_resources())
-        self.assertEqual(result[0].name, self.phony_layer_name)
+        self.assertEqual(result[0].name, self.phony_dataset_name)
         test_user, created = get_user_model().objects.get_or_create(username="serviceowner")
         if created:
             test_user.set_password("somepassword")
@@ -666,24 +666,24 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             Dataset.objects.filter(remote_service=geonode_service).delete()
             HarvestJob.objects.filter(service=geonode_service).delete()
             result = list(handler.get_resources())
-            layer_meta = handler.get_resource(result[0].name)
-            resource_fields = handler._get_indexed_layer_fields(layer_meta)
+            dataset_meta = handler.get_resource(result[0].name)
+            resource_fields = handler._get_indexed_dataset_fields(dataset_meta)
             keywords = resource_fields.pop("keywords")
             resource_fields["keywords"] = keywords
             resource_fields["is_approved"] = True
             resource_fields["is_published"] = True
-            geonode_layer = handler._create_layer(geonode_service, **resource_fields)
-            self.assertIsNotNone(geonode_layer)
-            self.assertNotEqual(geonode_layer.srid, "EPSG:4326")
+            geonode_dataset = handler._create_dataset(geonode_service, **resource_fields)
+            self.assertIsNotNone(geonode_dataset)
+            self.assertNotEqual(geonode_dataset.srid, "EPSG:4326")
             harvest_job, created = HarvestJob.objects.get_or_create(
                 service=geonode_service,
-                resource_id=geonode_layer.alternate
+                resource_id=geonode_dataset.alternate
             )
             self.assertIsNotNone(harvest_job)
             Dataset.objects.filter(remote_service=geonode_service).delete()
             self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
-                                                       resource_id=geonode_layer.alternate).count(), 0)
-            legend_url = handler._create_layer_legend_link(geonode_layer)
+                                                       resource_id=geonode_dataset.alternate).count(), 0)
+            legend_url = handler._create_dataset_legend_link(geonode_dataset)
             self.assertTrue('sld_version=1.1.0' in str(legend_url))
         except Service.DoesNotExist as e:
             # In the case the Service URL becomes inaccessible for some reason
@@ -707,7 +707,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     def test_does_not_offer_geonode_projection(self, mock_settings, mock_wms):
         mock_settings.DEFAULT_MAP_CRS = "EPSG:3857"
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
-        self.parsed_wms.contents[self.phony_layer_name].crsOptions = [
+        self.parsed_wms.contents[self.phony_dataset_name].crsOptions = [
             "EPSG:4326"]
         handler = wms.WmsServiceHandler(self.phony_url)
         result = handler._offers_geonode_projection()

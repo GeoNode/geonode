@@ -79,7 +79,7 @@ class GenericWMSBackground(BaseThumbBackground):
 
         Initialization options (valid in settings.THUMBNAIL_BACKGROUND['options']):
         :key service_url: layer's provider (OGC server's location)
-        :key layer_name: name of a layer to be used as the background
+        :key dataset_name: name of a layer to be used as the background
         :key format: retrieve image's format/mime-type (defautl 'image/png')
         :key version: WMS service version (default '1.3.0')
         :key styles: layer's style (default None)
@@ -92,7 +92,7 @@ class GenericWMSBackground(BaseThumbBackground):
         # WMS specific attributes (to be overwritten in specific background classes)
         service_url = options.get("service_url", None)
         self.service_url = f"{service_url}/" if service_url and not service_url.endswith("/") else service_url
-        self.layer_name = options.get("layer_name", None)
+        self.dataset_name = options.get("dataset_name", None)
         self.format = options.get("format", "image/png")
         self.version = options.get("version", "1.3.0")
         self.styles = options.get("styles", None)
@@ -125,14 +125,14 @@ class GenericWMSBackground(BaseThumbBackground):
         :param **kargs: not used, kept for API compatibility
         """
 
-        if not self.service_url or not self.layer_name:
+        if not self.service_url or not self.dataset_name:
             logger.error("Thumbnail background configured improperly: service URL and layer name may not be empty")
             return
 
         background = Image.new("RGB", (self.thumbnail_width, self.thumbnail_height), (250, 250, 250))
         img = utils.get_map(
             self.service_url,
-            [self.layer_name],
+            [self.dataset_name],
             self.bbox_to_projection(bbox) + [self.srid],
             wms_version=self.version,
             mime_type=self.format,

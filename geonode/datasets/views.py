@@ -56,7 +56,7 @@ from guardian.shortcuts import get_objects_for_user
 from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
 from geonode.resource.manager import resource_manager
-from geonode.geoserver.helpers import set_layer_style
+from geonode.geoserver.helpers import set_dataset_style
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
@@ -142,7 +142,7 @@ def log_snippet(log_file):
         return f.read()
 
 
-def _resolve_layer(request, alternate, permission='base.view_resourcebase',
+def _resolve_dataset(request, alternate, permission='base.view_resourcebase',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     """
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
@@ -196,13 +196,13 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
 # Basic Dataset Views #
 
 @login_required
-def layer_upload(request, template='upload/layer_upload.html'):
+def dataset_upload(request, template='upload/dataset_upload.html'):
     if request.method == 'GET':
-        return layer_upload_handle_get(request, template)
+        return dataset_upload_handle_get(request, template)
     elif request.method == 'POST' and is_xml_upload_only(request):
-        return layer_upload_metadata(request)
+        return dataset_upload_metadata(request)
     elif request.method == 'POST' and is_sld_upload_only(request):
-        return layer_style_upload(request)
+        return dataset_style_upload(request)
     out = {"errormsgs": "Please, upload a valid XML file"}
     return HttpResponse(
         json.dumps(out),
@@ -210,12 +210,12 @@ def layer_upload(request, template='upload/layer_upload.html'):
         status=500)
 
 
-def layer_upload_handle_get(request, template):
+def dataset_upload_handle_get(request, template):
     mosaics = Dataset.objects.filter(is_mosaic=True).order_by('name')
     ctx = {
         'mosaics': mosaics,
         'charsets': CHARSETS,
-        'is_layer': True,
+        'is_dataset': True,
     }
     if 'geonode.upload' in settings.INSTALLED_APPS and \
             settings.UPLOADER['BACKEND'] == 'geonode.importer':
@@ -226,7 +226,7 @@ def layer_upload_handle_get(request, template):
     return render(request, template, context=ctx)
 
 
-def layer_upload_metadata(request):
+def dataset_upload_metadata(request):
     out = {}
     errormsgs = []
 
@@ -247,30 +247,30 @@ def layer_upload_metadata(request):
 
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
 
-        name = form.cleaned_data['layer_title']
+        name = form.cleaned_data['dataset_title']
         layer = Dataset.objects.filter(typename=name)
         if layer.exists():
-            layer_uuid, vals, regions, keywords, _ = parse_metadata(
+            dataset_uuid, vals, regions, keywords, _ = parse_metadata(
                 open(base_file).read())
-            if layer_uuid and layer.first().uuid != layer_uuid:
+            if dataset_uuid and layer.first().uuid != dataset_uuid:
                 out['success'] = False
                 out['errors'] = "The UUID identifier from the XML Metadata, is different from the one saved"
                 return HttpResponse(
                     json.dumps(out),
                     content_type='application/json',
                     status=404)
-            updated_layer = update_resource(layer.first(), base_file, regions, keywords, vals)
-            updated_layer.save()
+            updated_dataset = update_resource(layer.first(), base_file, regions, keywords, vals)
+            updated_dataset.save()
             out['status'] = ['finished']
-            out['url'] = updated_layer.get_absolute_url()
-            out['bbox'] = updated_layer.bbox_string
+            out['url'] = updated_dataset.get_absolute_url()
+            out['bbox'] = updated_dataset.bbox_string
             out['crs'] = {
                 'type': 'name',
-                'properties': updated_layer.srid
+                'properties': updated_dataset.srid
             }
             out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
-            if hasattr(updated_layer, 'upload_session'):
-                upload_session = updated_layer.upload_session
+            if hasattr(updated_dataset, 'upload_session'):
+                upload_session = updated_dataset.upload_session
                 upload_session.processed = True
                 upload_session.save()
             status_code = 200
@@ -299,7 +299,7 @@ def layer_upload_metadata(request):
         status=500)
 
 
-def layer_style_upload(request):
+def dataset_style_upload(request):
     form = NewLayerUploadForm(request.POST, request.FILES)
     body = {}
     if not form.is_valid():
@@ -315,18 +315,18 @@ def layer_style_upload(request):
         data = form.cleaned_data
         body = {
             'success': True,
-            'style': data.get('layer_title'),
+            'style': data.get('dataset_title'),
         }
 
-        layer = _resolve_layer(
+        layer = _resolve_dataset(
             request,
-            data.get('layer_title'),
+            data.get('dataset_title'),
             'base.change_resourcebase',
             _PERMISSION_MSG_MODIFY)
 
         sld = request.FILES['sld_file'].read()
 
-        set_layer_style(layer, data.get('layer_title'), sld)
+        set_dataset_style(layer, data.get('dataset_title'), sld)
         body['url'] = layer.get_absolute_url()
         body['bbox'] = layer.bbox_string
         body['crs'] = {
@@ -346,9 +346,9 @@ def layer_style_upload(request):
         status=status_code)
 
 
-def layer_detail(request, layername, template='layers/layer_detail.html'):
+def dataset_detail(request, layername, template='layers/dataset_detail.html'):
     try:
-        layer = _resolve_layer(
+        layer = _resolve_dataset(
             request,
             layername,
             'base.view_resourcebase',
@@ -387,7 +387,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         }
         return _sld
 
-    # assert False, str(layer_bbox)
+    # assert False, str(dataset_bbox)
     config = layer.attribute_config()
     if hasattr(layer, 'srid'):
         config['crs'] = {
@@ -395,11 +395,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             'properties': layer.srid
         }
     # Add required parameters for GXP lazy-loading
-    layer_bbox = layer.bbox[0:4]
+    dataset_bbox = layer.bbox[0:4]
     # Must be in the form xmin, ymin, xmax, ymax
     bbox = [
-        float(layer_bbox[0]), float(layer_bbox[2]),
-        float(layer_bbox[1]), float(layer_bbox[3])
+        float(dataset_bbox[0]), float(dataset_bbox[2]),
+        float(dataset_bbox[1]), float(dataset_bbox[3])
     ]
 
     # Add required parameters for GXP lazy-loading
@@ -414,7 +414,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     config["wrapDateLine"] = True
     config["visibility"] = True
     config["srs"] = srs
-    config["bbox"] = bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
+    config["bbox"] = bbox_to_projection([float(coord) for coord in dataset_bbox] + [layer.srid, ],
                                         target_srid=int(srs.split(":")[1]))[:4]
 
     config["capability"] = {
@@ -432,20 +432,20 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             },
             srs: {
                 "srs": srs,
-                "bbox": bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
+                "bbox": bbox_to_projection([float(coord) for coord in dataset_bbox] + [layer.srid, ],
                                            target_srid=srs_srid)[:4]
             },
             "EPSG:4326": {
                 "srs": "EPSG:4326",
                 "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
                 bbox_to_projection(
-                    [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
+                    [float(coord) for coord in dataset_bbox] + [layer.srid, ], target_srid=4326)[:4]
             },
             "EPSG:900913": {
                 "srs": "EPSG:900913",
                 "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:900913' else
                 bbox_to_projection(
-                    [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=3857)[:4]
+                    [float(coord) for coord in dataset_bbox] + [layer.srid, ], target_srid=3857)[:4]
             }
         },
         "srs": {
@@ -471,7 +471,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "keywords": [k.name for k in layer.keywords.all()] if layer.keywords else [],
         "llbbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
         bbox_to_projection(
-            [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
+            [float(coord) for coord in dataset_bbox] + [layer.srid, ], target_srid=4326)[:4]
     }
 
     granules = None
@@ -574,14 +574,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
-            layer_params=json.dumps(config),
+            dataset_params=json.dumps(config),
             source_params=json.dumps(source_params)
         )
     else:
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
-            layer_params=json.dumps(config)
+            dataset_params=json.dumps(config)
         )
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
@@ -615,7 +615,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "permissions_json": permissions_json,
         "documents": get_related_documents(layer),
         "metadata": metadata,
-        "is_layer": True,
+        "is_dataset": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
         "granules": granules,
         "all_granules": all_granules,
@@ -664,16 +664,16 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
     layers_names = layer.alternate
-    context_dict["layer_name"] = json.dumps(layers_names)
+    context_dict["dataset_name"] = json.dumps(layers_names)
     try:
         # get type of layer (raster or vector)
         if layer.subtype == 'raster':
-            context_dict["layer_type"] = "raster"
+            context_dict["dataset_type"] = "raster"
         elif layer.subtype == 'vector':
             if layer.has_time:
-                context_dict["layer_type"] = "vector_time"
+                context_dict["dataset_type"] = "vector_time"
             else:
-                context_dict["layer_type"] = "vector"
+                context_dict["dataset_type"] = "vector"
     except Exception:
         logger.error(
             "Possible error with OWSLib. Turning all available properties to string")
@@ -693,21 +693,21 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             context_dict['groups'] = [group for group in request.user.group_list_all()]
 
     register_event(request, 'view', layer)
-    context_dict['map_layers'] = [map_layer for map_layer in layer.maps() if
-                                  request.user.has_perm('view_resourcebase', map_layer.map.get_self_resource())]
+    context_dict['map_datasets'] = [map_dataset for map_dataset in layer.maps() if
+                                  request.user.has_perm('view_resourcebase', map_dataset.map.get_self_resource())]
     return TemplateResponse(
         request, template, context=context_dict)
 
 
 # Loads the data using the OWS lib when the "Do you want to filter it"
 # button is clicked.
-def load_layer_data(request, template='layers/layer_detail.html'):
+def load_dataset_data(request, template='layers/dataset_detail.html'):
     context_dict = {}
     data_dict = json.loads(request.POST.get('json_data'))
-    layername = data_dict['layer_name']
+    layername = data_dict['dataset_name']
     filtered_attributes = ''
     if not isinstance(data_dict['filtered_attributes'], str):
-        filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
+        filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_dataset_data' not in x]
     name = layername if ':' not in layername else layername.split(':')[1]
     location = f"{(settings.OGC_SERVER['default']['LOCATION'])}wms"
     headers = {}
@@ -740,7 +740,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
         for i in range(len(decoded_features)):
             for key, value in decoded_features[i]['properties'].items():
                 if value != '' and isinstance(value, (str, int, float)) and (
-                        (isinstance(value, Iterable) and '/load_layer_data' not in value) or value):
+                        (isinstance(value, Iterable) and '/load_dataset_data' not in value) or value):
                     properties[key].append(value)
 
         for key in properties:
@@ -755,12 +755,12 @@ def load_layer_data(request, template='layers/layer_detail.html'):
                         content_type="application/json")
 
 
-def layer_feature_catalogue(
+def dataset_feature_catalogue(
         request,
         layername,
         template='../../catalogue/templates/catalogue/feature_catalogue.xml'):
     try:
-        layer = _resolve_layer(request, layername)
+        layer = _resolve_dataset(request, layername)
     except PermissionDenied:
         return HttpResponse(_("Not allowed"), status=403)
     except Exception:
@@ -802,13 +802,13 @@ def layer_feature_catalogue(
 
 @login_required
 @check_keyword_write_perms
-def layer_metadata(
+def dataset_metadata(
         request,
         layername,
-        template='layers/layer_metadata.html',
+        template='layers/dataset_metadata.html',
         ajax=True):
     try:
-        layer = _resolve_layer(
+        layer = _resolve_dataset(
             request,
             layername,
             'base.change_resourcebase_metadata',
@@ -820,7 +820,7 @@ def layer_metadata(
     if not layer:
         raise Http404(_("Not found"))
 
-    layer_attribute_set = inlineformset_factory(
+    dataset_attribute_set = inlineformset_factory(
         Dataset,
         Attribute,
         extra=0,
@@ -836,12 +836,12 @@ def layer_metadata(
     poc = layer.poc
     metadata_author = layer.metadata_author
 
-    # assert False, str(layer_bbox)
+    # assert False, str(dataset_bbox)
     config = layer.attribute_config()
 
     # Add required parameters for GXP lazy-loading
-    layer_bbox = layer.bbox
-    bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    dataset_bbox = layer.bbox
+    bbox = [float(coord) for coord in list(dataset_bbox[0:4])]
     if hasattr(layer, 'srid'):
         config['crs'] = {
             'type': 'name',
@@ -866,14 +866,14 @@ def layer_metadata(
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
-            layer_params=json.dumps(config),
+            dataset_params=json.dumps(config),
             source_params=json.dumps(source_params)
         )
     else:
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
-            layer_params=json.dumps(config))
+            dataset_params=json.dumps(config))
 
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
@@ -902,22 +902,22 @@ def layer_metadata(
                 content_type='application/json',
                 status=400)
 
-        layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
-        if not layer_form.is_valid():
-            logger.error(f"Dataset Metadata form is not valid: {layer_form.errors}")
+        dataset_form = LayerForm(request.POST, instance=layer, prefix="resource")
+        if not dataset_form.is_valid():
+            logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
             out = {
                 'success': False,
                 'errors': [
-                    re.sub(re.compile('<.*?>'), '', str(err)) for err in layer_form.errors]
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in dataset_form.errors]
             }
             return HttpResponse(
                 json.dumps(out),
                 content_type='application/json',
                 status=400)
-        attribute_form = layer_attribute_set(
+        attribute_form = dataset_attribute_set(
             request.POST,
             instance=layer,
-            prefix="layer_attribute_set",
+            prefix="dataset_attribute_set",
             queryset=Attribute.objects.order_by('display_order'))
         if not attribute_form.is_valid():
             logger.error(f"Dataset Attributes form is not valid: {attribute_form.errors}")
@@ -961,11 +961,11 @@ def layer_metadata(
                 content_type='application/json',
                 status=400)
     else:
-        layer_form = LayerForm(instance=layer, prefix="resource")
-        layer_form.disable_keywords_widget_for_non_superuser(request.user)
-        attribute_form = layer_attribute_set(
+        dataset_form = LayerForm(instance=layer, prefix="resource")
+        dataset_form.disable_keywords_widget_for_non_superuser(request.user)
+        attribute_form = dataset_attribute_set(
             instance=layer,
-            prefix="layer_attribute_set",
+            prefix="dataset_attribute_set",
             queryset=Attribute.objects.order_by('display_order'))
         category_form = CategoryForm(
             prefix="category_choice_field",
@@ -976,10 +976,10 @@ def layer_metadata(
         if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
             warnings.warn('The settings for Thesaurus has been moved to Model, \
             this feature will be removed in next releases', DeprecationWarning)
-            layer_tkeywords = layer.tkeywords.all()
+            dataset_tkeywords = layer.tkeywords.all()
             tkeywords_list = ''
-            if layer_tkeywords and len(layer_tkeywords) > 0:
-                tkeywords_ids = layer_tkeywords.values_list('id', flat=True)
+            if dataset_tkeywords and len(dataset_tkeywords) > 0:
+                tkeywords_ids = dataset_tkeywords.values_list('id', flat=True)
                 if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
                     el = settings.THESAURUS
                     thesaurus_name = el['name']
@@ -1004,10 +1004,10 @@ def layer_metadata(
                 values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
                 tkeywords_form.fields[tid].initial = values
 
-    if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
+    if request.method == "POST" and dataset_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid() and tkeywords_form.is_valid():
-        new_poc = layer_form.cleaned_data['poc']
-        new_author = layer_form.cleaned_data['metadata_author']
+        new_poc = dataset_form.cleaned_data['poc']
+        new_author = dataset_form.cleaned_data['metadata_author']
 
         if new_poc is None:
             if poc is None:
@@ -1066,8 +1066,8 @@ def layer_metadata(
             if new_author is not None:
                 layer.metadata_author = new_author
 
-        new_keywords = current_keywords if request.keyword_readonly else layer_form.cleaned_data['keywords']
-        new_regions = [x.strip() for x in layer_form.cleaned_data['regions']]
+        new_keywords = current_keywords if request.keyword_readonly else dataset_form.cleaned_data['keywords']
+        new_regions = [x.strip() for x in dataset_form.cleaned_data['regions']]
 
         layer.keywords.clear()
         if new_keywords:
@@ -1087,7 +1087,7 @@ def layer_metadata(
         if not ajax:
             return HttpResponseRedirect(
                 reverse(
-                    'layer_detail',
+                    'dataset_detail',
                     args=(
                         layer.service_typename,
                     )))
@@ -1128,13 +1128,13 @@ def layer_metadata(
 
             if not is_manager or not can_change_metadata:
                 if settings.RESOURCE_PUBLISHING:
-                    layer_form.fields['is_published'].widget.attrs.update(
+                    dataset_form.fields['is_published'].widget.attrs.update(
                         {'disabled': 'true'})
-                layer_form.fields['is_approved'].widget.attrs.update(
+                dataset_form.fields['is_approved'].widget.attrs.update(
                     {'disabled': 'true'})
 
     if poc is not None:
-        layer_form.fields['poc'].initial = poc.id
+        dataset_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden = True
     else:
@@ -1142,7 +1142,7 @@ def layer_metadata(
         poc_form.hidden = False
 
     if metadata_author is not None:
-        layer_form.fields['metadata_author'].initial = metadata_author.id
+        dataset_form.fields['metadata_author'].initial = metadata_author.id
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
     else:
@@ -1170,7 +1170,7 @@ def layer_metadata(
     return render(request, template, context={
         "resource": layer,
         "layer": layer,
-        "layer_form": layer_form,
+        "dataset_form": dataset_form,
         "poc_form": poc_form,
         "author_form": author_form,
         "attribute_form": attribute_form,
@@ -1196,26 +1196,26 @@ def layer_metadata(
 
 
 @login_required
-def layer_metadata_advanced(request, layername):
-    return layer_metadata(
+def dataset_metadata_advanced(request, layername):
+    return dataset_metadata(
         request,
         layername,
-        template='layers/layer_metadata_advanced.html')
+        template='layers/dataset_metadata_advanced.html')
 
 
 @login_required
-def layer_replace(request, layername, template='layers/layer_replace.html'):
-    return layer_append_replace_view(request, layername, template, action_type='replace')
+def dataset_replace(request, layername, template='layers/dataset_replace.html'):
+    return dataset_append_replace_view(request, layername, template, action_type='replace')
 
 
 @login_required
-def layer_append(request, layername, template='layers/layer_append.html'):
-    return layer_append_replace_view(request, layername, template, action_type='append')
+def dataset_append(request, layername, template='layers/dataset_append.html'):
+    return dataset_append_replace_view(request, layername, template, action_type='append')
 
 
-def layer_append_replace_view(request, layername, template, action_type):
+def dataset_append_replace_view(request, layername, template, action_type):
     try:
-        layer = _resolve_layer(
+        layer = _resolve_dataset(
             request,
             layername,
             'base.change_resourcebase',
@@ -1232,7 +1232,7 @@ def layer_append_replace_view(request, layername, template, action_type):
             'charsets': CHARSETS,
             'resource': layer,
             'is_featuretype': layer.is_vector(),
-            'is_layer': True,
+            'is_dataset': True,
         }
         return render(request, template, context=ctx)
     elif request.method == 'POST':
@@ -1255,7 +1255,7 @@ def layer_append_replace_view(request, layername, template, action_type):
                             'user': request.user})
                     out['success'] = True
                     out['url'] = reverse(
-                        'layer_detail', args=[
+                        'dataset_detail', args=[
                             layer.service_typename])
                     #  invalidating resource chache
                     set_geowebcache_invalidate_cache(layer.typename)
@@ -1288,9 +1288,9 @@ def layer_append_replace_view(request, layername, template, action_type):
 
 
 @login_required
-def layer_remove(request, layername, template='layers/layer_remove.html'):
+def dataset_remove(request, layername, template='layers/dataset_remove.html'):
     try:
-        layer = _resolve_layer(
+        layer = _resolve_dataset(
             request,
             layername,
             'base.delete_resourcebase',
@@ -1315,19 +1315,19 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
                 request, template, context={"layer": layer})
 
         register_event(request, 'remove', layer)
-        return HttpResponseRedirect(reverse("layer_browse"))
+        return HttpResponseRedirect(reverse("dataset_browse"))
     else:
         return HttpResponse("Not allowed", status=403)
 
 
 @login_required
-def layer_granule_remove(
+def dataset_granule_remove(
         request,
         granule_id,
         layername,
-        template='layers/layer_granule_remove.html'):
+        template='layers/dataset_granule_remove.html'):
     try:
-        layer = _resolve_layer(
+        layer = _resolve_dataset(
             request,
             layername,
             'base.delete_resourcebase',
@@ -1365,13 +1365,13 @@ def layer_granule_remove(
                 request, template, context={"layer": layer})
         return HttpResponseRedirect(
             reverse(
-                'layer_detail', args=(
+                'dataset_detail', args=(
                     layer.service_typename,)))
     else:
         return HttpResponse("Not allowed", status=403)
 
 
-def get_layer(request, layername):
+def get_dataset(request, layername):
     """Get Dataset object as JSON"""
 
     # Function to treat Decimal in json.dumps.
@@ -1383,25 +1383,25 @@ def get_layer(request, layername):
     logger.debug('Call get layer')
     if request.method == 'GET':
         try:
-            layer_obj = _resolve_layer(request, layername)
+            dataset_obj = _resolve_dataset(request, layername)
         except PermissionDenied:
             return HttpResponse(_("Not allowed"), status=403)
         except Exception:
             raise Http404(_("Not found"))
-        if not layer_obj:
+        if not dataset_obj:
             raise Http404(_("Not found"))
 
         logger.debug(layername)
         response = {
             'typename': layername,
-            'name': layer_obj.name,
-            'title': layer_obj.title,
-            'url': layer_obj.get_tiles_url(),
-            'bbox_string': layer_obj.bbox_string,
-            'bbox_x0': layer_obj.bbox_helper.xmin,
-            'bbox_x1': layer_obj.bbox_helper.xmax,
-            'bbox_y0': layer_obj.bbox_helper.ymin,
-            'bbox_y1': layer_obj.bbox_helper.ymax,
+            'name': dataset_obj.name,
+            'title': dataset_obj.title,
+            'url': dataset_obj.get_tiles_url(),
+            'bbox_string': dataset_obj.bbox_string,
+            'bbox_x0': dataset_obj.bbox_helper.xmin,
+            'bbox_x1': dataset_obj.bbox_helper.xmax,
+            'bbox_y0': dataset_obj.bbox_helper.ymin,
+            'bbox_y1': dataset_obj.bbox_helper.ymax,
         }
         return HttpResponse(
             json.dumps(
@@ -1412,12 +1412,12 @@ def get_layer(request, layername):
             content_type='application/javascript')
 
 
-def layer_metadata_detail(
+def dataset_metadata_detail(
         request,
         layername,
-        template='layers/layer_metadata_detail.html'):
+        template='layers/dataset_metadata_detail.html'):
     try:
-        layer = _resolve_layer(
+        layer = _resolve_dataset(
             request,
             layername,
             'view_resourcebase',
@@ -1451,12 +1451,12 @@ def layer_metadata_detail(
     })
 
 
-def layer_metadata_upload(
+def dataset_metadata_upload(
         request,
         layername,
-        template='layers/layer_metadata_upload.html'):
+        template='layers/dataset_metadata_upload.html'):
     try:
-        layer = _resolve_layer(
+        layer = _resolve_dataset(
             request,
             layername,
             'base.change_resourcebase',
@@ -1476,12 +1476,12 @@ def layer_metadata_upload(
     })
 
 
-def layer_sld_upload(
+def dataset_sld_upload(
         request,
         layername,
-        template='layers/layer_style_upload.html'):
+        template='layers/dataset_style_upload.html'):
     try:
-        layer = _resolve_layer(
+        layer = _resolve_dataset(
             request,
             layername,
             'base.change_resourcebase',
@@ -1501,23 +1501,23 @@ def layer_sld_upload(
     })
 
 
-def layer_sld_edit(
+def dataset_sld_edit(
         request,
         layername,
-        template='layers/layer_style_edit.html'):
-    return layer_detail(request, layername, template)
+        template='layers/dataset_style_edit.html'):
+    return dataset_detail(request, layername, template)
 
 
 @xframe_options_exempt
-def layer_embed(
+def dataset_embed(
         request,
         layername,
-        template='layers/layer_embed.html'):
-    return layer_detail(request, layername, template)
+        template='layers/dataset_embed.html'):
+    return dataset_detail(request, layername, template)
 
 
 @login_required
-def layer_batch_metadata(request):
+def dataset_batch_metadata(request):
     return batch_modify(request, 'Dataset')
 
 
@@ -1597,12 +1597,12 @@ def batch_permissions(request, model):
 
 
 @login_required
-def layer_batch_permissions(request):
+def dataset_batch_permissions(request):
     return batch_permissions(request, 'Dataset')
 
 
-def layer_view_counter(layer_id, viewer):
-    _l = Dataset.objects.get(id=layer_id)
+def dataset_view_counter(dataset_id, viewer):
+    _l = Dataset.objects.get(id=dataset_id)
     _u = get_user_model().objects.get(username=viewer)
     _l.view_count_up(_u, do_local=True)
 

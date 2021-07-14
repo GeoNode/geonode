@@ -81,11 +81,11 @@ aux={self.auxillary_files} sld={self.sld_files} xml={self.xml_files}>"
 
 class FileType:
 
-    def __init__(self, name, code, layer_type, aliases=None,
+    def __init__(self, name, code, dataset_type, aliases=None,
                  auxillary_file_exts=None):
         self.name = name
         self.code = code
-        self.layer_type = layer_type
+        self.dataset_type = dataset_type
         self.aliases = list(aliases) if aliases is not None else []
         self.auxillary_file_exts = list(
             auxillary_file_exts) if auxillary_file_exts is not None else []

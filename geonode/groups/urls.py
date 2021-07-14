@@ -64,5 +64,5 @@ urlpatterns = [  # 'geonode.groups.views',
     url(r'^autocomplete_category/$',
         views.GroupCategoryAutocomplete.as_view(), name='autocomplete_category'),
     url(r'^layer/permission/$',
-        SetGroupLayerPermission.as_view(), name='set_group_layer_permissions'),
+        SetGroupLayerPermission.as_view(), name='set_group_dataset_permissions'),
 ]

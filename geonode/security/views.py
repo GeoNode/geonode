@@ -372,7 +372,7 @@ def attributes_sats_refresh(request):
 
 
 @require_POST
-def invalidate_tiledlayer_cache(request):
+def invalidate_tileddataset_cache(request):
     from geonode.geoserver.security import set_geowebcache_invalidate_cache
     uuid = request.POST['uuid']
     resource = get_object_or_404(ResourceBase, uuid=uuid)
@@ -458,18 +458,18 @@ def request_permissions(request):
             content_type='text/plain')
 
 
-def send_email_consumer(layer_uuid, user_id):
-    resource = get_object_or_404(ResourceBase, uuid=layer_uuid)
+def send_email_consumer(dataset_uuid, user_id):
+    resource = get_object_or_404(ResourceBase, uuid=dataset_uuid)
     user = get_user_model().objects.get(id=user_id)
     send_notification([resource.owner],
                       'request_download_resourcebase',
                       {'resource': resource, 'from_user': user})
 
 
-def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.node"):
+def send_email_owner_on_view(owner, viewer, dataset_id, geonode_email="email@geo.node"):
     # get owner and viewer emails
     owner_email = get_user_model().objects.get(username=owner).email
-    layer = Dataset.objects.get(id=layer_id)
+    layer = Dataset.objects.get(id=dataset_id)
     # check if those values are empty
     if owner_email and geonode_email:
         from django.core.mail import EmailMessage

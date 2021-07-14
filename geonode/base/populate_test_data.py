@@ -124,7 +124,7 @@ def create_fixtures():
 
     next_date = get_test_date()
 
-    layer_data = [
+    dataset_data = [
         ('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, next_date(), ('populartag', 'here'), elevation),
         ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, next_date(), ('populartag',), elevation),
         ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', world_extent, next_date(), ('populartag',), elevation),
@@ -149,14 +149,14 @@ def create_fixtures():
         ('doc metadata true', 'doc metadata true', ('populartag',), [0, 22, 0, 22], farming)
     ]
 
-    return map_data, user_data, people_data, layer_data, document_data
+    return map_data, user_data, people_data, dataset_data, document_data
 
 
 def create_models(type=None, integration=False):
     users = []
     obj_ids = []
     with transaction.atomic():
-        map_data, user_data, people_data, layer_data, document_data = create_fixtures()
+        map_data, user_data, people_data, dataset_data, document_data = create_fixtures()
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
         cont_group, created = Group.objects.get_or_create(name='contributors')
         perm = Permission.objects.get(codename='add_resourcebase')
@@ -240,7 +240,7 @@ def create_models(type=None, integration=False):
                         m.save()
 
             if not type or ensure_string(type) == 'layer':
-                for ld, owner, subtype in zip(layer_data, cycle(users), cycle(('raster', 'vector'))):
+                for ld, owner, subtype in zip(dataset_data, cycle(users), cycle(('raster', 'vector'))):
                     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                     end = start + timedelta(days=365)
                     logger.debug(f"[SetUp] Add layer {title}")
@@ -321,7 +321,7 @@ def dump_models(path=None):
         f.write(result)
 
 
-def create_single_layer(name):
+def create_single_dataset(name):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True

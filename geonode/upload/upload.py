@@ -61,7 +61,7 @@ from geonode.upload import UploadException, LayerNotReady
 from ..layers.models import Dataset
 from ..layers.metadata import parse_metadata
 from ..people.utils import get_default_user
-from ..layers.utils import get_valid_layer_name
+from ..layers.utils import get_valid_dataset_name
 from ..geoserver.helpers import (
     gs_catalog,
     gs_uploader
@@ -70,8 +70,8 @@ from . import utils
 from .models import Upload
 from .upload_preprocessing import preprocess_files
 from geonode.geoserver.helpers import (
-    get_layer_type,
-    get_layer_storetype)
+    get_dataset_type,
+    get_dataset_storetype)
 
 logger = logging.getLogger(__name__)
 
@@ -116,10 +116,10 @@ class UploaderSession:
     time = None
 
     # the title given to the layer
-    layer_title = None
+    dataset_title = None
 
     # the abstract
-    layer_abstract = None
+    dataset_abstract = None
 
     # track the most recently completed upload step
     completed_step = None
@@ -203,8 +203,8 @@ def upload(
         name=name,
         charset=charset,
         import_session=import_session,
-        layer_abstract="",
-        layer_title=name,
+        dataset_abstract="",
+        dataset_title=name,
         permissions=None,
         mosaic=mosaic,
         append_to_mosaic_opts=append_to_mosaic_opts,
@@ -237,7 +237,7 @@ def _get_next_id():
     return next_id
 
 
-def _check_geoserver_store(store_name, layer_type, overwrite):
+def _check_geoserver_store(store_name, dataset_type, overwrite):
     """Check if the store exists in geoserver"""
     try:
         store = gs_catalog.get_store(store_name)
@@ -259,8 +259,8 @@ def _check_geoserver_store(store_name, layer_type, overwrite):
                             raise GeoNodeException(
                                 _("Name already in use and overwrite is False"))
                         existing_type = resource.resource_type
-                        if existing_type != layer_type:
-                            msg = (f"Type of uploaded file {store_name} ({layer_type}) does not "
+                        if existing_type != dataset_type:
+                            msg = (f"Type of uploaded file {store_name} ({dataset_type}) does not "
                                    "match type of existing resource type "
                                    f"{existing_type}")
                             logger.error(msg)
@@ -279,24 +279,24 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
     if len(spatial_files) > 1:
         # we only support more than one file if they're rasters for mosaicing
         if not all(
-                [f.file_type.layer_type == 'coverage' for f in spatial_files]):
+                [f.file_type.dataset_type == 'coverage' for f in spatial_files]):
             msg = "Please upload only one type of file at a time"
             raise UploadException(msg)
-    name = get_valid_layer_name(layer, overwrite)
+    name = get_valid_dataset_name(layer, overwrite)
     logger.debug(f'Name for layer: {name}')
     if not any(spatial_files.all_files()):
         msg = "Unable to recognize the uploaded file(s)"
         raise UploadException(msg)
-    the_layer_type = get_layer_type(spatial_files)
-    _check_geoserver_store(name, the_layer_type, overwrite)
-    if the_layer_type not in (
+    the_dataset_type = get_dataset_type(spatial_files)
+    _check_geoserver_store(name, the_dataset_type, overwrite)
+    if the_dataset_type not in (
             FeatureType.resource_type,
             Coverage.resource_type):
-        msg = f"Expected layer type to FeatureType or Coverage, not {the_layer_type}"
+        msg = f"Expected layer type to FeatureType or Coverage, not {the_dataset_type}"
         raise RuntimeError(msg)
     files_to_upload = preprocess_files(spatial_files)
     logger.debug(f"files_to_upload: {files_to_upload}")
-    logger.debug(f'Uploading {the_layer_type}')
+    logger.debug(f'Uploading {the_dataset_type}')
     error_msg = None
     try:
         next_id = _get_next_id()
@@ -559,7 +559,7 @@ def srs_step(upload_session, source, target):
     Upload.objects.update_from_session(upload_session)
 
 
-def final_step(upload_session, user, charset="UTF-8", layer_id=None):
+def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
     import_session = upload_session.import_session
     import_id = import_session.id
 
@@ -588,8 +588,8 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     # @todo see above in save_step, regarding computed unique name
     name = task.layer.name
 
-    if layer_id:
-        name = Dataset.objects.get(resourcebase_ptr_id=layer_id).name
+    if dataset_id:
+        name = Dataset.objects.get(resourcebase_ptr_id=dataset_id).name
 
     _log(f'Getting from catalog [{name}]')
     try:
@@ -619,10 +619,10 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
     _log(f'Creating Django record for [{name}]')
     target = task.target
-    alternate = task.get_target_layer_name()
-    layer_uuid = None
-    title = upload_session.layer_title
-    abstract = upload_session.layer_abstract
+    alternate = task.get_target_dataset_name()
+    dataset_uuid = None
+    title = upload_session.dataset_title
+    abstract = upload_session.dataset_abstract
 
     metadata_uploaded = False
     xml_file = upload_session.base_file[0].xml_files
@@ -647,7 +647,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 xml_file = None
 
             if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
-                layer_uuid, vals, regions, keywords, custom = parse_metadata(
+                dataset_uuid, vals, regions, keywords, custom = parse_metadata(
                     open(xml_file).read())
                 metadata_uploaded = True
         except Exception as e:
@@ -679,7 +679,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         sld_uploaded = False
 
     # Make sure the layer does not exists already
-    if layer_uuid and Dataset.objects.filter(uuid=layer_uuid).count():
+    if dataset_uuid and Dataset.objects.filter(uuid=dataset_uuid).count():
         Upload.objects.invalidate_from_session(upload_session)
         logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
         raise GeoNodeException(
@@ -687,7 +687,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
     # Is it a regular file or an ImageMosaic?
     # if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
-    saved_layer = None
+    saved_dataset = None
     has_time = has_elevation = False
     start = end = None
     if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
@@ -700,20 +700,20 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         has_time = True
 
     if upload_session.append_to_mosaic_opts:
-        saved_layer, created = Dataset.objects.get_or_create(
+        saved_dataset, created = Dataset.objects.get_or_create(
             name=upload_session.append_to_mosaic_name)
-        assert saved_layer
+        assert saved_dataset
         try:
-            if saved_layer.temporal_extent_start and end:
+            if saved_dataset.temporal_extent_start and end:
                 if pytz.utc.localize(
-                        saved_layer.temporal_extent_start,
+                        saved_dataset.temporal_extent_start,
                         is_dst=False) < end:
-                    saved_layer.temporal_extent_end = end
+                    saved_dataset.temporal_extent_end = end
                     Dataset.objects.filter(
                         name=upload_session.append_to_mosaic_name).update(
                         temporal_extent_end=end)
                 else:
-                    saved_layer.temporal_extent_start = end
+                    saved_dataset.temporal_extent_start = end
                     Dataset.objects.filter(
                         name=upload_session.append_to_mosaic_name).update(
                         temporal_extent_start=end)
@@ -722,12 +722,12 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 f"There was an error updating the mosaic temporal extent: {str(e)}")
     else:
         try:
-            saved_layer = resource_manager.create(
-                layer_uuid,
+            saved_dataset = resource_manager.create(
+                dataset_uuid,
                 resource_type=Dataset,
                 defaults=dict(
                     store=target.name,
-                    subtype=get_layer_storetype(target.store_type),
+                    subtype=get_dataset_storetype(target.store_type),
                     alternate=alternate,
                     workspace=target.workspace_name,
                     title=title,
@@ -745,17 +745,17 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             Upload.objects.invalidate_from_session(upload_session)
             raise UploadException.from_exc(_('Error configuring Dataset'), e)
 
-        Upload.objects.update_from_session(upload_session, resource=saved_layer)
+        Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions
 
     # Finalize Upload
-    resource_manager.set_permissions(None, instance=saved_layer, permissions=permissions, created=created)
-    resource_manager.update(None, instance=saved_layer, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
-    resource_manager.exec('set_style', None, instance=saved_layer, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
-    resource_manager.exec('set_time_info', None, instance=saved_layer, time_info=upload_session.time_info)
-    resource_manager.set_thumbnail(None, instance=saved_layer)
+    resource_manager.set_permissions(None, instance=saved_dataset, permissions=permissions, created=created)
+    resource_manager.update(None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
+    resource_manager.exec('set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
+    resource_manager.exec('set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
+    resource_manager.set_thumbnail(None, instance=saved_dataset)
 
     try:
         logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
@@ -766,4 +766,4 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     finally:
         Upload.objects.filter(import_id=import_id).update(complete=True)
 
-    return saved_layer
+    return saved_dataset

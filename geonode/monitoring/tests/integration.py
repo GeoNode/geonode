@@ -58,7 +58,7 @@ from geonode.base.populate_test_data import (
     all_public,
     create_models,
     remove_models,
-    create_single_layer)
+    create_single_dataset)
 
 from geonode.tests.utils import Client
 from geonode.geoserver.helpers import ogc_server_settings
@@ -262,10 +262,10 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = create_single_layer('san_andres_y_providencia_poi')
+        _l = create_single_dataset('san_andres_y_providencia_poi')
 
         self.client.get(
-            reverse('layer_detail',
+            reverse('dataset_detail',
                     args=(_l.alternate,
                           )),
             **{"HTTP_USER_AGENT": self.ua})
@@ -284,11 +284,11 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = create_single_layer('san_andres_y_providencia_poi')
+        _l = create_single_dataset('san_andres_y_providencia_poi')
 
         self.assertIsNotNone(_l)
         self.client.get(
-            reverse('layer_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
+            reverse('dataset_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
         eq = ExceptionEvent.objects.all().last()
         if eq:
             self.assertEqual('django.http.response.Http404', eq.error_type)
@@ -300,12 +300,12 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = create_single_layer('san_andres_y_providencia_poi')
+        _l = create_single_dataset('san_andres_y_providencia_poi')
 
         for idx, _l in enumerate(Dataset.objects.all()):
             for inum in range(0, idx + 1):
                 self.client.get(
-                    reverse('layer_detail',
+                    reverse('dataset_detail',
                             args=(_l.alternate,
                                   )),
                     **{"HTTP_USER_AGENT": self.ua})
@@ -908,8 +908,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.user.email = 'test_user@email.com'
         self.user.save()
 
-    def test_layer_view_endpoints(self):
-        layer_view_data = [
+    def test_dataset_view_endpoints(self):
+        dataset_view_data = [
             {'label': 'd2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10',
              'max': '1.0000',
              'metric_count': 2,
@@ -960,13 +960,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             if not len(month_data):
                 empty_months += 1
             else:
-                self.assertEqual(len(month_data), len(layer_view_data))
+                self.assertEqual(len(month_data), len(dataset_view_data))
                 for dd in month_data:
-                    self.assertIn(dd, layer_view_data)
+                    self.assertIn(dd, dataset_view_data)
         self.assertEqual(empty_months, 11)
 
-    def test_layer_upload_endpoints(self):
-        layer_upload_data = [
+    def test_dataset_upload_endpoints(self):
+        dataset_upload_data = [
             {'label': 'd2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10',
              'max': '1.0000',
              'metric_count': 2,
@@ -1017,13 +1017,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             if not len(month_data):
                 empty_months += 1
             else:
-                self.assertEqual(len(month_data), len(layer_upload_data))
+                self.assertEqual(len(month_data), len(dataset_upload_data))
                 for dd in month_data:
-                    self.assertIn(dd, layer_upload_data)
+                    self.assertIn(dd, dataset_upload_data)
         self.assertEqual(empty_months, 11)
 
-    def test_layer_view_metadata_endpoints(self):
-        layer_view_metadata_data = [
+    def test_dataset_view_metadata_endpoints(self):
+        dataset_view_metadata_data = [
             {'label': '68ce3486a49de17ac675ead5ba963cc31a0444bd7eb7c6da9db17c933637186b',
              'max': '1.0000',
              'metric_count': 1,
@@ -1074,13 +1074,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             if not len(month_data):
                 empty_months += 1
             else:
-                self.assertEqual(len(month_data), len(layer_view_metadata_data))
+                self.assertEqual(len(month_data), len(dataset_view_metadata_data))
                 for dd in month_data:
-                    self.assertIn(dd, layer_view_metadata_data)
+                    self.assertIn(dd, dataset_view_metadata_data)
         self.assertEqual(empty_months, 11)
 
-    def test_layer_change_metadata_endpoints(self):
-        layer_change_data = [
+    def test_dataset_change_metadata_endpoints(self):
+        dataset_change_data = [
             {'label': '68ce3486a49de17ac675ead5ba963cc31a0444bd7eb7c6da9db17c933637186b',
              'max': '1.0000',
              'metric_count': 1,
@@ -1123,13 +1123,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             if not len(month_data):
                 empty_months += 1
             else:
-                self.assertEqual(len(month_data), len(layer_change_data))
+                self.assertEqual(len(month_data), len(dataset_change_data))
                 for dd in month_data:
-                    self.assertIn(dd, layer_change_data)
+                    self.assertIn(dd, dataset_change_data)
         self.assertEqual(empty_months, 11)
 
-    def test_layer_download_endpoints(self):
-        layer_downloads_data = [
+    def test_dataset_download_endpoints(self):
+        dataset_downloads_data = [
             {'label': 'd2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10',
              'max': '1.0000',
              'metric_count': 1,
@@ -1172,9 +1172,9 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             if not len(month_data):
                 empty_months += 1
             else:
-                self.assertEqual(len(month_data), len(layer_downloads_data))
+                self.assertEqual(len(month_data), len(dataset_downloads_data))
                 for dd in month_data:
-                    self.assertIn(dd, layer_downloads_data)
+                    self.assertIn(dd, dataset_downloads_data)
         self.assertEqual(empty_months, 11)
 
     def test_map_create_endpoints(self):

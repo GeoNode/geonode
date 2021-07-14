@@ -47,7 +47,7 @@ from geonode.base.models import Link
 from geonode.datasets.models import Dataset
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.base.populate_test_data import create_models, create_single_layer
+from geonode.base.populate_test_data import create_models, create_single_dataset
 
 TEST_DOMAIN = '.github.com'
 TEST_URL = f'https://help{TEST_DOMAIN}/'
@@ -209,7 +209,7 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
 @override_settings(SITEURL='http://localhost:8000')
 class TestProxyTags(GeoNodeBaseTestSupport):
     def setUp(self):
-        self.resource = create_single_layer('foo_layer')
+        self.resource = create_single_dataset('foo_dataset')
         r = RequestFactory()
         self.url = urljoin(settings.SITEURL, reverse("download", args={self.resource.id}))
         r.get(self.url)
