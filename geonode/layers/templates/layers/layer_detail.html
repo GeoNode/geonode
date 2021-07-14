@@ -626,7 +626,7 @@
           {% endfor %}
         </ul>
     </li>
-    {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
+    {% if "add_resource" in user.perms %}
       <li class="list-group-item">
         <h4>{% trans "Create a map using this dataset" %}</h4>
         <p>{% trans "Click the button below to generate a new map based on this dataset." %}</p>
