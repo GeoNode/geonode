@@ -19,6 +19,7 @@
 import logging
 import sys
 from unittest.mock import patch
+from urllib.parse import urljoin
 
 from django.urls import reverse
 from rest_framework.test import APITestCase
@@ -52,12 +53,19 @@ class LayersApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 8)
+
         # Pagination
         self.assertEqual(len(response.data['layers']), 8)
         logger.debug(response.data)
 
         for _l in response.data['layers']:
             self.assertTrue(_l['resource_type'], 'layer')
+        # Test list response doesn't have attribute_set
+        self.assertIsNone(response.data['layers'][0].get('attribute_set'))
+        # Test detail response has attribute_set
+        url = urljoin(f"{reverse('datasets-list')}/", f"{Layer.objects.first().pk}")
+        response = self.client.get(url, format='json')
+        self.assertIsNotNone(response.data['layer'].get('attribute_set'))
 
     def test_raw_HTML_stripped_properties(self):
         """
