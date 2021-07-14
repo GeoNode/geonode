@@ -18,6 +18,8 @@
 #
 #########################################################################
 import logging
+
+from requests.models import HTTPError
 from geonode.services.enumerations import WMS, INDEXED
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import Client
@@ -464,7 +466,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             'units': 'esriMeters'
         }
 
-        phony_url = "http://sit.cittametropolitana.na.it/arcgis/rest/services/basemap_ortofoto_AGEA2011/MapServer"
+        phony_url = "http://sportellotelematico.provincia.foggia.it/arcgis/rest/services/ProvFoggia/ptcp_a2/MapServer"
         mock_parsed_arcgis = mock.MagicMock(ArcMapService).return_value
         (url, mock_parsed_arcgis) = mock.MagicMock(ArcMapService,
                                                    return_value=(phony_url,
@@ -489,8 +491,8 @@ class ModuleFunctionsTestCase(StandardTestCase):
         if created:
             test_user.set_password("somepassword")
             test_user.save()
-        result = handler.create_geonode_service(test_user)
         try:
+            result = handler.create_geonode_service(test_user)
             geonode_service, created = Service.objects.get_or_create(
                 base_url=result.base_url,
                 owner=test_user)
@@ -508,9 +510,9 @@ class ModuleFunctionsTestCase(StandardTestCase):
             Layer.objects.filter(remote_service=geonode_service).delete()
             self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
                                                        resource_id=geonode_layer.alternate).count(), 0)
-        except Service.DoesNotExist as e:
+        except (Service.DoesNotExist, HTTPError) as e:
             # In the case the Service URL becomes inaccessible for some reason
-            logger.error(e)
+            logger.info(e)
 
 
 class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
@@ -905,7 +907,6 @@ class TestServiceViews(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('services'))
         self.assertEqual(response.status_code, 200)
 
-    def test_invalid_user_cannot_access_to_page(self):
-        self.client.login(username='bobby', password='bobby')
+    def test_anonymous_user_can_see_the_services(self):
         response = self.client.get(reverse('services'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
