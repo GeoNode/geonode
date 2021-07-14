@@ -43,6 +43,7 @@ from geonode.utils import check_ogc_backend
 from geonode.layers.utils import file_upload
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map
+from geonode.layers.models import Layer
 from geonode.utils import http_client, DisableDjangoSignals
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
@@ -564,7 +565,8 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         ]
 
         self.client.login(username="norman", password="norman")
-        thumbnail_post_url = reverse("layer_thumbnail", kwargs={"layername": self.layer_coast_line.alternate})
+        dataset_id = Layer.objects.get(alternate="geonode:san_andres_y_providencia_coastline").resourcebase_ptr_id
+        thumbnail_post_url = reverse('layers-set-thumb-from-bbox', args=[dataset_id])
 
         for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):
             response = self.client.post(
