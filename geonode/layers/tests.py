@@ -18,7 +18,6 @@
 #
 #########################################################################
 from collections import namedtuple
-from geonode.geoserver.createlayer.utils import create_layer
 
 from django.test.client import RequestFactory
 from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
