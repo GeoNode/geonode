@@ -9,6 +9,15 @@ class Migration(migrations.Migration):
         ('datasets', '0028_auto_20200323_1945'),
         ('datasets', '0032_auto_20200612_1544'),
     ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0033_merge_20200618_2150')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
 
-    operations = [
-    ]
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+        ]

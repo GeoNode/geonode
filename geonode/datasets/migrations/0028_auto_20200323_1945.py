@@ -20,6 +20,16 @@ class Migration(migrations.Migration):
         ('datasets', '0027_auto_20170801_1228_squashed_0033_auto_20180606_1543'),
     ]
 
-    operations = [
-        migrations.RunPython(populate_polygon, lambda a, b: True),
-    ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0028_auto_20200323_1945')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
+
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+            migrations.RunPython(populate_polygon, lambda a, b: True),
+        ]

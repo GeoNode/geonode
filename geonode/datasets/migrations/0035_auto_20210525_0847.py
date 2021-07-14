@@ -8,24 +8,33 @@ class Migration(migrations.Migration):
     dependencies = [
         ('datasets', '0034_auto_20210329_1458'),
     ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0035_auto_20210525_0847')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
 
-    operations = [
-        migrations.RemoveField(
-            model_name='uploadsession',
-            name='resource',
-        ),
-        migrations.RemoveField(
-            model_name='uploadsession',
-            name='user',
-        ),
-        migrations.RemoveField(
-            model_name='Dataset',
-            name='upload_session',
-        ),
-        migrations.DeleteModel(
-            name='LayerFile',
-        ),
-        migrations.DeleteModel(
-            name='UploadSession',
-        ),
-    ]
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+            migrations.RemoveField(
+                model_name='uploadsession',
+                name='resource',
+            ),
+            migrations.RemoveField(
+                model_name='uploadsession',
+                name='user',
+            ),
+            migrations.RemoveField(
+                model_name='Dataset',
+                name='upload_session',
+            ),
+            migrations.DeleteModel(
+                name='LayerFile',
+            ),
+            migrations.DeleteModel(
+                name='UploadSession',
+            ),
+        ]

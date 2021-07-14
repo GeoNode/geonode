@@ -14,6 +14,16 @@ class Migration(migrations.Migration):
         ('datasets', '24_to_26'),
     ]
 
-    operations = [
-        migrations.RunPython(copy_typename),
-    ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='26_to_27')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
+
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+            migrations.RunPython(copy_typename),
+        ]

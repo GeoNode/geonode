@@ -15,95 +15,105 @@ class Migration(migrations.Migration):
         ('services', '0030_auto_20171212_0518'),
     ]
 
-    operations = [
-        migrations.AlterField(
-            model_name='Dataset',
-            name='abstract_en',
-            field=models.TextField(blank=True, help_text='brief narrative summary of the content of the resource(s)', max_length=2000, null=True, verbose_name='abstract'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='data_quality_statement_en',
-            field=models.TextField(blank=True, help_text="general explanation of the data producer's knowledge about the lineage of a dataset", max_length=2000, null=True, verbose_name='data quality statement'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='purpose_en',
-            field=models.TextField(blank=True, help_text='summary of the intentions with which the resource(s) was developed', max_length=500, null=True, verbose_name='purpose'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='supplemental_information_en',
-            field=models.TextField(default='No information provided', help_text='any other descriptive information about the dataset', max_length=2000, null=True, verbose_name='supplemental information'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='default_style',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='layer_default_style', to='datasets.Style'),
-        ),
-        migrations.AddField(
-            model_name='Dataset',
-            name='remote_service',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='services.Service'),
-        ),
-        migrations.AddField(
-            model_name='uploadsession',
-            name='resource',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='base.ResourceBase'),
-        ),
-        migrations.AlterField(
-            model_name='layerfile',
-            name='file',
-            field=models.FileField(max_length=255, storage=django.core.files.storage.FileSystemStorage(base_url='/uploaded/'), upload_to='layers/%Y/%m/%d'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='elevation_regex',
-            field=models.CharField(blank=True, max_length=128, null=True, verbose_name='Elevation regex'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='has_elevation',
-            field=models.BooleanField(default=False, verbose_name='Has elevation?'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='has_time',
-            field=models.BooleanField(default=False, verbose_name='Has time?'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='is_mosaic',
-            field=models.BooleanField(default=False, verbose_name='Is mosaic?'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='name',
-            field=models.CharField(max_length=128, verbose_name='Name'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='store',
-            field=models.CharField(max_length=128, verbose_name='Store'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='storeType',
-            field=models.CharField(max_length=128, verbose_name='Storetype'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='time_regex',
-            field=models.CharField(blank=True, choices=[('[0-9]{8}', 'YYYYMMDD'), ('[0-9]{8}T[0-9]{6}', "YYYYMMDD'T'hhmmss"), ('[0-9]{8}T[0-9]{6}Z', "YYYYMMDD'T'hhmmss'Z'")], max_length=128, null=True, verbose_name='Time regex'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='typename',
-            field=models.CharField(blank=True, max_length=128, null=True, verbose_name='Typename'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='workspace',
-            field=models.CharField(max_length=128, verbose_name='Workspace'),
-        ),
-    ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0027_auto_20170801_1228_squashed_0033_auto_20180606_1543')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
+
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+            migrations.AlterField(
+                model_name='Dataset',
+                name='abstract_en',
+                field=models.TextField(blank=True, help_text='brief narrative summary of the content of the resource(s)', max_length=2000, null=True, verbose_name='abstract'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='data_quality_statement_en',
+                field=models.TextField(blank=True, help_text="general explanation of the data producer's knowledge about the lineage of a dataset", max_length=2000, null=True, verbose_name='data quality statement'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='purpose_en',
+                field=models.TextField(blank=True, help_text='summary of the intentions with which the resource(s) was developed', max_length=500, null=True, verbose_name='purpose'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='supplemental_information_en',
+                field=models.TextField(default='No information provided', help_text='any other descriptive information about the dataset', max_length=2000, null=True, verbose_name='supplemental information'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='default_style',
+                field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='layer_default_style', to='datasets.Style'),
+            ),
+            migrations.AddField(
+                model_name='Dataset',
+                name='remote_service',
+                field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='services.Service'),
+            ),
+            migrations.AddField(
+                model_name='uploadsession',
+                name='resource',
+                field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='base.ResourceBase'),
+            ),
+            migrations.AlterField(
+                model_name='layerfile',
+                name='file',
+                field=models.FileField(max_length=255, storage=django.core.files.storage.FileSystemStorage(base_url='/uploaded/'), upload_to='layers/%Y/%m/%d'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='elevation_regex',
+                field=models.CharField(blank=True, max_length=128, null=True, verbose_name='Elevation regex'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='has_elevation',
+                field=models.BooleanField(default=False, verbose_name='Has elevation?'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='has_time',
+                field=models.BooleanField(default=False, verbose_name='Has time?'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='is_mosaic',
+                field=models.BooleanField(default=False, verbose_name='Is mosaic?'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='name',
+                field=models.CharField(max_length=128, verbose_name='Name'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='store',
+                field=models.CharField(max_length=128, verbose_name='Store'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='storeType',
+                field=models.CharField(max_length=128, verbose_name='Storetype'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='time_regex',
+                field=models.CharField(blank=True, choices=[('[0-9]{8}', 'YYYYMMDD'), ('[0-9]{8}T[0-9]{6}', "YYYYMMDD'T'hhmmss"), ('[0-9]{8}T[0-9]{6}Z', "YYYYMMDD'T'hhmmss'Z'")], max_length=128, null=True, verbose_name='Time regex'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='typename',
+                field=models.CharField(blank=True, max_length=128, null=True, verbose_name='Typename'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='workspace',
+                field=models.CharField(max_length=128, verbose_name='Workspace'),
+            ),
+        ]

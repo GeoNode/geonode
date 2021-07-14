@@ -9,21 +9,30 @@ class Migration(migrations.Migration):
     dependencies = [
         ('datasets', '0027_auto_20170801_1228_squashed_0033_auto_20180606_1543'),
     ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0028_auto_20200610_0759')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
 
-    operations = [
-        migrations.AddField(
-            model_name='attribute',
-            name='featureinfo_type',
-            field=models.CharField(choices=[('type_property', 'Property-Label'), ('type_href', 'HREF-Link'), ('type_image', 'Image')], default='type_property', help_text='specifies if the attribute should be rendered with an HTML widget on GetFeatureInfo template.', max_length=255, verbose_name='featureinfo type'),
-        ),
-        migrations.AddField(
-            model_name='Dataset',
-            name='featureinfo_custom_template',
-            field=tinymce.models.HTMLField(blank=True, help_text='the custom GetFeatureInfo template HTML contents.', null=True, verbose_name='featureinfo custom template'),
-        ),
-        migrations.AddField(
-            model_name='Dataset',
-            name='use_featureinfo_custom_template',
-            field=models.BooleanField(default=False, help_text='specifies wether or not use a custom GetFeatureInfo template.', verbose_name='use featureinfo custom template?'),
-        ),
-    ]
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+            migrations.AddField(
+                model_name='attribute',
+                name='featureinfo_type',
+                field=models.CharField(choices=[('type_property', 'Property-Label'), ('type_href', 'HREF-Link'), ('type_image', 'Image')], default='type_property', help_text='specifies if the attribute should be rendered with an HTML widget on GetFeatureInfo template.', max_length=255, verbose_name='featureinfo type'),
+            ),
+            migrations.AddField(
+                model_name='Dataset',
+                name='featureinfo_custom_template',
+                field=tinymce.models.HTMLField(blank=True, help_text='the custom GetFeatureInfo template HTML contents.', null=True, verbose_name='featureinfo custom template'),
+            ),
+            migrations.AddField(
+                model_name='Dataset',
+                name='use_featureinfo_custom_template',
+                field=models.BooleanField(default=False, help_text='specifies wether or not use a custom GetFeatureInfo template.', verbose_name='use featureinfo custom template?'),
+            ),
+        ]

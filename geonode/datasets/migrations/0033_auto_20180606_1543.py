@@ -8,56 +8,65 @@ class Migration(migrations.Migration):
     dependencies = [
         ('datasets', '0032_auto_20180424_1638'),
     ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0033_auto_20180606_1543')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
 
-    operations = [
-        migrations.AlterField(
-            model_name='Dataset',
-            name='elevation_regex',
-            field=models.CharField(blank=True, max_length=128, null=True, verbose_name='Elevation regex'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='has_elevation',
-            field=models.BooleanField(default=False, verbose_name='Has elevation?'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='has_time',
-            field=models.BooleanField(default=False, verbose_name='Has time?'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='is_mosaic',
-            field=models.BooleanField(default=False, verbose_name='Is mosaic?'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='name',
-            field=models.CharField(max_length=128, verbose_name='Name'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='store',
-            field=models.CharField(max_length=128, verbose_name='Store'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='storeType',
-            field=models.CharField(max_length=128, verbose_name='Storetype'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='time_regex',
-            field=models.CharField(blank=True, choices=[('[0-9]{8}', 'YYYYMMDD'), ('[0-9]{8}T[0-9]{6}', "YYYYMMDD'T'hhmmss"), ('[0-9]{8}T[0-9]{6}Z', "YYYYMMDD'T'hhmmss'Z'")], max_length=128, null=True, verbose_name='Time regex'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='typename',
-            field=models.CharField(blank=True, max_length=128, null=True, verbose_name='Typename'),
-        ),
-        migrations.AlterField(
-            model_name='Dataset',
-            name='workspace',
-            field=models.CharField(max_length=128, verbose_name='Workspace'),
-        ),
-    ]
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+            migrations.AlterField(
+                model_name='Dataset',
+                name='elevation_regex',
+                field=models.CharField(blank=True, max_length=128, null=True, verbose_name='Elevation regex'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='has_elevation',
+                field=models.BooleanField(default=False, verbose_name='Has elevation?'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='has_time',
+                field=models.BooleanField(default=False, verbose_name='Has time?'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='is_mosaic',
+                field=models.BooleanField(default=False, verbose_name='Is mosaic?'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='name',
+                field=models.CharField(max_length=128, verbose_name='Name'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='store',
+                field=models.CharField(max_length=128, verbose_name='Store'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='storeType',
+                field=models.CharField(max_length=128, verbose_name='Storetype'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='time_regex',
+                field=models.CharField(blank=True, choices=[('[0-9]{8}', 'YYYYMMDD'), ('[0-9]{8}T[0-9]{6}', "YYYYMMDD'T'hhmmss"), ('[0-9]{8}T[0-9]{6}Z', "YYYYMMDD'T'hhmmss'Z'")], max_length=128, null=True, verbose_name='Time regex'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='typename',
+                field=models.CharField(blank=True, max_length=128, null=True, verbose_name='Typename'),
+            ),
+            migrations.AlterField(
+                model_name='Dataset',
+                name='workspace',
+                field=models.CharField(max_length=128, verbose_name='Workspace'),
+            ),
+        ]

@@ -10,11 +10,20 @@ class Migration(migrations.Migration):
         ('base', '0033_auto_20180330_0951'),
         ('datasets', '0030_auto_20180228_0812'),
     ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0031_uploadsession_resource')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
 
-    operations = [
-        migrations.AddField(
-            model_name='uploadsession',
-            name='resource',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='base.ResourceBase'),
-        ),
-    ]
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+            migrations.AddField(
+                model_name='uploadsession',
+                name='resource',
+                field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='base.ResourceBase'),
+            ),
+        ]

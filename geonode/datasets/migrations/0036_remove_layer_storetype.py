@@ -9,9 +9,19 @@ class Migration(migrations.Migration):
         ('datasets', '0035_auto_20210525_0847'),
     ]
 
-    operations = [
-        migrations.RemoveField(
-            model_name='Dataset',
-            name='storeType',
-        ),
-    ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0032_auto_20200612_1544')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
+
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+            migrations.RemoveField(
+                model_name='Dataset',
+                name='storeType',
+            ),
+        ]

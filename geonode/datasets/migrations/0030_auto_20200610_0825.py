@@ -8,11 +8,20 @@ class Migration(migrations.Migration):
     dependencies = [
         ('datasets', '0029_auto_20200610_0803'),
     ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0030_auto_20200610_0825')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
 
-    operations = [
-        migrations.AlterField(
-            model_name='attribute',
-            name='featureinfo_type',
-            field=models.CharField(choices=[('type_property', 'Property-Label'), ('type_href', 'HREF-Link'), ('type_image', 'Image'), ('type_video', 'Video'), ('type_audio', 'Audio'), ('type_iframe', 'iFrame')], default='type_property', help_text='specifies if the attribute should be rendered with an HTML widget on GetFeatureInfo template.', max_length=255, verbose_name='featureinfo type'),
-        ),
-    ]
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+            migrations.AlterField(
+                model_name='attribute',
+                name='featureinfo_type',
+                field=models.CharField(choices=[('type_property', 'Property-Label'), ('type_href', 'HREF-Link'), ('type_image', 'Image'), ('type_video', 'Video'), ('type_audio', 'Audio'), ('type_iframe', 'iFrame')], default='type_property', help_text='specifies if the attribute should be rendered with an HTML widget on GetFeatureInfo template.', max_length=255, verbose_name='featureinfo type'),
+            ),
+        ]

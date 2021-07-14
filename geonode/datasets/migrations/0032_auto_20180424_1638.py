@@ -9,11 +9,20 @@ class Migration(migrations.Migration):
     dependencies = [
         ('datasets', '0031_uploadsession_resource'),
     ]
+    try:
+        from django.db.migrations.recorder import MigrationRecorder
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0032_auto_20180424_1638')
+        is_fake_migration = is_fake.exists()
+    except Exception:
+        is_fake_migration = False
 
-    operations = [
-        migrations.AlterField(
-            model_name='layerfile',
-            name='file',
-            field=models.FileField(max_length=255, storage=django.core.files.storage.FileSystemStorage(base_url='/uploaded/'), upload_to='layers/%Y/%m/%d'),
-        ),
-    ]
+    if is_fake_migration:
+        is_fake.update(app='datasets')
+    else:
+        operations = [
+            migrations.AlterField(
+                model_name='layerfile',
+                name='file',
+                field=models.FileField(max_length=255, storage=django.core.files.storage.FileSystemStorage(base_url='/uploaded/'), upload_to='layers/%Y/%m/%d'),
+            ),
+        ]
