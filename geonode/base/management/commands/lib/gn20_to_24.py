@@ -148,7 +148,7 @@ class LayerMangler(DefaultMangler):
         for obj in default_obj:
             obj['pk'] = obj['pk'] + self.basepk
 
-            # Retrieve the ResourceBase associated to this Layer
+            # Retrieve the ResourceBase associated to this Dataset
             from geonode.base.models import ResourceBase
 
             resource = ResourceBase.objects.get(pk=obj['pk'])
@@ -227,7 +227,7 @@ class MapMangler(DefaultMangler):
         for obj in default_obj:
             obj['pk'] = obj['pk'] + self.basepk
 
-            # Retrieve the ResourceBase associated to this Layer
+            # Retrieve the ResourceBase associated to this Dataset
             from geonode.base.models import ResourceBase
 
             resource = ResourceBase.objects.get(pk=obj['pk'])

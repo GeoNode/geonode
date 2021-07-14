@@ -27,7 +27,7 @@ from django.urls import reverse
 
 from geonode import geoserver
 from geonode import GeoNodeException
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.signals import gs_catalog
 
@@ -105,7 +105,7 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
             cat = gs_catalog
 
             # Check the layer is in the Django database
-            layer = Layer.objects.get(name=layer_name)
+            layer = Dataset.objects.get(name=layer_name)
 
             # check if it is in geoserver
             gs_layer = cat.get_layer(layer_name)

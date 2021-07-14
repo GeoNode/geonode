@@ -25,7 +25,7 @@ from django.conf import settings
 
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.utils import DisableDjangoSignals
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
@@ -100,9 +100,9 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
     def test_generate_thumbnail_name_layer(self):
 
-        layer_name = thumbnails._generate_thumbnail_name(Layer.objects.first())
+        layer_name = thumbnails._generate_thumbnail_name(Dataset.objects.first())
         self.assertIsNotNone(
-            re.match(f"layer-{self.re_uuid}-thumb.png", layer_name, re.I), "Layer name should meet a provided pattern"
+            re.match(f"layer-{self.re_uuid}-thumb.png", layer_name, re.I), "Dataset name should meet a provided pattern"
         )
 
     @patch("geonode.maps.models.Map.layers", new_callable=PropertyMock)
@@ -125,7 +125,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_layers_locations_layer(self):
-        layer = Layer.objects.get(title_en="theaters_nyc")
+        layer = Dataset.objects.get(title_en="theaters_nyc")
 
         locations, bbox = thumbnails._layers_locations(layer)
 
@@ -134,7 +134,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
     def test_layers_locations_layer_default_bbox(self):
         expected_bbox = [-8238681.428369759, -8220320.787127878, 4969844.155936863, 4984363.9488296695, "epsg:3857"]
-        layer = Layer.objects.get(title_en="theaters_nyc")
+        layer = Dataset.objects.get(title_en="theaters_nyc")
 
         locations, bbox = thumbnails._layers_locations(layer, compute_bbox=True)
 
@@ -143,7 +143,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
 
     def test_layers_locations_layer_bbox(self):
-        layer = Layer.objects.get(title_en="theaters_nyc")
+        layer = Dataset.objects.get(title_en="theaters_nyc")
 
         locations, bbox = thumbnails._layers_locations(layer, compute_bbox=True, target_crs="EPSG:4326")
 
@@ -152,7 +152,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
 
     def test_layers_locations_simple_map(self):
-        layer = Layer.objects.get(title_en="theaters_nyc")
+        layer = Dataset.objects.get(title_en="theaters_nyc")
         map = Map.objects.get(title_en="theaters_nyc_map")
 
         locations, bbox = thumbnails._layers_locations(map)
@@ -163,7 +163,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
     def test_layers_locations_simple_map_default_bbox(self):
         expected_bbox = [-8238681.428369759, -8220320.787127878, 4969844.155936863, 4984363.9488296695, "epsg:3857"]
 
-        layer = Layer.objects.get(title_en="theaters_nyc")
+        layer = Dataset.objects.get(title_en="theaters_nyc")
         map = Map.objects.get(title_en="theaters_nyc_map")
 
         locations, bbox = thumbnails._layers_locations(map, compute_bbox=True)

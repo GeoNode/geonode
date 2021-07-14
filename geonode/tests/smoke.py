@@ -69,7 +69,7 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('help'))
         self.assertEqual(response.status_code, 200)
 
-    # Layer Pages #
+    # Dataset Pages #
 
     def test_layer_page(self):
         'Test if the data home page renders.'

@@ -28,7 +28,7 @@ from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify, safe
 
 from geonode.base.models import Link
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.resource.manager import resource_manager
 
@@ -185,7 +185,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     def _harvest_resource(self, layer_meta, geonode_service):
         resource_fields = self._get_indexed_layer_fields(layer_meta)
         keywords = resource_fields.pop("keywords")
-        existance_test_qs = Layer.objects.filter(
+        existance_test_qs = Dataset.objects.filter(
             name=resource_fields["name"],
             store=resource_fields["store"],
             workspace=resource_fields["workspace"]
@@ -208,7 +208,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
 
-        This method will try to create new ``geonode.layers.models.Layer``
+        This method will try to create new ``geonode.datasets.models.Dataset``
         instance (and its related objects too).
 
         :arg resource_id: The resource's identifier
@@ -257,15 +257,15 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         }
 
     def _create_layer(self, geonode_service, **resource_fields):
-        # bear in mind that in ``geonode.layers.models`` there is a
+        # bear in mind that in ``geonode.datasets.models`` there is a
         # ``pre_save_layer`` function handler that is connected to the
-        # ``pre_save`` signal for the Layer model. This handler does a check
+        # ``pre_save`` signal for the Dataset model. This handler does a check
         # for common fields (such as abstract and title) and adds
         # sensible default values
         keywords = resource_fields.pop("keywords", [])
         geonode_layer = resource_manager.create(
             None,
-            resource_type=Layer,
+            resource_type=Dataset,
             defaults=dict(
                 owner=geonode_service.owner,
                 remote_service=geonode_service,

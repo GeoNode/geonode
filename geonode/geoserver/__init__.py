@@ -28,12 +28,12 @@ logger = logging.getLogger(__name__)
 
 def run_setup_hooks(*args, **kwargs):
     from django.db.models import signals
-    from geonode.layers.models import Layer
+    from geonode.datasets.models import Dataset
     from geonode.maps.models import MapLayer
     from geonode.geoserver.signals import geoserver_pre_delete
     from geonode.geoserver.signals import geoserver_pre_save_maplayer
 
-    signals.pre_delete.connect(geoserver_pre_delete, sender=Layer)
+    signals.pre_delete.connect(geoserver_pre_delete, sender=Dataset)
     signals.pre_save.connect(geoserver_pre_save_maplayer, sender=MapLayer)
 
 
@@ -41,28 +41,28 @@ def set_resource_links(*args, **kwargs):
 
     from geonode.utils import set_resource_default_links
     from geonode.catalogue.models import catalogue_post_save
-    from geonode.layers.models import Layer
+    from geonode.datasets.models import Dataset
 
     if settings.UPDATE_RESOURCE_LINKS_AT_MIGRATE:
-        _all_layers = Layer.objects.all()
+        _all_layers = Dataset.objects.all()
         for index, layer in enumerate(_all_layers, start=1):
             _lyr_name = layer.name
-            message = f"[{index} / {len(_all_layers)}] Updating Layer [{_lyr_name}] ..."
+            message = f"[{index} / {len(_all_layers)}] Updating Dataset [{_lyr_name}] ..."
             logger.debug(message)
             try:
                 set_resource_default_links(layer, layer)
                 catalogue_post_save(instance=layer, sender=layer.__class__)
             except Exception:
                 logger.exception(
-                    f"[ERROR] Layer [{_lyr_name}] couldn't be updated"
+                    f"[ERROR] Dataset [{_lyr_name}] couldn't be updated"
                 )
 
 
 class GeoserverAppConfig(NotificationsAppConfigBase):
     name = 'geonode.geoserver'
-    NOTIFICATIONS = (("layer_uploaded", _("Layer Uploaded"), _("A layer was uploaded"),),
-                     ("layer_comment", _("Comment on Layer"), _("A layer was commented on"),),
-                     ("layer_rated", _("Rating for Layer"), _("A rating was given to a layer"),),
+    NOTIFICATIONS = (("layer_uploaded", _("Dataset Uploaded"), _("A layer was uploaded"),),
+                     ("layer_comment", _("Comment on Dataset"), _("A layer was commented on"),),
+                     ("layer_rated", _("Rating for Dataset"), _("A rating was given to a layer"),),
                      )
 
     def ready(self):

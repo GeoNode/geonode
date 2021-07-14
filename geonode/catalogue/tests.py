@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 
 from django.db.models import Q
 from django.test import RequestFactory
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.catalogue import get_catalogue
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -29,7 +29,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.catalogue.models import catalogue_post_save
 
 from geonode.catalogue.views import csw_global_dispatch
-from geonode.layers.populate_layers_data import create_layer_data
+from geonode.datasets.populate_layers_data import create_layer_data
 
 from geonode.base.populate_test_data import (
     all_public,
@@ -65,7 +65,7 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(c)
 
     def test_update_metadata_records(self):
-        layer = Layer.objects.first()
+        layer = Dataset.objects.first()
         self.assertIsNotNone(layer)
         layer.abstract = "<p>Test HTML abstract</p>"
         layer.save()
@@ -87,7 +87,7 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         self.assertEqual(200, actual.status_code)
 
     def test_given_a_request_for_a_single_layer_should_return_single_value_in_xml_without_layer_filter(self):
-        layer = Layer.objects.first()
+        layer = Dataset.objects.first()
         request = self.__request_factory_single(layer.uuid)
         response = csw_global_dispatch(request)
         root = ET.fromstring(response.content)
@@ -95,7 +95,7 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         self.assertEqual(1, actual)
 
     def test_given_a_request_for_a_single_layer_should_return_empty_value_in_xml_with_layer_filter(self):
-        layer = Layer.objects.first()
+        layer = Dataset.objects.first()
         request = self.__request_factory_single(layer.uuid)
         response = csw_global_dispatch(request, self.layer_filter)
         root = ET.fromstring(response.content)

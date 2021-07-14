@@ -86,7 +86,7 @@ class Upload(models.Model):
     complete = models.BooleanField(default=False)
     # hold our serialized session object
     session = models.TextField(null=True, blank=True)
-    # hold a dict of any intermediate Layer metadata - not used for now
+    # hold a dict of any intermediate Dataset metadata - not used for now
     metadata = models.TextField(null=True)
 
     mosaic = models.BooleanField(default=False)

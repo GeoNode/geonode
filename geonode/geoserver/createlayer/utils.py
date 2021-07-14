@@ -27,8 +27,8 @@ from django.contrib.gis.geos import Polygon
 from django.template.defaultfilters import slugify
 
 from geonode import GeoNodeException
-from geonode.layers.models import Layer
-from geonode.layers.utils import get_valid_name
+from geonode.datasets.models import Dataset
+from geonode.datasets.utils import get_valid_name
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import (
     gs_catalog,
@@ -67,7 +67,7 @@ def create_gn_layer(workspace, datastore, name, title, owner_name):
 
     layer = resource_manager.create(
         str(uuid.uuid4()),
-        resource_type=Layer,
+        resource_type=Dataset,
         defaults=dict(
             name=name,
             workspace=workspace.name,
@@ -218,6 +218,6 @@ def create_gs_layer(name, title, geometry_type, attributes=None):
     if req.status_code != 201:
         logger.error(f'Request status code was: {req.status_code}')
         logger.error(f'Response was: {req.text}')
-        raise Exception(f"Layer could not be created in GeoServer {req.text}")
+        raise Exception(f"Dataset could not be created in GeoServer {req.text}")
 
     return workspace, datastore

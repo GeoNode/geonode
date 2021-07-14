@@ -230,7 +230,7 @@ class BaseHarvesterWorker(abc.ABC):
         #         "projection": resource_descriptor.projection,
         #         "last_modified": resource_descriptor.last_modified
         #     })
-        # elif geonode_resource_type == Layer:
+        # elif geonode_resource_type == Dataset:
         #     defaults.update({
         #         "charset": resource_descriptor.character_set
         #     })

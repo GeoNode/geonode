@@ -188,7 +188,7 @@ def get_layer_workspace(layer):
                 workspace = getattr(
                     settings, "CASCADE_WORKSPACE", default_workspace)
             else:
-                raise RuntimeError("Layer is not cascaded")
+                raise RuntimeError("Dataset is not cascaded")
         except AttributeError:  # layer does not have a service
             workspace = default_workspace
     return workspace
@@ -954,7 +954,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     allowed = True
     if permission.split('.')[-1] in ['change_layer_data',
                                      'change_layer_style']:
-        if obj.__class__.__name__ == 'Layer':
+        if obj.__class__.__name__ == 'Dataset':
             obj_to_check = obj
     if permission:
         if permission_required or request.method != 'GET':
@@ -1656,7 +1656,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         height = 550
         width = 550
 
-        # Parse Layer BBOX and SRID
+        # Parse Dataset BBOX and SRID
         bbox = None
         srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
         if not prune and instance.srid and instance.bbox_polygon:
@@ -1684,14 +1684,14 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         # Guessing 'EPSG:4326' by default
                         instance.srid = 'EPSG:4326'
                     else:
-                        raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
+                        raise GeoNodeException(_("Invalid Projection. Dataset is missing CRS!"))
 
-                    from geonode.layers.models import Layer
+                    from geonode.datasets.models import Dataset
                     try:
                         with transaction.atomic():
                             # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
                             instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
-                            Layer.objects.filter(id=instance.id).update(
+                            Dataset.objects.filter(id=instance.id).update(
                                 bbox_polygon=instance.bbox_polygon, srid=srid)
 
                             # Refresh from DB
@@ -1703,7 +1703,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         with transaction.atomic():
                             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
                             instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
-                            Layer.objects.filter(id=instance.id).update(
+                            Dataset.objects.filter(id=instance.id).update(
                                 ll_bbox_polygon=instance.bbox_polygon, srid=srid)
 
                             # Refresh from DB
@@ -1713,7 +1713,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         try:
                             with transaction.atomic():
                                 instance.bbox_polygon.srid = 4326
-                                Layer.objects.filter(id=instance.id).update(
+                                Dataset.objects.filter(id=instance.id).update(
                                     ll_bbox_polygon=instance.bbox_polygon, srid=srid)
 
                                 # Refresh from DB

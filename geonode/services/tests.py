@@ -38,7 +38,7 @@ except ImportError:
     from unittest import mock
 from owslib.map.wms111 import ContentMetadata
 
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.services.utils import test_resource_table_status
 
@@ -273,7 +273,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             id=0,
             title='Droits pétroliers et gaziers / Oil and Gas Rights',
             abstract='Droits pétroliers et gaziers / Oil and Gas Rights',
-            type='Feature Layer',
+            type='Feature Dataset',
             geometryType='esriGeometryPolygon',
             copyrightText='',
             extent=LayerESRIExtent(
@@ -432,7 +432,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
                         'name': '-1'
                     },
                     'subLayers': [],
-                    'type': 'Raster Layer'
+                    'type': 'Raster Dataset'
                 }
             ],
             'mapName': 'Layers',
@@ -495,10 +495,10 @@ class ModuleFunctionsTestCase(StandardTestCase):
             geonode_service, created = Service.objects.get_or_create(
                 base_url=result.base_url,
                 owner=test_user)
-            Layer.objects.filter(remote_service=geonode_service).delete()
+            Dataset.objects.filter(remote_service=geonode_service).delete()
             HarvestJob.objects.filter(service=geonode_service).delete()
             handler._harvest_resource(layer_meta, geonode_service)
-            geonode_layer = Layer.objects.filter(remote_service=geonode_service).get()
+            geonode_layer = Dataset.objects.filter(remote_service=geonode_service).get()
             self.assertIsNotNone(geonode_layer)
             self.assertNotEqual(geonode_layer.srid, "EPSG:4326")
             harvest_job, created = HarvestJob.objects.get_or_create(
@@ -506,7 +506,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
                 resource_id=geonode_layer.alternate
             )
             self.assertIsNotNone(harvest_job)
-            Layer.objects.filter(remote_service=geonode_service).delete()
+            Dataset.objects.filter(remote_service=geonode_service).delete()
             self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
                                                        resource_id=geonode_layer.alternate).count(), 0)
         except (Service.DoesNotExist, HTTPError) as e:
@@ -663,7 +663,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             geonode_service, created = Service.objects.get_or_create(
                 base_url=result.base_url,
                 owner=test_user)
-            Layer.objects.filter(remote_service=geonode_service).delete()
+            Dataset.objects.filter(remote_service=geonode_service).delete()
             HarvestJob.objects.filter(service=geonode_service).delete()
             result = list(handler.get_resources())
             layer_meta = handler.get_resource(result[0].name)
@@ -680,7 +680,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
                 resource_id=geonode_layer.alternate
             )
             self.assertIsNotNone(harvest_job)
-            Layer.objects.filter(remote_service=geonode_service).delete()
+            Dataset.objects.filter(remote_service=geonode_service).delete()
             self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
                                                        resource_id=geonode_layer.alternate).count(), 0)
             legend_url = handler._create_layer_legend_link(geonode_layer)

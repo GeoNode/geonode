@@ -105,7 +105,7 @@ def _update_geofence_rule(layer, layer_name, workspace,
     logger.debug(f"response status_code: {response.status_code}")
     if response.status_code not in (200, 201):
         msg = (f"Could not ADD GeoServer User {user} Rule for "
-               f"Layer {layer}: '{response.text}'")
+               f"Dataset {layer}: '{response.text}'")
         if 'Duplicate Rule' in response.text:
             logger.debug(msg)
         else:
@@ -197,7 +197,7 @@ def purge_geofence_all():
                     rules_count = rules_objs['count']
                     rules = rules_objs['rules']
                     if rules_count > 0:
-                        # Delete GeoFence Rules associated to the Layer
+                        # Delete GeoFence Rules associated to the Dataset
                         # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
                         for rule in rules:
                             r = requests.delete(f"{url}rest/geofence/rules/id/{str(rule['id'])}",
@@ -217,7 +217,7 @@ def purge_geofence_all():
 
 def purge_geofence_layer_rules(resource):
     """purge layer existing GeoFence Cache Rules"""
-    # Scan GeoFence Rules associated to the Layer
+    # Scan GeoFence Rules associated to the Dataset
     """
     curl -u admin:geoserver
     http://<host>:<port>/geoserver/rest/geofence/rules.json?workspace=geonode&layer={layer}
@@ -245,7 +245,7 @@ def purge_geofence_layer_rules(resource):
                     if r['layer'] and r['layer'] == layer_name:
                         r_ids.append(r['id'])
 
-            # Delete GeoFence Rules associated to the Layer
+            # Delete GeoFence Rules associated to the Dataset
             # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
             for r_id in r_ids:
                 r = requests.delete(
@@ -253,7 +253,7 @@ def purge_geofence_layer_rules(resource):
                     headers=headers,
                     auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
-                    msg = "Could not DELETE GeoServer Rule for Layer "
+                    msg = "Could not DELETE GeoServer Rule for Dataset "
                     msg = msg + str(layer_name)
                     e = Exception(msg)
                     logger.debug(f"Response [{r.status_code}] : {r.text}")
@@ -287,7 +287,7 @@ def set_geofence_invalidate_cache():
 
 
 def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
-    """Disable/enable a GeoServer Tiled Layer Configuration"""
+    """Disable/enable a GeoServer Tiled Dataset Configuration"""
     if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
         try:
             url = settings.OGC_SERVER['default']['LOCATION']
@@ -380,7 +380,7 @@ def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
 
 
 def delete_layer_cache(layer_name):
-    """Delete a GeoServer Tiled Layer Configuration and all the cache"""
+    """Delete a GeoServer Tiled Dataset Configuration and all the cache"""
     if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
         try:
             url = settings.OGC_SERVER['default']['LOCATION']
@@ -425,7 +425,7 @@ def set_geowebcache_invalidate_cache(layer_alternate, cat=None):
                     data=payload,
                     auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
-                    logger.debug(f"Could not Truncate GWC Cache for Layer '{layer_alternate}'.")
+                    logger.debug(f"Could not Truncate GWC Cache for Dataset '{layer_alternate}'.")
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
@@ -434,7 +434,7 @@ def set_geowebcache_invalidate_cache(layer_alternate, cat=None):
 def set_geofence_all(instance):
     """assign access permissions to all users
 
-    This method is only relevant to Layer instances that have their
+    This method is only relevant to Dataset instances that have their
     underlying data managed by geoserver, meaning:
 
     * layers that are not associated with a Service
@@ -454,7 +454,7 @@ def set_geofence_all(instance):
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
-        # Create GeoFence Rules for ANONYMOUS to the Layer
+        # Create GeoFence Rules for ANONYMOUS to the Dataset
         """
         curl -X POST -u admin:geoserver -H "Content-Type: text/xml" -d \
         "<Rule><workspace>geonode</workspace><layer>{layer}</layer><access>ALLOW</access></Rule>" \
@@ -477,7 +477,7 @@ def set_geofence_all(instance):
             logger.debug(
                 f"Response {response.status_code} : {response.text}")
             raise RuntimeError("Could not ADD GeoServer ANONYMOUS Rule "
-                               f"for Layer {layer_name}")
+                               f"for Dataset {layer_name}")
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
@@ -576,7 +576,7 @@ def sync_resources_with_guardian(resource=None):
     """
     Sync resources with Guardian and clear their dirty state
     """
-    from geonode.layers.models import Layer
+    from geonode.datasets.models import Dataset
     from geonode.base.models import ResourceBase
 
     if resource:
@@ -590,7 +590,7 @@ def sync_resources_with_guardian(resource=None):
                 layer = None
                 try:
                     purge_geofence_layer_rules(r)
-                    layer = Layer.objects.get(id=r.id)
+                    layer = Dataset.objects.get(id=r.id)
                     perm_spec = layer.get_all_level_info()
                     # All the other users
                     if 'users' in perm_spec:

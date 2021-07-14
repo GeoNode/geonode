@@ -23,7 +23,7 @@ from django.conf import settings
 from django.db.models import signals
 from lxml import etree
 from owslib.etree import etree as dlxml
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.documents.models import Document
 from geonode.catalogue import get_catalogue
 from geonode.base.models import Link, ResourceBase
@@ -106,7 +106,7 @@ def catalogue_post_save(instance, sender, **kwargs):
 
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
-    signals.post_save.connect(catalogue_post_save, sender=Layer)
-    signals.pre_delete.connect(catalogue_pre_delete, sender=Layer)
+    signals.post_save.connect(catalogue_post_save, sender=Dataset)
+    signals.pre_delete.connect(catalogue_pre_delete, sender=Dataset)
     signals.post_save.connect(catalogue_post_save, sender=Document)
     signals.pre_delete.connect(catalogue_pre_delete, sender=Document)

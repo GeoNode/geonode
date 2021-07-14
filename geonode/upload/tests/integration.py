@@ -34,7 +34,7 @@ from django.db import connections
 from django.contrib.auth import get_user_model
 
 from geonode.base.models import Link
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.upload.models import Upload
 from geonode.catalogue import get_catalogue
 from geonode.tests.utils import upload_step, Client
@@ -84,7 +84,7 @@ if created:
     u.set_password(GEONODE_PASSWD)
     u.save()
 else:
-    Layer.objects.filter(owner=u).delete()
+    Dataset.objects.filter(owner=u).delete()
 
 
 def get_wms(version='1.1.1', type_name=None, username=None, password=None):
@@ -295,7 +295,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
             # the import session is COMPLETE
             if upload and not upload.complete:
                 logger.warning(
-                    f"Upload not complete for Layer {original_name}")
+                    f"Upload not complete for Dataset {original_name}")
         except Upload.DoesNotExist:
             self.fail(f'expected to find Upload object for {original_name}')
 
@@ -323,7 +323,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
                 pass
         if not caps_found:
             logger.warning(
-                f"Could not recognize Layer {original_name} on GeoServer WMS Capa")
+                f"Could not recognize Dataset {original_name} on GeoServer WMS Capa")
         self.check_upload_model(layer_name)
 
     def check_invalid_projection(self, layer_name, resp, data):
@@ -439,7 +439,7 @@ class TestUpload(UploaderBase):
                          self.complete_upload,
                          check_name=f'{layer_name}')
 
-        test_layer = Layer.objects.filter(name__icontains=f'{layer_name}').last()
+        test_layer = Dataset.objects.filter(name__icontains=f'{layer_name}').last()
         if test_layer:
             layer_attributes = test_layer.attributes
             self.assertIsNotNone(layer_attributes)
@@ -506,7 +506,7 @@ class TestUpload(UploaderBase):
         self.upload_file(fname, self.complete_raster_upload,
                          check_name='relief_san_andres')
 
-        test_layer = Layer.objects.all().first()
+        test_layer = Dataset.objects.all().first()
         self.assertIsNotNone(test_layer)
 
     def test_zipped_upload(self):
@@ -726,7 +726,7 @@ class TestUploadDBDataStore(UploaderBase):
         resp, data = self.client.upload_file(
             thefile, perms='{"users": {"AnonymousUser": []}, "groups":{}}'
         )
-        _layer = Layer.objects.get(name=layer_name)
+        _layer = Dataset.objects.get(name=layer_name)
         _user = get_user_model().objects.get(username='AnonymousUser')
         self.assertEqual(_layer.get_user_perms(_user).count(), 0)
 

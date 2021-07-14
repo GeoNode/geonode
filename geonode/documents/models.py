@@ -29,7 +29,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
@@ -152,7 +152,7 @@ class DocumentResourceLink(models.Model):
 
 
 def get_related_documents(resource):
-    if isinstance(resource, Layer) or isinstance(resource, Map):
+    if isinstance(resource, Dataset) or isinstance(resource, Map):
         content_type = ContentType.objects.get_for_model(resource)
         return Document.objects.filter(links__content_type=content_type,
                                        links__object_id=resource.pk)

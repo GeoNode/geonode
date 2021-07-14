@@ -45,7 +45,7 @@ from geonode.base.models import TopicCategory
 from geonode.base.models import Region
 from geonode.base.models import HierarchicalKeyword
 from geonode.base.models import ThesaurusKeywordLabel
-from geonode.layers.models import Layer, Style
+from geonode.datasets.models import Dataset, Style
 from geonode.maps.models import Map
 from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
@@ -61,7 +61,7 @@ from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
 
 FILTER_TYPES = {
-    'layer': Layer,
+    'layer': Dataset,
     'map': Map,
     'document': Document,
     'geoapp': GeoApp

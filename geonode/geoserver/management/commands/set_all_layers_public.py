@@ -20,7 +20,7 @@ import logging
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 
 from geonode.geoserver.security.utils import set_geofence_all
 
@@ -32,10 +32,10 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        all_layers = Layer.objects.all()
+        all_layers = Dataset.objects.all()
 
         for index, layer in enumerate(all_layers):
-            print(f"[{(index + 1)} / {len(all_layers)}] Setting public permissions to Layer [{layer.name}] ...")
+            print(f"[{(index + 1)} / {len(all_layers)}] Setting public permissions to Dataset [{layer.name}] ...")
             try:
                 use_geofence = settings.OGC_SERVER['default'].get(
                     "GEOFENCE_SECURITY_ENABLED", False)
@@ -52,4 +52,4 @@ class Command(BaseCommand):
                 perm_spec["users"]["AnonymousUser"] = ['view_resourcebase', 'download_resourcebase']
                 layer.set_permissions(perm_spec)
             except Exception:
-                logger.error(f"[ERROR] Layer [{layer.name}] couldn't be updated")
+                logger.error(f"[ERROR] Dataset [{layer.name}] couldn't be updated")

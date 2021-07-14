@@ -32,7 +32,7 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 import os
 import re
 import json
@@ -168,7 +168,7 @@ def save_step_view(req, session):
         logger.debug(f"spatial_files: {spatial_files}")
 
         if overwrite:
-            layer = Layer.objects.filter(id=req.GET['layer_id'])
+            layer = Dataset.objects.filter(id=req.GET['layer_id'])
             if layer.exists():
                 name = layer.first().name
                 target_store = layer.first().store
@@ -572,7 +572,7 @@ def final_step_view(req, upload_session):
             try:
                 layer_id = None
                 if req and 'layer_id' in req.GET:
-                    layer = Layer.objects.filter(id=req.GET['layer_id'])
+                    layer = Dataset.objects.filter(id=req.GET['layer_id'])
                     if layer.exists():
                         layer_id = layer.first().resourcebase_ptr_id
 

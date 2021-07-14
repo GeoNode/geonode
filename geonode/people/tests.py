@@ -26,8 +26,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 
-from geonode.layers import utils
-from geonode.layers.models import Layer
+from geonode.datasets import utils
+from geonode.datasets.models import Dataset
 from geonode.people import profileextractors
 
 from geonode.base.populate_test_data import (
@@ -57,7 +57,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        self.layers = Layer.objects.all()[:3]
+        self.layers = Dataset.objects.all()[:3]
         self.layer_ids = [layer.pk for layer in self.layers]
         self.user_ids = ','.join(str(element.pk) for element in get_user_model().objects.all()[:3])
         self.permission_type = ('r', 'w', 'd')
@@ -98,7 +98,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
             for permissions_name in self.permission_type:
                 utils.set_layers_permissions(
                     permissions_name,
-                    [resource.name for resource in Layer.objects.filter(
+                    [resource.name for resource in Dataset.objects.filter(
                         id__in=[int(_id) for _id in self.layer_ids])],
                     [user.username for user in get_user_model().objects.filter(id__in=self.user_ids.split(","))],
                     [],
@@ -126,7 +126,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
             for permissions_name in self.permission_type:
                 utils.set_layers_permissions(
                     permissions_name,
-                    [resource.name for resource in Layer.objects.filter(
+                    [resource.name for resource in Dataset.objects.filter(
                         id__in=[int(_id) for _id in self.layer_ids])],
                     [],
                     [group.name for group in Group.objects.filter(id__in=self.group_ids.split(","))],
@@ -160,7 +160,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
             for permissions_name in self.permission_type:
                 utils.set_layers_permissions(
                     permissions_name,
-                    [resource.name for resource in Layer.objects.filter(
+                    [resource.name for resource in Dataset.objects.filter(
                         id__in=[int(_id) for _id in self.layer_ids])],
                     [user.username for user in get_user_model().objects.filter(id__in=self.user_ids.split(","))],
                     [],

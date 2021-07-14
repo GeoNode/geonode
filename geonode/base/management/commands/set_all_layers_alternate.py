@@ -18,7 +18,7 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 import logging
 
 
@@ -58,20 +58,20 @@ class Command(BaseCommand):
         else:
             username = options.get('username')
 
-        all_layers = Layer.objects.all().order_by('name')
+        all_layers = Dataset.objects.all().order_by('name')
         if filter:
             all_layers = all_layers.filter(name__icontains=filter)
         if username:
             all_layers = all_layers.filter(owner__username=username)
 
         for index, layer in enumerate(all_layers):
-            logger.info(f"[{(index + 1)} / {len(all_layers)}] Checking 'alternate' of Layer [{layer.name}] ...")
+            logger.info(f"[{(index + 1)} / {len(all_layers)}] Checking 'alternate' of Dataset [{layer.name}] ...")
             try:
                 if not layer.alternate:
                     layer.alternate = layer.typename
                     layer.save()
             except Exception as e:
                 if ignore_errors:
-                    logger.error(f"[ERROR] Layer [{layer.name}] couldn't be updated")
+                    logger.error(f"[ERROR] Dataset [{layer.name}] couldn't be updated")
                 else:
                     raise e

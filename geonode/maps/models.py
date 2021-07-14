@@ -35,7 +35,7 @@ from geonode.compat import ensure_string
 from geonode.client.hooks import hookset
 from geonode.utils import check_ogc_backend
 from geonode.base.models import ResourceBase
-from geonode.layers.models import Layer, Style
+from geonode.datasets.models import Dataset, Style
 from geonode.maps.signals import map_changed_signal
 from geonode.utils import (
     GXPMapBase,
@@ -102,8 +102,8 @@ class Map(ResourceBase, GXPMapBase):
     @property
     def local_layers(self):
         layer_names = MapLayer.objects.filter(map__id=self.id).values('name')
-        return Layer.objects.filter(alternate__in=layer_names) | \
-            Layer.objects.filter(name__in=layer_names)
+        return Dataset.objects.filter(alternate__in=layer_names) | \
+            Dataset.objects.filter(name__in=layer_names)
 
     def json(self, layer_filter):
         """
@@ -114,7 +114,7 @@ class Map(ResourceBase, GXPMapBase):
         layers = []
         for map_layer in map_layers:
             if map_layer.local:
-                layer = Layer.objects.get(alternate=map_layer.name)
+                layer = Dataset.objects.get(alternate=map_layer.name)
                 layers.append(layer)
             else:
                 pass
@@ -251,7 +251,7 @@ class Map(ResourceBase, GXPMapBase):
 
     def get_bbox_from_layers(self, layers):
         """
-        Calculate the bbox from a given list of Layer objects
+        Calculate the bbox from a given list of Dataset objects
 
         bbox format: [xmin, xmax, ymin, ymax]
         """
@@ -284,9 +284,9 @@ class Map(ResourceBase, GXPMapBase):
 
         _layers = []
         for layer in layers:
-            if not isinstance(layer, Layer):
+            if not isinstance(layer, Dataset):
                 try:
-                    layer = Layer.objects.get(alternate=layer)
+                    layer = Dataset.objects.get(alternate=layer)
                 except ObjectDoesNotExist:
                     raise Exception(
                         f'Could not find layer with name {layer}')
@@ -386,12 +386,12 @@ class Map(ResourceBase, GXPMapBase):
 
         map_layers = MapLayer.objects.filter(map=self.id)
 
-        # Local Group Layer layers and corresponding styles
+        # Local Group Dataset layers and corresponding styles
         layers = []
         lg_styles = []
         for ml in map_layers:
             if ml.local:
-                layer = Layer.objects.get(alternate=ml.name)
+                layer = Dataset.objects.get(alternate=ml.name)
                 style = ml.styles or getattr(layer.default_style, 'name', '')
                 layers.append(layer)
                 lg_styles.append(style)
@@ -507,12 +507,12 @@ class MapLayer(models.Model, GXPLayerBase):
         cfg = GXPLayerBase.layer_config(self, user=user)
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
-        if Layer.objects.filter(alternate=self.name).exists():
+        if Dataset.objects.filter(alternate=self.name).exists():
             try:
                 if self.local:
-                    layer = Layer.objects.get(store=self.store, alternate=self.name)
+                    layer = Dataset.objects.get(store=self.store, alternate=self.name)
                 else:
-                    layer = Layer.objects.get(
+                    layer = Dataset.objects.get(
                         alternate=self.name,
                         remote_service__base_url=self.ows_url)
                 attribute_cfg = layer.attribute_config()
@@ -547,10 +547,10 @@ class MapLayer(models.Model, GXPLayerBase):
         try:
             if self.local:
                 if self.store:
-                    title = Layer.objects.get(
+                    title = Dataset.objects.get(
                         store=self.store, alternate=self.name).title
                 else:
-                    title = Layer.objects.get(alternate=self.name).title
+                    title = Dataset.objects.get(alternate=self.name).title
         except Exception:
             title = None
         if title is None:
@@ -563,10 +563,10 @@ class MapLayer(models.Model, GXPLayerBase):
         try:
             if self.local:
                 if self.store:
-                    layer = Layer.objects.get(
+                    layer = Dataset.objects.get(
                         store=self.store, alternate=self.name)
                 else:
-                    layer = Layer.objects.get(alternate=self.name)
+                    layer = Dataset.objects.get(alternate=self.name)
                 link = f"<a href=\"{layer.get_absolute_url()}\">{layer.title}</a>"
         except Exception:
             link = None
@@ -582,7 +582,7 @@ class MapLayer(models.Model, GXPLayerBase):
             capability = layer_params.get('capability', {})
             # Use '' to represent default layer style
             style_name = capability.get('style', '')
-            layer_obj = Layer.objects.filter(alternate=self.name).first()
+            layer_obj = Dataset.objects.filter(alternate=self.name).first()
             if ':' in style_name:
                 style_name = style_name.split(':')[1]
             elif layer_obj.default_style:

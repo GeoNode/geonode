@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from django.core.management.base import BaseCommand
 from requests.auth import HTTPBasicAuth
 from defusedxml import lxml as dlxml
@@ -43,7 +43,7 @@ class Command(BaseCommand):
             curl -v -u admin:geoserver -XGET \
                 "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
             """
-            layers = Layer.objects.all()
+            layers = Dataset.objects.all()
             print(f"Total layers to be updated: {layers.count()}")
             for layer in layers:
                 print(f"Processing layer: {layer.typename}")
@@ -51,7 +51,7 @@ class Command(BaseCommand):
                                  auth=HTTPBasicAuth(user, passwd))
 
                 if (r.status_code < 200 or r.status_code > 201):
-                    print(f"Layer does not exists on geoserver: {layer.name}")
+                    print(f"Dataset does not exists on geoserver: {layer.name}")
                     continue
                 try:
                     xml_content = r.content

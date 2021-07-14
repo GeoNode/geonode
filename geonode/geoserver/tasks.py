@@ -29,7 +29,7 @@ from geonode.tasks.tasks import (
     AcquireLock,
     FaultTolerantTask)
 from geonode.base.models import Link
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.base.models import ResourceBase
 
 from .security import sync_resources_with_guardian
@@ -89,9 +89,9 @@ def geoserver_set_style(
     """
     instance = None
     try:
-        instance = Layer.objects.get(id=instance_id)
-    except Layer.DoesNotExist:
-        logger.debug(f"Layer id {instance_id} does not exist yet!")
+        instance = Dataset.objects.get(id=instance_id)
+    except Dataset.DoesNotExist:
+        logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
     lock_id = f'{self.request.id}'
@@ -131,9 +131,9 @@ def geoserver_create_style(
     """
     instance = None
     try:
-        instance = Layer.objects.get(id=instance_id)
-    except Layer.DoesNotExist:
-        logger.debug(f"Layer id {instance_id} does not exist yet!")
+        instance = Dataset.objects.get(id=instance_id)
+    except Dataset.DoesNotExist:
+        logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
     lock_id = f'{self.request.id}'
@@ -237,7 +237,7 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
         if lock.acquire() is True:
             try:
                 create_gs_thumbnail(instance, overwrite=overwrite, check_bbox=check_bbox)
-                logger.debug(f"... Created Thumbnail for Layer {instance.title}")
+                logger.debug(f"... Created Thumbnail for Dataset {instance.title}")
             except Exception as e:
                 geoserver_create_thumbnail.retry(exc=e)
 

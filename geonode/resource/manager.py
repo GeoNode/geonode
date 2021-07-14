@@ -58,7 +58,7 @@ from .utils import (
 from ..base import enumerations
 from ..base.models import ResourceBase
 from ..layers.metadata import parse_metadata
-from ..layers.models import Layer
+from ..layers.models import Dataset
 
 from ..storage.manager import storage_manager
 
@@ -74,9 +74,9 @@ class ResourceManagerInterface(metaclass=ABCMeta):
          - The 'filter' parameter should be an dictionary with the filtering criteria;
            - 'filter' = None won't return any result
            - 'filter' = {} will return the whole set
-         - The 'resource_type' parameter allows to specify the concrete resource model (e.g. Layer, Document, Map, ...)
+         - The 'resource_type' parameter allows to specify the concrete resource model (e.g. Dataset, Document, Map, ...)
            - 'resource_type' must be a class
-           - 'resource_type' = Layer will return a set of the only available Layers
+           - 'resource_type' = Dataset will return a set of the only available Layers
         """
         pass
 
@@ -86,7 +86,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 
          - If 'instance' is provided, it will take precedence on 'uuid'
          - The existance criteria might be subject to the 'concrete resource manager' one, dependent on the resource type
-           e.g.: a local Layer existance check will be constrained by the existance of the layer on the GIS backend
+           e.g.: a local Dataset existance check will be constrained by the existance of the layer on the GIS backend
         """
         pass
 
@@ -128,7 +128,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         e.g.:
             In [1]: from geonode.resource.manager import resource_manager
 
-            In [2]: from geonode.layers.models import Layer
+            In [2]: from geonode.datasets.models import Dataset
 
             In [3]: from django.contrib.auth import get_user_model
 
@@ -137,7 +137,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
             In [5]: files = ["/.../san_andres_y_providencia_administrative.dbf", "/.../san_andres_y_providencia_administrative.prj",
             ...:  "/.../san_andres_y_providencia_administrative.shx", "/.../san_andres_y_providencia_administrative.sld", "/.../san_andres_y_providencia_administrative.shp"]
 
-            In [6]: resource_manager.ingest(files, resource_type=Layer, defaults={'owner': admin})
+            In [6]: resource_manager.ingest(files, resource_type=Dataset, defaults={'owner': admin})
         """
         pass
 
@@ -146,7 +146,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         """The method makes a copy of the existing resource.
 
          - It makes a copy of the files
-         - It creates a new layer on the GIS backend in the case the ResourceType is a Layer
+         - It creates a new layer on the GIS backend in the case the ResourceType is a Dataset
         """
         pass
 
@@ -239,7 +239,7 @@ class ResourceManager(ResourceManagerInterface):
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
                 self._concrete_resource_manager.delete(uuid, instance=_resource)
-                if isinstance(_resource.get_real_instance(), Layer):
+                if isinstance(_resource.get_real_instance(), Dataset):
                     """
                     - Remove any associated style to the layer, if it is not used by other layers.
                     - Default style will be deleted in post_delete_layer.
@@ -293,7 +293,7 @@ class ResourceManager(ResourceManagerInterface):
                         _resource.get_real_instance().styles.delete()
                         _resource.get_real_instance().default_style.delete()
                     except Exception as e:
-                        logger.debug(f"Error occurred while trying to delete the Layer Styles: {e}")
+                        logger.debug(f"Error occurred while trying to delete the Dataset Styles: {e}")
 
                 self.remove_permissions(_resource.get_real_instance().uuid, instance=_resource.get_real_instance())
                 try:
@@ -334,7 +334,7 @@ class ResourceManager(ResourceManagerInterface):
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             _resource.set_missing_info()
             _resource.metadata_uploaded = metadata_uploaded
-            logger.debug(f'Look for xml and finalize Layer metadata {_resource}')
+            logger.debug(f'Look for xml and finalize Dataset metadata {_resource}')
             try:
                 with transaction.atomic():
                     if metadata_uploaded and xml_file:
@@ -353,7 +353,7 @@ class ResourceManager(ResourceManagerInterface):
                         else:
                             uuid = _uuid
 
-                    logger.debug(f'Update Layer with information coming from XML File if available {_resource}')
+                    logger.debug(f'Update Dataset with information coming from XML File if available {_resource}')
                     _resource.save()
                     _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
@@ -388,11 +388,11 @@ class ResourceManager(ResourceManagerInterface):
                         resource_type=Document,
                         defaults=to_update
                     )
-                elif resource_type == Layer:
+                elif resource_type == Dataset:
                     if files:
                         instance = self.create(
                             uuid,
-                            resource_type=Layer,
+                            resource_type=Dataset,
                             defaults=to_update)
                 instance = self._concrete_resource_manager.ingest(files, uuid=instance.uuid, resource_type=resource_type, defaults=to_update, **kwargs)
         except Exception as e:
@@ -457,7 +457,7 @@ class ResourceManager(ResourceManagerInterface):
         return instance
 
     def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:
-        if not isinstance(instance, Layer) and action_type == 'append':
+        if not isinstance(instance, Dataset) and action_type == 'append':
             raise Exception("Append data is available only for Layers")
 
         if isinstance(instance, Document) and action_type == "replace":
@@ -493,8 +493,8 @@ class ResourceManager(ResourceManagerInterface):
             try:
                 with transaction.atomic():
                     logger.debug(f'Removing all permissions on {_resource}')
-                    from geonode.layers.models import Layer
-                    _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Layer) else None
+                    from geonode.datasets.models import Dataset
+                    _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Dataset) else None
                     if not _layer:
                         try:
                             _layer = _resource.layer if hasattr(_resource, "layer") else None
@@ -641,7 +641,7 @@ class ResourceManager(ResourceManagerInterface):
                                     assign_perm('download_resourcebase',
                                                 user_group, _resource.get_self_resource())
 
-                        if _resource.__class__.__name__ == 'Layer':
+                        if _resource.__class__.__name__ == 'Dataset':
                             # only for layer owner
                             assign_perm('change_layer_data', _owner, _resource)
                             assign_perm('change_layer_style', _owner, _resource)

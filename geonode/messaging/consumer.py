@@ -25,8 +25,8 @@ from datetime import datetime
 # from django.conf import settings
 from kombu.mixins import ConsumerMixin
 from geonode.security.views import send_email_consumer
-from geonode.layers.views import layer_view_counter
-from geonode.layers.models import Layer
+from geonode.datasets.views import layer_view_counter
+from geonode.datasets.models import Dataset
 from geonode.geoserver.helpers import gs_slurp
 
 from .queues import (
@@ -101,7 +101,7 @@ class Consumer(ConsumerMixin):
         # layer_id = body.get("id")
         # try:
         #     layer = _wait_for_layer(layer_id)
-        # except Layer.DoesNotExist as err:
+        # except Dataset.DoesNotExist as err:
         #     logger.debug(err)
         #     return
 
@@ -203,7 +203,7 @@ def _update_layer_data(body, last_message):
 
 
 def _wait_for_layer(layer_id, num_attempts=5, wait_seconds=1):
-    """Blocks execution while the Layer instance is not found on the database
+    """Blocks execution while the Dataset instance is not found on the database
 
     This is a workaround for the fact that the
     ``geonode.geoserver.signals.geoserver_post_save_local`` function might
@@ -214,12 +214,12 @@ def _wait_for_layer(layer_id, num_attempts=5, wait_seconds=1):
 
     for current in range(1, num_attempts + 1):
         try:
-            instance = Layer.objects.get(id=layer_id)
+            instance = Dataset.objects.get(id=layer_id)
             logger.debug(
                 f"Attempt {current}/{num_attempts} - Found layer in the "
                 "database")
             break
-        except Layer.DoesNotExist:
+        except Dataset.DoesNotExist:
             time.sleep(wait_seconds)
             logger.debug(
                 f"Attempt {current}/{num_attempts} - Could not find layer "
@@ -228,5 +228,5 @@ def _wait_for_layer(layer_id, num_attempts=5, wait_seconds=1):
         logger.debug(
             f"Reached maximum attempts and layer {layer_id} is still not "
             "saved. Exiting...")
-        raise Layer.DoesNotExist
+        raise Dataset.DoesNotExist
     return instance

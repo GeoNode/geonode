@@ -379,7 +379,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
     #     upload_data = response_data['uploads'][0]
 
     #     for _cnt in range(1, 10):
-    #         logger.error(f"[{_cnt}] Wait a bit until GeoNode finalizes the Layer configuration...")
+    #         logger.error(f"[{_cnt}] Wait a bit until GeoNode finalizes the Dataset configuration...")
     #         if upload_data['state'] == enumerations.STATE_PROCESSED:
     #             break
     #         time.sleep(10.0)

@@ -39,8 +39,8 @@ from geonode import geoserver
 from geonode.base.models import Configuration
 from geonode.decorators import on_ogc_backend
 
-from geonode.layers.models import Layer, Style
-from geonode.layers.populate_layers_data import create_layer_data
+from geonode.datasets.models import Dataset, Style
+from geonode.datasets.populate_layers_data import create_layer_data
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
@@ -608,7 +608,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         """
         Ensures the layer_style_manage route returns a 200.
         """
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
 
         bob = get_user_model().objects.get(username='bobby')
         assign_perm('change_layer_style', bob, layer)
@@ -715,7 +715,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         }
 
         bob = get_user_model().objects.get(username='bobby')
-        layer_ca = Layer.objects.get(alternate='geonode:CA')
+        layer_ca = Dataset.objects.get(alternate='geonode:CA')
         assign_perm('change_layer_data', bob, layer_ca)
 
         # Test that requesting when supplying the geoserver credentials returns
@@ -1060,7 +1060,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             _links.delete()
             self.assertFalse(_links.count() > 0, "No links have been deleted")
             # Delete resources metadata
-            _layers = Layer.objects.exclude(
+            _layers = Dataset.objects.exclude(
                 Q(metadata_xml__isnull=True) |
                 Q(metadata_xml__exact='') |
                 Q(csw_anytext__isnull=True) |
@@ -1069,7 +1069,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             count = _layers.count()
             if count:
                 _layers.update(metadata_xml=None)
-                _updated_layers = Layer.objects.exclude(
+                _updated_layers = Dataset.objects.exclude(
                     Q(metadata_xml__isnull=True) |
                     Q(metadata_xml__exact='') |
                     Q(csw_anytext__isnull=True) |
@@ -1090,7 +1090,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                 "No links have been restored"
             )
             # Check layers
-            _post_migrate_layers = Layer.objects.exclude(
+            _post_migrate_layers = Dataset.objects.exclude(
                 Q(metadata_xml__isnull=True) |
                 Q(metadata_xml__exact='') |
                 Q(csw_anytext__isnull=True) |

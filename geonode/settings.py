@@ -413,7 +413,7 @@ GEONODE_CORE_APPS = (
     'geonode.api',
     'geonode.base',
     'geonode.br',
-    'geonode.layers',
+    'geonode.datasets',
     'geonode.maps',
     'geonode.geoapps',
     'geonode.documents',
@@ -911,7 +911,7 @@ PINAX_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {
         "map": "How good is this map?"
     },
-    "layers.Layer": {
+    "layers.Dataset": {
         "layer": "How good is this layer?"
     },
     "documents.Document": {
@@ -1857,7 +1857,7 @@ if os.name == 'nt':
 # option to enable/disable resource unpublishing for administrators and members
 RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
 
-# Each uploaded Layer must be approved by an Admin before becoming visible
+# Each uploaded Dataset must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
 # If this option is enabled, Resources belonging to a Group (with access private) won't be

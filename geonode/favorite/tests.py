@@ -96,7 +96,7 @@ class FavoriteTest(GeoNodeBaseTestSupport):
 
         '''
         If the input object is a ResourceBase, in favorite content type, should be saved he
-        subtype content type (Doc, Layer, Map or GeoApp)
+        subtype content type (Doc, Dataset, Map or GeoApp)
         '''
         create_single_layer('foo_layer')
         resource = ResourceBase.objects.get(title='foo_layer')

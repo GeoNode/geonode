@@ -27,7 +27,7 @@ from geoserver.resource import FeatureType, Coverage
 from django.conf import settings
 
 from geonode import GeoNodeException
-from geonode.layers.utils import layer_type, get_files
+from geonode.datasets.utils import layer_type, get_files
 from .helpers import (
     GEOSERVER_LAYER_TYPES,
     gs_catalog,
@@ -158,7 +158,7 @@ def geoserver_upload(
             workspace=workspace)
 
     if not gs_resource:
-        msg = f'GeoNode encountered problems when creating layer {name}.It cannot find the Layer that matches this Workspace.try renaming your files.'
+        msg = f'GeoNode encountered problems when creating layer {name}.It cannot find the Dataset that matches this Workspace.try renaming your files.'
         logger.warn(msg)
         raise GeoNodeException(msg)
 
@@ -228,7 +228,7 @@ def geoserver_upload(
                 style = cat.get_style(name, workspace=workspace) or cat.get_style(name)
             except Exception as e:
                 style = cat.get_style('point')
-                msg = f'Could not find any suitable style in GeoServer for Layer: "{name}"'
+                msg = f'Could not find any suitable style in GeoServer for Dataset: "{name}"'
                 e.args = (msg,)
                 logger.exception(e)
 

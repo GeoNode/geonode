@@ -29,7 +29,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.geoserver.helpers import OGC_Servers_Handler
@@ -134,11 +134,11 @@ def expand_bbox_to_ratio(
     return new_bbox
 
 
-def assign_missing_thumbnail(instance: Union[Layer, Map]) -> None:
+def assign_missing_thumbnail(instance: Union[Dataset, Map]) -> None:
     """
     Function assigning settings.MISSING_THUMBNAIL to a provided instance
 
-    :param instance: instance of Layer or Map models
+    :param instance: instance of Dataset or Map models
     """
     instance.save_thumbnail("", image=None)
 

@@ -52,7 +52,7 @@ from geonode.compat import ensure_string
 from geonode.monitoring.collector import CollectorAPI
 from geonode.monitoring.utils import generate_periods, align_period_start
 from geonode.base.models import ResourceBase
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.monitoring.models import *  # noqa
 from geonode.base.populate_test_data import (
     all_public,
@@ -82,7 +82,7 @@ if created:
     u.set_password(GEONODE_PASSWD)
     u.save()
 else:
-    Layer.objects.filter(owner=u).delete()
+    Dataset.objects.filter(owner=u).delete()
 
 res_dir = os.path.join(os.path.dirname(__file__), 'resources')
 req_err_path = os.path.join(res_dir, 'req_err.xml')
@@ -302,7 +302,7 @@ class RequestsTestCase(MonitoringTestBase):
 
         _l = create_single_layer('san_andres_y_providencia_poi')
 
-        for idx, _l in enumerate(Layer.objects.all()):
+        for idx, _l in enumerate(Dataset.objects.all()):
             for inum in range(0, idx + 1):
                 self.client.get(
                     reverse('layer_detail',
@@ -1572,7 +1572,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
     def test_resource_types_endpoint(self):
         resource_types = [
             {'name': '', 'type_label': 'No resource'},
-            {'name': 'layer', 'type_label': 'Layer'},
+            {'name': 'layer', 'type_label': 'Dataset'},
             {'name': 'map', 'type_label': 'Map'},
             {'name': 'resource_base', 'type_label': 'Resource base'},
             {'name': 'document', 'type_label': 'Document'},

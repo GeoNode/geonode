@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=512, verbose_name='Layer Title')),
                 ('description', models.TextField(null=True, verbose_name='Layer Description')),
                 ('styles', models.TextField(null=True, verbose_name='Layer Styles')),
-                ('layer', models.ForeignKey(to='layers.Layer', on_delete=models.CASCADE, null=True)),
+                ('layer', models.ForeignKey(to='layers.Dataset', on_delete=models.CASCADE, null=True)),
                 ('service', models.ForeignKey(to='services.Service', on_delete=models.CASCADE)),
             ],
         ),

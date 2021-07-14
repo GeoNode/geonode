@@ -168,7 +168,7 @@ class MonitoredResource(models.Model):
               TYPE_URL, TYPE_OTHER,)
 
     TYPES = ((TYPE_EMPTY, _("No resource"),),
-             (TYPE_LAYER, _("Layer"),),
+             (TYPE_LAYER, _("Dataset"),),
              (TYPE_MAP, _("Map"),),
              (TYPE_RESOURCE_BASE, _("Resource base"),),
              (TYPE_DOCUMENT, _("Document"),),

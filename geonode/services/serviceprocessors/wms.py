@@ -43,9 +43,9 @@ from geonode.base.models import (
     Link,
     ResourceBase,
     TopicCategory)
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
-from geonode.layers.utils import resolve_regions
+from geonode.datasets.utils import resolve_regions
 from geonode.utils import http_client, get_legend_url
 from geonode.resource.manager import resource_manager
 from geonode.thumbs.thumbnails import create_thumbnail
@@ -222,7 +222,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
 
-        This method will try to create new ``geonode.layers.models.Layer``
+        This method will try to create new ``geonode.datasets.models.Dataset``
         instance (and its related objects too).
 
         :arg resource_id: The resource's identifier
@@ -242,7 +242,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         else:
             resource_fields = self._get_indexed_layer_fields(layer_meta)
             keywords = resource_fields.pop("keywords")
-        existance_test_qs = Layer.objects.filter(
+        existance_test_qs = Dataset.objects.filter(
             name=resource_fields["name"],
             store=resource_fields["store"],
             workspace=resource_fields["workspace"]
@@ -265,15 +265,15 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         return True if len(self.parsed_service.contents) > 0 else False
 
     def _create_layer(self, geonode_service, **resource_fields):
-        # bear in mind that in ``geonode.layers.models`` there is a
+        # bear in mind that in ``geonode.datasets.models`` there is a
         # ``pre_save_layer`` function handler that is connected to the
-        # ``pre_save`` signal for the Layer model. This handler does a check
+        # ``pre_save`` signal for the Dataset model. This handler does a check
         # for common fields (such as abstract and title) and adds
         # sensible default values
         keywords = resource_fields.pop("keywords", [])
         geonode_layer = resource_manager.create(
             None,
-            resource_type=Layer,
+            resource_type=Dataset,
             defaults=dict(
                 owner=geonode_service.owner,
                 remote_service=geonode_service,
@@ -436,7 +436,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                                    "geoserver")
             layer_resource = layer_resource.resource
         else:
-            logger.debug(f"Layer {layer_meta.id} is already present. Skipping...")
+            logger.debug(f"Dataset {layer_meta.id} is already present. Skipping...")
         layer_resource.refresh()
         return layer_resource
 
@@ -493,7 +493,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
 
-        This method will try to create new ``geonode.layers.models.Layer``
+        This method will try to create new ``geonode.datasets.models.Dataset``
         instance (and its related objects too).
 
         :arg resource_id: The resource's identifier
@@ -512,7 +512,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         else:
             resource_fields = self._get_indexed_layer_fields(layer_meta)
             keywords = resource_fields.pop("keywords")
-        existance_test_qs = Layer.objects.filter(
+        existance_test_qs = Dataset.objects.filter(
             name=resource_fields["name"],
             store=resource_fields["store"],
             workspace=resource_fields["workspace"]
@@ -592,7 +592,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                             if field in _layer and _layer[field]:
                                 r_fields[field] = _layer[field]
                         if r_fields:
-                            Layer.objects.filter(
+                            Dataset.objects.filter(
                                 id=geonode_layer.id).update(
                                 **r_fields)
                             geonode_layer.refresh_from_db()

@@ -30,8 +30,8 @@ from django.contrib.gis.geos import Polygon
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 
-from geonode.maps.models import Layer
-from geonode.layers.models import Attribute
+from geonode.maps.models import Dataset
+from geonode.datasets.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
@@ -147,13 +147,13 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
 
     def test_set_attributes_creates_attributes(self):
         """ Test utility function set_attributes() which creates Attribute instances attached
-            to a Layer instance.
+            to a Dataset instance.
         """
         # Creating a layer requires being logged in
         self.client.login(username='norman', password='norman')
 
         # Create dummy layer to attach attributes to
-        _l = Layer.objects.create(
+        _l = Dataset.objects.create(
             owner=self.user,
             name='dummy_layer',
             bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),

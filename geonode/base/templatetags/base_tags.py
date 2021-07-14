@@ -31,7 +31,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import ResourceBase
 from geonode.base.bbox_utils import filter_bbox
-from geonode.layers.models import Layer
+from geonode.datasets.models import Dataset
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
@@ -44,11 +44,11 @@ from collections import OrderedDict
 register = template.Library()
 
 FACETS = {
-    'raster': _('Raster Layer'),
-    'vector': _('Vector Layer'),
+    'raster': _('Raster Dataset'),
+    'vector': _('Vector Dataset'),
     'vector_time': _('Vector Temporal Serie'),
-    'remote': _('Remote Layer'),
-    'wms': _('WMS Cascade Layer')
+    'remote': _('Remote Dataset'),
+    'wms': _('WMS Cascade Dataset')
 }
 
 
@@ -182,7 +182,7 @@ def facets(context):
 
         return facets
     else:
-        layers = Layer.objects.filter(
+        layers = Dataset.objects.filter(
             Q(title__icontains=title_filter) |
             Q(abstract__icontains=abstract_filter) |
             Q(purpose__icontains=purpose_filter)
@@ -428,6 +428,6 @@ def display_change_perms_button(resource, user, perms):
 @register.simple_tag
 def get_layer_count_by_services(service_id, user):
     return get_visible_resources(
-        queryset=Layer.objects.filter(remote_service=service_id),
+        queryset=Dataset.objects.filter(remote_service=service_id),
         user=user
     ).count()

@@ -54,11 +54,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
 from geonode.base import enumerations
-from geonode.layers.models import TIME_REGEX_FORMAT
+from geonode.datasets.models import TIME_REGEX_FORMAT
 from geonode.resource.manager import resource_manager
 from geonode.upload import UploadException, LayerNotReady
 
-from ..layers.models import Layer
+from ..layers.models import Dataset
 from ..layers.metadata import parse_metadata
 from ..people.utils import get_default_user
 from ..layers.utils import get_valid_layer_name
@@ -112,7 +112,7 @@ class UploaderSession:
     # defaults to REPLACE if not provided. Accepts APPEND, too
     update_mode = None
 
-    # Configure Time for this Layer
+    # Configure Time for this Dataset
     time = None
 
     # the title given to the layer
@@ -251,7 +251,7 @@ def _check_geoserver_store(store_name, layer_type, overwrite):
                     logger.debug("Deleting previously existing store")
                     store.delete()
                 else:
-                    raise GeoNodeException(_("Layer already exists"))
+                    raise GeoNodeException(_("Dataset already exists"))
             else:
                 for resource in resources:
                     if resource.name == store_name:
@@ -589,7 +589,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     name = task.layer.name
 
     if layer_id:
-        name = Layer.objects.get(resourcebase_ptr_id=layer_id).name
+        name = Dataset.objects.get(resourcebase_ptr_id=layer_id).name
 
     _log(f'Getting from catalog [{name}]')
     try:
@@ -679,7 +679,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         sld_uploaded = False
 
     # Make sure the layer does not exists already
-    if layer_uuid and Layer.objects.filter(uuid=layer_uuid).count():
+    if layer_uuid and Dataset.objects.filter(uuid=layer_uuid).count():
         Upload.objects.invalidate_from_session(upload_session)
         logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
         raise GeoNodeException(
@@ -700,7 +700,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         has_time = True
 
     if upload_session.append_to_mosaic_opts:
-        saved_layer, created = Layer.objects.get_or_create(
+        saved_layer, created = Dataset.objects.get_or_create(
             name=upload_session.append_to_mosaic_name)
         assert saved_layer
         try:
@@ -709,12 +709,12 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         saved_layer.temporal_extent_start,
                         is_dst=False) < end:
                     saved_layer.temporal_extent_end = end
-                    Layer.objects.filter(
+                    Dataset.objects.filter(
                         name=upload_session.append_to_mosaic_name).update(
                         temporal_extent_end=end)
                 else:
                     saved_layer.temporal_extent_start = end
-                    Layer.objects.filter(
+                    Dataset.objects.filter(
                         name=upload_session.append_to_mosaic_name).update(
                         temporal_extent_start=end)
         except Exception as e:
@@ -724,7 +724,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         try:
             saved_layer = resource_manager.create(
                 layer_uuid,
-                resource_type=Layer,
+                resource_type=Dataset,
                 defaults=dict(
                     store=target.name,
                     subtype=get_layer_storetype(target.store_type),
@@ -743,7 +743,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             created = True
         except Exception as e:
             Upload.objects.invalidate_from_session(upload_session)
-            raise UploadException.from_exc(_('Error configuring Layer'), e)
+            raise UploadException.from_exc(_('Error configuring Dataset'), e)
 
         Upload.objects.update_from_session(upload_session, resource=saved_layer)
 
