@@ -33,7 +33,7 @@ from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.layers.models import Layer
 
-from .serializers import LayerSerializer
+from .serializers import LayerSerializer, LayerListSerializer
 from .permissions import LayerPermissionsFilter
 
 import logging
@@ -55,6 +55,11 @@ class LayerViewSet(DynamicModelViewSet):
     queryset = Layer.objects.all().order_by('-date')
     serializer_class = LayerSerializer
     pagination_class = GeoNodeApiPagination
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return LayerListSerializer
+        return LayerSerializer
 
     @extend_schema(
         methods=["post"], responses={200}, description="API endpoint allowing to set the thumbnail url for an existing dataset."
