@@ -23,7 +23,7 @@
 {% load base_tags %}
 {% load client_lib_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="{% block html_class %}{% endblock %}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -274,7 +274,7 @@
     {% endif %}
   </head>
 
-  <body class="{% block body_class %}{% endblock %}">
+  <body class="{% block body_class %}{% endblock %} {% block body_extra_class %}{% endblock %}">
     <!-- Loading Mask -->
     <div class='lmask'></div>
     <!-- Navbar -->
