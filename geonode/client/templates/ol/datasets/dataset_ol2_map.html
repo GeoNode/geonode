@@ -1,0 +1,83 @@
+
+{% load static %}
+<!-- script src="{% static "geonode/js/proj4js/proj4.js" %}" type="text/javascript"></script -->
+<script src="{% static "geonode/js/ol-2.13/OpenLayers.js" %}" type="text/javascript"></script>
+<script src="{% static "geonode/js/ol-2.13/lib/OpenLayers/Layer/ArcGISCache.js" %}" type="text/javascript"></script>
+
+<style>
+    .olControlAttribution {
+        bottom: 0 !important;
+    }
+</style>
+
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function (event) {
+    {% if resource.ll_bbox %}
+      var bbox = [{{ resource.ll_bbox_string }}];
+    {% else %}
+      var bbox = null;
+    {% endif %}
+    var source = null;
+    {% if resource.ptype == 'gxp_wmscsource' %}
+      {% if access_token %}
+        var url = '{{ resource.ows_url|safe }}?access_token={{access_token}}';
+      {% else %}
+        var url = '{{ resource.ows_url|safe }}';
+      {% endif %}
+
+      source = new OpenLayers.Layer.WMS("{{ resource.title|safe }}",
+        url,
+        {layers: '{{ resource.alternate }}', transparent: true},
+        {isBaseLayer: false}
+      );
+    {% elif resource.ptype == 'gxp_arcrestsource' %}
+      {% if access_token %}
+        var url = '{{ resource.ows_url|safe }}?access_token={{access_token}}';
+      {% else %}
+        var url = '{{ resource.ows_url|safe }}';
+      {% endif %}
+        source = new OpenLayers.Layer.ArcGISCache("{{ resource.title|safe }}",
+          url,
+          {layers: '{{ resource.alternate }}', transparent: true},
+          {isBaseLayer: false}
+        );
+    {% endif %}
+
+    //Snippet comes from http://osgeo-org.1560.x6.nabble.com/OL-2-13-1-latest-Proj4js-td5081636.html
+    /* window.Proj4js = {
+      Proj: function(code) {
+        return proj4(Proj4js.defs[code]);
+      },
+      defs: proj4.defs,
+      transform: proj4
+    }; */
+
+    var crs = 'EPSG:4326';  // resource.ll_bbox is always 4326
+    if (source != null) {
+    	var layers = [
+            new OpenLayers.Layer.OSM("OpenCycleMap",
+              ["https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+               "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+               "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
+          	source
+    	];
+        // olMap is used by thumbnail.js to POST to the thumbnail update view
+    	var map = window.olMap = new OpenLayers.Map({
+            div: 'preview_map',
+            projection: new OpenLayers.Projection('EPSG:3857'),
+            layers: layers,
+            center: [0, 0],
+            zoom: 2
+    	});
+
+    	if (bbox != null) {
+    	  if (crs != 'EPSG:3857') {
+          bbox = new OpenLayers.Bounds(bbox).transform(
+            new OpenLayers.Projection(crs),
+            new OpenLayers.Projection("EPSG:3857"));
+        }
+    		map.zoomToExtent(bbox);
+    	}
+    }
+  });
+</script>
