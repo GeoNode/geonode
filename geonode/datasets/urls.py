@@ -29,13 +29,13 @@ js_info_dict = {
     'packages': ('geonode.datasets',),
 }
 
-layers_list = register_url_event()(TemplateView.as_view(template_name='datasets/dataset_list.html'))
+dataset_list = register_url_event()(TemplateView.as_view(template_name='datasets/dataset_list.html'))
 
 urlpatterns = [
     # 'geonode.datasets.views',
     url(r'^$',
-        layers_list,
-        {'facet_type': 'layers', 'is_dataset': True},
+        dataset_list,
+        {'facet_type': 'dataset', 'is_dataset': True},
         name='dataset_browse'),
     url(r'^upload$', views.dataset_upload, name='dataset_upload'),
     url(r'^upload_metadata$', views.dataset_metadata_upload,

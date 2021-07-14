@@ -23,7 +23,7 @@ from guardian.shortcuts import get_objects_for_user
 from django.contrib.auth.models import AnonymousUser
 
 
-class LayerSitemap(Sitemap):
+class DatasetSitemap(Sitemap):
     changefreq = "never"
     priority = 0.5
 

@@ -226,9 +226,9 @@ def purge_geofence_dataset_rules(resource):
     user = settings.OGC_SERVER['default']['USER']
     passwd = settings.OGC_SERVER['default']['PASSWORD']
     headers = {'Content-type': 'application/json'}
-    workspace = get_dataset_workspace(resource.layer)
-    dataset_name = resource.layer.name if resource.layer and hasattr(resource.layer, 'name') \
-        else resource.layer.alternate.split(":")[0]
+    workspace = get_dataset_workspace(resource.dataset)
+    dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
+        else resource.dataset.alternate.split(":")[0]
     try:
         r = requests.get(
             f"{url}rest/geofence/rules.json?workspace={workspace}&layer={dataset_name}",
@@ -445,9 +445,9 @@ def set_geofence_all(instance):
 
     resource = instance.get_self_resource()
     logger.debug(f"Inside set_geofence_all for instance {instance}")
-    workspace = get_dataset_workspace(resource.layer)
-    dataset_name = resource.layer.name if resource.layer and hasattr(resource.layer, 'name') \
-        else resource.layer.alternate.split(":")[0]
+    workspace = get_dataset_workspace(resource.dataset)
+    dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
+        else resource.dataset.alternate.split(":")[0]
     logger.debug(f"going to work in workspace {workspace}")
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
@@ -462,7 +462,7 @@ def set_geofence_all(instance):
         """
         headers = {'Content-type': 'application/xml'}
         payload = _get_geofence_payload(
-            layer=resource.layer,
+            layer=resource.dataset,
             dataset_name=dataset_name,
             workspace=workspace,
             access="ALLOW"

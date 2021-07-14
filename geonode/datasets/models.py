@@ -223,7 +223,7 @@ class Dataset(ResourceBase):
         if self.attribute_set and self.attribute_set.count():
             _attrs = self.attribute_set
         else:
-            _attrs = Attribute.objects.filter(layer=self)
+            _attrs = Attribute.objects.filter(dataset=self)
         return _attrs.exclude(attribute='the_geom').order_by('display_order')
 
     # layer geometry type.
@@ -233,7 +233,7 @@ class Dataset(ResourceBase):
         if self.attribute_set and self.attribute_set.count():
             _attrs = self.attribute_set
         else:
-            _attrs = Attribute.objects.filter(layer=self)
+            _attrs = Attribute.objects.filter(dataset=self)
         if _attrs.filter(attribute='the_geom').exists():
             _att_type = _attrs.filter(attribute='the_geom').first().attribute_type
             _gtype = re.match(r'\(\'gml:(.*?)\',', _att_type)
@@ -369,7 +369,7 @@ class Attribute(models.Model):
        to other servers, and lets users customize attribute titles,
        sort order, and visibility.
     """
-    layer = models.ForeignKey(
+    dataset = models.ForeignKey(
         Dataset,
         blank=False,
         null=False,

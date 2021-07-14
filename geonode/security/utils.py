@@ -145,10 +145,10 @@ def set_owner_permissions(resource, members=None):
         # Set the GeoFence Owner Rule
         if resource.polymorphic_ctype.name == 'layer':
             for perm in LAYER_ADMIN_PERMISSIONS:
-                assign_perm(perm, resource.owner, resource.layer)
+                assign_perm(perm, resource.owner, resource.dataset)
                 if members:
                     for user in members:
-                        assign_perm(perm, user, resource.layer)
+                        assign_perm(perm, user, resource.dataset)
 
         if resource.polymorphic_ctype.name == 'service':
             for perm in SERVICE_PERMISSIONS:

@@ -114,7 +114,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='attribute',
-            name='Dataset',
+            name='dataset',
             field=models.ForeignKey(related_name='attribute_set', on_delete=models.CASCADE, to='datasets.Dataset'),
         ),
     ]

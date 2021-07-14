@@ -22,7 +22,7 @@
   {% for service in services %}
   <tr>
 	  <td>
-      <a href='{% url "service_detail" service.id %}'>{{ service.title }} <span class="badge">{% get_layer_count_by_services service.id request.user %}</span></a>
+      <a href='{% url "service_detail" service.id %}'>{{ service.title }} <span class="badge">{% get_dataset_count_by_services service.id request.user %}</span></a>
     </td>
 	  <td>
       <a href='{{ service.base_url }}' target="_blank" rel="noopener noreferrer">{{ service.base_url }}</a>

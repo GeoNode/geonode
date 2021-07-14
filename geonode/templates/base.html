@@ -295,14 +295,14 @@
           <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
-                <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
+                <li><a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
                 <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
                 <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
                 {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
                     <li role="separator" class="divider"></li>
-                    <li><a href="{% url "layer_upload" %}">{% trans "Upload Dataset" %}</a></li>
+                    <li><a href="{% url "dataset_upload" %}">{% trans "Upload Dataset" %}</a></li>
                     {% if USE_GEOSERVER and CREATE_LAYER %}
-                        <li><a href="{% url "layer_create" %}">{% trans "Create Dataset" %}</a></li>
+                        <li><a href="{% url "dataset_create" %}">{% trans "Create Dataset" %}</a></li>
                     {% endif %}
                     <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
                 {% endif %}
@@ -481,14 +481,14 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Data" %}</li>
-            <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
+            <li><a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
             {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
                 <li role="separator" class="divider"></li>
-                <li><a href="{% url "layer_upload" %}">{% trans "Upload Dataset" %}</a></li>
+                <li><a href="{% url "dataset_upload" %}">{% trans "Upload Dataset" %}</a></li>
                 {% if USE_GEOSERVER and CREATE_LAYER %}
-                    <li><a href="{% url "layer_create" %}">{% trans "Create Dataset" %}</a></li>
+                    <li><a href="{% url "dataset_create" %}">{% trans "Create Dataset" %}</a></li>
                 {% endif %}
                 <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
             {% endif %}

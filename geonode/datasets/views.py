@@ -68,7 +68,7 @@ from geonode.base.models import (
 from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
 from geonode.datasets.forms import (
-    LayerForm,
+    DatasetForm,
     LayerUploadForm,
     LayerAttributeForm,
     NewLayerUploadForm)
@@ -902,7 +902,7 @@ def dataset_metadata(
                 content_type='application/json',
                 status=400)
 
-        dataset_form = LayerForm(request.POST, instance=layer, prefix="resource")
+        dataset_form = DatasetForm(request.POST, instance=layer, prefix="resource")
         if not dataset_form.is_valid():
             logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
             out = {
@@ -961,7 +961,7 @@ def dataset_metadata(
                 content_type='application/json',
                 status=400)
     else:
-        dataset_form = LayerForm(instance=layer, prefix="resource")
+        dataset_form = DatasetForm(instance=layer, prefix="resource")
         dataset_form.disable_keywords_widget_for_non_superuser(request.user)
         attribute_form = dataset_attribute_set(
             instance=layer,

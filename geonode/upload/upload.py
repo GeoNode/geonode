@@ -619,7 +619,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
 
     _log(f'Creating Django record for [{name}]')
     target = task.target
-    alternate = task.get_target_dataset_name()
+    alternate = task.get_target_layer_name()
     dataset_uuid = None
     title = upload_session.dataset_title
     abstract = upload_session.dataset_abstract

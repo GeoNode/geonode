@@ -24,7 +24,7 @@ from django.shortcuts import render
 from django.template.defaultfilters import slugify
 from django.shortcuts import redirect
 
-from .forms import NewLayerForm
+from .forms import NewDatasetForm
 from .utils import create_dataset
 
 
@@ -35,7 +35,7 @@ def dataset_create(request, template='createlayer/dataset_create.html'):
     """
     error = None
     if request.method == 'POST':
-        form = NewLayerForm(request.POST)
+        form = NewDatasetForm(request.POST)
         if form.is_valid():
             try:
                 name = form.cleaned_data['name']
@@ -50,7 +50,7 @@ def dataset_create(request, template='createlayer/dataset_create.html'):
             except Exception as e:
                 error = f'{e} ({type(e)})'
     else:
-        form = NewLayerForm()
+        form = NewDatasetForm()
 
     ctx = {
         'form': form,

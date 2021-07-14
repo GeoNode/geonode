@@ -40,10 +40,10 @@
       'download_resourcebase_groups',
       'change_resourcebase_metadata_users',
       'change_resourcebase_metadata_groups',
-      'change_layer_data_users',
-      'change_layer_data_groups',
-      'change_layer_style_users',
-      'change_layer_style_groups',
+      'change_dataset_data_users',
+      'change_dataset_data_groups',
+      'change_dataset_style_users',
+      'change_dataset_style_groups',
       'manage_resourcebase_users',
       'manage_resourcebase_groups'
     ];
@@ -107,8 +107,8 @@
               view_resourcebase: [],
               download_resourcebase: [],
               change_resourcebase_metadata: [],
-              change_layer_data: [],
-              change_layer_style: [],
+              change_dataset_data: [],
+              change_dataset_style: [],
               manage_resourcebase: [],
             };
 
@@ -191,8 +191,8 @@
               view_resourcebase: [],
               download_resourcebase: [],
               change_resourcebase_metadata: [],
-              change_layer_data: [],
-              change_layer_style: [],
+              change_dataset_data: [],
+              change_dataset_style: [],
               manage_resourcebase: []
             };
 
@@ -244,7 +244,7 @@
         
         // In case resources are private we add the current user
         {% if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False %}
-            {% if request.resolver_match.url_name  == 'layer_upload' or request.resolver_match.url_name  == 'document_upload' %}
+            {% if request.resolver_match.url_name  == 'dataset_upload' or request.resolver_match.url_name  == 'document_upload' %}
                 var initialValues = [{name: "{{request.user}}", id:"{{request.user}}"}];
             {% endif %}
         {% endif %}
@@ -599,11 +599,11 @@
         return false;
     });
 
-    $("#tiledlayer_refresh").click(function(){
+    $("#tileddataset_refresh").click(function(){
         $.ajax(
           {
             type: "POST",
-            url: "{% url 'invalidate_tiledlayer_cache' %}",
+            url: "{% url 'invalidate_tileddataset_cache' %}",
             dataType: 'json',
             data: { uuid: "{{ resource.uuid }}" },
             beforeSend: function(){

@@ -2,7 +2,7 @@ from django.db import migrations, models
 from django.db.models import F
 
 def copy_typename(apps, schema_editor):
-    Dataset = apps.get_model('datasets', 'layer')
+    Dataset = apps.get_model('datasets', 'dataset')
     ResourceBase = apps.get_model('base', 'resourcebase')
     for row in Dataset.objects.all():
         row.alternate = row.typename

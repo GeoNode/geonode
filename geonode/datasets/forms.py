@@ -43,7 +43,7 @@ class JSONField(forms.CharField):
             raise forms.ValidationError("this field must be valid JSON")
 
 
-class LayerForm(ResourceBaseForm):
+class DatasetForm(ResourceBaseForm):
     class Meta(ResourceBaseForm.Meta):
         model = Dataset
         exclude = ResourceBaseForm.Meta.exclude + (

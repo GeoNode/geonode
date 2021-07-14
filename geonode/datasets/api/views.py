@@ -42,7 +42,7 @@ import ast
 logger = logging.getLogger(__name__)
 
 
-class LayerViewSet(DynamicModelViewSet):
+class DatasetViewSet(DynamicModelViewSet):
     """
     API endpoint that allows layers to be viewed or edited.
     """
@@ -75,12 +75,12 @@ class LayerViewSet(DynamicModelViewSet):
     )
     def set_thumbnail_from_bbox(self, request, dataset_id):
         try:
-            layer = Dataset.objects.get(resourcebase_ptr_id=ast.literal_eval(dataset_id))
+            dataset = Dataset.objects.get(resourcebase_ptr_id=ast.literal_eval(dataset_id))
             request_body = request.data if request.data else json.loads(request.body)
             bbox = request_body["bbox"] + [request_body["srid"]]
             zoom = request_body.get("zoom", None)
 
-            thumbnail_url = create_thumbnail(layer, bbox=bbox, background_zoom=zoom, overwrite=True)
+            thumbnail_url = create_thumbnail(dataset, bbox=bbox, background_zoom=zoom, overwrite=True)
             return Response({"thumbnail_url": thumbnail_url}, status=200)
         except Dataset.DoesNotExist:
             logger.error(f"Dataset selected with id {dataset_id} does not exists")
