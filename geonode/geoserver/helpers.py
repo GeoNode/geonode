@@ -695,7 +695,11 @@ def gs_slurp(
                     name=name,
                     workspace=workspace.name,
                     store=the_store.name,
+<<<<<<< HEAD
                     subtype=get_dataset_storetype(the_store.resource_type),
+=======
+                    subtype=get_layer_subtype(the_store.resource_type),
+>>>>>>> 88e5c65781fe2a57973ec1b3ae8a4e20e1c2970c
                     alternate=f"{workspace.name}:{resource.name}",
                     title=resource.title or _('No title provided'),
                     abstract=resource.abstract or _('No abstract provided'),
@@ -1732,7 +1736,11 @@ def sync_instance_with_geoserver(
         for key in ['alternate', 'store', 'subtype']:
             # attr_name = key if 'typename' not in key else 'alternate'
             # print attr_name
+<<<<<<< HEAD
             setattr(instance, key, get_dataset_storetype(values[key]))
+=======
+            setattr(instance, key, get_layer_subtype(values[key]))
+>>>>>>> 88e5c65781fe2a57973ec1b3ae8a4e20e1c2970c
 
         try:
             if settings.RESOURCE_PUBLISHING:
@@ -2293,7 +2301,11 @@ def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
     return implementation(instance, overwrite, check_bbox)
 
 
+<<<<<<< HEAD
 def get_dataset_storetype(element):
+=======
+def get_layer_subtype(element):
+>>>>>>> 88e5c65781fe2a57973ec1b3ae8a4e20e1c2970c
     return LAYER_SUBTYPES.get(element, element)
 
 
