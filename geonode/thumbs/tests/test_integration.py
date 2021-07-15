@@ -472,7 +472,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
 
             # update MapLayers to correctly show layers' location
             with DisableDjangoSignals():
-                for maplayer in cls.map_composition.layers:
+                for maplayer in cls.map_composition.datasets:
                     if maplayer.name in [cls.dataset_coast_line.alternate, cls.dataset_highway.alternate]:
                         maplayer.local = True
                         maplayer.save(force_update=True)

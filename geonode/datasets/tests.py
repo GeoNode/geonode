@@ -82,11 +82,11 @@ from geonode.base.populate_test_data import (
 logger = logging.getLogger(__name__)
 
 
-class LayersTest(GeoNodeBaseTestSupport):
+class DatasetsTest(GeoNodeBaseTestSupport):
 
     """Tests geonode.datasets app/module
     """
-    type = 'layer'
+    type = 'dataset'
 
     fixtures = [
         'initial_data.json',
@@ -774,7 +774,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         layer = Dataset.objects.all()[3]
         dataset_id = layer.id
         # Create the rating with the correct content type
-        ctype = ContentType.objects.get(model='layer')
+        ctype = ContentType.objects.get(model='dataset')
         OverallRating.objects.create(
             category=2,
             object_id=dataset_id,
@@ -1306,7 +1306,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
     @patch("geonode.datasets.utils.gs_catalog")
     def test_will_raise_exception_for_not_existing_dataset_in_the_catalog(self, catalog):
-        catalog.get_dataset.return_value = None
+        catalog.get_layer.return_value = None
         layer = Dataset.objects.get(name="single_point")
         file_path = gisdata.VECTOR_DATA
         filename = os.path.join(file_path, "single_point.shp")
@@ -1329,7 +1329,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         attr = namedtuple('GSCatalogAttr', ['attributes'])
         attr.attributes = []
         self.r.resource = attr
-        catalog.get_dataset.return_value = self.r
+        catalog.get_layer.return_value = self.r
         layer = Dataset.objects.filter(name="single_point")[0]
         file_path = gisdata.VECTOR_DATA
         filename = os.path.join(file_path, "single_point.shp")
@@ -1352,7 +1352,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         attr = namedtuple('GSCatalogAttr', ['attributes'])
         attr.attributes = ['label']
         self.r.resource = attr
-        catalog.get_dataset.return_value = self.r
+        catalog.get_layer.return_value = self.r
         layer = Dataset.objects.filter(name="single_point")[0]
         file_path = gisdata.VECTOR_DATA
         filename = os.path.join(file_path, "single_point.shp")
@@ -1524,7 +1524,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):
 
-    type = 'layer'
+    type = 'dataset'
 
     @classmethod
     def setUpClass(cls):

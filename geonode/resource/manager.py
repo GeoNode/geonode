@@ -497,7 +497,7 @@ class ResourceManager(ResourceManagerInterface):
                     _dataset = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Dataset) else None
                     if not _dataset:
                         try:
-                            _dataset = _resource.layer if hasattr(_resource, "layer") else None
+                            _dataset = _resource.dataset if hasattr(_resource, "layer") else None
                         except Exception:
                             _dataset = None
                     if _dataset:
@@ -563,10 +563,10 @@ class ResourceManager(ResourceManagerInterface):
                         if 'users' in permissions and "AnonymousUser" in permissions['users']:
                             anonymous_group = Group.objects.get(name='anonymous')
                             for perm in permissions['users']['AnonymousUser']:
-                                if _resource.polymorphic_ctype.name == 'layer' and perm in (
+                                if _resource.polymorphic_ctype.name == 'dataset' and perm in (
                                         'change_dataset_data', 'change_dataset_style',
                                         'add_dataset', 'change_dataset', 'delete_dataset',):
-                                    assign_perm(perm, anonymous_group, _resource.layer)
+                                    assign_perm(perm, anonymous_group, _resource.dataset)
                                 else:
                                     assign_perm(perm, anonymous_group, _resource.get_self_resource())
 
@@ -576,10 +576,10 @@ class ResourceManager(ResourceManagerInterface):
                                 _user = get_user_model().objects.get(username=user)
                                 if _user != _resource.owner and user != "AnonymousUser":
                                     for perm in perms:
-                                        if _resource.polymorphic_ctype.name == 'layer' and perm in (
+                                        if _resource.polymorphic_ctype.name == 'dataset' and perm in (
                                                 'change_dataset_data', 'change_dataset_style',
                                                 'add_dataset', 'change_dataset', 'delete_dataset',):
-                                            assign_perm(perm, _user, _resource.layer)
+                                            assign_perm(perm, _user, _resource.dataset)
                                         else:
                                             assign_perm(perm, _user, _resource.get_self_resource())
 
@@ -588,10 +588,10 @@ class ResourceManager(ResourceManagerInterface):
                             for group, perms in permissions['groups'].items():
                                 _group = Group.objects.get(name=group)
                                 for perm in perms:
-                                    if _resource.polymorphic_ctype.name == 'layer' and perm in (
+                                    if _resource.polymorphic_ctype.name == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset',):
-                                        assign_perm(perm, _group, _resource.layer)
+                                        assign_perm(perm, _group, _resource.dataset)
                                     else:
                                         assign_perm(perm, _group, _resource.get_self_resource())
 
@@ -601,10 +601,10 @@ class ResourceManager(ResourceManagerInterface):
                                 _user = get_anonymous_user()
                                 perms = permissions['users']["AnonymousUser"]
                                 for perm in perms:
-                                    if _resource.polymorphic_ctype.name == 'layer' and perm in (
+                                    if _resource.polymorphic_ctype.name == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset',):
-                                        assign_perm(perm, _user, _resource.layer)
+                                        assign_perm(perm, _user, _resource.dataset)
                                     else:
                                         assign_perm(perm, _user, _resource.get_self_resource())
                     else:

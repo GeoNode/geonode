@@ -95,7 +95,7 @@ class Map(ResourceBase, GXPMapBase):
         return (self.center_x, self.center_y)
 
     @property
-    def layers(self):
+    def datasets(self):
         layers = MapLayer.objects.filter(map=self.id)
         return [layer for layer in layers]
 
@@ -147,7 +147,7 @@ class Map(ResourceBase, GXPMapBase):
         map_config = {
             # the title must be provided and is used for the zip file name
             "map": {"readme": readme, "title": self.title},
-            "layers": [dataset_json(lyr) for lyr in layers]
+            "datasets": [dataset_json(lyr) for lyr in layers]
         }
 
         return json.dumps(map_config)
@@ -231,7 +231,7 @@ class Map(ResourceBase, GXPMapBase):
         resource_manager.set_thumbnail(self.uuid, instance=self, overwrite=False)
 
         if dataset_names != {lyr.alternate for lyr in self.local_datasets}:
-            map_changed_signal.send_robust(sender=self, what_changed='layers')
+            map_changed_signal.send_robust(sender=self, what_changed='datasets')
 
         return template_name
 
@@ -356,7 +356,7 @@ class Map(ResourceBase, GXPMapBase):
             lg_name = f'{slugify(self.title)}_{self.id}'
             try:
                 return {
-                    'catalog': gs_catalog.get_datasetgroup(lg_name),
+                    'catalog': gs_catalog.get_layergroup(lg_name),
                     'ows': ogc_server_settings.ows
                 }
             except Exception:
@@ -601,4 +601,4 @@ class MapLayer(models.Model, GXPLayerBase):
         ordering = ["stack_order"]
 
     def __str__(self):
-        return f'{self.ows_url}?layers={self.name}'
+        return f'{self.ows_url}?datasets={self.name}'

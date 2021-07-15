@@ -155,7 +155,7 @@ class TestClient(DjangoTestClient):
 
 class MonitoringTestBase(GeoNodeLiveTestSupport):
 
-    type = 'layer'
+    type = 'dataset'
 
     #  loading test thesausuri and initial data
     fixtures = [

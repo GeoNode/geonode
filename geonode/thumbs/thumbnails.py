@@ -223,7 +223,7 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
 
     elif isinstance(instance, Map):
         # if a Map is empty - nothing to do here
-        if not instance.layers:
+        if not instance.datasets:
             logger.debug(f"Thumbnail generation skipped - Map {instance.title} has no defined layers")
             return None
 
@@ -282,7 +282,7 @@ def _datasets_locations(
 
     elif isinstance(instance, Map):
 
-        map_datasets = instance.layers.copy()
+        map_datasets = instance.datasets.copy()
         # ensure correct order of layers in the map (higher stack_order are printed on top of lower)
         map_datasets.sort(key=lambda l: l.stack_order)
 

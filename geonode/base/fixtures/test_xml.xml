@@ -162,11 +162,11 @@
          <gmd:CI_Citation>
            
            <gmd:name>
-             <gco:CharacterString>geonode:test_layer</gco:CharacterString>
+             <gco:CharacterString>geonode:test_dataset</gco:CharacterString>
            </gmd:name>
            
            <gmd:title>
-             <gco:CharacterString>test_layer</gco:CharacterString>
+             <gco:CharacterString>test_dataset</gco:CharacterString>
            </gmd:title>
            <gmd:date>
              <gmd:CI_Date>
@@ -260,7 +260,7 @@
              <gco:CharacterString>/static/geonode/img/missing_thumb.png?v=d498e972</gco:CharacterString>
            </gmd:fileName>
            <gmd:fileDescription>
-             <gco:CharacterString>Thumbnail for 'test_layer'</gco:CharacterString>
+             <gco:CharacterString>Thumbnail for 'test_dataset'</gco:CharacterString>
            </gmd:fileDescription>
            <gmd:fileType>
              <gco:CharacterString>image/png</gco:CharacterString>
@@ -288,7 +288,7 @@
            </gmd:keyword>
            
            <gmd:keyword>
-             <gco:CharacterString>test_layer</gco:CharacterString>
+             <gco:CharacterString>test_dataset</gco:CharacterString>
            </gmd:keyword>
            
            <gmd:type>
@@ -450,7 +450,7 @@
        <gco:Boolean>0</gco:Boolean>
      </gmd:includedWithDataset>
      <gmd:MD_FeatureCatalogueDescription>
-       <gmd:featureCatalogueCitation uuidref="7cfbc42c-efa7-431c-8daa-1399dff4cd19" xlink:href="http://localhost:8000/datasets/geonode_data:geonode:test_layer/feature_catalogue"/>
+       <gmd:featureCatalogueCitation uuidref="7cfbc42c-efa7-431c-8daa-1399dff4cd19" xlink:href="http://localhost:8000/datasets/geonode_data:geonode:test_dataset/feature_catalogue"/>
      </gmd:MD_FeatureCatalogueDescription>
      
    </gmd:contentInfo>
@@ -461,13 +461,13 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                   <gmd:URL>http://localhost:8000/datasets/geonode_data:geonode:test_layer</gmd:URL>
+                   <gmd:URL>http://localhost:8000/datasets/geonode_data:geonode:test_dataset</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
                </gmd:protocol>
                <gmd:description>
-                 <gco:CharacterString>Online link to the 'test_layer' description on GeoNode</gco:CharacterString>
+                 <gco:CharacterString>Online link to the 'test_dataset' description on GeoNode</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -481,10 +481,10 @@
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.zip</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.zip</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (Original Dataset Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (Original Dataset Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -492,16 +492,16 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetMap&amp;layers=geonode%3Atest_layer&amp;format=image%2Fjpeg&amp;height=550&amp;width=550&amp;srs=EPSG%3A4326&amp;bbox=-180.0000000%2C-90.0000000%2C180.0000000%2C90.0000000</gmd:URL>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetMap&amp;layers=geonode%3Atest_dataset&amp;format=image%2Fjpeg&amp;height=550&amp;width=550&amp;srs=EPSG%3A4326&amp;bbox=-180.0000000%2C-90.0000000%2C180.0000000%2C90.0000000</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.jpg</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.jpg</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (JPEG Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (JPEG Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -509,16 +509,16 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetMap&amp;layers=geonode%3Atest_layer&amp;format=application%2Fpdf&amp;height=550&amp;width=550&amp;srs=EPSG%3A4326&amp;bbox=-180.0000000%2C-90.0000000%2C180.0000000%2C90.0000000</gmd:URL>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetMap&amp;layers=geonode%3Atest_dataset&amp;format=application%2Fpdf&amp;height=550&amp;width=550&amp;srs=EPSG%3A4326&amp;bbox=-180.0000000%2C-90.0000000%2C180.0000000%2C90.0000000</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.pdf</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.pdf</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (PDF Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (PDF Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -526,16 +526,16 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetMap&amp;layers=geonode%3Atest_layer&amp;format=image%2Fpng&amp;height=550&amp;width=550&amp;srs=EPSG%3A4326&amp;bbox=-180.0000000%2C-90.0000000%2C180.0000000%2C90.0000000</gmd:URL>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetMap&amp;layers=geonode%3Atest_dataset&amp;format=image%2Fpng&amp;height=550&amp;width=550&amp;srs=EPSG%3A4326&amp;bbox=-180.0000000%2C-90.0000000%2C180.0000000%2C90.0000000</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.png</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.png</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (PNG Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (PNG Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -543,16 +543,16 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_layer&amp;outputFormat=SHAPE-ZIP&amp;srs=EPSG%3A4326&amp;format_options=charset%3AUTF-8</gmd:URL>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_dataset&amp;outputFormat=SHAPE-ZIP&amp;srs=EPSG%3A4326&amp;format_options=charset%3AUTF-8</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.zip</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.zip</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (Zipped Shapefile Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (Zipped Shapefile Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -560,16 +560,16 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_layer&amp;outputFormat=gml2&amp;srs=EPSG%3A4326</gmd:URL>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_dataset&amp;outputFormat=gml2&amp;srs=EPSG%3A4326</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.gml</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.gml</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (GML 2.0 Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (GML 2.0 Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -577,16 +577,16 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_layer&amp;outputFormat=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&amp;srs=EPSG%3A4326</gmd:URL>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_dataset&amp;outputFormat=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&amp;srs=EPSG%3A4326</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.gml</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.gml</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (GML 3.1.1 Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (GML 3.1.1 Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -594,16 +594,16 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_layer&amp;outputFormat=csv&amp;srs=EPSG%3A4326</gmd:URL>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_dataset&amp;outputFormat=csv&amp;srs=EPSG%3A4326</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.csv</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.csv</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (CSV Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (CSV Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -611,16 +611,16 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_layer&amp;outputFormat=excel&amp;srs=EPSG%3A4326</gmd:URL>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_dataset&amp;outputFormat=excel&amp;srs=EPSG%3A4326</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.excel</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.excel</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (Excel Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (Excel Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -628,16 +628,16 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_layer&amp;outputFormat=json&amp;srs=EPSG%3A4326&amp;srsName=EPSG%3A4326</gmd:URL>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typename=geonode%3Atest_dataset&amp;outputFormat=json&amp;srs=EPSG%3A4326&amp;srsName=EPSG%3A4326</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.json</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.json</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (GeoJSON Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (GeoJSON Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -645,16 +645,16 @@
            <gmd:onLine>
              <gmd:CI_OnlineResource>
                <gmd:linkage>
-                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=geonode:test_layer&amp;STYLE=point&amp;legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on</gmd:URL>
+                 <gmd:URL>http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&amp;format=image/png&amp;WIDTH=20&amp;HEIGHT=20&amp;LAYER=geonode:test_dataset&amp;STYLE=point&amp;legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on</gmd:URL>
                </gmd:linkage>
                <gmd:protocol>
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.png</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.png</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (Legend Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (Legend Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -668,10 +668,10 @@
                  <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>test_layer.png</gco:CharacterString>
+                 <gco:CharacterString>test_dataset.png</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>test_layer (Thumbnail Format)</gco:CharacterString>
+                 <gco:CharacterString>test_dataset (Thumbnail Format)</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -686,10 +686,10 @@
                  <gco:CharacterString>OGC:WMS</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>geonode:test_layer</gco:CharacterString>
+                 <gco:CharacterString>geonode:test_dataset</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>geonode Service - Provides Layer: test_layer</gco:CharacterString>
+                 <gco:CharacterString>geonode Service - Provides Layer: test_dataset</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>
@@ -703,10 +703,10 @@
                  <gco:CharacterString>OGC:WFS</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>geonode:test_layer</gco:CharacterString>
+                 <gco:CharacterString>geonode:test_dataset</gco:CharacterString>
                </gmd:name>
                <gmd:description>
-                 <gco:CharacterString>geonode Service - Provides Layer: test_layer</gco:CharacterString>
+                 <gco:CharacterString>geonode Service - Provides Layer: test_dataset</gco:CharacterString>
                </gmd:description>
              </gmd:CI_OnlineResource>
            </gmd:onLine>

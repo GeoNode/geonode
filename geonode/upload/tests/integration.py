@@ -110,7 +110,7 @@ def get_wms(version='1.1.1', type_name=None, username=None, password=None):
 
 class UploaderBase(GeoNodeBaseTestSupport):
 
-    type = 'layer'
+    type = 'dataset'
 
     @classmethod
     def setUpClass(cls):

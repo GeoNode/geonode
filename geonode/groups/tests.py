@@ -821,7 +821,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(200, response.status_code)
         logger.error(response.content)
         self.assertContains(response,
-                            'Layers',
+                            'Datasets',
                             count=1,
                             status_code=200,
                             msg_prefix='',
@@ -850,26 +850,26 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                             status_code=200,
                             msg_prefix='',
                             html=False)
-        layer = create_single_dataset('single_point.shp')
+        dataset = create_single_dataset('single_point.shp')
         try:
             # Add test to test perms being sent to the front end.
-            layer.set_default_permissions()
-            perms_info = layer.get_all_level_info()
+            dataset.set_default_permissions()
+            perms_info = dataset.get_all_level_info()
 
             # Ensure there is only one group 'anonymous' by default
             self.assertEqual(len(perms_info['groups'].keys()), 1)
 
-            # Add the foo group to the layer object groups
-            layer.set_permissions({'groups': {'bar': ['view_resourcebase']}})
+            # Add the foo group to the dataset object groups
+            dataset.set_permissions({'groups': {'bar': ['view_resourcebase']}})
 
-            perms_info = _perms_info_json(layer)
+            perms_info = _perms_info_json(dataset)
             # Ensure foo is in the perms_info output
             self.assertCountEqual(
                 json.loads(perms_info)['groups'], {
                     'bar': ['view_resourcebase']})
 
-            layer.group = self.bar.group
-            layer.save()
+            dataset.group = self.bar.group
+            dataset.save()
 
             response = self.client.get("/groups/group/bar/activity/")
             self.assertEqual(200, response.status_code)
@@ -889,9 +889,9 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                 msg_prefix='',
                 html=False)
         finally:
-            layer.set_default_permissions()
-            layer.group = None
-            layer.save()
+            dataset.set_default_permissions()
+            dataset.group = None
+            dataset.save()
 
     """
     Group Categories tests
