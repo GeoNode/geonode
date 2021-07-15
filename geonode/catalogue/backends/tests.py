@@ -10,8 +10,8 @@ from django.conf import settings
 
 pycsw_settings = settings.PYCSW.copy()
 pycsw_settings_all = settings.PYCSW.copy()
-pycsw_settings['FILTER'] = {'resource_type__in': ['layer', 'map']}
-pycsw_settings_all['FILTER'] = {'resource_type__in': ['layer', 'map', 'document']}
+pycsw_settings['FILTER'] = {'resource_type__in': ['dataset', 'map']}
+pycsw_settings_all['FILTER'] = {'resource_type__in': ['dataset', 'map', 'document']}
 
 
 class TestGeoNodeRepository(TestCase):
