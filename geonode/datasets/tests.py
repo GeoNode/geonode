@@ -287,7 +287,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             custom_attributes["propertyNames"]["place_name"],
             "Place Name")
 
-        attributes = Attribute.objects.filter(layer=lyr)
+        attributes = Attribute.objects.filter(dataset=lyr)
         for _att in attributes:
             self.assertEqual(_att.featureinfo_type, 'type_property')
 

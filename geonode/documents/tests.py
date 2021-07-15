@@ -681,7 +681,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
     def setUp(self):
         create_models(b'document')
         create_models(b'map')
-        create_models(b'layer')
+        create_models(b'dataset')
 
         self.test_file = io.BytesIO(
             b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'

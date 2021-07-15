@@ -1477,7 +1477,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_get_visible_resources_should_return_updated_resource_with_metadata_only_false(self):
         # Updating the layer with metadata only True to verify that the filter works
-        x = Dataset.objects.get(title='layer metadata true')
+        x = Dataset.objects.get(title='dataset metadata true')
         x.metadata_only = False
         x.save()
         layers = Dataset.objects.all()

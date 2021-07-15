@@ -1,6 +1,6 @@
 [
    {
-      "model":"layers.layer",
+      "model":"datasets.dataset",
       "pk":1001,
       "fields":{
          "title_en":"theaters_nyc",
@@ -42,7 +42,7 @@
       }
    },
    {
-      "model":"layers.layer",
+      "model":"datasets.dataset",
       "pk":1005,
       "fields":{
          "title_en":"Meteorite_Landings_from_NASA_Open_Data_Portal1",
@@ -84,7 +84,7 @@
       }
    },
    {
-      "model":"layers.layer",
+      "model":"datasets.dataset",
       "pk":1008,
       "fields":{
          "title_en":"DBG - Risorse minerarie",

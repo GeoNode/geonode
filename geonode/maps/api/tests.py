@@ -41,7 +41,7 @@ class MapsApiTests(APITestCase):
     def setUp(self):
         create_models(b'document')
         create_models(b'map')
-        create_models(b'layer')
+        create_models(b'dataset')
         first = Map.objects.first()
         first.blob = DUMMY_MAPDATA
         first.save()

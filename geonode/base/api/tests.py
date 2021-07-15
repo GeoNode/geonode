@@ -64,7 +64,7 @@ class BaseApiTests(APITestCase):
     def setUp(self):
         create_models(b'document')
         create_models(b'map')
-        create_models(b'layer')
+        create_models(b'dataset')
 
     def test_gropus_list(self):
         """
@@ -321,7 +321,7 @@ class BaseApiTests(APITestCase):
 
         # Filter by resource_type == layer and title like 'common morx'
         response = self.client.get(
-            f"{url}?filter{{resource_type}}=layer&filter{{title.icontains}}=common morx", format='json')
+            f"{url}?filter{{resource_type}}=dataset&filter{{title.icontains}}=common morx", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 1)
@@ -521,7 +521,7 @@ class BaseApiTests(APITestCase):
         r_type_names = [item['name'] for item in response.data['resource_types']]
         self.assertEqual(response.status_code, 200)
         self.assertTrue('resource_types' in response.data)
-        self.assertTrue('layer' in r_type_names)
+        self.assertTrue('dataset' in r_type_names)
         self.assertTrue('map' in r_type_names)
         self.assertTrue('document' in r_type_names)
         self.assertFalse('service' in r_type_names)
@@ -530,7 +530,7 @@ class BaseApiTests(APITestCase):
         """
         Ensure we get user's favorite resources.
         """
-        layer = Dataset.objects.first()
+        dataset = Dataset.objects.first()
         url = urljoin(f"{reverse('base-resources-list')}/", 'favorites/')
         # Anonymous
         response = self.client.get(url, format='json')
@@ -538,7 +538,7 @@ class BaseApiTests(APITestCase):
         # Authenticated user
         bobby = get_user_model().objects.get(username='bobby')
         self.assertTrue(self.client.login(username='bobby', password='bob'))
-        favorite = Favorite.objects.create_favorite(layer, bobby)
+        favorite = Favorite.objects.create_favorite(dataset, bobby)
         response = self.client.get(url, format='json')
         self.assertEqual(response.data['total'], 1)
         self.assertEqual(response.status_code, 200)
@@ -549,8 +549,8 @@ class BaseApiTests(APITestCase):
         """
         Ensure we can add and remove resources to user's favorite.
         """
-        layer = get_resources_with_perms(get_user_model().objects.get(pk=-1)).first()
-        url = urljoin(f"{reverse('base-resources-list')}/", f"{layer.pk}/favorite/")
+        dataset = get_resources_with_perms(get_user_model().objects.get(pk=-1)).first()
+        url = urljoin(f"{reverse('base-resources-list')}/", f"{dataset.pk}/favorite/")
         # Anonymous
         response = self.client.post(url, format='json')
         self.assertEqual(response.status_code, 403)
@@ -595,8 +595,8 @@ class BaseApiTests(APITestCase):
         url = reverse('base-resources-list')
         # Admin
         admin = get_user_model().objects.get(username='admin')
-        layer = Dataset.objects.first()
-        Favorite.objects.create_favorite(layer, admin)
+        dataset = Dataset.objects.first()
+        Favorite.objects.create_favorite(dataset, admin)
 
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
@@ -679,7 +679,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(f"{url}?type=geoapp", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 0)
-        response = self.client.get(f"{url}?type=layer&title__icontains=CA", format='json')
+        response = self.client.get(f"{url}?type=dataset&title__icontains=CA", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 1)
         # response has link to the response

@@ -184,7 +184,7 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
             field = attribute[0]
             ftype = attribute[1]
             if field:
-                la = Attribute.objects.create(layer=_l, attribute=field)
+                la = Attribute.objects.create(dataset=_l, attribute=field)
                 la.visible = ftype.find("gml:") != 0
                 la.attribute_type = ftype
                 la.description = None

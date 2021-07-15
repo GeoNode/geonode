@@ -84,7 +84,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             "resource_base.json",
             "service.json",
             "style.json",
-            "layer.json",
+            "dataset.json",
             "map.json",
             "map_dataset.json",
         ]

@@ -24,7 +24,7 @@ from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedFiel
 
 from geonode.upload.models import Upload
 from geonode.base.utils import build_absolute_uri
-from geonode.datasets.api.serializers import LayerSerializer
+from geonode.datasets.api.serializers import DatasetSerializer
 from geonode.base.api.serializers import BaseDynamicModelSerializer
 
 import logging
@@ -207,7 +207,7 @@ class UploadSerializer(BaseDynamicModelSerializer):
         if 'request' in self.context and \
                 self.context['request'].query_params.get('full'):
             self.fields['layer'] = DynamicRelationField(
-                LayerSerializer,
+                DatasetSerializer,
                 embed=True,
                 many=False,
                 read_only=True)

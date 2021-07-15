@@ -59,6 +59,7 @@ class Command(BaseCommand):
             username = options.get('username')
 
         all_datasets = Dataset.objects.all().order_by('name')
+
         if filter:
             all_datasets = all_datasets.filter(name__icontains=filter)
         if username:

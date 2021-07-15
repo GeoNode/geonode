@@ -41,7 +41,7 @@ class LayersApiTests(APITestCase):
     def setUp(self):
         create_models(b'document')
         create_models(b'map')
-        create_models(b'layer')
+        create_models(b'dataset')
 
     def test_datasets(self):
         """

@@ -33,8 +33,8 @@ from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.datasets.models import Dataset
 
-from .serializers import LayerSerializer, LayerListSerializer
-from .permissions import LayerPermissionsFilter
+from .serializers import DatasetSerializer, DatasetListSerializer
+from .permissions import DatasetPermissionsFilter
 
 import logging
 import ast
@@ -50,16 +50,16 @@ class DatasetViewSet(DynamicModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
-        ExtentFilter, LayerPermissionsFilter
+        ExtentFilter, DatasetPermissionsFilter
     ]
     queryset = Dataset.objects.all().order_by('-date')
-    serializer_class = LayerSerializer
+    serializer_class = DatasetSerializer
     pagination_class = GeoNodeApiPagination
 
     def get_serializer_class(self):
         if self.action == 'list':
-            return LayerListSerializer
-        return LayerSerializer
+            return DatasetListSerializer
+        return DatasetSerializer
 
     @extend_schema(
         methods=["post"], responses={200}, description="API endpoint allowing to set the thumbnail url for an existing dataset."

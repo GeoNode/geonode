@@ -125,7 +125,7 @@ def create_dataset_data(object_id=None, owner=None):
 
     for attr in attributes:
         Attribute.objects.update_or_create(
-            layer=layer,
+            dataset=layer,
             attribute=attr['attribute'],
             attribute_label=attr['attribute_label'],
             attribute_type=attr['attribute_type'],

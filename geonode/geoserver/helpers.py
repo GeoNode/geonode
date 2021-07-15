@@ -918,17 +918,17 @@ def set_attributes(
 
     # Add new layer attributes if they doesn't exist already
     if attribute_map:
-        iter = len(Attribute.objects.filter(layer=layer)) + 1
+        iter = len(Attribute.objects.filter(dataset=layer)) + 1
         for attribute in attribute_map:
             field, ftype, description, label, display_order = attribute
             if field:
-                _gs_attrs = Attribute.objects.filter(layer=layer, attribute=field)
+                _gs_attrs = Attribute.objects.filter(dataset=layer, attribute=field)
                 if _gs_attrs.count() == 1:
                     la = _gs_attrs.get()
                 else:
                     if _gs_attrs.count() > 0:
                         _gs_attrs.delete()
-                    la = Attribute.objects.create(layer=layer, attribute=field)
+                    la = Attribute.objects.create(dataset=layer, attribute=field)
                     la.visible = ftype.find("gml:") != 0
                     la.attribute_type = ftype
                     la.description = description
@@ -1052,7 +1052,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     for attribute in attribute_map:
         field, ftype = attribute
         if field is not None:
-            if Attribute.objects.filter(layer=layer, attribute=field).exists():
+            if Attribute.objects.filter(dataset=layer, attribute=field).exists():
                 continue
             elif is_dataset_attribute_aggregable(
                     layer.subtype,

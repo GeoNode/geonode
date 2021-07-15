@@ -71,7 +71,7 @@ class AttributeSerializer(DynamicModelSerializer):
     attribute = serializers.CharField(read_only=True)
 
 
-class LayerSerializer(ResourceBaseSerializer):
+class DatasetSerializer(ResourceBaseSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
@@ -79,7 +79,7 @@ class LayerSerializer(ResourceBaseSerializer):
 
     class Meta:
         model = Dataset
-        name = 'layer'
+        name = 'dataset'
         view_name = 'datasets-list'
         fields = (
             'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
@@ -99,8 +99,8 @@ class LayerSerializer(ResourceBaseSerializer):
     attribute_set = DynamicRelationField(AttributeSerializer, embed=True, many=True, read_only=True)
 
 
-class LayerListSerializer(LayerSerializer):
-    class Meta(LayerSerializer.Meta):
+class DatasetListSerializer(DatasetSerializer):
+    class Meta(DatasetSerializer.Meta):
         fields = (
             'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',

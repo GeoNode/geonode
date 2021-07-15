@@ -133,7 +133,7 @@ def create_fixtures():
         ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], next_date(), ('populartag',), location),
         ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], next_date(), ('populartag',), biota),
         ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], next_date(), ('populartag',), biota),
-        ('layer metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [0, 22, 0, 22], next_date(), ('populartag',), farming)
+        ('dataset metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [0, 22, 0, 22], next_date(), ('populartag',), farming)
     ]
 
     document_data = [
@@ -239,12 +239,12 @@ def create_models(type=None, integration=False):
                         m.keywords.add(kw)
                         m.save()
 
-            if not type or ensure_string(type) == 'layer':
+            if not type or ensure_string(type) == 'dataset':
                 for ld, owner, subtype in zip(dataset_data, cycle(users), cycle(('raster', 'vector'))):
                     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                     end = start + timedelta(days=365)
-                    logger.debug(f"[SetUp] Add layer {title}")
-                    layer = Dataset(
+                    logger.debug(f"[SetUp] Add dataset {title}")
+                    dataset = Dataset(
                         title=title,
                         abstract=abstract,
                         name=name,
@@ -259,16 +259,16 @@ def create_models(type=None, integration=False):
                         date=start,
                         subtype=subtype,
                         category=category,
-                        metadata_only=title == 'layer metadata true'
+                        metadata_only=title == 'dataset metadata true'
                     )
-                    layer.save()
-                    layer.set_default_permissions()
-                    layer.clear_dirty_state()
-                    layer.set_processing_state(enumerations.STATE_PROCESSED)
-                    obj_ids.append(layer.id)
+                    dataset.save()
+                    dataset.set_default_permissions()
+                    dataset.clear_dirty_state()
+                    dataset.set_processing_state(enumerations.STATE_PROCESSED)
+                    obj_ids.append(dataset.id)
                     for kw in kws:
-                        layer.keywords.add(kw)
-                        layer.save()
+                        dataset.keywords.add(kw)
+                        dataset.save()
     return obj_ids
 
 
@@ -277,7 +277,7 @@ def remove_models(obj_ids, type=None, integration=False):
     with DisableDjangoSignals(skip=integration):
         if not type:
             remove_models(None, type=b'map')
-            remove_models(None, type=b'layer')
+            remove_models(None, type=b'dataset')
             remove_models(None, type=b'document')
         if type == 'map':
             try:
@@ -287,12 +287,12 @@ def remove_models(obj_ids, type=None, integration=False):
                     m.delete()
             except Exception:
                 pass
-        elif type == 'layer':
+        elif type == 'dataset':
             try:
                 l_ids = obj_ids or [lyr.id for lyr in Dataset.objects.all()]
                 for id in l_ids:
-                    layer = Dataset.objects.get(pk=id)
-                    layer.delete()
+                    dataset = Dataset.objects.get(pk=id)
+                    dataset.delete()
             except Exception:
                 pass
         elif type == 'document':
@@ -333,7 +333,7 @@ def create_single_dataset(name):
     ll = (name, 'lorem ipsum', name, f'geonode:{name}', [
         0, 22, 0, 22], test_datetime, ('populartag',), "farming")
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ll
-    layer = Dataset(
+    dataset = Dataset(
         title=title,
         abstract=abstract,
         name=name,
@@ -347,14 +347,14 @@ def create_single_dataset(name):
         temporal_extent_end=test_datetime,
         date=start,
         subtype="vector",
-        resource_type="layer",
+        resource_type="dataset",
         typename=f"geonode:{title}"
     )
-    layer.save()
-    layer.set_default_permissions()
-    layer.clear_dirty_state()
-    layer.set_processing_state(enumerations.STATE_PROCESSED)
-    return layer
+    dataset.save()
+    dataset.set_default_permissions()
+    dataset.clear_dirty_state()
+    dataset.set_processing_state(enumerations.STATE_PROCESSED)
+    return dataset
 
 
 def create_single_map(name):
