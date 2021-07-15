@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 class HelperTest(GeoNodeBaseTestSupport):
 
-    type = 'layer'
+    type = 'dataset'
 
     fixtures = [
         'initial_data.json',
