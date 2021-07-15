@@ -9,15 +9,14 @@ def alter_permissions(apps, schema_editor):
     try:
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
-        dataset_ctype = ContentType.objects.filter(app_label='layers', model='layer')
-        if dataset_ctype.exists():
-            perms = Permission.objects.filter(content_type=dataset_ctype)
+        layer_ctype = ContentType.objects.filter(app_label='layers', model='layer')
+        dataset_ctype = ContentType.objects.filter(app_label='datasets', model='dataset')
+        if layer_ctype.exists():
+            perms = Permission.objects.filter(content_type=layer_ctype.first())
             for perm in perms:
-                perm.code_name.replace('layer', 'dataset')
+                perm.codename = perm.codename.replace('layer', 'dataset')
+                perm.content_type=dataset_ctype.first()
                 perm.save()
-            dataset_ctype.app_label='datasets'
-            dataset_ctype.model='dataset'
-            dataset_ctype.save()
     except Exception as e:
         raise e
 
