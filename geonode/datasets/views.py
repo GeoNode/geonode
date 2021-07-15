@@ -142,8 +142,7 @@ def log_snippet(log_file):
         return f.read()
 
 
-def _resolve_dataset(request, alternate, permission='base.view_resourcebase',
-                   msg=_PERMISSION_MSG_GENERIC, **kwargs):
+def _resolve_dataset(request, alternate, permission='base.view_resourcebase', msg=_PERMISSION_MSG_GENERIC, **kwargs):
     """
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
@@ -693,10 +692,8 @@ def dataset_detail(request, layername, template='datasets/dataset_detail.html'):
             context_dict['groups'] = [group for group in request.user.group_list_all()]
 
     register_event(request, 'view', layer)
-    context_dict['map_datasets'] = [map_dataset for map_dataset in layer.maps() if
-                                  request.user.has_perm('view_resourcebase', map_dataset.map.get_self_resource())]
-    return TemplateResponse(
-        request, template, context=context_dict)
+    context_dict['map_datasets'] = [map_dataset for map_dataset in layer.maps() if request.user.has_perm('view_resourcebase', map_dataset.map.get_self_resource())]
+    return TemplateResponse(request, template, context=context_dict)
 
 
 # Loads the data using the OWS lib when the "Do you want to filter it"

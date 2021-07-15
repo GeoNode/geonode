@@ -766,9 +766,7 @@ def get_capabilities(request, layerid=None, user=None,
                 access_token = None
             try:
                 workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
-                layercap = get_dataset_capabilities(layer,
-                                                  access_token=access_token,
-                                                  tolerant=tolerant)
+                layercap = get_dataset_capabilities(layer, access_token=access_token, tolerant=tolerant)
                 if layercap is not None:  # 1st one, seed with real GetCapabilities doc
                     try:
                         namespaces = {'wms': 'http://www.opengis.net/wms',

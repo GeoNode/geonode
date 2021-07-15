@@ -30,13 +30,7 @@ from geonode.geoserver.helpers import (
 )
 
 
-def sync_geonode_datasets(ignore_errors,
-                        filter,
-                        username,
-                        removeduplicates,
-                        updatepermissions,
-                        updatethumbnails,
-                        updateattributes):
+def sync_geonode_datasets(ignore_errors, filter, username, removeduplicates, updatepermissions, updatethumbnails, updateattributes):
     layers = Dataset.objects.all().order_by('name')
     if filter:
         layers = layers.filter(name__icontains=filter)

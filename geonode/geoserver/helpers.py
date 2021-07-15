@@ -273,9 +273,7 @@ def get_sld_for(gs_catalog, layer):
         gs_dataset = gs_catalog.get_layer(layer.name)
         if gs_dataset.default_style:
             gs_style = gs_dataset.default_style.sld_body
-            set_dataset_style(layer,
-                            layer.alternate,
-                            gs_style)
+            set_dataset_style(layer, layer.alternate, gs_style)
         name = gs_dataset.default_style.name
         _default_style = gs_dataset.default_style
     except Exception as e:
@@ -288,9 +286,7 @@ def get_sld_for(gs_catalog, layer):
             if gs_dataset:
                 if gs_dataset.default_style:
                     gs_style = gs_dataset.default_style.sld_body
-                    set_dataset_style(layer,
-                                    layer.alternate,
-                                    gs_style)
+                    set_dataset_style(layer, layer.alternate, gs_style)
                 name = gs_dataset.default_style.name
                 if name:
                     break
@@ -1128,9 +1124,7 @@ def set_styles(layer, gs_catalog):
                 style_name = os.path.basename(
                     urlparse(style.sld_url).path).split('.')[0]
                 legend_url = get_legend_url(layer, style_name)
-                if dataset_legends.filter(resource=layer.resourcebase_ptr,
-                                        name='Legend',
-                                        url=legend_url).count() < 2:
+                if dataset_legends.filter(resource=layer.resourcebase_ptr, name='Legend', url=legend_url).count() < 2:
                     Link.objects.update_or_create(
                         resource=layer.resourcebase_ptr,
                         name='Legend',

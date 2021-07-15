@@ -469,8 +469,7 @@ def time_step_view(request, upload_session):
         layer = check_import_session_is_valid(
             request, upload_session, import_session)
         if layer:
-            (has_time_dim, dataset_values) = dataset_eligible_for_time_dimension(request,
-                                                                             layer, upload_session=upload_session)
+            (has_time_dim, dataset_values) = dataset_eligible_for_time_dimension(request, layer, upload_session=upload_session)
             if has_time_dim and dataset_values:
                 context = {
                     'time_form': create_time_form(request, upload_session, None),

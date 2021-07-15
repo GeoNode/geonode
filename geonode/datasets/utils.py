@@ -431,9 +431,7 @@ def surrogate_escape_string(input_string, source_character_set):
     return input_string.encode(source_character_set, "surrogateescape").decode("utf-8", "surrogateescape")
 
 
-def set_datasets_permissions(permissions_name, resources_names=None,
-                           users_usernames=None, groups_names=None,
-                           delete_flag=False, verbose=False):
+def set_datasets_permissions(permissions_name, resources_names=None, users_usernames=None, groups_names=None, delete_flag=False, verbose=False):
     # Processing information
     if not resources_names:
         # If resources is None we consider all the existing layer
