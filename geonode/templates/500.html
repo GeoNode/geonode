@@ -196,7 +196,7 @@
               <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
             {% endif %}
             {% if user.is_superuser and not READ_ONLY_MODE %}
-              <li><a href="{% url 'people_profile_add' %}">{% trans "Add User" %}</a></li>
+              <li><a href="{% url 'admin:people_profile_add' %}">{% trans "Add User" %}</a></li>
               <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
           </ul>

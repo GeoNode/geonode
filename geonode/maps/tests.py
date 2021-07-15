@@ -205,7 +205,7 @@ community."
         self.assertEqual(map_obj.abstract, "Abstract2")
         self.assertEqual(map_obj.dataset_set.all().count(), 1)
 
-        for map_dataset in map_obj.layers:
+        for map_dataset in map_obj.datasets:
             self.assertEqual(
                 map_dataset.dataset_title,
                 "base:nic_admin")
@@ -385,7 +385,7 @@ community."
         self.client.get(f"{reverse('add_dataset')}?dataset_name={layer.alternate}&map_id={map_obj.id}")
 
         map_obj = Map.objects.get(id=map_obj.id)
-        for map_dataset in map_obj.layers:
+        for map_dataset in map_obj.datasets:
             dataset_title = map_dataset.dataset_title
             local_link = map_dataset.local_link
             if map_dataset.name == layer.alternate:
@@ -774,7 +774,7 @@ community."
         self.assertEqual(map_obj.zoom, 6)
         self.assertEqual(map_obj.projection, projection)
 
-        for map_dataset in map_obj.layers:
+        for map_dataset in map_obj.datasets:
             if Dataset.objects.filter(alternate=map_dataset.name).exists():
                 cfg = map_dataset.dataset_config()
                 self.assertIsNotNone(cfg["getFeatureInfo"])

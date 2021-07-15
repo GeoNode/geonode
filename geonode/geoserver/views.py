@@ -751,7 +751,7 @@ def get_capabilities(request, layerid=None, user=None,
         map_obj = Map.objects.get(id=mapid)
         cap_name += map_obj.title
         alternates = []
-        for layer in map_obj.layers:
+        for layer in map_obj.datasets:
             if layer.local:
                 alternates.append(layer.name)
         layers = Dataset.objects.filter(alternate__in=alternates)

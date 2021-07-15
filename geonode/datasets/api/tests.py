@@ -30,7 +30,7 @@ from geonode.base.populate_test_data import create_models
 logger = logging.getLogger(__name__)
 
 
-class LayersApiTests(APITestCase):
+class DatasetsApiTests(APITestCase):
 
     fixtures = [
         'initial_data.json',
@@ -65,7 +65,7 @@ class LayersApiTests(APITestCase):
         # Test detail response has attribute_set
         url = urljoin(f"{reverse('datasets-list')}/", f"{Dataset.objects.first().pk}")
         response = self.client.get(url, format='json')
-        self.assertIsNotNone(response.data['datasets'].get('attribute_set'))
+        self.assertIsNotNone(response.data['dataset'].get('attribute_set'))
 
     def test_raw_HTML_stripped_properties(self):
         """

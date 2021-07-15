@@ -562,7 +562,10 @@ class GXPMapBase:
             if cfg is not None:
                 return cfg
 
-        layers = list(self.layers)
+        if hasattr(self, 'layers'):
+            layers = list(self.layers)
+        else:
+            layers = list(self.datasets)
         layers.extend(added_datasets)
 
         server_lookup = {}
