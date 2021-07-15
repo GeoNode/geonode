@@ -549,7 +549,7 @@ SLDS = {
 
 class LayerTests(GeoNodeBaseTestSupport):
 
-    type = 'layer'
+    type = 'dataset'
 
     fixtures = [
         'initial_data.json',

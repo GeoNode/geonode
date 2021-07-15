@@ -65,38 +65,38 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(c)
 
     def test_update_metadata_records(self):
-        layer = Dataset.objects.first()
-        self.assertIsNotNone(layer)
-        layer.abstract = "<p>Test HTML abstract</p>"
-        layer.save()
-        self.assertEqual(layer.abstract, "<p>Test HTML abstract</p>")
-        self.assertEqual(layer.raw_abstract, "Test HTML abstract")
+        dataset = Dataset.objects.first()
+        self.assertIsNotNone(dataset)
+        dataset.abstract = "<p>Test HTML abstract</p>"
+        dataset.save()
+        self.assertEqual(dataset.abstract, "<p>Test HTML abstract</p>")
+        self.assertEqual(dataset.raw_abstract, "Test HTML abstract")
         # refresh catalogue metadata records
-        catalogue_post_save(instance=layer, sender=layer.__class__)
+        catalogue_post_save(instance=dataset, sender=dataset.__class__)
         # get all records
         csw = get_catalogue()
-        record = csw.get_record(layer.uuid)
+        record = csw.get_record(dataset.uuid)
         self.assertIsNotNone(record)
-        self.assertEqual(record.identification.title, layer.title)
-        self.assertEqual(record.identification.abstract, layer.raw_abstract)
+        self.assertEqual(record.identification.title, dataset.title)
+        self.assertEqual(record.identification.abstract, dataset.raw_abstract)
         if len(record.identification.otherconstraints) > 0:
-            self.assertEqual(record.identification.otherconstraints[0], layer.raw_constraints_other)
+            self.assertEqual(record.identification.otherconstraints[0], dataset.raw_constraints_other)
 
     def test_given_a_simple_request_should_return_200(self):
         actual = csw_global_dispatch(self.request)
         self.assertEqual(200, actual.status_code)
 
     def test_given_a_request_for_a_single_dataset_should_return_single_value_in_xml_without_dataset_filter(self):
-        layer = Dataset.objects.first()
-        request = self.__request_factory_single(layer.uuid)
+        dataset = Dataset.objects.first()
+        request = self.__request_factory_single(dataset.uuid)
         response = csw_global_dispatch(request)
         root = ET.fromstring(response.content)
         actual = len(list(root))
         self.assertEqual(1, actual)
 
     def test_given_a_request_for_a_single_dataset_should_return_empty_value_in_xml_with_dataset_filter(self):
-        layer = Dataset.objects.first()
-        request = self.__request_factory_single(layer.uuid)
+        dataset = Dataset.objects.first()
+        request = self.__request_factory_single(dataset.uuid)
         response = csw_global_dispatch(request, self.dataset_filter)
         root = ET.fromstring(response.content)
         actual = len(list(root))
@@ -117,12 +117,12 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         self.assertEqual(2, int(actual))
 
     @staticmethod
-    def dataset_filter(layer):
-        return layer.filter(uuid__startswith="foo_uuid")
+    def dataset_filter(dataset):
+        return dataset.filter(uuid__startswith="foo_uuid")
 
     @staticmethod
-    def dataset_filter_multiple(layer):
-        return layer.filter(Q(title="CA") | Q(title="uniquetitle"))
+    def dataset_filter_multiple(dataset):
+        return dataset.filter(Q(title="CA") | Q(title="uniquetitle"))
 
     @staticmethod
     def __request_factory_single(uuid):

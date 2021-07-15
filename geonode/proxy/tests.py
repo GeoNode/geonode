@@ -131,14 +131,14 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        create_models(type='layer')
+        create_models(type='dataset')
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_download_url_with_not_existing_file(self):
-        layer = Dataset.objects.all().first()
+        dataset = Dataset.objects.all().first()
         self.client.login(username='admin', password='admin')
         # ... all should be good
-        response = self.client.get(reverse('download', args=(layer.id,)))
+        response = self.client.get(reverse('download', args=(dataset.id,)))
         # Espected 404 since there are no files available for this layer
         self.assertEqual(response.status_code, 404)
         content = response.content
@@ -154,29 +154,29 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
     def test_download_url_with_existing_files(self, fopen, fexists):
         fexists.return_value = True
         fopen.return_value = SimpleUploadedFile('foo_file.shp', b'scc')
-        layer = Dataset.objects.all().first()
+        dataset = Dataset.objects.all().first()
 
-        layer.files = [
+        dataset.files = [
             "/tmpe1exb9e9/foo_file.dbf",
             "/tmpe1exb9e9/foo_file.prj",
             "/tmpe1exb9e9/foo_file.shp",
             "/tmpe1exb9e9/foo_file.shx"
         ]
 
-        layer.save()
+        dataset.save()
 
-        layer.refresh_from_db()
+        dataset.refresh_from_db()
 
         upload = Upload.objects.create(
             state='RUNNING',
-            resource=layer
+            resource=dataset
         )
 
         assert upload
 
         self.client.login(username='admin', password='admin')
         # ... all should be good
-        response = self.client.get(reverse('download', args=(layer.id,)))
+        response = self.client.get(reverse('download', args=(dataset.id,)))
         # Espected 404 since there are no files available for this layer
         self.assertEqual(response.status_code, 200)
         self.assertEqual('application/zip', response.headers.get('Content-Type'))
@@ -187,7 +187,7 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        create_models(type='layer')
+        create_models(type='dataset')
         # prepare some WMS endpoints
         q = Link.objects.all()
         for lyr in q[:3]:

@@ -471,9 +471,9 @@ class MonitoringChecksTestCase(MonitoringTestBase):
 
         event_type = EventType.objects.get(name='OWS:WFS')
         resource, _ = MonitoredResource.objects.get_or_create(
-            type='layer', name='test:test')
+            type='dataset', name='test:test')
         resource2, _ = MonitoredResource.objects.get_or_create(
-            type='layer', name='test:test2')
+            type='dataset', name='test:test2')
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         MetricValue.add(self.metric, start_aligned,
@@ -563,9 +563,9 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         self.assertTrue(start_aligned < start < end_aligned)
 
         resource, _ = MonitoredResource.objects.get_or_create(
-            type='layer', name='test:test')
+            type='dataset', name='test:test')
         resource2, _ = MonitoredResource.objects.get_or_create(
-            type='layer', name='test:test2')
+            type='dataset', name='test:test2')
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         MetricValue.add(self.metric, start_aligned, end_aligned, self.service,
@@ -626,7 +626,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         self.assertTrue(start_aligned < start < end_aligned)
 
         resource, _ = MonitoredResource.objects.get_or_create(
-            type='layer', name='test:test')
+            type='dataset', name='test:test')
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
 

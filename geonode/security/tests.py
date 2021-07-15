@@ -134,7 +134,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
         self.bulk_perms_url = reverse('bulk_permissions')
         self.perm_spec = {
             "users": {"admin": ["view_resourcebase"]}, "groups": []}

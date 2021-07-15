@@ -405,10 +405,10 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         # Test the resource filter
         self.assertTrue(
             layer.get_self_resource() in self.bar.resources(
-                resource_type='layer'))
+                resource_type='dataset'))
         self.assertTrue(
             map.get_self_resource() not in self.bar.resources(
-                resource_type='layer'))
+                resource_type='dataset'))
 
         # Revoke permissions on the layer from the self.bar group
         layer.set_permissions("{}")

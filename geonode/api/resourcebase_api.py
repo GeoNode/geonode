@@ -826,7 +826,7 @@ class LayerResource(CommonModelApi):
     class Meta(CommonMetaApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = Dataset.objects.distinct().order_by('-date')
-        resource_name = 'layers'
+        resource_name = 'datasets'
         detail_uri_name = 'id'
         include_resource_uri = True
         allowed_methods = ['get', 'patch']

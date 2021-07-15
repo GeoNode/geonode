@@ -2007,7 +2007,7 @@ json_serializer_k_map = {
     'category': 'base.TopicCategory',
     'spatial_representation_type': 'base.SpatialRepresentationType',
     'group': 'auth.Group',
-    'default_style': 'layers.Style',
+    'default_style': 'datasets.Style',
 }
 
 

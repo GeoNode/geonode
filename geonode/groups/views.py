@@ -154,7 +154,7 @@ class GroupDetailView(ListView):
         context = super().get_context_data(**kwargs)
         context['object'] = self.group
         context['maps'] = self.group.resources(resource_type='map')
-        context['layers'] = self.group.resources(resource_type='layer')
+        context['datasets'] = self.group.resources(resource_type='dataset')
         context['documents'] = self.group.resources(resource_type='document')
         context['is_member'] = self.group.user_is_member(self.request.user)
         context['is_manager'] = self.group.user_is_role(
