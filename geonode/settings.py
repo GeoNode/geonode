@@ -1390,8 +1390,8 @@ DEFAULT_TILE_SIZE = os.environ.get('DEFAULT_TILE_SIZE', 512)
 
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (
-    ast.literal_eval(os.environ.get('DEFAULT_MAP_CENTER_X', 0)),
-    ast.literal_eval(os.environ.get('DEFAULT_MAP_CENTER_Y', 0)))
+    ast.literal_eval(os.environ.get('DEFAULT_MAP_CENTER_X', '0')),
+    ast.literal_eval(os.environ.get('DEFAULT_MAP_CENTER_Y', '0')))
 
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
