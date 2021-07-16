@@ -4852,5 +4852,26 @@
       "fields": {
         "name": "TOPBAR_MENU"
       }
+    },
+    {
+        "model": "base.menuplaceholder",
+        "pk": 2,
+        "fields": {
+            "name": "TOPBAR_MENU_LEFT"
+        }
+    },
+    {
+        "model": "base.menuplaceholder",
+        "pk": 3,
+        "fields": {
+            "name": "TOPBAR_MENU_RIGHT"
+        }
+    },
+    {
+        "model": "base.menuplaceholder",
+        "pk": 4,
+        "fields": {
+            "name": "CARDS_MENU"
+        }
     }
 ]
