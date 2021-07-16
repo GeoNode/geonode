@@ -186,33 +186,6 @@
       </div>
     </section>
     {% endblock datasets %}
-
-      {% block partners %}
-        {% if custom_theme.partners.all %}
-        <section id="partners">
-        <div class="container text-center">
-          {% with partners_title=custom_theme.partners_title|default:"Our partners"|template_trans %}
-          <h2>{% trans partners_title %}</h2>
-          {% endwith %}
-          <div class="row">
-              {% for partner in custom_theme.partners.all %}
-              <div class="col-md-2">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                  {% if partner.logo %}
-                  <div class="partner_logo" style="background-image: url({{partner.logo.url}})">
-                  {% else %}
-                  {{ partner.title|safe }}
-                  {% endif %}
-                  </div>
-                </a>
-              </div>
-              {% endfor %}
-          </div>
-        </div>
-        </section>
-        {% endif %}
-      {% endblock partners %}
-
       {% block cookielawinfo %}
       {% if custom_theme.cookie_law_info_bar_enabled %}
           <div id="cookie-law-info-bar">
