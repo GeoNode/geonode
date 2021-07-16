@@ -819,16 +819,16 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
         response = self.client.get("/groups/group/bar/activity/")
         self.assertEqual(200, response.status_code)
-        logger.error(response.content)
+
         self.assertContains(response,
                             'Datasets',
-                            count=2,
+                            count=3,
                             status_code=200,
                             msg_prefix='',
                             html=False)
         self.assertContains(response,
                             'Maps',
-                            count=5,
+                            count=3,
                             status_code=200,
                             msg_prefix='',
                             html=False)
