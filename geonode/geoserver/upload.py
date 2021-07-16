@@ -47,7 +47,7 @@ def geoserver_dataset_type(filename):
 
 
 def geoserver_upload(
-        layer,
+        dataset,
         base_file,
         user,
         name,
@@ -197,7 +197,7 @@ def geoserver_upload(
             with open(files['sld'], 'rb') as f:
                 sld = f.read()
         else:
-            sld = get_sld_for(cat, layer)
+            sld = get_sld_for(cat, dataset)
     except Exception as e:
         logger.exception(e)
 

@@ -1651,8 +1651,8 @@ def sync_instance_with_geoserver(
         raise
 
     if isinstance(instance, ResourceBase):
-        if hasattr(instance, 'layer'):
-            instance = instance.layer
+        if hasattr(instance, 'dataset'):
+            instance = instance.dataset
         else:
             return instance
 
@@ -1704,7 +1704,7 @@ def sync_instance_with_geoserver(
         metadata_links.append((link.mime, link.name, link.url))
 
     if gs_resource:
-        logger.debug(f"Found geoserver resource for this layer: {instance.name}")
+        logger.debug(f"Found geoserver resource for this dataset: {instance.name}")
         gs_resource.metadata_links = metadata_links
         instance.gs_resource = gs_resource
 
@@ -1835,14 +1835,14 @@ def sync_instance_with_geoserver(
         except Exception as e:
             logger.exception(e)
 
-        # Refreshing layer links
+        # Refreshing dataset links
         logger.debug(f"... Creating Default Resource Links for Dataset {instance.title}")
         try:
             set_resource_default_links(instance, instance, prune=True)
         except Exception as e:
             logger.exception(e)
 
-        # Save layer styles
+        # Save dataset styles
         logger.debug(f"... Refresh Legend links for Dataset {instance.title}")
         try:
             set_styles(instance, gs_catalog)
