@@ -488,14 +488,14 @@ def set_geofence_all(instance):
             resource.set_dirty_state()
 
 
-def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms=None):
+def sync_geofence_with_guardian(dataset, perms, user=None, group=None, group_perms=None):
     """
     Sync Guardian permissions to GeoFence.
     """
-    _dataset_name = layer.name if layer and hasattr(layer, 'name') else layer.alternate.split(":")[0]
-    _dataset_workspace = get_dataset_workspace(layer)
+    _dataset_name = dataset.name if dataset and hasattr(dataset, 'name') else dataset.alternate.split(":")[0]
+    _dataset_workspace = get_dataset_workspace(dataset)
     # Create new rule-set
-    gf_services = _get_gf_services(layer, perms)
+    gf_services = _get_gf_services(dataset, perms)
 
     gf_requests = {}
     if 'change_dataset_data' not in perms:
@@ -519,7 +519,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     users_geolimits = None
     groups_geolimits = None
     anonymous_geolimits = None
-    _group, _user, _disable_cache, users_geolimits, groups_geolimits, anonymous_geolimits = get_user_geolimits(layer, user, group, gf_services)
+    _group, _user, _disable_cache, users_geolimits, groups_geolimits, anonymous_geolimits = get_user_geolimits(dataset, user, group, gf_services)
 
     if _disable_cache:
         gf_services_limits_first = {"*": gf_services.pop('*')}
@@ -527,49 +527,49 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
         gf_services = gf_services_limits_first
 
     for service, allowed in gf_services.items():
-        if layer and _dataset_name and allowed:
+        if dataset and _dataset_name and allowed:
             if _user:
-                logger.debug(f"Adding 'user' to geofence the rule: {layer} {service} {_user}")
+                logger.debug(f"Adding 'user' to geofence the rule: {dataset} {service} {_user}")
                 _wkt = None
                 if users_geolimits and users_geolimits.count():
                     _wkt = users_geolimits.last().wkt
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(layer, _dataset_name, _dataset_workspace,
+                        _update_geofence_rule(dataset, _dataset_name, _dataset_workspace,
                                               service, request=request, user=_user, allow=enabled)
-                _update_geofence_rule(layer, _dataset_name, _dataset_workspace, service, user=_user, geo_limit=_wkt)
+                _update_geofence_rule(dataset, _dataset_name, _dataset_workspace, service, user=_user, geo_limit=_wkt)
             elif not _group:
-                logger.debug(f"Adding to geofence the rule: {layer} {service} *")
+                logger.debug(f"Adding to geofence the rule: {dataset} {service} *")
                 _wkt = None
                 if anonymous_geolimits and anonymous_geolimits.count():
                     _wkt = anonymous_geolimits.last().wkt
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(layer, _dataset_name, _dataset_workspace,
+                        _update_geofence_rule(dataset, _dataset_name, _dataset_workspace,
                                               service, request=request, user=_user, allow=enabled)
-                _update_geofence_rule(layer, _dataset_name, _dataset_workspace, service, geo_limit=_wkt)
+                _update_geofence_rule(dataset, _dataset_name, _dataset_workspace, service, geo_limit=_wkt)
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(layer, _dataset_name, _dataset_workspace,
+                        _update_geofence_rule(dataset, _dataset_name, _dataset_workspace,
                                               service, request=request, user=_user, allow=enabled)
             if _group:
-                logger.debug(f"Adding 'group' to geofence the rule: {layer} {service} {_group}")
+                logger.debug(f"Adding 'group' to geofence the rule: {dataset} {service} {_group}")
                 _wkt = None
                 if groups_geolimits and groups_geolimits.count():
                     _wkt = groups_geolimits.last().wkt
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(layer, _dataset_name, _dataset_workspace,
+                        _update_geofence_rule(dataset, _dataset_name, _dataset_workspace,
                                               service, request=request, group=_group, allow=enabled)
-                _update_geofence_rule(layer, _dataset_name, _dataset_workspace, service, group=_group, geo_limit=_wkt)
+                _update_geofence_rule(dataset, _dataset_name, _dataset_workspace, service, group=_group, geo_limit=_wkt)
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(layer, _dataset_name, _dataset_workspace,
+                        _update_geofence_rule(dataset, _dataset_name, _dataset_workspace,
                                               service, request=request, group=_group, allow=enabled)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         set_geofence_invalidate_cache()
     else:
-        layer.set_dirty_state()
+        dataset.set_dirty_state()
 
 
 def sync_resources_with_guardian(resource=None):
@@ -586,7 +586,7 @@ def sync_resources_with_guardian(resource=None):
     if dirty_resources and dirty_resources.count() > 0:
         logger.debug(" --------------------------- synching with guardian!")
         for r in dirty_resources:
-            if r.polymorphic_ctype.name == 'layer':
+            if r.polymorphic_ctype.name == 'dataset':
                 layer = None
                 try:
                     purge_geofence_dataset_rules(r)

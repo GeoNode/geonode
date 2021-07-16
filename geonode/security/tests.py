@@ -452,16 +452,16 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             },
             'groups': []
         }
-        layer = Dataset.objects.filter(subtype='vector').first()
-        layer.set_permissions(perm_spec)
+        dataset = Dataset.objects.filter(subtype='vector').first()
+        dataset.set_permissions(perm_spec)
         # Test user has permission with read_only=False
-        self.assertTrue(layer.user_can(bobby, 'change_dataset_style'))
+        self.assertTrue(dataset.user_can(bobby, 'change_dataset_style'))
         # Test with edit permission and read_only=True
         self.config.read_only = True
         self.config.save()
-        self.assertFalse(layer.user_can(bobby, 'change_dataset_style'))
+        self.assertFalse(dataset.user_can(bobby, 'change_dataset_style'))
         # Test with view permission and read_only=True
-        self.assertTrue(layer.user_can(bobby, 'view_resourcebase'))
+        self.assertTrue(dataset.user_can(bobby, 'view_resourcebase'))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):

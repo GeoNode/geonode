@@ -143,7 +143,7 @@ def set_owner_permissions(resource, members=None):
                     assign_perm(perm, user, resource.get_self_resource())
 
         # Set the GeoFence Owner Rule
-        if resource.polymorphic_ctype.name == 'layer':
+        if resource.polymorphic_ctype.name == 'dataset':
             for perm in DATASET_ADMIN_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.dataset)
                 if members:

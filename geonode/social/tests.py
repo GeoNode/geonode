@@ -83,7 +83,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         self.assertNotEqual(Action.objects.all().count(), Dataset.objects.all().count())
 
         action = Action.objects.all()[0]
-        layer = action.action_object
+        dataset = action.action_object
 
         # The activity should read:
         # layer.owner (actor) 'uploaded' (verb) layer (object)
@@ -92,7 +92,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         if isinstance(data, (str, bytes)):
             data = json.loads(data)
         self.assertEqual(data.get('raw_action'), 'created')
-        self.assertEqual(data.get('object_name'), layer.name)
+        self.assertEqual(data.get('object_name'), dataset.name)
         self.assertTrue(isinstance(action.action_object, Dataset))
         self.assertIsNone(action.target)
 
@@ -100,14 +100,14 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         template_tag = activity_item(Action.objects.all()[0])
 
         self.assertEqual(template_tag.get('username'), action.actor.username)
-        self.assertEqual(template_tag.get('object_name'), layer.name)
+        self.assertEqual(template_tag.get('object_name'), dataset.name)
         self.assertEqual(template_tag.get('actor'), action.actor)
         self.assertEqual(template_tag.get('verb'), _('uploaded'))
         self.assertEqual(template_tag.get('action'), action)
         self.assertEqual(template_tag.get('activity_class'), 'upload')
 
-        dataset_name = layer.name
-        layer.delete()
+        dataset_name = dataset.name
+        dataset.delete()
 
         # <user> deleted <object_name>
         action = Action.objects.all()[0]
@@ -133,11 +133,11 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         self.assertEqual(template_tag.get('verb'), _('deleted'))
 
         content_type = ContentType.objects.get_for_model(Dataset)
-        layer = Dataset.objects.all()[0]
+        dataset = Dataset.objects.all()[0]
         comment = Comment(
             author=self.user,
             content_type=content_type,
-            object_id=layer.id,
+            object_id=dataset.id,
             comment="This is a cool layer.")
         comment.save()
 
@@ -148,7 +148,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         self.assertEqual(action.actor, self.user)
         self.assertEqual(data.get('raw_action'), 'created')
         self.assertEqual(action.action_object, comment)
-        self.assertEqual(action.target, layer)
+        self.assertEqual(action.target, dataset)
 
         template_tag = activity_item(action)
 
@@ -158,7 +158,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         self.assertEqual(template_tag.get('target'), action.target)
         self.assertEqual(template_tag.get('preposition'), _('on'))
         self.assertIsNone(template_tag.get('object'))
-        self.assertEqual(template_tag.get('target'), layer)
+        self.assertEqual(template_tag.get('target'), dataset)
 
         # Pre-fecthing actstream breaks the actor stream
         self.assertIn(action, actor_stream(self.user))

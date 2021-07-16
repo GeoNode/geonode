@@ -105,14 +105,14 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             re.match(f"dataset-{self.re_uuid}-thumb.png", dataset_name, re.I), "Dataset name should meet a provided pattern"
         )
 
-    @patch("geonode.maps.models.Map.layers", new_callable=PropertyMock)
+    @patch("geonode.maps.models.Map.datasets", new_callable=PropertyMock)
     def test_generate_thumbnail_name_map_empty(self, layers_mock):
         layers_mock.return_value = []
 
         map_name = thumbnails._generate_thumbnail_name(Map.objects.first())
         self.assertIsNone(map_name, "Map name for maps without layers should return None.")
 
-    @patch("geonode.maps.models.Map.layers", new_callable=PropertyMock)
+    @patch("geonode.maps.models.Map.datasets", new_callable=PropertyMock)
     @patch("geonode.maps.models.Map.uuid", new_callable=PropertyMock)
     def test_generate_thumbnail_name_map(self, uuid_mock, layers_mock):
 

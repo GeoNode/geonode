@@ -100,12 +100,12 @@ class PermissionLevelMixin:
             'groups': groups}
 
         try:
-            if hasattr(self, "layer"):
+            if hasattr(self, "dataset"):
                 info_dataset = {
                     'users': get_users_with_perms(
-                        self.layer),
+                        self.dataset),
                     'groups': get_groups_with_perms(
-                        self.layer,
+                        self.dataset,
                         attach_perms=True)}
                 for user in info_dataset['users']:
                     if user in info['users']:

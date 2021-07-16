@@ -44,7 +44,7 @@ def favorite(req, subject, id):
         obj = get_object_or_404(Document, pk=id)
     elif subject == 'map':
         obj = get_object_or_404(Map, pk=id)
-    elif subject == 'layer':
+    elif subject == 'dataset':
         obj = get_object_or_404(Dataset, pk=id)
     elif subject == 'user':
         obj = get_object_or_404(settings.AUTH_USER_MODEL, pk=id)
