@@ -45,7 +45,7 @@ from django.contrib.admin.sites import AdminSite
 
 from geonode.datasets import utils
 from geonode.datasets import DatasetAppConfig
-from geonode.datasets.admin import LayerAdmin
+from geonode.datasets.admin import DatasetAdmin
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import DisableDjangoSignals
@@ -121,7 +121,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.r = namedtuple('GSCatalogRes', ['resource'])
 
         site = AdminSite()
-        self.admin = LayerAdmin(Layer, site)
+        self.admin = DatasetAdmin(Layer, site)
 
         self.request_admin = RequestFactory().get('/admin')
         self.request_admin.user = get_user_model().objects.get(username='admin')
@@ -374,7 +374,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
 
         from geonode.base.models import HierarchicalKeyword as hk
-        keywords = hk.resource_keywords_tree(get_user_model().objects.get(username='admin'), resource_type='layer')
+        keywords = hk.resource_keywords_tree(get_user_model().objects.get(username='admin'), resource_type='dataset')
 
         self.assertEqual(len(keywords), 13)
 

@@ -36,7 +36,7 @@ class AttributeInline(admin.TabularInline):
     model = Attribute
 
 
-class LayerAdminForm(ResourceBaseAdminForm):
+class DatasetAdminForm(ResourceBaseAdminForm):
 
     class Meta(ResourceBaseAdminForm.Meta):
         model = Dataset
@@ -55,7 +55,7 @@ class LayerAdminForm(ResourceBaseAdminForm):
     )
 
 
-class LayerAdmin(TabbedTranslationAdmin):
+class DatasetAdmin(TabbedTranslationAdmin):
     list_display = (
         'id',
         'alternate',
@@ -77,7 +77,7 @@ class LayerAdmin(TabbedTranslationAdmin):
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'alternate', 'workspace')
     inlines = [AttributeInline]
-    form = LayerAdminForm
+    form = DatasetAdminForm
     actions = [metadata_batch_edit, set_batch_permissions]
 
 
@@ -104,6 +104,6 @@ class StyleAdmin(admin.ModelAdmin):
     search_fields = ('name', 'workspace',)
 
 
-admin.site.register(Dataset, LayerAdmin)
+admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Style, StyleAdmin)
