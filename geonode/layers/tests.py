@@ -41,9 +41,11 @@ from django.contrib.auth import get_user_model
 
 from django.conf import settings
 from django.test.utils import override_settings
+from django.contrib.admin.sites import AdminSite
 
 from geonode.layers import utils
 from geonode.layers import LayersAppConfig
+from geonode.layers.admin import LayerAdmin
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import DisableDjangoSignals
@@ -117,6 +119,20 @@ class LayersTest(GeoNodeBaseTestSupport):
         create_layer_data(self.sut.resourcebase_ptr_id)
         create_layer_data(Layer.objects.first().resourcebase_ptr_id)
         self.r = namedtuple('GSCatalogRes', ['resource'])
+
+        site = AdminSite()
+        self.admin = LayerAdmin(Layer, site)
+
+        self.request_admin = RequestFactory().get('/admin')
+        self.request_admin.user = get_user_model().objects.get(username='admin')
+
+    # Admin Tests
+
+    def test_admin_save_model(self):
+        obj = Layer.objects.first()
+        self.assertEqual(len(obj.keywords.all()), 2)
+        form = self.admin.get_form(self.request_admin, obj=obj, change=True)
+        self.admin.save_model(self.request_admin, obj, form, True)
 
     # Data Tests
 
@@ -358,7 +374,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
 
         from geonode.base.models import HierarchicalKeyword as hk
-        keywords = hk.dump_bulk_tree(get_user_model().objects.get(username='admin'), type='layer')
+        keywords = hk.resource_keywords_tree(get_user_model().objects.get(username='admin'), resource_type='layer')
 
         self.assertEqual(len(keywords), 13)
 
