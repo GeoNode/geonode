@@ -822,7 +822,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         logger.error(response.content)
         self.assertContains(response,
                             'Datasets',
-                            count=1,
+                            count=2,
                             status_code=200,
                             msg_prefix='',
                             html=False)
