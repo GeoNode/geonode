@@ -30,7 +30,6 @@ from sequences import get_next_value
 from django.db import models
 from django.db.models import Max
 from django.conf import settings
-from django.core import serializers
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.db.models import Q, signals
@@ -68,9 +67,10 @@ from geonode.singleton import SingletonModel
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
 from geonode.utils import (
     bbox_to_wkt,
+    find_by_attr,
     is_monochromatic_image)
 from geonode.groups.models import GroupProfile
-from geonode.security.utils import get_visible_resources
+from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
 
 from geonode.notifications_helper import (
@@ -334,15 +334,15 @@ class HierarchicalKeywordManager(MP_NodeManager):
 
 class HierarchicalKeyword(TagBase, MP_Node):
     node_order_by = ['name']
-
     objects = HierarchicalKeywordManager()
 
     @classmethod
-    def dump_bulk_tree(cls, user, parent=None, keep_ids=True, type=None):
-        """Dumps a tree branch to a python data structure."""
+    def resource_keywords_tree(cls, user, parent=None, resource_type=None, resource_name=None):
+        """ Returns resource keywords tree as a dict object. """
         user = user or get_anonymous_user()
-        ctype_filter = [type, ] if type else ['dataset', 'map', 'document']
-        qset = cls._get_serializable_model().get_tree(parent)
+        resource_types = [resource_type] if resource_type else ['dataset', 'map', 'document'] + get_geoapp_subtypes()
+        qset = cls.get_tree(parent)
+
         if settings.SKIP_PERMS_FILTER:
             resources = ResourceBase.objects.all()
         else:
@@ -350,60 +350,82 @@ class HierarchicalKeyword(TagBase, MP_Node):
                 user,
                 'base.view_resourcebase'
             )
+
         resources = resources.filter(
-            polymorphic_ctype__model__in=ctype_filter,
+            polymorphic_ctype__model__in=resource_types,
         )
+
+        if resource_name is not None:
+            resources = resources.filter(title=resource_name)
+
         resources = get_visible_resources(
             resources,
             user,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
-        ret, lnk = [], {}
-        try:
-            for pyobj in qset.order_by('name'):
-                serobj = serializers.serialize('python', [pyobj])[0]
-                # django's serializer stores the attributes in 'fields'
-                fields = serobj['fields']
-                depth = fields['depth'] or 1
-                tags_count = 0
-                try:
-                    tags_count = TaggedContentItem.objects.filter(
-                        content_object__in=resources,
-                        tag=HierarchicalKeyword.objects.get(slug=fields['slug'])).count()
-                except Exception:
-                    pass
-                if tags_count > 0:
-                    fields['text'] = fields['name']
-                    fields['href'] = fields['slug']
-                    fields['tags'] = [tags_count]
-                    del fields['name']
-                    del fields['slug']
-                    del fields['path']
-                    del fields['numchild']
-                    del fields['depth']
-                    if 'id' in fields:
-                        # this happens immediately after a load_bulk
-                        del fields['id']
-                    newobj = {}
-                    for field in fields:
-                        newobj[field] = fields[field]
-                    if keep_ids:
-                        newobj['id'] = serobj['pk']
 
-                    if (not parent and depth == 1) or \
-                            (parent and depth == parent.depth):
-                        ret.append(newobj)
+        tree = {}
+
+        for hkw in qset.order_by('name'):
+            slug = hkw.slug
+            tags_count = 0
+
+            tags_count = TaggedContentItem.objects.filter(
+                content_object__in=resources,
+                tag=hkw
+            ).count()
+
+            if tags_count > 0:
+                newobj = {"id": hkw.pk, "text": hkw.name, "href": slug, 'tags': [tags_count]}
+                depth = hkw.depth or 1
+
+                # No use case, so purpose of 'parent' param is not clear.
+                # So following first 'if' statement is left unchanged
+                if (not parent and depth == 1) or \
+                        (parent and depth == parent.depth):
+                    if hkw.pk not in tree:
+                        tree[hkw.pk] = newobj
+                        tree[hkw.pk]["nodes"] = []
                     else:
-                        parentobj = pyobj.get_parent()
-                        parentser = lnk[parentobj.pk]
-                        if 'nodes' not in parentser:
-                            parentser['nodes'] = []
-                        parentser['nodes'].append(newobj)
-                    lnk[pyobj.pk] = newobj
-        except Exception:
-            pass
-        return ret
+                        tree[hkw.pk]['tags'] = [tags_count]
+                else:
+                    tree = cls._keywords_tree_of_a_child(hkw, tree, newobj)
+
+        return list(tree.values())
+
+    @classmethod
+    def _keywords_tree_of_a_child(cls, child, tree, newobj):
+        qs = cls.get_tree(child.get_root())
+        parent = qs[0]
+
+        if parent.id not in tree:
+            tree[parent.id] = {"id": parent.id, "text": parent.name, "href": parent.slug, "tags": [], "nodes": []}
+
+        node = tree[parent.id]
+
+        for kw in qs:
+            if child.is_descendant_of(kw):
+                if kw.depth > 1:
+                    item_found = None
+                    if node["nodes"]:
+                        item_found = find_by_attr(node["nodes"], kw.id)
+
+                    if item_found is None:
+                        node["nodes"].append({"id": kw.id, "text": kw.name, "href": kw.slug, "nodes": []})
+                        node = node["nodes"][-1]
+                    else:
+                        node = item_found
+
+        # All leaves appended but a child which is not a leaf may not be added
+        # again, as a leaf, but only its tag count be updated
+        item_found = find_by_attr(node["nodes"], newobj["id"])
+        if item_found is not None:
+            item_found["tags"] = newobj["tags"]
+        else:
+            node["nodes"].append(newobj)
+
+        return tree
 
 
 class TaggedContentItem(ItemBase):
@@ -423,30 +445,54 @@ class TaggedContentItem(ItemBase):
 
 
 class _HierarchicalTagManager(_TaggableManager):
-    def add(self, *tags):
-        str_tags = {
+    def add(self, *tags, through_defaults=None, tag_kwargs=None):
+        if tag_kwargs is None:
+            tag_kwargs = {}
+
+        str_tags = set([
             t
             for t in tags
             if not isinstance(t, self.through.tag_model())
-        }
+        ])
         tag_objs = set(tags) - str_tags
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
         existing = self.through.tag_model().objects.filter(
-            name__in=str_tags
+            name__in=str_tags, **tag_kwargs
         )
         tag_objs.update(existing)
-        for new_tag in str_tags - {t.name for t in existing}:
+        new_ids = set()
+        for new_tag in str_tags - set(t.name for t in existing):
             if new_tag:
                 new_tag = escape(new_tag)
-                tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
+                new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
+                tag_objs.add(new_tag_obj)
+                new_ids.add(new_tag_obj.id)
+
+        signals.m2m_changed.send(
+            sender=self.through,
+            action="pre_add",
+            instance=self.instance,
+            reverse=False,
+            model=self.through.tag_model(),
+            pk_set=new_ids,
+        )
 
         for tag in tag_objs:
             try:
                 self.through.objects.get_or_create(
-                    tag=tag, **self._lookup_kwargs())
+                    tag=tag, **self._lookup_kwargs(), defaults=through_defaults)
             except Exception as e:
                 logger.exception(e)
+
+        signals.m2m_changed.send(
+            sender=self.through,
+            action="post_add",
+            instance=self.instance,
+            reverse=False,
+            model=self.through.tag_model(),
+            pk_set=new_ids,
+        )
 
 
 class Thesaurus(models.Model):

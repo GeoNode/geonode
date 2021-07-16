@@ -34,7 +34,7 @@ jobs:
 
       - run:
           name: Build the stack
-          command: docker-compose -f docker-compose-test.yml build
+          command: docker-compose -f docker-compose-test.yml build --no-cache
           working_directory: ./
 
       - when:
