@@ -46,7 +46,9 @@ from django.contrib.auth import get_user_model
 
 from django.conf import settings
 from django.test.utils import override_settings
+from django.contrib.admin.sites import AdminSite
 
+from geonode.layers.admin import LayerAdmin
 from guardian.shortcuts import get_anonymous_user
 from guardian.shortcuts import assign_perm, remove_perm
 
@@ -92,6 +94,20 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.user = 'admin'
         self.passwd = 'admin'
         self.anonymous_user = get_anonymous_user()
+
+        site = AdminSite()
+        self.admin = LayerAdmin(Layer, site)
+
+        self.request_admin = RequestFactory().get('/admin')
+        self.request_admin.user = get_user_model().objects.get(username='admin')
+
+    # Admin Tests
+
+    def test_admin_save_model(self):
+        obj = Layer.objects.first()
+        self.assertEqual(len(obj.keywords.all()), 2)
+        form = self.admin.get_form(self.request_admin, obj=obj, change=True)
+        self.admin.save_model(self.request_admin, obj, form, True)
 
     # Data Tests
 
@@ -318,7 +334,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(
             set(lyr.keyword_list()), {
-                '&lt;IMG SRC=&#39;javascript:true;&#39;&gt;Science', 'Europe&lt;script&gt;true;&lt;/script&gt;',
+                '&lt;IMG SRC=&#x27;javascript:true;&#x27;&gt;Science', 'Europe&lt;script&gt;true;&lt;/script&gt;',
                 'here', 'keywords', 'land_&lt;script&gt;true;&lt;/script&gt;covering', 'populartag', 'saving',
                 'ß', 'ä', 'ö', 'ü', '論語'})
 
