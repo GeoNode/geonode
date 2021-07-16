@@ -65,7 +65,7 @@ def metadata_batch_edit(modeladmin, request, queryset):
         'ids': ids
     })
     name_space_mapper = {
-        'layer': 'dataset_batch_metadata',
+        'dataset': 'dataset_batch_metadata',
         'map': 'map_batch_metadata',
         'document': 'document_batch_metadata'
     }

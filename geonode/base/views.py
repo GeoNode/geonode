@@ -96,7 +96,7 @@ def user_and_group_permission(request, model):
         form = UserAndGroupPermissionsForm(request.POST)
         ids = ids.split(",")
         if form.is_valid():
-            resources_names = [layer.name for layer in form.cleaned_data.get('layers')]
+            resources_names = [layer.name for layer in form.cleaned_data.get('datasets')]
             users_usernames = [user.username for user in model_class.objects.filter(
                 id__in=ids)] if model == 'profile' else None
             groups_names = [group_profile.group.name for group_profile in model_class.objects.filter(

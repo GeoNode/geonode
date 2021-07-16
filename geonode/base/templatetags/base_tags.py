@@ -252,7 +252,7 @@ def facets(context):
         }
 
         # Break early if only_datasets is set.
-        if facet_type == 'layers':
+        if facet_type == 'datasets':
             return facets
 
         maps = Map.objects.filter(title__icontains=title_filter)
@@ -321,7 +321,7 @@ def facets(context):
             facets['group'] = GroupProfile.objects.exclude(
                 access="private").count()
 
-            facets['layer'] = facets['raster'] + facets['vector'] + facets['remote'] + facets['wms']
+            facets['dataset'] = facets['raster'] + facets['vector'] + facets['remote'] + facets['wms']
 
     return facets
 
@@ -343,7 +343,7 @@ def get_current_path(context):
 @register.simple_tag(takes_context=True)
 def get_context_resourcetype(context):
     c_path = get_current_path(context)
-    resource_types = ['layers', 'maps', 'geoapps', 'documents', 'search', 'people',
+    resource_types = ['datasets', 'maps', 'geoapps', 'documents', 'search', 'people',
                       'groups/categories', 'groups']
     for resource_type in resource_types:
         if f"/{resource_type}/" in c_path:

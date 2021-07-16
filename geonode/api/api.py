@@ -61,7 +61,7 @@ from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
 
 FILTER_TYPES = {
-    'layer': Dataset,
+    'dataset': Dataset,
     'map': Map,
     'document': Document,
     'geoapp': GeoApp
@@ -135,7 +135,7 @@ class CountJSONSerializer(Serializer):
 class TypeFilteredResource(ModelResource):
     """ Common resource used to apply faceting to categories, keywords, and
     regions based on the type passed as query parameter in the form
-    type:layer/map/document"""
+    type:dataset/map/document"""
 
     count = fields.IntegerField()
 
@@ -280,7 +280,7 @@ class TopicCategoryResource(TypeFilteredResource):
     def dehydrate_datasets_count(self, bundle):
         request = bundle.request
         obj_with_perms = get_objects_for_user(request.user,
-                                              'base.view_resourcebase').filter(polymorphic_ctype__model='layer')
+                                              'base.view_resourcebase').filter(polymorphic_ctype__model='dataset')
         filter_set = bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)
 
         if not settings.SKIP_PERMS_FILTER:
@@ -501,7 +501,7 @@ class ProfileResource(TypeFilteredResource):
 
     def dehydrate_datasets_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
-                                              'base.view_resourcebase').filter(polymorphic_ctype__model='layer')
+                                              'base.view_resourcebase').filter(polymorphic_ctype__model='dataset')
         return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)\
             .distinct().count()
 
@@ -743,7 +743,7 @@ def _get_resource_counts(request, resourcebase_filter_kwargs):
     )
     qs = values.annotate(counts=Count('polymorphic_ctype__model'))
     types = [
-        'layer',
+        'dataset',
         'document',
         'map',
         'geoapp',

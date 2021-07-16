@@ -53,7 +53,7 @@ from .models import GroupMember
 logger = logging.getLogger(__name__)
 
 
-class SetGroupLayerPermission(View):
+class SetGroupDatasetPermission(View):
     def get(self, request):
         return user_and_group_permission(request, 'groupprofile')
 
@@ -307,7 +307,7 @@ class GroupActivityView(ListView):
         action_list = []
         actions = Action.objects.filter(
             public=True,
-            action_object_content_type__model='layer')
+            action_object_content_type__model='dataset')
         context['action_list_datasets'] = [
             action
             for action in actions

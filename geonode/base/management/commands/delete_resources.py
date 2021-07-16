@@ -104,7 +104,7 @@ class Command(BaseCommand):
                         # or all filters are empty
                         or not any(
                             [
-                                config.get('filters').get('layer'),
+                                config.get('filters').get('dataset'),
                                 config.get('filters').get('map'),
                                 config.get('filters').get('document')
                             ])
@@ -113,7 +113,7 @@ class Command(BaseCommand):
                     return
 
             # override filters variables with configuration file data
-            dataset_filters = config.get('filters').get('layer')
+            dataset_filters = config.get('filters').get('dataset')
             map_filters = config.get('filters').get('map')
             document_filters = config.get('filters').get('document')
 

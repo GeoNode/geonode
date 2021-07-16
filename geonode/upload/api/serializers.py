@@ -170,8 +170,8 @@ class SessionSerializer(serializers.Field):
                                 getattr(_task, 'data', None)),
                             'target': SessionSerializer._decode_target(
                                 getattr(_task, 'target', None)),
-                            'layer': SessionSerializer._decode_dataset(
-                                getattr(_task, 'layer', None))
+                            'dataset': SessionSerializer._decode_dataset(
+                                getattr(_task, 'dataset', None))
                         }
                     )
             return _s
@@ -206,7 +206,7 @@ class UploadSerializer(BaseDynamicModelSerializer):
 
         if 'request' in self.context and \
                 self.context['request'].query_params.get('full'):
-            self.fields['layer'] = DynamicRelationField(
+            self.fields['dataset'] = DynamicRelationField(
                 DatasetSerializer,
                 embed=True,
                 many=False,

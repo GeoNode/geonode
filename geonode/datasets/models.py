@@ -95,14 +95,14 @@ class Style(models.Model, PermissionLevelMixin):
         """Get associated resource base."""
         # Associate this model with resource
         try:
-            layer = self.dataset_styles.first()
+            dataset = self.dataset_styles.first()
             """:type: Dataset"""
-            return layer.get_self_resource()
+            return dataset.get_self_resource()
         except Exception:
             return None
 
 
-class LayerManager(ResourceBaseManager):
+class DatasetManager(ResourceBaseManager):
 
     def __init__(self):
         models.Manager.__init__(self)
@@ -122,7 +122,7 @@ class Dataset(ResourceBase):
     }
 
     # internal fields
-    objects = LayerManager()
+    objects = DatasetManager()
     workspace = models.CharField(_('Workspace'), max_length=128)
     store = models.CharField(_('Store'), max_length=128)
 

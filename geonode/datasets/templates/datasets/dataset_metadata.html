@@ -6,7 +6,7 @@
 {% load floppyforms %}
 {% load client_lib_tags %}
 
-{% block title %}{{ layer.alternate }} — {{ block.super }}{% endblock title %}
+{% block title %}{{ dataset.alternate }} — {{ block.super }}{% endblock title %}
 
 {% block head %}
     {% include "ol/datasets/dataset_ol2_map.html" %}
@@ -17,7 +17,7 @@
 
 {% block body_outer %}
 <div class="container-fluid page-header" style="position: relative;">
-  <h2 class="page-title">{% trans "Metadata" %}&nbsp;{% blocktrans with layer.title as dataset_title %}for {{ dataset_title }}{% endblocktrans %}</h2>
+  <h2 class="page-title">{% trans "Metadata" %}&nbsp;{% blocktrans with dataset.title as dataset_title %}for {{ dataset_title }}{% endblocktrans %}</h2>
       <div id="profileCompleteness" class="alert alert-info" style="position: absolute; right: 0; top: 0; padding: 4px;">
         <strong>{% trans "Completeness" %}</strong>
         <div style="padding: 2px;">
@@ -33,11 +33,11 @@
   </h2>
 </div>
 
-    <form id="metadata_update" class="form-horizontal" action="{% url "dataset_metadata" layer.service_typename %}" method="POST">
-      {% if layer.metadata_uploaded_preserve %}
+    <form id="metadata_update" class="form-horizontal" action="{% url "dataset_metadata" dataset.service_typename %}" method="POST">
+      {% if dataset.metadata_uploaded_preserve %}
         <p class="bg-warning">{% blocktrans %}Note: this layer's orginal metadata was populated and preserved by importing a metadata XML file.
           This metadata cannot be edited.{% endblocktrans %}</p>
-      {% elif layer.metadata_uploaded %}
+      {% elif dataset.metadata_uploaded %}
         <p class="bg-warning">{% blocktrans %}Note: this layer's orginal metadata was populated by importing a metadata XML file.
           GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.
           Some of your original metadata may have been lost.{% endblocktrans %}</p>
@@ -95,7 +95,7 @@
               <button type='button' class="modal-cloose-btn btn btn-primary">{% trans "Done" %}</button>
             </fieldset>
 
-            {% if not layer.metadata_uploaded_preserve %}
+            {% if not dataset.metadata_uploaded_preserve %}
             <div class="form-actions">
               <a href="{% dataset_detail_url resource %}" class="btn btn-primary">{% trans "Return to Dataset" %}</a>
               <input type="button" id="btn_back_dwn" class="btn btn-primary" style="display: none" value="{% trans "<< Back" %}"/>

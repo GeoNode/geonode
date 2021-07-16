@@ -274,7 +274,7 @@ class RequestsTestCase(MonitoringTestBase):
             rq = RequestEvent.objects.all().last()
             self.assertTrue(rq.response_time > 0)
             self.assertEqual(
-                list(rq.resources.all().values_list('name', 'type')), [(_l.alternate, 'layer',)])
+                list(rq.resources.all().values_list('name', 'type')), [(_l.alternate, 'dataset',)])
             self.assertEqual(rq.request_method, 'GET')
 
     def test_gn_error(self):
@@ -1540,10 +1540,10 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
 
     def test_resources_endpoint(self):
         resources_data = [
-            {'id': 2, 'name': 'geonode:roads', 'type': 'layer'},
-            {'id': 5, 'name': 'geonode:waterways', 'type': 'layer'},
+            {'id': 2, 'name': 'geonode:roads', 'type': 'dataset'},
+            {'id': 5, 'name': 'geonode:waterways', 'type': 'dataset'},
             {'id': 6, 'name': 'Amsterdam Waterways Map', 'type': 'map'},
-            {'id': 3, 'name': 'geonode:railways', 'type': 'layer'},
+            {'id': 3, 'name': 'geonode:railways', 'type': 'dataset'},
             {'id': 1, 'name': '/', 'type': 'url'},
             {'id': 4, 'name': 'San Francisco Transport Map', 'type': 'map'}
         ]
@@ -1572,7 +1572,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
     def test_resource_types_endpoint(self):
         resource_types = [
             {'name': '', 'type_label': 'No resource'},
-            {'name': 'layer', 'type_label': 'Dataset'},
+            {'name': 'dataset', 'type_label': 'Dataset'},
             {'name': 'map', 'type_label': 'Map'},
             {'name': 'resource_base', 'type_label': 'Resource base'},
             {'name': 'document', 'type_label': 'Document'},

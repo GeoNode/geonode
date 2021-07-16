@@ -341,7 +341,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
     def dump_bulk_tree(cls, user, parent=None, keep_ids=True, type=None):
         """Dumps a tree branch to a python data structure."""
         user = user or get_anonymous_user()
-        ctype_filter = [type, ] if type else ['layer', 'map', 'document']
+        ctype_filter = [type, ] if type else ['dataset', 'map', 'document']
         qset = cls._get_serializable_model().get_tree(parent)
         if settings.SKIP_PERMS_FILTER:
             resources = ResourceBase.objects.all()

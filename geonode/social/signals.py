@@ -99,7 +99,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
         logger.exception(e)
 
     try:
-        action_settings['layer'].update(created_verb=_('uploaded'))
+        action_settings['dataset'].update(created_verb=_('uploaded'))
     except Exception as e:
         logger.exception(e)
 

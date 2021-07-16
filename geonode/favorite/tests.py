@@ -101,7 +101,7 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         create_single_dataset('foo_dataset')
         resource = ResourceBase.objects.get(title='foo_dataset')
         created_fav = Favorite.objects.create_favorite(resource, test_user)
-        self.assertEqual('layer', created_fav.content_type.model)
+        self.assertEqual('dataset', created_fav.content_type.model)
 
         '''
         If the input object is a subtype, should save the relative content type

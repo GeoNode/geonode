@@ -645,7 +645,7 @@ def dataset_acls(request):
     # use of polymorphic selectors/functions to optimize performances
     resources_readable = get_objects_for_user(
         acl_user, 'view_resourcebase',
-        ResourceBase.objects.filter(polymorphic_ctype__model='layer')).values_list('id', flat=True)
+        ResourceBase.objects.filter(polymorphic_ctype__model='dataset')).values_list('id', flat=True)
     dataset_writable = get_objects_for_user(
         acl_user, 'change_dataset_data',
         Dataset.objects.all())

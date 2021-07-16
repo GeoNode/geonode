@@ -6,7 +6,7 @@
 {% load guardian_tags %}
 {% load client_lib_tags %}
 
-{% block title %}{{ layer.title }} — {{ block.super }}{% endblock %}
+{% block title %}{{ dataset.title }} — {{ block.super }}{% endblock %}
 
 {% block body_class %}data{% endblock %}
 
@@ -33,18 +33,18 @@
 <div class="row">
   <div class="col-md-8">
     <p class="lead">
-      {% blocktrans with layer.title as dataset_title %}
+      {% blocktrans with dataset.title as dataset_title %}
         Editing details for {{ dataset_title }}
       {% endblocktrans %}
     </p>
     {% block advanced_edit_form %}
-    <form id="metadata_update" class="form-horizontal" action="{% url "dataset_metadata" layer.service_typename %}" method="POST">
+    <form id="metadata_update" class="form-horizontal" action="{% url "dataset_metadata" dataset.service_typename %}" method="POST">
 
       {% block metadata_uploaded_check %}
-      {% if layer.metadata_uploaded_preserve %}
+      {% if dataset.metadata_uploaded_preserve %}
         <p class="bg-warning">{% blocktrans %}Note: this layer's orginal metadata was populated and preserved by importing a metadata XML file.
           This metadata cannot be edited.{% endblocktrans %}</p>
-      {% elif layer.metadata_uploaded %}
+      {% elif dataset.metadata_uploaded %}
         <p class="bg-warning">{% blocktrans %}Note: this layer's orginal metadata was populated by importing a metadata XML file.
           GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.
           Some of your original metadata may have been lost.{% endblocktrans %}</p>
@@ -83,7 +83,7 @@
         {% endif %}
       {% endblock dataset_form_errors %}
 
-        {% if not layer.metadata_uploaded_preserve %}
+        {% if not dataset.metadata_uploaded_preserve %}
         <div class="form-actions">
           <a href="{% dataset_detail_url resource %}" class="btn btn-primary">{% trans "Return to Dataset" %}</a>
           <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update" %}"/>
@@ -212,7 +212,7 @@
             </fieldset>
             {% endblock metadata_provider %}
 
-            {% if not layer.metadata_uploaded_preserve %}
+            {% if not dataset.metadata_uploaded_preserve %}
             {% block form_actions %}
             <div class="form-actions">
               <a href="{% dataset_detail_url resource %}" class="btn btn-primary">{% trans "Return to Dataset" %}</a>

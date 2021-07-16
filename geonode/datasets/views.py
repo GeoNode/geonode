@@ -785,7 +785,7 @@ def dataset_feature_catalogue(
         attributes.append(attr)
 
     context_dict = {
-        'layer': layer,
+        'dataset': layer,
         'attributes': attributes,
         'metadata': settings.PYCSW['CONFIGURATION']['metadata:main']
     }
@@ -1166,7 +1166,7 @@ def dataset_metadata(
     register_event(request, 'view_metadata', layer)
     return render(request, template, context={
         "resource": layer,
-        "layer": layer,
+        "dataset": layer,
         "dataset_form": dataset_form,
         "poc_form": poc_form,
         "author_form": author_form,
@@ -1301,7 +1301,7 @@ def dataset_remove(request, layername, template='datasets/dataset_remove.html'):
 
     if (request.method == 'GET'):
         return render(request, template, context={
-            "layer": layer
+            "dataset": layer
         })
     if (request.method == 'POST'):
         logger.debug(f'Deleting Dataset {layer}')
@@ -1339,7 +1339,7 @@ def dataset_granule_remove(
     if (request.method == 'GET'):
         return render(request, template, context={
             "granule_id": granule_id,
-            "layer": layer
+            "dataset": layer
         })
     if (request.method == 'POST'):
         try:
@@ -1493,7 +1493,7 @@ def dataset_sld_upload(
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
-        "layer": layer,
+        "dataset": layer,
         'SITEURL': site_url
     })
 

@@ -155,7 +155,7 @@ class Service(models.Model):
 
 class MonitoredResource(models.Model):
     TYPE_EMPTY = ''
-    TYPE_LAYER = 'layer'
+    TYPE_LAYER = 'dataset'
     TYPE_MAP = 'map'
     TYPE_RESOURCE_BASE = 'resource_base'
     TYPE_DOCUMENT = 'document'

@@ -59,7 +59,7 @@ class DatasetsApiTests(APITestCase):
         logger.debug(response.data)
 
         for _l in response.data['datasets']:
-            self.assertTrue(_l['resource_type'], 'layer')
+            self.assertTrue(_l['resource_type'], 'dataset')
         # Test list response doesn't have attribute_set
         self.assertIsNone(response.data['datasets'][0].get('attribute_set'))
         # Test detail response has attribute_set

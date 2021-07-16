@@ -150,32 +150,32 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
     return absolute_base_file
 
 
-def get_dataset_name(layer):
+def get_dataset_name(dataset):
     """Get the workspace where the input layer belongs"""
-    _name = layer.name
+    _name = dataset.name
     if _name and ':' in _name:
         _name = _name.split(':')[1]
     try:
-        if not _name and layer.alternate:
-            if ':' in layer.alternate:
-                _name = layer.alternate.split(':')[1]
+        if not _name and dataset.alternate:
+            if ':' in dataset.alternate:
+                _name = dataset.alternate.split(':')[1]
             else:
-                _name = layer.alternate
+                _name = dataset.alternate
     except Exception:
         pass
     return _name
 
 
-def get_dataset_workspace(layer):
+def get_dataset_workspace(dataset):
     """Get the workspace where the input layer belongs"""
     alternate = None
     workspace = None
     try:
-        alternate = layer.alternate
+        alternate = dataset.alternate
     except Exception:
-        alternate = layer.name
+        alternate = dataset.name
     try:
-        workspace = layer.workspace
+        workspace = dataset.workspace
     except Exception:
         workspace = None
     if not workspace and alternate and ':' in alternate:
@@ -184,7 +184,7 @@ def get_dataset_workspace(layer):
         default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
         try:
             from geonode.services.enumerations import CASCADED
-            if layer.remote_service.method == CASCADED:
+            if dataset.remote_service.method == CASCADED:
                 workspace = getattr(
                     settings, "CASCADE_WORKSPACE", default_workspace)
             else:
@@ -471,7 +471,7 @@ def inverse_mercator(xy):
     return (lon, lat)
 
 
-def dataset_from_viewer_config(map_id, model, layer, source, ordering, save_map=True):
+def dataset_from_viewer_config(map_id, model, dataset, source, ordering, save_map=True):
     """
     Parse an object out of a parsed layer configuration from a GXP
     viewer.
@@ -482,7 +482,7 @@ def dataset_from_viewer_config(map_id, model, layer, source, ordering, save_map=
     ``ordering`` is the index of the layer within the map's layer list
     ``save_map`` if map should be saved (default: True)
     """
-    dataset_cfg = dict(layer)
+    dataset_cfg = dict(dataset)
     for k in ["format", "name", "opacity", "styles", "transparent",
               "fixed", "group", "visibility", "source"]:
         if k in dataset_cfg:
@@ -510,8 +510,8 @@ def dataset_from_viewer_config(map_id, model, layer, source, ordering, save_map=
                     if 'href' in legend:
                         legend['href'] = re.sub(
                             r'\&access_token=.*', '', legend['href'])
-    if not styles and layer.get("styles", None):
-        for style in layer.get("styles", None):
+    if not styles and dataset.get("styles", None):
+        for style in dataset.get("styles", None):
             if 'name' in style:
                 styles.append(style['name'])
             else:
@@ -520,15 +520,15 @@ def dataset_from_viewer_config(map_id, model, layer, source, ordering, save_map=
     _model = model(
         map_id=map_id,
         stack_order=ordering,
-        format=layer.get("format", None),
-        name=layer.get("name", None),
-        store=layer.get("store", None),
-        opacity=layer.get("opacity", 1),
+        format=dataset.get("format", None),
+        name=dataset.get("name", None),
+        store=dataset.get("store", None),
+        opacity=dataset.get("opacity", 1),
         styles=styles,
-        transparent=layer.get("transparent", False),
-        fixed=layer.get("fixed", False),
-        group=layer.get('group', None),
-        visibility=layer.get("visibility", True),
+        transparent=dataset.get("transparent", False),
+        fixed=dataset.get("fixed", False),
+        group=dataset.get('group', None),
+        visibility=dataset.get("visibility", True),
         ows_url=source.get("url", None) if source else None,
         dataset_params=json.dumps(dataset_cfg),
         source_params=json.dumps(source_cfg)
@@ -831,7 +831,7 @@ def default_map_config(request):
         return dataset_from_viewer_config(
             None,
             GXPLayer,
-            layer=lyr,
+            dataset=lyr,
             source=lyr["source"] if lyr and "source" in lyr else None,
             ordering=order
         )
