@@ -32,7 +32,8 @@ class JumbotronThemeSlide(models.Model):
     slide_name = models.CharField(max_length=255, unique=True)
     jumbotron_slide_image = models.ImageField(
         upload_to='img/%Y/%m', verbose_name="Jumbotron slide background")
-    jumbotron_slide_image_thumbnail = ImageSpecField(source='jumbotron_slide_image', options={'quality': 60})
+    jumbotron_slide_image_thumbnail = ImageSpecField(
+        source='jumbotron_slide_image', options={'quality': 60})
     jumbotron_slide_content = models.TextField(
         null=True, blank=True, verbose_name="Jumbotron slide content",
         help_text=_("Fill in this section with markdown"))
@@ -59,7 +60,11 @@ class GeoNodeThemeCustomization(models.Model):
         default=False,
         help_text="Enabling this theme will disable the current enabled theme (if any)")
     logo = models.ImageField(upload_to='img/%Y/%m', null=True, blank=True)
-    variant = models.CharField(max_length=100, null=True, blank=True, help_text="Name of the theme variant, can be 'ligh', 'dark', or a custom variant name.", default='light')
+    variant = models.CharField(
+        max_length=100, 
+        null=True, 
+        blank=True, 
+        help_text="Name of the theme variant, can be 'ligh', 'dark', or a custom variant name.", default='light')
     jumbotron_bg = models.ImageField(
         upload_to='img/%Y/%m', null=True, blank=True, verbose_name="Jumbotron background")
     jumbotron_welcome_hide = models.BooleanField(
@@ -72,7 +77,6 @@ class GeoNodeThemeCustomization(models.Model):
     jumbotron_slide_show = models.ManyToManyField(JumbotronThemeSlide, blank=True)
     jumbotron_welcome_title = models.CharField(max_length=255, null=True, blank=True, verbose_name="Jumbotron title")
     jumbotron_welcome_content = models.TextField(null=True, blank=True, verbose_name="Jumbotron content")
-
 
     @property
     def theme_uuid(self):
