@@ -828,7 +828,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                             html=False)
         self.assertContains(response,
                             'Maps',
-                            count=5,
+                            count=3,
                             status_code=200,
                             msg_prefix='',
                             html=False)
