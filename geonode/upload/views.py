@@ -168,10 +168,10 @@ def save_step_view(req, session):
         logger.debug(f"spatial_files: {spatial_files}")
 
         if overwrite:
-            layer = Dataset.objects.filter(id=req.GET['dataset_id'])
-            if layer.exists():
-                name = layer.first().name
-                target_store = layer.first().store
+            dataset = Dataset.objects.filter(id=req.GET['dataset_id'])
+            if dataset.exists():
+                name = dataset.first().name
+                target_store = dataset.first().store
 
         import_session, upload = save_step(
             req.user,
@@ -571,9 +571,9 @@ def final_step_view(req, upload_session):
             try:
                 dataset_id = None
                 if req and 'dataset_id' in req.GET:
-                    layer = Dataset.objects.filter(id=req.GET['dataset_id'])
-                    if layer.exists():
-                        dataset_id = layer.first().resourcebase_ptr_id
+                    dataset = Dataset.objects.filter(id=req.GET['dataset_id'])
+                    if dataset.exists():
+                        dataset_id = dataset.first().resourcebase_ptr_id
 
                 saved_dataset = final_step(upload_session, upload_session.user, dataset_id)
 

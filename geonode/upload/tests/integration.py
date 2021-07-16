@@ -167,16 +167,16 @@ class UploaderBase(GeoNodeBaseTestSupport):
             purge_geofence_all()
 
     def check_dataset_geonode_page(self, path):
-        """ Check that the final layer page render's correctly after
-        an layer is uploaded """
+        """ Check that the final dataset page render's correctly after
+        an dataset is uploaded """
         # the final url for uploader process. This does a redirect to
-        # the final layer page in geonode
+        # the final dataset page in geonode
         resp, _ = self.client.get_html(path)
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('content-type' in resp.headers)
 
     def check_dataset_geoserver_caps(self, type_name):
-        """ Check that a layer shows up in GeoServer's get
+        """ Check that a dataset shows up in GeoServer's get
         capabilities document """
         # using owslib
         wms = get_wms(
@@ -186,11 +186,11 @@ class UploaderBase(GeoNodeBaseTestSupport):
                         f'{dataset_name} is not in {wms.contents}')
 
     def check_dataset_geoserver_rest(self, dataset_name):
-        """ Check that a layer shows up in GeoServer rest api after
+        """ Check that a dataset shows up in GeoServer rest api after
         the uploader is done"""
         # using gsconfig to test the geoserver rest api.
-        layer = self.catalog.get_layer(dataset_name)
-        self.assertIsNotNone(layer)
+        dataset = self.catalog.get_layer(dataset_name)
+        self.assertIsNotNone(dataset)
 
     def check_and_pass_through_timestep(self, redirect_to):
         time_step = upload_step('time')
@@ -218,13 +218,13 @@ class UploaderBase(GeoNodeBaseTestSupport):
         self.assertTrue('redirect_to' in data)
 
     def complete_upload(self, file_path, resp, data, is_raster=False):
-        """Method to check if a layer was correctly uploaded to the
+        """Method to check if a dataset was correctly uploaded to the
         GeoNode.
 
         arguments: file path, the django http response
 
-           Checks to see if a layer is configured in Django
-           Checks to see if a layer is configured in GeoServer
+           Checks to see if a dataset is configured in Django
+           Checks to see if a dataset is configured in GeoServer
                checks the Rest API
                checks the get cap document """
 
@@ -275,7 +275,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
             c = resp.json()
             url = c['url']
             url = unquote(url)
-            # and the final page should redirect to the layer page
+            # and the final page should redirect to the dataset page
             # @todo - make the check match completely (endswith at least)
             # currently working around potential 'orphaned' db tables
             self.assertTrue(
@@ -300,7 +300,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
             self.fail(f'expected to find Upload object for {original_name}')
 
     def check_dataset_complete(self, dataset_page, original_name):
-        '''check everything to verify the layer is complete'''
+        '''check everything to verify the dataset is complete'''
         self.check_dataset_geonode_page(dataset_page)
         # @todo use the original_name
         # currently working around potential 'orphaned' db tables
@@ -327,7 +327,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
         self.check_upload_model(dataset_name)
 
     def check_invalid_projection(self, dataset_name, resp, data):
-        """ Makes sure that we got the correct response from an layer
+        """ Makes sure that we got the correct response from an dataset
         that can't be uploaded"""
         self.assertTrue(resp.status_code, 200)
         if not isinstance(data, str):
@@ -342,7 +342,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
                 self.assertTrue(str(h2).find(dataset_name))
 
     def check_upload_complete(self, dataset_name, resp, data):
-        """ Makes sure that we got the correct response from an layer
+        """ Makes sure that we got the correct response from an dataset
         that has been uploaded"""
         self.assertTrue(resp.status_code, 200)
         if not isinstance(data, str):
@@ -352,7 +352,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
                 self.assertTrue(final_step in data['redirect_to'])
 
     def check_upload_failed(self, dataset_name, resp, data):
-        """ Makes sure that we got the correct response from an layer
+        """ Makes sure that we got the correct response from an dataset
         that can't be uploaded"""
         self.assertTrue(resp.status_code, 400)
 
@@ -429,7 +429,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
 class TestUpload(UploaderBase):
 
     def test_shp_upload(self):
-        """ Tests if a vector layer can be uploaded to a running GeoNode/GeoServer"""
+        """ Tests if a vector dataset can be uploaded to a running GeoNode/GeoServer"""
         dataset_name = 'san_andres_y_providencia_water'
         fname = os.path.join(
             GOOD_DATA,
@@ -472,7 +472,7 @@ class TestUpload(UploaderBase):
                 #     _link_orig.url,
                 #     test_dataset.csw_anytext,
                 #     f"The link URL {_link_orig.url} is not present in the 'csw_anytext' \
-                # attribute of the layer '{test_dataset.alternate}'"
+                # attribute of the dataset '{test_dataset.alternate}'"
                 # )
             # Check catalogue
             catalogue = get_catalogue()
@@ -501,7 +501,7 @@ class TestUpload(UploaderBase):
                     _post_migrate_link_meta = None
 
     def test_raster_upload(self):
-        """ Tests if a raster layer can be upload to a running GeoNode GeoServer"""
+        """ Tests if a raster dataset can be upload to a running GeoNode GeoServer"""
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
         self.upload_file(fname, self.complete_raster_upload,
                          check_name='relief_san_andres')
@@ -529,7 +529,7 @@ class TestUpload(UploaderBase):
 
     def test_geonode_same_UUID_error(self):
         """
-        Ensure a new layer with same UUID metadata cannot be uploaded
+        Ensure a new dataset with same UUID metadata cannot be uploaded
         """
         PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -609,7 +609,7 @@ class TestUpload(UploaderBase):
             self.assertTrue(int(session_ids[0]) < int(session_ids[1]))
 
     def test_extension_not_implemented(self):
-        """Verify a error message is return when an unsupported layer is
+        """Verify a error message is return when an unsupported dataset is
         uploaded"""
 
         # try to upload ourselves

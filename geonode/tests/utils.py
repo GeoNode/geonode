@@ -332,9 +332,9 @@ def get_web_page(url, username=None, password=None, login_url=None):
 def check_dataset(uploaded):
     """Verify if an object is a valid Dataset.
     """
-    msg = (f'Was expecting layer object, got {type(uploaded)}')
+    msg = (f'Was expecting dataset object, got {type(uploaded)}')
     assert isinstance(uploaded, Dataset), msg
-    msg = (f'The layer does not have a valid name: {uploaded.name}')
+    msg = (f'The dataset does not have a valid name: {uploaded.name}')
     assert len(uploaded.name) > 0, msg
 
 

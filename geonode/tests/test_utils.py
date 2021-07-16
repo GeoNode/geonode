@@ -149,10 +149,10 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         """ Test utility function set_attributes() which creates Attribute instances attached
             to a Dataset instance.
         """
-        # Creating a layer requires being logged in
+        # Creating a dataset requires being logged in
         self.client.login(username='norman', password='norman')
 
-        # Create dummy layer to attach attributes to
+        # Create dummy dataset to attach attributes to
         _l = Dataset.objects.create(
             owner=self.user,
             name='dummy_dataset',

@@ -126,7 +126,7 @@ def create_thumbnail(
     else:
         compute_bbox_from_datasets = True
 
-    # --- define layer locations ---
+    # --- define dataset locations ---
     locations, layers_bbox = _datasets_locations(instance, compute_bbox=compute_bbox_from_datasets, target_crs=target_crs)
 
     if compute_bbox_from_datasets:
@@ -178,7 +178,7 @@ def create_thumbnail(
                 img = Image.open(BytesIO(image))  # "re-open" the file (required after running verify method)
                 merged_partial_thumbs.paste(img, mask=img.convert('RGBA'))
             except UnidentifiedImageError as e:
-                logger.error(f"Thumbnail generation. Error occurred while fetching layer image: {image}")
+                logger.error(f"Thumbnail generation. Error occurred while fetching dataset image: {image}")
                 logger.exception(e)
 
     # --- fetch background image ---
@@ -219,7 +219,7 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
     """
 
     if isinstance(instance, Dataset):
-        file_name = f"layer-{instance.uuid}-thumb.png"
+        file_name = f"dataset-{instance.uuid}-thumb.png"
 
     elif isinstance(instance, Map):
         # if a Map is empty - nothing to do here
@@ -289,12 +289,12 @@ def _datasets_locations(
         for map_dataset in map_datasets:
 
             if not map_dataset.visibility:
-                logger.debug("Skipping not visible layer in the thumbnail generation.")
+                logger.debug("Skipping not visible dataset in the thumbnail generation.")
                 continue
 
             if not map_dataset.local and not map_dataset.ows_url:
                 logger.warning(
-                    "Incorrectly defined remote layer encountered (no OWS URL defined)."
+                    "Incorrectly defined remote dataset encountered (no OWS URL defined)."
                     "Skipping it in the thumbnail generation."
                 )
                 continue
@@ -304,48 +304,48 @@ def _datasets_locations(
             workspace = get_dataset_workspace(map_dataset)
 
             if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
-                layer = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()
+                dataset = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()
 
             elif workspace and Dataset.objects.filter(workspace=workspace, name=name).count() > 0:
-                layer = Dataset.objects.filter(workspace=workspace, name=name).first()
+                dataset = Dataset.objects.filter(workspace=workspace, name=name).first()
 
             elif Dataset.objects.filter(alternate=map_dataset.name).count() > 0:
-                layer = Dataset.objects.filter(alternate=map_dataset.name).first()
+                dataset = Dataset.objects.filter(alternate=map_dataset.name).first()
 
             else:
                 logger.warning(f"Dataset for MapLayer {name} was not found. Skipping it in the thumbnail.")
                 continue
 
-            if layer.subtype in ['tileStore', 'remote']:
-                # limit number of locations, ensuring layer order
-                if len(locations) and locations[-1][0] == layer.remote_service.service_url:
-                    # if previous layer's location is the same as the current one - append current layer there
-                    locations[-1][1].append(layer.alternate)
+            if dataset.subtype in ['tileStore', 'remote']:
+                # limit number of locations, ensuring dataset order
+                if len(locations) and locations[-1][0] == dataset.remote_service.service_url:
+                    # if previous dataset's location is the same as the current one - append current dataset there
+                    locations[-1][1].append(dataset.alternate)
                 else:
-                    locations.append([layer.remote_service.service_url, [layer.alternate]])
+                    locations.append([dataset.remote_service.service_url, [dataset.alternate]])
             else:
-                # limit number of locations, ensuring layer order
+                # limit number of locations, ensuring dataset order
                 if len(locations) and locations[-1][0] == settings.OGC_SERVER["default"]["LOCATION"]:
-                    # if previous layer's location is the same as the current one - append current layer there
-                    locations[-1][1].append(layer.alternate)
+                    # if previous dataset's location is the same as the current one - append current dataset there
+                    locations[-1][1].append(dataset.alternate)
                 else:
-                    locations.append([settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]])
+                    locations.append([settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate]])
 
             if compute_bbox:
                 # handle exceeding the area of use of the default thumb's CRS
                 if (
-                        layer.bbox[-1].upper() != 'EPSG:3857'
+                        dataset.bbox[-1].upper() != 'EPSG:3857'
                         and target_crs.upper() == 'EPSG:3857'
-                        and utils.exceeds_epsg3857_area_of_use(layer.bbox)
+                        and utils.exceeds_epsg3857_area_of_use(dataset.bbox)
                 ):
-                    dataset_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(layer.bbox), target_crs.lower())
+                    dataset_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(dataset.bbox), target_crs.lower())
                 else:
-                    dataset_bbox = utils.transform_bbox(layer.bbox, target_crs.lower())
+                    dataset_bbox = utils.transform_bbox(dataset.bbox, target_crs.lower())
 
                 if not bbox:
                     bbox = dataset_bbox
                 else:
-                    # layer's BBOX: (left, right, bottom, top)
+                    # dataset's BBOX: (left, right, bottom, top)
                     bbox = [
                         min(bbox[0], dataset_bbox[0]),
                         max(bbox[1], dataset_bbox[1]),

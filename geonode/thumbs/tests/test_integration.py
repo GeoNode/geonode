@@ -482,7 +482,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
 
     def _fetch_thumb_and_compare(self, url, expected_image):
         if url == missing_thumbnail_url:
-            logger.error(f'It was not possible to fetch the remote layer WMS GetMap! thumb_url: {url}')
+            logger.error(f'It was not possible to fetch the remote dataset WMS GetMap! thumb_url: {url}')
             return
         _, img = http_client.request(url)
         content = BytesIO(img)
