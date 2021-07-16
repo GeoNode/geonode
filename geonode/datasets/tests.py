@@ -121,7 +121,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.r = namedtuple('GSCatalogRes', ['resource'])
 
         site = AdminSite()
-        self.admin = DatasetAdmin(Layer, site)
+        self.admin = DatasetAdmin(Dataset, site)
 
         self.request_admin = RequestFactory().get('/admin')
         self.request_admin.user = get_user_model().objects.get(username='admin')
@@ -129,7 +129,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
     # Admin Tests
 
     def test_admin_save_model(self):
-        obj = Layer.objects.first()
+        obj = Dataset.objects.first()
         self.assertEqual(len(obj.keywords.all()), 2)
         form = self.admin.get_form(self.request_admin, obj=obj, change=True)
         self.admin.save_model(self.request_admin, obj, form, True)
