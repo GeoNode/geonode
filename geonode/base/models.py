@@ -372,9 +372,9 @@ class HierarchicalKeyword(TagBase, MP_Node):
             tags_count = 0
 
             tags_count = TaggedContentItem.objects.filter(
-                    content_object__in=resources,
-                    tag=hkw
-                    ).count()
+                content_object__in=resources,
+                tag=hkw
+            ).count()
 
             if tags_count > 0:
                 newobj = {"id": hkw.pk, "text": hkw.name, "href": slug, 'tags': [tags_count]}

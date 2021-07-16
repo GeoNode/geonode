@@ -61,9 +61,9 @@ class GeoNodeThemeCustomization(models.Model):
         help_text="Enabling this theme will disable the current enabled theme (if any)")
     logo = models.ImageField(upload_to='img/%Y/%m', null=True, blank=True)
     variant = models.CharField(
-        max_length=100, 
-        null=True, 
-        blank=True, 
+        max_length=100,
+        null=True,
+        blank=True,
         help_text="Name of the theme variant, can be 'ligh', 'dark', or a custom variant name.", default='light')
     jumbotron_bg = models.ImageField(
         upload_to='img/%Y/%m', null=True, blank=True, verbose_name="Jumbotron background")
