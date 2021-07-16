@@ -90,14 +90,14 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
         return "layer"
 
     def prepare_subtype(self, obj):
-        if obj.storetype == "vector":
+        if obj.subtype == "vector":
             if obj.has_time:
                 return "vector_time"
             else:
                 return "vector"
-        elif obj.storetype == "raster":
+        elif obj.subtype == "raster":
             return "raster"
-        elif obj.storetype in ['tileStore', 'remote']:
+        elif obj.subtype in ['tileStore', 'remote']:
             return "remote"
 
     def prepare_rating(self, obj):

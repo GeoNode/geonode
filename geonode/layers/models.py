@@ -164,7 +164,7 @@ class Layer(ResourceBase):
         null=True)
 
     def is_vector(self):
-        return self.storetype == 'vector'
+        return self.subtype == 'vector'
 
     @property
     def processed(self):
@@ -176,9 +176,9 @@ class Layer(ResourceBase):
 
     @property
     def display_type(self):
-        if self.storetype == "vector":
+        if self.subtype == "vector":
             return "Vector Data"
-        elif self.storetype == "raster":
+        elif self.subtype == "raster":
             return "Raster Data"
         else:
             return "Data"
@@ -265,7 +265,7 @@ class Layer(ResourceBase):
 
         # we need to check, for shapefile, if column names are valid
         list_col = None
-        if self.storetype == 'vector':
+        if self.subtype == 'vector':
             valid_shp, wrong_column_name, list_col = check_shp_columnnames(
                 self)
             if wrong_column_name:

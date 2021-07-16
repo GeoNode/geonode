@@ -245,7 +245,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         return {
             "name": layer_meta.title,
             "store": self.name,
-            "storetype": "remote",
+            "subtype": "remote",
             "workspace": "remoteWorkspace",
             "typename": typename,
             "alternate": f"{slugify(self.url)}:{layer_meta.id}",

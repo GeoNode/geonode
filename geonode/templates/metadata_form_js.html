@@ -797,7 +797,7 @@
         
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         $.ajax({
-            url: '/h_keywords_api',
+            url: {% url 'h_keywords_api' %},
             params: params,
             success: function(data) {
                 data = JSON.parse(data)

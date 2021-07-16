@@ -49,7 +49,6 @@ from django.forms.models import inlineformset_factory
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.decorators.http import require_http_methods
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from guardian.shortcuts import get_objects_for_user
@@ -58,16 +57,11 @@ from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_layer_style
-from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import (
-    CategoryForm,
-    TKeywordForm,
-    BatchPermissionsForm,
-    ThesaurusAvailableForm)
-from geonode.base.views import batch_modify
+from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
+from geonode.base.views import batch_modify, get_url_for_model
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
@@ -94,9 +88,7 @@ from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import get_visible_resources
 from geonode.documents.models import get_related_documents
-from geonode.people.forms import (
-    PocForm,
-    ProfileForm)
+from geonode.people.forms import ProfileForm
 from geonode.utils import (
     resolve_object,
     default_map_config,
@@ -163,7 +155,7 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
         if len(service_typename) > 1:
             query['store'] = service_typename[0]
         else:
-            query['storetype'] = 'remote'
+            query['subtype'] = 'remote'
         return resolve_object(
             request,
             Layer,
@@ -185,9 +177,9 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
         else:
             query = {'alternate': alternate}
         test_query = Layer.objects.filter(**query)
-        if test_query.count() > 1 and test_query.exclude(storetype='remote').count() == 1:
+        if test_query.count() > 1 and test_query.exclude(subtype='remote').count() == 1:
             query = {
-                'id': test_query.exclude(storetype='remote').last().id
+                'id': test_query.exclude(subtype='remote').last().id
             }
         elif test_query.count() > 1:
             query = {
@@ -432,7 +424,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "title": layer.title,
         "style": '',
         "queryable": True,
-        "storetype": layer.storetype,
+        "subtype": layer.subtype,
         "bbox": {
             layer.srid: {
                 "srs": layer.srid,
@@ -569,7 +561,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if 'show_popup' in request.GET and request.GET["show_popup"]:
         show_popup = True
 
-    if layer.storetype in ['tileStore', 'remote']:
+    if layer.subtype in ['tileStore', 'remote']:
         service = layer.remote_service
         source_params = {}
         if service.type in ('REST_MAP', 'REST_IMG'):
@@ -630,8 +622,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "all_times": all_times,
         "show_popup": show_popup,
         "filter": filter,
-        "storetype": layer.storetype,
-        "online": (layer.remote_service.probe == 200) if layer.storetype in ['tileStore', 'remote'] else True,
+        "subtype": layer.subtype,
+        "online": (layer.remote_service.probe == 200) if layer.subtype in ['tileStore', 'remote'] else True,
         "processed": layer.processed
     }
 
@@ -646,7 +638,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'DEFAULT_MAP_CRS',
         'EPSG:3857')
 
-    if layer.storetype == 'vector':
+    if layer.subtype == 'vector':
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
             Q(link_type='original'))
@@ -675,9 +667,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     context_dict["layer_name"] = json.dumps(layers_names)
     try:
         # get type of layer (raster or vector)
-        if layer.storetype == 'raster':
+        if layer.subtype == 'raster':
             context_dict["layer_type"] = "raster"
-        elif layer.storetype == 'vector':
+        elif layer.subtype == 'vector':
             if layer.has_time:
                 context_dict["layer_type"] = "vector_time"
             else:
@@ -776,7 +768,7 @@ def layer_feature_catalogue(
     if not layer:
         raise Http404(_("Not found"))
 
-    if layer.storetype != 'vector':
+    if layer.subtype != 'vector':
         out = {
             'success': False,
             'errors': 'layer is not a feature type'
@@ -861,7 +853,7 @@ def layer_metadata(
     config["title"] = layer.title
     config["queryable"] = True
 
-    if layer.storetype in ['tileStore', 'remote']:
+    if layer.subtype in ['tileStore', 'remote']:
         service = layer.remote_service
         source_params = {}
         if service.type in ('REST_MAP', 'REST_IMG'):
@@ -1212,27 +1204,6 @@ def layer_metadata_advanced(request, layername):
 
 
 @login_required
-def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
-    layers = Layer.objects.filter(id__in=ids.split('_'))
-
-    if request.method == 'POST':
-        form = PocForm(request.POST)
-        if form.is_valid():
-            for layer in layers:
-                layer.poc = form.cleaned_data['contact']
-                layer.save()
-
-            # Process the data in form.cleaned_data
-            # ...
-            # Redirect after POST
-            return HttpResponseRedirect('/admin/maps/layer')
-    else:
-        form = PocForm()  # An unbound form
-    return render(
-        request, template, context={'layers': layers, 'form': form})
-
-
-@login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
     return layer_append_replace_view(request, layername, template, action_type='replace')
 
@@ -1400,40 +1371,6 @@ def layer_granule_remove(
         return HttpResponse("Not allowed", status=403)
 
 
-@require_http_methods(["POST"])
-def layer_thumbnail(request, layername):
-    try:
-        layer_obj = _resolve_layer(request, layername)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not layer_obj:
-        raise Http404(_("Not found"))
-
-    try:
-        request_body = json.loads(request.body)
-        bbox = request_body['bbox'] + [request_body['srid']]
-        zoom = request_body.get('zoom', None)
-
-        create_thumbnail(
-            layer_obj,
-            bbox=bbox,
-            background_zoom=zoom,
-            overwrite=True
-        )
-
-        return HttpResponse('Thumbnail saved')
-
-    except Exception as e:
-        logger.exception(e)
-        return HttpResponse(
-            content=_('couldn\'t generate thumbnail: %s' % str(e)),
-            status=500,
-            content_type='text/plain'
-        )
-
-
 def get_layer(request, layername):
     """Get Layer object as JSON"""
 
@@ -1596,7 +1533,7 @@ def batch_permissions(request, model):
 
     if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
-            f'/admin/{model.lower()}s/{model.lower()}/'
+            get_url_for_model(model)
         )
 
     if request.method == 'POST':
@@ -1631,7 +1568,7 @@ def batch_permissions(request, model):
                 except set_permissions.OperationalError as exc:
                     celery_logger.exception('Sending task raised: %r', exc)
             return HttpResponseRedirect(
-                f'/admin/{model.lower()}s/{model.lower()}/'
+                get_url_for_model(model)
             )
         return render(
             request,

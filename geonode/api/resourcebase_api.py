@@ -198,17 +198,17 @@ class CommonModelApi(ModelResource):
                     if filtered:
                         if 'time' in the_type:
                             filtered = filtered | semi_filtered.filter(
-                                Layer___storetype=super_type).exclude(Layer___has_time=False)
+                                Layer___subtype=super_type).exclude(Layer___has_time=False)
                         else:
                             filtered = filtered | semi_filtered.filter(
-                                Layer___storetype=super_type)
+                                Layer___subtype=super_type)
                     else:
                         if 'time' in the_type:
                             filtered = semi_filtered.filter(
-                                Layer___storetype=super_type).exclude(Layer___has_time=False)
+                                Layer___subtype=super_type).exclude(Layer___has_time=False)
                         else:
                             filtered = semi_filtered.filter(
-                                Layer___storetype=super_type)
+                                Layer___subtype=super_type)
                 else:
                     _type_filter = FILTER_TYPES[the_type].__name__.lower()
                     if filtered:
@@ -742,9 +742,9 @@ class LayerResource(CommonModelApi):
             # Probe Remote Services
             formatted_obj['store_type'] = 'dataset'
             formatted_obj['online'] = True
-            if hasattr(obj, 'storetype'):
-                formatted_obj['store_type'] = obj.storetype
-                if obj.storetype in ['tileStore', 'remote'] and hasattr(obj, 'remote_service'):
+            if hasattr(obj, 'subtype'):
+                formatted_obj['store_type'] = obj.subtype
+                if obj.subtype in ['tileStore', 'remote'] and hasattr(obj, 'remote_service'):
                     if obj.remote_service:
                         formatted_obj['online'] = (obj.remote_service.probe == 200)
                     else:
@@ -1051,7 +1051,7 @@ class DocumentResource(CommonModelApi):
     class Meta(CommonMetaApi):
         paginator_class = CrossSiteXHRPaginator
         filtering = CommonMetaApi.filtering
-        filtering.update({'storetype': ALL})
+        filtering.update({'subtype': ALL})
         queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'
         authentication = MultiAuthentication(SessionAuthentication(),
