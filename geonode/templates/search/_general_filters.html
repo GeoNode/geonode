@@ -3,7 +3,7 @@
 <nav class="filter" ng-cloak>
   <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans "Categories" %}</a></h4>
   <ul class="nav closed" id="categories">
-  {% if facet_type == 'layers' %}
+  {% if facet_type == 'datasets' %}
     {% verbatim %}
       <li ng-repeat="category in categories" ng-if="category.layers_count > 0">
         <a data-value="{{ category.identifier }}" data-filter="category__identifier__in" title="{{ category.gn_description }}"
@@ -43,7 +43,7 @@
     <nav class="filter" ng-cloak>
         <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i> {% trans "Groups" %}</a></h4>
         <ul class="nav closed" id="groups">
-            {% if facet_type == 'layers' %}
+            {% if facet_type == 'datasets' %}
                 {% verbatim %}
                 <li ng-repeat="group in groups" ng-if="group.resource_counts.layer.total > 0">
                     <a data-value="{{ group.name }}" data-filter="group__group_profile__slug__in" ng-click="multiple_choice_listener($event)" class="{{group.active}}">{{ group.group_profile.title }}
@@ -83,7 +83,7 @@
     <nav class="filter" ng-cloak>
         <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i> {% trans "Group Categories" %}</a></h4>
         <ul class="nav closed" id="group-categories">
-            {% if facet_type == 'layers' %}
+            {% if facet_type == 'datasets' %}
                 {% verbatim %}
                 <li ng-repeat="groupCategory in groupCategories" ng-if="groupCategory.resource_counts.layer.total > 0">
                     <a data-value="{{ groupCategory.slug }}" data-filter="group__group_profile__categories__slug__in" ng-click="multiple_choice_listener($event)" class="{{groupCategory.active}}">{{ groupCategory.name }}
