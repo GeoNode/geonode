@@ -181,7 +181,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner=None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
         """Sets the permissions of a resource.
 
          - It optionally gets a JSON 'perm_spec' through the 'permissions' parameter
@@ -522,7 +522,7 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner=None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource = _resource.get_real_instance()

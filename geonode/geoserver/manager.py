@@ -366,7 +366,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
             return False
         return True
 
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner=None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
         instance = instance or ResourceManager._get_instance(uuid)
 
         try:

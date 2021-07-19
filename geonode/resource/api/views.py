@@ -17,51 +17,28 @@
 #
 #########################################################################
 import json
-import inspect
-import importlib
+import logging
 
-from django.apps import apps
+from urllib.parse import urljoin
+
+from django.urls import reverse
+from django.conf import settings
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from geonode.base.models import ResourceBase
-from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.base.api.serializers import ResourceBaseSerializer
-
 from geonode.resource.manager import resource_manager
-
 from geonode.security.utils import get_resources_with_perms
 
-import logging
+from .tasks import resouce_service_dispatcher
+from .utils import (
+    filtered,
+    resolve_type_serializer)
+
+from ..models import ExecutionRequest
 
 logger = logging.getLogger(__name__)
-
-
-def _get_api_serializer(app):
-    if app:
-        try:
-            _module = importlib.import_module(f'{app.name}.api.serializers')
-            for name, obj in inspect.getmembers(_module):
-                if inspect.isclass(obj) and issubclass(obj, ResourceBaseSerializer):
-                    return obj
-        except Exception as e:
-            logger.debug(e)
-    return ResourceBaseSerializer
-
-
-def _filtered(request, resources, serializer):
-    try:
-        paginator = GeoNodeApiPagination()
-        paginator.page_size = request.GET.get('page_size', 10)
-        user_resources = get_resources_with_perms(request.user)
-        resources = resources.filter(id__in=user_resources)
-        result_page = paginator.paginate_queryset(resources, request)
-        resource_type_serializer = serializer(result_page, embed=True, many=True)
-        return paginator.get_paginated_response({"resources": resource_type_serializer.data})
-    except Exception as e:
-        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, exception=e)
 
 
 @api_view(['GET'])
@@ -81,30 +58,14 @@ def resource_service_search(request, resource_type: str = None):
         http://localhost:8000/api/v2/resource-service/search/?filter={"title__icontains":"foo"}
 
     """
-    _serializer = ResourceBaseSerializer
     try:
         search_filter = json.loads(request.GET.get('filter', '{}'))
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
-    if not resource_type:
-        resource_type = ResourceBase
-    else:
-        _resource_type_found = False
-        for label, app in apps.app_configs.items():
-            if _resource_type_found:
-                break
-            if hasattr(app, 'models'):
-                for _model_name, _model in app.models.items():
-                    if resource_type.lower() == _model_name.lower():
-                        _resource_type_found = True
-                        _serializer = _get_api_serializer(app)
-                        resource_type = _model
-                        break
-        if not _resource_type_found:
-            resource_type = ResourceBase
-    logger.debug(f"Searching for {resource_type} type resources.")
-    return _filtered(request, resource_manager.search(search_filter, resource_type=resource_type), _serializer)
+    _resource_type, _serializer = resolve_type_serializer(resource_type)
+    logger.error(f"Serializing '{_resource_type}' resources through {_serializer}.")
+    return filtered(request, resource_manager.search(search_filter, resource_type=_resource_type), _serializer)
 
 
 @api_view(['GET'])
@@ -120,4 +81,69 @@ def resource_service_exists(request, uuid: str):
         }
        ```
     """
-    return Response({'success': resource_manager.exists(uuid)}, status=status.HTTP_200_OK)
+    _exists = False
+    if resource_manager.exists(uuid):
+        _exists = get_resources_with_perms(request.user).filter(uuid=uuid).exists()
+    return Response({'success': _exists}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def resource_service_execution_status(request, execution_id: str):
+    """
+    TODO
+    """
+    try:
+        _exec_request = ExecutionRequest.objects.filter(exec_id=execution_id)
+        if not _exec_request.exists():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            _request = _exec_request.get()
+            if _request.user == request.user or request.user.is_superuser:
+                return Response(
+                    {
+                        'user': _request.user.username,
+                        'status': _request.status,
+                        'func_name': _request.func_name,
+                        'created': _request.created,
+                        'finished': _request.finished,
+                        'last_updated': _request.last_updated,
+                        'input_params': _request.input_params,
+                        'output_params': _request.output_params
+                    },
+                    status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    except Exception as e:
+        logger.exception(e)
+        return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
+
+
+@api_view(['DELETE'])
+def resource_service_delete(request, uuid: str):
+    """
+    TODO
+    """
+    if request.user.is_anonymous:
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    try:
+        _exec_request = ExecutionRequest.objects.create(
+            user=request.user,
+            func_name='delete',
+            input_params={
+                "uuid": uuid
+            }
+        )
+        resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+        return Response(
+            {
+                'status': _exec_request.status,
+                'execution_id': _exec_request.exec_id,
+                'status_url':
+                    urljoin(
+                        settings.SITEURL,
+                        reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
+                    )
+            },
+            status=status.HTTP_200_OK)
+    except Exception as e:
+        logger.exception(e)
+        return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
