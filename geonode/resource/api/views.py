@@ -89,8 +89,10 @@ def resource_service_exists(request, uuid: str):
 
 @api_view(['GET'])
 def resource_service_execution_status(request, execution_id: str):
-    """
-    TODO
+    """Main dispatcher endpoint to follow an API request status progress
+
+     - input: <str: execution id>
+     - output: <ExecutionRequest>
     """
     try:
         _exec_request = ExecutionRequest.objects.filter(exec_id=execution_id)
@@ -119,8 +121,42 @@ def resource_service_execution_status(request, execution_id: str):
 
 @api_view(['DELETE'])
 def resource_service_delete(request, uuid: str):
-    """
-    TODO
+    """Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'
+
+     - input_params: {
+         uuid: "<str: UUID>"
+       }
+
+     - output_params: {
+         output: <int: number of resources deleted / 0 if none>
+       }
+
+     - output: {
+            "status": "ready",
+            "execution_id": "<str: execution ID>",
+            "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/<str: execution ID>"
+        }
+
+    Sample request:
+
+     1. curl -v -X DELETE -u admin:admin http://localhost:8000/api/v2/resource-service/delete/1234
+        OUTPUT: {
+            "status":"ready",
+            "execution_id":"7ed0b141-cf85-434f-bbfb-c02447a5221b",
+            "status_url":"http://localhost:8000/api/v2/resource-service/execution-status/7ed0b141-cf85-434f-bbfb-c02447a5221b"
+        }
+
+     2. curl -v -X GET -u admin:admin http://localhost:8000/api/v2/resource-service/execution-status/42c0dee6-0cb0-4af7-9bd9-f7dccf75a2d9
+        OUTPUT: {
+            "user":"admin",
+            "status":"finished",
+            "func_name":"delete",
+            "created":"2021-07-19T14:09:59.930619Z",
+            "finished":"2021-07-19T14:10:00.054915Z",
+            "last_updated":"2021-07-19T14:09:59.930647Z",
+            "input_params":{"uuid":"1234"},
+            "output_params":{"output":0}
+        }
     """
     if request.user.is_anonymous:
         return Response(status=status.HTTP_403_FORBIDDEN)
