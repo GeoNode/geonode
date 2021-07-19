@@ -1,12 +1,11 @@
-from django.db import migrations, models
-import datetime
 from django.conf import settings
 from django.utils.timezone import now
 import django.core.files.storage
+from django.db import connection, migrations, transaction, models
 
 
 class Migration(migrations.Migration):
-
+    atomic = True
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('base', '__first__'),
@@ -21,9 +20,11 @@ class Migration(migrations.Migration):
 
     if is_fake_migration:
         is_fake.update(app='datasets')
-        operations = [
-            migrations.RenameModel('Layer', 'Dataset')
-        ]
+        with connection.schema_editor() as schema_editor:
+            schema_editor.alter_db_table('Dataset', 'layers_layer', 'datasets_dataset')
+            schema_editor.alter_db_table('Dataset', 'layers_attribute', 'datasets_attribute')
+            schema_editor.alter_db_table('Dataset', 'layers_layer_styles', 'datasets_layer_styles')
+            schema_editor.alter_db_table('Dataset', 'layers_style', 'datasets_style')
     else:
         operations = [
             migrations.CreateModel(
