@@ -21,6 +21,9 @@ class Migration(migrations.Migration):
 
     if is_fake_migration:
         is_fake.update(app='datasets')
+        operations = [
+            migrations.RenameModel('Layer', 'Dataset')
+        ]
     else:
         operations = [
             migrations.CreateModel(
