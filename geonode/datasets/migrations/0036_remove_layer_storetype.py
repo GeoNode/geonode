@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     try:
         from django.db.migrations.recorder import MigrationRecorder
-        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0032_auto_20200612_1544')
+        is_fake = MigrationRecorder.Migration.objects.filter(app='layers', name='0036_remove_layer_storetype')
         is_fake_migration = is_fake.exists()
     except Exception:
         is_fake_migration = False
