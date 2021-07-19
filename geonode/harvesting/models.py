@@ -38,12 +38,6 @@ from .config import HARVESTER_CLASSES
 logger = logging.getLogger(__name__)
 
 
-def get_default_access_permissions():
-    return {
-        "AnonymousUser": ["view"]
-    }
-
-
 class Harvester(models.Model):
     STATUS_READY = "ready"
     STATUS_UPDATING_HARVESTABLE_RESOURCES = "updating-harvestable-resources"
@@ -104,10 +98,6 @@ class Harvester(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         help_text=_("Default owner of harvested resources")
-    )
-    default_access_permissions = models.JSONField(
-        default=get_default_access_permissions,
-        help_text=_("Default access permissions of harvested resources")
     )
     harvest_new_resources_by_default = models.BooleanField(
         help_text=_(

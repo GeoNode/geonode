@@ -105,7 +105,6 @@ class HarvesterSerializer(BriefHarvesterSerializer):
             "scheduling_enabled",
             "update_frequency",
             "default_owner",
-            "default_access_permissions",
             "harvester_type",
             "harvester_type_specific_configuration",
             "update_frequency",

@@ -154,7 +154,6 @@ class BaseHarvesterWorker(abc.ABC):
             harvesting_session_id: int,
     ):
         """Create or update a local GeoNode resource with the input harvested information."""
-        harvester = models.Harvester.objects.get(pk=self.harvester_id)
         defaults = self.get_geonode_resource_defaults(
             harvested_info.resource_descriptor, harvestable_resource)
         geonode_resource = harvestable_resource.geonode_resource
@@ -177,6 +176,7 @@ class BaseHarvesterWorker(abc.ABC):
         keywords = list(
             harvested_info.resource_descriptor.identification.other_keywords
         ) + geonode_resource.keyword_list()
+        harvester = models.Harvester.objects.get(pk=self.harvester_id)
         keywords.append(
             harvester.name.lower().replace(
                 'harvester ', '').replace(
@@ -186,11 +186,6 @@ class BaseHarvesterWorker(abc.ABC):
         regions = harvested_info.resource_descriptor.identification.place_keywords
         resource_manager.update(
             str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=list(set(keywords)))
-
-        resource_manager.set_permissions(
-            str(harvested_info.resource_descriptor.uuid),
-            instance=geonode_resource,
-            permissions=harvester.default_access_permissions)
         harvestable_resource.geonode_resource = geonode_resource
         harvestable_resource.save()
         self.finalize_resource_update(
