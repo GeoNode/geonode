@@ -69,7 +69,7 @@ from geonode.base.models import Link
 from geonode.base.models import ResourceBase
 from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
-from geonode.layers.models import Layer, Attribute, Style
+from geonode.layers.models import Dataset, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 
 from geonode.utils import (
@@ -436,7 +436,7 @@ def cascading_delete(layer_name=None, catalog=None):
             except FailedRequestError:
                 if ogc_server_settings.DATASTORE:
                     try:
-                        layers = Layer.objects.filter(alternate=layer_name)
+                        layers = Dataset.objects.filter(alternate=layer_name)
                         for layer in layers:
                             store = get_store(cat, layer.store, workspace=ws)
                     except FailedRequestError:
@@ -653,7 +653,7 @@ def gs_slurp(
                 raise
 
     # filter out layers already registered in geonode
-    layer_names = Layer.objects.all().values_list('alternate', flat=True)
+    layer_names = Dataset.objects.all().values_list('alternate', flat=True)
     if skip_geonode_registered:
         try:
             resources = [k for k in resources
@@ -689,9 +689,9 @@ def gs_slurp(
         workspace = the_store.workspace
         try:
             created = False
-            layer = Layer.objects.filter(name=name, workspace=workspace.name).first()
+            layer = Dataset.objects.filter(name=name, workspace=workspace.name).first()
             if not layer:
-                layer = Layer.objects.create(
+                layer = Dataset.objects.create(
                     name=name,
                     workspace=workspace.name,
                     store=the_store.name,
@@ -764,7 +764,7 @@ def gs_slurp(
             print(msg, file=console)
 
     if remove_deleted:
-        q = Layer.objects.filter()
+        q = Dataset.objects.filter()
         if workspace_for_delete_compare is not None:
             if isinstance(workspace_for_delete_compare, Workspace):
                 q = q.filter(
@@ -1115,7 +1115,7 @@ def set_styles(layer, gs_catalog):
         'default_style': layer.default_style
     }
 
-    Layer.objects.filter(id=layer.id).update(**to_update)
+    Dataset.objects.filter(id=layer.id).update(**to_update)
     layer.refresh_from_db()
 
     # Legend links
@@ -1257,8 +1257,8 @@ def cleanup(name, uuid):
        it performs no action.
     """
     try:
-        Layer.objects.get(name=name)
-    except Layer.DoesNotExist:
+        Dataset.objects.get(name=name)
+    except Dataset.DoesNotExist:
         pass
     else:
         msg = f'Not doing any cleanup because the layer {name} exists in the Django db.'
@@ -1651,8 +1651,8 @@ def sync_instance_with_geoserver(
     """
     instance = None
     try:
-        instance = Layer.objects.get(id=instance_id)
-    except Layer.DoesNotExist:
+        instance = Dataset.objects.get(id=instance_id)
+    except Dataset.DoesNotExist:
         logger.error(f"Layer id {instance_id} does not exist yet!")
         raise
 
@@ -1800,11 +1800,11 @@ def sync_instance_with_geoserver(
                 to_update['subtype'] = instance.subtype
                 to_update['typename'] = instance.alternate
 
-                Layer.objects.filter(id=instance.id).update(**to_update)
+                Dataset.objects.filter(id=instance.id).update(**to_update)
 
                 # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
                 instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
-                Layer.objects.filter(id=instance.id).update(
+                Dataset.objects.filter(id=instance.id).update(
                     bbox_polygon=instance.bbox_polygon, srid=srid)
 
                 # Refresh from DB
@@ -1816,7 +1816,7 @@ def sync_instance_with_geoserver(
             with transaction.atomic():
                 match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
                 instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
-                Layer.objects.filter(id=instance.id).update(
+                Dataset.objects.filter(id=instance.id).update(
                     ll_bbox_polygon=instance.bbox_polygon, srid=srid)
 
                 # Refresh from DB
@@ -1826,7 +1826,7 @@ def sync_instance_with_geoserver(
             try:
                 with transaction.atomic():
                     instance.bbox_polygon.srid = 4326
-                    Layer.objects.filter(id=instance.id).update(
+                    Dataset.objects.filter(id=instance.id).update(
                         ll_bbox_polygon=instance.bbox_polygon, srid=srid)
 
                     # Refresh from DB
@@ -2057,10 +2057,10 @@ def style_update(request, url, workspace=None):
             layer = None
             if layer_name:
                 try:
-                    layer = Layer.objects.get(name=layer_name)
+                    layer = Dataset.objects.get(name=layer_name)
                 except Exception:
                     try:
-                        layer = Layer.objects.get(alternate=layer_name)
+                        layer = Dataset.objects.get(alternate=layer_name)
                     except Exception:
                         pass
             if layer:

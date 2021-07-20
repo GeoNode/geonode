@@ -23,7 +23,7 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from geonode.geoserver.helpers import gs_catalog
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 
 
 def is_gs_resource_valid(layer):
@@ -63,9 +63,9 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         if options['layername']:
-            layers = Layer.objects.filter(name__icontains=options['layername'])
+            layers = Dataset.objects.filter(name__icontains=options['layername'])
         else:
-            layers = Layer.objects.all()
+            layers = Dataset.objects.all()
         if options['owner']:
             layers = layers.filter(owner=get_user_model().objects.filter(username=options['owner']))
 

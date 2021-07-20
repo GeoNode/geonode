@@ -30,7 +30,7 @@ from geonode.base.models import Link
 from geonode.utils import check_ogc_backend
 from geonode.base.models import ResourceBase
 from geonode.maps.models import Map, MapLayer
-from geonode.layers.models import Layer, Style
+from geonode.layers.models import Dataset, Style
 import logging
 
 
@@ -93,7 +93,7 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                         F('layer_params'), Value(source_address), Value(target_address), function='replace'))
                 logger.info(f"Updated {_cnt} MapLayers")
 
-                _cnt = Layer.objects.filter(thumbnail_url__icontains=source_address).update(
+                _cnt = Dataset.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
                         F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
                 logger.info(f"Updated {_cnt} Layers")

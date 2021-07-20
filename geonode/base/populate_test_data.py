@@ -37,7 +37,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 from geonode.maps.models import Map
 from geonode.base import enumerations
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase, TopicCategory
@@ -58,7 +58,7 @@ dfile = [f"{settings.MEDIA_ROOT}/img.gif"]
 
 def all_public():
     '''ensure all layers, maps and documents are publicly available'''
-    for lyr in Layer.objects.all():
+    for lyr in Dataset.objects.all():
         lyr.set_default_permissions()
         lyr.clear_dirty_state()
         lyr.set_processing_state(enumerations.STATE_PROCESSED)
@@ -244,7 +244,7 @@ def create_models(type=None, integration=False):
                     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                     end = start + timedelta(days=365)
                     logger.debug(f"[SetUp] Add layer {title}")
-                    layer = Layer(
+                    layer = Dataset(
                         title=title,
                         abstract=abstract,
                         name=name,
@@ -289,9 +289,9 @@ def remove_models(obj_ids, type=None, integration=False):
                 pass
         elif type == 'layer':
             try:
-                l_ids = obj_ids or [lyr.id for lyr in Layer.objects.all()]
+                l_ids = obj_ids or [lyr.id for lyr in Dataset.objects.all()]
                 for id in l_ids:
-                    layer = Layer.objects.get(pk=id)
+                    layer = Dataset.objects.get(pk=id)
                     layer.delete()
             except Exception:
                 pass
@@ -308,7 +308,7 @@ def remove_models(obj_ids, type=None, integration=False):
 def dump_models(path=None):
     result = serialize("json", sum([list(x) for x in
                                     [get_user_model().objects.all(),
-                                     Layer.objects.all(),
+                                     Dataset.objects.all(),
                                      Map.objects.all(),
                                      Document.objects.all(),
                                      Tag.objects.all(),
@@ -333,7 +333,7 @@ def create_single_layer(name):
     ll = (name, 'lorem ipsum', name, f'geonode:{name}', [
         0, 22, 0, 22], test_datetime, ('populartag',), "farming")
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ll
-    layer = Layer(
+    layer = Dataset(
         title=title,
         abstract=abstract,
         name=name,

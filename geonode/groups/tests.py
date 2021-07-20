@@ -27,7 +27,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from guardian.shortcuts import get_anonymous_user
 from geonode.security.views import _perms_info_json
@@ -321,7 +321,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Ensures that when a user is in a group, the group permissions
         extend to the user.
         """
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         # Set the default permissions
         layer.set_default_permissions()
 
@@ -390,7 +390,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Tests the resources method on a Group object.
         """
 
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         map = Map.objects.all()[0]
 
         perm_spec = {'groups': {'bar': ['change_resourcebase']}}
@@ -421,7 +421,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Tests the perms_info function (which passes permissions to the response context).
         """
         # Add test to test perms being sent to the front end.
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         layer.set_default_permissions()
         perms_info = layer.get_all_level_info()
 
@@ -444,7 +444,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
         self.assertTrue(self.client.login(username="admin", password="admin"))
 
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         document = Document.objects.all()[0]
         map_obj = Map.objects.all()[0]
         layer.set_default_permissions()

@@ -27,7 +27,7 @@ from pycsw import server
 from guardian.shortcuts import get_objects_for_user
 from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 from geonode.base.models import ResourceBase
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.auth import get_or_create_token
 from geonode.base.models import ContactRole, SpatialRepresentationType
 from geonode.groups.models import GroupProfile
@@ -280,7 +280,7 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
     content += sc
 
     if resource.detail_url.find('/layers/') > -1:
-        layer = Layer.objects.get(resourcebase_ptr_id=resource.id)
+        layer = Dataset.objects.get(resourcebase_ptr_id=resource.id)
         content += f"attribute data{sc}"
         content += 'attribute name;label;description\n'
         for attr in layer.attribute_set.all():
@@ -317,7 +317,7 @@ def csw_render_extra_format_html(request, layeruuid, resname):
         extra_res_md['keywords'] = get_keywords(resource)
 
     if resource.detail_url.find('/layers/') > -1:
-        layer = Layer.objects.get(resourcebase_ptr_id=resource.id)
+        layer = Dataset.objects.get(resourcebase_ptr_id=resource.id)
         extra_res_md['atrributes'] = ''
         for attr in layer.attribute_set.all():
             s = f"<tr><td>{attr.attribute}</td><td>{attr.attribute_label}</td><td>{attr.description}</td></tr>"

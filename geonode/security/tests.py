@@ -41,7 +41,7 @@ from guardian.shortcuts import (
 )
 
 from geonode import geoserver
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_layer
@@ -299,8 +299,8 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_attributes_sats_refresh(self):
-        layers = Layer.objects.all()[:2].values_list('id', flat=True)
-        test_layer = Layer.objects.get(id=layers[0])
+        layers = Dataset.objects.all()[:2].values_list('id', flat=True)
+        test_layer = Dataset.objects.get(id=layers[0])
 
         self.client.login(username='admin', password='admin')
         layer_attributes = test_layer.attributes
@@ -336,8 +336,8 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_invalidate_tiledlayer_cache(self):
-        layers = Layer.objects.all()[:2].values_list('id', flat=True)
-        test_layer = Layer.objects.get(id=layers[0])
+        layers = Dataset.objects.all()[:2].values_list('id', flat=True)
+        test_layer = Dataset.objects.get(id=layers[0])
 
         self.client.login(username='admin', password='admin')
 
@@ -357,9 +357,9 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             geofence_rules_count = get_geofence_rules_count()
             self.assertEqual(geofence_rules_count, 0)
 
-        layers = Layer.objects.all()[:2].values_list('id', flat=True)
+        layers = Dataset.objects.all()[:2].values_list('id', flat=True)
         layers_id = [str(x) for x in layers]
-        test_perm_layer = Layer.objects.get(id=layers[0])
+        test_perm_layer = Dataset.objects.get(id=layers[0])
 
         self.client.login(username='admin', password='admin')
         resp = self.client.get(self.list_url)
@@ -421,13 +421,13 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """Test that Bobby can set the permissions only only on the ones
         for which he has the right"""
         bobby = get_user_model().objects.get(username='bobby')
-        layer = Layer.objects.all().exclude(owner=bobby)[0]
+        layer = Dataset.objects.all().exclude(owner=bobby)[0]
         self.client.login(username='admin', password='admin')
         # give bobby the right to change the layer permissions
         assign_perm('change_resourcebase_permissions', bobby, layer.get_self_resource())
         self.client.logout()
         self.client.login(username='bobby', password='bob')
-        layer2 = Layer.objects.all().exclude(owner=bobby)[1]
+        layer2 = Dataset.objects.all().exclude(owner=bobby)[1]
         data = {
             'permissions': json.dumps({"users": {"bobby": ["view_resourcebase"]}, "groups": []}),
             'resources': [layer.id, layer2.id]
@@ -452,7 +452,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             },
             'groups': []
         }
-        layer = Layer.objects.filter(subtype='vector').first()
+        layer = Dataset.objects.filter(subtype='vector').first()
         layer.set_permissions(perm_spec)
         # Test user has permission with read_only=False
         self.assertTrue(layer.user_can(bobby, 'change_layer_style'))
@@ -472,7 +472,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             4. Try to sync a layer from GeoServer
         """
         bobby = get_user_model().objects.get(username='bobby')
-        layer = Layer.objects.filter(subtype='vector').exclude(owner=bobby).first()
+        layer = Dataset.objects.filter(subtype='vector').exclude(owner=bobby).first()
         self.client.login(username='admin', password='admin')
 
         # Reset GeoFence Rules
@@ -597,7 +597,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
         self.assertEqual(geofence_rules_count, 0)
-        layer = Layer.objects.first()
+        layer = Dataset.objects.first()
         # grab bobby
         bobby = get_user_model().objects.get(username="bobby")
 
@@ -778,7 +778,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             permissions=permissions,
             execute_signals=True)
 
-        saved_layer = Layer.objects.get(name='boxes_with_date.shp')
+        saved_layer = Dataset.objects.get(name='boxes_with_date.shp')
         check_layer(saved_layer)
 
         from lxml import etree
@@ -983,7 +983,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             permissions=permissions,
             execute_signals=True)
 
-        layer = Layer.objects.get(name='san_andres_y_providencia_poi.shp')
+        layer = Dataset.objects.get(name='san_andres_y_providencia_poi.shp')
         check_layer(layer)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"0. geofence_rules_count: {geofence_rules_count} ")
@@ -1105,7 +1105,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Get a Layer object to work with
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         # Set the default permissions
         layer.set_default_permissions()
 
@@ -1169,7 +1169,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Get a layer to work with
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
 
         # FIXME Test a comprehensive set of permissions specifications
 
@@ -1198,7 +1198,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Setup some layer names to work with
-        valid_layer_typename = Layer.objects.all().first().id
+        valid_layer_typename = Dataset.objects.all().first().id
         invalid_layer_id = 9999999
 
         # Test that an invalid layer.alternate is handled for properly
@@ -1258,7 +1258,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Test with a Layer object
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         layer.set_default_permissions()
         # Test that the anonymous user can read
         self.assertTrue(
@@ -1298,7 +1298,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         bob = get_user_model().objects.get(username='bobby')
 
         # grab a layer
-        layer = Layer.objects.filter(owner=bob).first()
+        layer = Dataset.objects.filter(owner=bob).first()
         layer.set_default_permissions()
         # verify bobby has view/change permissions on it but not manage
         self.assertTrue(
@@ -1423,7 +1423,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_anonymus_permissions(self):
         # grab a layer
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         layer.set_default_permissions()
         # 1. view_resourcebase
         # 1.1 has view_resourcebase: verify that anonymous user can access
@@ -1471,16 +1471,16 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertTrue(response.status_code in (302, 403))
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
-        layers = Layer.objects.all()
+        layers = Dataset.objects.all()
         actual = get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
         self.assertEqual(8, len(actual))
 
     def test_get_visible_resources_should_return_updated_resource_with_metadata_only_false(self):
         # Updating the layer with metadata only True to verify that the filter works
-        x = Layer.objects.get(title='layer metadata true')
+        x = Dataset.objects.get(title='layer metadata true')
         x.metadata_only = False
         x.save()
-        layers = Layer.objects.all()
+        layers = Dataset.objects.all()
         actual = get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
         self.assertEqual(layers.filter(dirty_state=False).count(), len(actual))
 
@@ -1496,10 +1496,10 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertIsNotNone(standard_user)
         admin_user.is_superuser = True
         admin_user.save()
-        layers = Layer.objects.all()
+        layers = Dataset.objects.all()
 
         actual = get_visible_resources(
-            queryset=Layer.objects.all(),
+            queryset=Dataset.objects.all(),
             user=admin_user,
             admin_approval_required=True,
             unpublished_not_visible=True,
@@ -1507,7 +1507,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(layers.count() - 1, actual.count())
         actual = get_visible_resources(
-            queryset=Layer.objects.all(),
+            queryset=Dataset.objects.all(),
             user=standard_user,
             admin_approval_required=True,
             unpublished_not_visible=True,
@@ -1516,12 +1516,12 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(layers.count() - 1, actual.count())
 
         # Test 'is_approved=False' 'is_published=False'
-        Layer.objects.filter(
+        Dataset.objects.filter(
             ~Q(owner=standard_user)).update(
                 is_approved=False, is_published=False)
 
         actual = get_visible_resources(
-            queryset=Layer.objects.all(),
+            queryset=Dataset.objects.all(),
             user=admin_user,
             admin_approval_required=True,
             unpublished_not_visible=True,
@@ -1529,7 +1529,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(layers.count() - 1, actual.count())
         actual = get_visible_resources(
-            queryset=Layer.objects.all(),
+            queryset=Dataset.objects.all(),
             user=standard_user,
             admin_approval_required=True,
             unpublished_not_visible=True,
@@ -1537,7 +1537,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(layers.count() - 1, actual.count())
         actual = get_visible_resources(
-            queryset=Layer.objects.all(),
+            queryset=Dataset.objects.all(),
             user=None,
             admin_approval_required=True,
             unpublished_not_visible=True,
@@ -1549,11 +1549,11 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         private_groups = GroupProfile.objects.filter(
             access="private")
         private_groups.first().leave(standard_user)
-        Layer.objects.filter(
+        Dataset.objects.filter(
             ~Q(owner=standard_user)).update(
                 group=private_groups.first().group)
         actual = get_visible_resources(
-            queryset=Layer.objects.all(),
+            queryset=Dataset.objects.all(),
             user=admin_user,
             admin_approval_required=True,
             unpublished_not_visible=True,
@@ -1561,7 +1561,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(layers.count() - 1, actual.count())
         actual = get_visible_resources(
-            queryset=Layer.objects.all(),
+            queryset=Dataset.objects.all(),
             user=standard_user,
             admin_approval_required=True,
             unpublished_not_visible=True,
@@ -1569,7 +1569,7 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # The method returns only 'metadata_only=False' resources
         self.assertEqual(1, actual.count())
         actual = get_visible_resources(
-            queryset=Layer.objects.all(),
+            queryset=Dataset.objects.all(),
             user=None,
             admin_approval_required=True,
             unpublished_not_visible=True,
@@ -1579,10 +1579,10 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_get_visible_resources(self):
         standard_user = get_user_model().objects.get(username="bobby")
-        layers = Layer.objects.all()
+        layers = Dataset.objects.all()
         # update user's perm on a layer,
         # this should not return the layer since it will not be in user's allowed resources
-        x = Layer.objects.get(title='common bar')
+        x = Dataset.objects.get(title='common bar')
         remove_perm('view_resourcebase', standard_user, x.get_self_resource())
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, x.get_self_resource())
@@ -1613,12 +1613,12 @@ class SecurityRulesTest(TestCase):
             # Set geofence (and so the dirty state)
             set_geofence_all(self._l)
             # Retrieve the same layer
-            dirty_layer = Layer.objects.get(pk=self._l.id)
+            dirty_layer = Dataset.objects.get(pk=self._l.id)
             # Check dirty state (True)
             self.assertFalse(dirty_layer.dirty_state)
             # Call sync resources
             sync_resources_with_guardian()
-            clean_layer = Layer.objects.get(pk=self._l.id)
+            clean_layer = Dataset.objects.get(pk=self._l.id)
             # Check dirty state
             self.assertFalse(clean_layer.dirty_state)
 
@@ -1628,7 +1628,7 @@ class SecurityRulesTest(TestCase):
             # Set geofence (and so the dirty state)
             set_geofence_all(self._l)
             # Retrieve the same layer
-            dirty_layer = Layer.objects.get(pk=self._l.id)
+            dirty_layer = Dataset.objects.get(pk=self._l.id)
             # Check dirty state (True)
             self.assertTrue(dirty_layer.dirty_state)
             # Call sync resources

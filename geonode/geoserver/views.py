@@ -52,7 +52,7 @@ from geonode.compat import ensure_string
 from geonode.base.auth import get_or_create_token
 from geonode.decorators import logged_in_or_basicauth
 from geonode.layers.forms import LayerStyleUploadForm
-from geonode.layers.models import Layer, Style
+from geonode.layers.models import Dataset, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
 from geonode.proxy.views import proxy
@@ -509,7 +509,7 @@ def geoserver_proxy(request,
                     f"[geoserver_proxy] Updating Layer ---> url {url.geturl()}")
                 try:
                     _layer_name = os.path.splitext(os.path.basename(request.path))[0]
-                    _layer = Layer.objects.get(name=_layer_name)
+                    _layer = Dataset.objects.get(name=_layer_name)
                     affected_layers = [_layer]
                 except Exception:
                     logger.warn(f"Could not find any Layer {os.path.basename(request.path)} on DB")
@@ -648,10 +648,10 @@ def layer_acls(request):
         ResourceBase.objects.filter(polymorphic_ctype__model='layer')).values_list('id', flat=True)
     layer_writable = get_objects_for_user(
         acl_user, 'change_layer_data',
-        Layer.objects.all())
+        Dataset.objects.all())
 
     _read = set(
-        Layer.objects.filter(
+        Dataset.objects.filter(
             id__in=resources_readable).values_list(
             'alternate',
             flat=True))
@@ -738,14 +738,14 @@ def get_capabilities(request, layerid=None, user=None,
     layers = None
     cap_name = ' Capabilities - '
     if layerid is not None:
-        layer_obj = Layer.objects.get(id=layerid)
+        layer_obj = Dataset.objects.get(id=layerid)
         cap_name += layer_obj.title
-        layers = Layer.objects.filter(id=layerid)
+        layers = Dataset.objects.filter(id=layerid)
     elif user is not None:
-        layers = Layer.objects.filter(owner__username=user)
+        layers = Dataset.objects.filter(owner__username=user)
         cap_name += user
     elif category is not None:
-        layers = Layer.objects.filter(category__identifier=category)
+        layers = Dataset.objects.filter(category__identifier=category)
         cap_name += category
     elif mapid is not None:
         map_obj = Map.objects.get(id=mapid)
@@ -754,7 +754,7 @@ def get_capabilities(request, layerid=None, user=None,
         for layer in map_obj.layers:
             if layer.local:
                 alternates.append(layer.name)
-        layers = Layer.objects.filter(alternate__in=alternates)
+        layers = Dataset.objects.filter(alternate__in=alternates)
 
     for layer in layers:
         if request.user.has_perm('view_resourcebase',

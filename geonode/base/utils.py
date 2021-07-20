@@ -35,7 +35,7 @@ from django.contrib.auth import get_user_model
 # Geonode functionality
 from guardian.shortcuts import get_perms, remove_perm, assign_perm
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.base.thumb_utils import (
     get_thumbs,
@@ -93,7 +93,7 @@ def remove_duplicate_links(resource):
             _links.last().delete()
             _cnt -= 1
 
-    if isinstance(resource, Layer):
+    if isinstance(resource, Dataset):
         # fixup Legend links
         layer = resource
         if layer.default_style and not layer.get_legend_url(style_name=layer.default_style.name):

@@ -43,7 +43,7 @@ from geonode.base.models import (
     Link,
     ResourceBase,
     TopicCategory)
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.layers.utils import resolve_regions
 from geonode.utils import http_client, get_legend_url
@@ -242,7 +242,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         else:
             resource_fields = self._get_indexed_layer_fields(layer_meta)
             keywords = resource_fields.pop("keywords")
-        existance_test_qs = Layer.objects.filter(
+        existance_test_qs = Dataset.objects.filter(
             name=resource_fields["name"],
             store=resource_fields["store"],
             workspace=resource_fields["workspace"]
@@ -273,7 +273,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         keywords = resource_fields.pop("keywords", [])
         geonode_layer = resource_manager.create(
             None,
-            resource_type=Layer,
+            resource_type=Dataset,
             defaults=dict(
                 owner=geonode_service.owner,
                 remote_service=geonode_service,
@@ -512,7 +512,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         else:
             resource_fields = self._get_indexed_layer_fields(layer_meta)
             keywords = resource_fields.pop("keywords")
-        existance_test_qs = Layer.objects.filter(
+        existance_test_qs = Dataset.objects.filter(
             name=resource_fields["name"],
             store=resource_fields["store"],
             workspace=resource_fields["workspace"]
@@ -592,7 +592,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                             if field in _layer and _layer[field]:
                                 r_fields[field] = _layer[field]
                         if r_fields:
-                            Layer.objects.filter(
+                            Dataset.objects.filter(
                                 id=geonode_layer.id).update(
                                 **r_fields)
                             geonode_layer.refresh_from_db()

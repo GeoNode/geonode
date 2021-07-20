@@ -36,7 +36,7 @@ from django.views.decorators.csrf import requires_csrf_token
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
 from geonode.security.views import _perms_info_json
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.proxy.views import proxy
 from urllib.parse import urljoin
 from urllib.parse import quote
@@ -208,7 +208,7 @@ def harvest_resources_handle_post(request, service, handler):
             'change_resourcebase_metadata', 'change_resourcebase',
             'delete_resourcebase'
         ]
-        layer = Layer.objects.filter(alternate=id)
+        layer = Dataset.objects.filter(alternate=id)
         if layer.exists():
             for perm in perms:
                 assign_perm(perm, request.user, layer.first().get_self_resource())
@@ -322,7 +322,7 @@ def service_detail(request, service_id):
     )
 
     already_imported_layers = get_visible_resources(
-        queryset=Layer.objects.filter(remote_service=service),
+        queryset=Dataset.objects.filter(remote_service=service),
         user=request.user
     )
     resources_being_harvested = HarvestJob.objects.filter(service=service)

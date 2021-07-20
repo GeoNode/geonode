@@ -33,7 +33,7 @@ from geonode.base.models import (
     ResourceBase,
     UserGeoLimit,
     GroupGeoLimit)
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.groups.models import GroupProfile
 
 from geonode.notifications_helper import send_notification
@@ -315,7 +315,7 @@ def attributes_sats_refresh(request):
     can_change_data = request.user.has_perm(
         'change_resourcebase',
         resource)
-    layer = Layer.objects.get(id=resource.id)
+    layer = Dataset.objects.get(id=resource.id)
     if layer and can_change_data:
         try:
             # recalculate the layer statistics
@@ -379,7 +379,7 @@ def invalidate_tiledlayer_cache(request):
     can_change_data = request.user.has_perm(
         'change_resourcebase',
         resource)
-    layer = Layer.objects.get(id=resource.id)
+    layer = Dataset.objects.get(id=resource.id)
     if layer and can_change_data:
         try:
             set_geowebcache_invalidate_cache(layer.alternate or layer.typename)
@@ -469,7 +469,7 @@ def send_email_consumer(layer_uuid, user_id):
 def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.node"):
     # get owner and viewer emails
     owner_email = get_user_model().objects.get(username=owner).email
-    layer = Layer.objects.get(id=layer_id)
+    layer = Dataset.objects.get(id=layer_id)
     # check if those values are empty
     if owner_email and geonode_email:
         from django.core.mail import EmailMessage

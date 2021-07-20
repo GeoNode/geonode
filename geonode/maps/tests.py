@@ -33,7 +33,7 @@ from django.contrib.contenttypes.models import ContentType
 from geonode import geoserver
 from geonode.settings import on_travis
 from geonode.maps import MapsAppConfig
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.decorators import on_ogc_backend
 from geonode.maps.utils import fix_baselayers
@@ -358,11 +358,11 @@ community."
         self.client.get(reverse('new_map'))
 
     def test_new_map_with_layer(self):
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         self.client.get(f"{reverse('new_map')}?layer={layer.alternate}")
 
     def test_new_map_with_layer_view(self):
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         # anonymous user
         response = self.client.get(f"{reverse('new_map')}?layer={layer.alternate}&view=True")
         self.assertIn('view_resourcebase', response.context.get('perms_list', []))
@@ -376,11 +376,11 @@ community."
         self.assertListEqual([], response.context.get('perms_list', []))
 
     def test_new_map_with_empty_bbox_layer(self):
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         self.client.get(f"{reverse('new_map')}?layer={layer.alternate}")
 
     def test_add_layer_to_existing_map(self):
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         map_obj = Map.objects.all().first()
         self.client.get(f"{reverse('add_layer')}?layer_name={layer.alternate}&map_id={map_obj.id}")
 
@@ -393,8 +393,8 @@ community."
                     layer_title in layer.alternate)
                 self.assertTrue(
                     map_layer.name in local_link)
-            if Layer.objects.filter(alternate=map_layer.name).exists():
-                attribute_cfg = Layer.objects.get(alternate=map_layer.name).attribute_config()
+            if Dataset.objects.filter(alternate=map_layer.name).exists():
+                attribute_cfg = Dataset.objects.get(alternate=map_layer.name).attribute_config()
                 if "getFeatureInfo" in attribute_cfg:
                     self.assertIsNotNone(attribute_cfg["getFeatureInfo"])
                     cfg = map_layer.layer_config()
@@ -775,7 +775,7 @@ community."
         self.assertEqual(map_obj.projection, projection)
 
         for map_layer in map_obj.layers:
-            if Layer.objects.filter(alternate=map_layer.name).exists():
+            if Dataset.objects.filter(alternate=map_layer.name).exists():
                 cfg = map_layer.layer_config()
                 self.assertIsNotNone(cfg["getFeatureInfo"])
 
@@ -788,7 +788,7 @@ community."
         # Test successful new map creation
         m = Map()
         admin_user = get_user_model().objects.get(username='admin')
-        layer_name = Layer.objects.all().first().alternate
+        layer_name = Dataset.objects.all().first().alternate
         m.create_from_layer_list(admin_user, [layer_name], "title", "abstract")
         map_id = m.id
 
@@ -1000,7 +1000,7 @@ community."
                 self.assertTrue(word.name in keywords.split(','))
 
     def test_get_legend(self):
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         map_layer = MapLayer.objects.filter(name=layer.alternate).exclude(layer_params='').first()
         if map_layer and layer.default_style:
             self.assertIsNone(map_layer.get_legend)

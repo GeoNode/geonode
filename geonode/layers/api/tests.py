@@ -24,7 +24,7 @@ from urllib.parse import urljoin
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class LayersApiTests(APITestCase):
         # Test list response doesn't have attribute_set
         self.assertIsNone(response.data['layers'][0].get('attribute_set'))
         # Test detail response has attribute_set
-        url = urljoin(f"{reverse('datasets-list')}/", f"{Layer.objects.first().pk}")
+        url = urljoin(f"{reverse('datasets-list')}/", f"{Dataset.objects.first().pk}")
         response = self.client.get(url, format='json')
         self.assertIsNotNone(response.data['layer'].get('attribute_set'))
 
@@ -71,7 +71,7 @@ class LayersApiTests(APITestCase):
         """
         Ensure "raw_*" properties returns no HTML or carriage-return tag
         """
-        layer = Layer.objects.first()
+        layer = Dataset.objects.first()
         layer.abstract = "<p><em>No abstract provided</em>.</p>\r\n<p><img src=\"data:image/jpeg;base64,/9j/4AAQSkZJR/>"
         layer.constraints_other = "<p><span style=\"text-decoration: underline;\">None</span></p>"
         layer.supplemental_information = "<p>No information provided &iacute;</p> <p>&pound;682m</p>"
@@ -115,7 +115,7 @@ class LayersApiTests(APITestCase):
         mock_create_thumbnail.return_value = "http://localhost:8000/mocked_url.jpg"
         # Admin
         self.client.login(username="admin", password="admin")
-        layer_id = Layer.objects.first().resourcebase_ptr_id
+        layer_id = Dataset.objects.first().resourcebase_ptr_id
         url = reverse('datasets-set-thumb-from-bbox', args=[layer_id])
         payload = {
             "bbox": [

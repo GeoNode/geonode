@@ -28,7 +28,7 @@ from django.conf import settings
 from django.utils.module_loading import import_string
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.thumb_utils import thumb_exists
 from geonode.geoserver.helpers import OGC_Servers_Handler
 from geonode.utils import get_layer_name, get_layer_workspace
@@ -55,7 +55,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
 
 
 def create_thumbnail(
-    instance: Union[Layer, Map],
+    instance: Union[Dataset, Map],
     wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"),
     bbox: Optional[Union[List, Tuple]] = None,
     forced_crs: Optional[str] = None,
@@ -208,7 +208,7 @@ def create_thumbnail(
     return instance.thumbnail_url
 
 
-def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
+def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
     """
     Method returning file name for the thumbnail.
     If provided instance is a Map, and doesn't have any defined layers, None is returned.
@@ -218,7 +218,7 @@ def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
     :raises ThumbnailError: if provided instance is neither an instance of the Map nor of the Layer
     """
 
-    if isinstance(instance, Layer):
+    if isinstance(instance, Dataset):
         file_name = f"layer-{instance.uuid}-thumb.png"
 
     elif isinstance(instance, Map):
@@ -237,7 +237,7 @@ def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
 
 
 def _layers_locations(
-    instance: Union[Layer, Map], compute_bbox: bool = False, target_crs: str = "EPSG:3857"
+    instance: Union[Dataset, Map], compute_bbox: bool = False, target_crs: str = "EPSG:3857"
 ) -> Tuple[List[List], List]:
     """
     Function returning a list mapping instance's layers to their locations, enabling to construct a minimum
@@ -260,7 +260,7 @@ def _layers_locations(
     locations = []
     bbox = []
 
-    if isinstance(instance, Layer):
+    if isinstance(instance, Dataset):
 
         # for local layers
         if instance.remote_service is None:
@@ -303,14 +303,14 @@ def _layers_locations(
             store = map_layer.store
             workspace = get_layer_workspace(map_layer)
 
-            if store and Layer.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
-                layer = Layer.objects.filter(store=store, workspace=workspace, name=name).first()
+            if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
+                layer = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()
 
-            elif workspace and Layer.objects.filter(workspace=workspace, name=name).count() > 0:
-                layer = Layer.objects.filter(workspace=workspace, name=name).first()
+            elif workspace and Dataset.objects.filter(workspace=workspace, name=name).count() > 0:
+                layer = Dataset.objects.filter(workspace=workspace, name=name).first()
 
-            elif Layer.objects.filter(alternate=map_layer.name).count() > 0:
-                layer = Layer.objects.filter(alternate=map_layer.name).first()
+            elif Dataset.objects.filter(alternate=map_layer.name).count() > 0:
+                layer = Dataset.objects.filter(alternate=map_layer.name).first()
 
             else:
                 logger.warning(f"Layer for MapLayer {name} was not found. Skipping it in the thumbnail.")

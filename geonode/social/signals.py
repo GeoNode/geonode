@@ -31,7 +31,7 @@ from django.utils.translation import ugettext_lazy as _
 
 # from actstream.exceptions import ModelNotActionable
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.notifications_helper import (send_notification, queue_notification,
@@ -117,7 +117,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
         else:
             if created is False:
                 # object was saved.
-                if not isinstance(instance, Layer) and \
+                if not isinstance(instance, Dataset) and \
                         not isinstance(instance, Document) and \
                         not isinstance(instance, Map):
                     verb = action.get('updated_verb')
@@ -160,8 +160,8 @@ def relationship_post_save(instance, sender, created, **kwargs):
 if activity:
     signals.post_save.connect(activity_post_modify_object, sender=Comment)
 
-    signals.post_save.connect(activity_post_modify_object, sender=Layer)
-    signals.post_delete.connect(activity_post_modify_object, sender=Layer)
+    signals.post_save.connect(activity_post_modify_object, sender=Dataset)
+    signals.post_delete.connect(activity_post_modify_object, sender=Dataset)
 
     signals.post_save.connect(activity_post_modify_object, sender=Map)
     signals.post_delete.connect(activity_post_modify_object, sender=Map)

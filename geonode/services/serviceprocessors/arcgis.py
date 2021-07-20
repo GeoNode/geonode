@@ -28,7 +28,7 @@ from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify, safe
 
 from geonode.base.models import Link
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.resource.manager import resource_manager
 
@@ -185,7 +185,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     def _harvest_resource(self, layer_meta, geonode_service):
         resource_fields = self._get_indexed_layer_fields(layer_meta)
         keywords = resource_fields.pop("keywords")
-        existance_test_qs = Layer.objects.filter(
+        existance_test_qs = Dataset.objects.filter(
             name=resource_fields["name"],
             store=resource_fields["store"],
             workspace=resource_fields["workspace"]
@@ -265,7 +265,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         keywords = resource_fields.pop("keywords", [])
         geonode_layer = resource_manager.create(
             None,
-            resource_type=Layer,
+            resource_type=Dataset,
             defaults=dict(
                 owner=geonode_service.owner,
                 remote_service=geonode_service,

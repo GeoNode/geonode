@@ -39,7 +39,7 @@ from ..utils import XML_PARSER
 from . import base
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 
@@ -218,7 +218,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         """Return resource type class from resource type string."""
         return {
             GeoNodeResourceType.MAP.value: Map,
-            GeoNodeResourceType.LAYER.value: Layer,
+            GeoNodeResourceType.LAYER.value: Dataset,
             GeoNodeResourceType.DOCUMENT.value: Document,
         }[remote_resource_type]
 

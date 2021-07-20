@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from django.core.management.base import BaseCommand
 from requests.auth import HTTPBasicAuth
 from defusedxml import lxml as dlxml
@@ -43,7 +43,7 @@ class Command(BaseCommand):
             curl -v -u admin:geoserver -XGET \
                 "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
             """
-            layers = Layer.objects.all()
+            layers = Dataset.objects.all()
             print(f"Total layers to be updated: {layers.count()}")
             for layer in layers:
                 print(f"Processing layer: {layer.typename}")

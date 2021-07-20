@@ -38,7 +38,7 @@ from django.urls import reverse
 
 # Geonode dependencies
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.utils import resolve_object
 from geonode.monitoring import register_event
 from geonode.documents.models import Document
@@ -143,7 +143,7 @@ def batch_modify(request, model):
     if model == 'Document':
         Resource = Document
     if model == 'Layer':
-        Resource = Layer
+        Resource = Dataset
     if model == 'Map':
         Resource = Map
     template = 'base/batch_edit.html'

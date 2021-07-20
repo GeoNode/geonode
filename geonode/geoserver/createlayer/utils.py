@@ -27,7 +27,7 @@ from django.contrib.gis.geos import Polygon
 from django.template.defaultfilters import slugify
 
 from geonode import GeoNodeException
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.layers.utils import get_valid_name
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import (
@@ -67,7 +67,7 @@ def create_gn_layer(workspace, datastore, name, title, owner_name):
 
     layer = resource_manager.create(
         str(uuid.uuid4()),
-        resource_type=Layer,
+        resource_type=Dataset,
         defaults=dict(
             name=name,
             workspace=workspace.name,

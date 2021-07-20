@@ -20,7 +20,7 @@ import logging
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 
 from geonode.geoserver.security.utils import set_geofence_all
 
@@ -32,7 +32,7 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        all_layers = Layer.objects.all()
+        all_layers = Dataset.objects.all()
 
         for index, layer in enumerate(all_layers):
             print(f"[{(index + 1)} / {len(all_layers)}] Setting public permissions to Layer [{layer.name}] ...")

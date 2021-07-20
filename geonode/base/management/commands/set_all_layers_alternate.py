@@ -18,7 +18,7 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 import logging
 
 
@@ -58,7 +58,7 @@ class Command(BaseCommand):
         else:
             username = options.get('username')
 
-        all_layers = Layer.objects.all().order_by('name')
+        all_layers = Dataset.objects.all().order_by('name')
         if filter:
             all_layers = all_layers.filter(name__icontains=filter)
         if username:

@@ -108,7 +108,7 @@ class LayerManager(ResourceBaseManager):
         models.Manager.__init__(self)
 
 
-class Layer(ResourceBase):
+class Dataset(ResourceBase):
 
     """
     Layer (inherits ResourceBase fields)
@@ -116,8 +116,8 @@ class Layer(ResourceBase):
 
     PERMISSIONS = {
         'write': [
-            'change_layer_data',
-            'change_layer_style',
+            'change_dataset_data',
+            'change_dataset_style',
         ]
     }
 
@@ -346,7 +346,7 @@ class Layer(ResourceBase):
             producer.viewing_layer(str(user), str(self.owner), self.id)
 
         else:
-            Layer.objects.filter(id=self.id)\
+            Dataset.objects.filter(id=self.id)\
                          .update(popular_count=models.F('popular_count') + 1)
 
 
@@ -370,7 +370,7 @@ class Attribute(models.Model):
        sort order, and visibility.
     """
     layer = models.ForeignKey(
-        Layer,
+        Dataset,
         blank=False,
         null=False,
         unique=False,

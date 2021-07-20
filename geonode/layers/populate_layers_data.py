@@ -19,7 +19,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from geonode.layers.models import Style, Attribute, Layer
+from geonode.layers.models import Style, Attribute, Dataset
 
 ogc_location = settings.OGC_SERVER['default']['LOCATION']
 
@@ -107,8 +107,8 @@ attributes = [
 
 
 def create_layer_data(object_id=None, owner=None):
-    layer = Layer.objects.get(pk=object_id) if object_id else\
-        Layer.objects.all().first()
+    layer = Dataset.objects.get(pk=object_id) if object_id else\
+        Dataset.objects.all().first()
     if not owner:
         owner = get_user_model().objects.get(username="admin")
     for style in styles:

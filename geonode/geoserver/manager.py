@@ -32,7 +32,7 @@ from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
 from geonode.base import enumerations
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
@@ -113,7 +113,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if instance and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             _real_instance = instance.get_real_instance()
-            if isinstance(_real_instance, Layer) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
+            if isinstance(_real_instance, Dataset) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
                 if _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
                     geoserver_cascading_delete.apply_async((_real_instance.alternate,))
             elif isinstance(_real_instance, Map):
@@ -121,20 +121,20 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
     def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
         _resource = resource_type.objects.get(uuid=uuid)
-        if resource_type == Layer:
+        if resource_type == Dataset:
             return sync_instance_with_geoserver(_resource.id)
         return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
                vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
         if instance:
-            if isinstance(instance.get_real_instance(), Layer):
+            if isinstance(instance.get_real_instance(), Dataset):
                 return sync_instance_with_geoserver(instance.id)
         return instance
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
         instance = ResourceManager._get_instance(uuid)
-        if instance and isinstance(instance.get_real_instance(), Layer):
+        if instance and isinstance(instance.get_real_instance(), Dataset):
             instance = self.import_layer(
                 'import_layer',
                 instance.uuid,
@@ -147,7 +147,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
-        if instance and isinstance(instance.get_real_instance(), Layer):
+        if instance and isinstance(instance.get_real_instance(), Dataset):
             return self.import_layer(
                 'import_layer',
                 instance.uuid,
@@ -160,7 +160,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return instance
 
     def append(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
-        if instance and isinstance(instance.get_real_instance(), Layer):
+        if instance and isinstance(instance.get_real_instance(), Dataset):
             return self.import_layer(
                 'import_layer',
                 instance.uuid,
@@ -172,7 +172,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return instance
 
     def replace(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
-        if instance and isinstance(instance.get_real_instance(), Layer):
+        if instance and isinstance(instance.get_real_instance(), Dataset):
             return self.import_layer(
                 'import_layer',
                 instance.uuid,
@@ -186,7 +186,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def import_layer(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         instance = instance or ResourceManager._get_instance(uuid)
 
-        if instance and isinstance(instance.get_real_instance(), Layer):
+        if instance and isinstance(instance.get_real_instance(), Dataset):
             try:
                 _gs_import_session_info = self._revise_resource_value(
                     instance,
@@ -354,7 +354,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         instance = instance or ResourceManager._get_instance(uuid)
 
         try:
-            if instance and isinstance(instance.get_real_instance(), Layer):
+            if instance and isinstance(instance.get_real_instance(), Dataset):
                 if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
                     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
                         purge_geofence_layer_rules(instance.get_real_instance())
@@ -371,7 +371,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
         try:
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                if isinstance(instance.get_real_instance(), Layer):
+                if isinstance(instance.get_real_instance(), Dataset):
                     _disable_cache = []
                     _owner = owner or instance.owner
                     if permissions is not None:
@@ -482,7 +482,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         ]
                     try:
                         toggle_layer_cache(f'{get_layer_workspace(instance.get_real_instance())}:{instance.get_real_instance().name}', filters=filters, formats=formats)
-                    except Layer.DoesNotExist:
+                    except Dataset.DoesNotExist:
                         pass
         except Exception as e:
             logger.exception(e)
@@ -494,7 +494,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
         try:
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                if isinstance(instance.get_real_instance(), Layer):
+                if isinstance(instance.get_real_instance(), Dataset):
                     _disable_cache = []
                     gf_services = _get_gf_services(instance, VIEW_PERMISSIONS)
                     if approved:
@@ -536,7 +536,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         ]
                     try:
                         toggle_layer_cache(f'{get_layer_workspace(instance.get_real_instance())}:{instance.get_real_instance().name}', filters=filters, formats=formats)
-                    except Layer.DoesNotExist:
+                    except Dataset.DoesNotExist:
                         pass
         except Exception as e:
             logger.exception(e)
@@ -556,7 +556,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def set_style(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         instance = instance or ResourceManager._get_instance(uuid)
 
-        if instance and isinstance(instance.get_real_instance(), Layer):
+        if instance and isinstance(instance.get_real_instance(), Dataset):
             try:
                 logger.info(f'Creating style for Layer {instance.get_real_instance()} / {kwargs}')
                 _sld_file = kwargs.get('sld_file', None)
@@ -573,7 +573,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def set_time_info(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         instance = instance or ResourceManager._get_instance(uuid)
 
-        if instance and isinstance(instance.get_real_instance(), Layer):
+        if instance and isinstance(instance.get_real_instance(), Dataset):
             try:
                 if kwargs.get('time_info', None):
                     set_time_info(instance.get_real_instance(), **kwargs['time_info'])

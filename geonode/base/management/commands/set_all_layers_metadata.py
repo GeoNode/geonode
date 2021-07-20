@@ -19,7 +19,7 @@
 
 from django.core.management.base import BaseCommand
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode import geoserver  # noqa
 from geonode.catalogue.models import catalogue_post_save
 import logging
@@ -134,7 +134,7 @@ class Command(BaseCommand):
         else:
             username = options.get('username')
 
-        all_layers = Layer.objects.all().order_by('name')
+        all_layers = Dataset.objects.all().order_by('name')
         if filter:
             all_layers = all_layers.filter(name__icontains=filter)
         if username:
@@ -150,7 +150,7 @@ class Command(BaseCommand):
                 if set_uuid and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
                     from geonode.layers.utils import get_uuid_handler
                     uuid = get_uuid_handler()(layer).create_uuid()
-                    la = Layer.objects.filter(resourcebase_ptr=layer.resourcebase_ptr)
+                    la = Dataset.objects.filter(resourcebase_ptr=layer.resourcebase_ptr)
                     la.update(uuid=uuid)
                     layer.refresh_from_db()
                 # refresh metadata links

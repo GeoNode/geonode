@@ -42,7 +42,7 @@ from geonode.base.models import (
 )
 
 from geonode.favorite.models import Favorite
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
 from geonode.security.utils import get_resources_with_perms
@@ -262,7 +262,7 @@ class BaseApiTests(APITestCase):
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
-        Layer(
+        Dataset(
             title='Test Remove User',
             abstract='abstract',
             name='Test Remove User',
@@ -530,7 +530,7 @@ class BaseApiTests(APITestCase):
         """
         Ensure we get user's favorite resources.
         """
-        layer = Layer.objects.first()
+        layer = Dataset.objects.first()
         url = urljoin(f"{reverse('base-resources-list')}/", 'favorites/')
         # Anonymous
         response = self.client.get(url, format='json')
@@ -595,7 +595,7 @@ class BaseApiTests(APITestCase):
         url = reverse('base-resources-list')
         # Admin
         admin = get_user_model().objects.get(username='admin')
-        layer = Layer.objects.first()
+        layer = Dataset.objects.first()
         Favorite.objects.create_favorite(layer, admin)
 
         self.assertTrue(self.client.login(username='admin', password='admin'))

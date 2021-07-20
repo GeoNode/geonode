@@ -50,7 +50,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test.client import Client as DjangoTestClient
 
-from geonode.maps.models import Layer
+from geonode.maps.models import Dataset
 from geonode.notifications_helper import has_notifications, notifications
 
 logger = logging.getLogger(__name__)
@@ -333,7 +333,7 @@ def check_layer(uploaded):
     """Verify if an object is a valid Layer.
     """
     msg = (f'Was expecting layer object, got {type(uploaded)}')
-    assert isinstance(uploaded, Layer), msg
+    assert isinstance(uploaded, Dataset), msg
     msg = (f'The layer does not have a valid name: {uploaded.name}')
     assert len(uploaded.name) > 0, msg
 

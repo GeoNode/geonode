@@ -33,7 +33,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.social.templatetags.social_tags import activity_item
@@ -68,7 +68,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
 
-        registry.register(Layer)
+        registry.register(Dataset)
         registry.register(Comment)
         registry.register(get_user_model())
         create_layer_data()
@@ -80,7 +80,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         """
 
         # A new activity should be created for each Layer.
-        self.assertNotEqual(Action.objects.all().count(), Layer.objects.all().count())
+        self.assertNotEqual(Action.objects.all().count(), Dataset.objects.all().count())
 
         action = Action.objects.all()[0]
         layer = action.action_object
@@ -93,7 +93,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
             data = json.loads(data)
         self.assertEqual(data.get('raw_action'), 'created')
         self.assertEqual(data.get('object_name'), layer.name)
-        self.assertTrue(isinstance(action.action_object, Layer))
+        self.assertTrue(isinstance(action.action_object, Dataset))
         self.assertIsNone(action.target)
 
         # Test the  activity_item template tag
@@ -132,8 +132,8 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         self.assertEqual(template_tag.get('object_name'), layer_name)
         self.assertEqual(template_tag.get('verb'), _('deleted'))
 
-        content_type = ContentType.objects.get_for_model(Layer)
-        layer = Layer.objects.all()[0]
+        content_type = ContentType.objects.get_for_model(Dataset)
+        layer = Dataset.objects.all()[0]
         comment = Comment(
             author=self.user,
             content_type=content_type,

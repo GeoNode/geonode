@@ -32,7 +32,7 @@ from guardian.shortcuts import assign_perm, get_perms
 from geonode.maps.models import Map
 from geonode.base import thumb_utils
 from geonode.base import enumerations
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -673,7 +673,7 @@ class TestOwnerPermissionManagement(TestCase):
     def setUp(self):
         User = get_user_model()
         self.user = User.objects.create(username='test', email='test@test.com')
-        self.la = Layer.objects.create(owner=self.user, title='test', is_approved=True)
+        self.la = Dataset.objects.create(owner=self.user, title='test', is_approved=True)
 
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_owner_has_no_permissions(self):
@@ -740,7 +740,7 @@ class TestOwnerRightsRequestUtils(TestCase):
         self.user = User.objects.create(username='test', email='test@test.com')
         self.admin = User.objects.create(username='admin', email='test@test.com', is_superuser=True)
         self.d = Document.objects.create(owner=self.user, title='test', is_approved=True)
-        self.la = Layer.objects.create(owner=self.user, title='test', is_approved=True)
+        self.la = Dataset.objects.create(owner=self.user, title='test', is_approved=True)
         self.s = Service.objects.create(owner=self.user, title='test', is_approved=True)
         self.m = Map.objects.create(owner=self.user, title='test', is_approved=True, zoom=0, center_x=0.0,
                                     center_y=0.0)
@@ -751,7 +751,7 @@ class TestOwnerRightsRequestUtils(TestCase):
         ))
 
         self.assertTrue(isinstance(
-            OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.la.id)), Layer
+            OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.la.id)), Dataset
         ))
 
         self.assertTrue(isinstance(
@@ -989,36 +989,36 @@ class TestFacets(TestCase):
 
     def setUp(self):
         self.user = get_user_model().objects.create(username='test', email='test@test.com')
-        Layer.objects.create(
+        Dataset.objects.create(
             owner=self.user, title='test_boxes', abstract='nothing', subtype='vector', is_approved=True
         )
-        Layer.objects.create(
+        Dataset.objects.create(
             owner=self.user, title='test_1', abstract='contains boxes', subtype='vector', is_approved=True
         )
-        Layer.objects.create(
+        Dataset.objects.create(
             owner=self.user, title='test_2', purpose='contains boxes', subtype='vector', is_approved=True
         )
-        Layer.objects.create(
+        Dataset.objects.create(
             owner=self.user, title='test_3', subtype='vector', is_approved=True
         )
 
-        Layer.objects.create(
+        Dataset.objects.create(
             owner=self.user, title='test_boxes', abstract='nothing', subtype='raster', is_approved=True
         )
-        Layer.objects.create(
+        Dataset.objects.create(
             owner=self.user, title='test_1', abstract='contains boxes', subtype='raster', is_approved=True
         )
-        Layer.objects.create(
+        Dataset.objects.create(
             owner=self.user, title='test_2', purpose='contains boxes', subtype='raster', is_approved=True
         )
-        Layer.objects.create(
+        Dataset.objects.create(
             owner=self.user, title='test_boxes', subtype='raster', is_approved=True
         )
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
 
     def test_facets_filter_layers_returns_correctly(self):
-        for _l in Layer.objects.all():
+        for _l in Dataset.objects.all():
             _l.set_default_permissions()
             _l.clear_dirty_state()
             _l.set_processing_state(enumerations.STATE_PROCESSED)

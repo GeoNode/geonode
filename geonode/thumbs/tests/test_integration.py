@@ -42,7 +42,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.utils import http_client, DisableDjangoSignals
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.thumbs.background import (
     OSMTileBackground,
     WikiMediaTileBackground,
@@ -557,7 +557,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         ]
 
         self.client.login(username="norman", password="norman")
-        dataset_id = Layer.objects.get(alternate="geonode:san_andres_y_providencia_coastline").resourcebase_ptr_id
+        dataset_id = Dataset.objects.get(alternate="geonode:san_andres_y_providencia_coastline").resourcebase_ptr_id
         thumbnail_post_url = reverse('datasets-set-thumb-from-bbox', args=[dataset_id])
 
         for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):

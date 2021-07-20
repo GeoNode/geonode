@@ -47,7 +47,7 @@ from geonode.base.models import Region
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
 from geonode.geoserver.helpers import gs_catalog
-from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
+from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Dataset
 
 READ_PERMISSIONS = [
     'view_resourcebase'
@@ -261,7 +261,7 @@ def get_valid_name(layer_name):
     """
     name = _clean_string(layer_name)
     proposed_name = name
-    while Layer.objects.filter(name=proposed_name).exists():
+    while Dataset.objects.filter(name=proposed_name).exists():
         possible_chars = string.ascii_lowercase + string.digits
         suffix = "".join([choice(possible_chars) for i in range(4)])
         proposed_name = f'{name}_{suffix}'
@@ -275,7 +275,7 @@ def get_valid_layer_name(layer, overwrite):
     """Checks if the layer is a string and fetches it from the database.
     """
     # The first thing we do is get the layer name string
-    if isinstance(layer, Layer):
+    if isinstance(layer, Dataset):
         layer_name = layer.name
     elif isinstance(layer, str):
         layer_name = str(layer)
@@ -410,7 +410,7 @@ def delete_orphaned_layers():
     _, files = storage_manager.listdir("layers")
 
     for filename in files:
-        if Layer.objects.filter(file__icontains=filename).count() == 0:
+        if Dataset.objects.filter(file__icontains=filename).count() == 0:
             logger.debug(f"Deleting orphaned dataset file {filename}")
             try:
                 storage_manager.delete(os.path.join("layers", filename))
@@ -437,11 +437,11 @@ def set_layers_permissions(permissions_name, resources_names=None,
     # Processing information
     if not resources_names:
         # If resources is None we consider all the existing layer
-        resources = Layer.objects.all()
+        resources = Dataset.objects.all()
     else:
         try:
-            resources = Layer.objects.filter(Q(title__in=resources_names) | Q(name__in=resources_names))
-        except Layer.DoesNotExist:
+            resources = Dataset.objects.filter(Q(title__in=resources_names) | Q(name__in=resources_names))
+        except Dataset.DoesNotExist:
             logger.warning(
                 f'No resources have been found with these names: {", ".join(resources_names)}.'
             )

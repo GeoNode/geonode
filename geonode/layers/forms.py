@@ -30,7 +30,7 @@ from geonode.utils import check_ogc_backend
 
 import json
 from geonode.utils import unzip_file
-from geonode.layers.models import Layer, Attribute
+from geonode.layers.models import Dataset, Attribute
 
 
 class JSONField(forms.CharField):
@@ -45,7 +45,7 @@ class JSONField(forms.CharField):
 
 class LayerForm(ResourceBaseForm):
     class Meta(ResourceBaseForm.Meta):
-        model = Layer
+        model = Dataset
         exclude = ResourceBaseForm.Meta.exclude + (
             'workspace',
             'store',

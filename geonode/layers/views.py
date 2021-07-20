@@ -73,7 +73,7 @@ from geonode.layers.forms import (
     LayerAttributeForm,
     NewLayerUploadForm)
 from geonode.layers.models import (
-    Layer,
+    Dataset,
     Attribute)
 from geonode.layers.utils import (
     get_files,
@@ -158,7 +158,7 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
             query['subtype'] = 'remote'
         return resolve_object(
             request,
-            Layer,
+            Dataset,
             query,
             permission=permission,
             permission_msg=msg,
@@ -176,7 +176,7 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
                 }
         else:
             query = {'alternate': alternate}
-        test_query = Layer.objects.filter(**query)
+        test_query = Dataset.objects.filter(**query)
         if test_query.count() > 1 and test_query.exclude(subtype='remote').count() == 1:
             query = {
                 'id': test_query.exclude(subtype='remote').last().id
@@ -186,7 +186,7 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
                 'id': test_query.last().id
             }
         return resolve_object(request,
-                              Layer,
+                              Dataset,
                               query,
                               permission=permission,
                               permission_msg=msg,
@@ -211,7 +211,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_upload_handle_get(request, template):
-    mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
+    mosaics = Dataset.objects.filter(is_mosaic=True).order_by('name')
     ctx = {
         'mosaics': mosaics,
         'charsets': CHARSETS,
@@ -248,7 +248,7 @@ def layer_upload_metadata(request):
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
 
         name = form.cleaned_data['layer_title']
-        layer = Layer.objects.filter(typename=name)
+        layer = Dataset.objects.filter(typename=name)
         if layer.exists():
             layer_uuid, vals, regions, keywords, _ = parse_metadata(
                 open(base_file).read())
@@ -588,7 +588,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer.view_count_up(request.user)
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(
-        sender=Layer,
+        sender=Dataset,
         projection=getattr(
             settings,
             'DEFAULT_MAP_CRS',
@@ -821,7 +821,7 @@ def layer_metadata(
         raise Http404(_("Not found"))
 
     layer_attribute_set = inlineformset_factory(
-        Layer,
+        Dataset,
         Attribute,
         extra=0,
         form=LayerAttributeForm,
@@ -878,7 +878,7 @@ def layer_metadata(
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     if request.user != layer.owner and not request.user.is_superuser:
-        Layer.objects.filter(
+        Dataset.objects.filter(
             id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
@@ -1524,7 +1524,7 @@ def layer_batch_metadata(request):
 def batch_permissions(request, model):
     Resource = None
     if model == 'Layer':
-        Resource = Layer
+        Resource = Dataset
     if not Resource or not request.user.is_superuser:
         raise PermissionDenied
 
@@ -1602,7 +1602,7 @@ def layer_batch_permissions(request):
 
 
 def layer_view_counter(layer_id, viewer):
-    _l = Layer.objects.get(id=layer_id)
+    _l = Dataset.objects.get(id=layer_id)
     _u = get_user_model().objects.get(username=viewer)
     _l.view_count_up(_u, do_local=True)
 
@@ -1623,7 +1623,7 @@ class LayerAutocomplete(autocomplete.Select2QuerySetView):
         permitted = get_objects_for_user(
             request.user,
             'base.view_resourcebase')
-        qs = Layer.objects.all().filter(id__in=permitted)
+        qs = Dataset.objects.all().filter(id__in=permitted)
 
         if self.q:
             qs = qs.filter(title__icontains=self.q)

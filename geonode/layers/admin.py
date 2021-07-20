@@ -23,7 +23,7 @@ from django.db.models import Prefetch
 from modeltranslation.admin import TabbedTranslationAdmin
 
 from geonode.base.admin import ResourceBaseAdminForm
-from geonode.layers.models import Layer, Attribute, Style
+from geonode.layers.models import Dataset, Attribute, Style
 from geonode.base.admin import metadata_batch_edit, set_batch_permissions
 
 from geonode.base.fields import MultiThesauriField
@@ -39,7 +39,7 @@ class AttributeInline(admin.TabularInline):
 class LayerAdminForm(ResourceBaseAdminForm):
 
     class Meta(ResourceBaseAdminForm.Meta):
-        model = Layer
+        model = Dataset
         fields = '__all__'
 
     tkeywords = MultiThesauriField(
@@ -104,6 +104,6 @@ class StyleAdmin(admin.ModelAdmin):
     search_fields = ('name', 'workspace',)
 
 
-admin.site.register(Layer, LayerAdmin)
+admin.site.register(Dataset, LayerAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Style, StyleAdmin)

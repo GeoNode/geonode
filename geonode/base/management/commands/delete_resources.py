@@ -25,7 +25,7 @@ from django.db import transaction, IntegrityError
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 
 
@@ -121,10 +121,10 @@ class Command(BaseCommand):
         if layer_filters:
 
             if '*' in layer_filters:
-                layers_to_delete = Layer.objects.all()
+                layers_to_delete = Dataset.objects.all()
             else:
                 layers_q_expressions = [eval(expr) for expr in layer_filters]
-                layers_to_delete = Layer.objects.filter(*layers_q_expressions)
+                layers_to_delete = Dataset.objects.filter(*layers_q_expressions)
 
             for layer in layers_to_delete:
                 print(f'Deleting layer "{layer.name}" with ID: {layer.id}')

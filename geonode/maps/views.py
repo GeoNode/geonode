@@ -49,7 +49,7 @@ from django.views.decorators.clickjacking import (
 
 from geonode import geoserver
 from geonode.maps.forms import MapForm
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.views import batch_modify
 from geonode.people.forms import ProfileForm
 from geonode.maps.models import Map, MapLayer
@@ -723,7 +723,7 @@ def new_map(request, template='maps/map_new.html'):
         try:
             if ':' in layer_name:
                 layer_name = layer_name.split(':')[1]
-            layer_obj = Layer.objects.get(name=layer_name)
+            layer_obj = Dataset.objects.get(name=layer_name)
             perms_list = list(
                 layer_obj.get_self_resource().get_user_perms(request.user)
                 .union(layer_obj.get_user_perms(request.user))
@@ -1178,7 +1178,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             if not lyr.local:
                 remote_layers.append(lyr)
             else:
-                ownable_layer = Layer.objects.get(alternate=lyr.name)
+                ownable_layer = Dataset.objects.get(alternate=lyr.name)
                 if not request.user.has_perm(
                         'download_resourcebase',
                         obj=ownable_layer.get_self_resource()):
@@ -1276,7 +1276,7 @@ def map_wms(request, mapid):
 
 def maplayer_attributes(request, layername):
     # Return custom layer attribute labels/order in JSON format
-    layer = Layer.objects.get(alternate=layername)
+    layer = Dataset.objects.get(alternate=layername)
     return HttpResponse(
         json.dumps(
             layer.attribute_config()),

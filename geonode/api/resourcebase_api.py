@@ -43,7 +43,7 @@ from django.forms.models import model_to_dict
 from tastypie.utils.mime import build_content_type
 
 from geonode import get_version, geoserver
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
@@ -825,7 +825,7 @@ class LayerResource(CommonModelApi):
 
     class Meta(CommonMetaApi):
         paginator_class = CrossSiteXHRPaginator
-        queryset = Layer.objects.distinct().order_by('-date')
+        queryset = Dataset.objects.distinct().order_by('-date')
         resource_name = 'layers'
         detail_uri_name = 'id'
         include_resource_uri = True

@@ -36,7 +36,7 @@ from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 
 from geonode import geoserver
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.tests.utils import check_layer
 from geonode.decorators import on_ogc_backend
@@ -71,7 +71,7 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
     def test_set_attributes_from_geoserver(self):
         """Test attributes syncronization
         """
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         create_layer_data(layer.resourcebase_ptr_id)
         try:
             # set attributes for resource
@@ -236,7 +236,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     def test_unpublished(self):
         """Test permissions on an unpublished layer
         """
-        layer = Layer.objects.first()
+        layer = Dataset.objects.first()
         layer.set_default_permissions()
         check_layer(layer)
 
@@ -264,7 +264,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
 
         # with settings disabled
         with self.settings(RESOURCE_PUBLISHING=True):
-            layer = Layer.objects.first()
+            layer = Dataset.objects.first()
             layer.is_approved = False
             layer.is_published = False
             layer.save()
@@ -283,7 +283,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 response = urlopen(request)
 
                 # now test with published layer
-                layer = Layer.objects.get(pk=layer.pk)
+                layer = Dataset.objects.get(pk=layer.pk)
                 layer.is_published = True
                 layer.save()
 

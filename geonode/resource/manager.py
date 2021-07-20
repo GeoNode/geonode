@@ -58,7 +58,7 @@ from .utils import (
 from ..base import enumerations
 from ..base.models import ResourceBase
 from ..layers.metadata import parse_metadata
-from ..layers.models import Layer
+from ..layers.models import Dataset
 
 from ..storage.manager import storage_manager
 
@@ -239,7 +239,7 @@ class ResourceManager(ResourceManagerInterface):
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
                 self._concrete_resource_manager.delete(uuid, instance=_resource)
-                if isinstance(_resource.get_real_instance(), Layer):
+                if isinstance(_resource.get_real_instance(), Dataset):
                     """
                     - Remove any associated style to the layer, if it is not used by other layers.
                     - Default style will be deleted in post_delete_layer.
@@ -388,11 +388,11 @@ class ResourceManager(ResourceManagerInterface):
                         resource_type=Document,
                         defaults=to_update
                     )
-                elif resource_type == Layer:
+                elif resource_type == Dataset:
                     if files:
                         instance = self.create(
                             uuid,
-                            resource_type=Layer,
+                            resource_type=Dataset,
                             defaults=to_update)
                 instance = self._concrete_resource_manager.ingest(files, uuid=instance.uuid, resource_type=resource_type, defaults=to_update, **kwargs)
         except Exception as e:
@@ -457,7 +457,7 @@ class ResourceManager(ResourceManagerInterface):
         return instance
 
     def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:
-        if not isinstance(instance, Layer) and action_type == 'append':
+        if not isinstance(instance, Dataset) and action_type == 'append':
             raise Exception("Append data is available only for Layers")
 
         if isinstance(instance, Document) and action_type == "replace":
@@ -493,8 +493,8 @@ class ResourceManager(ResourceManagerInterface):
             try:
                 with transaction.atomic():
                     logger.debug(f'Removing all permissions on {_resource}')
-                    from geonode.layers.models import Layer
-                    _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Layer) else None
+                    from geonode.layers.models import Dataset
+                    _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Dataset) else None
                     if not _layer:
                         try:
                             _layer = _resource.layer if hasattr(_resource, "layer") else None

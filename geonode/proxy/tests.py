@@ -44,7 +44,7 @@ from django.test.utils import override_settings
 
 from geonode import geoserver
 from geonode.base.models import Link
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import create_models, create_single_layer
@@ -135,7 +135,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_download_url_with_not_existing_file(self):
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         self.client.login(username='admin', password='admin')
         # ... all should be good
         response = self.client.get(reverse('download', args=(layer.id,)))
@@ -154,7 +154,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
     def test_download_url_with_existing_files(self, fopen, fexists):
         fexists.return_value = True
         fopen.return_value = SimpleUploadedFile('foo_file.shp', b'scc')
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
 
         layer.files = [
             "/tmpe1exb9e9/foo_file.dbf",

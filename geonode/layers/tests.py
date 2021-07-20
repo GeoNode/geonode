@@ -58,7 +58,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
 from guardian.shortcuts import assign_perm, remove_perm
 from geonode.tests.utils import NotificationsTestsHelper
-from geonode.layers.models import Layer, Style, Attribute
+from geonode.layers.models import Dataset, Style, Attribute
 from geonode.layers.forms import JSONField, LayerUploadForm
 from geonode.maps.tests_populate_maplayers import maplayers as ml
 from geonode.layers.populate_layers_data import create_layer_data
@@ -117,11 +117,11 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.maxDiff = None
         self.sut = create_single_layer("single_point")
         create_layer_data(self.sut.resourcebase_ptr_id)
-        create_layer_data(Layer.objects.first().resourcebase_ptr_id)
+        create_layer_data(Dataset.objects.first().resourcebase_ptr_id)
         self.r = namedtuple('GSCatalogRes', ['resource'])
 
         site = AdminSite()
-        self.admin = LayerAdmin(Layer, site)
+        self.admin = LayerAdmin(Dataset, site)
 
         self.request_admin = RequestFactory().get('/admin')
         self.request_admin.user = get_user_model().objects.get(username='admin')
@@ -129,7 +129,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     # Admin Tests
 
     def test_admin_save_model(self):
-        obj = Layer.objects.first()
+        obj = Dataset.objects.first()
         self.assertEqual(len(obj.keywords.all()), 2)
         form = self.admin.get_form(self.request_admin, obj=obj, change=True)
         self.admin.save_model(self.request_admin, obj, form, True)
@@ -165,7 +165,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix='', html=False)
 
         # ... now assigning a Group to the Layer
-        lyr = Layer.objects.get(alternate='geonode:CA')
+        lyr = Dataset.objects.get(alternate='geonode:CA')
         group = Group.objects.first()
         lyr.group = group
         lyr.save()
@@ -178,14 +178,14 @@ class LayersTest(GeoNodeBaseTestSupport):
     # Layer Tests
 
     def test_layer_name_clash(self):
-        _ll_1 = Layer.objects.create(
+        _ll_1 = Dataset.objects.create(
             owner=get_user_model().objects.get(username=self.user),
             name='states',
             store='geonode_data',
             subtype="vector",
             alternate="geonode:states"
         )
-        _ll_2 = Layer.objects.create(
+        _ll_2 = Dataset.objects.create(
             owner=get_user_model().objects.get(username=self.user),
             name='geonode:states',
             store='httpfooremoteservce',
@@ -225,7 +225,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
 
     def test_layer_attributes(self):
-        lyr = Layer.objects.all().first()
+        lyr = Dataset.objects.all().first()
         # There should be a total of 3 attributes
         self.assertEqual(len(lyr.attribute_set.all()), 4)
         # 2 out of 3 attributes should be visible
@@ -248,7 +248,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(custom_attributes[1].unique_values, "NA")
 
     def test_layer_bbox(self):
-        lyr = Layer.objects.all().first()
+        lyr = Dataset.objects.all().first()
         layer_bbox = lyr.bbox[0:4]
         logger.debug(layer_bbox)
 
@@ -284,13 +284,13 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 404)
 
         # Get the layer to work with
-        layer = Layer.objects.all()[3]
+        layer = Dataset.objects.all()[3]
         url = reverse('layer_feature_catalogue', args=(layer.alternate,))
         response = self.client.get(url)
         self.assertNotEqual(response.status_code, 404)
 
     def test_layer_attribute_config(self):
-        lyr = Layer.objects.all().first()
+        lyr = Dataset.objects.all().first()
         attribute_config = lyr.attribute_config()
         custom_attributes = attribute_config["getFeatureInfo"]
         self.assertEqual(
@@ -321,7 +321,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertTrue("ftInfoTemplate" not in attribute_config)
 
     def test_layer_styles(self):
-        lyr = Layer.objects.all().first()
+        lyr = Dataset.objects.all().first()
         # There should be a total of 3 styles
         self.assertEqual(len(lyr.styles.all()), 4)
         # One of the style is the default one
@@ -337,7 +337,7 @@ class LayersTest(GeoNodeBaseTestSupport):
                 "str of the Style model throws a UnicodeEncodeError with special characters.")
 
     def test_layer_save(self):
-        lyr = Layer.objects.all().first()
+        lyr = Dataset.objects.all().first()
         lyr.keywords.add(*["saving", "keywords"])
         lyr.save()
         self.assertEqual(
@@ -379,7 +379,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(len(keywords), 13)
 
     def test_layer_links(self):
-        lyr = Layer.objects.filter(subtype="vector").first()
+        lyr = Dataset.objects.filter(subtype="vector").first()
         self.assertEqual(lyr.subtype, "vector")
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
@@ -406,7 +406,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
 
-        lyr = Layer.objects.filter(subtype="raster").first()
+        lyr = Dataset.objects.filter(subtype="raster").first()
         self.assertEqual(lyr.subtype, "raster")
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="metadata")
@@ -755,7 +755,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(get_valid_layer_name("CA", True), "CA")
         self.assertEqual(get_valid_layer_name("CA", True), "CA")
 
-        layer = Layer.objects.get(name="CA")
+        layer = Dataset.objects.get(name="CA")
         self.assertNotEqual(get_valid_layer_name(layer, False), "CA_1")
         self.assertEqual(get_valid_layer_name(layer, True), "CA")
 
@@ -787,7 +787,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         """ Test layer rating is removed on layer remove
         """
         # Get the layer to work with
-        layer = Layer.objects.all()[3]
+        layer = Dataset.objects.all()[3]
         layer_id = layer.id
         # Create the rating with the correct content type
         ctype = ContentType.objects.get(model='layer')
@@ -807,7 +807,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     def test_sld_upload(self):
         """Test layer remove functionality
         """
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         url = reverse('layer_sld_upload', args=(layer.alternate,))
         # Now test with a valid user
         self.client.login(username='admin', password='admin')
@@ -821,7 +821,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     def test_layer_remove(self):
         """Test layer remove functionality
         """
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         url = reverse('layer_remove', args=(layer.alternate,))
 
         # test unauthenticated
@@ -851,7 +851,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertTrue('/layers/' in response['Location'])
 
         # test that the layer is actually removed
-        self.assertEqual(Layer.objects.filter(pk=layer.pk).count(), 0)
+        self.assertEqual(Dataset.objects.filter(pk=layer.pk).count(), 0)
 
         # test that all styles associated to the layer are removed
         self.assertGreaterEqual(Style.objects.count(), 1)
@@ -861,8 +861,8 @@ class LayersTest(GeoNodeBaseTestSupport):
         Tests that deleting a layer with a shared default style will not cascade and
         delete multiple layers.
         """
-        layer1 = Layer.objects.all().first()
-        layer2 = Layer.objects.all()[2]
+        layer1 = Dataset.objects.all().first()
+        layer2 = Dataset.objects.all()[2]
         url = reverse('layer_remove', args=(layer1.alternate,))
 
         layer2.default_style = layer1.default_style
@@ -880,8 +880,8 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         # test that the layer is actually removed
 
-        self.assertEqual(Layer.objects.filter(pk=layer1.pk).count(), 0)
-        self.assertEqual(Layer.objects.filter(pk=layer2.pk).count(), 1)
+        self.assertEqual(Dataset.objects.filter(pk=layer1.pk).count(), 0)
+        self.assertEqual(Dataset.objects.filter(pk=layer2.pk).count(), 1)
 
         # test that all styles associated to the layer are removed
         self.assertGreaterEqual(Style.objects.count(), 1)
@@ -895,7 +895,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(location.layer_count, 3)
 
         # change the category of one layers_count
-        layer = Layer.objects.filter(category=location)[0]
+        layer = Dataset.objects.filter(category=location)[0]
         elevation = topics.get(identifier='elevation')
         layer.category = elevation
         layer.save()
@@ -910,7 +910,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         # delete a layer and check the count update
         # use the first since it's the only one which has styles
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         elevation = topics.get(identifier='elevation')
         self.assertEqual(elevation.layer_count, 4)
         layer.delete()
@@ -923,7 +923,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         """
         Ensure set_permissions supports the change_layer_data permission.
         """
-        layer = Layer.objects.first()
+        layer = Dataset.objects.first()
         user = get_anonymous_user()
         layer.set_permissions({'users': {user.username: ['change_layer_data']}})
         perms = layer.get_all_level_info()
@@ -933,7 +933,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         """
         Test batch editing of metadata fields.
         """
-        Model = Layer
+        Model = Dataset
         view = 'layer_batch_metadata'
         resources = Model.objects.all()[:3]
         ids = ','.join(str(element.pk) for element in resources)
@@ -1008,7 +1008,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         Test batch editing of test_batch_permissions.
         """
         group = Group.objects.first()
-        Model = Layer
+        Model = Dataset
         view = 'layer_batch_permissions'
         resources = Model.objects.all()[:3]
         ids = ','.join(str(element.pk) for element in resources)
@@ -1103,7 +1103,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         # unpublished
         response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
         self.assertEqual(response.status_code, 200)
-        layer = Layer.objects.filter(title='CA')[0]
+        layer = Dataset.objects.filter(title='CA')[0]
         layer.is_published = False
         layer.save()
         response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
@@ -1113,7 +1113,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_unpublished_layer(self):
         """With resource publishing"""
-        layer = Layer.objects.filter(alternate='geonode:CA')[0]
+        layer = Dataset.objects.filter(alternate='geonode:CA')[0]
         layer.is_published = False
         layer.save()
 
@@ -1148,7 +1148,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_assign_remove_permissions(self):
         # Assing
-        layer = Layer.objects.all().first()
+        layer = Dataset.objects.all().first()
         perm_spec = layer.get_all_level_info()
         self.assertNotIn(get_user_model().objects.get(username="norman"), perm_spec["users"])
 
@@ -1208,14 +1208,14 @@ class LayersTest(GeoNodeBaseTestSupport):
         }
 
         self.client.login(username="admin", password="admin")
-        prev_layer = Layer.objects.get(typename="geonode:single_point")
+        prev_layer = Dataset.objects.get(typename="geonode:single_point")
         self.assertEqual(0, prev_layer.keywords.count())
         resp = self.client.post(reverse('layer_upload'), params)
         self.assertEqual(404, resp.status_code)
         self.assertEqual(resp.json()["errors"], "The UUID identifier from the XML Metadata, is different from the one saved")
 
     def test_sld_should_raise_500_if_is_invalid(self):
-        layer = Layer.objects.get(typename="geonode:single_point")
+        layer = Dataset.objects.get(typename="geonode:single_point")
 
         params = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
@@ -1236,7 +1236,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual('No Layer matches the given query.', resp.json().get('errors'))
 
     def test_sld_should_update_the_layer_with_the_expected_values(self):
-        layer = Layer.objects.get(typename="geonode:single_point")
+        layer = Dataset.objects.get(typename="geonode:single_point")
 
         params = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
@@ -1253,7 +1253,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(layer.styles.first())
         resp = self.client.post(reverse('layer_upload'), params)
         self.assertEqual(200, resp.status_code)
-        updated_layer = Layer.objects.get(alternate=f"geonode:{layer.name}")
+        updated_layer = Dataset.objects.get(alternate=f"geonode:{layer.name}")
         # just checking some values if are updated
         self.assertEqual(1, updated_layer.styles.all().count())
         self.assertIsNotNone(updated_layer.styles.first().sld_title)
@@ -1274,7 +1274,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         }
 
         self.client.login(username="admin", password="admin")
-        prev_layer = Layer.objects.get(typename="geonode:single_point")
+        prev_layer = Dataset.objects.get(typename="geonode:single_point")
         self.assertEqual(0, prev_layer.keywords.count())
         resp = self.client.post(reverse('layer_upload'), params)
         self.assertEqual(404, resp.status_code)
@@ -1285,7 +1285,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertDictEqual(expected, resp.json())
 
     def test_will_raise_exception_for_replace_vector_layer_with_raster(self):
-        layer = Layer.objects.get(name="single_point")
+        layer = Dataset.objects.get(name="single_point")
         filename = "/tpm/filename.tif"
         files = ["/opt/file1.shp", "/opt/file2.ccc"]
         with self.assertRaises(Exception) as e:
@@ -1294,7 +1294,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(expected, e.exception.args[0])
 
     def test_will_raise_exception_for_replace_layer_with_unknown_format(self):
-        layer = Layer.objects.get(name="single_point")
+        layer = Dataset.objects.get(name="single_point")
         filename = "/tpm/filename.ccc"
         files = ["/opt/file1.shp", "/opt/file2.ccc"]
         with self.assertRaises(Exception) as e:
@@ -1303,7 +1303,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(expected, e.exception.args[0])
 
     def test_will_raise_exception_for_replace_layer_with_different_file_name(self):
-        layer = Layer.objects.get(name="single_point")
+        layer = Dataset.objects.get(name="single_point")
         file_path = gisdata.VECTOR_DATA
         filename = os.path.join(file_path, "san_andres_y_providencia_highway.shp")
         files = {
@@ -1323,7 +1323,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     @patch("geonode.layers.utils.gs_catalog")
     def test_will_raise_exception_for_not_existing_layer_in_the_catalog(self, catalog):
         catalog.get_layer.return_value = None
-        layer = Layer.objects.get(name="single_point")
+        layer = Dataset.objects.get(name="single_point")
         file_path = gisdata.VECTOR_DATA
         filename = os.path.join(file_path, "single_point.shp")
         files = {
@@ -1346,7 +1346,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         attr.attributes = []
         self.r.resource = attr
         catalog.get_layer.return_value = self.r
-        layer = Layer.objects.filter(name="single_point")[0]
+        layer = Dataset.objects.filter(name="single_point")[0]
         file_path = gisdata.VECTOR_DATA
         filename = os.path.join(file_path, "single_point.shp")
         files = {
@@ -1369,7 +1369,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         attr.attributes = ['label']
         self.r.resource = attr
         catalog.get_layer.return_value = self.r
-        layer = Layer.objects.filter(name="single_point")[0]
+        layer = Dataset.objects.filter(name="single_point")[0]
         file_path = gisdata.VECTOR_DATA
         filename = os.path.join(file_path, "single_point.shp")
         files = {
@@ -1412,7 +1412,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.not_admin.set_password('very-secret')
         self.not_admin.save()
 
-        self.layer = Layer.objects.all().first()
+        self.layer = Dataset.objects.all().first()
         create_layer_data(self.layer.resourcebase_ptr_id)
         with DisableDjangoSignals():
             self.map_layer = MapLayer.objects.create(
@@ -1445,7 +1445,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         self.test_layer = resource_manager.create(
             None,
-            resource_type=Layer,
+            resource_type=Dataset,
             defaults=dict(
                 owner=self.not_admin,
                 title='test',
@@ -1467,7 +1467,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
 
         self.test_layer = resource_manager.create(
             None,
-            resource_type=Layer,
+            resource_type=Dataset,
             defaults=dict(
                 owner=admin,
                 title='test',
@@ -1486,7 +1486,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         self.test_layer = resource_manager.create(
             None,
-            resource_type=Layer,
+            resource_type=Dataset,
             defaults=dict(
                 owner=self.not_admin,
                 title='test',
@@ -1506,7 +1506,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         self.test_layer = resource_manager.create(
             None,
-            resource_type=Layer,
+            resource_type=Dataset,
             defaults=dict(
                 owner=self.not_admin,
                 title='test',
@@ -1580,7 +1580,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
 
             _l = resource_manager.create(
                 None,
-                resource_type=Layer,
+                resource_type=Dataset,
                 defaults=dict(
                     name='test notifications',
                     title='test notifications',
@@ -1646,7 +1646,7 @@ class TestCustomUUidHandler(TestCase):
     def setUp(self):
         User = get_user_model()
         self.user = User.objects.create(username='test', email='test@test.com')
-        self.sut = Layer.objects.create(
+        self.sut = Dataset.objects.create(
             name="testLayer", owner=self.user, title='test', is_approved=True, uuid='abc-1234-abc'
         )
 
@@ -1658,7 +1658,7 @@ class TestCustomUUidHandler(TestCase):
     def test_layer_will_override_the_uuid_if_handler_is_defined(self):
         resource_manager.update(None, instance=self.sut, keywords=["updating", "values"])
         expected = "abc:abc-1234-abc"
-        actual = Layer.objects.get(id=self.sut.id)
+        actual = Dataset.objects.get(id=self.sut.id)
         self.assertEqual(expected, actual.uuid)
 
 

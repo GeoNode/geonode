@@ -39,7 +39,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from guardian.shortcuts import get_perms, get_anonymous_user
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.base.thumb_utils import get_thumbs
 from geonode.base.models import License, Region
@@ -702,7 +702,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(Document.objects.get(pk=d.id).title, 'theimg')
 
         maps = list(Map.objects.all())
-        layers = list(Layer.objects.all())
+        layers = list(Dataset.objects.all())
         resources = maps + layers
 
         # create document links

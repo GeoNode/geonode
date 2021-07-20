@@ -25,7 +25,7 @@ import logging
 from django.dispatch import receiver
 from django.db.models import signals
 
-from ..layers.models import Layer
+from ..layers.models import Dataset
 
 from .models import Service
 from .models import HarvestJob
@@ -34,7 +34,7 @@ from .serviceprocessors import base
 logger = logging.getLogger(__name__)
 
 
-@receiver(signals.post_delete, sender=Layer)
+@receiver(signals.post_delete, sender=Dataset)
 def remove_harvest_job(sender, **kwargs):
     """Remove a Layer's harvest job so that it may be re-imported later."""
     layer = kwargs["instance"]

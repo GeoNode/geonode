@@ -25,7 +25,7 @@ from django.conf import settings
 from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField
 
-from geonode.layers.models import Layer, Style, Attribute
+from geonode.layers.models import Dataset, Style, Attribute
 from geonode.base.api.serializers import ResourceBaseSerializer
 
 import logging
@@ -78,7 +78,7 @@ class LayerSerializer(ResourceBaseSerializer):
         super().__init__(*args, **kwargs)
 
     class Meta:
-        model = Layer
+        model = Dataset
         name = 'layer'
         view_name = 'datasets-list'
         fields = (

@@ -576,7 +576,7 @@ def sync_resources_with_guardian(resource=None):
     """
     Sync resources with Guardian and clear their dirty state
     """
-    from geonode.layers.models import Layer
+    from geonode.layers.models import Dataset
     from geonode.base.models import ResourceBase
 
     if resource:
@@ -590,7 +590,7 @@ def sync_resources_with_guardian(resource=None):
                 layer = None
                 try:
                     purge_geofence_layer_rules(r)
-                    layer = Layer.objects.get(id=r.id)
+                    layer = Dataset.objects.get(id=r.id)
                     perm_spec = layer.get_all_level_info()
                     # All the other users
                     if 'users' in perm_spec:
