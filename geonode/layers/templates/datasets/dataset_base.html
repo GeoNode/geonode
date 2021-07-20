@@ -1,0 +1,11 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+
+{% block title %} {{ block.super }} {% endblock %}
+
+{% block body_class %}data{% endblock body_class %}
+
+{% block body_outer %}
+  {% block body %}{% endblock body %}
+  {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
