@@ -91,7 +91,7 @@ class Document(ResourceBase):
         elif self.files:
             return urljoin(
                 settings.SITEURL,
-                reverse('document_download', args=(self.id,))
+                reverse('document_link', args=(self.id,))
             )
 
     @property
@@ -125,7 +125,7 @@ class Document(ResourceBase):
 
     @property
     def embed_url(self):
-        return reverse('document_link', args=(self.id,))
+        return self.href
 
     class Meta(ResourceBase.Meta):
         pass
