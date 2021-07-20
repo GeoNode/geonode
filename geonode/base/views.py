@@ -76,7 +76,6 @@ def get_url_for_model(model):
     if model.lower() == 'dataset':
         url = f'admin:layers_{model.lower()}_changelist'
     return reverse(url)
-    
     # was: f'/admin/{model.lower()}s/{model.lower()}/'
 
 
