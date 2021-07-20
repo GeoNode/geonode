@@ -155,7 +155,7 @@ class Service(models.Model):
 
 class MonitoredResource(models.Model):
     TYPE_EMPTY = ''
-    TYPE_LAYER = 'layer'
+    TYPE_LAYER = 'dataset'
     TYPE_MAP = 'map'
     TYPE_RESOURCE_BASE = 'resource_base'
     TYPE_DOCUMENT = 'document'
@@ -168,7 +168,7 @@ class MonitoredResource(models.Model):
               TYPE_URL, TYPE_OTHER,)
 
     TYPES = ((TYPE_EMPTY, _("No resource"),),
-             (TYPE_LAYER, _("Layer"),),
+             (TYPE_LAYER, _("Dataset"),),
              (TYPE_MAP, _("Map"),),
              (TYPE_RESOURCE_BASE, _("Resource base"),),
              (TYPE_DOCUMENT, _("Document"),),
@@ -416,7 +416,7 @@ class RequestEvent(models.Model):
     request_path = models.TextField(blank=False, default='')
 
     # resources is a list of affected resources. it is buld as a pair of type and name:
-    #  layer=geonode:sample_layer01
+    #  layer=geonode:sample_dataset01
     # or
     #  document=documents/id
     # or

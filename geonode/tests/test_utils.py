@@ -30,7 +30,7 @@ from django.contrib.gis.geos import Polygon
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 
-from geonode.maps.models import Layer
+from geonode.maps.models import Dataset
 from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -108,19 +108,19 @@ class TestCopyTree(GeoNodeBaseTestSupport):
 class TestFixupShp(GeoNodeBaseTestSupport):
     def test_fixup_shp_columnnames(self):
         project_root = os.path.abspath(os.path.dirname(__file__))
-        layer_zip = os.path.join(project_root, "data", "ming_female_1.zip")
+        dataset_zip = os.path.join(project_root, "data", "ming_female_1.zip")
 
-        self.failUnless(zipfile.is_zipfile(layer_zip))
+        self.failUnless(zipfile.is_zipfile(dataset_zip))
 
-        layer_shp = unzip_file(layer_zip)
+        dataset_shp = unzip_file(dataset_zip)
 
         expected_fieldnames = [
             "ID", "_f", "__1", "__2", "m", "_", "_M2", "_M2_1", "l", "x", "y", "_WU", "_1",
         ]
-        _, _, fieldnames = fixup_shp_columnnames(layer_shp, "windows-1258")
+        _, _, fieldnames = fixup_shp_columnnames(dataset_shp, "windows-1258")
 
         inDriver = ogr.GetDriverByName("ESRI Shapefile")
-        inDataSource = inDriver.Open(layer_shp, 0)
+        inDataSource = inDriver.Open(dataset_shp, 0)
         inLayer = inDataSource.GetLayer()
         inLayerDefn = inLayer.GetLayerDefn()
 
@@ -132,7 +132,7 @@ class TestFixupShp(GeoNodeBaseTestSupport):
         inDataSource.Destroy()
 
         # Cleanup temp dir
-        shp_parent = os.path.dirname(layer_shp)
+        shp_parent = os.path.dirname(dataset_shp)
         if shp_parent.startswith(tempfile.gettempdir()):
             shutil.rmtree(shp_parent, ignore_errors=True)
 
@@ -147,15 +147,15 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
 
     def test_set_attributes_creates_attributes(self):
         """ Test utility function set_attributes() which creates Attribute instances attached
-            to a Layer instance.
+            to a Dataset instance.
         """
-        # Creating a layer requires being logged in
+        # Creating a dataset requires being logged in
         self.client.login(username='norman', password='norman')
 
-        # Create dummy layer to attach attributes to
-        _l = Layer.objects.create(
+        # Create dummy dataset to attach attributes to
+        _l = Dataset.objects.create(
             owner=self.user,
-            name='dummy_layer',
+            name='dummy_dataset',
             bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
             srid='EPSG:4326')
 
@@ -184,7 +184,7 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
             field = attribute[0]
             ftype = attribute[1]
             if field:
-                la = Attribute.objects.create(layer=_l, attribute=field)
+                la = Attribute.objects.create(dataset=_l, attribute=field)
                 la.visible = ftype.find("gml:") != 0
                 la.attribute_type = ftype
                 la.description = None

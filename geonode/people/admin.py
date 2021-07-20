@@ -35,7 +35,7 @@ from django.template.response import TemplateResponse
 from django.http import HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied
 from django.forms import modelform_factory
-from geonode.base.admin import set_user_and_group_layer_permission
+from geonode.base.admin import set_user_and_group_dataset_permission
 
 from .models import Profile
 from .forms import ProfileCreationForm, ProfileChangeForm
@@ -81,7 +81,7 @@ class ProfileAdmin(admin.ModelAdmin):
     # readonly_fields = ("groups", )
     ordering = ('username',)
     filter_horizontal = ('groups', 'user_permissions',)
-    actions = [set_user_and_group_layer_permission]
+    actions = [set_user_and_group_dataset_permission]
 
     def get_fieldsets(self, request, obj=None):
         if not obj:

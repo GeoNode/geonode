@@ -27,7 +27,7 @@ from .queues import (
     queue_email_events,
     queue_geoserver_events,
     queue_notifications_events,
-    queue_layer_viewers
+    queue_dataset_viewers
 )
 
 from . import (url,
@@ -82,11 +82,11 @@ def sync_if_local_memory(func, *args, **kwargs):
 
 
 @sync_if_local_memory
-def send_email_producer(layer_uuid, user_id):
+def send_email_producer(dataset_uuid, user_id):
     with producers[connection].acquire(block=True, timeout=broker_socket_timeout) as producer:
         maybe_declare(queue_email_events, producer.channel)
         payload = {
-            "layer_uuid": layer_uuid,
+            "dataset_uuid": dataset_uuid,
             "user_id": user_id
         }
         producer.publish(
@@ -100,7 +100,7 @@ def send_email_producer(layer_uuid, user_id):
 
 
 @sync_if_local_memory
-def geoserver_upload_layer(payload):
+def geoserver_upload_dataset(payload):
     with producers[connection].acquire(block=True, timeout=broker_socket_timeout) as producer:
         maybe_declare(queue_geoserver_events, producer.channel)
         producer.publish(
@@ -129,12 +129,12 @@ def notifications_send(payload, created=None):
 
 
 @sync_if_local_memory
-def viewing_layer(user, owner, layer_id):
+def viewing_dataset(user, owner, dataset_id):
     with producers[connection].acquire(block=True, timeout=broker_socket_timeout) as producer:
-        maybe_declare(queue_layer_viewers, producer.channel)
+        maybe_declare(queue_dataset_viewers, producer.channel)
         payload = {"viewer": user,
-                   "owner_layer": owner,
-                   "layer_id": layer_id}
+                   "owner_dataset": owner,
+                   "dataset_id": dataset_id}
         producer.publish(
             payload,
             exchange='geonode',

@@ -53,7 +53,7 @@ from .models import GroupMember
 logger = logging.getLogger(__name__)
 
 
-class SetGroupLayerPermission(View):
+class SetGroupDatasetPermission(View):
     def get(self, request):
         return user_and_group_permission(request, 'groupprofile')
 
@@ -154,7 +154,7 @@ class GroupDetailView(ListView):
         context = super().get_context_data(**kwargs)
         context['object'] = self.group
         context['maps'] = self.group.resources(resource_type='map')
-        context['layers'] = self.group.resources(resource_type='layer')
+        context['datasets'] = self.group.resources(resource_type='dataset')
         context['documents'] = self.group.resources(resource_type='document')
         context['is_member'] = self.group.user_is_member(self.request.user)
         context['is_manager'] = self.group.user_is_role(
@@ -307,13 +307,13 @@ class GroupActivityView(ListView):
         action_list = []
         actions = Action.objects.filter(
             public=True,
-            action_object_content_type__model='layer')
-        context['action_list_layers'] = [
+            action_object_content_type__model='dataset')
+        context['action_list_datasets'] = [
             action
             for action in actions
             if action.action_object and action.action_object.group == self.group.group][
             :15]
-        action_list.extend(context['action_list_layers'])
+        action_list.extend(context['action_list_datasets'])
         actions = Action.objects.filter(
             public=True,
             action_object_content_type__model='map')[:15]

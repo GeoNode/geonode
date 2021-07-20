@@ -31,7 +31,7 @@ from guardian.shortcuts import get_anonymous_user
 
 from geonode import geoserver
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
@@ -63,7 +63,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.passwd = 'admin'
         self.perm_spec = {"users": {}, "groups": {}}
 
-    def test_layer_get_list_unauth_all_public(self):
+    def test_dataset_get_list_unauth_all_public(self):
         """
         Test that the correct number of layers are returned when the
         client is not logged in and all are public
@@ -72,12 +72,12 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
         resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
-    def test_layers_get_list_unauth_some_public(self):
+    def test_datasets_get_list_unauth_some_public(self):
         """
         Test that if a layer is not public then not all are returned when the
         client is not logged in
@@ -86,16 +86,16 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         layer.set_permissions(self.perm_spec)
 
         resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
-    def test_layers_get_list_auth_some_public(self):
+    def test_datasets_get_list_auth_some_public(self):
         """
         Test that if a layer is not public then all are returned if the
         client is not logged in
@@ -104,17 +104,17 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         self.api_client.client.login(username=self.user, password=self.passwd)
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         layer.set_permissions(self.perm_spec)
 
         resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
-    def test_layer_get_list_layer_private_to_one_user(self):
+    def test_dataset_get_list_dataset_private_to_one_user(self):
         """
         Test that if a layer is only visible by admin, then does not appear
         in the unauthenticated list nor in the list when logged is as bobby
@@ -123,10 +123,10 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         layer.set_permissions(perm_spec)
         resp = self.api_client.get(list_url)
         self.assertEqual(len(self.deserialize(resp)['objects']), 7)
@@ -155,7 +155,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             resp = self.api_client.get(list_url)
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
-    def test_layer_get_detail_unauth_layer_not_public(self):
+    def test_dataset_get_detail_unauth_dataset_not_public(self):
         """
         Test that layer detail gives 404 when not public and not logged in
         """
@@ -163,9 +163,9 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         layer.set_permissions(self.perm_spec)
         layer.clear_dirty_state()
         self.assertHttpNotFound(self.api_client.get(
@@ -199,7 +199,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 resp = self.client.get(list_url)
                 self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
-    def test_new_user_has_access_to_old_layers(self):
+    def test_new_user_has_access_to_old_datasets(self):
         """Test that a new user can access the public available layers"""
         from django.contrib.auth import get_user_model
         get_user_model().objects.create(
@@ -211,7 +211,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         self.api_client.client.login(username='imnew', password='thepwd')
         resp = self.api_client.get(list_url)
@@ -226,7 +226,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 with self.settings(DELAYED_SECURITY_SIGNALS=True,
                                    OGC_SERVER=_ogc_geofence_enabled,
                                    DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
-                    layer = Layer.objects.all()[0]
+                    layer = Dataset.objects.all()[0]
                     layer.set_default_permissions()
                     layer.refresh_from_db()
                     # self.assertTrue(layer.dirty_state)
@@ -255,7 +255,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         with self.settings(SESSION_EXPIRED_CONTROL_ENABLED=False, DELAYED_SECURITY_SIGNALS=False):
             # all public
@@ -264,7 +264,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
-            layer = Layer.objects.all()[0]
+            layer = Dataset.objects.all()[0]
             layer.set_permissions(perm_spec)
             resp = self.api_client.get(list_url)
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
@@ -512,7 +512,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         # check we get the correct layers number returnered filtering on one
         # and then two different categories
@@ -534,7 +534,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         # check we get the correct layers number returnered filtering on one
         # and then two different keywords
@@ -556,7 +556,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         # check we get the correct layers number returnered filtering on one
         # and then two different owners
@@ -578,7 +578,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         # check we get the correct layers number returnered filtering on the
         # title
@@ -594,7 +594,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         # check we get the correct layers number returnered filtering on the
         # dates
@@ -632,7 +632,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
 
         filter_url = f"{list_url}?title__icontains=layer2&abstract__icontains=layer2&purpose__icontains=layer2&f_method=or"
 
@@ -640,12 +640,12 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-    def test_the_api_should_return_all_layers_with_metadata_false(self):
+    def test_the_api_should_return_all_datasets_with_metadata_false(self):
         list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
         user = get_user_model().objects.get(username="admin")
         token = get_or_create_token(user)
         auth_header = f'Bearer {token}'
@@ -654,12 +654,12 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertValidJSONResponse(resp)
         self.assertEqual(8, resp.json()["meta"]["total_count"])
 
-    def test_the_api_should_return_all_layers_with_metadata_true(self):
+    def test_the_api_should_return_all_datasets_with_metadata_true(self):
         list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
-                'resource_name': 'layers'})
+                'resource_name': 'datasets'})
         user = get_user_model().objects.get(username="admin")
         token = get_or_create_token(user)
         auth_header = f'Bearer {token}'

@@ -110,7 +110,7 @@ function setup_django_every_time() {
     geonode loaddata $geonodedir/people/fixtures/sample_admin.json
     geonode loaddata $geonodedir/base/fixtures/default_oauth_apps.json
     geonode loaddata $geonodedir/base/fixtures/initial_data.json
-    geonode set_all_layers_alternate --verbosity 0
+    geonode set_all_datasets_alternate --verbosity 0
     geonode collectstatic --noinput --verbosity 0
 
     # Create an empty uploads dir

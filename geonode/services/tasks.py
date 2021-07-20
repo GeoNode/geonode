@@ -28,7 +28,7 @@ from . import enumerations
 from .serviceprocessors import base, get_service_handler
 
 from geonode.celery_app import app
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.tasks.tasks import AcquireLock
 from geonode.base.enumerations import (
     STATE_RUNNING,
@@ -71,11 +71,11 @@ def harvest_resource(self, harvest_job_id):
         _cnt = 0
         while _cnt < 5 and not result:
             try:
-                if Layer.objects.filter(alternate=f"{harvest_job.resource_id}").count():
-                    layer = Layer.objects.get(
+                if Dataset.objects.filter(alternate=f"{harvest_job.resource_id}").count():
+                    layer = Dataset.objects.get(
                         alternate=f"{harvest_job.resource_id}")
                 else:
-                    layer = Layer.objects.get(
+                    layer = Dataset.objects.get(
                         alternate=f"{workspace.name}:{harvest_job.resource_id}")
                 layer.set_processing_state(STATE_RUNNING)
                 layer.save(notify=True)
@@ -85,7 +85,7 @@ def harvest_resource(self, harvest_job_id):
                 logger.error(
                     f"Notfiy resource {workspace.name}:{harvest_job.resource_id} tentative {_cnt}: {e}")
                 try:
-                    layer = Layer.objects.get(
+                    layer = Dataset.objects.get(
                         alternate=f"{slugify(harvest_job.service.base_url)}:{harvest_job.resource_id}")
                     layer.set_processing_state(STATE_RUNNING)
                     layer.save(notify=True)

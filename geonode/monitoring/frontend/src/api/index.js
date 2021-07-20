@@ -151,7 +151,7 @@ export const getDates = ({ resourceType = 'layers', timeRange }) => {
 };
 
 export const getLayersCount = () => {
-    return axios.get('/api/layers/', {
+    return axios.get('/api/datasets/', {
             params: {
                 limit: 1
             }
@@ -238,7 +238,7 @@ export const getResourceMainUrls = () => {
         .then(({ data = {} } = {}) => {
             const { resources = [] } = data;
             const homeUrl = resources.find(({ name }) => name === '/') || {};
-            const layersUrl = resources.find(({ name }) => name ===  '/layers/') || {};
+            const layersUrl = resources.find(({ name }) => name ===  '/datasets/') || {};
             return [null, { homeUrl, layersUrl }];
         })
         .catch((e) => [parseError(e), null]);

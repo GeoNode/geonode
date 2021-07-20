@@ -30,7 +30,7 @@ from geonode.utils import check_ogc_backend
 
 import json
 from geonode.utils import unzip_file
-from geonode.layers.models import Layer, Attribute
+from geonode.layers.models import Dataset, Attribute
 
 
 class JSONField(forms.CharField):
@@ -43,9 +43,9 @@ class JSONField(forms.CharField):
             raise forms.ValidationError("this field must be valid JSON")
 
 
-class LayerForm(ResourceBaseForm):
+class DatasetForm(ResourceBaseForm):
     class Meta(ResourceBaseForm.Meta):
-        model = Layer
+        model = Dataset
         exclude = ResourceBaseForm.Meta.exclude + (
             'workspace',
             'store',
@@ -214,7 +214,7 @@ class NewLayerUploadForm(LayerUploadForm):
     xml_file = forms.FileField(required=False)
 
     abstract = forms.CharField(required=False)
-    layer_title = forms.CharField(required=False)
+    dataset_title = forms.CharField(required=False)
     permissions = JSONField()
     charset = forms.CharField(required=False)
     metadata_uploaded_preserve = forms.BooleanField(required=False)

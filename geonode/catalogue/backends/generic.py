@@ -160,16 +160,16 @@ class Catalogue(CatalogueServiceWeb):
         response = http_post(self.url, md_doc, timeout=TIMEOUT)
         return response
 
-    def create_from_layer(self, layer):
+    def create_from_dataset(self, layer):
         response = self.csw_request(layer, "catalogue/transaction_insert.xml")  # noqa
         # TODO: Parse response, check for error report
         return self.url_for_uuid(layer.uuid, namespaces['gmd'])
 
-    def delete_layer(self, layer):
+    def delete_dataset(self, layer):
         response = self.csw_request(layer, "catalogue/transaction_delete.xml")  # noqa
         # TODO: Parse response, check for error report
 
-    def update_layer(self, layer):
+    def update_dataset(self, layer):
         tmpl = 'catalogue/transaction_update.xml'
         response = self.csw_request(layer, tmpl)  # noqa
         # TODO: Parse response, check for error report
@@ -297,10 +297,10 @@ class CatalogueBackend(BaseCatalogueBackend):
             if catalogue_record is None:
                 return
             try:
-                # this is a bit hacky, delete_layer expects an instance of the layer
+                # this is a bit hacky, delete_dataset expects an instance of the layer
                 # model but it just passes it to a Django template so a dict works
                 # too.
-                self.catalogue.delete_layer({"uuid": uuid})
+                self.catalogue.delete_dataset({"uuid": uuid})
             except Exception:
                 logger.exception(
                     'Couldn\'t delete Catalogue record during cleanup()')
@@ -309,7 +309,7 @@ class CatalogueBackend(BaseCatalogueBackend):
         with self.catalogue:
             record = self.catalogue.get_by_uuid(item.uuid)
             if record is None:
-                md_link = self.catalogue.create_from_layer(item)
+                md_link = self.catalogue.create_from_dataset(item)
                 item.metadata_links = [("text/xml", "ISO", md_link)]
             else:
-                self.catalogue.update_layer(item)
+                self.catalogue.update_dataset(item)

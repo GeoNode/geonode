@@ -20,7 +20,7 @@
 from django.conf.urls import url
 from django.views.generic import TemplateView
 
-from .views import GroupDetailView, GroupActivityView, SetGroupLayerPermission
+from .views import GroupDetailView, GroupActivityView, SetGroupDatasetPermission
 from . import views
 
 urlpatterns = [  # 'geonode.groups.views',
@@ -63,6 +63,6 @@ urlpatterns = [  # 'geonode.groups.views',
         views.GroupProfileAutocomplete.as_view(), name='autocomplete_groups'),
     url(r'^autocomplete_category/$',
         views.GroupCategoryAutocomplete.as_view(), name='autocomplete_category'),
-    url(r'^layer/permission/$',
-        SetGroupLayerPermission.as_view(), name='set_group_layer_permissions'),
+    url(r'^dataset/permission/$',
+        SetGroupDatasetPermission.as_view(), name='set_group_dataset_permissions'),
 ]

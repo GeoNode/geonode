@@ -20,7 +20,7 @@
 from django.core.management.base import BaseCommand
 
 from geonode.people.utils import get_valid_user
-from geonode.geoserver.createlayer.utils import create_layer
+from geonode.geoserver.createlayer.utils import create_dataset
 
 
 class Command(BaseCommand):
@@ -55,4 +55,4 @@ class Command(BaseCommand):
         title = options.get('title')
         geometry_type = options.get('geometry')
         attributes = options.get('attributes')
-        create_layer(name, title, user, geometry_type, attributes)
+        create_dataset(name, title, user, geometry_type, attributes)

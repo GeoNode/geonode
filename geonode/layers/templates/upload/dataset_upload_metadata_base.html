@@ -1,0 +1,19 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+{% load base_tags %}
+{% load client_lib_tags %}
+
+{% block title %} {{ block.super }} {% endblock %}
+
+{% block body_class %}data{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% dataset_list_url %}"class="btn btn-primary pull-right">{% trans "Explore Datasets" %}</a>
+  <h2 class="page-title">{% trans "Upload Dataset Metadata" %}</h2>
+</div>
+<div class="row">
+  {% block body %}{% endblock body %}
+  {% block sidebar %}{% endblock sidebar %}
+</div>
+{% endblock body_outer %}

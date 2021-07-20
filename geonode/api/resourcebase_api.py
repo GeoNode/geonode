@@ -43,7 +43,7 @@ from django.forms.models import model_to_dict
 from tastypie.utils.mime import build_content_type
 
 from geonode import get_version, geoserver
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
@@ -673,7 +673,7 @@ class FeaturedResourceBaseResource(CommonModelApi):
 
 class LayerResource(CommonModelApi):
 
-    """Layer API"""
+    """Dataset API"""
     links = fields.ListField(
         attribute='links',
         null=True,
@@ -813,8 +813,8 @@ class LayerResource(CommonModelApi):
     def populate_object(self, obj):
         """Populate results with necessary fields
 
-        :param obj: Layer obj
-        :type obj: Layer
+        :param obj: Dataset obj
+        :type obj: Dataset
         :return:
         """
         return obj
@@ -825,8 +825,8 @@ class LayerResource(CommonModelApi):
 
     class Meta(CommonMetaApi):
         paginator_class = CrossSiteXHRPaginator
-        queryset = Layer.objects.distinct().order_by('-date')
-        resource_name = 'layers'
+        queryset = Dataset.objects.distinct().order_by('-date')
+        resource_name = 'datasets'
         detail_uri_name = 'id'
         include_resource_uri = True
         allowed_methods = ['get', 'patch']
@@ -890,9 +890,9 @@ class MapResource(CommonModelApi):
             formatted_obj['online'] = True
 
             # get map layers
-            map_layers = obj.layers
-            formatted_layers = []
-            map_layer_fields = [
+            map_datasets = obj.datasets
+            formatted_datasets = []
+            map_dataset_fields = [
                 'id',
                 'stack_order',
                 'format',
@@ -902,15 +902,15 @@ class MapResource(CommonModelApi):
                 'visibility',
                 'transparent',
                 'ows_url',
-                'layer_params',
+                'dataset_params',
                 'source_params',
                 'local'
             ]
-            for layer in map_layers:
-                formatted_map_layer = model_to_dict(
-                    layer, fields=map_layer_fields)
-                formatted_layers.append(formatted_map_layer)
-            formatted_obj['layers'] = formatted_layers
+            for layer in map_datasets:
+                formatted_map_dataset = model_to_dict(
+                    layer, fields=map_dataset_fields)
+                formatted_datasets.append(formatted_map_dataset)
+            formatted_obj['layers'] = formatted_datasets
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):

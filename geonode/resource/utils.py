@@ -44,7 +44,7 @@ from ..base.models import (
     SpatialRepresentationType)
 
 from ..maps.models import Map
-from ..layers.models import Layer
+from ..layers.models import Dataset
 from ..documents.models import Document
 from ..documents.enumerations import (
     DOCUMENT_TYPE_MAP,
@@ -60,7 +60,7 @@ class KeywordHandler:
     '''
     Object needed to handle the keywords coming from the XML
     The expected input are:
-     - instance (Layer/Document/Map): instance of any object inherited from ResourceBase.
+     - instance (Dataset/Document/Map): instance of any object inherited from ResourceBase.
      - keywords (list(dict)): Is required to analyze the keywords to find if some thesaurus is available.
     '''
 
@@ -186,7 +186,7 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
         defaults['date'] = instance.date or timezone.now()
 
     to_update = {}
-    if isinstance(instance, Layer):
+    if isinstance(instance, Dataset):
         for _key in ('name', 'workspace', 'store', 'subtype', 'alternate', 'typename'):
             if hasattr(instance, _key):
                 if _key in defaults:
@@ -258,7 +258,7 @@ def metadata_storers(instance, custom={}):
 
 def get_alternate_name(instance):
     try:
-        if isinstance(instance, Layer):
+        if isinstance(instance, Dataset):
             from ..services.enumerations import CASCADED
             from ..services.enumerations import INDEXED
 
@@ -353,7 +353,7 @@ def document_post_save(instance, *args, **kwargs):
         instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
 
 
-def layer_post_save(instance, *args, **kwargs):
+def dataset_post_save(instance, *args, **kwargs):
     base_file, info = instance.get_base_file()
 
     if info:
@@ -367,18 +367,18 @@ def layer_post_save(instance, *args, **kwargs):
         elif extension in cov_exts:
             instance.subtype = 'raster'
 
-    Layer.objects.filter(id=instance.id).update(subtype=instance.subtype)
+    Dataset.objects.filter(id=instance.id).update(subtype=instance.subtype)
 
 
 def metadata_post_save(instance, *args, **kwargs):
-    logger.debug("handling UUID In pre_save_layer")
-    if isinstance(instance, Layer) and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
-        logger.debug("using custom uuid handler In pre_save_layer")
+    logger.debug("handling UUID In pre_save_dataset")
+    if isinstance(instance, Dataset) and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
+        logger.debug("using custom uuid handler In pre_save_dataset")
         from ..layers.utils import get_uuid_handler
         _uuid = get_uuid_handler()(instance).create_uuid()
         if _uuid != instance.uuid:
             instance.uuid = _uuid
-            Layer.objects.filter(id=instance.id).update(uuid=_uuid)
+            Dataset.objects.filter(id=instance.id).update(uuid=_uuid)
 
     # Fixup bbox
     if instance.bbox_polygon is None:
@@ -477,7 +477,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
 
         if isinstance(instance, Document):
             document_post_save(instance, *args, **kwargs)
-        if isinstance(instance, Layer):
-            layer_post_save(instance, *args, **kwargs)
+        if isinstance(instance, Dataset):
+            dataset_post_save(instance, *args, **kwargs)
 
         metadata_post_save(instance, *args, **kwargs)

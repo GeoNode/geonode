@@ -22,7 +22,7 @@ from dialogos.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from haystack import indexes
-from geonode.maps.models import Layer
+from geonode.maps.models import Dataset
 
 
 class LayerIndex(indexes.SearchIndex, indexes.Indexable):
@@ -84,7 +84,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     num_comments = indexes.IntegerField(stored=False)
 
     def get_model(self):
-        return Layer
+        return Dataset
 
     def prepare_type(self, obj):
         return "layer"

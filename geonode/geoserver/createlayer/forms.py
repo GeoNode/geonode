@@ -27,7 +27,7 @@ GEOMETRY_TYPES = (
 )
 
 
-class NewLayerForm(forms.Form):
+class NewDatasetForm(forms.Form):
     """
     A form to create an empty layer in PostGIS.
     """

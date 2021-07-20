@@ -47,7 +47,7 @@ const history = createHashHistory({});
 const Dashboard = withRouter(DashboardContainer);
 
 const parseResourceTypes = function(resourceTypes) {
-    const availableResourceTypes = [ 'layer', 'map', 'document', 'url' ];
+    const availableResourceTypes = [ 'dataset', 'map', 'document', 'url' ];
     return [
         { value: 'all', label: 'All' },
         ...resourceTypes.filter(({ value }) => availableResourceTypes.indexOf(value) !== -1)

@@ -36,7 +36,7 @@ from geonode.groups.models import GroupProfile
 from .permissions import (
     VIEW_PERMISSIONS,
     ADMIN_PERMISSIONS,
-    LAYER_ADMIN_PERMISSIONS,
+    DATASET_ADMIN_PERMISSIONS,
     SERVICE_PERMISSIONS
 )
 
@@ -100,23 +100,23 @@ class PermissionLevelMixin:
             'groups': groups}
 
         try:
-            if hasattr(self, "layer"):
-                info_layer = {
+            if hasattr(self, "dataset"):
+                info_dataset = {
                     'users': get_users_with_perms(
-                        self.layer),
+                        self.dataset),
                     'groups': get_groups_with_perms(
-                        self.layer,
+                        self.dataset,
                         attach_perms=True)}
-                for user in info_layer['users']:
+                for user in info_dataset['users']:
                     if user in info['users']:
-                        info['users'][user] = info['users'][user] + info_layer['users'][user]
+                        info['users'][user] = info['users'][user] + info_dataset['users'][user]
                     else:
-                        info['users'][user] = info_layer['users'][user]
-                for group in info_layer['groups']:
+                        info['users'][user] = info_dataset['users'][user]
+                for group in info_dataset['groups']:
                     if group in info['groups']:
-                        info['groups'][group] = list(dict.fromkeys(info['groups'][group] + info_layer['groups'][group]))
+                        info['groups'][group] = list(dict.fromkeys(info['groups'][group] + info_dataset['groups'][group]))
                     else:
-                        info['groups'][group] = info_layer['groups'][group]
+                        info['groups'][group] = info_dataset['groups'][group]
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
@@ -151,7 +151,7 @@ class PermissionLevelMixin:
 
         config = Configuration.load()
         ctype = ContentType.objects.get_for_model(self)
-        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DATASET_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
 
         resource_perms = Permission.objects.filter(
             codename__in=PERMISSIONS_TO_FETCH,

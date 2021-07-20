@@ -18,7 +18,7 @@
 #########################################################################
 
 from geonode.base.models import ResourceBase
-from geonode.base.populate_test_data import create_single_layer
+from geonode.base.populate_test_data import create_single_dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import json
@@ -69,8 +69,8 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(document_favorites.count(), 2)
 
         # test layer favorites for user.
-        layer_favorites = Favorite.objects.favorite_layers_for_user(test_user)
-        self.assertEqual(layer_favorites.count(), 0)
+        dataset_favorites = Favorite.objects.favorite_datasets_for_user(test_user)
+        self.assertEqual(dataset_favorites.count(), 0)
 
         # test map favorites for user.
         map_favorites = Favorite.objects.favorite_maps_for_user(test_user)
@@ -96,12 +96,12 @@ class FavoriteTest(GeoNodeBaseTestSupport):
 
         '''
         If the input object is a ResourceBase, in favorite content type, should be saved he
-        subtype content type (Doc, Layer, Map or GeoApp)
+        subtype content type (Doc, Dataset, Map or GeoApp)
         '''
-        create_single_layer('foo_layer')
-        resource = ResourceBase.objects.get(title='foo_layer')
+        create_single_dataset('foo_dataset')
+        resource = ResourceBase.objects.get(title='foo_dataset')
         created_fav = Favorite.objects.create_favorite(resource, test_user)
-        self.assertEqual('layer', created_fav.content_type.model)
+        self.assertEqual('dataset', created_fav.content_type.model)
 
         '''
         If the input object is a subtype, should save the relative content type

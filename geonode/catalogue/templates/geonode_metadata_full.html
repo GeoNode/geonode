@@ -155,7 +155,7 @@
 							</dd>
 									{% endif %}
 
-						{% if "layer" in  request.META.HTTP_REFERER|stringformat:"s" %}
+						{% if "dataset" in  request.META.HTTP_REFERER|stringformat:"s" %}
 						<dt>{% trans "Attributes" %}</dt>
 							<dd>
 								<table id="attr_table" class="table table-striped table-bordered table-condensed" style="margin-top:10px;font-size:14px;">

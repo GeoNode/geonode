@@ -1,7 +1,7 @@
 import ast
 from django.test.utils import override_settings
 from owslib.etree import etree
-from geonode.base.populate_test_data import create_single_doc, create_single_layer, create_single_map
+from geonode.base.populate_test_data import create_single_doc, create_single_dataset, create_single_map
 from django.contrib.auth.models import AnonymousUser
 from django.test.client import RequestFactory
 from geonode.catalogue.views import csw_global_dispatch
@@ -10,20 +10,20 @@ from django.conf import settings
 
 pycsw_settings = settings.PYCSW.copy()
 pycsw_settings_all = settings.PYCSW.copy()
-pycsw_settings['FILTER'] = {'resource_type__in': ['layer', 'map']}
-pycsw_settings_all['FILTER'] = {'resource_type__in': ['layer', 'map', 'document']}
+pycsw_settings['FILTER'] = {'resource_type__in': ['dataset', 'map']}
+pycsw_settings_all['FILTER'] = {'resource_type__in': ['dataset', 'map', 'document']}
 
 
 class TestGeoNodeRepository(TestCase):
     # to simplify the tests we pass throught csw_global_dispatch
     # since call the GeoNodeRepository.query
     def setUp(self):
-        self.layer = create_single_layer("layer_name")
+        self.layer = create_single_dataset("dataset_name")
         self.map = create_single_map("map_name")
         self.doc = create_single_doc("doc_name")
         self.request = self.__request_factory()
 
-    def test_if_pycsw_filter_is_not_set_should_return_only_the_layer_by_default(self):
+    def test_if_pycsw_filter_is_not_set_should_return_only_the_dataset_by_default(self):
         response = csw_global_dispatch(self.request)
         root = etree.fromstring(response.content)
         child = [x.attrib for x in root.getchildren() if 'numberOfRecordsMatched' in x.attrib]
@@ -31,7 +31,7 @@ class TestGeoNodeRepository(TestCase):
         self.assertEqual(1, returned_results)
 
     @override_settings(PYCSW=pycsw_settings)
-    def test_if_pycsw_filter_is_set_should_return_only_layers_and_map(self):
+    def test_if_pycsw_filter_is_set_should_return_only_datasets_and_map(self):
         response = csw_global_dispatch(self.request)
         root = etree.fromstring(response.content)
         child = [x.attrib for x in root.getchildren() if 'numberOfRecordsMatched' in x.attrib]
@@ -39,7 +39,7 @@ class TestGeoNodeRepository(TestCase):
         self.assertEqual(2, returned_results)
 
     @override_settings(PYCSW=pycsw_settings_all)
-    def test_if_pycsw_filter_is_set_should_return_all_layers_map_doc(self):
+    def test_if_pycsw_filter_is_set_should_return_all_datasets_map_doc(self):
         response = csw_global_dispatch(self.request)
         root = etree.fromstring(response.content)
         child = [x.attrib for x in root.getchildren() if 'numberOfRecordsMatched' in x.attrib]

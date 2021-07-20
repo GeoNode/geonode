@@ -18,7 +18,7 @@
 {% block body_outer %}
 
 <div class="page-header">
-  <a href="{% layer_list_url %}" class="btn btn-primary pull-right">{% trans "Explore Datasets" %}</a>
+  <a href="{% dataset_list_url %}" class="btn btn-primary pull-right">{% trans "Explore Datasets" %}</a>
   <h2 class="page-title">{% trans "Create an empty dataset" %}</h2>
 </div>
 
@@ -32,7 +32,7 @@
     {% endif %}
 
     <section>
-      <form id="layer-create-form"  method="post" action="{% url "layer_create" %}">
+      <form id="layer-create-form"  method="post" action="{% url "dataset_create" %}">
         {% csrf_token %}
         {{ form|as_bootstrap }}
 

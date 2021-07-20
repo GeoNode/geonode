@@ -27,7 +27,7 @@ from .models import Map, MapLayer
 logger = logging.getLogger(__name__)
 
 
-def _layer_json(layers, sources):
+def _dataset_json(layers, sources):
     """
     return a list of layer config for the provided layer
     """
@@ -62,15 +62,15 @@ def _layer_json(layers, sources):
                 return k
         return None
 
-    def layer_config(lyr, user=None):
-        cfg = lyr.layer_config(user=user)
+    def dataset_config(lyr, user=None):
+        cfg = lyr.dataset_config(user=user)
         src_cfg = lyr.source_config()
         source = source_lookup(src_cfg)
         if source:
             cfg["source"] = source
         return cfg
 
-    return [layer_config(lyr, user=None) for lyr in layers]
+    return [dataset_config(lyr, user=None) for lyr in layers]
 
 
 def fix_baselayers(map_id):
@@ -90,47 +90,47 @@ def fix_baselayers(map_id):
 
     map = Map.objects.get(pk=id)
     # first we delete all of the base layers
-    map.layer_set.filter(local=False).delete()
+    map.dataset_set.filter(local=False).delete()
 
     # now we re-add them
     source = 0
-    for base_layer in settings.MAP_BASELAYERS:
-        if 'group' in base_layer:
-            # layer_params
-            layer_params = {}
-            layer_params['selected'] = True
-            if 'title' in base_layer:
-                layer_params['title'] = base_layer['title']
-            if 'type' in base_layer:
-                layer_params['type'] = base_layer['type']
-            if 'args' in base_layer:
-                layer_params['args'] = base_layer['args']
-            if 'wrapDateLine' in base_layer:
-                layer_params['wrapDateLine'] = base_layer['wrapDateLine']
+    for base_dataset in settings.MAP_BASELAYERS:
+        if 'group' in base_dataset:
+            # dataset_params
+            dataset_params = {}
+            dataset_params['selected'] = True
+            if 'title' in base_dataset:
+                dataset_params['title'] = base_dataset['title']
+            if 'type' in base_dataset:
+                dataset_params['type'] = base_dataset['type']
+            if 'args' in base_dataset:
+                dataset_params['args'] = base_dataset['args']
+            if 'wrapDateLine' in base_dataset:
+                dataset_params['wrapDateLine'] = base_dataset['wrapDateLine']
             else:
-                layer_params['wrapDateLine'] = True
+                dataset_params['wrapDateLine'] = True
             # source_params
             source_params = {}
             source_params['id'] = source
-            for param in base_layer['source']:
-                source_params[param] = base_layer['source'][param]
+            for param in base_dataset['source']:
+                source_params[param] = base_dataset['source'][param]
             # let's create the map layer
             name = ''
-            if 'name' in base_layer:
-                name = base_layer['name']
+            if 'name' in base_dataset:
+                name = base_dataset['name']
             else:
-                if 'args' in base_layer:
-                    name = base_layer['args'][0]
-            map_layer = MapLayer(
+                if 'args' in base_dataset:
+                    name = base_dataset['args'][0]
+            map_dataset = MapLayer(
                 map=map,
-                stack_order=map.layer_set.count() + 1,
+                stack_order=map.dataset_set.count() + 1,
                 name=name,
                 opacity=1,
                 transparent=False,
                 fixed=True,
                 group='background',
-                layer_params=json.dumps(layer_params),
+                dataset_params=json.dumps(dataset_params),
                 source_params=json.dumps(source_params)
             )
-            map_layer.save()
+            map_dataset.save()
         source += 1

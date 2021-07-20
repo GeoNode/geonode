@@ -41,13 +41,13 @@ def google_api_key():
 
 # For client single page links
 @register.simple_tag
-def layer_list_url():
-    return hookset.layer_list_url()
+def dataset_list_url():
+    return hookset.dataset_list_url()
 
 
 @register.simple_tag
-def layer_detail_url(layer):
-    return hookset.layer_detail_url(layer)
+def dataset_detail_url(layer):
+    return hookset.dataset_detail_url(layer)
 
 
 @register.simple_tag
@@ -127,41 +127,41 @@ class GeoNodeClientLibraryTag(template.Node):
         t = None
 
         # LAYERS
-        if self.tag_name == 'get_layer_list':
+        if self.tag_name == 'get_dataset_list':
             t = context.template.engine.get_template(
-                hookset.layer_list_template(
+                hookset.dataset_list_template(
                     context=context))
-        elif self.tag_name == 'get_layer_detail':
+        elif self.tag_name == 'get_dataset_detail':
             t = context.template.engine.get_template(
-                hookset.layer_detail_template(
+                hookset.dataset_detail_template(
                     context=context))
-        elif self.tag_name == 'get_layer_new':
+        elif self.tag_name == 'get_dataset_new':
             t = context.template.engine.get_template(
-                hookset.layer_new_template(
+                hookset.dataset_new_template(
                     context=context))
-        elif self.tag_name == 'get_layer_view':
+        elif self.tag_name == 'get_dataset_view':
             t = context.template.engine.get_template(
-                hookset.layer_view_template(
+                hookset.dataset_view_template(
                     context=context))
-        elif self.tag_name == 'get_layer_edit':
+        elif self.tag_name == 'get_dataset_edit':
             t = context.template.engine.get_template(
-                hookset.layer_edit_template(
+                hookset.dataset_edit_template(
                     context=context))
-        elif self.tag_name == 'get_layer_update':
+        elif self.tag_name == 'get_dataset_update':
             t = context.template.engine.get_template(
-                hookset.layer_update_template(
+                hookset.dataset_update_template(
                     context=context))
-        elif self.tag_name == 'get_layer_embed':
+        elif self.tag_name == 'get_dataset_embed':
             t = context.template.engine.get_template(
-                hookset.layer_embed_template(
+                hookset.dataset_embed_template(
                     context=context))
-        elif self.tag_name == 'get_layer_download':
+        elif self.tag_name == 'get_dataset_download':
             t = context.template.engine.get_template(
-                hookset.layer_download_template(
+                hookset.dataset_download_template(
                     context=context))
-        elif self.tag_name == 'get_layer_style_edit':
+        elif self.tag_name == 'get_dataset_style_edit':
             t = context.template.engine.get_template(
-                hookset.layer_style_edit_template(
+                hookset.dataset_style_edit_template(
                     context=context))
 
         # MAPS
@@ -243,15 +243,15 @@ def do_get_client_library_template(parser, token):
     return GeoNodeClientLibraryTag(tag_name, args, kwargs)
 
 
-register.tag('get_layer_list', do_get_client_library_template)
-register.tag('get_layer_detail', do_get_client_library_template)
-register.tag('get_layer_new', do_get_client_library_template)
-register.tag('get_layer_view', do_get_client_library_template)
-register.tag('get_layer_edit', do_get_client_library_template)
-register.tag('get_layer_update', do_get_client_library_template)
-register.tag('get_layer_embed', do_get_client_library_template)
-register.tag('get_layer_download', do_get_client_library_template)
-register.tag('get_layer_style_edit', do_get_client_library_template)
+register.tag('get_dataset_list', do_get_client_library_template)
+register.tag('get_dataset_detail', do_get_client_library_template)
+register.tag('get_dataset_new', do_get_client_library_template)
+register.tag('get_dataset_view', do_get_client_library_template)
+register.tag('get_dataset_edit', do_get_client_library_template)
+register.tag('get_dataset_update', do_get_client_library_template)
+register.tag('get_dataset_embed', do_get_client_library_template)
+register.tag('get_dataset_download', do_get_client_library_template)
+register.tag('get_dataset_style_edit', do_get_client_library_template)
 
 register.tag('get_map_list', do_get_client_library_template)
 register.tag('get_map_detail', do_get_client_library_template)

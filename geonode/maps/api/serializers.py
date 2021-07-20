@@ -37,7 +37,7 @@ class MapLayerSerializer(DynamicModelSerializer):
             'pk', 'name', 'store',
             'stack_order', 'format', 'opacity', 'styles',
             'transparent', 'fixed', 'group', 'visibility',
-            'ows_url', 'layer_params', 'source_params', 'local'
+            'ows_url', 'dataset_params', 'source_params', 'local'
         )
 
     name = serializers.CharField(read_only=True)
