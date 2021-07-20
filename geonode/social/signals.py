@@ -31,7 +31,7 @@ from django.utils.translation import ugettext_lazy as _
 
 # from actstream.exceptions import ModelNotActionable
 
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.notifications_helper import (send_notification, queue_notification,

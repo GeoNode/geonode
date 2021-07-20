@@ -32,7 +32,7 @@ from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
 from geonode.base import enumerations
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document

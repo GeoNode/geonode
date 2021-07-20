@@ -31,7 +31,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import ResourceBase
 from geonode.base.bbox_utils import filter_bbox
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile

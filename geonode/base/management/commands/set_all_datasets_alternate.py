@@ -18,7 +18,7 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 import logging
 
 

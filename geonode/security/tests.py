@@ -41,7 +41,7 @@ from guardian.shortcuts import (
 )
 
 from geonode import geoserver
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_dataset
@@ -51,7 +51,7 @@ from geonode.people.utils import get_valid_user
 from geonode.resource.manager import resource_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.groups.models import Group, GroupProfile
-from geonode.datasets.populate_datasets_data import create_dataset_data
+from geonode.layers.populate_datasets_data import create_dataset_data
 
 from geonode.base.models import (
     Configuration,

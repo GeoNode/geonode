@@ -36,7 +36,7 @@ from django.views.decorators.csrf import requires_csrf_token
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
 from geonode.security.views import _perms_info_json
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.proxy.views import proxy
 from urllib.parse import urljoin
 from urllib.parse import quote

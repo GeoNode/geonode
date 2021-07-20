@@ -192,7 +192,7 @@ def send_queued_notifications(self, *args):
     retry_jitter=True)
 def set_permissions(self, permissions_names, resources_names,
                     users_usernames, groups_names, delete_flag):
-    from geonode.datasets.utils import set_datasets_permissions
+    from geonode.layers.utils import set_datasets_permissions
     with transaction.atomic():
         for permissions_name in permissions_names:
             set_datasets_permissions(

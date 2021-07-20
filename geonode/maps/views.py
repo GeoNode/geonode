@@ -49,14 +49,14 @@ from django.views.decorators.clickjacking import (
 
 from geonode import geoserver
 from geonode.maps.forms import MapForm
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.base.views import batch_modify
 from geonode.people.forms import ProfileForm
 from geonode.maps.models import Map, MapLayer
 from geonode.monitoring import register_event
 from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
-from geonode.datasets.views import _resolve_dataset
+from geonode.layers.views import _resolve_dataset
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
 from geonode.resource.manager import resource_manager

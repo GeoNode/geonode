@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 
 from django.db.models import Q
 from django.test import RequestFactory
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.catalogue import get_catalogue
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -29,7 +29,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.catalogue.models import catalogue_post_save
 
 from geonode.catalogue.views import csw_global_dispatch
-from geonode.datasets.populate_datasets_data import create_dataset_data
+from geonode.layers.populate_datasets_data import create_dataset_data
 
 from geonode.base.populate_test_data import (
     all_public,

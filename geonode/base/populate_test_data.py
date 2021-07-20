@@ -37,7 +37,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 from geonode.maps.models import Map
 from geonode.base import enumerations
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase, TopicCategory

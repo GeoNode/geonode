@@ -33,9 +33,9 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
 
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.datasets.populate_datasets_data import create_dataset_data
+from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.social.templatetags.social_tags import activity_item
 
 from geonode.base.populate_test_data import (

@@ -3,7 +3,7 @@
 from django.db import migrations, models
 from django.db.migrations import RunSQL, RunPython
 
-DATASETS_SUBTYPES = {
+LAYERS_SUBTYPES = {
     "dataStore": "vector",
     "coverageStore": "raster",
     "remoteStore": "remote",
@@ -13,7 +13,7 @@ DATASETS_SUBTYPES = {
 clone_layers_storetypes = '''
 UPDATE base_resourcebase
 SET "storetype"=subquery."storeType"
-FROM (select resourcebase_ptr_id,"storeType" from datasets_dataset gg) AS subquery
+FROM (select resourcebase_ptr_id,"storeType" from layers_layer gg) AS subquery
 WHERE base_resourcebase.id=subquery.resourcebase_ptr_id;
 '''
 
@@ -26,10 +26,10 @@ WHERE base_resourcebase.id=subquery.resourcebase_ptr_id;
 
 
 def update_storetype_value(apps, schema_editor):
-    MyModel = apps.get_model('datasets', 'Dataset')
-    for l in MyModel.objects.filter(storetype__in=(DATASETS_SUBTYPES.keys())):
+    MyModel = apps.get_model('layers', 'Layer')
+    for l in MyModel.objects.filter(storetype__in=(LAYERS_SUBTYPES.keys())):
         u = MyModel.objects.filter(resourcebase_ptr_id=l.resourcebase_ptr_id)
-        store_type = (lambda element: DATASETS_SUBTYPES.get(element, element))(l.storetype)
+        store_type = (lambda element: LAYERS_SUBTYPES.get(element, element))(l.storetype)
         u.update(storetype=store_type)
 
 
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('documents', '0032_remove_document_doc_file'),
-        ('datasets', '0035_auto_20210525_0847'),
+        ('layers', '0035_auto_20210525_0847'),
         ('base', '0066_resourcebase_data'),
     ]
 

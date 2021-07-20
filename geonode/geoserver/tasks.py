@@ -29,7 +29,7 @@ from geonode.tasks.tasks import (
     AcquireLock,
     FaultTolerantTask)
 from geonode.base.models import Link
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase
 
 from .security import sync_resources_with_guardian

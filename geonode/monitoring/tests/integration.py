@@ -52,7 +52,7 @@ from geonode.compat import ensure_string
 from geonode.monitoring.collector import CollectorAPI
 from geonode.monitoring.utils import generate_periods, align_period_start
 from geonode.base.models import ResourceBase
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.monitoring.models import *  # noqa
 from geonode.base.populate_test_data import (
     all_public,

@@ -21,7 +21,7 @@ import json
 
 from django.core.management.base import BaseCommand
 
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.security.views import _perms_info_json
 from geonode.base.utils import remove_duplicate_links
 from geonode.geoserver.helpers import (

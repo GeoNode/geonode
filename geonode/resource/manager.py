@@ -57,8 +57,8 @@ from .utils import (
 
 from ..base import enumerations
 from ..base.models import ResourceBase
-from ..datasets.metadata import parse_metadata
-from ..datasets.models import Dataset
+from ..layers.metadata import parse_metadata
+from ..layers.models import Dataset
 
 from ..storage.manager import storage_manager
 
@@ -128,7 +128,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         e.g.:
             In [1]: from geonode.resource.manager import resource_manager
 
-            In [2]: from geonode.datasets.models import Dataset
+            In [2]: from geonode.layers.models import Dataset
 
             In [3]: from django.contrib.auth import get_user_model
 
@@ -493,7 +493,7 @@ class ResourceManager(ResourceManagerInterface):
             try:
                 with transaction.atomic():
                     logger.debug(f'Removing all permissions on {_resource}')
-                    from geonode.datasets.models import Dataset
+                    from geonode.layers.models import Dataset
                     _dataset = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Dataset) else None
                     if not _dataset:
                         try:

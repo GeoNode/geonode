@@ -25,7 +25,7 @@ import logging
 from django.dispatch import receiver
 from django.db.models import signals
 
-from ..datasets.models import Dataset
+from ..layers.models import Dataset
 
 from .models import Service
 from .models import HarvestJob

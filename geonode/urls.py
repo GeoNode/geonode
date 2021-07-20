@@ -95,7 +95,7 @@ urlpatterns += [
     url(r'^base/', include('geonode.base.urls')),
 
     # Dataset views
-    url(r'^datasets/', include('geonode.datasets.urls')),
+    url(r'^datasets/', include('geonode.layers.urls')),
 
     # Remote Services views
     url(r'^services/', include('geonode.services.urls')),

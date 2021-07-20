@@ -25,8 +25,8 @@ from datetime import datetime
 # from django.conf import settings
 from kombu.mixins import ConsumerMixin
 from geonode.security.views import send_email_consumer
-from geonode.datasets.views import dataset_view_counter
-from geonode.datasets.models import Dataset
+from geonode.layers.views import dataset_view_counter
+from geonode.layers.models import Dataset
 from geonode.geoserver.helpers import gs_slurp
 
 from .queues import (

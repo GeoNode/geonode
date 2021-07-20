@@ -27,8 +27,8 @@ from django.contrib.gis.geos import Polygon
 from django.template.defaultfilters import slugify
 
 from geonode import GeoNodeException
-from geonode.datasets.models import Dataset
-from geonode.datasets.utils import get_valid_name
+from geonode.layers.models import Dataset
+from geonode.layers.utils import get_valid_name
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import (
     gs_catalog,

@@ -413,7 +413,7 @@ GEONODE_CORE_APPS = (
     'geonode.api',
     'geonode.base',
     'geonode.br',
-    'geonode.datasets',
+    'geonode.layers',
     'geonode.maps',
     'geonode.geoapps',
     'geonode.documents',
@@ -911,7 +911,7 @@ PINAX_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {
         "map": "How good is this map?"
     },
-    "datasets.Dataset": {
+    "layers.Dataset": {
         "dataset": "How good is this dataset?"
     },
     "documents.Document": {

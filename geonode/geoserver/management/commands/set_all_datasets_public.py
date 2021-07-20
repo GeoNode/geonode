@@ -20,7 +20,7 @@ import logging
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 
 from geonode.geoserver.security.utils import set_geofence_all
 

@@ -25,7 +25,7 @@ from django.db import transaction, IntegrityError
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.maps.models import Map
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 
 

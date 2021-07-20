@@ -1689,7 +1689,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     else:
                         raise GeoNodeException(_("Invalid Projection. Dataset is missing CRS!"))
 
-                    from geonode.datasets.models import Dataset
+                    from geonode.layers.models import Dataset
                     try:
                         with transaction.atomic():
                             # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates

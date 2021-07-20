@@ -35,7 +35,7 @@ from geonode.compat import ensure_string
 from geonode.client.hooks import hookset
 from geonode.utils import check_ogc_backend
 from geonode.base.models import ResourceBase
-from geonode.datasets.models import Dataset, Style
+from geonode.layers.models import Dataset, Style
 from geonode.maps.signals import map_changed_signal
 from geonode.utils import (
     GXPMapBase,

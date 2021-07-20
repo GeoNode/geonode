@@ -23,7 +23,7 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from geonode.geoserver.helpers import gs_catalog
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 
 
 def is_gs_resource_valid(layer):

@@ -38,7 +38,7 @@ except ImportError:
     from unittest import mock
 from owslib.map.wms111 import ContentMetadata
 
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.services.utils import test_resource_table_status
 

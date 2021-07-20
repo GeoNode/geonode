@@ -37,7 +37,7 @@ from django.http.request import validate_host
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import requires_csrf_token
 
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import storage_manager

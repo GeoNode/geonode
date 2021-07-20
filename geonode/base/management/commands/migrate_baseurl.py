@@ -30,7 +30,7 @@ from geonode.base.models import Link
 from geonode.utils import check_ogc_backend
 from geonode.base.models import ResourceBase
 from geonode.maps.models import Map, MapLayer
-from geonode.datasets.models import Dataset, Style
+from geonode.layers.models import Dataset, Style
 import logging
 
 

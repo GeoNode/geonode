@@ -42,7 +42,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.utils import http_client, DisableDjangoSignals
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.thumbs.background import (
     OSMTileBackground,
     WikiMediaTileBackground,

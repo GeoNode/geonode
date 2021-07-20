@@ -32,7 +32,7 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 import os
 import re
 import json

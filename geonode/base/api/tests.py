@@ -42,7 +42,7 @@ from geonode.base.models import (
 )
 
 from geonode.favorite.models import Favorite
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
 from geonode.security.utils import get_resources_with_perms
@@ -183,7 +183,7 @@ class BaseApiTests(APITestCase):
         logger.debug(response.data)
 
         # Remove public permissions to Layers
-        from geonode.datasets.utils import set_datasets_permissions
+        from geonode.layers.utils import set_datasets_permissions
         set_datasets_permissions(
             "read",  # permissions_name
             None,  # resources_names == None (all layers)

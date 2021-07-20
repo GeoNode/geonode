@@ -26,8 +26,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 
-from geonode.datasets import utils
-from geonode.datasets.models import Dataset
+from geonode.layers import utils
+from geonode.layers.models import Dataset
 from geonode.people import profileextractors
 
 from geonode.base.populate_test_data import (

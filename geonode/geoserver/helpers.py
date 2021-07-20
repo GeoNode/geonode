@@ -69,8 +69,8 @@ from geonode.base.models import Link
 from geonode.base.models import ResourceBase
 from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
-from geonode.datasets.models import Dataset, Attribute, Style
-from geonode.datasets.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.layers.models import Dataset, Attribute, Style
+from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 
 from geonode.utils import (
     http_client,
@@ -874,7 +874,7 @@ def set_attributes(
         attribute_map,
         overwrite=False,
         attribute_stats=None):
-    """ *layer*: a geonode.datasets.models.Dataset instance
+    """ *layer*: a geonode.layers.models.Dataset instance
         *attribute_map*: a list of 2-lists specifying attribute names and types,
             example: [ ['id', 'Integer'], ... ]
         *overwrite*: replace existing attributes with new values if name/type matches.

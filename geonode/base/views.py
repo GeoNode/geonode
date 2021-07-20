@@ -38,7 +38,7 @@ from django.urls import reverse
 
 # Geonode dependencies
 from geonode.maps.models import Map
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.utils import resolve_object
 from geonode.monitoring import register_event
 from geonode.documents.models import Document

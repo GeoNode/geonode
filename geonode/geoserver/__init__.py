@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 def run_setup_hooks(*args, **kwargs):
     from django.db.models import signals
-    from geonode.datasets.models import Dataset
+    from geonode.layers.models import Dataset
     from geonode.maps.models import MapLayer
     from geonode.geoserver.signals import geoserver_pre_delete
     from geonode.geoserver.signals import geoserver_pre_save_maplayer
@@ -41,7 +41,7 @@ def set_resource_links(*args, **kwargs):
 
     from geonode.utils import set_resource_default_links
     from geonode.catalogue.models import catalogue_post_save
-    from geonode.datasets.models import Dataset
+    from geonode.layers.models import Dataset
 
     if settings.UPDATE_RESOURCE_LINKS_AT_MIGRATE:
         _all_datasets = Dataset.objects.all()

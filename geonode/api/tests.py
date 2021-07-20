@@ -31,7 +31,7 @@ from guardian.shortcuts import get_anonymous_user
 
 from geonode import geoserver
 from geonode.maps.models import Map
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend

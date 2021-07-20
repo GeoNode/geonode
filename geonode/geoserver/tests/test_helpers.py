@@ -28,7 +28,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.views import _response_callback
 from geonode.geoserver.helpers import get_dataset_storetype
-from geonode.datasets.populate_datasets_data import create_dataset_data
+from geonode.layers.populate_datasets_data import create_dataset_data
 
 from geonode.base.populate_test_data import (
     all_public,

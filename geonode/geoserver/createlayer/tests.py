@@ -27,7 +27,7 @@ from django.urls import reverse
 
 from geonode import geoserver
 from geonode import GeoNodeException
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.signals import gs_catalog
 

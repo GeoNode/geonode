@@ -25,7 +25,7 @@ from django.conf import settings
 
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.utils import DisableDjangoSignals
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport

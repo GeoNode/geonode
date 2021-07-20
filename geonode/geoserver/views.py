@@ -51,9 +51,9 @@ from geonode.base.models import ResourceBase
 from geonode.compat import ensure_string
 from geonode.base.auth import get_or_create_token
 from geonode.decorators import logged_in_or_basicauth
-from geonode.datasets.forms import LayerStyleUploadForm
-from geonode.datasets.models import Dataset, Style
-from geonode.datasets.views import _resolve_dataset, _PERMISSION_MSG_MODIFY
+from geonode.layers.forms import LayerStyleUploadForm
+from geonode.layers.models import Dataset, Style
+from geonode.layers.views import _resolve_dataset, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
 from geonode.proxy.views import proxy
 from .tasks import geoserver_update_datasets

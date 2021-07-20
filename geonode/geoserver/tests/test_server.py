@@ -39,8 +39,8 @@ from geonode import geoserver
 from geonode.base.models import Configuration
 from geonode.decorators import on_ogc_backend
 
-from geonode.datasets.models import Dataset, Style
-from geonode.datasets.populate_datasets_data import create_dataset_data
+from geonode.layers.models import Dataset, Style
+from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import (
     all_public,
     create_models,

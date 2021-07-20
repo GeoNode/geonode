@@ -28,7 +28,7 @@ from django.conf import settings
 from django.utils.module_loading import import_string
 
 from geonode.maps.models import Map
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.base.thumb_utils import thumb_exists
 from geonode.geoserver.helpers import OGC_Servers_Handler
 from geonode.utils import get_dataset_name, get_dataset_workspace

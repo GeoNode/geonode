@@ -29,7 +29,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from geonode.maps.models import Map
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP

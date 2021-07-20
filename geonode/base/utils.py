@@ -35,7 +35,7 @@ from django.contrib.auth import get_user_model
 # Geonode functionality
 from guardian.shortcuts import get_perms, remove_perm, assign_perm
 
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.base.thumb_utils import (
     get_thumbs,

@@ -33,7 +33,7 @@ from geonode.base.models import (
     ResourceBase,
     UserGeoLimit,
     GroupGeoLimit)
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.groups.models import GroupProfile
 
 from geonode.notifications_helper import send_notification

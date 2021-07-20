@@ -32,7 +32,7 @@ from guardian.shortcuts import assign_perm, get_perms
 from geonode.maps.models import Map
 from geonode.base import thumb_utils
 from geonode.base import enumerations
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
 from geonode.tests.base import GeoNodeBaseTestSupport

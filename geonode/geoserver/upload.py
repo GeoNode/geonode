@@ -27,7 +27,7 @@ from geoserver.resource import FeatureType, Coverage
 from django.conf import settings
 
 from geonode import GeoNodeException
-from geonode.datasets.utils import dataset_type, get_files
+from geonode.layers.utils import dataset_type, get_files
 from .helpers import (
     GEOSERVER_LAYER_TYPES,
     gs_catalog,

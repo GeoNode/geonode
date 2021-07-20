@@ -23,7 +23,7 @@ from django.conf import settings
 from django.db.models import signals
 from lxml import etree
 from owslib.etree import etree as dlxml
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from geonode.catalogue import get_catalogue
 from geonode.base.models import Link, ResourceBase

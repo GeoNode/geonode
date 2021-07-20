@@ -29,7 +29,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.geoserver.helpers import OGC_Servers_Handler

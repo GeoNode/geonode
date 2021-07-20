@@ -24,7 +24,7 @@ from django.urls import reverse
 from django.db.models import signals
 
 from geonode.base.models import Link
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 
 

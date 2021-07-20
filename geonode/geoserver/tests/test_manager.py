@@ -26,8 +26,8 @@ from django.contrib.auth import get_user_model
 
 from geonode import geoserver
 from geonode.base import enumerations
-from geonode.datasets.models import Dataset
-from geonode.datasets.utils import get_files
+from geonode.layers.models import Dataset
+from geonode.layers.utils import get_files
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import gs_catalog
 from geonode.tests.base import GeoNodeBaseTestSupport

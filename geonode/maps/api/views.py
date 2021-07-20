@@ -29,7 +29,7 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.datasets.api.serializers import DatasetSerializer
+from geonode.layers.api.serializers import DatasetSerializer
 from geonode.maps.models import Map
 from geonode.maps.api.hook import hookset
 

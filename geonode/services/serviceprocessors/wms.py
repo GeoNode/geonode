@@ -43,9 +43,9 @@ from geonode.base.models import (
     Link,
     ResourceBase,
     TopicCategory)
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
-from geonode.datasets.utils import resolve_regions
+from geonode.layers.utils import resolve_regions
 from geonode.utils import http_client, get_legend_url
 from geonode.resource.manager import resource_manager
 from geonode.thumbs.thumbnails import create_thumbnail
@@ -222,7 +222,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
 
-        This method will try to create new ``geonode.datasets.models.Dataset``
+        This method will try to create new ``geonode.layers.models.Dataset``
         instance (and its related objects too).
 
         :arg resource_id: The resource's identifier
@@ -265,7 +265,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         return True if len(self.parsed_service.contents) > 0 else False
 
     def _create_dataset(self, geonode_service, **resource_fields):
-        # bear in mind that in ``geonode.datasets.models`` there is a
+        # bear in mind that in ``geonode.layers.models`` there is a
         # ``pre_save_dataset`` function handler that is connected to the
         # ``pre_save`` signal for the Dataset model. This handler does a check
         # for common fields (such as abstract and title) and adds
@@ -493,7 +493,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
 
-        This method will try to create new ``geonode.datasets.models.Dataset``
+        This method will try to create new ``geonode.layers.models.Dataset``
         instance (and its related objects too).
 
         :arg resource_id: The resource's identifier

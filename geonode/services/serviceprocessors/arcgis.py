@@ -28,7 +28,7 @@ from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify, safe
 
 from geonode.base.models import Link
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.resource.manager import resource_manager
 
@@ -208,7 +208,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
 
-        This method will try to create new ``geonode.datasets.models.Dataset``
+        This method will try to create new ``geonode.layers.models.Dataset``
         instance (and its related objects too).
 
         :arg resource_id: The resource's identifier
@@ -257,7 +257,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         }
 
     def _create_dataset(self, geonode_service, **resource_fields):
-        # bear in mind that in ``geonode.datasets.models`` there is a
+        # bear in mind that in ``geonode.layers.models`` there is a
         # ``pre_save_dataset`` function handler that is connected to the
         # ``pre_save`` signal for the Dataset model. This handler does a check
         # for common fields (such as abstract and title) and adds

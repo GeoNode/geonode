@@ -31,7 +31,7 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 
 from geonode.maps.models import Dataset
-from geonode.datasets.models import Attribute
+from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time

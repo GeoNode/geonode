@@ -33,7 +33,7 @@ from django.contrib.contenttypes.models import ContentType
 from geonode import geoserver
 from geonode.settings import on_travis
 from geonode.maps import MapsAppConfig
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.decorators import on_ogc_backend
 from geonode.maps.utils import fix_baselayers

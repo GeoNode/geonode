@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from django.core.management.base import BaseCommand
 from requests.auth import HTTPBasicAuth
 from defusedxml import lxml as dlxml

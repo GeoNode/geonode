@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from geonode.maps.models import MapLayer
-        from geonode.datasets.models import Dataset
+        from geonode.layers.models import Dataset
 
         map_datasets = MapLayer.objects.filter(local=True)
         for maplayer in map_datasets:

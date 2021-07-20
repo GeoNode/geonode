@@ -34,7 +34,7 @@ from django.db import connections
 from django.contrib.auth import get_user_model
 
 from geonode.base.models import Link
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.catalogue import get_catalogue
 from geonode.tests.utils import upload_step, Client

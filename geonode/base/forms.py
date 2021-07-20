@@ -46,7 +46,7 @@ from geonode.base.models import (CuratedThumbnail, HierarchicalKeyword,
                                  TopicCategory)
 from geonode.base.widgets import TaggitSelect2Custom
 from geonode.documents.models import Document
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from django.utils.translation import get_language
 from .fields import MultiThesauriField
 

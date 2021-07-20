@@ -54,14 +54,14 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode import GeoNodeException
 from geonode.base import enumerations
-from geonode.datasets.models import TIME_REGEX_FORMAT
+from geonode.layers.models import TIME_REGEX_FORMAT
 from geonode.resource.manager import resource_manager
 from geonode.upload import UploadException, LayerNotReady
 
-from ..datasets.models import Dataset
-from ..datasets.metadata import parse_metadata
+from ..layers.models import Dataset
+from ..layers.metadata import parse_metadata
 from ..people.utils import get_default_user
-from ..datasets.utils import get_valid_dataset_name
+from ..layers.utils import get_valid_dataset_name
 from ..geoserver.helpers import (
     gs_catalog,
     gs_uploader

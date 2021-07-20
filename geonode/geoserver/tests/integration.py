@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from geonode.datasets.populate_datasets_data import create_dataset_data
+from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.geoserver.createlayer.utils import create_dataset
 from geonode.tests.base import GeoNodeLiveTestSupport
 
@@ -36,7 +36,7 @@ from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 
 from geonode import geoserver
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend

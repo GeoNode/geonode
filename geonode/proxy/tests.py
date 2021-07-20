@@ -44,7 +44,7 @@ from django.test.utils import override_settings
 
 from geonode import geoserver
 from geonode.base.models import Link
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import create_models, create_single_dataset

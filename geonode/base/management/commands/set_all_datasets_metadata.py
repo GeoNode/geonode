@@ -19,7 +19,7 @@
 
 from django.core.management.base import BaseCommand
 
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode import geoserver  # noqa
 from geonode.catalogue.models import catalogue_post_save
 import logging
@@ -148,7 +148,7 @@ class Command(BaseCommand):
                     set_attributes(layer, overwrite=True)
 
                 if set_uuid and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
-                    from geonode.datasets.utils import get_uuid_handler
+                    from geonode.layers.utils import get_uuid_handler
                     uuid = get_uuid_handler()(layer).create_uuid()
                     la = Dataset.objects.filter(resourcebase_ptr=layer.resourcebase_ptr)
                     la.update(uuid=uuid)

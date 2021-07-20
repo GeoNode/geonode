@@ -28,7 +28,7 @@ from . import enumerations
 from .serviceprocessors import base, get_service_handler
 
 from geonode.celery_app import app
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.tasks.tasks import AcquireLock
 from geonode.base.enumerations import (
     STATE_RUNNING,

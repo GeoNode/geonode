@@ -32,7 +32,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
 
 from geonode.maps.models import Map
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.resource.utils import get_related_resources
 from geonode.documents.models import (
     Document,

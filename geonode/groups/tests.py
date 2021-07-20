@@ -27,7 +27,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from geonode.maps.models import Map
-from geonode.datasets.models import Dataset
+from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from guardian.shortcuts import get_anonymous_user
 from geonode.security.views import _perms_info_json
