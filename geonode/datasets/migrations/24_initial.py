@@ -20,11 +20,6 @@ class Migration(migrations.Migration):
 
     if is_fake_migration:
         is_fake.update(app='datasets')
-        with connection.schema_editor() as schema_editor:
-            schema_editor.alter_db_table('Dataset', 'layers_layer', 'datasets_dataset')
-            schema_editor.alter_db_table('Dataset', 'layers_attribute', 'datasets_attribute')
-            schema_editor.alter_db_table('Dataset', 'layers_layer_styles', 'datasets_layer_styles')
-            schema_editor.alter_db_table('Dataset', 'layers_style', 'datasets_style')
     else:
         operations = [
             migrations.CreateModel(
