@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.base import enumerations
 import io
 import os
 import shutil
@@ -133,6 +134,10 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(len(obj.keywords.all()), 2)
         form = self.admin.get_form(self.request_admin, obj=obj, change=True)
         self.admin.save_model(self.request_admin, obj, form, True)
+
+    def test_default_sourcetype(self):
+        obj = Layer.objects.first()
+        self.assertEqual(obj.sourcetype, enumerations.SOURCE_TYPE_LOCAL)
 
     # Data Tests
 

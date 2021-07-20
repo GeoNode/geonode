@@ -39,6 +39,7 @@ from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 
+from geonode.base import enumerations as base_enumerations
 from geonode.base.models import (
     Link,
     ResourceBase,
@@ -277,6 +278,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             defaults=dict(
                 owner=geonode_service.owner,
                 remote_service=geonode_service,
+                sourcetype=base_enumerations.SOURCE_TYPE_REMOTE,
                 **resource_fields
             )
         )

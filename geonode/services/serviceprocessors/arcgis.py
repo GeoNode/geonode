@@ -31,6 +31,7 @@ from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.resource.manager import resource_manager
+from geonode.base import enumerations as base_enumerations
 
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
 
@@ -269,6 +270,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             defaults=dict(
                 owner=geonode_service.owner,
                 remote_service=geonode_service,
+                sourcetype=base_enumerations.SOURCE_TYPE_REMOTE,
                 **resource_fields
             )
         )

@@ -952,6 +952,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         choices=enumerations.PROCESSING_STATES,
         help_text=_('Hold the resource processing state.'))
 
+    sourcetype = models.CharField(
+        _("Source Type"),
+        max_length=16,
+        null=False,
+        blank=False,
+        default=enumerations.SOURCE_TYPE_LOCAL,
+        choices=enumerations.SOURCE_TYPES,
+        help_text=_('The resource source type, which can be one of "LOCAL", "REMOTE" or "COPYREMOTE".'))
+
     # fields controlling security state
     dirty_state = models.BooleanField(
         _("Dirty State"),

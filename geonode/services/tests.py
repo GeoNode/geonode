@@ -40,6 +40,7 @@ from owslib.map.wms111 import ContentMetadata
 
 from geonode.layers.models import Layer
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base import enumerations as base_enumerations
 from geonode.services.utils import test_resource_table_status
 
 from . import enumerations, forms
@@ -501,6 +502,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             geonode_layer = Layer.objects.filter(remote_service=geonode_service).get()
             self.assertIsNotNone(geonode_layer)
             self.assertNotEqual(geonode_layer.srid, "EPSG:4326")
+            self.assertEqual(geonode_layer.sourcetype, base_enumerations.SOURCE_TYPE_REMOTE)
             harvest_job, created = HarvestJob.objects.get_or_create(
                 service=geonode_service,
                 resource_id=geonode_layer.alternate
@@ -675,6 +677,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             geonode_layer = handler._create_layer(geonode_service, **resource_fields)
             self.assertIsNotNone(geonode_layer)
             self.assertNotEqual(geonode_layer.srid, "EPSG:4326")
+            self.assertEqual(geonode_layer.sourcetype, base_enumerations.SOURCE_TYPE_REMOTE)
             harvest_job, created = HarvestJob.objects.get_or_create(
                 service=geonode_service,
                 resource_id=geonode_layer.alternate
