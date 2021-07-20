@@ -1,6 +1,6 @@
 [
    {
-      "model":"datasets.style",
+      "model":"layers.style",
       "pk":1,
       "fields":{
          "name":"geonode_theaters_nyc44",
@@ -12,7 +12,7 @@
       }
    },
    {
-      "model":"datasets.style",
+      "model":"layers.style",
       "pk":2,
       "fields":{
          "name":"theaters_nyc",
@@ -24,7 +24,7 @@
       }
    },
    {
-      "model":"datasets.style",
+      "model":"layers.style",
       "pk":3,
       "fields":{
          "name":"geonode_Meteorite_Landings_from_NASA_Open_Data_Portal7",
@@ -36,7 +36,7 @@
       }
    },
    {
-      "model":"datasets.style",
+      "model":"layers.style",
       "pk":4,
       "fields":{
          "name":"Meteorite_Landings_from_NASA_Open_Data_Portal1",

@@ -204,7 +204,7 @@ def dataset_style_manage(request, layername):
     layer = _resolve_dataset(
         request,
         layername,
-        'datasets.change_dataset_style',
+        'layers.change_dataset_style',
         _PERMISSION_MSG_MODIFY)
 
     if request.method == 'GET':
