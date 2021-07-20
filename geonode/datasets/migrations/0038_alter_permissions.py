@@ -61,13 +61,17 @@ def alter_permissions(apps, schema_editor):
                 perm.codename = perm.codename.replace('layer', 'dataset')
                 perm.content_type=dataset_ctype
                 perm.save()
-        with connection.schema_editor() as schema_editor:
-            schema_editor.alter_db_table('Dataset', 'layers_layer', 'datasets_dataset')
-            schema_editor.alter_db_table('Dataset', 'layers_attribute', 'datasets_attribute')
-            schema_editor.alter_db_table('Dataset', 'layers_layer_styles', 'datasets_layer_styles')
-            schema_editor.alter_db_table('Dataset', 'layers_style', 'datasets_style')
     except Exception as e:
         raise e
+
+
+def rename_table(apps, schema_editor):
+    with connection.schema_editor() as schema_editor:
+        schema_editor.alter_db_table('Dataset', 'layers_layer', 'datasets_dataset')
+        schema_editor.alter_db_table('Dataset', 'layers_attribute', 'datasets_attribute')
+        schema_editor.alter_db_table('Dataset', 'layers_layer_styles', 'datasets_layer_styles')
+        schema_editor.alter_db_table('Dataset', 'layers_style', 'datasets_style')
+
 
 class Migration(migrations.Migration):
     atomic= True
@@ -82,10 +86,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        FixUpMigrationState('datasets', "dataset"),
-        migrations.AlterModelOptions(
-            name='dataset',
-            options={'permissions': (('change_dataset_data', 'Can edit layer data'), ('change_dataset_style', 'Can change layer style'))},
-        ),
+        FixUpMigrationState('datasets', "dataset"),      
+        migrations.RunPython(rename_table),
         migrations.RunPython(alter_permissions)
     ]
