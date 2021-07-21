@@ -334,7 +334,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(
             set(lyr.keyword_list()), {
-                '&lt;IMG SRC=&#x27;javascript:true;&#x27;&gt;Science', 'Europe&lt;script&gt;true;&lt;/script&gt;',
+                '&lt;IMG SRC=&#39;javascript:true;&#39;&gt;Science', 'Europe&lt;script&gt;true;&lt;/script&gt;',
                 'here', 'keywords', 'land_&lt;script&gt;true;&lt;/script&gt;covering', 'populartag', 'saving',
                 'ß', 'ä', 'ö', 'ü', '論語'})
 
@@ -349,7 +349,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
 
         from geonode.base.models import HierarchicalKeyword as hk
-        keywords = hk.resource_keywords_tree(get_user_model().objects.get(username='admin'), type='layer')
+        keywords = hk.resource_keywords_tree(get_user_model().objects.get(username='admin'), resource_type='layer')
 
         self.assertEqual(len(keywords), 13)
 
