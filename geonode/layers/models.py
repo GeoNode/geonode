@@ -32,7 +32,6 @@ from geonode.security.models import PermissionLevelMixin
 from geonode.base.models import (
     ResourceBase,
     ResourceBaseManager)
-from geonode.services.enumerations import INDEXED
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -123,9 +122,13 @@ class Dataset(ResourceBase):
     objects = DatasetManager()
     workspace = models.CharField(_('Workspace'), max_length=128)
     store = models.CharField(_('Store'), max_length=128)
-
     name = models.CharField(_('Name'), max_length=128)
     typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
+    ows_url = models.URLField(
+        _('ows URL'),
+        null=True,
+        blank=True,
+        help_text=_('The URL of the OWS service providing this layer, if any exists.'))
 
     is_mosaic = models.BooleanField(_('Is mosaic?'), default=False)
     has_time = models.BooleanField(_('Has time?'), default=False)
@@ -151,7 +154,9 @@ class Dataset(ResourceBase):
         related_name='dataset_default_style',
         null=True,
         blank=True)
+
     styles = models.ManyToManyField(Style, related_name='dataset_styles')
+
     remote_service = models.ForeignKey("services.Service", null=True, blank=True, on_delete=models.CASCADE)
 
     charset = models.CharField(max_length=255, default='UTF-8')
@@ -329,7 +334,7 @@ class Dataset(ResourceBase):
 
         else:
             Dataset.objects.filter(id=self.id)\
-                         .update(popular_count=models.F('popular_count') + 1)
+                .update(popular_count=models.F('popular_count') + 1)
 
 
 class AttributeManager(models.Manager):

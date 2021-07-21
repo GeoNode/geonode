@@ -968,13 +968,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         max_length=512,
         help_text=_('Name of the Remote Service if any.'))
 
-    ows_url = models.URLField(
-        _('ows URL'),
-        null=True,
-        blank=True,
-        default=f"{(settings.OGC_SERVER['default']['PUBLIC_LOCATION'])}ows",
-        help_text=_('The URL of the OWS service providing this layer, if any exists.'))
-
     # fields controlling security state
     dirty_state = models.BooleanField(
         _("Dirty State"),

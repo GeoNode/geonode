@@ -36,5 +36,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        RunPython(assign_permissions_to_contributors)
+        RunPython(assign_permissions_to_contributors, migrations.RunPython.noop)
     ]

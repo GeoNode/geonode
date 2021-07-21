@@ -136,7 +136,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.admin.save_model(self.request_admin, obj, form, True)
 
     def test_default_sourcetype(self):
-        obj = Layer.objects.first()
+        obj = Dataset.objects.first()
         self.assertEqual(obj.sourcetype, enumerations.SOURCE_TYPE_LOCAL)
 
     # Data Tests
