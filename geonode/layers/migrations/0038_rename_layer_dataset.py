@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         ('harvesting', '0026_harvestableresource_last_harvesting_succeeded'),
         ('base', '0068_rename_storetype_resourcebase_subtype'),
         ('contenttypes', '0002_remove_content_type_name'),
-        ('layers', '0036_remove_layer_storetype'),
+        ('layers', '0037_layer_ptype'),
     ]
 
     operations = [
