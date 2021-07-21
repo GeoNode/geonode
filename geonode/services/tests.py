@@ -40,6 +40,7 @@ from owslib.map.wms111 import ContentMetadata
 
 from geonode.layers.models import Dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base import enumerations as base_enumerations
 from geonode.services.utils import test_resource_table_status
 
 from . import enumerations, forms
@@ -501,6 +502,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             geonode_dataset = Dataset.objects.filter(remote_service=geonode_service).get()
             self.assertIsNotNone(geonode_dataset)
             self.assertNotEqual(geonode_dataset.srid, "EPSG:4326")
+            self.assertEqual(geonode_dataset.sourcetype, base_enumerations.SOURCE_TYPE_REMOTE)
             harvest_job, created = HarvestJob.objects.get_or_create(
                 service=geonode_service,
                 resource_id=geonode_dataset.alternate
@@ -672,9 +674,10 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             resource_fields["keywords"] = keywords
             resource_fields["is_approved"] = True
             resource_fields["is_published"] = True
-            geonode_dataset = handler._create_dataset(geonode_service, **resource_fields)
+            geonode_dataset = handler._create_layer(geonode_service, **resource_fields)
             self.assertIsNotNone(geonode_dataset)
             self.assertNotEqual(geonode_dataset.srid, "EPSG:4326")
+            self.assertEqual(geonode_dataset.sourcetype, base_enumerations.SOURCE_TYPE_REMOTE)
             harvest_job, created = HarvestJob.objects.get_or_create(
                 service=geonode_service,
                 resource_id=geonode_dataset.alternate

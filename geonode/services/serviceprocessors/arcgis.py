@@ -31,6 +31,7 @@ from geonode.base.models import Link
 from geonode.layers.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.resource.manager import resource_manager
+from geonode.base import enumerations as base_enumerations
 
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
 
@@ -263,14 +264,21 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         # for common fields (such as abstract and title) and adds
         # sensible default values
         keywords = resource_fields.pop("keywords", [])
+        defaults = dict(
+            owner=geonode_service.owner,
+            remote_service=geonode_service,
+            remote_typename=geonode_service.name,
+            sourcetype=base_enumerations.SOURCE_TYPE_REMOTE,
+            ptype=getattr(geonode_service, "ptype", "gxp_wmscsource"),
+            **resource_fields
+        )
+        if geonode_service.method == INDEXED:
+            defaults['ows_url'] = geonode_service.service_url
+
         geonode_dataset = resource_manager.create(
             None,
             resource_type=Dataset,
-            defaults=dict(
-                owner=geonode_service.owner,
-                remote_service=geonode_service,
-                **resource_fields
-            )
+            defaults=defaults
         )
         resource_manager.update(geonode_dataset.uuid, instance=geonode_dataset, keywords=keywords, notify=True)
         resource_manager.set_permissions(geonode_dataset.uuid, instance=geonode_dataset)

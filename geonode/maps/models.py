@@ -471,13 +471,13 @@ class MapLayer(models.Model, GXPLayerBase):
     # A group label to apply to this layer.  This affects the hierarchy displayed
     # in the map viewer's layer tree.
 
-    visibility = models.BooleanField(_('visibility'), default=True)
-    # A boolean value, true if this layer should be visible when the map loads.
-
     ows_url = models.URLField(_('ows URL'), null=True, blank=True)
     # The URL of the OWS service providing this layer, if any exists.
 
-    dataset_params = models.TextField(_('layer params'))
+    visibility = models.BooleanField(_('visibility'), default=True)
+    # A boolean value, true if this layer should be visible when the map loads.
+
+    layer_params = models.TextField(_('layer params'))
     # A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     # passed to the GXP viewer.
 
