@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -435,6 +435,12 @@ msgstr "该资源是否被发布者或编辑者准许？"
 msgid "Thumbnail url"
 msgstr "缩略图链接"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -652,6 +658,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "密码更改成功。"
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -971,6 +986,9 @@ msgstr "速度打分"
 msgid "Link to"
 msgstr "链接"
 
+msgid "File"
+msgstr "文件"
+
 msgid "Document must be a file or url."
 msgstr "文档必须是一个文件或URL。"
 
@@ -982,9 +1000,6 @@ msgstr "该文件类型不允许"
 
 msgid "Permissions must be valid JSON."
 msgstr "权限必须是有效的JSON。"
-
-msgid "File"
-msgstr "文件"
 
 msgid "The URL of the document if it is external."
 msgstr "的文档的URL，如果它是外部的。"
@@ -1045,6 +1060,9 @@ msgstr "高级编辑"
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] "文件"
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr "代替"
@@ -1487,6 +1505,11 @@ msgstr ""
 "导入支持ISO，FGDC和都柏林核心元数据元素的一个子集。        一些您原来的元数据"
 "可能已经丢失。"
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "浏览地图"
+
 #, python-format
 msgid ""
 "\n"
@@ -1495,6 +1518,11 @@ msgid ""
 msgstr ""
 "\n"
 "编辑细节%(map_title)s"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "返回到"
 
 #, fuzzy
 #| msgid "View Map"
@@ -1585,26 +1613,32 @@ msgstr ""
 msgid "Polygons"
 msgstr ""
 
-msgid "Layer name"
-msgstr "图层名"
+#, fuzzy
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "数据集"
 
-msgid "Layer title"
-msgstr "图层标题"
+#, fuzzy
+#| msgid "Dataset Attributes"
+msgid "Dataset title"
+msgstr "数据集属性"
 
 msgid "Geometry type"
 msgstr "几何类型"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "创建地图"
+#| msgid "Featured"
+msgid "Create Dataset"
+msgstr "是否作为特色"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "浏览图层"
 
 #, fuzzy
 #| msgid "Create a map using this layer"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "制作一张用此图层制作的地图"
 
 #, fuzzy
@@ -1640,6 +1674,9 @@ msgstr "在加载数据倒PostGIS时出现了一个异常"
 msgid " Additionally an error occured during database cleanup"
 msgstr "在数据库清理时又发生了一个错误"
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr "压缩程序"
 
@@ -1672,9 +1709,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "您没有权限改变该图层的样式"
@@ -1899,6 +1933,119 @@ msgstr "编辑群体类别"
 
 msgid "Save"
 msgstr "保存"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "资源"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "收获"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "引用文献的版本"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "对选定的资源设置权限"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2169,10 +2316,12 @@ msgstr "上一次统计更新的时间"
 
 #, fuzzy
 #| msgid "Return to Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "返回图层"
 
-msgid "Return to Layer"
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Return to Dataset"
 msgstr "返回图层"
 
 #, fuzzy
@@ -2192,7 +2341,7 @@ msgstr "改变联络地址"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "给以下图层添加一个新的联系点"
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2253,14 +2402,18 @@ msgstr "中值"
 msgid "Standard Deviation"
 msgstr "方差"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "为该图层评分"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "下载图层"
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "下载"
 
 msgid "Images"
 msgstr ""
@@ -2351,9 +2504,9 @@ msgid "Edit data"
 msgstr "编辑数据"
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "编辑图层"
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "修改元数据"
 
 #, fuzzy
 #| msgid "Information"
@@ -2366,27 +2519,37 @@ msgstr ""
 msgid "Legend"
 msgstr "图例"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "使用此图层的地图"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "列出使用此图层的地图"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "当前图层未被任何地图使用。"
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "制作一张用此图层制作的地图"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr "如果要使用该图层生成新地图，请点击下方按钮"
 
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "点击下方按钮以改变该图层的使用权限"
 
 #, fuzzy
@@ -2424,7 +2587,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2441,22 +2604,16 @@ msgstr "制作一张用此图层制作的地图"
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "点击下方按钮以改变该图层的使用权限"
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr "点击下方按钮以改变该图层的使用权限"
 
-msgid "Change Layer Permissions"
-msgstr "改变图层访问权限"
-
-msgid "Processing..."
-msgstr "处理中…"
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "权限"
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
+msgstr "改变图层访问权限"
 
 msgid "Remove Mosaic Granules"
 msgstr "移除镶嵌颗粒"
@@ -2479,8 +2636,10 @@ msgstr "此操作会影响以下地图："
 msgid "No maps are using this layer"
 msgstr "没有地图使用此图层。"
 
-msgid "Upload Layers"
-msgstr "上传图层"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "下载元数据"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2536,13 +2695,17 @@ msgstr "错误"
 msgid "Following items are required:"
 msgstr ""
 
-msgid "Upload Layer Metadata"
+#, fuzzy
+#| msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "上传图层元数据"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
+#, fuzzy
+#| msgid "Remove Layers"
+msgid "Remove Datasets"
 msgstr "移除图层"
 
 #, python-format
@@ -2557,7 +2720,9 @@ msgstr ""
 "%(layer_title)s</a>?\n"
 "        "
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "替换图层"
 
 msgid "Manage Styles"
@@ -2566,14 +2731,16 @@ msgstr "管理样式"
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"      Manage Available Styles for <a href=\"{{ layer_url }}\">"
 "%(layer_title)s</a>\n"
 "    "
 msgstr ""
 "\n"
-"为 <a href=\"/layers/%(layer_title)s\">%(layer_title)s</a>管理可用的样式</a>"
+"为 <a href=\"{{ layer_url }}\">%(layer_title)s</a>管理可用的样式</a>"
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "默认样式"
 
 msgid "Available styles"
@@ -2588,9 +2755,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "更新可用样式"
 
+msgid "Return to Layer"
+msgstr "返回图层"
+
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "上传层第2步"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2608,8 +2778,10 @@ msgstr "预览"
 msgid "Dataset Attributes"
 msgstr "数据集属性"
 
-msgid "Upload Layer"
-msgstr "上传图层"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "下载元数据"
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2660,7 +2832,7 @@ msgstr "您要删除此上传吗？"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "上传层第2步"
 
 msgid "Provide CRS for "
@@ -2681,9 +2853,9 @@ msgstr "坐标参照系"
 #| "    "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2873,7 +3045,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "上传层第2步"
 
 msgid "Geospatial Data"
@@ -2929,7 +3101,7 @@ msgstr "上传表单"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "上传层第2步"
 
 msgid "Inspect data for "
@@ -3053,11 +3225,11 @@ msgstr "启用时间"
 #| "valid period for the\n"
 #| "    feature."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3136,29 +3308,20 @@ msgstr "或者只是去"
 msgid "now"
 msgstr "现在"
 
-#, fuzzy
-#| msgid "You are attempting to replace a vector layer with a raster."
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr "您正在试图用栅格数据代替一个矢量图层。"
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
-
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with a raster."
-msgid "You are attempting to {action_type} a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr "您正在试图用栅格数据代替一个矢量图层。"
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a raster layer with a vector."
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr "您正在试图用一个矢量代替一个栅格图层。"
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with a raster."
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr "您正在试图用栅格数据代替一个矢量图层。"
 
 #, python-brace-format
@@ -3167,7 +3330,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3177,10 +3340,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3192,42 +3355,49 @@ msgid ""
 "or contact and administrator if the problem continues."
 msgstr "在上传数据时出现错误。请重试，如果还有问题，请与管理员联系。"
 
+#, fuzzy
+#| msgid ""
+#| "Note: this layer's orginal metadata was populated and preserved by "
+#| "importing a metadata XML file. This metadata cannot be edited."
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
 "注意： 该图层的原始元数据已通过导入一个元数据XML文件保存。 该元数据不能被编"
 "辑。"
 
-msgid "You are not permitted to delete this layer"
+#, fuzzy
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
 msgstr "您无权删除此图层"
 
-msgid "You do not have permissions for this layer."
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
 msgstr "您没有权限查看或下载此图层。"
 
-msgid "You are not permitted to modify this layer"
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
 msgstr "您无权修改此图层"
 
-msgid "You are not permitted to modify this layer's metadata"
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
 msgstr "您无权修改此图层元数据"
 
-msgid "You are not permitted to view this layer"
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
 msgstr "您无权以查看此图层"
 
 #, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "文件上传"
-
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr "您正在试图用栅格数据代替一个矢量图层。"
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr "您正在试图用一个矢量代替一个栅格图层。"
-
+#| msgid ""
+#| "This layer is a member of a layer group, you must remove the layer from "
+#| "the group before deleting."
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr "该图层是一个图层组的成员，您必须在删除之前从群体中移除该图层。"
 
 #, fuzzy, python-format
@@ -4083,6 +4253,17 @@ msgstr "文件"
 msgid "Not Authorized"
 msgstr "未提供"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "GeoNode帮助"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4267,8 +4448,8 @@ msgstr "编辑服务"
 msgid "Services"
 msgstr "服务"
 
-msgid "Register a new Service"
-msgstr "注册新服务"
+msgid "Add Remote Service"
+msgstr "添加远程服务"
 
 msgid "Remote Services"
 msgstr "远程服务"
@@ -4380,6 +4561,11 @@ msgid "Service rescanned successfully"
 msgstr "密码更改成功。"
 
 #, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "您不允许保存或编辑此地图。"
+
+#, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "您不得删除此服务。"
@@ -4464,6 +4650,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr "高程"
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "数据集"
+
 msgid "People"
 msgstr "用户"
 
@@ -4513,8 +4704,10 @@ msgstr ""
 "tracker</a>\n"
 "            "
 
-msgid "Add Remote Service"
-msgstr "添加远程服务"
+#, fuzzy
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "创建一个新的地图"
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4613,10 +4806,14 @@ msgstr "谁可以下载吗？"
 msgid "Who can change metadata for it?"
 msgstr "谁可以改变元数据？"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "谁可以为该图层编辑的数据？"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "谁可以编辑样式这一层？"
 
 msgid ""
@@ -5265,6 +5462,9 @@ msgstr "上传中..."
 msgid "Upload in progress..."
 msgstr "正在上传..."
 
+msgid "Processing..."
+msgstr "处理中…"
+
 msgid "Updating Thumbnail..."
 msgstr "正在更新缩略图..."
 
@@ -5272,6 +5472,11 @@ msgstr "正在更新缩略图..."
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
 msgstr "您确定要删除"
+
+#, fuzzy
+#| msgid "Processing..."
+msgid "Processing Resource..."
+msgstr "处理中…"
 
 msgid "Information for Developers"
 msgstr "针对开发者的帮助信息"
@@ -5457,8 +5662,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5611,13 +5816,13 @@ msgid ""
 "p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <p>The <a href=\"{{ url_layer_browse }}\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
 "    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
 "    <h4 id=\"developer-access\">Developer Access</h4>\n"
-"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <p>The <a href=\"{{ url_developer }}\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
@@ -5626,9 +5831,9 @@ msgid ""
 "    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
 "    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"{{ url_maps_browse }}\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"<strong>create a map</strong>, which will open the <a href=\"{{ url_maps_new }}\">Map "
 "Composer</a>.</p>\n"
 "    <h5>Google Earth Mode</h5>\n"
 "    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
@@ -5637,9 +5842,9 @@ msgid ""
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
-"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"    <p>To create a new map go to the <a href=\"{{ url_maps_browse }}\">Contributed Maps</a> "
+"tab and click the <a href=\"{{ url_maps_new }}\">create your own map</a> link.</p>\n"
+"    <p>This will take you to the <a href=\"{{ url_maps_new }}\">Map Composer</a> with "
 "a base layer loaded.</p>\n"
 "    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
@@ -5673,7 +5878,7 @@ msgid ""
 "    </ol>\n"
 "    <p>This will put an interactive widget showing you map in your web page "
 "or blog post.</p>\n"
-"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"    <p>Note that the <a href=\"{{ url_maps_new }}\">Map Composer</a> also has a "
 "button to publish the map. Just be sure to save the map before publishing if "
 "there are changes that you want others to see. It publishes the last saved "
 "version, not the last viewed version.</p>\n"
@@ -5689,7 +5894,7 @@ msgid ""
 "      <li>Save the map.</li>\n"
 "    </ol>\n"
 "    <p>You will be able to see your new map when you search for it from the "
-"<a href=\"/maps\">Maps</a> tab.</p>\n"
+"<a href=\"{{ url_maps_browse }}\">Maps</a> tab.</p>\n"
 "    "
 msgstr ""
 "\n"
@@ -5697,29 +5902,29 @@ msgstr ""
 "地图的地图编辑应用。</p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">浏览图层</h4>\n"
-"    <p><a href=\"/layers\">Layers</a>标签允许您去浏览那些被上传到GeoNode上的"
+"    <p><a href=\"{{ url_layer_browse }}\">Layers</a>标签允许您去浏览那些被上传到GeoNode上的"
 "数据。</p>\n"
 "    <p>为了在其他应用上使用，所有数据都可以以多种格式下载。</p>\n"
 "\n"
 "    <h4 id=\"developer-access\">开发者使用权</h4>\n"
-"    <p><a href=\"/developer\">开发者</a>页面是一个开发者开始构建不同于GeoNode"
+"    <p><a href=\"{{ url_developer }}\">开发者</a>页面是一个开发者开始构建不同于GeoNode"
 "应用的地方。它包括网络服务的使用说明，GeoNode源代码的链接和用于创建它的关于开"
 "源项目的信息。</p>\n"
 "\n"
 "    <h4 id=\"browsing-maps\">浏览地图</h4>\n"
 "    <p>GeoNode允许用户创建和分享地图给他人。</p>\n"
-"    <p><a href=\"/maps\">Maps</a>标签是一个在GeoNode上浏览地图的途径。从这里"
+"    <p><a href=\"{{ url_maps_browse }}\">Maps</a>标签是一个在GeoNode上浏览地图的途径。从这里"
 "您可以<strong>搜索一张地图</strong>或者<strong>创建一张地图</strong>, 这将会"
-"打开<a href=\"/maps/new\">地图编辑器</a>。</p>\n"
+"打开<a href=\"{{ url_maps_new }}\">地图编辑器</a>。</p>\n"
 "    <h5>谷歌地球模式</h5>\n"
 "    <p>任何在交互地图编辑器上观察的地图可以利用谷歌地球的插件用3D的形式进行观"
 "看。为了转换至3D模式，选择谷歌地球按钮，它在上方工具栏中最右方的。如果您没有"
 "安装谷歌地球的插件，您将会被提示安装插件。</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">创建地图</h4>\n"
-"    <p>为了创建一张新的地图，进入<a href=\"/maps\">查看地图</a>标签，然后点击"
-"<a href=\"/maps/new\">创建您自己的地图</a>链接。</p>\n"
-"    <p>这将会带您进入<a href=\"/maps/new\">地图编辑器</a>，同时加载一个基础图"
+"    <p>为了创建一张新的地图，进入<a href=\"{{ url_maps_browse }}\">查看地图</a>标签，然后点击"
+"<a href=\"{{ url_maps_new }}\">创建您自己的地图</a>链接。</p>\n"
+"    <p>这将会带您进入<a href=\"{{ url_maps_new }}\">地图编辑器</a>，同时加载一个基础图"
 "层。</p>\n"
 "    <p>为了从GeoNode添加数据图层，点击绿色加号按钮，它位于图层底部，在屏幕的"
 "左手边。这将会打开一个会话，该会话中列出了GeoNode上所有可用的图层。</p>\n"
@@ -5748,7 +5953,7 @@ msgstr ""
 "    </ol>\n"
 "    <p>这将会放置一个交互的装置在您的网络页面上展示您的地图或者博客站点。</"
 "p>\n"
-"    <p>注意<a href=\"/maps/new\">地图编辑器</a>也有一个发布地图的按钮。如果您"
+"    <p>注意<a href=\"{{ url_maps_new }}\">地图编辑器</a>也有一个发布地图的按钮。如果您"
 "有任何希望其他人看见的改动，请在发布地图前确认保存过地图。地图编辑器会发布最"
 "后一次保存的地图版本而不是最后看见的版本。</p>\n"
 "\n"
@@ -5762,7 +5967,7 @@ msgstr ""
 "地图。</li>\n"
 "      <li>保存地图。</li>\n"
 "    </ol>\n"
-"    <p>当您搜索地图自<a href=\"/maps\">Maps</a>标签，您将能够看见您的新地图</"
+"    <p>当您搜索地图自<a href=\"{{ url_maps_browse }}\">Maps</a>标签，您将能够看见您的新地图</"
 "p>\n"
 "    "
 
@@ -5810,10 +6015,14 @@ msgid ""
 "and public sources. Download data in standard formats."
 msgstr "点击搜索其他用户，组织和公共资源出版的地理空间数据。以标准格式下载。"
 
-msgid "Add layers"
-msgstr "添加图层"
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "数据集"
 
-msgid "Explore layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
 msgstr "浏览图层"
 
 #, fuzzy
@@ -6353,7 +6562,7 @@ msgstr "过滤器"
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "图层"
 
 msgid "Maps found"
@@ -6395,6 +6604,11 @@ msgstr "热门度"
 
 msgid "Text"
 msgstr "文本"
+
+#, fuzzy
+#| msgid "Share This"
+msgid "Share This Dataset"
+msgstr "分享"
 
 msgid "Share This"
 msgstr "分享"
@@ -6579,6 +6793,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6659,6 +6877,61 @@ msgstr "权限等级不够。"
 
 msgid "Permission Denied"
 msgstr "权限级别"
+
+#~ msgid "Layer name"
+#~ msgstr "图层名"
+
+#~ msgid "Layer title"
+#~ msgstr "图层标题"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "创建地图"
+
+#~ msgid "Download Layer"
+#~ msgstr "下载图层"
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "编辑图层"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "权限"
+
+#~ msgid "Upload Layers"
+#~ msgstr "上传图层"
+
+#~ msgid "Upload Layer"
+#~ msgstr "上传图层"
+
+#, fuzzy
+#~| msgid "You are attempting to replace a vector layer with a raster."
+#~ msgid "You are attempting to replace a vector layer with an unknown format."
+#~ msgstr "您正在试图用栅格数据代替一个矢量图层。"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "文件上传"
+
+#~ msgid "You are attempting to replace a vector layer with a raster."
+#~ msgstr "您正在试图用栅格数据代替一个矢量图层。"
+
+#~ msgid "You are attempting to replace a raster layer with a vector."
+#~ msgstr "您正在试图用一个矢量代替一个栅格图层。"
+
+#~ msgid "Register a new Service"
+#~ msgstr "注册新服务"
+
+#~ msgid "Add layers"
+#~ msgstr "添加图层"
+
+#~ msgid "Explore layers"
+#~ msgstr "浏览图层"
 
 #, fuzzy
 #~| msgid "Set permissions"

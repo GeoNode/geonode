@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load static %}
 {% load base_tags %}
+{% load client_lib_tags %}
 
 {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
 
@@ -128,9 +129,9 @@
                 <h2><a href="{% url "layer_browse" %}">{{ facets.layer|default:_("No") }} {% blocktrans count counter=facets.layer %}Layer{% plural %}Layers{% endblocktrans %}</a></h2>
                 <p>{% trans "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats." %}</p>
                 {% if user.is_authenticated %}
-                <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Add layers" %} &raquo;</a></p>
+                <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Add datasets" %} &raquo;</a></p>
                 {% else %}
-                <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore layers" %} &raquo;</a></p>
+                <p class="text-center"><a class="btn btn-default" href="{% layer_list_url %}" role="button">{% trans "Explore datasetss" %} &raquo;</a></p>
                 {% endif %}
               </div>
               <div class="col-md-6">
@@ -140,7 +141,7 @@
                 {% if user.is_authenticated %}
                 <p><a class="btn btn-default" href="{% url "new_map" %}" role="button">{% trans "Create maps" %} &raquo;</a></p>
                 {% else %}
-                <p><a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Explore maps" %} &raquo;</a></p>
+                <p><a class="btn btn-default" href="{% map_list_url %}" role="button">{% trans "Explore maps" %} &raquo;</a></p>
                 {% endif %}
               </div>
               <div class="col-md-6">
@@ -185,33 +186,6 @@
       </div>
     </section>
     {% endblock datasets %}
-
-      {% block partners %}
-        {% if custom_theme.partners.all %}
-        <section id="partners">
-        <div class="container text-center">
-          {% with partners_title=custom_theme.partners_title|default:"Our partners"|template_trans %}
-          <h2>{% trans partners_title %}</h2>
-          {% endwith %}
-          <div class="row">
-              {% for partner in custom_theme.partners.all %}
-              <div class="col-md-2">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                  {% if partner.logo %}
-                  <div class="partner_logo" style="background-image: url({{partner.logo.url}})">
-                  {% else %}
-                  {{ partner.title|safe }}
-                  {% endif %}
-                  </div>
-                </a>
-              </div>
-              {% endfor %}
-          </div>
-        </div>
-        </section>
-        {% endif %}
-      {% endblock partners %}
-
       {% block cookielawinfo %}
       {% if custom_theme.cookie_law_info_bar_enabled %}
           <div id="cookie-law-info-bar">

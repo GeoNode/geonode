@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -281,7 +280,7 @@ class ThesaurusAdmin(admin.ModelAdmin):
     ordering = ('identifier',)
 
     def get_urls(self):
-        urls = super(ThesaurusAdmin, self).get_urls()
+        urls = super().get_urls()
         my_urls = [
             path('importrdf/', self.import_rdf, name="base_thesaurus_importrdf")
         ]
@@ -377,6 +376,14 @@ admin.site.register(ThesaurusKeywordLabel, ThesaurusKeywordLabelAdmin)
 class ResourceBaseAdminForm(autocomplete.FutureModelForm):
 
     keywords = TagField(widget=TaggitSelect2Custom('autocomplete_hierachical_keyword'))
+
+    def delete_queryset(self, request, queryset):
+        """
+        We need to invoke the 'ResourceBase.delete' method even when deleting
+        through the admin batch action
+        """
+        for obj in queryset:
+            obj.delete()
 
     class Meta:
         pass

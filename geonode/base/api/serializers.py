@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -17,10 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 from urllib.parse import urljoin
 
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.forms.models import model_to_dict
 
 from rest_framework import serializers
 from rest_framework_gis import fields
@@ -33,6 +34,7 @@ from avatar.templatetags.avatar_tags import avatar_url
 
 from geonode.favorite.models import Favorite
 from geonode.base.models import (
+    Link,
     ResourceBase,
     HierarchicalKeyword,
     Region,
@@ -57,7 +59,7 @@ logger = logging.getLogger(__name__)
 class BaseDynamicModelSerializer(DynamicModelSerializer):
 
     def to_representation(self, instance):
-        data = super(BaseDynamicModelSerializer, self).to_representation(instance)
+        data = super().to_representation(instance)
         try:
             path = reverse(self.Meta.view_name)
             if not path.endswith('/'):
@@ -167,7 +169,7 @@ class AvatarUrlField(DynamicComputedField):
 
     def __init__(self, avatar_size, **kwargs):
         self.avatar_size = avatar_size
-        super(AvatarUrlField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         return build_absolute_uri(avatar_url(instance, self.avatar_size))
@@ -176,7 +178,7 @@ class AvatarUrlField(DynamicComputedField):
 class EmbedUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):
-        super(EmbedUrlField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         _instance = instance.get_real_instance()
@@ -189,7 +191,7 @@ class EmbedUrlField(DynamicComputedField):
 class DetailUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):
-        super(DetailUrlField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         return build_absolute_uri(instance.detail_url)
@@ -198,7 +200,7 @@ class DetailUrlField(DynamicComputedField):
 class ThumbnailUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):
-        super(ThumbnailUrlField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         thumbnail_url = instance.thumbnail_url
@@ -234,7 +236,7 @@ class ContactRoleField(DynamicComputedField):
 
     def __init__(self, contat_type, **kwargs):
         self.contat_type = contat_type
-        super(ContactRoleField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_attribute(self, instance):
         return getattr(instance, self.contat_type)
@@ -243,11 +245,34 @@ class ContactRoleField(DynamicComputedField):
         return UserSerializer(embed=True, many=False).to_representation(value)
 
 
+class DataBlobField(DynamicRelationField):
+
+    def value_to_string(self, obj):
+        value = self.value_from_object(obj)
+        return self.get_prep_value(value)
+
+
+class DataBlobSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = ResourceBase
+        fields = ('pk', 'blob')
+
+    def to_internal_value(self, data):
+        return data
+
+    def to_representation(self, value):
+        data = ResourceBase.objects.filter(id=value)
+        if data.exists() and data.count() == 1:
+            return data.get().blob
+        return {}
+
+
 class ResourceBaseSerializer(BaseDynamicModelSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
-        super(ResourceBaseSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['pk'] = serializers.CharField(read_only=True)
         self.fields['uuid'] = serializers.CharField(read_only=True)
@@ -292,6 +317,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
         self.fields['raw_data_quality_statement'] = serializers.CharField(read_only=True)
         self.fields['metadata_only'] = serializers.BooleanField()
         self.fields['processed'] = serializers.BooleanField(read_only=True)
+        self.fields['state'] = serializers.CharField(read_only=True)
 
         self.fields['embed_url'] = EmbedUrlField()
         self.fields['thumbnail_url'] = ThumbnailUrlField()
@@ -324,16 +350,26 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             'popular_count', 'share_count', 'rating', 'featured', 'is_published', 'is_approved',
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
-            'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed'
+            'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', 'state',
+            'data', 'subtype'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
             # users_geolimits, groups_geolimits
         )
 
+    def to_internal_value(self, data):
+        if isinstance(data, str):
+            data = json.loads(data)
+        if 'data' in data:
+            _data = data.pop('data')
+            if self.is_valid():
+                data['blob'] = _data
+        return data
+
     def to_representation(self, instance):
         request = self.context.get('request')
-        data = super(ResourceBaseSerializer, self).to_representation(instance)
+        data = super().to_representation(instance)
         if request:
             data['perms'] = instance.get_user_perms(request.user).union(
                 instance.get_self_resource().get_user_perms(request.user)
@@ -341,7 +377,35 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             if not request.user.is_anonymous:
                 favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
                 data['favorite'] = favorite > 0
+        # Adding links to resource_base api
+        obj_id = data.get('pk', None)
+        if obj_id:
+            dehydrated = []
+            link_fields = [
+                'extension',
+                'link_type',
+                'name',
+                'mime',
+                'url'
+            ]
+
+            links = Link.objects.filter(resource_id=int(obj_id), link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
+            for lnk in links:
+                formatted_link = model_to_dict(lnk, fields=link_fields)
+                dehydrated.append(formatted_link)
+            if len(dehydrated) > 0:
+                data['links'] = dehydrated
         return data
+
+    """
+     - Deferred / not Embedded --> ?include[]=data
+    """
+    data = DataBlobField(
+        DataBlobSerializer,
+        source='id',
+        many=False,
+        embed=False,
+        deferred=True)
 
 
 class FavoriteSerializer(DynamicModelSerializer):
@@ -353,7 +417,7 @@ class FavoriteSerializer(DynamicModelSerializer):
         fields = 'resource',
 
     def to_representation(self, value):
-        data = super(FavoriteSerializer, self).to_representation(value)
+        data = super().to_representation(value)
         return data['resource']
 
     def get_resource(self, instance):
@@ -371,7 +435,7 @@ class BaseResourceCountSerializer(BaseDynamicModelSerializer):
                 'type_filter': request.query_params.get('type'),
                 'title_filter': request.query_params.get('title__icontains')
             }
-        data = super(BaseResourceCountSerializer, self).to_representation(instance)
+        data = super().to_representation(instance)
         count_filter = {self.Meta.count_type: instance}
         data['count'] = get_resources_with_perms(
             request.user, filter_options).filter(**count_filter).count()

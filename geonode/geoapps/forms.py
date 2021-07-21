@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -34,7 +33,7 @@ class GeoAppForm(ResourceBaseForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(GeoAppForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for field in self.fields:
             help_text = self.fields[field].help_text
             self.fields[field].help_text = None

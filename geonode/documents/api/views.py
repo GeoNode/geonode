@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -53,7 +52,7 @@ class DocumentViewSet(DynamicModelViewSet):
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, DocumentPermissionsFilter
     ]
-    queryset = Document.objects.all()
+    queryset = Document.objects.all().order_by('-date')
     serializer_class = DocumentSerializer
     pagination_class = GeoNodeApiPagination
 

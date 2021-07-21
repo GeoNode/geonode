@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load bootstrap_tags %}
 {% load guardian_tags %}
+{% load client_lib_tags %}
 
 {% block title %}{{ document.title }} — {{ block.super }}{% endblock %}
 
@@ -26,7 +27,7 @@
 <script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
 
 <div class="page-header">
-  <a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
+  <a href="{% document_list_url %}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
   <h2 class="page-title">{% trans "Edit Metadata" %}</h2>
 </div>
 <div class="row">
@@ -59,7 +60,7 @@
         </ul>
       {% endif %}
         <div class="form-actions">
-          <a href="{% url 'document_detail' docid=document.id %}" class="btn btn-primary">{% trans "Return to Document" %}</a>
+          <a href="{% document_detail_url document %}" class="btn btn-primary">{% trans "Return to Document" %}</a>
           <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update" %}"/>
         </div>
       {% csrf_token %}
@@ -132,7 +133,7 @@
                 <button type='button' class="modal-cloose-btn btn btn-primary">{% trans "Done" %}</button>
               </fieldset>
               <div class="form-actions">
-                <a href="{% url 'document_detail' docid=document.id %}" class="btn btn-primary">{% trans "Return to Document" %}</a>
+                <a href="{% document_detail_url document %}" class="btn btn-primary">{% trans "Return to Document" %}</a>
                 <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
               </div>
           </div>

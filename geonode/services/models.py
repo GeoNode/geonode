@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -180,6 +179,14 @@ class Service(ResourceBase):
             return resp.status_code
         except Exception:
             return 404
+
+    class Meta:
+        # custom permissions,
+        # change and delete are standard in django-guardian
+        permissions = (
+            ('add_resourcebase_from_service', 'Can add resources to Service'),
+            ('change_resourcebase_metadata', 'Can change resources metadata'),
+        )
 
 
 class ServiceProfileRole(models.Model):

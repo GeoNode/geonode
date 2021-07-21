@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -17,6 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.contrib.auth.decorators import login_required
+from geonode.client.hooks import hookset
 import json
 
 from django import forms
@@ -164,7 +165,8 @@ def ident_json(request):
 def h_keywords(request):
     from geonode.base.models import HierarchicalKeyword as hk
     p_type = request.GET.get('type', None)
-    keywords = hk.dump_bulk_tree(request.user, type=p_type)
+    resource_name = request.GET.get('resource_name', None)
+    keywords = hk.resource_keywords_tree(request.user, resource_type=p_type, resource_name=resource_name)
 
     subtypes = []
     if p_type == 'geoapp':
@@ -176,7 +178,7 @@ def h_keywords(request):
                         subtypes.append(_model.__name__.lower())
 
     for _type in subtypes:
-        _bulk_tree = hk.dump_bulk_tree(request.user, type=_type)
+        _bulk_tree = hk.resource_keywords_tree(request.user, resource_type=_type, resource_name=resource_name)
         if isinstance(_bulk_tree, list):
             for _elem in _bulk_tree:
                 keywords.append(_elem)
@@ -194,3 +196,10 @@ def moderator_contacted(request, inactive_user=None):
         template="account/admin_approval_sent.html",
         context={"email": user.email}
     )
+
+
+@login_required
+def metadata_update_redirect(request):
+    url = request.POST['url']
+    client_redirect_url = hookset.metadata_update_redirect(url)
+    return HttpResponse(content=client_redirect_url)

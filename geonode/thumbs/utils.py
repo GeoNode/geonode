@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2021 OSGeo
@@ -184,6 +183,9 @@ def get_map(
     else:
         thumbnail_url = ogc_server_settings.LOCATION
 
+    if thumbnail_url.startswith(ogc_server_settings.PUBLIC_LOCATION):
+        thumbnail_url = thumbnail_url.replace(ogc_server_settings.PUBLIC_LOCATION, ogc_server_settings.LOCATION)
+
     wms_endpoint = ""
     additional_kwargs = {}
     if thumbnail_url == ogc_server_settings.LOCATION:
@@ -200,13 +202,14 @@ def get_map(
 
     # prepare authorization for WMS service
     headers = {}
-    if "access_token" not in additional_kwargs.keys():
-        if thumbnail_url.startswith(settings.OGC_SERVER["default"]["LOCATION"]):
+    if thumbnail_url.startswith(ogc_server_settings.LOCATION):
+        if "access_token" not in additional_kwargs.keys():
             # for the Geoserver backend, use Basic Auth, if access_token is not provided
-            _user = settings.OGC_SERVER["default"].get("USER")
-            _pwd = settings.OGC_SERVER["default"].get("PASSWORD")
+            _user, _pwd = ogc_server_settings.credentials
             encoded_credentials = base64.b64encode(f"{_user}:{_pwd}".encode("UTF-8")).decode("ascii")
             headers["Authorization"] = f"Basic {encoded_credentials}"
+        else:
+            headers["Authorization"] = f"Berarer {additional_kwargs['access_token']}"
 
     wms = WebMapService(f"{thumbnail_url}{wms_endpoint}", version=wms_version, headers=headers)
 

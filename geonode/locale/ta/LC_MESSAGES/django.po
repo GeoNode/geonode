@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/geonode/geonode/language/"
@@ -456,6 +456,12 @@ msgstr ""
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -675,6 +681,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "கடவுச்சொல் வெற்றிகரமாக மாற்றப்பட்டது."
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -992,6 +1007,9 @@ msgstr "வேக வீதம் "
 msgid "Link to"
 msgstr "இணைகின்றது "
 
+msgid "File"
+msgstr "கோப்பு"
+
 msgid "Document must be a file or url."
 msgstr "ஆவண ஒரு கோப்பு அல்லது URL ஆக இருக்க வேண்டும்."
 
@@ -1003,9 +1021,6 @@ msgstr "இந்த கோப்பு வகை அனுமதிக்க
 
 msgid "Permissions must be valid JSON."
 msgstr "அனுமதிகள் கச்சிதமாக JSON இருக்க வேண்டும்."
-
-msgid "File"
-msgstr "கோப்பு"
 
 msgid "The URL of the document if it is external."
 msgstr "ஆவணத்தின் URL அதை வெளி ஆகிறது என்றால்."
@@ -1067,6 +1082,9 @@ msgid "Document"
 msgid_plural "Documents"
 msgstr[0] "ஆவணம் "
 msgstr[1] "ஆவணம் "
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr "பதிலீடு "
@@ -1524,6 +1542,11 @@ msgstr ""
 "GeoNode மீத்தரவைத் இறக்குமதி, ISO, FGDC, மற்றும் டப்ளின் கோர் மெட்டா கூறுகள் ஒரு "
 "துணைக்குழு ஆதரிக்கிறது. உங்கள் அசல் மெட்டாடேட்டாவை இழந்தது."
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "வரைபடங்களை உலாவருதல் "
+
 #, python-format
 msgid ""
 "\n"
@@ -1532,6 +1555,11 @@ msgid ""
 msgstr ""
 "\n"
 "திருத்துதல் விவரங்கள் %(map_title)s ங்கள்"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "திரும்புக "
 
 #, fuzzy
 #| msgid "View Map"
@@ -1624,14 +1652,14 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "அடுக்கு பெயர்"
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "தரவு தொகுதி"
 
 #, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "லேயர் தலைப்பு"
+#| msgid "Attributes"
+msgid "Dataset title"
+msgstr "பண்பியல்பு"
 
 #, fuzzy
 #| msgid "property type"
@@ -1639,16 +1667,18 @@ msgid "Geometry type"
 msgstr "சொத்து வகை"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "வரைபடத்தை உருவாக்குதல்"
+#| msgid "Featured"
+msgid "Create Dataset"
+msgstr "முனைப்பு "
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "படுகைகளை உலாவருதல்"
 
 #, fuzzy
 #| msgid "Create a map using this layer"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "இந்த படுகையை பயன்படுத்தும் வரைபடத்தை உருவாக்குதல்"
 
 #, fuzzy
@@ -1684,6 +1714,9 @@ msgstr "PostGIS இற்கு தரவுகளை உட்செலுத�
 msgid " Additionally an error occured during database cleanup"
 msgstr "தரவுத்தள சுத்திகரிப்பின்போது மேலதிகமாக தவரொன்று ஏற்பட்டுள்ளது"
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr "GZIP"
 
@@ -1716,9 +1749,6 @@ msgstr "PDF "
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "நீங்கள் இந்த அடுக்கு பாணியை மாற்ற அனுமதி இல்லை"
@@ -1967,6 +1997,119 @@ msgstr "குழு உருவாக்கவும்"
 
 msgid "Save"
 msgstr "சேமி"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "வளங்கள்"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "அறுவடை"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "குறிப்பிடப்பட்டுள்ள மூலவளத்தின் பதிப்பு"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "தேர்ந்தெடுத்த ஆதாரங்களை அமை அனுமதிகள்"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2245,10 +2388,12 @@ msgstr "பண்பு புள்ளிவிவரங்கள் கடந�
 
 #, fuzzy
 #| msgid "Return to Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "படுகைக்கு மீள்திரும்பல்"
 
-msgid "Return to Layer"
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Return to Dataset"
 msgstr "படுகைக்கு மீள்திரும்பல்"
 
 #, fuzzy
@@ -2268,7 +2413,7 @@ msgstr "தொடர்பு மையத்தை மாற்றல்"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "கீழுள்ள படுகைக்கு புதிய தொடர்பு மையம் ஒன்றை வழங்குக  "
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2329,14 +2474,18 @@ msgstr "மையம் "
 msgid "Standard Deviation"
 msgstr "நியமச்சாய்வு"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "இந்த படுகையை தரப்படுத்துக"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "பதிவிரக்க படுகை "
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "பதிவிரக்கம் செய்க"
 
 msgid "Images"
 msgstr ""
@@ -2426,9 +2575,9 @@ msgid "Edit data"
 msgstr "தரவுகளை சரிசெய்"
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "படுகையை திருத்தம் செய்தல் "
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "நுண்தரவுகளை சரிசெய்க"
 
 #, fuzzy
 #| msgid "Information of Layer"
@@ -2441,28 +2590,38 @@ msgstr ""
 msgid "Legend"
 msgstr "விளக்கம்"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "இந்த படுகையை பயன்படுத்தும் வரைபடங்கள் "
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "இந்த படுகையை பயன்படுத்தும் வரைபடங்களின் பட்டியல் "
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "எந்தவொரு வரைபடத்திலும் இந்த படுகை பயன்படுத்தப்படவில்லை "
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "இந்த படுகையை பயன்படுத்தும் வரைபடத்தை உருவாக்குதல்"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr ""
 "இந்த படுகையின் அடிப்படையில் புதிய வரைபடத்தை உருவாக்குவதற்கு  கீழுள்ள ஆழியை அழுத்துக  "
 
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "இந்த படுகைக்கான அனுமதியை மாற்றுவதற்கு கீழுள்ள ஆழியை அழுத்தவம் "
 
 #, fuzzy
@@ -2502,7 +2661,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2519,22 +2678,16 @@ msgstr "இந்த படுகையை பயன்படுத்தும�
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "இந்த படுகைக்கான அனுமதியை மாற்றுவதற்கு கீழுள்ள ஆழியை அழுத்தவம் "
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr "இந்த படுகைக்கான அனுமதியை மாற்றுவதற்கு கீழுள்ள ஆழியை அழுத்தவம் "
 
-msgid "Change Layer Permissions"
-msgstr " படுகை மாற்றத்திற்கான அனுமதி "
-
-msgid "Processing..."
-msgstr ""
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "அனுமதி"
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
+msgstr " படுகை மாற்றத்திற்கான அனுமதி "
 
 msgid "Remove Mosaic Granules"
 msgstr ""
@@ -2553,8 +2706,10 @@ msgstr "செயற்பாடு பின்வரும் வரைபட�
 msgid "No maps are using this layer"
 msgstr "எந்தவொரு வரைபடமும் இந்த படுகையை பயன்படுத்தவில்லை"
 
-msgid "Upload Layers"
-msgstr "படிமங்களை பதிவேற்றுதல்"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "நுண் தரவகளை பதிவிரக்கம் செய்க "
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2618,13 +2773,15 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "படுகையை பதிவேற்றுக "
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
+#, fuzzy
+#| msgid "Remove Layers"
+msgid "Remove Datasets"
 msgstr "படுகைகளை நீக்கு "
 
 #, python-format
@@ -2638,7 +2795,9 @@ msgstr ""
 "<a href=\"%(layer.get_absolute_url)s\">%(layer_title)s</a>? நீக்கவேண்டுமென நீங்கள் "
 "உறுதியாக உள்ளீர்களா?"
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "படுகையை மாற்றுக  "
 
 msgid "Manage Styles"
@@ -2647,15 +2806,17 @@ msgstr "பாங்குகள் நிர்வகிக்கவும்"
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"      Manage Available Styles for <a href=\"{{ layer_url }}\">"
 "%(layer_title)s</a>\n"
 "    "
 msgstr ""
 "\n"
-"கிடைக்கும் பாங்குகள் நிர்வகிக்கவும் <a href=\"/layers/%(layer_title)s\">"
+"கிடைக்கும் பாங்குகள் நிர்வகிக்கவும் <a href=\"{{ layer_url }}\">"
 "%(layer_title)s</a>"
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr " படுகை முன்னிருப்பு வடிவம்"
 
 msgid "Available styles"
@@ -2671,9 +2832,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "புதுப்பிக்கப்பட்டது கிடைக்கும் பாங்குகள்"
 
+msgid "Return to Layer"
+msgstr "படுகைக்கு மீள்திரும்பல்"
+
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "பதிவேற்றம் அடுக்கு படி 2"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2693,8 +2857,10 @@ msgstr "முன்காட்சி  "
 msgid "Dataset Attributes"
 msgstr "பண்பியல்பு"
 
-msgid "Upload Layer"
-msgstr "படுகையை பதிவேற்றுக "
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "நுண் தரவகளை பதிவிரக்கம் செய்க "
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2745,7 +2911,7 @@ msgstr "உண்மையில் இந்த பதிவேற்றத்�
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "பதிவேற்றம் அடுக்கு படி 2"
 
 msgid "Provide CRS for "
@@ -2766,9 +2932,9 @@ msgstr "குறிப்பு முறைமை"
 #| "    "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2959,7 +3125,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "பதிவேற்றம் அடுக்கு படி 2"
 
 msgid "Geospatial Data"
@@ -3018,7 +3184,7 @@ msgstr "உட்செலுத்தல் படிவம்"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "பதிவேற்றம் அடுக்கு படி 2"
 
 msgid "Inspect data for "
@@ -3143,11 +3309,11 @@ msgstr "நேரம் செயல்படுத்துகிறது"
 #| "valid period for the\n"
 #| "    feature."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3229,32 +3395,22 @@ msgstr "அல்லது செல்லுங்கள்"
 msgid "now"
 msgstr "தற்போது"
 
-#, fuzzy
-#| msgid "You are attempting to replace a vector layer with a raster."
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-"நெறியப் படுகை ஒன்றை பரவுப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
-
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with a raster."
-msgid "You are attempting to {action_type} a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr ""
 "நெறியப் படுகை ஒன்றை பரவுப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a raster layer with a vector."
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr ""
 "பரவுப் படுகை ஒன்றை  நெறியப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with a raster."
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr ""
 "நெறியப் படுகை ஒன்றை பரவுப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
 
@@ -3264,7 +3420,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3274,10 +3430,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3291,44 +3447,49 @@ msgstr ""
 "உங்களின் தரவ பதிவேற்ற முயற்சியின் போது தவறு ஏற்பட்டுள்ளது. தயவ செய்து மீண்டும் முயற்சி "
 "செய்க. அல்லது பிரச்சினை தொடர்கின்றதாயின் நிர்வாகியை தொடர்பு கொள்ளுங்கள். "
 
+#, fuzzy
+#| msgid ""
+#| "Note: this layer's orginal metadata was populated and preserved by "
+#| "importing a metadata XML file. This metadata cannot be edited."
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
 "நுண்தரவு கோப்பொன்றை வரவழைத்து இந்த படுகையின் ஆரம்ப நுண்தரவு உருவாக்கப்பட்டு "
 "பாதுகாக்கப்பட்டுள்ளது "
 
-msgid "You are not permitted to delete this layer"
+#, fuzzy
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
 msgstr "இந்த படுகையை அழிப்பதற்கு உங்களுக்கு அனுமதியில்லை "
 
-msgid "You do not have permissions for this layer."
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
 msgstr "இந்த படுகைக்கு உங்களுக்கு அனுமதியில்லை"
 
-msgid "You are not permitted to modify this layer"
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
 msgstr "இந்த படுகையை மாற்றியமைப்பதற்கு உங்களுக்கு அனுமதியில்லை"
 
-msgid "You are not permitted to modify this layer's metadata"
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
 msgstr "இந்த படிமத்தின் நுண்தரவூகளை மாற்றியமைப்பதற்கு உங்களுக்கு அனுமதியில்லை  "
 
-msgid "You are not permitted to view this layer"
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
 msgstr "இந்த படுகையை பார்வையிட உங்களுக்கு அனுமதியில்லை"
 
 #, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "கோப்புகள் பதிவேற்றம் செய்வதற்கு"
-
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-"நெறியப் படுகை ஒன்றை பரவுப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-"பரவுப் படுகை ஒன்றை  நெறியப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
-
+#| msgid ""
+#| "This layer is a member of a layer group, you must remove the layer from "
+#| "the group before deleting."
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 "படுகை குழு ஒன்றின் அங்கத்துவமுடையதாக இப் படுகை காணப்படுகின்றது, இதனை நீக்குவதற்கு "
 "முன்னர் குழுவில் இருந்து படுகையை நீக்குதல் வேண்டும்"
@@ -4203,6 +4364,17 @@ msgstr "ஆவணங்கள் "
 msgid "Not Authorized"
 msgstr "வழங்கப்படவில்லை"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "ஜியோநோட் உதவி "
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4387,8 +4559,10 @@ msgstr "சேவையை சரிசெய்"
 msgid "Services"
 msgstr "சேவைகள்"
 
-msgid "Register a new Service"
-msgstr "ஒரு புதிய சேவை பதிவு"
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Add Remote Service"
+msgstr "தொலை சேவைகள்"
 
 msgid "Remote Services"
 msgstr "தொலை சேவைகள்"
@@ -4500,6 +4674,11 @@ msgid "Service rescanned successfully"
 msgstr "கடவுச்சொல் வெற்றிகரமாக மாற்றப்பட்டது."
 
 #, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "நீங்கள் சேமிக்க அல்லது இந்த வரைபடத்தைத் திருத்த அனுமதி இல்லை."
+
+#, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "இந்த சேவை நீக்க அனுமதி இல்லை."
@@ -4582,6 +4761,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "தரவு தொகுதி"
+
 msgid "People"
 msgstr "மக்கள் "
 
@@ -4633,9 +4817,9 @@ msgstr ""
 "பிரச்சினை கண்காணிப்பு குறியீடு </a>"
 
 #, fuzzy
-#| msgid "Remote Services"
-msgid "Add Remote Service"
-msgstr "தொலை சேவைகள்"
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "புதிய வரைபடம் ஒன்றை உருவாக்கு "
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4734,10 +4918,14 @@ msgstr "யார் அது பதிவிறக்க முடியும
 msgid "Who can change metadata for it?"
 msgstr "இதற்கு யார் மெட்டா மாற்ற முடியும்?"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "யார் இந்த அடுக்கு தரவு திருத்த முடியும்?"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "யார் இந்த அடுக்கு பாணியை திருத்த முடியும்?"
 
 msgid ""
@@ -5385,6 +5573,9 @@ msgstr "உட்செலுத்தப்பட்டுள்ளது"
 msgid "Upload in progress..."
 msgstr "ஆவணத்தை பதிவேற்றுக"
 
+msgid "Processing..."
+msgstr ""
+
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
@@ -5394,6 +5585,11 @@ msgstr "Thumbnail"
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
 msgstr "நீங்கள் நீக்க வேண்டும் என்பதில் உறுதியாக இருக்கிறீர்களா"
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Processing Resource..."
+msgstr "வளங்கள்"
 
 msgid "Information for Developers"
 msgstr "விருத்தி செய்பவர்களுக்கான தகவல்கள் "
@@ -5477,8 +5673,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5550,13 +5746,13 @@ msgid ""
 "p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <p>The <a href=\"{{ url_layer_browse }}\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
 "    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
 "    <h4 id=\"developer-access\">Developer Access</h4>\n"
-"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <p>The <a href=\"{{ url_developer }}\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
@@ -5565,9 +5761,9 @@ msgid ""
 "    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
 "    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"{{ url_maps_browse }}\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"<strong>create a map</strong>, which will open the <a href=\"{{ url_maps_new }}\">Map "
 "Composer</a>.</p>\n"
 "    <h5>Google Earth Mode</h5>\n"
 "    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
@@ -5576,9 +5772,9 @@ msgid ""
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
-"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"    <p>To create a new map go to the <a href=\"{{ url_maps_browse }}\">Contributed Maps</a> "
+"tab and click the <a href=\"{{ url_maps_new }}\">create your own map</a> link.</p>\n"
+"    <p>This will take you to the <a href=\"{{ url_maps_new }}\">Map Composer</a> with "
 "a base layer loaded.</p>\n"
 "    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
@@ -5612,7 +5808,7 @@ msgid ""
 "    </ol>\n"
 "    <p>This will put an interactive widget showing you map in your web page "
 "or blog post.</p>\n"
-"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"    <p>Note that the <a href=\"{{ url_maps_new }}\">Map Composer</a> also has a "
 "button to publish the map. Just be sure to save the map before publishing if "
 "there are changes that you want others to see. It publishes the last saved "
 "version, not the last viewed version.</p>\n"
@@ -5628,7 +5824,7 @@ msgid ""
 "      <li>Save the map.</li>\n"
 "    </ol>\n"
 "    <p>You will be able to see your new map when you search for it from the "
-"<a href=\"/maps\">Maps</a> tab.</p>\n"
+"<a href=\"{{ url_maps_browse }}\">Maps</a> tab.</p>\n"
 "    "
 msgstr ""
 
@@ -5676,11 +5872,15 @@ msgstr ""
 "பிற பயனர்களின், அமைப்புக்கள் மற்றும் பொது ஆதாரங்கள் வெளியிடப்பட்ட தாழ்த்தப்பட்ட தேட கிளிக் "
 "செய்யவும். நிலையான வடிவங்களில் பதிவிறக்க தரவு."
 
-msgid "Add layers"
-msgstr "படுகையை சேர்க்கவும் "
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "தரவு தொகுதி"
 
-msgid "Explore layers"
-msgstr "படுகைகளை ஆராய்தல் "
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
+msgstr "படுகைகளை உலாவருதல்"
 
 #, fuzzy
 #| msgid ""
@@ -6237,7 +6437,7 @@ msgstr "வடிப்பான்"
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "படுகை  "
 
 msgid "Maps found"
@@ -6279,6 +6479,11 @@ msgstr "மிக பிரபல்யமானது "
 
 msgid "Text"
 msgstr "உரை"
+
+#, fuzzy
+#| msgid "Share This"
+msgid "Share This Dataset"
+msgstr "இதை பகிர்க"
 
 msgid "Share This"
 msgstr "இதை பகிர்க"
@@ -6465,6 +6670,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6545,6 +6754,69 @@ msgstr "பெறுமதியற்ற அனுமதி மட்டம்"
 
 msgid "Permission Denied"
 msgstr "அனுமதி மறுக்கப்பட்டுள்ளது "
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "அடுக்கு பெயர்"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "லேயர் தலைப்பு"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "வரைபடத்தை உருவாக்குதல்"
+
+#~ msgid "Download Layer"
+#~ msgstr "பதிவிரக்க படுகை "
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "படுகையை திருத்தம் செய்தல் "
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "அனுமதி"
+
+#~ msgid "Upload Layers"
+#~ msgstr "படிமங்களை பதிவேற்றுதல்"
+
+#~ msgid "Upload Layer"
+#~ msgstr "படுகையை பதிவேற்றுக "
+
+#, fuzzy
+#~| msgid "You are attempting to replace a vector layer with a raster."
+#~ msgid "You are attempting to replace a vector layer with an unknown format."
+#~ msgstr ""
+#~ "நெறியப் படுகை ஒன்றை பரவுப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "கோப்புகள் பதிவேற்றம் செய்வதற்கு"
+
+#~ msgid "You are attempting to replace a vector layer with a raster."
+#~ msgstr ""
+#~ "நெறியப் படுகை ஒன்றை பரவுப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
+
+#~ msgid "You are attempting to replace a raster layer with a vector."
+#~ msgstr ""
+#~ "பரவுப் படுகை ஒன்றை  நெறியப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் "
+#~ "முயற்சிக்கின்றீர்கள் "
+
+#~ msgid "Register a new Service"
+#~ msgstr "ஒரு புதிய சேவை பதிவு"
+
+#~ msgid "Add layers"
+#~ msgstr "படுகையை சேர்க்கவும் "
+
+#~ msgid "Explore layers"
+#~ msgstr "படுகைகளை ஆராய்தல் "
 
 #, fuzzy
 #~| msgid "Set permissions"

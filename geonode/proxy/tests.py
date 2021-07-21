@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -24,12 +23,20 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
+from urllib.parse import urljoin
+
+from django.conf import settings
+from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
+from django.test.client import RequestFactory
+from unittest.mock import patch
+from geonode.upload.models import Upload
 import json
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 try:
     from unittest.mock import MagicMock
 except ImportError:
-    from mock import MagicMock
+    from unittest.mock import MagicMock
 
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -40,7 +47,7 @@ from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.base.populate_test_data import create_models
+from geonode.base.populate_test_data import create_models, create_single_layer
 
 TEST_DOMAIN = '.github.com'
 TEST_URL = f'https://help{TEST_DOMAIN}/'
@@ -49,7 +56,7 @@ TEST_URL = f'https://help{TEST_DOMAIN}/'
 class ProxyTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(ProxyTest, self).setUp()
+        super().setUp()
         self.admin = get_user_model().objects.get(username='admin')
 
         # FIXME(Ariel): These tests do not work when the computer is offline.
@@ -105,7 +112,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         an absolute path before calling the remote URL."""
         import geonode.proxy.views
 
-        class Response(object):
+        class Response:
             status_code = 200
             content = 'Hello World'
             headers = {'Content-Type': 'text/html'}
@@ -123,11 +130,11 @@ class ProxyTest(GeoNodeBaseTestSupport):
 class DownloadResourceTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(DownloadResourceTestCase, self).setUp()
+        super().setUp()
         create_models(type='layer')
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_download_url(self):
+    def test_download_url_with_not_existing_file(self):
         layer = Layer.objects.all().first()
         self.client.login(username='admin', password='admin')
         # ... all should be good
@@ -141,11 +148,45 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         self.assertTrue(
             "No files have been found for this resource. Please, contact a system administrator." in data)
 
+    @patch('geonode.storage.manager.storage_manager.exists')
+    @patch('geonode.storage.manager.storage_manager.open')
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_download_url_with_existing_files(self, fopen, fexists):
+        fexists.return_value = True
+        fopen.return_value = SimpleUploadedFile('foo_file.shp', b'scc')
+        layer = Layer.objects.all().first()
+
+        layer.files = [
+            "/tmpe1exb9e9/foo_file.dbf",
+            "/tmpe1exb9e9/foo_file.prj",
+            "/tmpe1exb9e9/foo_file.shp",
+            "/tmpe1exb9e9/foo_file.shx"
+        ]
+
+        layer.save()
+
+        layer.refresh_from_db()
+
+        upload = Upload.objects.create(
+            state='RUNNING',
+            resource=layer
+        )
+
+        assert upload
+
+        self.client.login(username='admin', password='admin')
+        # ... all should be good
+        response = self.client.get(reverse('download', args=(layer.id,)))
+        # Espected 404 since there are no files available for this layer
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual('application/zip', response.headers.get('Content-Type'))
+        self.assertEqual('attachment; filename="CA.zip"', response.headers.get('Content-Disposition'))
+
 
 class OWSApiTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(OWSApiTestCase, self).setUp()
+        super().setUp()
         create_models(type='layer')
         # prepare some WMS endpoints
         q = Link.objects.all()
@@ -163,3 +204,51 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
             content = content.decode('UTF-8')
         data = json.loads(content)
         self.assertTrue(len(data['data']), q.count())
+
+
+@override_settings(SITEURL='http://localhost:8000')
+class TestProxyTags(GeoNodeBaseTestSupport):
+    def setUp(self):
+        self.resource = create_single_layer('foo_layer')
+        r = RequestFactory()
+        self.url = urljoin(settings.SITEURL, reverse("download", args={self.resource.id}))
+        r.get(self.url)
+        admin = get_user_model().objects.get(username='admin')
+        r.user = admin
+        self.context = {'request': r}
+
+    def test_tag_original_link_available_with_different_netlock_should_return_true(self):
+        actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, "http://url.com/")
+        self.assertTrue(actual)
+
+    def test_should_return_false_if_no_files_are_available(self):
+        _ = Upload.objects.create(
+            state='RUNNING',
+            resource=self.resource
+        )
+
+        actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, self.url)
+        self.assertFalse(actual)
+
+    @patch('geonode.storage.manager.storage_manager.exists', return_value=True)
+    def test_should_return_true_if_files_are_available(self, fexists):
+        upload = Upload.objects.create(
+            state='RUNNING',
+            resource=self.resource
+        )
+
+        assert upload
+
+        self.resource.files = [
+            "/tmpe1exb9e9/foo_file.dbf",
+            "/tmpe1exb9e9/foo_file.prj",
+            "/tmpe1exb9e9/foo_file.shp",
+            "/tmpe1exb9e9/foo_file.shx"
+        ]
+
+        self.resource.save()
+
+        self.resource.refresh_from_db()
+
+        actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, self.url)
+        self.assertTrue(actual)

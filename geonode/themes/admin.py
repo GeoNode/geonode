@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -17,16 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from django import forms
 from django.contrib import admin
 
-from .models import Partner, GeoNodeThemeCustomization, JumbotronThemeSlide
-
-
-@admin.register(Partner)
-class PartnerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'title', 'href',)
+from .models import GeoNodeThemeCustomization, JumbotronThemeSlide
 
 
 class GeonodeThemCustomizationForm(forms.ModelForm):

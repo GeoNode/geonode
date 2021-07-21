@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -164,7 +163,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
         # Cleanup
         if settings.OGC_SERVER['default'].get(
                 "GEOFENCE_SECURITY_ENABLED", False):
-            from geonode.security.utils import purge_geofence_all
+            from geonode.geoserver.security import purge_geofence_all
             purge_geofence_all()
 
     def check_layer_geonode_page(self, path):
@@ -726,7 +725,7 @@ class TestUploadDBDataStore(UploaderBase):
         # Test upload with custom permissions
         resp, data = self.client.upload_file(
             thefile, perms='{"users": {"AnonymousUser": []}, "groups":{}}'
-            )
+        )
         _layer = Layer.objects.get(name=layer_name)
         _user = get_user_model().objects.get(username='AnonymousUser')
         self.assertEqual(_layer.get_user_perms(_user).count(), 0)

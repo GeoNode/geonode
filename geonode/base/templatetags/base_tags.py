@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -178,8 +177,8 @@ def facets(context):
         if not settings.SKIP_PERMS_FILTER:
             documents = documents.filter(id__in=authorized)
 
-        counts = documents.values('doc_type').annotate(count=Count('doc_type'))
-        facets = {count['doc_type']: count['count'] for count in counts}
+        counts = documents.values('subtype').annotate(count=Count('subtype'))
+        facets = {count['subtype']: count['count'] for count in counts}
 
         return facets
     else:
@@ -227,28 +226,28 @@ def facets(context):
         if not settings.SKIP_PERMS_FILTER:
             layers = layers.filter(id__in=authorized)
 
-        counts = layers.values('storeType').annotate(count=Count('storeType'))
+        counts = layers.values('subtype').annotate(count=Count('subtype'))
 
         counts_array = []
         try:
             for count in counts:
-                counts_array.append((count['storeType'], count['count']))
+                counts_array.append((count['subtype'], count['count']))
         except Exception:
             pass
 
         count_dict = dict(counts_array)
 
-        vector_time_series = layers.exclude(has_time=False).filter(storeType='dataStore'). \
-            values('storeType').annotate(count=Count('storeType'))
+        vector_time_series = layers.exclude(has_time=False).filter(subtype='vector'). \
+            values('subtype').annotate(count=Count('subtype'))
 
         if vector_time_series:
             count_dict['vectorTimeSeries'] = vector_time_series[0]['count']
 
         facets = {
-            'raster': count_dict.get('coverageStore', 0),
-            'vector': count_dict.get('dataStore', 0),
+            'raster': count_dict.get('raster', 0),
+            'vector': count_dict.get('vector', 0),
             'vector_time': count_dict.get('vectorTimeSeries', 0),
-            'remote': count_dict.get('remoteStore', 0),
+            'remote': count_dict.get('remote', 0),
             'wms': count_dict.get('wmsStore', 0),
         }
 
@@ -404,7 +403,7 @@ def display_edit_request_button(resource, user, perms):
                          resource.BASE_PERMISSIONS.get('download')) - \
             set(perms)
         return _owner_set == set() or \
-            _owner_set == set(['change_resourcebase_permissions', 'publish_resourcebase'])
+            _owner_set == {'change_resourcebase_permissions', 'publish_resourcebase'}
 
     if not _has_owner_his_permissions() and \
             (user.is_superuser or resource.owner.pk == user.pk):
@@ -424,3 +423,11 @@ def display_change_perms_button(resource, user, perms):
         return True
     else:
         return not getattr(settings, 'ADMIN_MODERATE_UPLOADS', False)
+
+
+@register.simple_tag
+def get_layer_count_by_services(service_id, user):
+    return get_visible_resources(
+        queryset=Layer.objects.filter(remote_service=service_id),
+        user=user
+    ).count()

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -17,29 +16,34 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from geonode.tests.base import GeoNodeBaseTestSupport
-
 import json
 import logging
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.urls import reverse
-from django.test import override_settings
-from django.conf import settings
 
+from django.urls import reverse
+from django.conf import settings
+from django.test import override_settings
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+
+from geonode.maps.models import Map
+from geonode.layers.models import Layer
+from geonode.documents.models import Document
 from guardian.shortcuts import get_anonymous_user
+from geonode.security.views import _perms_info_json
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.groups.conf import settings as groups_settings
 
 from geonode.groups.models import (
     GroupProfile,
     GroupMember,
     GroupCategory)
-from geonode.documents.models import Document
-from geonode.layers.models import Layer
-from geonode.maps.models import Map
-from geonode.security.views import _perms_info_json
-from geonode.groups.conf import settings as groups_settings
+
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models,
+    create_single_layer)
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +52,27 @@ def _log(msg, *args):
     logger.debug(msg, *args)
 
 
-class SmokeTest(GeoNodeBaseTestSupport):
-    """
-    Basic checks to make sure pages load, etc.
-    """
+class GroupsSmokeTest(GeoNodeBaseTestSupport):
+
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
-        super(SmokeTest, self).setUp()
+        super().setUp()
 
         self.norman = get_user_model().objects.get(username="norman")
         self.norman.groups.add(Group.objects.get(name='anonymous'))
@@ -62,6 +80,19 @@ class SmokeTest(GeoNodeBaseTestSupport):
         self.test_user.groups.add(Group.objects.get(name='anonymous'))
         self.bar = GroupProfile.objects.get(slug='bar')
         self.anonymous_user = get_anonymous_user()
+
+        c1 = GroupCategory.objects.create(name='test #1 category')
+        g = GroupProfile.objects.create(slug='test', title='test')
+        g.categories.add(c1)
+        g.save()
+        User = get_user_model()
+        u = User.objects.create(username='test')
+        u.set_password('test')
+        u.save()
+
+    """
+    Basic checks to make sure pages load, etc.
+    """
 
     def test_registered_group_exists(self):
         """
@@ -652,106 +683,6 @@ class SmokeTest(GeoNodeBaseTestSupport):
         # response = self.client.get("/groups/group/bar/invite/")
         # self.assertEqual(405, response.status_code)
 
-
-class GroupActivityTest(GeoNodeBaseTestSupport):
-
-    integration = True
-
-    def setUp(self):
-        super(GroupActivityTest, self).setUp()
-
-        self.norman = get_user_model().objects.get(username="norman")
-        self.norman.groups.add(Group.objects.get(name='anonymous'))
-        self.test_user = get_user_model().objects.get(username='test_user')
-        self.test_user.groups.add(Group.objects.get(name='anonymous'))
-        self.bar = GroupProfile.objects.get(slug='bar')
-        self.anonymous_user = get_anonymous_user()
-
-    def test_group_activity_pages_render(self):
-        """
-        Verify Activity List pages
-        """
-
-        self.assertTrue(self.client.login(username="admin", password="admin"))
-
-        response = self.client.get("/groups/")
-        self.assertEqual(200, response.status_code)
-
-        response = self.client.get("/groups/group/bar/activity/")
-        self.assertEqual(200, response.status_code)
-        self.assertContains(response,
-                            'Layers',
-                            count=3,
-                            status_code=200,
-                            msg_prefix='',
-                            html=False)
-        self.assertContains(response,
-                            'Maps',
-                            count=5,
-                            status_code=200,
-                            msg_prefix='',
-                            html=False)
-        self.assertContains(response,
-                            'Documents',
-                            count=3,
-                            status_code=200,
-                            msg_prefix='',
-                            html=False)
-        self.assertContains(response,
-                            '<a href="/layers/:geonode:CA">CA</a>',
-                            count=0,
-                            status_code=200,
-                            msg_prefix='',
-                            html=False)
-        self.assertContains(response,
-                            'uploaded',
-                            count=0,
-                            status_code=200,
-                            msg_prefix='',
-                            html=False)
-        try:
-            # Add test to test perms being sent to the front end.
-            layer = Layer.objects.all()[0]
-            layer.set_default_permissions()
-            perms_info = layer.get_all_level_info()
-
-            # Ensure there is only one group 'anonymous' by default
-            self.assertEqual(len(perms_info['groups'].keys()), 1)
-
-            # Add the foo group to the layer object groups
-            layer.set_permissions({'groups': {'bar': ['view_resourcebase']}})
-
-            perms_info = _perms_info_json(layer)
-            # Ensure foo is in the perms_info output
-            self.assertCountEqual(
-                json.loads(perms_info)['groups'], {
-                    'bar': ['view_resourcebase']})
-
-            layer.group = self.bar.group
-            layer.save()
-
-            response = self.client.get("/groups/group/bar/activity/")
-            self.assertEqual(200, response.status_code)
-            _log(response)
-            self.assertContains(response,
-                                '<a href="/layers/:geonode:CA">geonode:CA</a>',
-                                count=2,
-                                status_code=200,
-                                msg_prefix='',
-                                html=False)
-            self.assertContains(response,
-                                'uploaded',
-                                count=2,
-                                status_code=200,
-                                msg_prefix='',
-                                html=False)
-        finally:
-            layer.set_default_permissions()
-            layer.group = None
-            layer.save()
-
-
-class MembershipTest(GeoNodeBaseTestSupport):
     """
     Tests membership logic in the geonode.groups models
     """
@@ -818,23 +749,153 @@ class MembershipTest(GeoNodeBaseTestSupport):
         group.leave(normal)
         self.assertFalse(group.user_is_member(normal))
 
+    @override_settings(MEDIA_ROOT="/tmp/geonode_tests")
+    def test_group_logo_is_present_on_list_view(self):
+        """Verify that a group's logo is rendered on list view."""
+        with self.settings(API_LOCKDOWN=False):
+            test_profile, _ = GroupProfile.objects.update_or_create(
+                slug="test",
+                defaults=dict(
+                    description="test",
+                    access="public",
+                    logo=SimpleUploadedFile("dummy-file.jpg", b"dummy contents"))
+            )
 
-class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
+            response = self.client.get(
+                reverse("api_dispatch_list",
+                        kwargs={"api_name": "api", "resource_name": "groups"})
+            )
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+            response_payload = json.loads(content)
+            returned = response_payload["objects"]
+            group_profile = [
+                g["group_profile"] for g in returned if
+                g["group_profile"]["title"] == test_profile.title
+            ][0]
+            self.assertEqual(200, response.status_code)
+            self.assertEqual(group_profile["logo"], test_profile.logo.url)
+
+    def test_group_logo_is_not_present_on_list_view(self):
+        """
+        Verify that no logo exists in list view when a group doesn't have one.
+        """
+
+        with self.settings(API_LOCKDOWN=False):
+            test_profile, _ = GroupProfile.objects.update_or_create(
+                slug="test",
+                defaults=dict(
+                    title="test",
+                    description="test",
+                    access="public")
+            )
+
+            response = self.client.get(
+                reverse("api_dispatch_list",
+                        kwargs={"api_name": "api", "resource_name": "groups"})
+            )
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+            response_payload = json.loads(content)
+            returned = response_payload["objects"]
+            group_profile = [
+                g["group_profile"] for g in returned if
+                g["group_profile"]["title"] == test_profile.title
+            ][0]
+            self.assertEqual(200, response.status_code)
+            self.assertIsNone(group_profile["logo"])
+
+    def test_group_activity_pages_render(self):
+        """
+        Verify Activity List pages
+        """
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        response = self.client.get("/groups/")
+        self.assertEqual(200, response.status_code)
+
+        response = self.client.get("/groups/group/bar/activity/")
+        self.assertEqual(200, response.status_code)
+        logger.error(response.content)
+        self.assertContains(response,
+                            'Layers',
+                            count=1,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        self.assertContains(response,
+                            'Maps',
+                            count=3,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        self.assertContains(response,
+                            'Documents',
+                            count=3,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        self.assertContains(response,
+                            '<a href="/layers/:geonode:CA">CA</a>',
+                            count=0,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        self.assertContains(response,
+                            'uploaded',
+                            count=0,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
+        layer = create_single_layer('single_point.shp')
+        try:
+            # Add test to test perms being sent to the front end.
+            layer.set_default_permissions()
+            perms_info = layer.get_all_level_info()
+
+            # Ensure there is only one group 'anonymous' by default
+            self.assertEqual(len(perms_info['groups'].keys()), 1)
+
+            # Add the foo group to the layer object groups
+            layer.set_permissions({'groups': {'bar': ['view_resourcebase']}})
+
+            perms_info = _perms_info_json(layer)
+            # Ensure foo is in the perms_info output
+            self.assertCountEqual(
+                json.loads(perms_info)['groups'], {
+                    'bar': ['view_resourcebase']})
+
+            layer.group = self.bar.group
+            layer.save()
+
+            response = self.client.get("/groups/group/bar/activity/")
+            self.assertEqual(200, response.status_code)
+            _log(response)
+            self.assertContains(
+                response,
+                '<a href="/layers/:geonode:single_point.shp">geonode:single_point.shp</a>',
+                count=2,
+                status_code=200,
+                msg_prefix='',
+                html=False)
+            self.assertContains(
+                response,
+                'uploaded',
+                count=2,
+                status_code=200,
+                msg_prefix='',
+                html=False)
+        finally:
+            layer.set_default_permissions()
+            layer.group = None
+            layer.save()
+
     """
     Group Categories tests
     """
-
-    def setUp(self):
-        super(GroupCategoriesTestCase, self).setUp()
-
-        c1 = GroupCategory.objects.create(name='test #1 category')
-        g = GroupProfile.objects.create(slug='test', title='test')
-        g.categories.add(c1)
-        g.save()
-        User = get_user_model()
-        u = User.objects.create(username='test')
-        u.set_password('test')
-        u.save()
 
     def test_api(self):
         api_url = '/api/groupcategory/'
@@ -913,64 +974,3 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
         q = GroupCategory.objects.filter(name=category)
         self.assertEqual(q.count(), 1)
         self.assertTrue(q.get().slug)
-
-
-class GroupProfileTest(GeoNodeBaseTestSupport):
-
-    @override_settings(MEDIA_ROOT="/tmp/geonode_tests")
-    def test_group_logo_is_present_on_list_view(self):
-        """Verify that a group's logo is rendered on list view."""
-        with self.settings(API_LOCKDOWN=False):
-            test_profile = GroupProfile(
-                title="test",
-                slug="test",
-                description="test",
-                access="public",
-                logo=SimpleUploadedFile("dummy-file.jpg", "dummy contents".encode("UTF-8"))
-            )
-            test_profile.save()
-            response = self.client.get(
-                reverse("api_dispatch_list",
-                        kwargs={"api_name": "api", "resource_name": "groups"})
-            )
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-            response_payload = json.loads(content)
-            returned = response_payload["objects"]
-            group_profile = [
-                g["group_profile"] for g in returned if
-                g["group_profile"]["title"] == test_profile.title
-            ][0]
-            self.assertEqual(200, response.status_code)
-            self.assertEqual(group_profile["logo"], test_profile.logo.url)
-
-    def test_group_logo_is_not_present_on_list_view(self):
-        """
-        Verify that no logo exists in list view when a group doesn't have one.
-        """
-
-        with self.settings(API_LOCKDOWN=False):
-            test_profile = GroupProfile(
-                title="test",
-                slug="test",
-                description="test",
-                access="public"
-            )
-            test_profile.save()
-
-            response = self.client.get(
-                reverse("api_dispatch_list",
-                        kwargs={"api_name": "api", "resource_name": "groups"})
-            )
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-            response_payload = json.loads(content)
-            returned = response_payload["objects"]
-            group_profile = [
-                g["group_profile"] for g in returned if
-                g["group_profile"]["title"] == test_profile.title
-            ][0]
-            self.assertEqual(200, response.status_code)
-            self.assertIsNone(group_profile["logo"])

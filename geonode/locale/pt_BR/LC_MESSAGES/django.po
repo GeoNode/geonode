@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-11 09:14+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2021-06-06 18:14-0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/geonode/geonode/"
@@ -412,6 +412,14 @@ msgstr "Este recurso é validado por um divulgador ou editor?"
 msgid "Thumbnail url"
 msgstr "URL da miniatura"
 
+#, fuzzy
+#| msgid "Dirty State"
+msgid "State"
+msgstr "Estado sujo"
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr "Estado sujo"
 
@@ -593,6 +601,16 @@ msgstr ""
 "Para permitir a alteração, configure a recurso como não “Aprovado” nas "
 "configurações de metadados e escreva uma mensagem para o proprietário para "
 "notificá-lo"
+
+#, fuzzy
+#| msgid "Service rescanned successfully"
+msgid "Resource Cloned Successfully!"
+msgstr "Serviço reescaneado com sucesso"
+
+#, fuzzy, python-brace-format
+#| msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "Error Occurred while Cloning the Resource: {e}"
+msgstr "Ocorreu algum erro ao tentar acessar o esquema carregado:% s"
 
 msgid "Resource Metadata"
 msgstr "Recurso de Metadados"
@@ -889,6 +907,9 @@ msgstr "Classificação da velocidade"
 msgid "Link to"
 msgstr "Vincular a"
 
+msgid "File"
+msgstr "Arquivo"
+
 msgid "Document must be a file or url."
 msgstr "O documento deve ser um arquivo ou URL."
 
@@ -900,9 +921,6 @@ msgstr "Este tipo de arquivo não é permitido"
 
 msgid "Permissions must be valid JSON."
 msgstr "As permissões devem ser JSON válido."
-
-msgid "File"
-msgstr "Arquivo"
 
 msgid "The URL of the document if it is external."
 msgstr "O URL do documento, se ele for externo."
@@ -956,6 +974,9 @@ msgid "Document"
 msgid_plural "Documents"
 msgstr[0] "Documento"
 msgstr[1] "Documentos"
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr "Substituir"
@@ -1417,22 +1438,32 @@ msgstr ""
 msgid "Polygons"
 msgstr ""
 
-msgid "Layer name"
-msgstr "Nome da Camada"
+#, fuzzy
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "conjunto de dados"
 
-msgid "Layer title"
-msgstr "Título da Camada"
+#, fuzzy
+#| msgid "Dataset Attributes"
+msgid "Dataset title"
+msgstr "Atributos do Conjunto de Dados"
 
 msgid "Geometry type"
 msgstr "Tipo de geometria"
 
-msgid "Create Layer"
-msgstr "Criar Camada"
+#, fuzzy
+#| msgid "Featured Datasets"
+msgid "Create Dataset"
+msgstr "Conjunto de Dados Disponíveis"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "Explorar camadas"
 
-msgid "Create an empty layer"
+#, fuzzy
+#| msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "Criar uma camada vazia"
 
 msgid "Add Attribute"
@@ -1466,6 +1497,9 @@ msgstr "Ocorreu uma exceção ao carregar dados para o PostGIS"
 msgid " Additionally an error occured during database cleanup"
 msgstr " Além disso, ocorreu um erro durante a limpeza do banco de dados"
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr "GZIP"
 
@@ -1498,9 +1532,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "Você não tem permissão para alterar o estilo para esta camada"
@@ -1735,6 +1766,121 @@ msgstr "Editar Categoria de Grupo"
 
 msgid "Save"
 msgstr "Salvar"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "harvesting-resources"
+msgstr "Colhendo os recursos…"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "Colhido(a)"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "versão do recurso citado"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "Definir permissões para recursos selecionados"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "harvesting-resource"
+msgstr "Colhendo os recursos…"
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, fuzzy, python-brace-format
 #| msgid "The e-mail address '%(email)s' has already been invited."
@@ -1992,11 +2138,13 @@ msgid "date when attribute statistics were last updated"
 msgstr "data da última atualização das estatísticas do atributo"
 
 #, fuzzy
-#| msgid "Return to Layer"
-msgid "Append to Layer"
-msgstr "Retornar à Camada"
+#| msgid "Open Data:"
+msgid "Append to Dataset"
+msgstr "Dados Abertos:"
 
-msgid "Return to Layer"
+#, fuzzy
+#| msgid "Return to Layer"
+msgid "Return to Dataset"
 msgstr "Retornar à Camada"
 
 msgid "Preserve Metadata XML"
@@ -2014,7 +2162,9 @@ msgstr "Alterar ponto de contato"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Atribuir um novo ponto de contato às camadas abaixo:"
 
-msgid "Layer WMS GetCapabilities document"
+#, fuzzy
+#| msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr "WMS da camada documento GetCapabilities"
 
 msgid "Filter Granules"
@@ -2071,14 +2221,18 @@ msgstr "Mediana"
 msgid "Standard Deviation"
 msgstr "Desvio padrão"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "Classificar esta camada"
 
 msgid "Analyze with"
 msgstr "Analise com"
 
-msgid "Download Layer"
-msgstr "Fazer download da camada"
+#, fuzzy
+#| msgid "Download the"
+msgid "Download Dataset"
+msgstr "Baixar o"
 
 msgid "Images"
 msgstr "Imagens"
@@ -2157,8 +2311,10 @@ msgstr "Dados Abertos:"
 msgid "Edit data"
 msgstr "Editar dados"
 
-msgid "View Layer"
-msgstr "Visualizar Camada"
+#, fuzzy
+#| msgid "View Metadata"
+msgid "View Dataset"
+msgstr "Visualizar Metadado"
 
 msgid "Attribute Information"
 msgstr "Informação de Atributos"
@@ -2169,25 +2325,39 @@ msgstr "Catálogo de recursos da ISO"
 msgid "Legend"
 msgstr "Legenda"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "Mapas que usam esta camada"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "Lista de mapas que estão usando esta camada:"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "Esta camada não está sendo utilizada por nenhum mapa atualmente."
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "Criar um mapa usando esta camada"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr "Clique no botão abaixo para gerar um novo mapa com base nesta camada."
 
-msgid "Add the layer to an existing map"
+#, fuzzy
+#| msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr "Adicionar a camada a um mapa existente"
 
-msgid "Click the button below to add the layer to the selected map."
+#, fuzzy
+#| msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "Clique no botão abaixo para adicionar a camada ao mapa selecionado."
 
 msgid "Add to Map"
@@ -2221,9 +2391,14 @@ msgstr "Fonte"
 msgid "Refresh Attributes and Statistics of this layer"
 msgstr "Atualizar atributos e estatísticas desta camada"
 
+#, fuzzy
+#| msgid ""
+#| "Click the button below to allow GeoNode refreshing the list of available "
+#| "Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+#| "backend, it will recalculate their statistics too."
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 "Clique no botão abaixo para permitir que o GeoNode atualize a lista de "
@@ -2239,20 +2414,18 @@ msgstr "Limpar o Server Cache para esta camada"
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "Clique no botão abaixo para limpar o tile-cache desta camada."
 
-msgid "Empty Tiled-Layer Cache"
+#, fuzzy
+#| msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr "Esvaziar Tiled-Layer Cache"
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Clique no botão abaixo para alterar as permissões para esta camada."
 
-msgid "Change Layer Permissions"
+#, fuzzy
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
 msgstr "Alterar permissões da camada"
-
-msgid "Processing..."
-msgstr "Processando…"
-
-msgid "Updating Permissions..."
-msgstr "Atualizando Permissões…"
 
 msgid "Remove Mosaic Granules"
 msgstr "Remover Grânulos de Mosaico"
@@ -2275,8 +2448,10 @@ msgstr "Esta ação afeta os seguintes mapas:"
 msgid "No maps are using this layer"
 msgstr "Nenhum mapa está usando esta camada"
 
-msgid "Upload Layers"
-msgstr "Carregar Camadas"
+#, fuzzy
+#| msgid "Upload Metadata"
+msgid "Upload Datasets"
+msgstr "Carregar Metadados"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2332,13 +2507,17 @@ msgstr "ERRO"
 msgid "Following items are required:"
 msgstr ""
 
-msgid "Upload Layer Metadata"
+#, fuzzy
+#| msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "Carregar Metadados da Camada"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 
-msgid "Remove Layers"
+#, fuzzy
+#| msgid "Remove Layers"
+msgid "Remove Datasets"
 msgstr "Excluir Camadas"
 
 #, python-format
@@ -2353,7 +2532,9 @@ msgstr ""
 "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "Substituir Camada"
 
 msgid "Manage Styles"
@@ -2362,16 +2543,18 @@ msgstr "Gerenciar Estilos"
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"      Manage Available Styles for <a href=\"{{ layer_url }}\">"
 "%(layer_title)s</a>\n"
 "    "
 msgstr ""
 "\n"
-"      Gerenciar estilos disponíveis para <a href=\"/layers/%(layer_title)s\">"
+"      Gerenciar estilos disponíveis para <a href=\"{{ layer_url }}\">"
 "%(layer_title)s</a>\n"
 "    "
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "Estilo Padrão de Camada"
 
 msgid "Available styles"
@@ -2387,7 +2570,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "Atualizar Estilos Disponíveis"
 
-msgid "Upload Layer Style"
+msgid "Return to Layer"
+msgstr "Retornar à Camada"
+
+#, fuzzy
+#| msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "Upload Estilo de Camada"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2405,8 +2593,10 @@ msgstr "Pré-visualizar"
 msgid "Dataset Attributes"
 msgstr "Atributos do Conjunto de Dados"
 
-msgid "Upload Layer"
-msgstr "Carregar Camada"
+#, fuzzy
+#| msgid "Upload Metadata"
+msgid "Upload Dataset"
+msgstr "Carregar Metadados"
 
 #, fuzzy
 #| msgid "Upload Metadata"
@@ -2455,7 +2645,9 @@ msgstr "Uploads incompletos"
 msgid "Are you sure you want to remove this incomplete upload?"
 msgstr "Tem certeza de que deseja excluir este upload?"
 
-msgid "Upload Layer Step: Set SRS"
+#, fuzzy
+#| msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "Passo para carregamento de camada: Configurar SRS"
 
 msgid "Provide CRS for "
@@ -2464,11 +2656,23 @@ msgstr "Informar CRS para "
 msgid "Coordinate Reference System"
 msgstr "Sistema de Referência de Coordenadas(SRC)"
 
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "                A coordinate reference system for this layer could not be "
+#| "determined.\n"
+#| "                Locate or enter the appropriate ESPG code for this layer "
+#| "below.\n"
+#| "                One way to do this is do visit:\n"
+#| "                <a href=\"http://prj2epsg.org/search\" target=\"_"
+#| "\">prj2epsg</a>\n"
+#| "                and enter the following:\n"
+#| "            "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2748,7 +2952,9 @@ msgstr ""
 "project the coordinates from Source SRS to another one.\n"
 "                        "
 
-msgid "Upload Layer Step: CSV Field Mapping"
+#, fuzzy
+#| msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "Etapa de Upload da Camada: Mapeamento de Atributos CSV"
 
 msgid "Geospatial Data"
@@ -2795,7 +3001,9 @@ msgstr "Retornar para"
 msgid "Upload Form"
 msgstr "Upload Formulário"
 
-msgid "Upload Layer Step: Time"
+#, fuzzy
+#| msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "Etapa de Upload de Camada: Tempo"
 
 msgid "Inspect data for "
@@ -2915,12 +3123,21 @@ msgstr "Resolução do atributo de tempo/hora"
 msgid "Enabling Time"
 msgstr "Ativação de tempo/hora"
 
+#, fuzzy
+#| msgid ""
+#| "A layer can support one or two time attributes. If a single\n"
+#| "                        attribute is used, the layer is considered to "
+#| "contain data that is valid at single points in time. If two\n"
+#| "                        attributes are used, the second attribute "
+#| "represents the end of a valid period  hence the layer is considered\n"
+#| "                        to contain data that is valid at certain periods "
+#| "in time."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3011,29 +3228,20 @@ msgstr " Ou ir agora "
 msgid "now"
 msgstr "agora"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-"Você está tentando substituir uma camada vetorial por um formato "
-"desconhecido."
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
-
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with a raster."
-msgid "You are attempting to {action_type} a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr "Você está tentando substituir uma camada vetorial por um raster."
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a raster layer with a vector."
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr "Você está tentando substituir uma camada raster por uma vetorial."
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with an unknown format."
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr ""
 "Você está tentando substituir uma camada vetorial por um formato "
 "desconhecido."
@@ -3049,7 +3257,9 @@ msgstr ""
 "Favor certificar-se de que o nome seja consistente com o arquivo que você "
 "está tentando substituir."
 
-msgid "Local GeoNode layer has no geometry type."
+#, fuzzy
+#| msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr "A camada local do GeoNode local não possui tipo de geometria."
 
 #, fuzzy, python-brace-format
@@ -3065,10 +3275,10 @@ msgstr ""
 "Favor certificar-se de que haja pelo menos um tipo de geometria consistente "
 "com o arquivo que você está tentando substituir."
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 #, fuzzy
@@ -3084,40 +3294,49 @@ msgstr ""
 "Ocorreu um erro ao tentar fazer o upload de seus dados. Tente novamente ou "
 "entre em contato com o administrador se o problema persistir."
 
+#, fuzzy
+#| msgid ""
+#| "Note: this layer's orginal metadata was populated and preserved by "
+#| "importing a metadata XML file. This metadata cannot be edited."
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
 "Nota: Os metadados originais dessa camada foram preservados por importar um "
 "arquivo XML de metadados. Esses metadados não podem ser editados."
 
-msgid "You are not permitted to delete this layer"
+#, fuzzy
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
 msgstr "Você não tem permissão para excluir esta camada"
 
-msgid "You do not have permissions for this layer."
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
 msgstr "Você não tem permissões para esta camada."
 
-msgid "You are not permitted to modify this layer"
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
 msgstr "Você não tem permissão para alterar esta camada"
 
-msgid "You are not permitted to modify this layer's metadata"
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
 msgstr "Você não tem permissão para alteraros metadados desta camada"
 
-msgid "You are not permitted to view this layer"
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
 msgstr "Você não tem permissão para visualizar esta camada"
 
-msgid "Failed to upload the layer"
-msgstr "Falha ao carregar a camada"
-
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr "Você está tentando substituir uma camada vetorial por um raster."
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr "Você está tentando substituir uma camada raster por uma vetorial."
-
+#, fuzzy
+#| msgid ""
+#| "This layer is a member of a layer group, you must remove the layer from "
+#| "the group before deleting."
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 "Esta camada faz parte de um grupo de camadas. Você precisa remover a camada "
 "do grupo antes de excluí-la."
@@ -3932,6 +4151,17 @@ msgstr "Arquivos não encontrados."
 msgid "Not Authorized"
 msgstr "Sem Autorização"
 
+#, fuzzy
+#| msgid "GeoNode Themes Library"
+msgid "GeoNode Resource Processing Library"
+msgstr "Biblioteca de Temas do GeoNode"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr "A sessão expirou. Por favor faça login novamente!"
 
@@ -4166,6 +4396,11 @@ msgstr "Recurso {} está em processamento"
 msgid "Service rescanned successfully"
 msgstr "Serviço reescaneado com sucesso"
 
+#, fuzzy
+#| msgid "You are not permitted to save or edit this resource."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "Você não tem permissão para salvar ou editar este recurso."
+
 msgid "You are not permitted to change this service."
 msgstr "Você não tem permissão para alterar este serviço."
 
@@ -4239,6 +4474,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr "Alternar de navegação"
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "conjunto de dados"
+
 msgid "People"
 msgstr "Pessoas"
 
@@ -4282,6 +4522,11 @@ msgstr ""
 "\"http://github.com/GeoNode/geonode/issues\">Rastreador de problemas do "
 "GeoNode</a>\n"
 "            "
+
+#, fuzzy
+#| msgid "Create a new layer"
+msgid "Create a new dataset"
+msgstr "Criar nova camada"
 
 msgid "Create Map"
 msgstr "Criar Mapa"
@@ -4376,10 +4621,14 @@ msgstr "Quem pode fazer download?"
 msgid "Who can change metadata for it?"
 msgstr "Quem pode alterar os metadados?"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "Quem pode editar os dados para esta camada?"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "Quem pode editar estilos para esta camada?"
 
 msgid ""
@@ -5023,11 +5272,19 @@ msgstr "Uploading…"
 msgid "Upload in progress..."
 msgstr "Realizando upload..."
 
+msgid "Processing..."
+msgstr "Processando…"
+
 msgid "Updating Thumbnail..."
 msgstr "Atualizando Miniatura..."
 
 msgid "Message. Do you want to proceed?"
 msgstr "Mensagem. Tem certeza de que deseja prosseguir?"
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "Processing Resource..."
+msgstr "Colhendo os recursos…"
 
 msgid "Information for Developers"
 msgstr "Informações para desenvolvedores"
@@ -5035,7 +5292,109 @@ msgstr "Informações para desenvolvedores"
 msgid "Useful information for developers interested in GeoNode."
 msgstr "Informações úteis para desenvolvedores interessados em GeoNode."
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service "
+#| "built on open source software. We encourage you to build new applications "
+#| "using the components and resources it provides. This page is a starting "
+#| "point for developers interesting in taking full advantage of GeoNode. It "
+#| "also includes links to the project's source code so anyone can build and "
+#| "customize their own GeoNode. </p>\n"
+#| "\n"
+#| "    <h3>GeoNode Software</h3>\n"
+#| "\n"
+#| "    <p>All the code that runs GeoNode is open source. The code is "
+#| "available at <a href=\"http://github.com/GeoNode/geonode\">http://github."
+#| "com/GeoNode/geonode/</a>. The issue tracker for the project is at <a href="
+#| "\"http://github.com/GeoNode/geonode/issues\">http://github.com/GeoNode/"
+#| "geonode/issues</a>.</p>\n"
+#| "\n"
+#| "    <p>GeoNode is built using several open source projects, each with its "
+#| "own community. If you are interested in contributing new features to the "
+#| "GeoNode, we encourage you to do so by contributing to one of the projects "
+#| "on which it is built:</p>\n"
+#| "    <ul>\n"
+#| "      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards "
+#| "based server for geospatial information</li>\n"
+#| "      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache "
+#| "engine for WMS Tiles</li><li><a href=\"http://openlayers.org"
+#| "\">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</"
+#| "li>\n"
+#| "      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW, OpenSearch and "
+#| "OAI-PMH metadata catalogue server</li>\n"
+#| "    </ul>\n"
+#| "\n"
+#| "    <h3>What are OGC Services?</h3>\n"
+#| "    <p>The data in this application is served using open standards "
+#| "endorsed by ISO and the <a href=\"http://opengeospatial.org/\">Open "
+#| "Geospatial Consortium</a>; in particular, WMS (Web Map Service) is used "
+#| "for accessing maps, WFS (Web Feature Service) is used for accessing "
+#| "vector data, and WCS (Web Coverage Service) is used for accessing raster "
+#| "data.  WMC (Web Map Context Documents) is used for sharing maps. You can "
+#| "use these services in your own applications using libraries such as "
+#| "OpenLayers, GeoTools, and OGR (all of which are open-source software and "
+#| "available at zero cost). Additionally, CSW (Catalog Service for the Web) "
+#| "supports access to collections of descriptive information (metadata) "
+#| "about data and services.</p>\n"
+#| "\n"
+#| "    <h3>What is GeoWebCache?</h3>\n"
+#| "    <p>GeoWebCache provides mapping tiles that are compatible with a "
+#| "number of mapping engines, including Google Maps, Bing Maps and "
+#| "OpenLayers. All the data hosted by GeoNode is also available through "
+#| "GeoWebCache. GeoWebCache improves on WMS by caching data and providing "
+#| "more responsive maps.</p>\n"
+#| "\n"
+#| "    <h3>CSW Example Code</h3>\n"
+#| "    <p>To interact with GeoNode's CSW you can use any CSW client (QGIS "
+#| "MetaSearch, GRASS, etc.).  The following example illustrates a simple "
+#| "invocation using the OWSLib Python package:</p>\n"
+#| "    <p><code>from owslib.csw import CatalogueServiceWeb</code></p>\n"
+#| "    <p><code>from owslib.fes import PropertyIsLike</code></p>\n"
+#| "    <p><code>csw = CatalogueServiceWeb('%(CATALOGUE_BASE_URL)s')</code></"
+#| "p>\n"
+#| "    <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></"
+#| "p>\n"
+#| "    <p><code>csw.getrecords2(constraints=[anytext])</code></p>\n"
+#| "    <p><code>print csw.results</code></p>\n"
+#| "    <p><code>print csw.records</code></p>\n"
+#| "\n"
+#| "    <h3>OpenLayers Example Code</h3>\n"
+#| "\n"
+#| "    <p>To include a GeoNode map layer in an OpenLayers map, first find "
+#| "the name for that layer. This is found in the layer's <code>name</code> "
+#| "field (not <code>title</code>) of the layer list. For this example, we "
+#| "will use the Nicaraguan political boundaries background layer, whose name "
+#| "is <code>risk:nicaragua_admin</code>. Then, create an instance of "
+#| "OpenLayers.Layer.WMS:</p>\n"
+#| "    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk "
+#| "Data\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
+#| "nicaragua_admin\" });</code></p>\n"
+#| "\n"
+#| "    <h3>Google Maps Example Code</h3>\n"
+#| "    <p>To include a GeoNode map layer in a Google Map, include the layer "
+#| "namein the URL template.</p>\n"
+#| "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+#| "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
+#| "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:"
+#| "true, opacity:0.5 } );</code></p>\n"
+#| "\n"
+#| "    <h3>Shapefile/GeoJSON/GML Output</h3>\n"
+#| "    <p>To get data from the GeoNode web services use the WFS protocol. "
+#| "For example, to get the full Nicaraguan admin boundaries use:</p>\n"
+#| "    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+#| "typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+#| "    <p>Changing output format to <code>json</code>, <code>GML2</code>, "
+#| "<code>GML3</code>, or <code>csv</code> will get data in those formats. "
+#| "The WFS protocol also can handle more precise queries, specifying a "
+#| "bounding box or various spatial and non-spatial filters based on the "
+#| "attributes of the data.</p>\n"
+#| "\n"
+#| "    <h3>GeoTools Example Code</h3>\n"
+#| "    <p>Create a DataStore and extract a FeatureType from it, then run a "
+#| "Query. It is all documented on the wiki at <code>http://geotools.org/</"
+#| "code>.</p>\n"
+#| "    "
 msgid ""
 "\n"
 "    <p><a href=\"http://geonode.org/\">GeoNode</a> is an open service built "
@@ -5111,8 +5470,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5285,13 +5644,13 @@ msgid ""
 "p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <p>The <a href=\"{{ url_layer_browse }}\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
 "    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
 "    <h4 id=\"developer-access\">Developer Access</h4>\n"
-"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <p>The <a href=\"{{ url_developer }}\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
@@ -5300,9 +5659,9 @@ msgid ""
 "    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
 "    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"{{ url_maps_browse }}\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"<strong>create a map</strong>, which will open the <a href=\"{{ url_maps_new }}\">Map "
 "Composer</a>.</p>\n"
 "    <h5>Google Earth Mode</h5>\n"
 "    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
@@ -5311,9 +5670,9 @@ msgid ""
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
-"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"    <p>To create a new map go to the <a href=\"{{ url_maps_browse }}\">Contributed Maps</a> "
+"tab and click the <a href=\"{{ url_maps_new }}\">create your own map</a> link.</p>\n"
+"    <p>This will take you to the <a href=\"{{ url_maps_new }}\">Map Composer</a> with "
 "a base layer loaded.</p>\n"
 "    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
@@ -5347,7 +5706,7 @@ msgid ""
 "    </ol>\n"
 "    <p>This will put an interactive widget showing you map in your web page "
 "or blog post.</p>\n"
-"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"    <p>Note that the <a href=\"{{ url_maps_new }}\">Map Composer</a> also has a "
 "button to publish the map. Just be sure to save the map before publishing if "
 "there are changes that you want others to see. It publishes the last saved "
 "version, not the last viewed version.</p>\n"
@@ -5363,7 +5722,7 @@ msgid ""
 "      <li>Save the map.</li>\n"
 "    </ol>\n"
 "    <p>You will be able to see your new map when you search for it from the "
-"<a href=\"/maps\">Maps</a> tab.</p>\n"
+"<a href=\"{{ url_maps_browse }}\">Maps</a> tab.</p>\n"
 "    "
 msgstr ""
 "\n"
@@ -5372,13 +5731,13 @@ msgstr ""
 "contribuam com seus próprios mapas.</p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">Navegando pelas camadas</h4>\n"
-"    <p>O <a href=\"/layers\">Camadas</a> tab permite navegar pelos dados "
+"    <p>O <a href=\"{{ url_layer_browse }}\">Camadas</a> tab permite navegar pelos dados "
 "carregados no GeoNode.</p>\n"
 "    <p>Todos os dados podem ser baixados em diversos formatos, para uso em "
 "outros aplicativos.</p>\n"
 "\n"
 "    <h4 id=\"developer-access\">Acesso para desenvolvedores</h4>\n"
-"    <p>A <a href=\"/developer\">Desenvolvedor</a> página é o ponto de "
+"    <p>A <a href=\"{{ url_developer }}\">Desenvolvedor</a> página é o ponto de "
 "partida para os desenvolvedores iniciarem a criação de aplicativos para o "
 "GeoNode. Contém instruções sobre como usar os serviços web, links para o "
 "código-fonte do GeoNode e informações sobre os projetos de código aberto que "
@@ -5387,7 +5746,7 @@ msgstr ""
 "    <h4 id=\"browsing-maps\">Navegando pelos mapas</h4>\n"
 "    <p>GeoNode permite que os usuários criem e compartilhem mapas entre si.</"
 "p>\n"
-"    <p>O <a href=\"/maps\">Mapas</a>tab é uma porta para a exploração de "
+"    <p>O <a href=\"{{ url_maps_browse }}\">Mapas</a>tab é uma porta para a exploração de "
 "mapas no GeoNode.  A partir dela o usuário pode <strong>pesquisar por um "
 "mapa</strong> ou <strong>criar um mapa</strong>, que abrirá o link <a href="
 "\"/maps/new\">Compositor de mapas</a>.</p>\n"
@@ -5399,10 +5758,10 @@ msgstr ""
 "instalado, você será solicitado a instalá-lo.</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">Criando um mapa</h4>\n"
-"    <p>Para criar um novo mapa, vá para <a href=\"/maps\">Mapas "
-"Contribuídos</a> e clique no link <a href=\"/maps/new\">crie seu próprio "
+"    <p>Para criar um novo mapa, vá para <a href=\"{{ url_maps_browse }}\">Mapas "
+"Contribuídos</a> e clique no link <a href=\"{{ url_maps_new }}\">crie seu próprio "
 "mapa</a>.</p>\n"
-"    <p>Você será levado à <a href=\"/maps/new\">Compositor de mapas</a>, "
+"    <p>Você será levado à <a href=\"{{ url_maps_new }}\">Compositor de mapas</a>, "
 "onde uma camada base será carregada.</p>\n"
 "    <p>Para adicionar camadas de dados a partir do GeoNode, clique no botão "
 "verde de adição, localizado abaixo da guia de camadas, no lado esquerdo da "
@@ -5440,7 +5799,7 @@ msgstr ""
 "    </ol>\n"
 "    <p>Esse procedimento vai inserir um <i>widget</i> interativo mostrando o "
 "seu mapa na página da web ou no blog.</p>\n"
-"    <p>Note que o <a href=\"/maps/new\">Compositor de mapas</a> também "
+"    <p>Note que o <a href=\"{{ url_maps_new }}\">Compositor de mapas</a> também "
 "possui um botão para publicar o mapa. Certifique-se de salvar o mapa antes "
 "de publicá-lo caso você tenha feito mudanças que devam ficar visíveis para "
 "as outras pessoas. A versão publicada é a última salva, não a última "
@@ -5459,7 +5818,7 @@ msgstr ""
 "      <li>Salve o mapa.</li>\n"
 "    </ol>\n"
 "    <p>Você conseguirá visualizar o seu novo mapa quando pesquisá-lo na guia "
-"<a href=\"/maps\">Mapas</a>.</p> \n"
+"<a href=\"{{ url_maps_browse }}\">Mapas</a>.</p> \n"
 "    "
 
 msgid "Sections"
@@ -5502,10 +5861,14 @@ msgstr ""
 "Clique para pesquisar dados geoespaciais publicados por outros usuários, "
 "organizações e fontes públicas. Download de dados em formato padrão."
 
-msgid "Add layers"
-msgstr "Adicionar camadas"
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "conjunto de dados"
 
-msgid "Explore layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
 msgstr "Explorar camadas"
 
 msgid ""
@@ -5995,7 +6358,9 @@ msgstr ""
 msgid "Filters"
 msgstr "Filtros"
 
-msgid "Layers found"
+#, fuzzy
+#| msgid "Layers found"
+msgid "Datasets found"
 msgstr "Camadas encontradas"
 
 msgid "Maps found"
@@ -6033,6 +6398,11 @@ msgstr "Mais popular"
 
 msgid "Text"
 msgstr "Texto"
+
+#, fuzzy
+#| msgid "Share This"
+msgid "Share This Dataset"
+msgstr "Compartilhar Isso"
 
 msgid "Share This"
 msgstr "Compartilhar Isso"
@@ -6211,6 +6581,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6294,6 +6668,55 @@ msgstr "Nível de permissão inválido."
 
 msgid "Permission Denied"
 msgstr "Permissão Negada"
+
+#~ msgid "Layer name"
+#~ msgstr "Nome da Camada"
+
+#~ msgid "Layer title"
+#~ msgstr "Título da Camada"
+
+#~ msgid "Create Layer"
+#~ msgstr "Criar Camada"
+
+#, fuzzy
+#~| msgid "Return to Layer"
+#~ msgid "Append to Layer"
+#~ msgstr "Retornar à Camada"
+
+#~ msgid "Download Layer"
+#~ msgstr "Fazer download da camada"
+
+#~ msgid "View Layer"
+#~ msgstr "Visualizar Camada"
+
+#~ msgid "Updating Permissions..."
+#~ msgstr "Atualizando Permissões…"
+
+#~ msgid "Upload Layers"
+#~ msgstr "Carregar Camadas"
+
+#~ msgid "Upload Layer"
+#~ msgstr "Carregar Camada"
+
+#~ msgid "You are attempting to replace a vector layer with an unknown format."
+#~ msgstr ""
+#~ "Você está tentando substituir uma camada vetorial por um formato "
+#~ "desconhecido."
+
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Falha ao carregar a camada"
+
+#~ msgid "You are attempting to replace a vector layer with a raster."
+#~ msgstr "Você está tentando substituir uma camada vetorial por um raster."
+
+#~ msgid "You are attempting to replace a raster layer with a vector."
+#~ msgstr "Você está tentando substituir uma camada raster por uma vetorial."
+
+#~ msgid "Add layers"
+#~ msgstr "Adicionar camadas"
+
+#~ msgid "Explore layers"
+#~ msgstr "Explorar camadas"
 
 #~ msgid "Layer not ready yet. Still finalizing layer ingestion..."
 #~ msgstr ""

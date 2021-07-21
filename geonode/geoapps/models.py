@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -21,12 +20,11 @@ import logging
 
 from django.db import models
 from django.urls import reverse
-from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.base.models import ResourceBase, resourcebase_post_save
+from geonode.base.models import ResourceBase
 
 logger = logging.getLogger("geonode.geoapps.models")
 
@@ -45,7 +43,7 @@ class GeoApp(ResourceBase):
         ]
     }
 
-    name = models.TextField(_('Name'), unique=True, db_index=True)
+    name = models.TextField(_('Name'), null=False, blank=False)
 
     # viewer configuration
     zoom = models.IntegerField(_('zoom'), null=True, blank=True)
@@ -70,13 +68,6 @@ class GeoApp(ResourceBase):
     urlsuffix = models.CharField(_('Site URL'), max_length=255, null=True, blank=True)
     # Alphanumeric alternative to referencing geoapps by id, appended to end of
     # URL instead of id, ie http://domain/geoapps/someview
-
-    data = models.OneToOneField(
-        "GeoAppData",
-        related_name="data",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.title} by {(self.owner.username if self.owner else "<Anonymous>")}'
@@ -129,23 +120,3 @@ class GeoApp(ResourceBase):
     @property
     def embed_url(self):
         return reverse('geoapp_embed', kwargs={'geoappid': self.pk})
-
-    class Meta(ResourceBase.Meta):
-        pass
-
-
-class GeoAppData(models.Model):
-
-    blob = models.JSONField(
-        null=False,
-        default={})
-
-    resource = models.ForeignKey(
-        GeoApp,
-        null=False,
-        blank=False,
-        on_delete=models.CASCADE)
-
-
-# signals.pre_delete.connect(pre_delete_app, sender=GeoApp)
-signals.post_save.connect(resourcebase_post_save, sender=GeoApp)

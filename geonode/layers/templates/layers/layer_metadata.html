@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load guardian_tags %}
 {% load floppyforms %}
+{% load client_lib_tags %}
 
 {% block title %}{{ layer.alternate }} — {{ block.super }}{% endblock title %}
 
@@ -96,7 +97,7 @@
 
             {% if not layer.metadata_uploaded_preserve %}
             <div class="form-actions">
-              <a href="{% url 'layer_detail' layername=resource.alternate %}" class="btn btn-primary">{% trans "Return to Layer" %}</a>
+              <a href="{% layer_detail_url resource %}" class="btn btn-primary">{% trans "Return to Dataset" %}</a>
               <input type="button" id="btn_back_dwn" class="btn btn-primary" style="display: none" value="{% trans "<< Back" %}"/>
               <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
               <input type="button" id="btn_next_dwn" class="btn btn-primary" value="{% trans "Next >>" %}"/>
@@ -108,30 +109,3 @@
 
 {{ block.super }}
 {% endblock body_outer %}
-
-{% block extra_script %}
-  {{ block.super }}
-  <script type="text/javascript">
-    {% autoescape off %}
-    tinyMCE_default_config = {{ TINYMCE_DEFAULT_CONFIG }};
-    tinyMCE_default_config['selector'] = 'textarea#id_resource-featureinfo_custom_template'
-    tinyMCE_default_config['file_picker_callback'] = function (callback, value, meta) {
-        /* Provide file and text for the link dialog */
-        if (meta.filetype === 'file') {
-          callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
-        }
-
-        /* Provide image and alt text for the image dialog */
-        if (meta.filetype === 'image') {
-          callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
-        }
-
-        /* Provide alternative source and posted for the media dialog */
-        if (meta.filetype === 'media') {
-          callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
-        }
-      };
-    tinyMCE.init(tinyMCE_default_config);
-    {% endautoescape %}
-  </script>
-{% endblock extra_script %}

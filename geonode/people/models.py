@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -135,7 +134,7 @@ class Profile(AbstractUser):
     )
 
     def __init__(self, *args, **kwargs):
-        super(Profile, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._previous_active_state = self.is_active
 
     def get_absolute_url(self):
@@ -218,7 +217,7 @@ class Profile(AbstractUser):
         return perms
 
     def save(self, *args, **kwargs):
-        super(Profile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self._notify_account_activated()
         self._previous_active_state = self.is_active
 

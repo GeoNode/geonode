@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -27,21 +26,21 @@ from taggit.models import Tag
 from taggit.models import TaggedItem
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.gis.geos import Polygon
-from django.contrib.auth.models import Permission, Group
 from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Permission, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from geonode import geoserver  # noqa
 from geonode.maps.models import Map
+from geonode.base import enumerations
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
-from geonode.base.models import ResourceBase, TopicCategory
 from geonode.documents.models import Document
+from geonode.base.models import ResourceBase, TopicCategory
 
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
@@ -54,6 +53,7 @@ imgfile = BytesIO(
     b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
 )
 f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
+dfile = [f"{settings.MEDIA_ROOT}/img.gif"]
 
 
 def all_public():
@@ -61,12 +61,15 @@ def all_public():
     for lyr in Layer.objects.all():
         lyr.set_default_permissions()
         lyr.clear_dirty_state()
+        lyr.set_processing_state(enumerations.STATE_PROCESSED)
     for mp in Map.objects.all():
         mp.set_default_permissions()
         mp.clear_dirty_state()
+        mp.set_processing_state(enumerations.STATE_PROCESSED)
     for doc in Document.objects.all():
         doc.set_default_permissions()
         doc.clear_dirty_state()
+        doc.set_processing_state(enumerations.STATE_PROCESSED)
     ResourceBase.objects.all().update(dirty_state=False)
 
 
@@ -156,12 +159,7 @@ def create_models(type=None, integration=False):
         map_data, user_data, people_data, layer_data, document_data = create_fixtures()
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
         cont_group, created = Group.objects.get_or_create(name='contributors')
-        ctype = ContentType.objects.get_for_model(cont_group)
-        perm, created = Permission.objects.get_or_create(
-            codename='base_addresourcebase',
-            name='Can add resources',
-            content_type=ctype
-        )
+        perm = Permission.objects.get(codename='add_resourcebase')
         cont_group.permissions.add(perm)
         logger.debug("[SetUp] Get or create user admin")
         u, created = get_user_model().objects.get_or_create(username='admin')
@@ -212,6 +210,7 @@ def create_models(type=None, integration=False):
                     m.save()
                     m.set_default_permissions()
                     m.clear_dirty_state()
+                    m.set_processing_state(enumerations.STATE_PROCESSED)
                     obj_ids.append(m.id)
                     for kw in kws:
                         m.keywords.add(kw)
@@ -228,20 +227,20 @@ def create_models(type=None, integration=False):
                         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                         srid='EPSG:4326',
-                        category=category,
-                        doc_file=f,
+                        files=dfile,
                         metadata_only=title == 'doc metadata true'
                     )
                     m.save()
                     m.set_default_permissions()
                     m.clear_dirty_state()
+                    m.set_processing_state(enumerations.STATE_PROCESSED)
                     obj_ids.append(m.id)
                     for kw in kws:
                         m.keywords.add(kw)
                         m.save()
 
             if not type or ensure_string(type) == 'layer':
-                for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
+                for ld, owner, subtype in zip(layer_data, cycle(users), cycle(('raster', 'vector'))):
                     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                     end = start + timedelta(days=365)
                     logger.debug(f"[SetUp] Add layer {title}")
@@ -258,13 +257,14 @@ def create_models(type=None, integration=False):
                         temporal_extent_start=start,
                         temporal_extent_end=end,
                         date=start,
-                        storeType=storeType,
+                        subtype=subtype,
                         category=category,
                         metadata_only=title == 'layer metadata true'
                     )
                     layer.save()
                     layer.set_default_permissions()
                     layer.clear_dirty_state()
+                    layer.set_processing_state(enumerations.STATE_PROCESSED)
                     obj_ids.append(layer.id)
                     for kw in kws:
                         layer.keywords.add(kw)
@@ -346,12 +346,14 @@ def create_single_layer(name):
         temporal_extent_start=test_datetime,
         temporal_extent_end=test_datetime,
         date=start,
-        storeType="dataStore",
-        resource_type="layer"
+        subtype="vector",
+        resource_type="layer",
+        typename=f"geonode:{title}"
     )
     layer.save()
     layer.set_default_permissions()
     layer.clear_dirty_state()
+    layer.set_processing_state(enumerations.STATE_PROCESSED)
     return layer
 
 
@@ -383,6 +385,7 @@ def create_single_map(name):
     m.save()
     m.set_default_permissions()
     m.clear_dirty_state()
+    m.set_processing_state(enumerations.STATE_PROCESSED)
     return m
 
 
@@ -406,12 +409,13 @@ def create_single_doc(name):
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
-        doc_file=f,
+        files=dfile,
         resource_type="document"
     )
     m.save()
     m.set_default_permissions()
     m.clear_dirty_state()
+    m.set_processing_state(enumerations.STATE_PROCESSED)
     return m
 
 

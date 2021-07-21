@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -18,6 +17,7 @@
 #
 #########################################################################
 import uuid
+import shutil
 import logging
 import geoserver
 
@@ -28,14 +28,15 @@ from django.conf import settings
 
 from geonode import GeoNodeException
 from geonode.layers.utils import layer_type, get_files
-from .helpers import (GEOSERVER_LAYER_TYPES,
-                      gs_catalog,
-                      get_store,
-                      get_sld_for,
-                      ogc_server_settings,
-                      _create_db_featurestore,
-                      _create_featurestore,
-                      _create_coveragestore)
+from .helpers import (
+    GEOSERVER_LAYER_TYPES,
+    gs_catalog,
+    get_store,
+    get_sld_for,
+    ogc_server_settings,
+    _create_db_featurestore,
+    _create_featurestore,
+    _create_coveragestore)
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +117,7 @@ def geoserver_upload(
     logger.debug('>>> Step 4. Starting upload of [%s] to GeoServer...', name)
 
     # Get the helper files if they exist
-    files = get_files(base_file)
+    files, _tmpdir = get_files(base_file)
     data = files
     if 'shp' not in files:
         data = base_file
@@ -142,13 +143,13 @@ def geoserver_upload(
         logger.warn(msg)
         e.args = (msg,)
         raise
-    else:
-        logger.debug('Finished upload of [%s] to GeoServer without '
-                     'errors.', name)
+    finally:
+        if _tmpdir is not None:
+            shutil.rmtree(_tmpdir, ignore_errors=True)
+    logger.debug(f'Finished upload of {name} to GeoServer without errors.')
 
     # Step 5. Create the resource in GeoServer
-    logger.debug('>>> Step 5. Generating the metadata for [%s] after '
-                 'successful import to GeoSever', name)
+    logger.debug(f'>>> Step 5. Generating the metadata for {name} after successful import to GeoSever')
 
     # Verify the resource was created
     if not gs_resource:
@@ -248,7 +249,7 @@ def geoserver_upload(
     layer_uuid = str(uuid.uuid1())
 
     defaults = dict(store=gs_resource.store.name,
-                    storeType=gs_resource.store.resource_type,
+                    subtype=gs_resource.store.resource_type,
                     alternate=alternate,
                     title=title or gs_resource.title,
                     uuid=layer_uuid,

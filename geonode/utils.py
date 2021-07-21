@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -46,7 +45,7 @@ from collections import defaultdict
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from requests.packages.urllib3.util.retry import Retry
-
+from geonode.storage.manager import storage_manager
 from django.conf import settings
 from django.core.cache import cache
 from django.db.models import signals
@@ -59,7 +58,6 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.files.storage import default_storage as storage
 from django.db import models, connection, transaction
 from django.utils.translation import ugettext_lazy as _
 
@@ -319,7 +317,7 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
     if srid and str(srid).startswith('EPSG:'):
         srid = srid[5:]
     if None not in {x0, x1, y0, y1}:
-        wkt = 'POLYGON((%f %f,%f %f,%f %f,%f %f,%f %f))' % (
+        wkt = 'POLYGON(({:f} {:f},{:f} {:f},{:f} {:f},{:f} {:f},{:f} {:f}))'.format(
             float(x0), float(y0),
             float(x0), float(y1),
             float(x1), float(y1),
@@ -541,7 +539,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
     return _model
 
 
-class GXPMapBase(object):
+class GXPMapBase:
 
     def viewer_json(self, request, *added_layers):
         """
@@ -707,7 +705,7 @@ class GXPMap(GXPMapBase):
         self.layers = []
 
 
-class GXPLayerBase(object):
+class GXPLayerBase:
 
     def source_config(self, access_token):
         """
@@ -1149,83 +1147,87 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     """
     charset = charset if charset and 'undefined' not in charset else 'UTF-8'
 
-    if not tempdir:
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-
-    if is_zipfile(inShapefile):
-        inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
-
-    inDriver = ogr.GetDriverByName('ESRI Shapefile')
     try:
-        inDataSource = inDriver.Open(inShapefile, 1)
-    except Exception:
-        tb = traceback.format_exc()
-        logger.debug(tb)
-        inDataSource = None
+        if not tempdir:
+            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
 
-    if inDataSource is None:
-        logger.debug(f"Could not open {inShapefile}")
-        return False, None, None
-    else:
-        inLayer = inDataSource.GetLayer()
+        if is_zipfile(inShapefile):
+            inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
-    # TODO we may need to improve this regexp
-    # first character must be any letter or "_"
-    # following characters can be any letter, number, "#", ":"
-    regex = r'^[a-zA-Z,_][a-zA-Z,_#:\d]*$'
-    a = re.compile(regex)
-    regex_first_char = r'[a-zA-Z,_]{1}'
-    b = re.compile(regex_first_char)
-    inLayerDefn = inLayer.GetLayerDefn()
-
-    list_col_original = []
-    list_col = {}
-
-    for i in range(inLayerDefn.GetFieldCount()):
+        inDriver = ogr.GetDriverByName('ESRI Shapefile')
         try:
-            field_name = inLayerDefn.GetFieldDefn(i).GetName()
-            if a.match(field_name):
-                list_col_original.append(field_name)
-        except Exception as e:
-            logger.exception(e)
+            inDataSource = inDriver.Open(inShapefile, 1)
+        except Exception:
+            tb = traceback.format_exc()
+            logger.debug(tb)
+            inDataSource = None
+
+        if inDataSource is None:
+            logger.debug(f"Could not open {inShapefile}")
+            return False, None, None
+        else:
+            inLayer = inDataSource.GetLayer()
+
+        # TODO we may need to improve this regexp
+        # first character must be any letter or "_"
+        # following characters can be any letter, number, "#", ":"
+        regex = r'^[a-zA-Z,_][a-zA-Z,_#:\d]*$'
+        a = re.compile(regex)
+        regex_first_char = r'[a-zA-Z,_]{1}'
+        b = re.compile(regex_first_char)
+        inLayerDefn = inLayer.GetLayerDefn()
+
+        list_col_original = []
+        list_col = {}
+
+        for i in range(inLayerDefn.GetFieldCount()):
+            try:
+                field_name = inLayerDefn.GetFieldDefn(i).GetName()
+                if a.match(field_name):
+                    list_col_original.append(field_name)
+            except Exception as e:
+                logger.exception(e)
+                return True, None, None
+
+        for i in range(inLayerDefn.GetFieldCount()):
+            try:
+                field_name = inLayerDefn.GetFieldDefn(i).GetName()
+                if not a.match(field_name):
+                    # once the field_name contains Chinese, to use slugify_zh
+                    if any('\u4e00' <= ch <= '\u9fff' for ch in field_name):
+                        new_field_name = slugify_zh(field_name, separator='_')
+                    else:
+                        new_field_name = slugify(field_name)
+                    if not b.match(new_field_name):
+                        new_field_name = f"_{new_field_name}"
+                    j = 0
+                    while new_field_name in list_col_original or new_field_name in list_col.values():
+                        if j == 0:
+                            new_field_name += '_0'
+                        if new_field_name.endswith(f"_{str(j)}"):
+                            j += 1
+                            new_field_name = f"{new_field_name[:-2]}_{str(j)}"
+                    if field_name != new_field_name:
+                        list_col[field_name] = new_field_name
+            except Exception as e:
+                logger.exception(e)
+                return True, None, None
+
+        if len(list_col) == 0:
             return True, None, None
-
-    for i in range(inLayerDefn.GetFieldCount()):
-        try:
-            field_name = inLayerDefn.GetFieldDefn(i).GetName()
-            if not a.match(field_name):
-                # once the field_name contains Chinese, to use slugify_zh
-                if any('\u4e00' <= ch <= '\u9fff' for ch in field_name):
-                    new_field_name = slugify_zh(field_name, separator='_')
-                else:
-                    new_field_name = slugify(field_name)
-                if not b.match(new_field_name):
-                    new_field_name = f"_{new_field_name}"
-                j = 0
-                while new_field_name in list_col_original or new_field_name in list_col.values():
-                    if j == 0:
-                        new_field_name += '_0'
-                    if new_field_name.endswith(f"_{str(j)}"):
-                        j += 1
-                        new_field_name = f"{new_field_name[:-2]}_{str(j)}"
-                if field_name != new_field_name:
-                    list_col[field_name] = new_field_name
-        except Exception as e:
-            logger.exception(e)
-            return True, None, None
-
-    if len(list_col) == 0:
-        return True, None, None
-    else:
-        try:
-            rename_shp_columnnames(inLayer, list_col)
-            inDataSource.SyncToDisk()
-            inDataSource.Destroy()
-        except Exception as e:
-            logger.exception(e)
-            raise GeoNodeException(
-                f"Could not decode SHAPEFILE attributes by using the specified charset '{charset}'.")
-    return True, None, list_col
+        else:
+            try:
+                rename_shp_columnnames(inLayer, list_col)
+                inDataSource.SyncToDisk()
+                inDataSource.Destroy()
+            except Exception as e:
+                logger.exception(e)
+                raise GeoNodeException(
+                    f"Could not decode SHAPEFILE attributes by using the specified charset '{charset}'.")
+        return True, None, list_col
+    finally:
+        if tempdir is not None:
+            shutil.rmtree(tempdir, ignore_errors=True)
 
 
 def id_to_obj(id_):
@@ -1395,7 +1397,7 @@ def check_ogc_backend(backend_package):
     return False
 
 
-class HttpClient(object):
+class HttpClient:
 
     def __init__(self):
         self.timeout = 5
@@ -1529,15 +1531,11 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
             s = os.path.join(src, item)
             d = os.path.join(dst, item)
             if os.path.isdir(s):
-                # shutil.rmtree(d)
                 if os.path.exists(d):
                     try:
                         os.remove(d)
                     except Exception:
-                        try:
-                            shutil.rmtree(d)
-                        except Exception:
-                            pass
+                        shutil.rmtree(d, ignore_errors=True)
                 try:
                     shutil.copytree(s, d, symlinks=symlinks, ignore=ignore)
                 except Exception:
@@ -1790,7 +1788,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                                     name=ugettext(name),
                                     link_type='image').update(**_d)
 
-        if instance.storeType == "dataStore":
+        if instance.subtype == "vector":
             links = wfs_links(f"{ogc_server_settings.public_url}ows?",
                               instance.alternate,
                               bbox=None,  # bbox filter should be set at runtime otherwise conflicting with CQL
@@ -1813,7 +1811,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         )
                     )
 
-        elif instance.storeType == 'coverageStore':
+        elif instance.subtype == 'raster':
             links = wcs_links(f"{ogc_server_settings.public_url}wcs?",
                               instance.alternate,
                               bbox,
@@ -1857,7 +1855,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
         try:
-            if instance.storeType != 'remoteStore':
+            if instance.subtype not in ['tileStore', 'remote']:
                 for style in set(list(instance.styles.all()) + [instance.default_style, ]):
                     if style:
                         style_name = os.path.basename(
@@ -1879,7 +1877,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 from geonode.services.serviceprocessors.handler import get_service_handler
                 handler = get_service_handler(
                     instance.remote_service.base_url, service_type=instance.remote_service.type)
-                if hasattr(handler, '_create_layer_legend_link'):
+                if handler and hasattr(handler, '_create_layer_legend_link'):
                     handler._create_layer_legend_link(instance)
 
             logger.debug(" -- Resource Links[Legend link]...done!")
@@ -1921,7 +1919,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 )
             )
 
-        if instance.storeType == "dataStore":
+        if instance.subtype == "vector":
             # ogc_wfs_path = '%s/wfs' % instance.workspace
             ogc_wfs_path = 'ows'
             ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
@@ -1939,7 +1937,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     )
                 )
 
-        if instance.storeType == "coverageStore":
+        if instance.subtype == "raster":
             # ogc_wcs_path = '%s/wcs' % instance.workspace
             ogc_wcs_path = 'ows'
             ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
@@ -2010,7 +2008,6 @@ json_serializer_k_map = {
     'spatial_representation_type': 'base.SpatialRepresentationType',
     'group': 'auth.Group',
     'default_style': 'layers.Style',
-    'upload_session': 'layers.UploadSession'
 }
 
 
@@ -2084,8 +2081,8 @@ def is_monochromatic_image(image_url, image_data=None):
     def get_thumb_handler(url):
         _index = url.find(settings.STATIC_URL)
         _thumb_path = urlparse(url[_index + len(settings.STATIC_URL):]).path
-        if storage.exists(_thumb_path):
-            return storage.open(_thumb_path)
+        if storage_manager.exists(_thumb_path):
+            return storage_manager.open(_thumb_path)
         return None
 
     def verify_image(stream):
@@ -2121,3 +2118,12 @@ def is_monochromatic_image(image_url, image_data=None):
     except Exception as e:
         logger.debug(e)
         return False
+
+
+def find_by_attr(lst, val, attr="id"):
+    """ Returns an object if the id matches in any list of objects """
+    for item in lst:
+        if attr in item and item[attr] == val:
+            return item
+
+    return None

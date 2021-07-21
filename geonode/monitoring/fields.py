@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -32,7 +31,7 @@ class MultiEmailField(models.Field):
         # while letting the caller override them.
         defaults = {'form_class': MultiEmailFormField}
         defaults.update(kwargs)
-        return super(MultiEmailField, self).formfield(**defaults)
+        return super().formfield(**defaults)
 
     def from_db_value(self, value, expression, connection, context):
         if value is None:

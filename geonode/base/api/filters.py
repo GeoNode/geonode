@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -52,7 +51,7 @@ class FavoriteFilter(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, _):
         if strtobool(request.query_params.get("favorite", 'False')):
-            ctype = list(set([r.resource_type for r in queryset]))
+            ctype = list({r.resource_type for r in queryset})
             return queryset.filter(
                 pk__in=Subquery(
                     Favorite.objects.values_list("object_id", flat=True)

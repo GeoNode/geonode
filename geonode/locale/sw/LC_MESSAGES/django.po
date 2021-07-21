@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swahili (http://www.transifex.com/geonode/geonode/language/"
@@ -469,6 +469,12 @@ msgstr ""
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -684,6 +690,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "Nenosiri limebadilishwa kwa mafanikio."
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -1019,6 +1034,9 @@ msgstr ""
 msgid "Link to"
 msgstr "Link to"
 
+msgid "File"
+msgstr "Faili"
+
 msgid "Document must be a file or url."
 msgstr "Hati ni lazima uwe faili au url."
 
@@ -1030,9 +1048,6 @@ msgstr "Aina hii ya faili hairuhusiwi"
 
 msgid "Permissions must be valid JSON."
 msgstr "Kibali ni lazima kiwe JSON halali."
-
-msgid "File"
-msgstr "Faili"
 
 msgid "The URL of the document if it is external."
 msgstr "URL ya hati kama ni kutoka nje."
@@ -1092,6 +1107,9 @@ msgid "Document"
 msgid_plural "Documents"
 msgstr[0] "Waraka"
 msgstr[1] "Waraka"
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr ""
@@ -1553,6 +1571,11 @@ msgstr ""
 "Core.\n"
 "Baadhi ya metadata halisi zinaweza kuwa zimepotea"
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "Peruzi Ramani"
+
 #, python-format
 msgid ""
 "\n"
@@ -1561,6 +1584,11 @@ msgid ""
 msgstr ""
 "\n"
 "Hariri maelezao ya %(map_title)s"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "Rudi"
 
 #, fuzzy
 #| msgid "View Map"
@@ -1649,14 +1677,14 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "Jina la Tabaka"
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "kanzidata"
 
 #, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "Kichwa cha tabaka"
+#| msgid "Attributes"
+msgid "Dataset title"
+msgstr "Sifa"
 
 #, fuzzy
 #| msgid "property type"
@@ -1664,16 +1692,18 @@ msgid "Geometry type"
 msgstr "aina ya uga"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "Tengeneza Ramani"
+#| msgid "feature type"
+msgid "Create Dataset"
+msgstr "aina ya sura"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "Peruzi matabaka"
 
 #, fuzzy
 #| msgid "Create a map using this layer"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "Tengeza ramani kwa kutumia tabaka hili"
 
 #, fuzzy
@@ -1711,6 +1741,9 @@ msgstr ""
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr ""
 
@@ -1743,9 +1776,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "Huna kibali cha kubadili mtido wa tabaka hili"
@@ -1998,6 +2028,119 @@ msgstr "Unda Kundi"
 
 msgid "Save"
 msgstr "Hifadhi"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "Rasilimali"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "Kuvuna"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "version of the cited resource"
+msgid "Default owner of harvested resources"
+msgstr "toleo la rasilimali alitoa"
+
+#, fuzzy
+#| msgid "Set permissions on selected resources"
+msgid "Default access permissions of harvested resources"
+msgstr "Ruhusa ya kuweka juu ya rasilimali aliliteua"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2287,11 +2430,13 @@ msgstr "tarehe ambapo takwimu za sifa zilisasishwa kwa mara ya mwisho"
 
 #, fuzzy
 #| msgid "Edit Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "Hariri Tabaka"
 
-msgid "Return to Layer"
-msgstr ""
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Dataset"
+msgstr "Rudi"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2310,7 +2455,7 @@ msgstr "Mabadiliko ya hatua ya kuwasiliana"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Hawawajui hatua mpya ya kuwasiliana na tabaka chini:"
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2371,14 +2516,18 @@ msgstr "Kiwango cha katikati"
 msgid "Standard Deviation"
 msgstr "Standard Deviation"
 
-msgid "Rate this layer"
+#, fuzzy
+#| msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "Kiwango safu hii"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "Pakua Tabaka"
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "Pakua"
 
 msgid "Images"
 msgstr ""
@@ -2466,9 +2615,9 @@ msgid "Edit data"
 msgstr ""
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "Hariri Tabaka"
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "Hariri Metadata"
 
 #, fuzzy
 #| msgid "format"
@@ -2481,28 +2630,38 @@ msgstr ""
 msgid "Legend"
 msgstr "Ufunguo"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "Ramani zinazotumia tabaka hili"
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "Orodha ya ramani zinzotumia tabaka hili"
 
-msgid "This layer is not currently used in any maps."
+#, fuzzy
+#| msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "Tabaka hili kwa sasa halitumiwi na ramani yoyote"
 
-msgid "Create a map using this layer"
+#, fuzzy
+#| msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "Tengeza ramani kwa kutumia tabaka hili"
 
-msgid "Click the button below to generate a new map based on this layer."
+#, fuzzy
+#| msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr ""
 "Bonyeza kitufe hapo chini kutengenza ramani mpya kutokana na tabaka hili."
 
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "Bonyeza kitufe hapo chini ili kubadili vibali vya safu hii."
 
 #, fuzzy
@@ -2542,7 +2701,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2559,22 +2718,16 @@ msgstr "Tengeza ramani kwa kutumia tabaka hili"
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "Bonyeza kitufe hapo chini ili kubadili vibali vya safu hii."
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Bonyeza kitufe hapo chini ili kubadili vibali vya safu hii."
 
-msgid "Change Layer Permissions"
-msgstr "Badilisha Vibali vya Tabaka"
-
-msgid "Processing..."
-msgstr ""
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "Vibali"
+#| msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
+msgstr "Badilisha Vibali vya Tabaka"
 
 msgid "Remove Mosaic Granules"
 msgstr ""
@@ -2593,8 +2746,10 @@ msgstr "Hatua hii ina athari kwa ramani zifuatazo:"
 msgid "No maps are using this layer"
 msgstr "Hakuna ramani zinazotumia tabaka hili"
 
-msgid "Upload Layers"
-msgstr "Pakia Matabaka"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "Pakua Metadata"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2647,14 +2802,16 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "Pakia Tabaka"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
-msgstr ""
+#, fuzzy
+#| msgid "feature type"
+msgid "Remove Datasets"
+msgstr "aina ya sura"
 
 #, python-format
 msgid ""
@@ -2664,7 +2821,9 @@ msgid ""
 "        "
 msgstr ""
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "Badilisha Tabaka"
 
 msgid "Manage Styles"
@@ -2673,15 +2832,17 @@ msgstr "Ratibu mitindo"
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"      Manage Available Styles for <a href=\"{{ layer_url }}\">"
 "%(layer_title)s</a>\n"
 "    "
 msgstr ""
 "\n"
-"Simamia mitindo iliyopo kwa ajili ya <a href=\"/layers/%(layer_title)s\">"
+"Simamia mitindo iliyopo kwa ajili ya <a href=\"{{ layer_url }}\">"
 "%(layer_title)s</a>"
 
-msgid "Layer Default Style"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "Mtindo msingoi wa tabaka"
 
 msgid "Available styles"
@@ -2697,9 +2858,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "Sasisha mitindo iliyopo"
 
+msgid "Return to Layer"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "Pakia Tabaka Hatua ya 2"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2719,8 +2883,10 @@ msgstr "Hakiki"
 msgid "Dataset Attributes"
 msgstr "Sifa"
 
-msgid "Upload Layer"
-msgstr "Pakia Tabaka"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "Pakua Metadata"
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2771,7 +2937,7 @@ msgstr "Je, una uhakika unataka kufuta upakiaji huu?"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "Pakia Tabaka Hatua ya 2"
 
 msgid "Provide CRS for "
@@ -2792,9 +2958,9 @@ msgstr "Coordinate Reference System"
 #| "    "
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2983,7 +3149,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "Pakia Tabaka Hatua ya 2"
 
 msgid "Geospatial Data"
@@ -3043,7 +3209,7 @@ msgstr "Pakia Fomu"
 
 #, fuzzy
 #| msgid "Upload Layer Step 2"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "Pakia Tabaka Hatua ya 2"
 
 msgid "Inspect data for "
@@ -3168,11 +3334,11 @@ msgstr "Kuwezesha Time"
 #| "valid period for the\n"
 #| "    feature."
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3254,24 +3420,17 @@ msgstr "Au tu kwenda"
 msgid "now"
 msgstr "sasa"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr ""
 
 #, python-brace-format
-msgid "You are attempting to {action_type} a vector layer with a raster."
-msgstr ""
-
-#, python-brace-format
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr ""
 
 #, python-brace-format
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr ""
 
 #, python-brace-format
@@ -3280,7 +3439,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3290,10 +3449,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3308,39 +3467,38 @@ msgstr ""
 "au wasiliana na msimamizi kama tatizo litaendelea."
 
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
-
-msgid "You are not permitted to delete this layer"
-msgstr "Huna kibali cha kufuta tabaka hili"
-
-msgid "You do not have permissions for this layer."
-msgstr "Huna kibali cha tabaka hili"
-
-msgid "You are not permitted to modify this layer"
-msgstr "Huna kibali cha kubadilisha kitu katika tabaka hili"
-
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "Huna kibali cha kubadilisha metadata za tabaka hili"
-
-msgid "You are not permitted to view this layer"
-msgstr "Huna kibali cha kutazama tabaka  hili"
 
 #, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "Mafaili yakupakia"
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
+msgstr "Huna kibali cha kufuta tabaka hili"
 
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
+msgstr "Huna kibali cha tabaka hili"
 
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
+#, fuzzy
+#| msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
+msgstr "Huna kibali cha kubadilisha kitu katika tabaka hili"
+
+#, fuzzy
+#| msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
+msgstr "Huna kibali cha kubadilisha metadata za tabaka hili"
+
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
+msgstr "Huna kibali cha kutazama tabaka  hili"
 
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 
 #, fuzzy, python-format
@@ -4216,6 +4374,17 @@ msgstr "Hati"
 msgid "Not Authorized"
 msgstr "Haijaainishwa"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "Msaada kuhusu Geonode"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4396,8 +4565,10 @@ msgstr ""
 msgid "Services"
 msgstr "Huduma"
 
-msgid "Register a new Service"
-msgstr "Sajili Huduma mpya"
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Add Remote Service"
+msgstr "Huduma ukiwa mbali"
 
 msgid "Remote Services"
 msgstr "Huduma ukiwa mbali"
@@ -4501,6 +4672,11 @@ msgid "Service rescanned successfully"
 msgstr "Nenosiri limebadilishwa kwa mafanikio."
 
 #, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "Wewe hawaruhusiwi kuokoa au hariri ramani hii."
+
+#, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "Hauruhusiwi kuondoa huduma hii."
@@ -4587,6 +4763,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "kanzidata"
+
 msgid "People"
 msgstr "Watu"
 
@@ -4621,9 +4802,9 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#| msgid "Remote Services"
-msgid "Add Remote Service"
-msgstr "Huduma ukiwa mbali"
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "Tengeneza ramani mpya"
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4723,10 +4904,14 @@ msgstr "Nani anaweza kupakua?"
 msgid "Who can change metadata for it?"
 msgstr "Nani anaweza kubadili metadata zake?"
 
-msgid "Who can edit data for this layer?"
+#, fuzzy
+#| msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "Nani anaweza kuhariri data za tabaka hili?"
 
-msgid "Who can edit styles for this layer?"
+#, fuzzy
+#| msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "Nani anaweza kubadilisha mtindo wa tabaka hili?"
 
 msgid ""
@@ -5353,6 +5538,9 @@ msgstr "kupakiwa"
 msgid "Upload in progress..."
 msgstr "Pakia mafaili"
 
+msgid "Processing..."
+msgstr ""
+
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
@@ -5362,6 +5550,11 @@ msgstr "Thumbnail"
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
 msgstr "Je, una uhakika unataka kuondoa"
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Processing Resource..."
+msgstr "Rasilimali"
 
 msgid "Information for Developers"
 msgstr "Taarifa kwa Developers"
@@ -5445,8 +5638,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5517,13 +5710,13 @@ msgid ""
 "p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <p>The <a href=\"{{ url_layer_browse }}\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
 "    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
 "    <h4 id=\"developer-access\">Developer Access</h4>\n"
-"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <p>The <a href=\"{{ url_developer }}\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
@@ -5532,9 +5725,9 @@ msgid ""
 "    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
 "    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"{{ url_maps_browse }}\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"<strong>create a map</strong>, which will open the <a href=\"{{ url_maps_new }}\">Map "
 "Composer</a>.</p>\n"
 "    <h5>Google Earth Mode</h5>\n"
 "    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
@@ -5543,9 +5736,9 @@ msgid ""
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
-"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"    <p>To create a new map go to the <a href=\"{{ url_maps_browse }}\">Contributed Maps</a> "
+"tab and click the <a href=\"{{ url_maps_new }}\">create your own map</a> link.</p>\n"
+"    <p>This will take you to the <a href=\"{{ url_maps_new }}\">Map Composer</a> with "
 "a base layer loaded.</p>\n"
 "    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
@@ -5579,7 +5772,7 @@ msgid ""
 "    </ol>\n"
 "    <p>This will put an interactive widget showing you map in your web page "
 "or blog post.</p>\n"
-"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"    <p>Note that the <a href=\"{{ url_maps_new }}\">Map Composer</a> also has a "
 "button to publish the map. Just be sure to save the map before publishing if "
 "there are changes that you want others to see. It publishes the last saved "
 "version, not the last viewed version.</p>\n"
@@ -5595,7 +5788,7 @@ msgid ""
 "      <li>Save the map.</li>\n"
 "    </ol>\n"
 "    <p>You will be able to see your new map when you search for it from the "
-"<a href=\"/maps\">Maps</a> tab.</p>\n"
+"<a href=\"{{ url_maps_browse }}\">Maps</a> tab.</p>\n"
 "    "
 msgstr ""
 
@@ -5644,11 +5837,15 @@ msgstr ""
 "mashirika na vyanzo vya umma. Pakua takwimu katika mfumo wenye viwango "
 "vinavyokubalika."
 
-msgid "Add layers"
-msgstr ""
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "kanzidata"
 
-msgid "Explore layers"
-msgstr ""
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
+msgstr "Peruzi matabaka"
 
 #, fuzzy
 #| msgid ""
@@ -6252,7 +6449,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "Matabaka"
 
 msgid "Maps found"
@@ -6294,6 +6491,11 @@ msgstr "Maarufu zaidi"
 
 msgid "Text"
 msgstr "Nakala"
+
+#, fuzzy
+#| msgid "feature type"
+msgid "Share This Dataset"
+msgstr "aina ya sura"
 
 msgid "Share This"
 msgstr ""
@@ -6480,6 +6682,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6560,6 +6766,48 @@ msgstr "Kibali batili."
 
 msgid "Permission Denied"
 msgstr "Kibali kimekataliwa"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "Jina la Tabaka"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "Kichwa cha tabaka"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "Tengeneza Ramani"
+
+#~ msgid "Download Layer"
+#~ msgstr "Pakua Tabaka"
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "Hariri Tabaka"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "Vibali"
+
+#~ msgid "Upload Layers"
+#~ msgstr "Pakia Matabaka"
+
+#~ msgid "Upload Layer"
+#~ msgstr "Pakia Tabaka"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Mafaili yakupakia"
+
+#~ msgid "Register a new Service"
+#~ msgstr "Sajili Huduma mpya"
 
 #, fuzzy
 #~| msgid "Set permissions"

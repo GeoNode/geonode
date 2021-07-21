@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -21,6 +20,6 @@ from geonode.api.urls import router
 
 from . import views
 
-router.register(r'layers', views.LayerViewSet, 'layers')
+router.register(r'datasets', views.LayerViewSet, 'datasets')
 
 urlpatterns = []

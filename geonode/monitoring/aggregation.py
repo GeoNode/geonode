@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -157,7 +156,7 @@ def calculate_rate(metric_name, metric_label,
     # this means counter was reset, don't want rates below 0
     if current_value < prev_val:
         return
-    rate = float((current_value - prev_val)) / interval.total_seconds()
+    rate = float(current_value - prev_val) / interval.total_seconds()
     return rate
 
 

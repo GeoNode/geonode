@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -24,9 +23,8 @@ from django.db.models import Prefetch
 from modeltranslation.admin import TabbedTranslationAdmin
 
 from geonode.base.admin import ResourceBaseAdminForm
-from geonode.base.admin import metadata_batch_edit, set_batch_permissions
 from geonode.layers.models import Layer, Attribute, Style
-from geonode.layers.models import LayerFile, UploadSession
+from geonode.base.admin import metadata_batch_edit, set_batch_permissions
 
 from geonode.base.fields import MultiThesauriField
 from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
@@ -70,7 +68,7 @@ class LayerAdmin(TabbedTranslationAdmin):
         'metadata_completeness')
     list_display_links = ('id',)
     list_editable = ('title', 'category', 'group', 'is_approved', 'is_published')
-    list_filter = ('storeType', 'owner', 'category', 'group',
+    list_filter = ('subtype', 'owner', 'category', 'group',
                    'restriction_code_type__identifier', 'date', 'date_type',
                    'is_approved', 'is_published')
     search_fields = ('alternate', 'title', 'abstract', 'purpose',
@@ -106,17 +104,6 @@ class StyleAdmin(admin.ModelAdmin):
     search_fields = ('name', 'workspace',)
 
 
-class LayerFileInline(admin.TabularInline):
-    model = LayerFile
-
-
-class UploadSessionAdmin(admin.ModelAdmin):
-    model = UploadSession
-    list_display = ('resource', 'date', 'user', 'processed')
-    inlines = [LayerFileInline]
-
-
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Style, StyleAdmin)
-admin.site.register(UploadSession, UploadSessionAdmin)

@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-
 from django.db import migrations, models
+from django.db.models.fields.json import JSONField
 from django.conf import settings
 
 
@@ -30,7 +29,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=255)),
                 ('description', models.CharField(max_length=255)),
-                ('user_threshold', models.JSONField(default={}, help_text='Threshold definition')),
+                ('user_threshold', JSONField(default=dict, help_text='Threshold definition')),
             ],
         ),
         migrations.AddField(

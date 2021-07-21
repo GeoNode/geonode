@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -76,14 +75,14 @@ class LayerSerializer(ResourceBaseSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
-        super(LayerSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = Layer
         name = 'layer'
-        view_name = 'layers-list'
+        view_name = 'datasets-list'
         fields = (
-            'pk', 'uuid', 'name', 'workspace', 'store', 'storeType', 'charset',
+            'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',
             'use_featureinfo_custom_template', 'featureinfo_custom_template',
             'default_style', 'styles', 'attribute_set'
@@ -92,10 +91,19 @@ class LayerSerializer(ResourceBaseSerializer):
     name = serializers.CharField(read_only=True)
     workspace = serializers.CharField(read_only=True)
     store = serializers.CharField(read_only=True)
-    storeType = serializers.CharField(read_only=True)
     charset = serializers.CharField(read_only=True)
 
     default_style = DynamicRelationField(StyleSerializer, embed=True, many=False, read_only=True)
     styles = DynamicRelationField(StyleSerializer, embed=True, many=True, read_only=True)
 
     attribute_set = DynamicRelationField(AttributeSerializer, embed=True, many=True, read_only=True)
+
+
+class LayerListSerializer(LayerSerializer):
+    class Meta(LayerSerializer.Meta):
+        fields = (
+            'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
+            'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',
+            'use_featureinfo_custom_template', 'featureinfo_custom_template',
+            'default_style', 'styles'
+        )

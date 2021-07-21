@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -80,7 +79,7 @@ class FavoriteManager(models.Manager):
         return favs
 
     def create_favorite(self, content_object, user):
-        if type(content_object) == ResourceBase:
+        if isinstance(content_object, ResourceBase):
             content_type = ContentType.objects.get(model=content_object.resource_type)
         else:
             content_type = ContentType.objects.get_for_model(type(content_object))

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -37,7 +36,7 @@ class RecentActivity(ListView):
     template_name = 'social/activity_list.html'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(RecentActivity, self).get_context_data(*args, **kwargs)
+        context = super().get_context_data(*args, **kwargs)
 
         def _filter_actions(action, request):
             if action == 'all':
@@ -95,6 +94,6 @@ class UserActivity(ListView):
                 if x and x.actor and x.actor.username == self.kwargs['actor']]
 
     def get_context_data(self, *args, **kwargs):
-        context = super(UserActivity, self).get_context_data(*args, **kwargs)
+        context = super().get_context_data(*args, **kwargs)
         context['actor'] = self.kwargs['actor']
         return context

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2021-03-11 16:40+0100\n"
 "Last-Translator: \n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -499,6 +499,13 @@ msgid "Thumbnail url"
 msgstr "Miniatúra adresy URL"
 
 #, fuzzy
+msgid "State"
+msgstr "Dirty State"
+
+msgid "Hold the resource processing state."
+msgstr ""
+
+#, fuzzy
 msgid "Dirty State"
 msgstr "Dirty State"
 
@@ -719,6 +726,14 @@ msgid ""
 msgstr ""
 "Ak chcete povoliť zmenu, v nastaveniach metadát nastavte zdroj na "
 "„Neschválené“ a napíšte správu vlastníkovi, aby ho upozornil"
+
+#, fuzzy
+msgid "Resource Cloned Successfully!"
+msgstr "Služba bola úspešne znova skenovaná"
+
+#, fuzzy, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
+msgstr "Pri pokuse o prístup k nahranej schéme sa vyskytla chyba: %s"
 
 #, fuzzy
 msgid "Resource Metadata"
@@ -1116,6 +1131,9 @@ msgstr "Rýchlostné hodnotenie"
 msgid "Link to"
 msgstr "Odkaz na"
 
+msgid "File"
+msgstr "Súbor"
+
 #, fuzzy
 msgid "Document must be a file or url."
 msgstr "Dokument musí byť súbor alebo webová adresa."
@@ -1131,9 +1149,6 @@ msgstr "Tento typ súboru nie je povolený"
 #, fuzzy
 msgid "Permissions must be valid JSON."
 msgstr "Povolenia musia byť platné súbory JSON."
-
-msgid "File"
-msgstr "Súbor"
 
 #, fuzzy
 msgid "The URL of the document if it is external."
@@ -1198,6 +1213,9 @@ msgid_plural "Documents"
 msgstr[0] "Document"
 msgstr[1] "Documents"
 msgstr[2] ""
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr "Vymeniť"
@@ -1644,6 +1662,10 @@ msgstr ""
 "a Dublin Core.\n"
 "        Niektoré z vašich pôvodných metadát mohli byť stratené."
 
+#, fuzzy
+msgid "Explore Apps"
+msgstr "Preskúmajte Mapy"
+
 #, fuzzy, python-format
 msgid ""
 "\n"
@@ -1653,6 +1675,10 @@ msgstr ""
 "\n"
 "        Úpravy podrobností pre% (map_title) s\n"
 "      "
+
+#, fuzzy
+msgid "Return to GeoApp"
+msgstr "Späť na mapu"
 
 #, fuzzy
 msgid "New Map"
@@ -1734,27 +1760,27 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-msgid "Layer name"
-msgstr "Názov vrstvy"
+msgid "Dataset name"
+msgstr "množina údajov"
 
 #, fuzzy
-msgid "Layer title"
-msgstr "Názov vrstvy"
+msgid "Dataset title"
+msgstr "Atribúty množiny údajov"
 
 #, fuzzy
 msgid "Geometry type"
 msgstr "Typ geometrie"
 
 #, fuzzy
-msgid "Create Layer"
-msgstr "Vytvorte vrstvu"
+msgid "Create Dataset"
+msgstr "Odporúčané súbory údajov"
 
 #, fuzzy
-msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "Preskúmajte vrstvy"
 
 #, fuzzy
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "Vytvorte prázdnu vrstvu"
 
 msgid "Add Attribute"
@@ -1788,6 +1814,10 @@ msgstr "Pri načítaní údajov do PostGIS nastala výnimka"
 #, fuzzy
 msgid " Additionally an error occured during database cleanup"
 msgstr " Počas čistenia databázy sa vyskytla chyba"
+
+#, fuzzy
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr "Neplatná projekcia. Na vrstve chýba CRS!"
 
 #, fuzzy
 msgid "GZIP"
@@ -1830,10 +1860,6 @@ msgstr "PDF"
 #, fuzzy
 msgid "PNG"
 msgstr "PNG"
-
-#, fuzzy
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr "Neplatná projekcia. Na vrstve chýba CRS!"
 
 #, fuzzy
 msgid "You don't have permissions to change style for this layer"
@@ -2099,6 +2125,116 @@ msgstr "Upraviť kategóriu skupiny"
 
 msgid "Save"
 msgstr "Uložiť"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+msgid "harvesting-resources"
+msgstr "Získavanie zdrojov ..."
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+msgid "Harvester name"
+msgstr "Zozbierané"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+#, fuzzy
+msgid "Default owner of harvested resources"
+msgstr "verzia citovaného zdroja"
+
+#, fuzzy
+msgid "Default access permissions of harvested resources"
+msgstr "Nastavte povolenia pre vybrané zdroje"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+#, fuzzy
+msgid "harvesting-resource"
+msgstr "Získavanie zdrojov ..."
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, fuzzy, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2414,11 +2550,11 @@ msgid "date when attribute statistics were last updated"
 msgstr "dátum poslednej aktualizácie štatistík atribútov"
 
 #, fuzzy
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "Vráťte sa do vrstvy"
 
 #, fuzzy
-msgid "Return to Layer"
+msgid "Return to Dataset"
 msgstr "Vráťte sa do vrstvy"
 
 #, fuzzy
@@ -2441,7 +2577,7 @@ msgid "Assign a new point of contact to the layers below:"
 msgstr "Priraďte nový kontaktný bod vrstvám uvedeným nižšie:"
 
 #, fuzzy
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr "Vrstvový dokument WMS GetCapabilities"
 
 #, fuzzy
@@ -2508,7 +2644,7 @@ msgid "Standard Deviation"
 msgstr "Štandardná odchýlka"
 
 #, fuzzy
-msgid "Rate this layer"
+msgid "Rate this dataset"
 msgstr "Ohodnoťte túto vrstvu"
 
 #, fuzzy
@@ -2516,8 +2652,8 @@ msgid "Analyze with"
 msgstr "Analyzujte s"
 
 #, fuzzy
-msgid "Download Layer"
-msgstr "Stiahnite si vrstvu"
+msgid "Download Dataset"
+msgstr "Stiahnite si"
 
 msgid "Images"
 msgstr "Obrázky"
@@ -2605,8 +2741,9 @@ msgstr ""
 msgid "Edit data"
 msgstr "Upraviť údaje"
 
-msgid "View Layer"
-msgstr "Zobraziť vrstvy"
+#, fuzzy
+msgid "View Dataset"
+msgstr "Zobraziť metadáta"
 
 #, fuzzy
 msgid "Attribute Information"
@@ -2620,32 +2757,32 @@ msgid "Legend"
 msgstr "Vysvetlivky"
 
 #, fuzzy
-msgid "Maps using this layer"
+msgid "Maps using this dataset"
 msgstr "Mapy používajúce túto vrstvu"
 
 #, fuzzy
-msgid "List of maps using this layer:"
+msgid "List of maps using this dataset:"
 msgstr "Zoznam máp využívajúcich túto vrstvu:"
 
 #, fuzzy
-msgid "This layer is not currently used in any maps."
+msgid "This dataset is not currently used in any maps."
 msgstr "Táto vrstva sa momentálne nepoužíva na žiadnych mapách."
 
 #, fuzzy
-msgid "Create a map using this layer"
+msgid "Create a map using this dataset"
 msgstr "Vytvorte mapu pomocou tejto vrstvy"
 
 #, fuzzy
-msgid "Click the button below to generate a new map based on this layer."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr ""
 "Kliknutím na tlačidlo nižšie vygenerujete novú mapu na základe tejto vrstvy."
 
 #, fuzzy
-msgid "Add the layer to an existing map"
+msgid "Add the dataset to an existing map"
 msgstr "Pridajte vrstvu na existujúcu mapu"
 
 #, fuzzy
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr "Kliknutím na tlačidlo nižšie pridáte vrstvu na vybranú mapu."
 
 #, fuzzy
@@ -2690,7 +2827,7 @@ msgstr "Obnovte atribúty a štatistiku tejto vrstvy"
 #, fuzzy
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 "Kliknutím na tlačidlo nižšie povolíte GeoNode obnovenie zoznamu dostupných "
@@ -2712,7 +2849,7 @@ msgstr ""
 "vrstvy."
 
 #, fuzzy
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr "Prázdna medzipamäť kachľovej vrstvy"
 
 #, fuzzy
@@ -2720,15 +2857,8 @@ msgid "Click the button below to change the permissions of this layer."
 msgstr "Kliknutím na tlačidlo nižšie zmeníte povolenia tejto vrstvy."
 
 #, fuzzy
-msgid "Change Layer Permissions"
+msgid "Change Dataset Permissions"
 msgstr "Zmena povolení vrstvy"
-
-msgid "Processing..."
-msgstr "Spracováva sa..."
-
-#, fuzzy
-msgid "Updating Permissions..."
-msgstr "Aktualizujú sa povolenia ..."
 
 #, fuzzy
 msgid "Remove Mosaic Granules"
@@ -2753,8 +2883,8 @@ msgid "No maps are using this layer"
 msgstr "Túto vrstvu nepoužívajú žiadne mapy"
 
 #, fuzzy
-msgid "Upload Layers"
-msgstr "Odovzdajte vrstvy"
+msgid "Upload Datasets"
+msgstr "Odovzdajte metadáta"
 
 #, fuzzy, python-format
 msgid "for %(layer_title)s"
@@ -2814,7 +2944,7 @@ msgid "Following items are required:"
 msgstr ""
 
 #, fuzzy
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "Nahrajte metadáta vrstvy"
 
 #, fuzzy
@@ -2822,7 +2952,7 @@ msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 
 #, fuzzy
-msgid "Remove Layers"
+msgid "Remove Datasets"
 msgstr "Odstrániť vrstvy"
 
 #, fuzzy, python-format
@@ -2836,7 +2966,7 @@ msgstr ""
 "(layer_title) s</a> ?"
 
 #, fuzzy
-msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "Vymeňte vrstvu"
 
 #, fuzzy
@@ -2846,15 +2976,15 @@ msgstr "Spravujte štýly"
 #, fuzzy, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"      Manage Available Styles for <a href=\"{{ layer_url }}\">"
 "%(layer_title)s</a>\n"
 "    "
 msgstr ""
-"Spravujte dostupné štýly pre <a href=\"/layers/%(layer_title)s\">% "
+"Spravujte dostupné štýly pre <a href=\"{{ layer_url }}\">% "
 "(layer_title) s</a>"
 
 #, fuzzy
-msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr "Predvolený štýl vrstvy"
 
 #, fuzzy
@@ -2874,7 +3004,11 @@ msgid "Update Available Styles"
 msgstr "Aktualizujte dostupné štýly"
 
 #, fuzzy
-msgid "Upload Layer Style"
+msgid "Return to Layer"
+msgstr "Vráťte sa do vrstvy"
+
+#, fuzzy
+msgid "Upload Dataset Style"
 msgstr "Odovzdajte štýl vrstvy"
 
 #, fuzzy
@@ -2896,8 +3030,8 @@ msgid "Dataset Attributes"
 msgstr "Atribúty množiny údajov"
 
 #, fuzzy
-msgid "Upload Layer"
-msgstr "Odovzdať vrstvu"
+msgid "Upload Dataset"
+msgstr "Odovzdajte metadáta"
 
 #, fuzzy
 msgid "Upload status"
@@ -2944,7 +3078,7 @@ msgid "Are you sure you want to remove this incomplete upload?"
 msgstr "Naozaj chcete odstrániť toto nahrávanie?"
 
 #, fuzzy
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "Krok odovzdania vrstvy: Nastavte SRS"
 
 #, fuzzy
@@ -2958,9 +3092,9 @@ msgstr "Súradnicový referenčný systém"
 #, fuzzy
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -3253,7 +3387,7 @@ msgstr ""
 "                        "
 
 #, fuzzy
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr "Krok odovzdania vrstvy: Mapovanie poľa CSV"
 
 #, fuzzy
@@ -3308,7 +3442,7 @@ msgid "Upload Form"
 msgstr "Nahrať formulár"
 
 #, fuzzy
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "Nahrajte krok vrstvy: čas"
 
 #, fuzzy
@@ -3449,11 +3583,11 @@ msgstr "Aktivačný čas"
 
 #, fuzzy
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3562,26 +3696,17 @@ msgstr " Alebo jednoducho choď"
 msgid "now"
 msgstr "teraz"
 
-#, fuzzy
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr "Pokúšate sa nahradiť vektorovú vrstvu neznámym formátom."
-
-#, fuzzy
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
-msgstr "Identifikátor UUID z metaúdajov XML sa v tomto systéme už používa."
-
 #, fuzzy, python-brace-format
-msgid "You are attempting to {action_type} a vector layer with a raster."
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr "Pokúšate sa nahradiť vektorovú vrstvu rastrom."
 
 #, fuzzy, python-brace-format
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr "Pokúšate sa nahradiť rastrovú vrstvu vektorom."
 
 #, fuzzy, python-brace-format
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr "Pokúšate sa nahradiť vektorovú vrstvu neznámym formátom."
 
 #, fuzzy, python-brace-format
@@ -3592,7 +3717,7 @@ msgstr ""
 "Skontrolujte, či je názov v súlade so súborom, ktorý sa pokúšate nahradiť."
 
 #, fuzzy
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr "Lokálna vrstva GeoNode nemá žiadny typ geometrie."
 
 #, fuzzy, python-brace-format
@@ -3604,10 +3729,10 @@ msgstr ""
 "Uistite sa, že existuje aspoň jeden typ geometrie, ktorý je v súlade so "
 "súborom, ktorý sa pokúšate nahradiť."
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 #, fuzzy
@@ -3625,48 +3750,36 @@ msgstr ""
 
 #, fuzzy
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
 "Poznámka: Originálne metadáta tejto vrstvy boli vyplnené a konzervované "
 "importom súboru XML metadát. Tieto metadáta nie je možné upraviť."
 
 #, fuzzy
-msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
 msgstr "Túto vrstvu nemáte oprávnenie mazať"
 
 #, fuzzy
-msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
 msgstr "Pre túto vrstvu nemáte oprávnenie."
 
 #, fuzzy
-msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
 msgstr "Túto vrstvu nemôžete upravovať"
 
 #, fuzzy
-msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
 msgstr "Nie ste oprávnení upravovať metadáta tejto vrstvy"
 
 #, fuzzy
-msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
 msgstr "Nemáte povolenie na zobrazenie tejto vrstvy"
 
 #, fuzzy
-msgid "Failed to upload the layer"
-msgstr "Nepodarilo sa nahrať vrstvu"
-
-#, fuzzy
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr "Pokúšate sa nahradiť vektorovú vrstvu rastrom."
-
-#, fuzzy
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr "Pokúšate sa nahradiť rastrovú vrstvu vektorom."
-
-#, fuzzy
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 "Táto vrstva je členom skupiny vrstiev. Pred odstránením musíte vrstvu zo "
 "skupiny odstrániť."
@@ -4657,6 +4770,16 @@ msgid "Not Authorized"
 msgstr "Neautorizované"
 
 #, fuzzy
+msgid "GeoNode Resource Processing Library"
+msgstr "Knižnica motívov GeoNode"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
+#, fuzzy
 msgid "Session is Expired. Please login again!"
 msgstr "Platnosť relácie vypršala. Prihláste sa znova!"
 
@@ -4837,8 +4960,8 @@ msgid "Services"
 msgstr "Služby"
 
 #, fuzzy
-msgid "Register a new Service"
-msgstr "Zaregistrujte si novú službu"
+msgid "Add Remote Service"
+msgstr "Pridajte vzdialenú službu"
 
 #, fuzzy
 msgid "Remote Services"
@@ -4944,6 +5067,10 @@ msgid "Service rescanned successfully"
 msgstr "Služba bola úspešne znova skenovaná"
 
 #, fuzzy
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "Nemáte oprávnenie ukladať alebo upravovať tento zdroj."
+
+#, fuzzy
 msgid "You are not permitted to change this service."
 msgstr "Nemáte oprávnenie meniť túto službu."
 
@@ -5025,6 +5152,10 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr "Prepnúť navigáciu"
 
+#, fuzzy
+msgid "Datasets"
+msgstr "množina údajov"
+
 msgid "People"
 msgstr "Ľudia"
 
@@ -5070,8 +5201,9 @@ msgstr ""
 "GeoNode</a>"
 
 #, fuzzy
-msgid "Add Remote Service"
-msgstr "Pridajte vzdialenú službu"
+#| msgid "Create a new layer"
+msgid "Create a new dataset"
+msgstr "Vytvorte novú vrstvu"
 
 #, fuzzy
 msgid "Create Map"
@@ -5180,11 +5312,11 @@ msgid "Who can change metadata for it?"
 msgstr "Kto za to môže zmeniť metadáta?"
 
 #, fuzzy
-msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr "Kto môže upravovať údaje pre túto vrstvu?"
 
 #, fuzzy
-msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr "Kto môže upravovať štýly pre túto vrstvu?"
 
 #, fuzzy
@@ -5912,6 +6044,9 @@ msgstr "Nahrávam..."
 msgid "Upload in progress..."
 msgstr "Prebieha nahrávanie ..."
 
+msgid "Processing..."
+msgstr "Spracováva sa..."
+
 #, fuzzy
 msgid "Updating Thumbnail..."
 msgstr "Aktualizuje sa miniatúra ..."
@@ -5919,6 +6054,10 @@ msgstr "Aktualizuje sa miniatúra ..."
 #, fuzzy
 msgid "Message. Do you want to proceed?"
 msgstr "Správa. Chcete pokračovať?"
+
+#, fuzzy
+msgid "Processing Resource..."
+msgstr "Získavanie zdrojov ..."
 
 #, fuzzy
 msgid "Information for Developers"
@@ -6004,8 +6143,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -6158,13 +6297,13 @@ msgid ""
 "p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <p>The <a href=\"{{ url_layer_browse }}\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
 "    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
 "    <h4 id=\"developer-access\">Developer Access</h4>\n"
-"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <p>The <a href=\"{{ url_developer }}\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
@@ -6173,9 +6312,9 @@ msgid ""
 "    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
 "    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"{{ url_maps_browse }}\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"<strong>create a map</strong>, which will open the <a href=\"{{ url_maps_new }}\">Map "
 "Composer</a>.</p>\n"
 "    <h5>Google Earth Mode</h5>\n"
 "    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
@@ -6184,9 +6323,9 @@ msgid ""
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
-"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"    <p>To create a new map go to the <a href=\"{{ url_maps_browse }}\">Contributed Maps</a> "
+"tab and click the <a href=\"{{ url_maps_new }}\">create your own map</a> link.</p>\n"
+"    <p>This will take you to the <a href=\"{{ url_maps_new }}\">Map Composer</a> with "
 "a base layer loaded.</p>\n"
 "    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
@@ -6220,7 +6359,7 @@ msgid ""
 "    </ol>\n"
 "    <p>This will put an interactive widget showing you map in your web page "
 "or blog post.</p>\n"
-"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"    <p>Note that the <a href=\"{{ url_maps_new }}\">Map Composer</a> also has a "
 "button to publish the map. Just be sure to save the map before publishing if "
 "there are changes that you want others to see. It publishes the last saved "
 "version, not the last viewed version.</p>\n"
@@ -6236,16 +6375,16 @@ msgid ""
 "      <li>Save the map.</li>\n"
 "    </ol>\n"
 "    <p>You will be able to see your new map when you search for it from the "
-"<a href=\"/maps\">Maps</a> tab.</p>\n"
+"<a href=\"{{ url_maps_browse }}\">Maps</a> tab.</p>\n"
 "    "
 msgstr ""
 "<p>GeoNode poskytuje prístup k súborom údajov a aplikácia na úpravu máp "
 "umožňuje používateľom prehľadávať existujúce mapy a prispievať svojimi "
 "vlastnými.</p><h4 id=\"browsing-data\"> Prechádzanie vrstiev</h4><p> Karta "
-"<a href=\"/layers\">Vrstvy</a> umožňuje prechádzať údaje nahrané do tohto "
+"<a href=\"{{ url_layer_browse }}\">Vrstvy</a> umožňuje prechádzať údaje nahrané do tohto "
 "GeoNode.</p><p> Všetky údaje je možné stiahnuť v rôznych formátoch na "
 "použitie v iných aplikáciách.</p><h4 id=\"developer-access\"> Prístup pre "
-"vývojárov</h4><p> Stránka <a href=\"/developer\">pre vývojárov</a> je "
+"vývojárov</h4><p> Stránka <a href=\"{{ url_developer }}\">pre vývojárov</a> je "
 "miestom, kde môžu vývojári začať so zostavovaním aplikácií proti GeoNode. "
 "Zahŕňa pokyny na používanie webových služieb, odkazy na zdrojový kód GeoNode "
 "a informácie o projektoch otvoreného zdroja použitých na ich vytvorenie.</"
@@ -6253,14 +6392,14 @@ msgstr ""
 "používateľom vytvárať a zdieľať mapy navzájom.</p><p> Karta <a href=\"/maps"
 "\">Mapy</a> je bránou k prieskumu máp na GeoNode. Odtiaľto môžete "
 "<strong>vyhľadať mapu</strong> alebo <strong>vytvoriť mapu</strong> , ktorá "
-"otvorí aplikáciu <a href=\"/maps/new\">Map Composer</a> .</p><h5> Režim "
+"otvorí aplikáciu <a href=\"{{ url_maps_new }}\">Map Composer</a> .</p><h5> Režim "
 "Google Earth</h5><p> Akákoľvek mapa zobrazená v interaktívnom editore máp je "
 "viditeľná v 3D režime s doplnkom Google Earth. Ak chcete prepnúť do režimu "
 "3D, vyberte logo zemegule Google Earth, tlačidlo úplne vpravo na hornom "
 "paneli nástrojov. Ak nemáte nainštalovaný doplnok Google Earth, zobrazí sa "
 "výzva na jeho inštaláciu.</p><h4 id=\"creating-a-map\"> Vytvorenie mapy</"
-"h4><p> Ak chcete vytvoriť novú mapu, prejdite na <a href=\"/maps\">kartu "
-"Prispievané mapy</a> a kliknite na odkaz <a href=\"/maps/new\">na vytvorenie "
+"h4><p> Ak chcete vytvoriť novú mapu, prejdite na <a href=\"{{ url_maps_browse }}\">kartu "
+"Prispievané mapy</a> a kliknite na odkaz <a href=\"{{ url_maps_new }}\">na vytvorenie "
 "vlastnej mapy.</a></p><p> Dostanete sa do aplikácie <a href=\"/maps/new"
 "\">Map Composer</a> s načítanou základnou vrstvou.</p><p> Ak chcete pridať "
 "dátové vrstvy z GeoNode, kliknite na zelené tlačidlo plus umiestnené pod "
@@ -6285,7 +6424,7 @@ msgstr ""
 "Skopírujte útržok HTML uvedený v sprievodcovi na ľubovoľnú stránku HTML "
 "alebo blogový príspevok podporujúci iFrame.</li></ol><p> Takto vložíte na "
 "svoju webovú stránku alebo do blogového príspevku interaktívny widget "
-"zobrazujúci mapu.</p><p> Upozorňujeme, že program <a href=\"/maps/new\">Map "
+"zobrazujúci mapu.</p><p> Upozorňujeme, že program <a href=\"{{ url_maps_new }}\">Map "
 "Composer</a> má tiež tlačidlo na zverejnenie mapy. Nezabudnite pred "
 "zverejnením mapu uložiť, ak existujú zmeny, ktoré chcete vidieť. Zverejňuje "
 "poslednú uloženú verziu, nie poslednú zobrazenú verziu.</p><h4 id=\"remixing-"
@@ -6295,7 +6434,7 @@ msgstr ""
 "Posunutím a zväčšením zvýraznite oblasť záujmu.</li><li> <strong>DÔLEŽITÉ:</"
 "strong> Aktualizujte názov, abstrakt, kontaktné informácie a značky tak, aby "
 "odrážali novú mapu.</li><li> Uložiť mapu.</li></ol><p> Keď budete hľadať "
-"svoju novú mapu na karte <a href=\"/maps\">Mapy, uvidíte ju.</a></p>"
+"svoju novú mapu na karte <a href=\"{{ url_maps_browse }}\">Mapy, uvidíte ju.</a></p>"
 
 msgid "Sections"
 msgstr "Sekcie"
@@ -6348,11 +6487,11 @@ msgstr ""
 "formátoch."
 
 #, fuzzy
-msgid "Add layers"
-msgstr "Pridajte vrstvy"
+msgid "Add datasets"
+msgstr "množina údajov"
 
 #, fuzzy
-msgid "Explore layers"
+msgid "Explore datasetss"
 msgstr "Preskúmajte vrstvy"
 
 #, fuzzy
@@ -6949,7 +7088,7 @@ msgid "Filters"
 msgstr "Filtre"
 
 #, fuzzy
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "Boli nájdené vrstvy"
 
 #, fuzzy
@@ -6992,6 +7131,11 @@ msgstr "Najpopulárnejšie"
 
 msgid "Text"
 msgstr "Text"
+
+#, fuzzy
+#| msgid "Share This"
+msgid "Share This Dataset"
+msgstr "分享"
 
 msgid "Share This"
 msgstr "分享"
@@ -7193,6 +7337,11 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+#, fuzzy
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr "Identifikátor UUID z metaúdajov XML sa v tomto systéme už používa."
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -7288,6 +7437,65 @@ msgstr "Neplatná úroveň povolenia."
 
 msgid "Permission Denied"
 msgstr "Povolenie bolo odmietnuté"
+
+#, fuzzy
+#~ msgid "Layer name"
+#~ msgstr "Názov vrstvy"
+
+#, fuzzy
+#~ msgid "Layer title"
+#~ msgstr "Názov vrstvy"
+
+#, fuzzy
+#~ msgid "Create Layer"
+#~ msgstr "Vytvorte vrstvu"
+
+#, fuzzy
+#~ msgid "Download Layer"
+#~ msgstr "Stiahnite si vrstvu"
+
+#~ msgid "View Layer"
+#~ msgstr "Zobraziť vrstvy"
+
+#, fuzzy
+#~ msgid "Updating Permissions..."
+#~ msgstr "Aktualizujú sa povolenia ..."
+
+#, fuzzy
+#~ msgid "Upload Layers"
+#~ msgstr "Odovzdajte vrstvy"
+
+#, fuzzy
+#~ msgid "Upload Layer"
+#~ msgstr "Odovzdať vrstvu"
+
+#, fuzzy
+#~ msgid "You are attempting to replace a vector layer with an unknown format."
+#~ msgstr "Pokúšate sa nahradiť vektorovú vrstvu neznámym formátom."
+
+#, fuzzy
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Nepodarilo sa nahrať vrstvu"
+
+#, fuzzy
+#~ msgid "You are attempting to replace a vector layer with a raster."
+#~ msgstr "Pokúšate sa nahradiť vektorovú vrstvu rastrom."
+
+#, fuzzy
+#~ msgid "You are attempting to replace a raster layer with a vector."
+#~ msgstr "Pokúšate sa nahradiť rastrovú vrstvu vektorom."
+
+#, fuzzy
+#~ msgid "Register a new Service"
+#~ msgstr "Zaregistrujte si novú službu"
+
+#, fuzzy
+#~ msgid "Add layers"
+#~ msgstr "Pridajte vrstvy"
+
+#, fuzzy
+#~ msgid "Explore layers"
+#~ msgstr "Preskúmajte vrstvy"
 
 #, fuzzy
 #~ msgid "Layer not ready yet. Still finalizing layer ingestion..."

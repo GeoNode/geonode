@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -70,7 +69,7 @@ class Client(DjangoTestClient):
     """client for making http requests"""
 
     def __init__(self, url, user, passwd, *args, **kwargs):
-        super(Client, self).__init__(*args)
+        super().__init__(*args)
 
         self.url = url
         self.user = user

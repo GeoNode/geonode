@@ -8,14 +8,14 @@
 
 {% block body %}
   <div class="page-header">
-    {% if user.is_authenticated and not READ_ONLY_MODE %}
+    {% if "add_resource" in user.perms %}
       <a href="{% url "document_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Documents" %}</a>
     {% endif %}
     <h2>{% trans "Explore Documents" %}</h2>
   </div>
   {% with include_type_filter='true' %}
     {% with header='Document Type' %}
-      {% with filter='doc_type__in' %}
+      {% with filter='subtype__in' %}
         {% include "search/_search_content.html" %}
       {% endwith %}
     {% endwith %}

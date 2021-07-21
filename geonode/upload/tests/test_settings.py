@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -162,7 +161,6 @@ OGC_SERVER = {
 
 # If you want to enable Mosaics use the following configuration
 UPLOADER = {
-    # 'BACKEND': 'geonode.rest',
     'BACKEND': 'geonode.importer',
     'OPTIONS': {
         'TIME_ENABLED': True,

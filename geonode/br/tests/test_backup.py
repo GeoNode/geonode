@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -19,7 +18,7 @@
 #########################################################################
 
 import os
-import mock
+from unittest import mock
 import tempfile
 
 from django.core.management import call_command

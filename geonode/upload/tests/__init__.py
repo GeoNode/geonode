@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -20,13 +19,12 @@
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import contextlib
 import os
-import shutil
-import tempfile
 import zipfile
-import geonode.upload.files as files
+import tempfile
+import contextlib
 
+import geonode.upload.files as files
 from geonode.upload.files import SpatialFiles, scan_file
 from geonode.upload.files import _rename_files, _contains_bad_names
 
@@ -43,7 +41,7 @@ def create_files(names, zipped=False):
         else:
             try:
                 open(f, 'wb').close()
-            except IOError:
+            except OSError:
                 # windows fails at writing special characters
                 # need to do something better here
                 print("Test does not work in Windows")
@@ -58,7 +56,6 @@ def create_files(names, zipped=False):
             os.unlink(f)
         names = [basefile]
     yield names
-    shutil.rmtree(tmpdir)
 
 
 class FilesTests(GeoNodeBaseTestSupport):
@@ -78,7 +75,7 @@ class FilesTests(GeoNodeBaseTestSupport):
             try:
                 renamed = files._rename_files(tests)
                 self.assertTrue(renamed[0].endswith("junk_y_"))
-            except WindowsError:
+            except OSError:
                 pass
 
     def test_rename_and_prepare(self):

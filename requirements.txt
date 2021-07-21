@@ -1,8 +1,8 @@
 # native dependencies
-Pillow==8.2.0
+Pillow==8.3.1
 lxml==4.6.3
-psycopg2==2.8.6
-Django==3.2
+psycopg2==2.9.1
+Django==3.2.4
 
 # Other
 amqp==5.0.6
@@ -10,25 +10,26 @@ beautifulsoup4==4.9.3
 httplib2<0.19.2
 hyperlink==21.0.0
 idna>=2.5,<2.11
-urllib3==1.26.5
+urllib3==1.26.6
 Paver==1.3.4
 python-slugify==5.0.2
 decorator==5.0.9
-celery==5.1.0
+celery==5.1.2
 kombu==5.1.0
 vine==5.0.0
-boto3==1.17.92
-tqdm==4.61.1
+tqdm==4.61.2
 Deprecated==1.2.12
 wrapt==1.12.1
 jsonschema==3.2.0
 
 # Django Apps
-django-allauth==0.44.0
+django-allauth==0.45.0
 django-appconf==1.0.4
+django-celery-beat==2.2.1
+django-celery-results==2.2.0
 django-filter==2.4.0
 django-imagekit==4.0.2
-django-taggit==1.4.0
+django-taggit==1.5.1
 django-markdownify==0.9.0
 django-mptt==0.12.0
 django-modeltranslation>=0.11,<0.18.0
@@ -41,6 +42,7 @@ django-tinymce==3.3.0
 django-grappelli==2.15.1
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.8
+django-sequences==2.6
 oauthlib==3.1.1
 pyopenssl==20.0.1
 
@@ -48,11 +50,11 @@ pyopenssl==20.0.1
 pyproj==3.1.0
 OWSLib==0.24.1
 pycsw==2.6.0
-SQLAlchemy==1.4.18 # required by PyCSW
+SQLAlchemy==1.4.20 # required by PyCSW
 Shapely==1.7.1
 mercantile==1.2.1
 geoip2==4.2.0
-numpy==1.19.*
+numpy==1.21.*
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
@@ -66,12 +68,12 @@ django-invitations<1.9.4
 django-recaptcha==2.0.6
 
 # REST
-djangorestframework==3.11.2
+djangorestframework<3.12.0,>=3.8.0
 djangorestframework-gis==0.17
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.0
 drf-writable-nested==0.6.3
-drf-spectacular==0.17.1
+drf-spectacular==0.17.2
 git+https://github.com/GeoNode/dynamic-rest.git@v2.0.1#egg=dynamic-rest
 Markdown==3.3.4
 
@@ -79,7 +81,7 @@ pinax-notifications==6.0.0
 pinax-ratings==4.0.0
 
 # GeoNode org maintained apps.
-# django-geonode-mapstore-client>=2.1.1
+# django-geonode-mapstore-client>=4.0.0
 -e git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
 geonode-avatar==5.0.7
 geonode-oauth-toolkit==2.2.1
@@ -89,7 +91,7 @@ geonode-django-activity-stream==0.10.0
 gn-arcrest==10.5.4
 geonode-dialogos==3.0.1
 geoserver-restconfig==2.0.4.9
-gn-gsimporter==2.0.1
+gn-gsimporter>=2.0.2
 gisdata==0.5.4
 
 # haystack/elasticsearch
@@ -99,8 +101,12 @@ elasticsearch>=2.0.0,<8.0.0
 # datetimepicker widget
 django-bootstrap3-datetimepicker-2==2.8.2
 
-# AWS S3 dependencies
+# storage manager dependencies
 django-storages==1.11.1
+dropbox==11.13.2
+google-cloud-storage==1.40.0
+google-cloud-core==1.7.1
+boto3==1.17.110
 
 # Django Caches
 python-memcached<=1.59
@@ -127,21 +133,21 @@ pycountry
 # production
 uWSGI==2.0.19.1
 gunicorn==20.1.0
-ipython==7.24.1
+ipython==7.25.0
 docker==4.4.4
-invoke==1.5.0
+invoke==1.6.0
 
 # tests
 coverage==5.5
 requests-toolbelt==0.9.1
 flake8==3.9.2
 pytest==6.2.4
-pytest-bdd==4.0.2
-splinter==0.14.0
+pytest-bdd==4.1.0
+splinter==0.15.0
 pytest-splinter==3.3.1
 pytest-django==4.4.0
-setuptools==57.0.0
-pip==21.1.2
+setuptools==57.1.0
+pip==21.1.3
 Twisted==21.2.0
 pixelmatch==0.2.3
 factory-boy==3.2.0

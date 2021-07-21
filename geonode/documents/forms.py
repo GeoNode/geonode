@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -24,25 +23,25 @@ import re
 import json
 import logging
 
-from django import forms
-from django.utils.translation import ugettext as _
-from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
-from django.forms import HiddenInput
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.documents.models import (
-    Document,
-    DocumentResourceLink,
-    get_related_resources,
-)
+from django import forms
+from django.conf import settings
+from django.forms import HiddenInput
+from django.utils.translation import ugettext as _
+from django.contrib.contenttypes.models import ContentType
+
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
+from geonode.resource.utils import get_related_resources
+from geonode.documents.models import (
+    Document,
+    DocumentResourceLink)
 
 logger = logging.getLogger(__name__)
 
 
-class DocumentFormMixin(object):
+class DocumentFormMixin:
 
     def generate_link_choices(self, resources=None):
 
@@ -86,12 +85,14 @@ class DocumentFormMixin(object):
 
 class DocumentForm(ResourceBaseForm, DocumentFormMixin):
 
+    title = forms.CharField(required=False)
+
     links = forms.MultipleChoiceField(
         label=_("Link to"),
         required=False)
 
     def __init__(self, *args, **kwargs):
-        super(DocumentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['links'].choices = self.generate_link_choices()
         self.fields['links'].initial = self.generate_link_values(
             resources=get_related_resources(self.instance)
@@ -118,7 +119,7 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
             'object_id',
             'doc_file',
             'extension',
-            'doc_type',
+            'subtype',
             'doc_url')
 
 
@@ -130,19 +131,28 @@ class DocumentDescriptionForm(forms.Form):
 
 class DocumentReplaceForm(forms.ModelForm):
 
+    doc_file = forms.FileField(
+        label=_("File"),
+        required=False)
+
+    files = forms.CharField(
+        label=_("File"),
+        required=False)
+
     """
     The form used to replace a document.
     """
 
     class Meta:
         model = Document
-        fields = ['doc_file', 'doc_url']
+        fields = ['doc_url']
+        exclude = ['files']
 
     def clean(self):
         """
         Ensures the doc_file or the doc_url field is populated.
         """
-        cleaned_data = super(DocumentReplaceForm, self).clean()
+        cleaned_data = super().clean()
         doc_file = self.cleaned_data.get('doc_file')
         doc_url = self.cleaned_data.get('doc_url')
 
@@ -155,7 +165,7 @@ class DocumentReplaceForm(forms.ModelForm):
 
         return cleaned_data
 
-    def clean_doc_file(self):
+    def clean_files(self):
         """
         Ensures the doc_file is valid.
         """
@@ -185,6 +195,10 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         label=_("Link to"),
         required=False)
 
+    doc_file = forms.FileField(
+        label=_("File"),
+        required=False)
+
     class Meta:
         model = Document
         fields = ['title', 'doc_file', 'doc_url']
@@ -193,7 +207,7 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         }
 
     def __init__(self, *args, **kwargs):
-        super(DocumentCreateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['links'].choices = self.generate_link_choices()
 
     def clean_permissions(self):
@@ -211,16 +225,16 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         """
         Ensures the doc_file or the doc_url field is populated.
         """
-        cleaned_data = super(DocumentCreateForm, self).clean()
+        cleaned_data = super().clean()
         doc_file = self.cleaned_data.get('doc_file')
         doc_url = self.cleaned_data.get('doc_url')
 
         if not doc_file and not doc_url:
-            logger.debug("Document must be a file or url.")
+            logger.error("Document must be a file or url.")
             raise forms.ValidationError(_("Document must be a file or url."))
 
         if doc_file and doc_url:
-            logger.debug("A document cannot have both a file and a url.")
+            logger.error("A document cannot have both a file and a url.")
             raise forms.ValidationError(
                 _("A document cannot have both a file and a url."))
 

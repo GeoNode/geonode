@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -32,21 +31,22 @@ from owslib.etree import etree as dlxml
 
 from django.conf import settings
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
+from django.http import HttpResponse, HttpResponseRedirect
 
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 
 from geonode.upload import UploadException
 from geonode.utils import json_response as do_json_response, unzip_file
-from geonode.geoserver.helpers import (gs_catalog,
-                                       gs_uploader,
-                                       ogc_server_settings,
-                                       get_store,
-                                       set_time_dimension,
-                                       create_geoserver_db_featurestore)  # mosaic_delete_first_granule
-from geonode.base.models import HierarchicalKeyword, ThesaurusKeyword
+from geonode.geoserver.helpers import (
+    gs_catalog,
+    gs_uploader,
+    ogc_server_settings,
+    get_store,
+    set_time_dimension,
+    create_geoserver_db_featurestore)  # mosaic_delete_first_granule
+
 ogr.UseExceptions()
 
 logger = logging.getLogger(__name__)
@@ -121,7 +121,7 @@ class JSONResponse(HttpResponse):
         if json_opts is None:
             json_opts = {}
         content = json.dumps(obj, **json_opts)
-        super(JSONResponse, self).__init__(
+        super().__init__(
             content, content_type, *args, **kwargs)
 
 
@@ -222,8 +222,8 @@ _pages = {
     'sid': ('run', 'final'),  # MrSID
 }
 
-_latitude_names = set(['latitude', 'lat'])
-_longitude_names = set(['longitude', 'lon', 'lng', 'long'])
+_latitude_names = {'latitude', 'lat'}
+_longitude_names = {'longitude', 'lon', 'lng', 'long'}
 
 
 if not _ALLOW_TIME_STEP:
@@ -305,46 +305,47 @@ def next_step_response(req, upload_session, force_ajax=True):
         )
 
     if next == 'check':
-        # @TODO we skip time steps for coverages currently
         store_type = import_session.tasks[0].target.store_type
         if store_type == 'coverageStore' or _force_ajax:
+            # @TODO we skip time steps for coverages currently
             upload_session.completed_step = 'check'
             return next_step_response(req, upload_session, force_ajax=True)
-    if next == 'check' and force_ajax:
-        url = f"{reverse('data_upload')}?id={import_session.id}"
-        return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
-             }
-        )
+        if force_ajax:
+            url = f"{reverse('data_upload')}?id={import_session.id}"
+            return json_response(
+                {'url': url,
+                 'status': 'incomplete',
+                 'success': True,
+                 'id': import_session.id,
+                 'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
+                 }
+            )
 
     if next == 'time':
-        # @TODO we skip time steps for coverages currently
         store_type = import_session.tasks[0].target.store_type
         layer = import_session.tasks[0].layer
-        (has_time_dim, layer_values) = layer_eligible_for_time_dimension(req,
-                                                                         layer,
-                                                                         upload_session=upload_session)
+        (has_time_dim, layer_values) = layer_eligible_for_time_dimension(
+            req,
+            layer,
+            upload_session=upload_session)
         if store_type == 'coverageStore' or not has_time_dim:
+            # @TODO we skip time steps for coverages currently
             upload_session.completed_step = 'time'
             return next_step_response(req, upload_session, False)
-    if next == 'time' and (
-            upload_session.time is None or not upload_session.time):
-        upload_session.completed_step = 'time'
-        return next_step_response(req, upload_session, force_ajax)
-    if next == 'time' and force_ajax:
-        url = f"{reverse('data_upload')}?id={import_session.id}"
-        return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
-             }
-        )
+        if upload_session.time is None or not upload_session.time:
+            upload_session.completed_step = 'time'
+        if force_ajax:
+            url = f"{reverse('data_upload')}?id={import_session.id}"
+            return json_response(
+                {'url': url,
+                 'status': 'incomplete',
+                 'success': True,
+                 'id': import_session.id,
+                 'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
+                 }
+            )
+        else:
+            return next_step_response(req, upload_session, force_ajax)
 
     if next == 'mosaic' and force_ajax:
         url = f"{reverse('data_upload')}?id={import_session.id}"
@@ -479,7 +480,7 @@ def _get_time_dimensions(layer, upload_session):
             ft = layer_values[0]
             attributes = [{'name': k, 'binding': ft[k]['binding'] or 0} for k in ft.keys()]
             for a in attributes:
-                if ((('Integer' in a['binding'] or 'Long' in a['binding']) and 'id' != a['name'].lower())) \
+                if (('Integer' in a['binding'] or 'Long' in a['binding']) and 'id' != a['name'].lower()) \
                         and filter_name(a['name'].lower()):
                     if layer_values:
                         for feat in layer_values:
@@ -535,8 +536,8 @@ def _get_layer_values(layer, upload_session, expand=0):
         inDataSource = ogr.Open(absolute_base_file)
         lyr = inDataSource.GetLayer(str(layer.name))
         limit = 10
-        for feat in islice(lyr, 0, limit):
-            try:
+        try:
+            for feat in islice(lyr, 0, limit):
                 feat_values = json_loads_byteified(
                     feat.ExportToJson(),
                     upload_session.charset).get('properties')
@@ -551,8 +552,8 @@ def _get_layer_values(layer, upload_session, expand=0):
                         else:
                             feat_values[k] = feat_value
                     layer_values.append(feat_values)
-            except Exception as e:
-                logger.exception(e)
+        except Exception as e:
+            logger.exception(e)
     return layer_values
 
 
@@ -650,7 +651,7 @@ def _get_time_regex(spatial_files, base_file_name):
         basename = os.path.basename(aux)
         aux_head, aux_tail = os.path.splitext(basename)
         if 'timeregex' == aux_head and '.properties' == aux_tail:
-            with open(aux, 'r') as timeregex_prop_file:
+            with open(aux) as timeregex_prop_file:
                 rr = timeregex_prop_file.read()
                 if rr and rr.split(","):
                     rrff = rr.split(",")
@@ -871,88 +872,3 @@ max\ connections={db_conn_max}"""
         cat.reset()
         # cat.reload()
         return append_to_mosaic_name, files_to_upload
-
-
-class KeywordHandler:
-    '''
-    Object needed to handle the keywords coming from the XML
-    The expected input are:
-     - instance (Layer/Document/Map): instance of any object inherited from ResourceBase.
-     - keywords (list(dict)): Is required to analyze the keywords to find if some thesaurus is available.
-    '''
-
-    def __init__(self, instance, keywords):
-        self.instance = instance
-        self.keywords = keywords
-
-    def set_keywords(self):
-        '''
-        Method with the responsible to set the keywords (free and thesaurus) to the object.
-        At return there is always a call to final_step to let it hookable.
-        '''
-        keywords, tkeyword = self.handle_metadata_keywords()
-        self._set_free_keyword(keywords)
-        self._set_tkeyword(tkeyword)
-        return self.instance
-
-    def handle_metadata_keywords(self):
-        '''
-        Method the extract the keyword from the dict.
-        If the keyword are passed, try to extract them from the dict
-        by splitting free-keyword from the thesaurus
-        '''
-        fkeyword = []
-        tkeyword = []
-        if len(self.keywords) > 0:
-            for dkey in self.keywords:
-                if isinstance(dkey, HierarchicalKeyword):
-                    fkeyword += [dkey.name]
-                    continue
-                if dkey['type'] == 'place':
-                    continue
-                thesaurus = dkey['thesaurus']
-                if thesaurus['date'] or thesaurus['datetype'] or thesaurus['title']:
-                    for k in dkey['keywords']:
-                        tavailable = self.is_thesaurus_available(thesaurus, k)
-                        if tavailable.exists():
-                            tkeyword += [tavailable.first()]
-                        else:
-                            fkeyword += [k]
-                else:
-                    fkeyword += dkey['keywords']
-            return fkeyword, tkeyword
-        return self.keywords, []
-
-    @staticmethod
-    def is_thesaurus_available(thesaurus, keyword):
-        is_available = ThesaurusKeyword.objects.filter(alt_label=keyword).filter(thesaurus__title=thesaurus['title'])
-        return is_available
-
-    def _set_free_keyword(self, keywords):
-        if len(keywords) > 0:
-            if not self.instance.keywords:
-                self.instance.keywords = keywords
-            else:
-                self.instance.keywords.add(*keywords)
-        return keywords
-
-    def _set_tkeyword(self, tkeyword):
-        if len(tkeyword) > 0:
-            if not self.instance.tkeywords:
-                self.instance.tkeywords = tkeyword
-            else:
-                self.instance.tkeywords.add(*tkeyword)
-        return [t.alt_label for t in tkeyword]
-
-
-def metadata_storers(layer, custom={}):
-    from django.utils.module_loading import import_string
-    available_storers = (
-        settings.METADATA_STORERS
-        if hasattr(settings, "METADATA_STORERS")
-        else []
-    )
-    for storer_path in available_storers:
-        storer = import_string(storer_path)
-        storer(layer, custom)
-    return layer

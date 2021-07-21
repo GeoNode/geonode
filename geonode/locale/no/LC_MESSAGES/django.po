@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2021-07-08 09:02+0300\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Norwegian (http://www.transifex.com/geonode/geonode/language/"
@@ -437,6 +437,12 @@ msgstr ""
 msgid "Thumbnail url"
 msgstr "Miniatyrbilde"
 
+msgid "State"
+msgstr ""
+
+msgid "Hold the resource processing state."
+msgstr ""
+
 msgid "Dirty State"
 msgstr ""
 
@@ -652,6 +658,15 @@ msgstr ""
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
+msgstr ""
+
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Resource Cloned Successfully!"
+msgstr "Endring av passord vellykket."
+
+#, python-brace-format
+msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr ""
 
 #, fuzzy
@@ -973,6 +988,9 @@ msgstr ""
 msgid "Link to"
 msgstr "Lenke til"
 
+msgid "File"
+msgstr "Fil"
+
 msgid "Document must be a file or url."
 msgstr "Dokumentet må være en fil eller en lenke."
 
@@ -986,9 +1004,6 @@ msgstr "Denne brukeren følger ingen andre"
 
 msgid "Permissions must be valid JSON."
 msgstr ""
-
-msgid "File"
-msgstr "Fil"
 
 msgid "The URL of the document if it is external."
 msgstr ""
@@ -1050,6 +1065,9 @@ msgid "Document"
 msgid_plural "Documents"
 msgstr[0] "Dokument"
 msgstr[1] "Dokument"
+
+msgid "Clone"
+msgstr ""
 
 msgid "Replace"
 msgstr "Erstatt"
@@ -1504,6 +1522,11 @@ msgid ""
 "        Some of your original metadata may have been lost."
 msgstr ""
 
+#, fuzzy
+#| msgid "Explore Maps"
+msgid "Explore Apps"
+msgstr "Utforsk kart"
+
 #, python-format
 msgid ""
 "\n"
@@ -1512,6 +1535,11 @@ msgid ""
 msgstr ""
 "\n"
 "Endre detaljer for %(map_title)s"
+
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to GeoApp"
+msgstr "Tilbake til"
 
 #, fuzzy
 #| msgid "View Map"
@@ -1606,14 +1634,14 @@ msgid "Polygons"
 msgstr ""
 
 #, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "Kartlag navn"
+#| msgid "dataset"
+msgid "Dataset name"
+msgstr "datasett"
 
 #, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "Kartlag tittel"
+#| msgid "Attributes"
+msgid "Dataset title"
+msgstr "attributt"
 
 #, fuzzy
 #| msgid "property type"
@@ -1621,16 +1649,18 @@ msgid "Geometry type"
 msgstr "egenskapstype"
 
 #, fuzzy
-#| msgid "Create a Map"
-msgid "Create Layer"
-msgstr "Lag et kart"
+#| msgid "Featured"
+msgid "Create Dataset"
+msgstr "spesielt fremhevet"
 
-msgid "Explore Layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
 msgstr "Utforsk kartlagene"
 
 #, fuzzy
 #| msgid "Create a map"
-msgid "Create an empty layer"
+msgid "Create an empty dataset"
 msgstr "Create a map"
 
 #, fuzzy
@@ -1668,6 +1698,9 @@ msgstr ""
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
 msgid "GZIP"
 msgstr "GZIP"
 
@@ -1700,9 +1733,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 #, fuzzy
 #| msgid "You do not have permission to view this layer"
@@ -1946,6 +1976,117 @@ msgstr "Opprett gruppe"
 
 msgid "Save"
 msgstr "Lagre"
+
+msgid "ready"
+msgstr ""
+
+msgid "updating-harvestable-resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "harvesting-resources"
+msgstr "Ressurser"
+
+msgid "checking-availability"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvested"
+msgid "Harvester name"
+msgstr "Høstet"
+
+msgid "Base URL of the remote service that is to be harvested"
+msgstr ""
+
+msgid ""
+"Whether to periodically schedule this harvester to look for resources on the "
+"remote service"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new harvesting sessions be automatically "
+"scheduled? Setting this value to zero has the same effect as setting "
+"`scheduling_enabled` to False "
+msgstr ""
+
+msgid "Whether the remote service is known to be available or not"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should the remote service be checked for availability?"
+msgstr ""
+
+msgid "Last time the remote server was checked for availability"
+msgstr ""
+
+msgid "Last time the remote server was checked for harvestable resources"
+msgstr ""
+
+msgid "Default owner of harvested resources"
+msgstr ""
+
+#, fuzzy
+#| msgid "You do not have permission to view this layer"
+msgid "Default access permissions of harvested resources"
+msgstr "You do not have permission to view this layer"
+
+msgid ""
+"Should new resources be harvested automatically without explicit selection?"
+msgstr ""
+
+msgid ""
+"Orphan resources are those that have previously been created by means of a "
+"harvesting operation but that GeoNode can no longer find on the remote "
+"service being harvested. Should these resources be deleted from GeoNode "
+"automatically? This also applies to when a harvester configuration is "
+"deleted, in which case all of the resources that originated from that "
+"harvester are now considered to be orphan."
+msgstr ""
+
+msgid "Date of last update to the harvester configuration."
+msgstr ""
+
+msgid ""
+"Harvester class used to perform harvesting sessions. New harvester types can "
+"be added by an admin by changing the main GeoNode `settings.py` file"
+msgstr ""
+
+msgid ""
+"Configuration specific to each harvester type. Please consult GeoNode "
+"documentation on harvesting for more info. This field is mandatory, so at "
+"the very least an empty object (i.e. {}) must be supplied."
+msgstr ""
+
+msgid "Periodic task used to configure harvest scheduling"
+msgstr ""
+
+msgid "Periodic task used to check availability of the remote"
+msgstr ""
+
+#, python-brace-format
+msgid "Check availability of {self.name}"
+msgstr ""
+
+msgid "updating-harvestable-resource"
+msgstr ""
+
+msgid "harvesting-resource"
+msgstr ""
+
+msgid ""
+"Identifier that allows referencing the resource on its remote service in a "
+"unique fashion. This is usually automatically filled by the harvester "
+"worker. The harvester worker needs to know how to either read or generate "
+"this from each remote resource in order to be able to compare the "
+"availability of resources between consecutive harvesting sessions."
+msgstr ""
+
+msgid ""
+"Type of the resource in the remote service. Each harvester worker knows how "
+"to fill this field, in accordance with the resources for which harvesting is "
+"supported"
+msgstr ""
 
 #, python-brace-format
 msgid "The e-mail address '{email}' has already been invited."
@@ -2250,11 +2391,13 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Edit Layer"
-msgid "Append to Layer"
+msgid "Append to Dataset"
 msgstr "Endre kartlag"
 
-msgid "Return to Layer"
-msgstr ""
+#, fuzzy
+#| msgid "Return to"
+msgid "Return to Dataset"
+msgstr "Tilbake til"
 
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -2273,7 +2416,7 @@ msgstr ""
 msgid "Assign a new point of contact to the layers below:"
 msgstr ""
 
-msgid "Layer WMS GetCapabilities document"
+msgid "Dataset WMS GetCapabilities document"
 msgstr ""
 
 msgid "Filter Granules"
@@ -2334,14 +2477,18 @@ msgstr "Median"
 msgid "Standard Deviation"
 msgstr "standardavvik"
 
-msgid "Rate this layer"
-msgstr ""
+#, fuzzy
+#| msgid "Rate this document"
+msgid "Rate this dataset"
+msgstr "Vurder dokumentet"
 
 msgid "Analyze with"
 msgstr ""
 
-msgid "Download Layer"
-msgstr "Last ned kartlaget"
+#, fuzzy
+#| msgid "Download"
+msgid "Download Dataset"
+msgstr "Nedlasting"
 
 msgid "Images"
 msgstr ""
@@ -2427,9 +2574,9 @@ msgid "Edit data"
 msgstr "Endre data"
 
 #, fuzzy
-#| msgid "Edit Layer"
-msgid "View Layer"
-msgstr "Endre kartlag"
+#| msgid "Edit Metadata"
+msgid "View Dataset"
+msgstr "Endre Metadata"
 
 #, fuzzy
 #| msgid "format"
@@ -2442,25 +2589,29 @@ msgstr ""
 msgid "Legend"
 msgstr "Tegnforklaring"
 
-msgid "Maps using this layer"
+#, fuzzy
+#| msgid "language used within the dataset"
+msgid "Maps using this dataset"
+msgstr "språk brukt i datasettet"
+
+msgid "List of maps using this dataset:"
 msgstr ""
 
-msgid "List of maps using this layer:"
+#, fuzzy
+#| msgid "This document is not related to any maps or layers"
+msgid "This dataset is not currently used in any maps."
+msgstr "Dokumentet er ikke relatert til noen kart eller kartlag"
+
+msgid "Create a map using this dataset"
 msgstr ""
 
-msgid "This layer is not currently used in any maps."
+msgid "Click the button below to generate a new map based on this dataset."
 msgstr ""
 
-msgid "Create a map using this layer"
+msgid "Add the dataset to an existing map"
 msgstr ""
 
-msgid "Click the button below to generate a new map based on this layer."
-msgstr ""
-
-msgid "Add the layer to an existing map"
-msgstr ""
-
-msgid "Click the button below to add the layer to the selected map."
+msgid "Click the button below to add the dataset to the selected map."
 msgstr ""
 
 #, fuzzy
@@ -2496,7 +2647,7 @@ msgstr ""
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
-"Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
+"Dataset Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
@@ -2509,22 +2660,16 @@ msgstr ""
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr ""
 
-msgid "Empty Tiled-Layer Cache"
+msgid "Empty Tiled-Dataset Cache"
 msgstr ""
 
 msgid "Click the button below to change the permissions of this layer."
 msgstr ""
 
-msgid "Change Layer Permissions"
-msgstr ""
-
-msgid "Processing..."
-msgstr ""
-
 #, fuzzy
-#| msgid "Permissions"
-msgid "Updating Permissions..."
-msgstr "Rettigheter"
+#| msgid "Set permissions"
+msgid "Change Dataset Permissions"
+msgstr "Definer tillatelser"
 
 msgid "Remove Mosaic Granules"
 msgstr ""
@@ -2543,8 +2688,10 @@ msgstr ""
 msgid "No maps are using this layer"
 msgstr ""
 
-msgid "Upload Layers"
-msgstr "Last opp kartlag"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Datasets"
+msgstr "Lat ned metadata"
 
 #, python-format
 msgid "for %(layer_title)s"
@@ -2595,13 +2742,15 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Metadata"
+msgid "Upload Dataset Metadata"
 msgstr "Last opp kartlag"
 
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr ""
 
-msgid "Remove Layers"
+#, fuzzy
+#| msgid "Remove Layers"
+msgid "Remove Datasets"
 msgstr "Fjern kartlag"
 
 #, python-format
@@ -2612,7 +2761,9 @@ msgid ""
 "        "
 msgstr ""
 
-msgid "Replace Layer"
+#, fuzzy
+#| msgid "Replace Layer"
+msgid "Replace Dataset"
 msgstr "Erstatt kartlag"
 
 msgid "Manage Styles"
@@ -2621,12 +2772,12 @@ msgstr "Forvalte stilene"
 #, python-format
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"/layers/%(layer_title)s\">"
+"      Manage Available Styles for <a href=\"{{ layer_url }}\">"
 "%(layer_title)s</a>\n"
 "    "
 msgstr ""
 
-msgid "Layer Default Style"
+msgid "Dataset Default Style"
 msgstr ""
 
 msgid "Available styles"
@@ -2640,9 +2791,12 @@ msgstr ""
 msgid "Update Available Styles"
 msgstr "Opdater tilgjengelige stiler"
 
+msgid "Return to Layer"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Style"
+msgid "Upload Dataset Style"
 msgstr "Last opp kartlag"
 
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -2662,8 +2816,10 @@ msgstr "Forhåndsvisning"
 msgid "Dataset Attributes"
 msgstr "attributt"
 
-msgid "Upload Layer"
-msgstr "Last opp kartlag"
+#, fuzzy
+#| msgid "Download Metadata"
+msgid "Upload Dataset"
+msgstr "Lat ned metadata"
 
 #, fuzzy
 #| msgid "Download Metadata"
@@ -2719,7 +2875,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
 msgstr "Last opp kartlag"
 
 msgid "Provide CRS for "
@@ -2730,9 +2886,9 @@ msgstr "Koordinatsystem"
 
 msgid ""
 "\n"
-"                A coordinate reference system for this layer could not be "
+"                A coordinate reference system for this dataset could not be "
 "determined.\n"
-"                Locate or enter the appropriate ESPG code for this layer "
+"                Locate or enter the appropriate ESPG code for this dataset "
 "below.\n"
 "                One way to do this is do visit:\n"
 "                <a href=\"http://prj2epsg.org/search\" target=\"_"
@@ -2912,7 +3068,7 @@ msgid ""
 "                        "
 msgstr ""
 
-msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
 msgstr ""
 
 msgid "Geospatial Data"
@@ -2952,7 +3108,7 @@ msgstr "Opplastingsskjema"
 
 #, fuzzy
 #| msgid "Upload Layer"
-msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
 msgstr "Last opp kartlag"
 
 msgid "Inspect data for "
@@ -3062,11 +3218,11 @@ msgid "Enabling Time"
 msgstr ""
 
 msgid ""
-"A layer can support one or two time attributes. If a single\n"
-"                        attribute is used, the layer is considered to "
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
 "contain data that is valid at single points in time. If two\n"
 "                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the layer is considered\n"
+"the end of a valid period  hence the dataset is considered\n"
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
@@ -3143,24 +3299,17 @@ msgstr ""
 msgid "now"
 msgstr "nå"
 
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-msgid ""
-"The UUID identifier from the XML Metadata is already in use in this system."
+#, python-brace-format
+msgid "You are attempting to {action_type} a vector dataset with a raster."
 msgstr ""
 
 #, python-brace-format
-msgid "You are attempting to {action_type} a vector layer with a raster."
-msgstr ""
-
-#, python-brace-format
-msgid "You are attempting to {action_type} a raster layer with a vector."
+msgid "You are attempting to {action_type} a raster dataset with a vector."
 msgstr ""
 
 #, python-brace-format
 msgid ""
-"You are attempting to {action_type} a vector layer with an unknown format."
+"You are attempting to {action_type} a vector dataset with an unknown format."
 msgstr ""
 
 #, python-brace-format
@@ -3169,7 +3318,7 @@ msgid ""
 "{action_type}."
 msgstr ""
 
-msgid "Local GeoNode layer has no geometry type."
+msgid "Local GeoNode dataset has no geometry type."
 msgstr ""
 
 #, python-brace-format
@@ -3179,10 +3328,10 @@ msgid ""
 "trying to {action_type}."
 msgstr ""
 
-msgid "The selected Layer does not exists in the catalog."
+msgid "The selected Dataset does not exists in the catalog."
 msgstr ""
 
-msgid "Please ensure that the layer structure is consistent "
+msgid "Please ensure that the dataset structure is consistent "
 msgstr ""
 
 msgid ""
@@ -3195,47 +3344,38 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
+"Note: this dataset's orginal metadata was populated and preserved by "
+"importing a metadata XML file. This metadata cannot be edited."
 msgstr ""
 
-msgid "You are not permitted to delete this layer"
+#, fuzzy
+#| msgid "You are not permitted to delete this layer"
+msgid "You are not permitted to delete this dataset"
 msgstr "Du har ikke lov til å slettet dette kartlaget"
 
 #, fuzzy
 #| msgid "You do not have permission to view this layer"
-msgid "You do not have permissions for this layer."
+msgid "You do not have permissions for this dataset."
 msgstr "You do not have permission to view this layer"
 
 #, fuzzy
 #| msgid "You are not permitted to delete this layer"
-msgid "You are not permitted to modify this layer"
+msgid "You are not permitted to modify this dataset"
 msgstr "Du har ikke lov til å slettet dette kartlaget"
 
 #, fuzzy
 #| msgid "You are not permitted to delete this layer"
-msgid "You are not permitted to modify this layer's metadata"
+msgid "You are not permitted to modify this dataset's metadata"
 msgstr "Du har ikke lov til å slettet dette kartlaget"
 
 #, fuzzy
 #| msgid "You are not permitted to delete this layer"
-msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this dataset"
 msgstr "Du har ikke lov til å slettet dette kartlaget"
-
-#, fuzzy
-#| msgid "Upload new layers"
-msgid "Failed to upload the layer"
-msgstr "Last opp nytt kartlag"
-
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
 
 msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
+"This dataset is a member of a layer group, you must remove the dataset from "
+"the group before deleting."
 msgstr ""
 
 #, fuzzy, python-format
@@ -4102,6 +4242,17 @@ msgstr "Dokumenter"
 msgid "Not Authorized"
 msgstr "Ikke oppgitt"
 
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Resource Processing Library"
+msgstr "GeoNode Hjelp"
+
+msgid "Disabling this Task will make the Processing Workflow to skip it."
+msgstr ""
+
+msgid "Processing Workflow Tasks"
+msgstr ""
+
 msgid "Session is Expired. Please login again!"
 msgstr ""
 
@@ -4282,8 +4433,10 @@ msgstr "Endre tjeneste"
 msgid "Services"
 msgstr "Tjenester"
 
-msgid "Register a new Service"
-msgstr "Registrer ny tjeneste"
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Add Remote Service"
+msgstr "Ekstern tjeneste"
 
 msgid "Remote Services"
 msgstr "Ekstern tjeneste"
@@ -4388,6 +4541,11 @@ msgstr "Endring av passord vellykket."
 
 #, fuzzy
 #| msgid "You are not permitted to remove this service."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "Du har ikke retigheter til å fjerne denne tjenesten."
+
+#, fuzzy
+#| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "Du har ikke retigheter til å fjerne denne tjenesten."
 
@@ -4466,6 +4624,11 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "datasett"
+
 msgid "People"
 msgstr ""
 
@@ -4500,9 +4663,9 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#| msgid "Remote Services"
-msgid "Add Remote Service"
-msgstr "Ekstern tjeneste"
+#| msgid "Create a new map"
+msgid "Create a new dataset"
+msgstr "Lag ny kart"
 
 #, fuzzy
 #| msgid "Create a Map"
@@ -4601,10 +4764,10 @@ msgstr ""
 msgid "Who can change metadata for it?"
 msgstr ""
 
-msgid "Who can edit data for this layer?"
+msgid "Who can edit data for this dataset?"
 msgstr ""
 
-msgid "Who can edit styles for this layer?"
+msgid "Who can edit styles for this dataset?"
 msgstr ""
 
 msgid ""
@@ -5216,6 +5379,9 @@ msgstr "Opplastingsskjema"
 msgid "Upload in progress..."
 msgstr "Last opp fil"
 
+msgid "Processing..."
+msgstr ""
+
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
@@ -5223,6 +5389,11 @@ msgstr "Miniatyrbilde"
 
 msgid "Message. Do you want to proceed?"
 msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Processing Resource..."
+msgstr "Ressurser"
 
 msgid "Information for Developers"
 msgstr "Informasjon for utviklere"
@@ -5306,8 +5477,8 @@ msgid ""
 "nicaragua_admin\" });</code></p>\n"
 "\n"
 "    <h3>Google Maps Example Code</h3>\n"
-"    <p>To include a GeoNode map layer in a Google Map, include the layer "
-"namein the URL template.</p>\n"
+"    <p>To include a GeoNode map layer in a Google Map, include the dataset "
+"name in the URL template.</p>\n"
 "    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
 "{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
 "layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
@@ -5376,13 +5547,13 @@ msgid ""
 "p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"    <p>The <a href=\"/layers\">Layers</a> tab allows you to browse data "
+"    <p>The <a href=\"{{ url_layer_browse }}\">Layers</a> tab allows you to browse data "
 "uploaded to this GeoNode.</p>\n"
 "    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
 "    <h4 id=\"developer-access\">Developer Access</h4>\n"
-"    <p>The <a href=\"/developer\"> Developer</a> page is the place for "
+"    <p>The <a href=\"{{ url_developer }}\"> Developer</a> page is the place for "
 "developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
@@ -5391,9 +5562,9 @@ msgid ""
 "    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
 "    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"    <p>The <a href=\"/maps\">Maps</a> tab is a gateway to map exploration on "
+"    <p>The <a href=\"{{ url_maps_browse }}\">Maps</a> tab is a gateway to map exploration on "
 "GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"/maps/new\">Map "
+"<strong>create a map</strong>, which will open the <a href=\"{{ url_maps_new }}\">Map "
 "Composer</a>.</p>\n"
 "    <h5>Google Earth Mode</h5>\n"
 "    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
@@ -5402,9 +5573,9 @@ msgid ""
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"    <p>To create a new map go to the <a href=\"/maps\">Contributed Maps</a> "
-"tab and click the <a href=\"/maps/new\">create your own map</a> link.</p>\n"
-"    <p>This will take you to the <a href=\"/maps/new\">Map Composer</a> with "
+"    <p>To create a new map go to the <a href=\"{{ url_maps_browse }}\">Contributed Maps</a> "
+"tab and click the <a href=\"{{ url_maps_new }}\">create your own map</a> link.</p>\n"
+"    <p>This will take you to the <a href=\"{{ url_maps_new }}\">Map Composer</a> with "
 "a base layer loaded.</p>\n"
 "    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
@@ -5438,7 +5609,7 @@ msgid ""
 "    </ol>\n"
 "    <p>This will put an interactive widget showing you map in your web page "
 "or blog post.</p>\n"
-"    <p>Note that the <a href=\"/maps/new\">Map Composer</a> also has a "
+"    <p>Note that the <a href=\"{{ url_maps_new }}\">Map Composer</a> also has a "
 "button to publish the map. Just be sure to save the map before publishing if "
 "there are changes that you want others to see. It publishes the last saved "
 "version, not the last viewed version.</p>\n"
@@ -5454,7 +5625,7 @@ msgid ""
 "      <li>Save the map.</li>\n"
 "    </ol>\n"
 "    <p>You will be able to see your new map when you search for it from the "
-"<a href=\"/maps\">Maps</a> tab.</p>\n"
+"<a href=\"{{ url_maps_browse }}\">Maps</a> tab.</p>\n"
 "    "
 msgstr ""
 
@@ -5502,10 +5673,14 @@ msgstr ""
 "Klick for å søke romlige data publisert av andre brukere, organisasjoner og "
 "offentlige kilder. Last ned data i standard formater."
 
-msgid "Add layers"
-msgstr "Legg til kartlag"
+#, fuzzy
+#| msgid "dataset"
+msgid "Add datasets"
+msgstr "datasett"
 
-msgid "Explore layers"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore datasetss"
 msgstr "Utforsk kartlagene"
 
 msgid ""
@@ -6096,7 +6271,7 @@ msgstr "Filtere"
 
 #, fuzzy
 #| msgid "Layers"
-msgid "Layers found"
+msgid "Datasets found"
 msgstr "Kartlag"
 
 msgid "Maps found"
@@ -6138,6 +6313,11 @@ msgstr "Mest populær"
 
 msgid "Text"
 msgstr "Tekst"
+
+#, fuzzy
+#| msgid "Share This"
+msgid "Share This Dataset"
+msgstr "Del dette"
 
 msgid "Share This"
 msgstr "Del dette"
@@ -6320,6 +6500,10 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+msgid ""
+"The UUID identifier from the XML Metadata is already in use in this system."
+msgstr ""
+
 msgid "Error configuring Layer"
 msgstr ""
 
@@ -6396,6 +6580,54 @@ msgstr "Definer tillatelser"
 
 msgid "Permission Denied"
 msgstr "Ingen tillatelse"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "Kartlag navn"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "Kartlag tittel"
+
+#, fuzzy
+#~| msgid "Create a Map"
+#~ msgid "Create Layer"
+#~ msgstr "Lag et kart"
+
+#~ msgid "Download Layer"
+#~ msgstr "Last ned kartlaget"
+
+#, fuzzy
+#~| msgid "Edit Layer"
+#~ msgid "View Layer"
+#~ msgstr "Endre kartlag"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Updating Permissions..."
+#~ msgstr "Rettigheter"
+
+#~ msgid "Upload Layers"
+#~ msgstr "Last opp kartlag"
+
+#~ msgid "Upload Layer"
+#~ msgstr "Last opp kartlag"
+
+#, fuzzy
+#~| msgid "Upload new layers"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Last opp nytt kartlag"
+
+#~ msgid "Register a new Service"
+#~ msgstr "Registrer ny tjeneste"
+
+#~ msgid "Add layers"
+#~ msgstr "Legg til kartlag"
+
+#~ msgid "Explore layers"
+#~ msgstr "Utforsk kartlagene"
 
 #, fuzzy
 #~| msgid "Set permissions"
