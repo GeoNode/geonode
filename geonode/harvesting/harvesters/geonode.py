@@ -19,17 +19,23 @@
 
 """Harvester for legacy GeoNode remote servers"""
 
+import datetime as dt
 import enum
 import json
-import uuid
-import typing
 import logging
-import requests
-import datetime as dt
-import dateutil.parser
+import typing
+import urllib.parse
+import uuid
 
-from lxml import etree
+import dateutil.parser
+import requests
 from django.contrib.gis import geos
+from lxml import etree
+
+from geonode.base.models import ResourceBase
+from geonode.documents.models import Document
+from geonode.layers.models import Layer
+from geonode.maps.models import Map
 
 from .. import (
     models,
@@ -38,12 +44,12 @@ from .. import (
 from ..utils import XML_PARSER
 from . import base
 
-from geonode.maps.models import Map
-from geonode.layers.models import Dataset
-from geonode.base.models import ResourceBase
-from geonode.documents.models import Document
-
 logger = logging.getLogger(__name__)
+
+
+class GeoNodeLayerType(enum.Enum):
+    VECTOR = "vector"
+    RASTER = "raster"
 
 
 class GeoNodeResourceType(enum.Enum):
@@ -98,22 +104,16 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         return cls(
             record.remote_url,
             record.id,
-            harvest_documents=(
-                record.harvester_type_specific_configuration.get(
-                    "harvest_documents", True)
-            ),
-            harvest_datasets=(
-                record.harvester_type_specific_configuration.get(
-                    "harvest_datasets", True)
-            ),
-            harvest_maps=(
-                record.harvester_type_specific_configuration.get(
-                    "harvest_maps", True)
-            ),
-            resource_title_filter=(
-                record.harvester_type_specific_configuration.get(
-                    "resource_title_filter")
-            ),
+            harvest_documents=record.harvester_type_specific_configuration.get(
+                "harvest_documents", True),
+            harvest_datasets=record.harvester_type_specific_configuration.get(
+                "harvest_datasets", True),
+            harvest_maps=record.harvester_type_specific_configuration.get(
+                "harvest_maps", True),
+            copy_documents=record.harvester_type_specific_configuration.get(
+                "copy_documents", False),
+            resource_title_filter=record.harvester_type_specific_configuration.get(
+                "resource_title_filter"),
         )
 
     @classmethod
@@ -218,7 +218,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         """Return resource type class from resource type string."""
         return {
             GeoNodeResourceType.MAP.value: Map,
-            GeoNodeResourceType.LAYER.value: Dataset,
+            GeoNodeResourceType.LAYER.value: Layer,
             GeoNodeResourceType.DOCUMENT.value: Document,
         }[remote_resource_type]
 
@@ -231,7 +231,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         endpoint_suffix = {
             GeoNodeResourceType.DOCUMENT.value: (
                 f"/documents/{resource_unique_identifier}/"),
-            GeoNodeResourceType.LAYER.value: f"/datasets/{resource_unique_identifier}/",
+            GeoNodeResourceType.LAYER.value: f"/layers/{resource_unique_identifier}/",
             GeoNodeResourceType.MAP.value: f"/maps/{resource_unique_identifier}/",
         }[harvestable_resource.remote_resource_type.lower()]
         response = self.http_session.get(f"{self.base_api_url}/{endpoint_suffix}")
@@ -251,6 +251,16 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 f"Could not retrieve remote resource {resource_unique_identifier!r}")
         return result
 
+    def should_copy_resource(
+            self,
+            harvestable_resource: "HarvestableResource",  # noqa
+    ) -> bool:
+        return {
+            GeoNodeResourceType.DOCUMENT.value: self.copy_documents,
+            GeoNodeResourceType.LAYER.value: False,
+            GeoNodeResourceType.MAP.value: False,
+        }[harvestable_resource.remote_resource_type]
+
     def finalize_resource_update(
             self,
             geonode_resource: ResourceBase,
@@ -263,10 +273,11 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             GeoNodeResourceType.DOCUMENT.value
         )
         if is_document:
-            geonode_resource.thumbnail_url = (
-                harvested_info.resource_descriptor.distribution.thumbnail_url)
-            geonode_resource.doc_url = (
-                harvested_info.resource_descriptor.distribution.original_format_url)
+            if len(harvested_info.copied_resources) == 0:
+                geonode_resource.thumbnail_url = (
+                    harvested_info.resource_descriptor.distribution.thumbnail_url)
+                geonode_resource.doc_url = (
+                    harvested_info.resource_descriptor.distribution.original_format_url)
         geonode_resource.save()
         return geonode_resource
 
@@ -413,11 +424,12 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             api_record: typing.Dict,
             harvestable_resource: models.HarvestableResource
     ) -> resourcedescriptor.RecordDescription:
-        crs_epsg_code = ''.join(
-            csw_record.xpath(
-                'gmd:referenceSystemInfo//code//text()', namespaces=csw_record.nsmap)
-        ).strip()
-        return resourcedescriptor.RecordDescription(
+        identification_descriptor = get_identification_descriptor(
+            csw_record.xpath("gmd:identificationInfo", namespaces=csw_record.nsmap)[0],
+            api_record
+        )
+        crs = api_record.get("srid", "EPSG:4326")
+        descriptor = resourcedescriptor.RecordDescription(
             uuid=uuid.UUID(get_xpath_value(csw_record, "gmd:fileIdentifier")),
             language=get_xpath_value(csw_record, "gmd:language"),
             character_set=csw_record.xpath(
@@ -442,24 +454,32 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 csw_record.xpath(
                     "gmd:dateStamp/gco:DateTime/text()", namespaces=csw_record.nsmap)[0],
             ).replace(tzinfo=dt.timezone.utc),
-            reference_systems=[f"EPSG:{crs_epsg_code}"],
-            identification=get_identification_descriptor(
-                csw_record.xpath("gmd:identificationInfo", namespaces=csw_record.nsmap)[0]
-            ),
+            reference_systems=[crs],
+            identification=identification_descriptor,
             distribution=self.get_distribution_info(
                 csw_record.xpath(
                     "gmd:distributionInfo", namespaces=csw_record.nsmap)[0],
                 api_record,
                 harvestable_resource,
+                identification_descriptor,
+                crs
             ),
             data_quality=get_xpath_value(csw_record, ".//gmd:dataQualityInfo//gmd:lineage"),
         )
+        if harvestable_resource.remote_resource_type == GeoNodeResourceType.LAYER.value:
+            layer_type = (
+                GeoNodeLayerType.RASTER if api_record.get("storeType") == "coverageStore" else GeoNodeLayerType.VECTOR
+            )
+            descriptor.additional_parameters["layer_type"] = layer_type.value
+        return descriptor
 
     def get_distribution_info(
             self,
             csw_distribution: etree.Element,
             api_record: typing.Dict,
             harvestable_resource: models.HarvestableResource,
+            identification_descriptor: resourcedescriptor.RecordIdentification,
+            crs: str,
     ) -> resourcedescriptor.RecordDistribution:
         online_elements = csw_distribution.xpath(
             ".//gmd:transferOptions//gmd:onLine", namespaces=csw_distribution.nsmap)
@@ -490,20 +510,60 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 legend = linkage
             elif "geojson" in description.lower():
                 geojson = linkage
-            elif api_record.get("doc_file") is not None:
-                # NOTE: for resources of type document, the GeoNode API returns a
-                # relative URL which can be used directly, as opposed to its CSW API,
-                # which returns a generic download URL
-                document_url: str = api_record.get("doc_file")
-                if document_url.startswith("/"):
-                    original = f"{self.remote_url}{document_url}"
-                else:
-                    original = document_url
+            # elif api_record.get("doc_file") is not None:
+            #     # NOTE: for resources of type document, the GeoNode API returns a
+            #     # relative URL which can be used directly, as opposed to its CSW API,
+            #     # which returns a generic download URL
+            #     document_url: str = api_record.get("doc_file")
+            #     if document_url.startswith("/"):
+            #         original = f"{self.remote_url}{document_url}"
+            #     else:
+            #         original = document_url
             else:
                 for original_value in original_format_values:
                     if original_value in description.lower():
                         original = linkage
                         break
+        if harvestable_resource.remote_resource_type == GeoNodeResourceType.DOCUMENT.value:
+            document_url: typing.Optional[str] = api_record.get("doc_file")
+            if document_url is not None:
+                # NOTE: for resources of type document, the GeoNode API returns a
+                # relative URL which can be used directly, as opposed to its CSW API,
+                # which returns a generic download URL
+                if document_url.startswith("/"):
+                    original = f"{self.remote_url}{document_url}"
+                else:
+                    original = document_url
+        elif harvestable_resource.remote_resource_type == GeoNodeResourceType.LAYER.value:
+            # for layers, we generate a download URL for a zipped shapefile, in a similar way
+            # as is done on the main GeoNode UI, by leveraging WFS
+            if wfs is not None:
+                query_params = {
+                    "service": "WFS",
+                    "version": "1.0.0",
+                    "request": "GetFeature",
+                    "typename": identification_descriptor.name,
+                    "outputformat": "SHAPE-ZIP",
+                    "srs": crs,
+                    "format_options": "charset:UTF-8",
+                }
+                original = f"{wfs}?{urllib.parse.urlencode(query_params)}"
+            elif wcs is not None:
+                coords = identification_descriptor.spatial_extent.coords[0]
+                min_x = min([i[0] for i in coords])
+                max_x = max([i[0] for i in coords])
+                min_y = min([i[1] for i in coords])
+                max_y = max([i[1] for i in coords])
+                query_params = {
+                    "service": "WCS",
+                    "version": "2.0.1",
+                    "request": "GetCoverage",
+                    "srs": crs,
+                    "format": "image/tiff",
+                    "coverageid": identification_descriptor.name.replace(":", "__"),
+                    "bbox": f"{min_x},{min_y},{max_x},{max_y}"
+                }
+                original = f"{wcs}?{urllib.parse.urlencode(query_params)}"
         return resourcedescriptor.RecordDistribution(
             link_url=link,
             wms_url=wms,
@@ -598,70 +658,83 @@ def get_contact_descriptor(contact: etree.Element):
     )
 
 
-def get_identification_descriptor(identification: etree.Element):
-    place_keywords = identification.xpath(
+def get_identification_descriptor(csw_identification: etree.Element, api_record: typing.Dict):
+    place_keywords = csw_identification.xpath(
         ".//gmd:descriptiveKeywords//gmd:keyword//text()[../../../gmd:type//"
         "@codeListValue='place']",
-        namespaces=identification.nsmap
+        namespaces=csw_identification.nsmap
     )
-    other_keywords = identification.xpath(
+    other_keywords = csw_identification.xpath(
         ".//gmd:descriptiveKeywords//gmd:keyword//text()[../../../gmd:type//"
         "@codeListValue!='place']",
-        namespaces=identification.nsmap
+        namespaces=csw_identification.nsmap
     )
     license_info = "".join(
-        identification.xpath(
+        csw_identification.xpath(
             ".//gmd:resourceConstraints//gmd:otherConstraints//text()[../../..//"
             "gmd:useConstraints//@codeListValue='license']",
-            namespaces=identification.nsmap
+            namespaces=csw_identification.nsmap
         )
     ).strip()
     other_constraints_description = "".join(
-        identification.xpath(
+        csw_identification.xpath(
             ".//gmd:resourceConstraints//gmd:otherConstraints//text()[../../..//"
             "gmd:useConstraints//@codeListValue!='license']",
-            namespaces=identification.nsmap
+            namespaces=csw_identification.nsmap
         )
     ).strip()
     other_constraints_code = "".join(
-        identification.xpath(
+        csw_identification.xpath(
             ".//gmd:resourceConstraints//gmd:useConstraints//text()[../../..//"
             "gmd:useConstraints//@codeListValue!='license']",
-            namespaces=identification.nsmap
+            namespaces=csw_identification.nsmap
         )
     ).strip() or None
     return resourcedescriptor.RecordIdentification(
-        name=get_xpath_value(identification, ".//gmd:citation//gmd:name"),
-        title=get_xpath_value(identification, ".//gmd:citation//gmd:title"),
+        name=get_xpath_value(csw_identification, ".//gmd:citation//gmd:name"),
+        title=get_xpath_value(csw_identification, ".//gmd:citation//gmd:title"),
         date=dateutil.parser.parse(
-            get_xpath_value(identification, ".//gmd:citation//gmd:date//gmd:date")
+            get_xpath_value(csw_identification, ".//gmd:citation//gmd:date//gmd:date")
         ).replace(tzinfo=dt.timezone.utc),
-        date_type=get_xpath_value(identification, ".//gmd:citation//gmd:dateType"),
-        abstract=get_xpath_value(identification, ".//gmd:abstract"),
-        purpose=get_xpath_value(identification, ".//gmd:purpose"),
-        status=get_xpath_value(identification, ".//gmd:status"),
+        date_type=get_xpath_value(csw_identification, ".//gmd:citation//gmd:dateType"),
+        abstract=get_xpath_value(csw_identification, ".//gmd:abstract"),
+        purpose=get_xpath_value(csw_identification, ".//gmd:purpose"),
+        status=get_xpath_value(csw_identification, ".//gmd:status"),
         originator=get_contact_descriptor(
-            identification.xpath(
-                ".//gmd:pointOfContact", namespaces=identification.nsmap)[0]
+            csw_identification.xpath(
+                ".//gmd:pointOfContact", namespaces=csw_identification.nsmap)[0]
         ),
         graphic_overview_uri=get_xpath_value(
-            identification, ".//gmd:graphicOverview//gmd:fileName"),
-        native_format=get_xpath_value(
-            identification, ".//gmd:resourceFormat//gmd:name"),
+            csw_identification, ".//gmd:graphicOverview//gmd:fileName"),
+        native_format=_get_native_format(csw_identification, api_record),
         place_keywords=place_keywords,
         other_keywords=other_keywords,
         license=license_info.split(":", maxsplit=1),
         other_constraints=(
             f"{other_constraints_code or ''}:{other_constraints_description}"),
-        topic_category=get_xpath_value(identification, ".//gmd:topicCategory"),
-        spatial_extent=get_spatial_extent(identification),
-        temporal_extent=get_temporal_extent(identification),
+        topic_category=get_xpath_value(csw_identification, ".//gmd:topicCategory"),
+        spatial_extent=get_spatial_extent_native(api_record),
+        temporal_extent=get_temporal_extent(csw_identification),
         supplemental_information=get_xpath_value(
-            identification, ".//gmd:supplumentalInformation")
+            csw_identification, ".//gmd:supplumentalInformation")
     )
 
 
-def get_spatial_extent(
+def _get_native_format(
+        csw_identification: etree.Element,
+        api_record: typing.Dict
+) -> typing.Optional[str]:
+    store_type = api_record.get("storeType", "").lower()
+    if store_type == "coveragestore":
+        result = "geotiff"
+    elif store_type == "datastore":
+        result = "shapefile"
+    else:
+        result = get_xpath_value(csw_identification, ".//gmd:resourceFormat//gmd:name")
+    return result
+
+
+def get_spatial_extent_4326(
         identification_el: etree.Element) -> typing.Optional[geos.Polygon]:
     try:
         extent_el = identification_el.xpath(
@@ -683,6 +756,15 @@ def get_spatial_extent(
     except IndexError:
         result = None
     return result
+
+
+def get_spatial_extent_native(api_record: typing.Dict):
+    left_x = float(api_record.get("bbox_x0", 0))
+    right_x = float(api_record.get("bbox_x1", 0))
+    lower_y = float(api_record.get("bbox_y0", 0))
+    upper_y = float(api_record.get("bbox_y1", 0))
+    return geos.Polygon.from_bbox((
+        left_x, lower_y, right_x, upper_y))
 
 
 def get_temporal_extent(

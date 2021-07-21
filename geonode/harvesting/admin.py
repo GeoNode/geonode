@@ -246,6 +246,9 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "remote_resource_type",
         "last_harvesting_succeeded",
     )
+    search_fields = (
+        "title",
+    )
     list_editable = (
         "should_be_harvested",
     )
