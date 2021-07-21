@@ -674,7 +674,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             resource_fields["keywords"] = keywords
             resource_fields["is_approved"] = True
             resource_fields["is_published"] = True
-            geonode_dataset = handler._create_layer(geonode_service, **resource_fields)
+            geonode_dataset = handler._create_dataset(geonode_service, **resource_fields)
             self.assertIsNotNone(geonode_dataset)
             self.assertNotEqual(geonode_dataset.srid, "EPSG:4326")
             self.assertEqual(geonode_dataset.sourcetype, base_enumerations.SOURCE_TYPE_REMOTE)
