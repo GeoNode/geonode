@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import json
 import re
 import logging
 
@@ -147,7 +147,9 @@ def create_thumbnail(
     # --- fetch WMS layers ---
     partial_thumbs = []
 
-    for ogc_server, layers in locations:
+    for ogc_server, layers, _styles in locations:
+        if isinstance(instance, Map) and len(layers) == len(_styles):
+            styles = _styles
         try:
             partial_thumbs.append(utils.get_map(
                 ogc_server,
@@ -265,10 +267,10 @@ def _layers_locations(
 
         # for local layers
         if instance.remote_service is None:
-            locations.append([ogc_server_settings.LOCATION, [instance.alternate]])
+            locations.append([ogc_server_settings.LOCATION, [instance.alternate], []])
         # for remote layers
         else:
-            locations.append([instance.remote_service.service_url, [instance.alternate]])
+            locations.append([instance.remote_service.service_url, [instance.alternate], []])
 
         if compute_bbox:
             # handle exceeding the area of use of the default thumb's CRS
@@ -303,6 +305,10 @@ def _layers_locations(
             name = get_layer_name(map_layer)
             store = map_layer.store
             workspace = get_layer_workspace(map_layer)
+            try:
+                map_layer_style = json.loads(map_layer.layer_params).get('style')
+            except json.decoder.JSONDecodeError:
+                map_layer_style = None
 
             if store and Layer.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
                 layer = Layer.objects.filter(store=store, workspace=workspace, name=name).first()
@@ -322,15 +328,29 @@ def _layers_locations(
                 if len(locations) and locations[-1][0] == layer.remote_service.service_url:
                     # if previous layer's location is the same as the current one - append current layer there
                     locations[-1][1].append(layer.alternate)
+                    # update the styles too
+                    if map_layer_style:
+                        locations[-1][2].append(map_layer_style)
                 else:
-                    locations.append([layer.remote_service.service_url, [layer.alternate]])
+                    locations.append([
+                        layer.remote_service.service_url,
+                        [layer.alternate],
+                        [map_layer_style] if map_layer_style else []
+                    ])
             else:
                 # limit number of locations, ensuring layer order
                 if len(locations) and locations[-1][0] == settings.OGC_SERVER["default"]["LOCATION"]:
                     # if previous layer's location is the same as the current one - append current layer there
                     locations[-1][1].append(layer.alternate)
+                    # update the styles too
+                    if map_layer_style:
+                        locations[-1][2].append(map_layer_style)
                 else:
-                    locations.append([settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]])
+                    locations.append([
+                        settings.OGC_SERVER["default"]["LOCATION"],
+                        [layer.alternate],
+                        [map_layer_style] if map_layer_style else []
+                    ])
 
             if compute_bbox:
                 # handle exceeding the area of use of the default thumb's CRS
