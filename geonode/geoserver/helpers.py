@@ -2233,14 +2233,6 @@ def _dump_image_spec(request_body, image_spec):
         return f"Unable to dump image_spec for request: {request_body}"
 
 
-def _fixup_ows_url(thumb_spec):
-    # @HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
-    # so rendering of thumbnails fails - replace those uri's with full geoserver URL
-    gspath = f"\"{ogc_server_settings.public_url}"  # this should be in img src attributes
-    repl = f"\"{ogc_server_settings.LOCATION}"
-    return re.sub(gspath, repl, thumb_spec)
-
-
 def mosaic_delete_first_granule(cat, layer):
     # - since GeoNode will uploade the first granule again through the Importer, we need to /
     #   delete the one created by the gs_config

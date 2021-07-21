@@ -246,6 +246,7 @@ class BaseApiTests(APITestCase):
         # Admin
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertEqual(response.data['resource']['state'], enumerations.STATE_PROCESSED)
+        self.assertEqual(response.data['resource']['sourcetype'], enumerations.SOURCE_TYPE_LOCAL)
         self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
         # Annonymous
         self.assertIsNone(self.client.logout())

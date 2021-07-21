@@ -27,14 +27,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from tinymce.models import HTMLField
 
-from geonode.base import enumerations
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.base.models import (
     ResourceBase,
     ResourceBaseManager)
-
-from ..services.enumerations import INDEXED
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -140,6 +137,13 @@ class Layer(ResourceBase):
         choices=TIME_REGEX)
     elevation_regex = models.CharField(_('Elevation regex'), max_length=128, null=True, blank=True)
 
+    ptype = models.CharField(
+        _('P-Type'),
+        null=False,
+        blank=False,
+        max_length=80,
+        default="gxp_wmscsource")
+
     default_style = models.ForeignKey(
         Style,
         on_delete=models.SET_NULL,
@@ -167,14 +171,6 @@ class Layer(ResourceBase):
         return self.subtype == 'vector'
 
     @property
-    def processed(self):
-        if self.state == enumerations.STATE_PROCESSED:
-            self.clear_dirty_state()
-        else:
-            self.set_dirty_state()
-        return not self.dirty_state
-
-    @property
     def display_type(self):
         if self.subtype == "vector":
             return "Vector Data"
@@ -200,31 +196,16 @@ class Layer(ResourceBase):
         return None
 
     @property
-    def ows_url(self):
-        if self.remote_service is not None and self.remote_service.method == INDEXED:
-            result = self.remote_service.service_url
-        else:
-            result = f"{(settings.OGC_SERVER['default']['PUBLIC_LOCATION'])}ows"
-        return result
-
-    @property
-    def ptype(self):
-        return self.remote_service.ptype if self.remote_service else "gxp_wmscsource"
-
-    @property
-    def service_typename(self):
-        if self.remote_service is not None:
-            return f"{self.remote_service.name}:{self.alternate}"
-        else:
-            return self.alternate
-
-    @property
     def attributes(self):
         if self.attribute_set and self.attribute_set.count():
             _attrs = self.attribute_set
         else:
             _attrs = Attribute.objects.filter(layer=self)
         return _attrs.exclude(attribute='the_geom').order_by('display_order')
+
+    @property
+    def service_typename(self):
+        return f"{self.remote_typename}:{self.alternate}" if self.remote_typename else self.alternate
 
     # layer geometry type.
     @property
