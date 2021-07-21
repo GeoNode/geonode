@@ -272,15 +272,21 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         # for common fields (such as abstract and title) and adds
         # sensible default values
         keywords = resource_fields.pop("keywords", [])
+        defaults = dict(
+            owner=geonode_service.owner,
+            remote_service=geonode_service,
+            remote_typename=geonode_service.name,
+            sourcetype=base_enumerations.SOURCE_TYPE_REMOTE,
+            ptype=getattr(geonode_service, "ptype", "gxp_wmscsource"),
+            **resource_fields
+        )
+        if geonode_service.method == INDEXED:
+            defaults['ows_url'] = geonode_service.service_url
+
         geonode_layer = resource_manager.create(
             None,
             resource_type=Layer,
-            defaults=dict(
-                owner=geonode_service.owner,
-                remote_service=geonode_service,
-                sourcetype=base_enumerations.SOURCE_TYPE_REMOTE,
-                **resource_fields
-            )
+            defaults=defaults
         )
         resource_manager.update(geonode_layer.uuid, instance=geonode_layer, keywords=keywords, notify=True)
         resource_manager.set_permissions(geonode_layer.uuid, instance=geonode_layer)

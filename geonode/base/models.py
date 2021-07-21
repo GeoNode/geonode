@@ -961,6 +961,20 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         choices=enumerations.SOURCE_TYPES,
         help_text=_('The resource source type, which can be one of "LOCAL", "REMOTE" or "COPYREMOTE".'))
 
+    remote_typename = models.CharField(
+        _('Remote Service Typename'),
+        null=True,
+        blank=True,
+        max_length=512,
+        help_text=_('Name of the Remote Service if any.'))
+
+    ows_url = models.URLField(
+        _('ows URL'),
+        null=True,
+        blank=True,
+        default=f"{(settings.OGC_SERVER['default']['PUBLIC_LOCATION'])}ows",
+        help_text=_('The URL of the OWS service providing this layer, if any exists.'))
+
     # fields controlling security state
     dirty_state = models.BooleanField(
         _("Dirty State"),
@@ -1374,6 +1388,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def processed(self):
+        if self.state == enumerations.STATE_PROCESSED:
+            self.clear_dirty_state()
+        else:
+            self.set_dirty_state()
         return not self.dirty_state
 
     @property

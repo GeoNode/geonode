@@ -474,9 +474,6 @@ class MapLayer(models.Model, GXPLayerBase):
     visibility = models.BooleanField(_('visibility'), default=True)
     # A boolean value, true if this layer should be visible when the map loads.
 
-    ows_url = models.URLField(_('ows URL'), null=True, blank=True)
-    # The URL of the OWS service providing this layer, if any exists.
-
     layer_params = models.TextField(_('layer params'))
     # A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     # passed to the GXP viewer.

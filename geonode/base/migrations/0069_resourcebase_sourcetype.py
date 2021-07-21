@@ -14,5 +14,5 @@ class Migration(migrations.Migration):
             model_name='resourcebase',
             name='sourcetype',
             field=models.CharField(choices=[('LOCAL', 'LOCAL'), ('REMOTE', 'REMOTE'), ('COPYREMOTE', 'COPYREMOTE')], default='LOCAL', help_text='The resource source type, which can be one of "LOCAL", "REMOTE" or "COPYREMOTE".', max_length=16, verbose_name='Source Type'),
-        ),
+        )
     ]
