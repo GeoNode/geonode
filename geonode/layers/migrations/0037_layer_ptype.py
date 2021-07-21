@@ -2,20 +2,24 @@
 
 from django.db import migrations, models
 
+from geonode.services.enumerations import INDEXED
+
 
 def update_remotes_attributes(apps, schema_editor):
+    """Updating Remote Services related attributes
+
+     - For the time being we need to iterate over the layers since the remote service properties
+       are built at runtime and therefore we cannot benefit of an optimized Subquery.
+    """
     MyModel = apps.get_model('layers', 'Layer')
 
-    # Updating 'remote_typename' and 'ptype'
     for _m in MyModel.objects.filter(models.Q(remote_service__isnull=False)):
+        ows_url = _m.remote_service.service_url if _m.remote_service.method == INDEXED else _m.ows_url
         MyModel.objects.filter(pk=_m).update(
+            ows_url=ows_url,
             sourcetype='REMOTE',
             ptype=_m.remote_service.ptype,
             remote_typename=_m.remote_service.name)
-
-    # Updating 'sourcetype' and 'ows_url'
-    for _m in MyModel.objects.filter(models.Q(remote_service__isnull=False) & models.Q(remote_service__method="I")):
-        MyModel.objects.filter(pk=_m).update(ows_url=_m.remote_service.service_url)
 
 
 class Migration(migrations.Migration):
