@@ -21,4 +21,9 @@ class Migration(migrations.Migration):
             name='map',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='dataset_set', to='maps.map'),
         ),
+        migrations.AlterField(
+            model_name='maplayer',
+            name='dataset_params',
+            field=models.TextField(verbose_name='dataset params'),
+        ),
     ]

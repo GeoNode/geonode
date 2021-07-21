@@ -477,7 +477,7 @@ class MapLayer(models.Model, GXPLayerBase):
     visibility = models.BooleanField(_('visibility'), default=True)
     # A boolean value, true if this layer should be visible when the map loads.
 
-    layer_params = models.TextField(_('layer params'))
+    dataset_params = models.TextField(_('dataset params'))
     # A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     # passed to the GXP viewer.
 
