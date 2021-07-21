@@ -16,3 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+from .config import *
+from .model import *
+from .tasks import *
+from .harvesters import *
