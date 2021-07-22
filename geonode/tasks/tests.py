@@ -72,7 +72,6 @@ class TestDeleteIncompleteSessionUploadsTask(TestCase):
         ]
         self.delete_upload_ids = {u.id for u in self.uploads_to_be_deleted}
 
-
     def test_only_expected_uploads_are_deleted(self):
         uploads = Upload.objects.all()
         upload_ids = {u.id for u in uploads}
