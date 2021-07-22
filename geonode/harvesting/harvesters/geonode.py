@@ -34,7 +34,7 @@ from lxml import etree
 
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 
 from .. import (
@@ -54,7 +54,7 @@ class GeoNodeLayerType(enum.Enum):
 
 class GeoNodeResourceType(enum.Enum):
     DOCUMENT = "documents"
-    LAYER = "layers"
+    DATASET = "layers"
     MAP = "maps"
 
 
@@ -66,10 +66,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     resource_title_filter: typing.Optional[str]
     http_session: requests.Session
     page_size: int = 10
-
-    _TYPE_DOCUMENT = "documents"
-    _TYPE_LAYER = "layers"
-    _TYPE_MAP = "maps"
 
     def __init__(
             self,
@@ -154,10 +150,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
 
     def get_num_available_resources(self) -> int:
         result = 0
+        if self.harvest_datasets:
+            result += self._get_total_records(GeoNodeResourceType.DATASET)
         if self.harvest_documents:
             result += self._get_total_records(GeoNodeResourceType.DOCUMENT)
-        if self.harvest_datasets:
-            result += self._get_total_records(GeoNodeResourceType.LAYER)
         if self.harvest_maps:
             result += self._get_total_records(GeoNodeResourceType.MAP)
         return result
@@ -185,7 +181,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 result = document_list
         elif offset < (
                 total_resources[GeoNodeResourceType.DOCUMENT] +
-                total_resources[GeoNodeResourceType.LAYER]
+                total_resources[GeoNodeResourceType.DATASET]
         ):
             dataset_offset = offset - total_resources[GeoNodeResourceType.DOCUMENT]
             dataset_list = self._list_dataset_resources(dataset_offset)
@@ -197,7 +193,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         else:
             map_offset = offset - (
                 total_resources[GeoNodeResourceType.DOCUMENT] +
-                total_resources[GeoNodeResourceType.LAYER]
+                total_resources[GeoNodeResourceType.DATASET]
             )
             result = self._list_map_resources(map_offset)
         return result
@@ -218,7 +214,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         """Return resource type class from resource type string."""
         return {
             GeoNodeResourceType.MAP.value: Map,
-            GeoNodeResourceType.LAYER.value: Layer,
+            GeoNodeResourceType.DATASET.value: Dataset,
             GeoNodeResourceType.DOCUMENT.value: Document,
         }[remote_resource_type]
 
@@ -231,7 +227,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         endpoint_suffix = {
             GeoNodeResourceType.DOCUMENT.value: (
                 f"/documents/{resource_unique_identifier}/"),
-            GeoNodeResourceType.LAYER.value: f"/layers/{resource_unique_identifier}/",
+            GeoNodeResourceType.DATASET.value: f"/layers/{resource_unique_identifier}/",
             GeoNodeResourceType.MAP.value: f"/maps/{resource_unique_identifier}/",
         }[harvestable_resource.remote_resource_type.lower()]
         response = self.http_session.get(f"{self.base_api_url}/{endpoint_suffix}")
@@ -257,7 +253,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     ) -> bool:
         return {
             GeoNodeResourceType.DOCUMENT.value: self.copy_documents,
-            GeoNodeResourceType.LAYER.value: False,
+            GeoNodeResourceType.DATASET.value: False,
             GeoNodeResourceType.MAP.value: False,
         }[harvestable_resource.remote_resource_type]
 
@@ -285,15 +281,15 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             self) -> typing.Dict[GeoNodeResourceType, int]:
         result = {
             GeoNodeResourceType.DOCUMENT: 0,
-            GeoNodeResourceType.LAYER: 0,
+            GeoNodeResourceType.DATASET: 0,
             GeoNodeResourceType.MAP: 0,
         }
         if self.harvest_documents:
             result[GeoNodeResourceType.DOCUMENT] = self._get_total_records(
                 GeoNodeResourceType.DOCUMENT)
         if self.harvest_datasets:
-            result[GeoNodeResourceType.LAYER] = self._get_total_records(
-                GeoNodeResourceType.LAYER)
+            result[GeoNodeResourceType.DATASET] = self._get_total_records(
+                GeoNodeResourceType.DATASET)
         if self.harvest_maps:
             result[GeoNodeResourceType.MAP] = self._get_total_records(
                 GeoNodeResourceType.MAP)
@@ -310,7 +306,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             self, offset: int) -> typing.List[base.BriefRemoteResource]:
         result = []
         if self.harvest_datasets:
-            result = self._list_resources_by_type(GeoNodeResourceType.LAYER, offset)
+            result = self._list_resources_by_type(GeoNodeResourceType.DATASET, offset)
         return result
 
     def _list_map_resources(
@@ -466,7 +462,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             ),
             data_quality=get_xpath_value(csw_record, ".//gmd:dataQualityInfo//gmd:lineage"),
         )
-        if harvestable_resource.remote_resource_type == GeoNodeResourceType.LAYER.value:
+        if harvestable_resource.remote_resource_type == GeoNodeResourceType.DATASET.value:
             layer_type = (
                 GeoNodeLayerType.RASTER if api_record.get("storeType") == "coverageStore" else GeoNodeLayerType.VECTOR
             )
@@ -534,7 +530,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                     original = f"{self.remote_url}{document_url}"
                 else:
                     original = document_url
-        elif harvestable_resource.remote_resource_type == GeoNodeResourceType.LAYER.value:
+        elif harvestable_resource.remote_resource_type == GeoNodeResourceType.DATASET.value:
             # for layers, we generate a download URL for a zipped shapefile, in a similar way
             # as is done on the main GeoNode UI, by leveraging WFS
             if wfs is not None:
