@@ -11,7 +11,7 @@
   <div class="col-md-8">
     <p class="lead">{% trans "This page provides helpful information about how to use the GeoNode. You can use the sidebar links to navigate to what you want to know." %}</p>
 
-    {% url 'layer_browse' as url_layer_browse %}
+    {% url 'dataset_browse' as url_dataset_browse %}
     {% url 'maps_browse' as url_maps_browse %}
     {% url 'new_map' as url_new_map %}
     {% url 'developer' as url_developer %}
@@ -20,7 +20,7 @@
     <p>The GeoNode provides access to data sets and a map editing application allows users to browse existing maps and contribute their own.</p>
 
     <h4 id="browsing-data">Browsing Layers</h4>
-    <p>The <a href="{{ url_layer_browse }}">Layers</a> tab allows you to browse data uploaded to this GeoNode.</p>
+    <p>The <a href="{{ url_dataset_browse }}">Layers</a> tab allows you to browse data uploaded to this GeoNode.</p>
     <p>All data can be downloaded in a variety of formats, for use in other applications.</p>
 
     <h4 id="developer-access">Developer Access</h4>

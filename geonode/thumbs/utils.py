@@ -29,10 +29,10 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
+from geonode.utils import OGC_Servers_Handler
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
-from geonode.geoserver.helpers import OGC_Servers_Handler
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +69,7 @@ def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[Li
 
 def transform_bbox(bbox: List, target_crs: str = "epsg:3857"):
     """
-    Function transforming BBOX in layer compliant format (xmin, xmax, ymin, ymax, 'EPSG:xxxx') to another CRS,
+    Function transforming BBOX in dataset compliant format (xmin, xmax, ymin, ymax, 'EPSG:xxxx') to another CRS,
     preserving overflow values.
     """
     transformer = Transformer.from_crs(bbox[-1].lower(), target_crs.lower(), always_xy=True)
@@ -88,7 +88,7 @@ def expand_bbox_to_ratio(
     Function returning an expanded BBOX, ensuring it's ratio, based on the provided BBOX, and width and height
     of the target image.
 
-    :param bbox: a layer compliant BBOX in a certain CRS, in (xmin, xmax, ymin, ymax, 'EPSG:xxxx') order
+    :param bbox: a dataset compliant BBOX in a certain CRS, in (xmin, xmax, ymin, ymax, 'EPSG:xxxx') order
     :param target_width: width of the target image in pixels
     :param target_height: height of the target image in pixels
     :return: BBOX (in input's format) with provided height/width ratio, and unchanged center point
@@ -134,11 +134,11 @@ def expand_bbox_to_ratio(
     return new_bbox
 
 
-def assign_missing_thumbnail(instance: Union[Layer, Map]) -> None:
+def assign_missing_thumbnail(instance: Union[Dataset, Map]) -> None:
     """
     Function assigning settings.MISSING_THUMBNAIL to a provided instance
 
-    :param instance: instance of Layer or Map models
+    :param instance: instance of Dataset or Map models
     """
     instance.save_thumbnail("", image=None)
 
@@ -250,7 +250,7 @@ def get_map(
 
 def epsg_3857_area_of_use():
     """
-    Shortcut function, returning area of use of EPSG:3857 (in EPSG:4326) in a layer compliant BBOX
+    Shortcut function, returning area of use of EPSG:3857 (in EPSG:4326) in a dataset compliant BBOX
     """
     epsg3857 = CRS.from_user_input('EPSG:3857')
     return [
@@ -290,7 +290,7 @@ def exceeds_epsg3857_area_of_use(bbox: List) -> bool:
     Function checking if a provided BBOX extends the are of use of EPSG:3857. Comparison is performed after casting
     the BBOX to EPSG:4326 (pivot for EPSG:3857).
 
-    :param bbox: a layer compliant BBOX in a certain CRS, in (xmin, xmax, ymin, ymax, 'EPSG:xxxx') order
+    :param bbox: a dataset compliant BBOX in a certain CRS, in (xmin, xmax, ymin, ymax, 'EPSG:xxxx') order
     :returns: List of indicators whether BBOX's coord exceeds the area of use of EPSG:3857
     """
 

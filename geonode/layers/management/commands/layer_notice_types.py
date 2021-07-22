@@ -18,7 +18,7 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
-from geonode.layers.populate_layers_data import create_notifications
+from geonode.layers.populate_datasets_data import create_notifications
 
 
 class Command(BaseCommand):

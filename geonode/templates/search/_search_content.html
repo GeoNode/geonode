@@ -2,14 +2,14 @@
 <div class="row" ng-controller="CartList">
   <div class="col-md-3">
 
-    {% if facet_type == 'layers' %}
+    {% if facet_type == 'datasets' %}
     <resource-cart data-facet-type="{{ facet_type }}" selectedString='{% trans "Selection" %}' emptyString="{% trans "No list items selected. Use the selection fields to add." %}" >
     </resource-cart>
     {% endif %}
     <div class="row">
       <div class="col-xs-12">
 
-        {% if user.is_authenticated and facet_type == 'layers' %}
+        {% if user.is_authenticated and facet_type == 'datasets' %}
           {% block bulk_perms_button %}
           <div class="btn-group btn-group-justified" role="group" aria-label="tools">
             <div class="btn-group" role="group">
@@ -52,7 +52,7 @@
   <div class="col-md-9">
     <div class="row">
       <div class="col-md-10">
-          {% if facet_type == 'layers' %}
+          {% if facet_type == 'datasets' %}
           <span style="font-size: 34px;" ng-bind="total_counts + ' ' + '{% trans "Datasets found" %}'"></span>
           {% elif facet_type == 'maps' %}
           <span style="font-size: 34px;" ng-bind="total_counts + ' ' + '{% trans "Maps found" %}'"></span>

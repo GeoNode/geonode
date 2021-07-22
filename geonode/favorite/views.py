@@ -28,7 +28,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 
 from geonode.documents.models import Document
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from . import models
 
@@ -44,8 +44,8 @@ def favorite(req, subject, id):
         obj = get_object_or_404(Document, pk=id)
     elif subject == 'map':
         obj = get_object_or_404(Map, pk=id)
-    elif subject == 'layer':
-        obj = get_object_or_404(Layer, pk=id)
+    elif subject == 'dataset':
+        obj = get_object_or_404(Dataset, pk=id)
     elif subject == 'user':
         obj = get_object_or_404(settings.AUTH_USER_MODEL, pk=id)
 

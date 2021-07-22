@@ -25,7 +25,7 @@ from django.conf import settings
 from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField
 
-from geonode.layers.models import Layer, Style, Attribute
+from geonode.layers.models import Dataset, Style, Attribute
 from geonode.base.api.serializers import ResourceBaseSerializer
 
 import logging
@@ -71,21 +71,21 @@ class AttributeSerializer(DynamicModelSerializer):
     attribute = serializers.CharField(read_only=True)
 
 
-class LayerSerializer(ResourceBaseSerializer):
+class DatasetSerializer(ResourceBaseSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
         super().__init__(*args, **kwargs)
 
     class Meta:
-        model = Layer
-        name = 'layer'
+        model = Dataset
+        name = 'dataset'
         view_name = 'datasets-list'
         fields = (
             'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',
             'use_featureinfo_custom_template', 'featureinfo_custom_template',
-            'default_style', 'styles', 'attribute_set'
+            'ows_url', 'ptype', 'default_style', 'styles', 'attribute_set'
         )
 
     name = serializers.CharField(read_only=True)
@@ -99,8 +99,8 @@ class LayerSerializer(ResourceBaseSerializer):
     attribute_set = DynamicRelationField(AttributeSerializer, embed=True, many=True, read_only=True)
 
 
-class LayerListSerializer(LayerSerializer):
-    class Meta(LayerSerializer.Meta):
+class DatasetListSerializer(DatasetSerializer):
+    class Meta(DatasetSerializer.Meta):
         fields = (
             'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',

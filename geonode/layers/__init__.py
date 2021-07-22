@@ -21,16 +21,18 @@ from django.utils.translation import ugettext_noop as _
 from geonode.notifications_helper import NotificationsAppConfigBase
 
 
-class LayersAppConfig(NotificationsAppConfigBase):
+class DatasetAppConfig(NotificationsAppConfigBase):
     name = 'geonode.layers'
+    verbose_name = "Dataset"
+    verbose_name_plural = "Datasets"
     NOTIFICATIONS = (
-        ("layer_created", _("Layer Created"), _("A Layer was created"),),
-        ("layer_updated", _("Layer Updated"), _("A Layer was updated"),),
-        ("layer_approved", _("Layer Approved"), _("A Layer was approved by a Manager"),),
-        ("layer_published", _("Layer Published"), _("A Layer was published"),),
-        ("layer_deleted", _("Layer Deleted"), _("A Layer was deleted"),),
-        ("layer_comment", _("Comment on Layer"), _("A layer was commented on"),),
-        ("layer_rated", _("Rating for Layer"), _("A rating was given to a layer"),),)
+        ("dataset_created", _("Dataset Created"), _("A Dataset was created"),),
+        ("dataset_updated", _("Dataset Updated"), _("A Dataset was updated"),),
+        ("dataset_approved", _("Dataset Approved"), _("A Dataset was approved by a Manager"),),
+        ("dataset_published", _("Dataset Published"), _("A Dataset was published"),),
+        ("dataset_deleted", _("Dataset Deleted"), _("A Dataset was deleted"),),
+        ("dataset_comment", _("Comment on Dataset"), _("A layer was commented on"),),
+        ("dataset_rated", _("Rating for Dataset"), _("A rating was given to a layer"),),)
 
 
-default_app_config = 'geonode.layers.LayersAppConfig'
+default_app_config = 'geonode.layers.DatasetAppConfig'

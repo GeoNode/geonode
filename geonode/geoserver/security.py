@@ -31,13 +31,13 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
-from geonode.utils import get_layer_workspace
+from geonode.utils import get_dataset_workspace
 from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger(__name__)
 
 
-def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group=None,
+def _get_geofence_payload(layer, dataset_name, workspace, access, user=None, group=None,
                           service=None, request=None, geo_limit=None):
     highest_priority = get_highest_priority()
     root_el = etree.Element("Rule")
@@ -53,8 +53,8 @@ def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group
         role_el.text = f"ROLE_{group.upper()}"
     workspace_el = etree.SubElement(root_el, "workspace")
     workspace_el.text = workspace
-    layer_el = etree.SubElement(root_el, "layer")
-    layer_el.text = layer_name
+    dataset_el = etree.SubElement(root_el, "layer")
+    dataset_el.text = dataset_name
     if service is not None and service != "*":
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
@@ -75,13 +75,13 @@ def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group
     return etree.tostring(root_el)
 
 
-def _update_geofence_rule(layer, layer_name, workspace,
+def _update_geofence_rule(layer, dataset_name, workspace,
                           service, request=None,
                           user=None, group=None,
                           geo_limit=None, allow=True):
     payload = _get_geofence_payload(
         layer=layer,
-        layer_name=layer_name,
+        dataset_name=dataset_name,
         workspace=workspace,
         access="ALLOW" if allow else "DENY",
         user=user,
@@ -105,7 +105,7 @@ def _update_geofence_rule(layer, layer_name, workspace,
     logger.debug(f"response status_code: {response.status_code}")
     if response.status_code not in (200, 201):
         msg = (f"Could not ADD GeoServer User {user} Rule for "
-               f"Layer {layer}: '{response.text}'")
+               f"Dataset {layer}: '{response.text}'")
         if 'Duplicate Rule' in response.text:
             logger.debug(msg)
         else:
@@ -197,7 +197,7 @@ def purge_geofence_all():
                     rules_count = rules_objs['count']
                     rules = rules_objs['rules']
                     if rules_count > 0:
-                        # Delete GeoFence Rules associated to the Layer
+                        # Delete GeoFence Rules associated to the Dataset
                         # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
                         for rule in rules:
                             r = requests.delete(f"{url}rest/geofence/rules/id/{str(rule['id'])}",
@@ -215,9 +215,9 @@ def purge_geofence_all():
             logger.debug(tb)
 
 
-def purge_geofence_layer_rules(resource):
+def purge_geofence_dataset_rules(resource):
     """purge layer existing GeoFence Cache Rules"""
-    # Scan GeoFence Rules associated to the Layer
+    # Scan GeoFence Rules associated to the Dataset
     """
     curl -u admin:geoserver
     http://<host>:<port>/geoserver/rest/geofence/rules.json?workspace=geonode&layer={layer}
@@ -226,12 +226,12 @@ def purge_geofence_layer_rules(resource):
     user = settings.OGC_SERVER['default']['USER']
     passwd = settings.OGC_SERVER['default']['PASSWORD']
     headers = {'Content-type': 'application/json'}
-    workspace = get_layer_workspace(resource.layer)
-    layer_name = resource.layer.name if resource.layer and hasattr(resource.layer, 'name') \
-        else resource.layer.alternate.split(":")[0]
+    workspace = get_dataset_workspace(resource.dataset)
+    dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
+        else resource.dataset.alternate.split(":")[0]
     try:
         r = requests.get(
-            f"{url}rest/geofence/rules.json?workspace={workspace}&layer={layer_name}",
+            f"{url}rest/geofence/rules.json?workspace={workspace}&layer={dataset_name}",
             headers=headers,
             auth=HTTPBasicAuth(user, passwd),
             timeout=10,
@@ -242,10 +242,10 @@ def purge_geofence_layer_rules(resource):
             r_ids = []
             if gs_rules and gs_rules['rules']:
                 for r in gs_rules['rules']:
-                    if r['layer'] and r['layer'] == layer_name:
+                    if r['layer'] and r['layer'] == dataset_name:
                         r_ids.append(r['id'])
 
-            # Delete GeoFence Rules associated to the Layer
+            # Delete GeoFence Rules associated to the Dataset
             # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
             for r_id in r_ids:
                 r = requests.delete(
@@ -253,8 +253,8 @@ def purge_geofence_layer_rules(resource):
                     headers=headers,
                     auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
-                    msg = "Could not DELETE GeoServer Rule for Layer "
-                    msg = msg + str(layer_name)
+                    msg = "Could not DELETE GeoServer Rule for Dataset "
+                    msg = msg + str(dataset_name)
                     e = Exception(msg)
                     logger.debug(f"Response [{r.status_code}] : {r.text}")
                     raise e
@@ -286,8 +286,8 @@ def set_geofence_invalidate_cache():
             return False
 
 
-def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
-    """Disable/enable a GeoServer Tiled Layer Configuration"""
+def toggle_dataset_cache(dataset_name, enable=True, filters=None, formats=None):
+    """Disable/enable a GeoServer Tiled Dataset Configuration"""
     if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
         try:
             url = settings.OGC_SERVER['default']['LOCATION']
@@ -297,11 +297,11 @@ def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
             curl -v -u admin:geoserver -XGET \
                 "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
             """
-            r = requests.get(f'{url}gwc/rest/layers/{layer_name}.xml',
+            r = requests.get(f'{url}gwc/rest/layers/{dataset_name}.xml',
                              auth=HTTPBasicAuth(user, passwd))
 
             if (r.status_code < 200 or r.status_code > 201):
-                logger.debug(f"Could not Retrieve {layer_name} Cache.")
+                logger.debug(f"Could not Retrieve {dataset_name} Cache.")
                 return False
             try:
                 xml_content = r.content
@@ -361,12 +361,12 @@ def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
                 """
                 headers = {'Content-type': 'text/xml'}
                 payload = ET.tostring(tree)
-                r = requests.post(f'{url}gwc/rest/layers/{layer_name}.xml',
+                r = requests.post(f'{url}gwc/rest/layers/{dataset_name}.xml',
                                   headers=headers,
                                   data=payload,
                                   auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
-                    logger.debug(f"Could not Update {layer_name} Cache.")
+                    logger.debug(f"Could not Update {dataset_name} Cache.")
                     return False
             except Exception:
                 tb = traceback.format_exc()
@@ -379,8 +379,8 @@ def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
             return False
 
 
-def delete_layer_cache(layer_name):
-    """Delete a GeoServer Tiled Layer Configuration and all the cache"""
+def delete_dataset_cache(dataset_name):
+    """Delete a GeoServer Tiled Dataset Configuration and all the cache"""
     if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
         try:
             url = settings.OGC_SERVER['default']['LOCATION']
@@ -390,11 +390,11 @@ def delete_layer_cache(layer_name):
             curl -v -u admin:geoserver -XDELETE \
                 "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
             """
-            r = requests.delete(f'{url}gwc/rest/layers/{layer_name}.xml',
+            r = requests.delete(f'{url}gwc/rest/layers/{dataset_name}.xml',
                                 auth=HTTPBasicAuth(user, passwd))
 
             if (r.status_code < 200 or r.status_code > 201):
-                logger.debug(f"Could not Delete {layer_name} Cache.")
+                logger.debug(f"Could not Delete {dataset_name} Cache.")
                 return False
             return True
         except Exception:
@@ -403,29 +403,29 @@ def delete_layer_cache(layer_name):
             return False
 
 
-def set_geowebcache_invalidate_cache(layer_alternate, cat=None):
+def set_geowebcache_invalidate_cache(dataset_alternate, cat=None):
     """invalidate GeoWebCache Cache Rules"""
-    if layer_alternate is not None and len(layer_alternate) and "None" not in layer_alternate:
+    if dataset_alternate is not None and len(dataset_alternate) and "None" not in dataset_alternate:
         try:
-            if cat is None or cat.get_layer(layer_alternate) is not None:
+            if cat is None or cat.get_layer(dataset_alternate) is not None:
                 url = settings.OGC_SERVER['default']['LOCATION']
                 user = settings.OGC_SERVER['default']['USER']
                 passwd = settings.OGC_SERVER['default']['PASSWORD']
                 """
                 curl -v -u admin:geoserver \
                 -H "Content-type: text/xml" \
-                -d "<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>" \
+                -d "<truncateLayer><layerName>{dataset_alternate}</layerName></truncateLayer>" \
                 http://localhost:8080/geoserver/gwc/rest/masstruncate
                 """
                 headers = {'Content-type': 'text/xml'}
-                payload = f"<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>"
+                payload = f"<truncateLayer><layerName>{dataset_alternate}</layerName></truncateLayer>"
                 r = requests.post(
                     f"{url}gwc/rest/masstruncate",
                     headers=headers,
                     data=payload,
                     auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
-                    logger.debug(f"Could not Truncate GWC Cache for Layer '{layer_alternate}'.")
+                    logger.debug(f"Could not Truncate GWC Cache for Dataset '{dataset_alternate}'.")
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
@@ -434,7 +434,7 @@ def set_geowebcache_invalidate_cache(layer_alternate, cat=None):
 def set_geofence_all(instance):
     """assign access permissions to all users
 
-    This method is only relevant to Layer instances that have their
+    This method is only relevant to Dataset instances that have their
     underlying data managed by geoserver, meaning:
 
     * layers that are not associated with a Service
@@ -445,16 +445,16 @@ def set_geofence_all(instance):
 
     resource = instance.get_self_resource()
     logger.debug(f"Inside set_geofence_all for instance {instance}")
-    workspace = get_layer_workspace(resource.layer)
-    layer_name = resource.layer.name if resource.layer and hasattr(resource.layer, 'name') \
-        else resource.layer.alternate.split(":")[0]
+    workspace = get_dataset_workspace(resource.dataset)
+    dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
+        else resource.dataset.alternate.split(":")[0]
     logger.debug(f"going to work in workspace {workspace}")
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
-        # Create GeoFence Rules for ANONYMOUS to the Layer
+        # Create GeoFence Rules for ANONYMOUS to the Dataset
         """
         curl -X POST -u admin:geoserver -H "Content-Type: text/xml" -d \
         "<Rule><workspace>geonode</workspace><layer>{layer}</layer><access>ALLOW</access></Rule>" \
@@ -462,8 +462,8 @@ def set_geofence_all(instance):
         """
         headers = {'Content-type': 'application/xml'}
         payload = _get_geofence_payload(
-            layer=resource.layer,
-            layer_name=layer_name,
+            layer=resource.dataset,
+            dataset_name=dataset_name,
             workspace=workspace,
             access="ALLOW"
         )
@@ -477,7 +477,7 @@ def set_geofence_all(instance):
             logger.debug(
                 f"Response {response.status_code} : {response.text}")
             raise RuntimeError("Could not ADD GeoServer ANONYMOUS Rule "
-                               f"for Layer {layer_name}")
+                               f"for Dataset {dataset_name}")
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
@@ -488,24 +488,24 @@ def set_geofence_all(instance):
             resource.set_dirty_state()
 
 
-def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms=None):
+def sync_geofence_with_guardian(dataset, perms, user=None, group=None, group_perms=None):
     """
     Sync Guardian permissions to GeoFence.
     """
-    _layer_name = layer.name if layer and hasattr(layer, 'name') else layer.alternate.split(":")[0]
-    _layer_workspace = get_layer_workspace(layer)
+    _dataset_name = dataset.name if dataset and hasattr(dataset, 'name') else dataset.alternate.split(":")[0]
+    _dataset_workspace = get_dataset_workspace(dataset)
     # Create new rule-set
-    gf_services = _get_gf_services(layer, perms)
+    gf_services = _get_gf_services(dataset, perms)
 
     gf_requests = {}
-    if 'change_layer_data' not in perms:
+    if 'change_dataset_data' not in perms:
         _skip_perm = False
         if user and group_perms:
             if isinstance(user, str):
                 user = get_user_model().objects.get(username=user)
             user_groups = list(user.groups.all().values_list('name', flat=True))
             for _group, _perm in group_perms.items():
-                if 'change_layer_data' in _perm and _group in user_groups:
+                if 'change_dataset_data' in _perm and _group in user_groups:
                     _skip_perm = True
                     break
         if not _skip_perm:
@@ -519,7 +519,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     users_geolimits = None
     groups_geolimits = None
     anonymous_geolimits = None
-    _group, _user, _disable_cache, users_geolimits, groups_geolimits, anonymous_geolimits = get_user_geolimits(layer, user, group, gf_services)
+    _group, _user, _disable_cache, users_geolimits, groups_geolimits, anonymous_geolimits = get_user_geolimits(dataset, user, group, gf_services)
 
     if _disable_cache:
         gf_services_limits_first = {"*": gf_services.pop('*')}
@@ -527,56 +527,56 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
         gf_services = gf_services_limits_first
 
     for service, allowed in gf_services.items():
-        if layer and _layer_name and allowed:
+        if dataset and _dataset_name and allowed:
             if _user:
-                logger.debug(f"Adding 'user' to geofence the rule: {layer} {service} {_user}")
+                logger.debug(f"Adding 'user' to geofence the rule: {dataset} {service} {_user}")
                 _wkt = None
                 if users_geolimits and users_geolimits.count():
                     _wkt = users_geolimits.last().wkt
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                        _update_geofence_rule(dataset, _dataset_name, _dataset_workspace,
                                               service, request=request, user=_user, allow=enabled)
-                _update_geofence_rule(layer, _layer_name, _layer_workspace, service, user=_user, geo_limit=_wkt)
+                _update_geofence_rule(dataset, _dataset_name, _dataset_workspace, service, user=_user, geo_limit=_wkt)
             elif not _group:
-                logger.debug(f"Adding to geofence the rule: {layer} {service} *")
+                logger.debug(f"Adding to geofence the rule: {dataset} {service} *")
                 _wkt = None
                 if anonymous_geolimits and anonymous_geolimits.count():
                     _wkt = anonymous_geolimits.last().wkt
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                        _update_geofence_rule(dataset, _dataset_name, _dataset_workspace,
                                               service, request=request, user=_user, allow=enabled)
-                _update_geofence_rule(layer, _layer_name, _layer_workspace, service, geo_limit=_wkt)
+                _update_geofence_rule(dataset, _dataset_name, _dataset_workspace, service, geo_limit=_wkt)
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                        _update_geofence_rule(dataset, _dataset_name, _dataset_workspace,
                                               service, request=request, user=_user, allow=enabled)
             if _group:
-                logger.debug(f"Adding 'group' to geofence the rule: {layer} {service} {_group}")
+                logger.debug(f"Adding 'group' to geofence the rule: {dataset} {service} {_group}")
                 _wkt = None
                 if groups_geolimits and groups_geolimits.count():
                     _wkt = groups_geolimits.last().wkt
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                        _update_geofence_rule(dataset, _dataset_name, _dataset_workspace,
                                               service, request=request, group=_group, allow=enabled)
-                _update_geofence_rule(layer, _layer_name, _layer_workspace, service, group=_group, geo_limit=_wkt)
+                _update_geofence_rule(dataset, _dataset_name, _dataset_workspace, service, group=_group, geo_limit=_wkt)
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                        _update_geofence_rule(dataset, _dataset_name, _dataset_workspace,
                                               service, request=request, group=_group, allow=enabled)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         set_geofence_invalidate_cache()
     else:
-        layer.set_dirty_state()
+        dataset.set_dirty_state()
 
 
 def sync_resources_with_guardian(resource=None):
     """
     Sync resources with Guardian and clear their dirty state
     """
-    from geonode.layers.models import Layer
+    from geonode.layers.models import Dataset
     from geonode.base.models import ResourceBase
 
     if resource:
@@ -586,11 +586,11 @@ def sync_resources_with_guardian(resource=None):
     if dirty_resources and dirty_resources.count() > 0:
         logger.debug(" --------------------------- synching with guardian!")
         for r in dirty_resources:
-            if r.polymorphic_ctype.name == 'layer':
+            if r.polymorphic_ctype.name == 'dataset':
                 layer = None
                 try:
-                    purge_geofence_layer_rules(r)
-                    layer = Layer.objects.get(id=r.id)
+                    purge_geofence_dataset_rules(r)
+                    layer = Dataset.objects.get(id=r.id)
                     perm_spec = layer.get_all_level_info()
                     # All the other users
                     if 'users' in perm_spec:
@@ -616,7 +616,7 @@ def sync_resources_with_guardian(resource=None):
 def get_user_geolimits(layer, user, group, gf_services):
     _user = None
     _group = None
-    _disable_layer_cache = None
+    _disable_dataset_cache = None
     users_geolimits = None
     groups_geolimits = None
     anonymous_geolimits = None
@@ -624,32 +624,32 @@ def get_user_geolimits(layer, user, group, gf_services):
         _user = user if isinstance(user, str) else user.username
         users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
         gf_services["*"] = users_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-        _disable_layer_cache = users_geolimits.count() > 0
+        _disable_dataset_cache = users_geolimits.count() > 0
 
     if group:
         _group = group if isinstance(group, str) else group.name
         if GroupProfile.objects.filter(group__name=_group).count() == 1:
             groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=_group))
             gf_services["*"] = groups_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-            _disable_layer_cache = groups_geolimits.count() > 0
+            _disable_dataset_cache = groups_geolimits.count() > 0
 
     if not user and not group:
         anonymous_geolimits = layer.users_geolimits.filter(user=get_anonymous_user())
         gf_services["*"] = anonymous_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-        _disable_layer_cache = anonymous_geolimits.count() > 0
-    return _group, _user, _disable_layer_cache, users_geolimits, groups_geolimits, anonymous_geolimits
+        _disable_dataset_cache = anonymous_geolimits.count() > 0
+    return _group, _user, _disable_dataset_cache, users_geolimits, groups_geolimits, anonymous_geolimits
 
 
 def _get_gf_services(layer, perms):
     gf_services = {}
-    gf_services["WMS"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
-    gf_services["GWC"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
-    gf_services["WFS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
+    gf_services["WMS"] = 'view_resourcebase' in perms or 'change_dataset_style' in perms
+    gf_services["GWC"] = 'view_resourcebase' in perms or 'change_dataset_style' in perms
+    gf_services["WFS"] = ('download_resourcebase' in perms or 'change_dataset_data' in perms) \
         and layer.is_vector()
-    gf_services["WCS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
+    gf_services["WCS"] = ('download_resourcebase' in perms or 'change_dataset_data' in perms) \
         and not layer.is_vector()
-    gf_services["WPS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms
+    gf_services["WPS"] = 'download_resourcebase' in perms or 'change_dataset_data' in perms
     gf_services["*"] = 'download_resourcebase' in perms and \
-        ('view_resourcebase' in perms or 'change_layer_style' in perms)
+        ('view_resourcebase' in perms or 'change_dataset_style' in perms)
 
     return gf_services

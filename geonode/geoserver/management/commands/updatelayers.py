@@ -131,7 +131,7 @@ class Command(BaseCommand):
                                               dict_['traceback'])
             if remove_deleted:
                 print("Detailed report of layers to be deleted from GeoNode that failed:")
-                for dict_ in output['deleted_layers']:
+                for dict_ in output['deleted_datasets']:
                     if dict_['status'] == 'delete_failed':
                         print("\n\n", dict_['name'], "\n================")
                         traceback.print_exception(dict_['exception_type'],
@@ -147,11 +147,11 @@ class Command(BaseCommand):
             print(f"{output['stats']['updated']} Updated layers")
             print(f"{output['stats']['failed']} Failed layers")
             try:
-                duration_layer = round(
+                duration_dataset = round(
                     output['stats']['duration_sec'] * 1.0 / len(output['layers']), 2)
             except ZeroDivisionError:
-                duration_layer = 0
+                duration_dataset = 0
             if len(output) > 0:
-                print(f"{duration_layer} seconds per layer")
+                print(f"{duration_dataset} seconds per layer")
             if remove_deleted:
                 print(f"\n{output['stats']['deleted']} Deleted layers")

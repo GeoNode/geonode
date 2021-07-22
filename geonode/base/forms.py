@@ -46,7 +46,7 @@ from geonode.base.models import (CuratedThumbnail, HierarchicalKeyword,
                                  TopicCategory)
 from geonode.base.widgets import TaggitSelect2Custom
 from geonode.documents.models import Document
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from django.utils.translation import get_language
 from .fields import MultiThesauriField
 
@@ -412,6 +412,9 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         widget=TinyMCE())
 
+    ptype = forms.CharField(required=False)
+    sourcetype = forms.CharField(required=False)
+
     data_quality_statement = forms.CharField(
         label=_("Data quality statement"),
         required=False,
@@ -470,13 +473,6 @@ class ResourceBaseForm(TranslationModelForm):
         # widget=TreeWidget(url='autocomplete_hierachical_keyword'), #Needs updating to work with select2
         widget=TaggitSelect2Custom(url='autocomplete_hierachical_keyword'))
 
-    """
-    regions = TreeNodeMultipleChoiceField(
-        label=_("Regions"),
-        required=False,
-        queryset=Region.objects.all(),
-        level_indicator=u'___')
-    """
     regions = RegionsMultipleChoiceField(
         label=_("Regions"),
         required=False,
@@ -647,7 +643,7 @@ class UserAndGroupPermissionsForm(forms.Form):
         self.fields['layers'].label_from_instance = self.label_from_instance
 
     layers = forms.ModelMultipleChoiceField(
-        queryset=Layer.objects.all(),
+        queryset=Dataset.objects.all(),
         required=False)
     permission_type = forms.MultipleChoiceField(
         required=True,

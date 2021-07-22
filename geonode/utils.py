@@ -39,13 +39,14 @@ from osgeo import ogr
 from PIL import Image
 from io import BytesIO, StringIO
 from decimal import Decimal
+from threading import local
 from slugify import slugify
 from contextlib import closing
-from collections import defaultdict
+from collections import namedtuple, defaultdict
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from requests.packages.urllib3.util.retry import Retry
-from geonode.storage.manager import storage_manager
+
 from django.conf import settings
 from django.core.cache import cache
 from django.db.models import signals
@@ -57,12 +58,14 @@ from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, connection, transaction
 from django.utils.translation import ugettext_lazy as _
 
 from geonode import geoserver, GeoNodeException  # noqa
 from geonode.compat import ensure_string
+from geonode.storage.manager import storage_manager
 from geonode.base.auth import (
     extend_token,
     get_or_create_token,
@@ -114,6 +117,151 @@ id_none = id(None)
 logger = logging.getLogger("geonode.utils")
 
 
+class ServerDoesNotExist(Exception):
+    pass
+
+
+class OGC_Server(object):  # LGTM: @property will not work in old-style classes
+
+    """
+    OGC Server object.
+    """
+
+    def __init__(self, ogc_server, alias):
+        self.alias = alias
+        self.server = ogc_server
+
+    def __getattr__(self, item):
+        return self.server.get(item)
+
+    @property
+    def credentials(self):
+        """
+        Returns a tuple of the server's credentials.
+        """
+        creds = namedtuple('OGC_SERVER_CREDENTIALS', ['username', 'password'])
+        return creds(username=self.USER, password=self.PASSWORD)
+
+    @property
+    def datastore_db(self):
+        """
+        Returns the server's datastore dict or None.
+        """
+        if self.DATASTORE and settings.DATABASES.get(self.DATASTORE, None):
+            datastore_dict = settings.DATABASES.get(self.DATASTORE, dict())
+            return datastore_dict
+        else:
+            return dict()
+
+    @property
+    def ows(self):
+        """
+        The Open Web Service url for the server.
+        """
+        location = self.PUBLIC_LOCATION if self.PUBLIC_LOCATION else self.LOCATION
+        return self.OWS_LOCATION if self.OWS_LOCATION else urljoin(location, 'ows')
+
+    @property
+    def rest(self):
+        """
+        The REST endpoint for the server.
+        """
+        return urljoin(self.LOCATION, 'rest') if not self.REST_LOCATION else self.REST_LOCATION
+
+    @property
+    def public_url(self):
+        """
+        The global public endpoint for the server.
+        """
+        return self.LOCATION if not self.PUBLIC_LOCATION else self.PUBLIC_LOCATION
+
+    @property
+    def internal_ows(self):
+        """
+        The Open Web Service url for the server used by GeoNode internally.
+        """
+        location = self.LOCATION
+        return urljoin(location, 'ows')
+
+    @property
+    def hostname(self):
+        return urlsplit(self.LOCATION).hostname
+
+    @property
+    def netloc(self):
+        return urlsplit(self.LOCATION).netloc
+
+    def __str__(self):
+        return str(self.alias)
+
+
+class OGC_Servers_Handler:
+
+    """
+    OGC Server Settings Convenience dict.
+    """
+
+    def __init__(self, ogc_server_dict):
+        self.servers = ogc_server_dict
+        # FIXME(Ariel): Are there better ways to do this without involving
+        # local?
+        self._servers = local()
+
+    def ensure_valid_configuration(self, alias):
+        """
+        Ensures the settings are valid.
+        """
+        try:
+            server = self.servers[alias]
+        except KeyError:
+            raise ServerDoesNotExist(f"The server {alias} doesn't exist")
+
+        if 'PRINTNG_ENABLED' in server:
+            raise ImproperlyConfigured("The PRINTNG_ENABLED setting has been removed, use 'PRINT_NG_ENABLED' instead.")
+
+    def ensure_defaults(self, alias):
+        """
+        Puts the defaults into the settings dictionary for a given connection where no settings is provided.
+        """
+        try:
+            server = self.servers[alias]
+        except KeyError:
+            raise ServerDoesNotExist(f"The server {alias} doesn't exist")
+
+        server.setdefault('BACKEND', 'geonode.geoserver')
+        server.setdefault('LOCATION', 'http://localhost:8080/geoserver/')
+        server.setdefault('USER', 'admin')
+        server.setdefault('PASSWORD', 'geoserver')
+        server.setdefault('DATASTORE', '')
+
+        for option in ['MAPFISH_PRINT_ENABLED', 'PRINT_NG_ENABLED', 'GEONODE_SECURITY_ENABLED',
+                       'GEOFENCE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
+            server.setdefault(option, True)
+
+        for option in ['WMST_ENABLED', 'WPS_ENABLED']:
+            server.setdefault(option, False)
+
+    def __getitem__(self, alias):
+        if hasattr(self._servers, alias):
+            return getattr(self._servers, alias)
+
+        self.ensure_defaults(alias)
+        self.ensure_valid_configuration(alias)
+        server = self.servers[alias]
+        server = OGC_Server(alias=alias, ogc_server=server)
+        setattr(self._servers, alias, server)
+        return server
+
+    def __setitem__(self, key, value):
+        setattr(self._servers, key, value)
+
+    def __iter__(self):
+        return iter(self.servers)
+
+    def all(self):
+        return [self[alias] for alias in self]
+
+
 def unzip_file(upload_file, extension='.shp', tempdir=None):
     """
     Unzips a zipfile into a temporary directory and returns the full path of the .shp file inside (if any)
@@ -150,32 +298,32 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
     return absolute_base_file
 
 
-def get_layer_name(layer):
+def get_dataset_name(dataset):
     """Get the workspace where the input layer belongs"""
-    _name = layer.name
+    _name = dataset.name
     if _name and ':' in _name:
         _name = _name.split(':')[1]
     try:
-        if not _name and layer.alternate:
-            if ':' in layer.alternate:
-                _name = layer.alternate.split(':')[1]
+        if not _name and dataset.alternate:
+            if ':' in dataset.alternate:
+                _name = dataset.alternate.split(':')[1]
             else:
-                _name = layer.alternate
+                _name = dataset.alternate
     except Exception:
         pass
     return _name
 
 
-def get_layer_workspace(layer):
+def get_dataset_workspace(dataset):
     """Get the workspace where the input layer belongs"""
     alternate = None
     workspace = None
     try:
-        alternate = layer.alternate
+        alternate = dataset.alternate
     except Exception:
-        alternate = layer.name
+        alternate = dataset.name
     try:
-        workspace = layer.workspace
+        workspace = dataset.workspace
     except Exception:
         workspace = None
     if not workspace and alternate and ':' in alternate:
@@ -184,11 +332,11 @@ def get_layer_workspace(layer):
         default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
         try:
             from geonode.services.enumerations import CASCADED
-            if layer.remote_service.method == CASCADED:
+            if dataset.remote_service.method == CASCADED:
                 workspace = getattr(
                     settings, "CASCADE_WORKSPACE", default_workspace)
             else:
-                raise RuntimeError("Layer is not cascaded")
+                raise RuntimeError("Dataset is not cascaded")
         except AttributeError:  # layer does not have a service
             workspace = default_workspace
     return workspace
@@ -471,7 +619,7 @@ def inverse_mercator(xy):
     return (lon, lat)
 
 
-def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=True):
+def dataset_from_viewer_config(map_id, model, dataset, source, ordering, save_map=True):
     """
     Parse an object out of a parsed layer configuration from a GXP
     viewer.
@@ -482,14 +630,14 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
     ``ordering`` is the index of the layer within the map's layer list
     ``save_map`` if map should be saved (default: True)
     """
-    layer_cfg = dict(layer)
+    dataset_cfg = dict(dataset)
     for k in ["format", "name", "opacity", "styles", "transparent",
               "fixed", "group", "visibility", "source"]:
-        if k in layer_cfg:
-            del layer_cfg[k]
-    layer_cfg["id"] = 1
-    layer_cfg["wrapDateLine"] = True
-    layer_cfg["displayOutsideMaxExtent"] = True
+        if k in dataset_cfg:
+            del dataset_cfg[k]
+    dataset_cfg["id"] = 1
+    dataset_cfg["wrapDateLine"] = True
+    dataset_cfg["displayOutsideMaxExtent"] = True
 
     source_cfg = dict(source) if source else {}
     if source_cfg:
@@ -499,8 +647,8 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
 
     # We don't want to hardcode 'access_token' into the storage
     styles = []
-    if 'capability' in layer_cfg:
-        _capability = layer_cfg['capability']
+    if 'capability' in dataset_cfg:
+        _capability = dataset_cfg['capability']
         if 'styles' in _capability:
             for style in _capability['styles']:
                 if 'name' in style:
@@ -510,8 +658,8 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
                     if 'href' in legend:
                         legend['href'] = re.sub(
                             r'\&access_token=.*', '', legend['href'])
-    if not styles and layer.get("styles", None):
-        for style in layer.get("styles", None):
+    if not styles and dataset.get("styles", None):
+        for style in dataset.get("styles", None):
             if 'name' in style:
                 styles.append(style['name'])
             else:
@@ -520,17 +668,17 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
     _model = model(
         map_id=map_id,
         stack_order=ordering,
-        format=layer.get("format", None),
-        name=layer.get("name", None),
-        store=layer.get("store", None),
-        opacity=layer.get("opacity", 1),
+        format=dataset.get("format", None),
+        name=dataset.get("name", None),
+        store=dataset.get("store", None),
+        opacity=dataset.get("opacity", 1),
         styles=styles,
-        transparent=layer.get("transparent", False),
-        fixed=layer.get("fixed", False),
-        group=layer.get('group', None),
-        visibility=layer.get("visibility", True),
+        transparent=dataset.get("transparent", False),
+        fixed=dataset.get("fixed", False),
+        group=dataset.get('group', None),
+        visibility=dataset.get("visibility", True),
         ows_url=source.get("url", None) if source else None,
-        layer_params=json.dumps(layer_cfg),
+        dataset_params=json.dumps(dataset_cfg),
         source_params=json.dumps(source_cfg)
     )
     if map_id and save_map:
@@ -541,15 +689,15 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
 
 class GXPMapBase:
 
-    def viewer_json(self, request, *added_layers):
+    def viewer_json(self, request, *added_datasets):
         """
         Convert this map to a nested dictionary structure matching the JSON
         configuration for GXP Viewers.
 
-        The ``added_layers`` parameter list allows a list of extra MapLayer
+        The ``added_datasets`` parameter list allows a list of extra MapLayer
         instances to append to the Map's layer list when generating the
         configuration. These are not persisted; if you want to add layers you
-        should use ``.layer_set.create()``.
+        should use ``.dataset_set.create()``.
         """
 
         user = request.user if request else None
@@ -557,13 +705,16 @@ class GXPMapBase:
         if access_token and not access_token.is_expired():
             access_token = access_token.token
 
-        if self.id and len(added_layers) == 0:
+        if self.id and len(added_datasets) == 0:
             cfg = cache.get(f"viewer_json_{str(self.id)}_{str(0 if user is None else user.id)}")
             if cfg is not None:
                 return cfg
 
-        layers = list(self.layers)
-        layers.extend(added_layers)
+        if hasattr(self, 'layers'):
+            layers = list(self.layers)
+        else:
+            layers = list(self.datasets)
+        layers.extend(added_datasets)
 
         server_lookup = {}
         sources = {}
@@ -597,8 +748,8 @@ class GXPMapBase:
                     return k
             return None
 
-        def layer_config(lyr, user=None):
-            cfg = lyr.layer_config(user=user)
+        def dataset_config(lyr, user=None):
+            cfg = lyr.dataset_config(user=user)
             src_cfg = lyr.source_config(access_token)
             source = source_lookup(src_cfg)
             if source:
@@ -661,7 +812,7 @@ class GXPMapBase:
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
-                'layers': [layer_config(lyr, user=user) for lyr in layers],
+                'layers': [dataset_config(lyr, user=user) for lyr in layers],
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
@@ -672,7 +823,7 @@ class GXPMapBase:
             # Mark the last added layer as selected - important for data page
             config["map"]["layers"][len(layers) - 1]["selected"] = True
         else:
-            (def_map_config, def_map_layers) = default_map_config(None)
+            (def_map_config, def_map_datasets) = default_map_config(None)
             config = def_map_config
 
         config["map"].update(_get_viewer_projection_info(self.projection))
@@ -748,7 +899,7 @@ class GXPLayerBase:
 
         return cfg
 
-    def layer_config(self, user=None):
+    def dataset_config(self, user=None):
         """
         Generate a dict that can be serialized to a GXP layer configuration
         suitable for loading this layer.
@@ -759,7 +910,7 @@ class GXPLayerBase:
         generating a full map configuration.
         """
         try:
-            cfg = json.loads(self.layer_params)
+            cfg = json.loads(self.dataset_params)
         except Exception:
             cfg = dict()
 
@@ -803,7 +954,7 @@ class GXPLayer(GXPLayerBase):
         self.wrapDateLine = True
         self.displayOutsideMaxExtent = True
         self.ows_url = ows_url
-        self.layer_params = ""
+        self.dataset_params = ""
         self.source_params = ""
         for k in kw:
             setattr(self, k, kw[k])
@@ -825,10 +976,10 @@ def default_map_config(request):
     )
 
     def _baselayer(lyr, order):
-        return layer_from_viewer_config(
+        return dataset_from_viewer_config(
             None,
             GXPLayer,
-            layer=lyr,
+            dataset=lyr,
             source=lyr["source"] if lyr and "source" in lyr else None,
             ordering=order
         )
@@ -952,9 +1103,9 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                                 'delete_resourcebase', user, obj_to_check)
 
     allowed = True
-    if permission.split('.')[-1] in ['change_layer_data',
-                                     'change_layer_style']:
-        if obj.__class__.__name__ == 'Layer':
+    if permission.split('.')[-1] in ['change_dataset_data',
+                                     'change_dataset_style']:
+        if obj.__class__.__name__ == 'Dataset':
             obj_to_check = obj
     if permission:
         if permission_required or request.method != 'GET':
@@ -1616,7 +1767,7 @@ def slugify_zh(text, separator='_'):
 def get_legend_url(
         instance, style_name, /,
         service_url=None,
-        layer_name=None,
+        dataset_name=None,
         version='1.3.0',
         sld_version='1.1.0',
         width=20,
@@ -1625,11 +1776,11 @@ def get_legend_url(
     from geonode.geoserver.helpers import ogc_server_settings
 
     _service_url = service_url or f"{ogc_server_settings.PUBLIC_LOCATION}ows"
-    _layer_name = layer_name or instance.alternate
+    _dataset_name = dataset_name or instance.alternate
     _params = f"&{params}" if params else ""
     return(f"{_service_url}?"
            f"service=WMS&request=GetLegendGraphic&format=image/png&WIDTH={width}&HEIGHT={height}&"
-           f"LAYER={_layer_name}&STYLE={style_name}&version={version}&"
+           f"LAYER={_dataset_name}&STYLE={style_name}&version={version}&"
            f"sld_version={sld_version}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on{_params}")
 
 
@@ -1656,7 +1807,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         height = 550
         width = 550
 
-        # Parse Layer BBOX and SRID
+        # Parse Dataset BBOX and SRID
         bbox = None
         srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
         if not prune and instance.srid and instance.bbox_polygon:
@@ -1684,14 +1835,14 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         # Guessing 'EPSG:4326' by default
                         instance.srid = 'EPSG:4326'
                     else:
-                        raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
+                        raise GeoNodeException(_("Invalid Projection. Dataset is missing CRS!"))
 
-                    from geonode.layers.models import Layer
+                    from geonode.layers.models import Dataset
                     try:
                         with transaction.atomic():
                             # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
                             instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
-                            Layer.objects.filter(id=instance.id).update(
+                            Dataset.objects.filter(id=instance.id).update(
                                 bbox_polygon=instance.bbox_polygon, srid=srid)
 
                             # Refresh from DB
@@ -1703,7 +1854,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         with transaction.atomic():
                             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
                             instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
-                            Layer.objects.filter(id=instance.id).update(
+                            Dataset.objects.filter(id=instance.id).update(
                                 ll_bbox_polygon=instance.bbox_polygon, srid=srid)
 
                             # Refresh from DB
@@ -1713,7 +1864,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         try:
                             with transaction.atomic():
                                 instance.bbox_polygon.srid = 4326
-                                Layer.objects.filter(id=instance.id).update(
+                                Dataset.objects.filter(id=instance.id).update(
                                     ll_bbox_polygon=instance.bbox_polygon, srid=srid)
 
                                 # Refresh from DB
@@ -1877,8 +2028,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 from geonode.services.serviceprocessors.handler import get_service_handler
                 handler = get_service_handler(
                     instance.remote_service.base_url, service_type=instance.remote_service.type)
-                if handler and hasattr(handler, '_create_layer_legend_link'):
-                    handler._create_layer_legend_link(instance)
+                if handler and hasattr(handler, '_create_dataset_legend_link'):
+                    handler._create_dataset_legend_link(instance)
 
             logger.debug(" -- Resource Links[Legend link]...done!")
         except Exception as e:
@@ -2007,7 +2158,7 @@ json_serializer_k_map = {
     'category': 'base.TopicCategory',
     'spatial_representation_type': 'base.SpatialRepresentationType',
     'group': 'auth.Group',
-    'default_style': 'layers.Style',
+    'default_style': 'datasets.Style',
 }
 
 

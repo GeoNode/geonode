@@ -22,7 +22,7 @@ from django.conf.urls import include, url
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
-from geonode.sitemap import LayerSitemap, MapSitemap
+from geonode.sitemap import DatasetSitemap, MapSitemap
 from django.views.generic import TemplateView
 from django.contrib import admin
 from django.conf.urls.i18n import i18n_patterns
@@ -55,7 +55,7 @@ js_info_dict = {
 }
 
 sitemaps = {
-    "layer": LayerSitemap,
+    "dataset": DatasetSitemap,
     "map": MapSitemap
 }
 
@@ -94,8 +94,8 @@ urlpatterns += [
     # ResourceBase views
     url(r'^base/', include('geonode.base.urls')),
 
-    # Layer views
-    url(r'^layers/', include('geonode.layers.urls')),
+    # Dataset views
+    url(r'^datasets/', include('geonode.layers.urls')),
 
     # Remote Services views
     url(r'^services/', include('geonode.services.urls')),
@@ -221,7 +221,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         url(r'^upload/', include('geonode.upload.urls')),
         # capabilities
         url(r'^capabilities/layer/(?P<layerid>\d+)/$',
-            get_capabilities, name='capabilities_layer'),
+            get_capabilities, name='capabilities_dataset'),
         url(r'^capabilities/map/(?P<mapid>\d+)/$',
             get_capabilities, name='capabilities_map'),
         url(r'^capabilities/user/(?P<user>[\w.@+-]+)/$',

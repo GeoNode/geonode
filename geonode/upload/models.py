@@ -36,7 +36,7 @@ from geonode.base.models import ResourceBase
 from geonode.storage.manager import storage_manager
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
-from .utils import next_step_response, get_next_step
+from .utils import next_step_response
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class Upload(models.Model):
     complete = models.BooleanField(default=False)
     # hold our serialized session object
     session = models.TextField(null=True, blank=True)
-    # hold a dict of any intermediate Layer metadata - not used for now
+    # hold a dict of any intermediate Dataset metadata - not used for now
     metadata = models.TextField(null=True)
 
     mosaic = models.BooleanField(default=False)
@@ -195,13 +195,6 @@ class Upload(models.Model):
                                 if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
                                     self.set_processing_state(enumerations.STATE_WAITING)
                                     return f"{reverse('data_upload')}?id={self.import_id}"
-                                else:
-                                    next = get_next_step(self.get_session)
-                                    if not self.resource and session.state == enumerations.STATE_COMPLETE:
-                                        if next == 'check' or (next == 'final' and self.state == enumerations.STATE_PENDING):
-                                            from .views import final_step_view
-                                            final_step_view(None, self.get_session)
-                                            self.set_processing_state(enumerations.STATE_RUNNING)
                         except (NotFound, Exception) as e:
                             logger.exception(e)
                             if self.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):

@@ -24,7 +24,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from urllib.parse import urlencode, urljoin
-from .helpers import OGC_Servers_Handler
+from geonode.utils import OGC_Servers_Handler
 
 logger = logging.getLogger(__name__)
 

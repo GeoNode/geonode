@@ -49,5 +49,5 @@ class Migration(migrations.Migration):
         ),
         RunSQL(clone_layers_storetypes),
         RunSQL(clone_documents_storetypes),
-        RunPython(update_storetype_value)
+        RunPython(update_storetype_value, migrations.RunPython.noop)
     ]

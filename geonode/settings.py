@@ -876,7 +876,7 @@ AUTH_EXEMPT_URLS = (
     f'{FORCE_SCRIPT_NAME}/api/roles',
     f'{FORCE_SCRIPT_NAME}/api/adminRole',
     f'{FORCE_SCRIPT_NAME}/api/users',
-    f'{FORCE_SCRIPT_NAME}/api/layers',
+    f'{FORCE_SCRIPT_NAME}/api/datasets',
     f'{FORCE_SCRIPT_NAME}/monitoring',
     r'^/i18n/setlang/?$',
 )
@@ -911,8 +911,8 @@ PINAX_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {
         "map": "How good is this map?"
     },
-    "layers.Layer": {
-        "layer": "How good is this layer?"
+    "layers.Dataset": {
+        "dataset": "How good is this dataset?"
     },
     "documents.Document": {
         "document": "How good is this document?"
@@ -1859,7 +1859,7 @@ if os.name == 'nt':
 # option to enable/disable resource unpublishing for administrators and members
 RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
 
-# Each uploaded Layer must be approved by an Admin before becoming visible
+# Each uploaded Dataset must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
 # If this option is enabled, Resources belonging to a Group (with access private) won't be

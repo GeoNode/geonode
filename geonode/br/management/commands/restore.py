@@ -502,7 +502,7 @@ class Command(BaseCommand):
                 finally:
                     call_command('makemigrations', interactive=False)
                     call_command('migrate', interactive=False, fake=True)
-                    call_command('sync_geonode_layers', updatepermissions=True, ignore_errors=True)
+                    call_command('sync_geonode_datasets', updatepermissions=True, ignore_errors=True)
 
                 if notify:
                     restore_notification.apply_async(
@@ -732,16 +732,16 @@ class Command(BaseCommand):
     def prepare_geoserver_gwc_config(self, config, settings):
         if (config.gs_data_dir):
             # Cleanup '$config.gs_data_dir/gwc-layers'
-            gwc_layers_root = os.path.join(config.gs_data_dir, 'gwc-layers')
-            if not os.path.isabs(gwc_layers_root):
-                gwc_layers_root = os.path.join(settings.PROJECT_ROOT, '..', gwc_layers_root)
+            gwc_datasets_root = os.path.join(config.gs_data_dir, 'gwc-layers')
+            if not os.path.isabs(gwc_datasets_root):
+                gwc_datasets_root = os.path.join(settings.PROJECT_ROOT, '..', gwc_datasets_root)
             try:
-                shutil.rmtree(gwc_layers_root)
-                print(f'Cleaned out old GeoServer GWC Layers Config: {gwc_layers_root}')
+                shutil.rmtree(gwc_datasets_root)
+                print(f'Cleaned out old GeoServer GWC Layers Config: {gwc_datasets_root}')
             except Exception:
                 pass
-            if not os.path.exists(gwc_layers_root):
-                os.makedirs(gwc_layers_root)
+            if not os.path.exists(gwc_datasets_root):
+                os.makedirs(gwc_datasets_root)
 
     def restore_geoserver_raster_data(self, config, settings, target_folder):
         if (config.gs_data_dir):

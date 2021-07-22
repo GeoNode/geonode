@@ -15,5 +15,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(copy_typename),
+        migrations.RunPython(copy_typename, migrations.RunPython.noop),
     ]

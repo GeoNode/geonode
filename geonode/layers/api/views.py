@@ -31,10 +31,10 @@ from rest_framework.response import Response
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 
-from .serializers import LayerSerializer, LayerListSerializer
-from .permissions import LayerPermissionsFilter
+from .serializers import DatasetSerializer, DatasetListSerializer
+from .permissions import DatasetPermissionsFilter
 
 import logging
 import ast
@@ -42,7 +42,7 @@ import ast
 logger = logging.getLogger(__name__)
 
 
-class LayerViewSet(DynamicModelViewSet):
+class DatasetViewSet(DynamicModelViewSet):
     """
     API endpoint that allows layers to be viewed or edited.
     """
@@ -50,16 +50,16 @@ class LayerViewSet(DynamicModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
-        ExtentFilter, LayerPermissionsFilter
+        ExtentFilter, DatasetPermissionsFilter
     ]
-    queryset = Layer.objects.all().order_by('-date')
-    serializer_class = LayerSerializer
+    queryset = Dataset.objects.all().order_by('-date')
+    serializer_class = DatasetSerializer
     pagination_class = GeoNodeApiPagination
 
     def get_serializer_class(self):
         if self.action == 'list':
-            return LayerListSerializer
-        return LayerSerializer
+            return DatasetListSerializer
+        return DatasetSerializer
 
     @extend_schema(
         methods=["post"], responses={200}, description="API endpoint allowing to set the thumbnail url for an existing dataset."
@@ -75,14 +75,14 @@ class LayerViewSet(DynamicModelViewSet):
     )
     def set_thumbnail_from_bbox(self, request, dataset_id):
         try:
-            layer = Layer.objects.get(resourcebase_ptr_id=ast.literal_eval(dataset_id))
+            dataset = Dataset.objects.get(resourcebase_ptr_id=ast.literal_eval(dataset_id))
             request_body = request.data if request.data else json.loads(request.body)
             bbox = request_body["bbox"] + [request_body["srid"]]
             zoom = request_body.get("zoom", None)
 
-            thumbnail_url = create_thumbnail(layer, bbox=bbox, background_zoom=zoom, overwrite=True)
+            thumbnail_url = create_thumbnail(dataset, bbox=bbox, background_zoom=zoom, overwrite=True)
             return Response({"thumbnail_url": thumbnail_url}, status=200)
-        except Layer.DoesNotExist:
+        except Dataset.DoesNotExist:
             logger.error(f"Dataset selected with id {dataset_id} does not exists")
             return Response(data={"message": f"Dataset selected with id {dataset_id} does not exists"}, status=404, exception=True)
         except Exception as e:

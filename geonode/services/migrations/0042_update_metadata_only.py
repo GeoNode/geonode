@@ -15,5 +15,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        RunPython(update_services_metadata_only)
+        RunPython(update_services_metadata_only, migrations.RunPython.noop)
     ]

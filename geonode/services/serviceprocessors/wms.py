@@ -39,11 +39,12 @@ from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 
+from geonode.base import enumerations as base_enumerations
 from geonode.base.models import (
     Link,
     ResourceBase,
     TopicCategory)
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.layers.utils import resolve_regions
 from geonode.utils import http_client, get_legend_url
@@ -222,7 +223,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
 
-        This method will try to create new ``geonode.layers.models.Layer``
+        This method will try to create new ``geonode.layers.models.Dataset``
         instance (and its related objects too).
 
         :arg resource_id: The resource's identifier
@@ -231,18 +232,18 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         :type geonode_service: geonode.services.models.Service
 
         """
-        layer_meta = self.get_resource(resource_id)
-        logger.debug(f"layer_meta: {layer_meta}")
+        dataset_meta = self.get_resource(resource_id)
+        logger.debug(f"dataset_meta: {dataset_meta}")
         if self.indexing_method == CASCADED:
             logger.debug("About to import cascaded layer...")
-            geoserver_resource = self._import_cascaded_resource(layer_meta)
-            resource_fields = self._get_cascaded_layer_fields(
+            geoserver_resource = self._import_cascaded_resource(dataset_meta)
+            resource_fields = self._get_cascaded_dataset_fields(
                 geoserver_resource)
             keywords = []
         else:
-            resource_fields = self._get_indexed_layer_fields(layer_meta)
+            resource_fields = self._get_indexed_dataset_fields(dataset_meta)
             keywords = resource_fields.pop("keywords")
-        existance_test_qs = Layer.objects.filter(
+        existance_test_qs = Dataset.objects.filter(
             name=resource_fields["name"],
             store=resource_fields["store"],
             workspace=resource_fields["workspace"]
@@ -256,46 +257,53 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
             resource_fields["is_approved"] = False
             resource_fields["is_published"] = False
-        geonode_layer = self._create_layer(geonode_service, **resource_fields)
-        self._create_layer_service_link(geonode_layer)
-        self._create_layer_legend_link(geonode_layer)
-        self._create_layer_thumbnail(geonode_layer)
+        geonode_dataset = self._create_dataset(geonode_service, **resource_fields)
+        self._create_dataset_service_link(geonode_dataset)
+        self._create_dataset_legend_link(geonode_dataset)
+        self._create_dataset_thumbnail(geonode_dataset)
 
     def has_resources(self):
         return True if len(self.parsed_service.contents) > 0 else False
 
-    def _create_layer(self, geonode_service, **resource_fields):
+    def _create_dataset(self, geonode_service, **resource_fields):
         # bear in mind that in ``geonode.layers.models`` there is a
-        # ``pre_save_layer`` function handler that is connected to the
-        # ``pre_save`` signal for the Layer model. This handler does a check
+        # ``pre_save_dataset`` function handler that is connected to the
+        # ``pre_save`` signal for the Dataset model. This handler does a check
         # for common fields (such as abstract and title) and adds
         # sensible default values
         keywords = resource_fields.pop("keywords", [])
-        geonode_layer = resource_manager.create(
-            None,
-            resource_type=Layer,
-            defaults=dict(
-                owner=geonode_service.owner,
-                remote_service=geonode_service,
-                **resource_fields
-            )
+        defaults = dict(
+            owner=geonode_service.owner,
+            remote_service=geonode_service,
+            remote_typename=geonode_service.name,
+            sourcetype=base_enumerations.SOURCE_TYPE_REMOTE,
+            ptype=getattr(geonode_service, "ptype", "gxp_wmscsource"),
+            **resource_fields
         )
-        resource_manager.update(geonode_layer.uuid, instance=geonode_layer, keywords=keywords, notify=True)
-        resource_manager.set_permissions(geonode_layer.uuid, instance=geonode_layer)
+        if geonode_service.method == INDEXED:
+            defaults['ows_url'] = geonode_service.service_url
 
-        return geonode_layer
+        geonode_dataset = resource_manager.create(
+            None,
+            resource_type=Dataset,
+            defaults=defaults
+        )
+        resource_manager.update(geonode_dataset.uuid, instance=geonode_dataset, keywords=keywords, notify=True)
+        resource_manager.set_permissions(geonode_dataset.uuid, instance=geonode_dataset)
 
-    def _create_layer_thumbnail(self, geonode_layer):
+        return geonode_dataset
+
+    def _create_dataset_thumbnail(self, geonode_dataset):
         """Create a thumbnail with a WMS request."""
         create_thumbnail(
-            instance=geonode_layer,
+            instance=geonode_dataset,
             wms_version=self.parsed_service.version,
-            bbox=geonode_layer.bbox,
-            forced_crs=geonode_layer.srid if 'EPSG:' in str(geonode_layer.srid) else f'EPSG:{geonode_layer.srid}',
+            bbox=geonode_dataset.bbox,
+            forced_crs=geonode_dataset.srid if 'EPSG:' in str(geonode_dataset.srid) else f'EPSG:{geonode_dataset.srid}',
             overwrite=True,
         )
 
-    def _create_layer_legend_link(self, geonode_layer):
+    def _create_dataset_legend_link(self, geonode_dataset):
         """Get the layer's legend and save it locally
 
         Regardless of the service being INDEXED or CASCADED we're always
@@ -305,16 +313,16 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
         _p_url = urlparse(self.url)
         legend_url = get_legend_url(
-            geonode_layer, "",
+            geonode_dataset, "",
             service_url=f"{_p_url.scheme}://{_p_url.netloc}{_p_url.path}",
-            layer_name=geonode_layer.name,
+            dataset_name=geonode_dataset.name,
             version=version,
             params=_p_url.query
         )
         logger.debug(f"legend_url: {legend_url}")
         try:
             Link.objects.get_or_create(
-                resource=geonode_layer.resourcebase_ptr,
+                resource=geonode_dataset.resourcebase_ptr,
                 url=legend_url,
                 name='Legend',
                 defaults={
@@ -329,15 +337,15 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             logger.exception(e)
         return legend_url
 
-    def _create_layer_service_link(self, geonode_layer):
-        ogc_wms_url = geonode_layer.ows_url
-        ogc_wms_name = f'OGC WMS: {geonode_layer.store} Service'
+    def _create_dataset_service_link(self, geonode_dataset):
+        ogc_wms_url = geonode_dataset.ows_url
+        ogc_wms_name = f'OGC WMS: {geonode_dataset.store} Service'
         ogc_wms_link_type = 'OGC:WMS'
-        if Link.objects.filter(resource=geonode_layer.resourcebase_ptr,
+        if Link.objects.filter(resource=geonode_dataset.resourcebase_ptr,
                                name=ogc_wms_name,
                                link_type=ogc_wms_link_type,).count() < 2:
             Link.objects.update_or_create(
-                resource=geonode_layer.resourcebase_ptr,
+                resource=geonode_dataset.resourcebase_ptr,
                 name=ogc_wms_name,
                 link_type=ogc_wms_link_type,
                 defaults=dict(
@@ -348,7 +356,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 )
             )
 
-    def _get_cascaded_layer_fields(self, geoserver_resource):
+    def _get_cascaded_dataset_fields(self, geoserver_resource):
         name = geoserver_resource.name
         workspace = geoserver_resource.workspace.name if hasattr(geoserver_resource, 'workspace') else None
         store = geoserver_resource.store if hasattr(geoserver_resource, 'store') else None
@@ -367,23 +375,23 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "srid": bbox[4] if len(bbox) > 4 else "EPSG:4326",
         }
 
-    def _get_indexed_layer_fields(self, layer_meta):
-        bbox = utils.decimal_encode(layer_meta.boundingBox)
+    def _get_indexed_dataset_fields(self, dataset_meta):
+        bbox = utils.decimal_encode(dataset_meta.boundingBox)
         if len(bbox) < 4:
             raise RuntimeError(
                 f"Resource BBOX is not valid: {bbox}")
         return {
-            "name": layer_meta.name,
+            "name": dataset_meta.name,
             "store": self.name,
             "subtype": "remote",
             "workspace": "remoteWorkspace",
-            "typename": layer_meta.name,
-            "alternate": layer_meta.name,
-            "title": layer_meta.title,
-            "abstract": layer_meta.abstract,
+            "typename": dataset_meta.name,
+            "alternate": dataset_meta.name,
+            "title": dataset_meta.title,
+            "abstract": dataset_meta.abstract,
             "bbox_polygon": BBOXHelper.from_xy([bbox[0], bbox[2], bbox[1], bbox[3]]).as_polygon(),
             "srid": bbox[4] if len(bbox) > 4 else "EPSG:4326",
-            "keywords": [keyword[:100] for keyword in layer_meta.keywords],
+            "keywords": [keyword[:100] for keyword in dataset_meta.keywords],
         }
 
     def _get_store(self, create=True):
@@ -408,7 +416,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             )
         return store
 
-    def _import_cascaded_resource(self, layer_meta):
+    def _import_cascaded_resource(self, dataset_meta):
         """Import a layer into geoserver in order to enable cascading."""
         store = self._get_store(create=False)
         if not store:
@@ -417,34 +425,34 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             raise RuntimeError("Could not create WMS CASCADE store.")
         cat = store.catalog
         workspace = store.workspace
-        layer_resource = cat.get_resource(
-            name=layer_meta.id,
+        dataset_resource = cat.get_resource(
+            name=dataset_meta.id,
             store=store,
             workspace=workspace)
-        if layer_resource is None:
-            layer_resource = cat.create_wmslayer(
-                workspace, store, layer_meta.id)
-            layer_resource.projection = getattr(
+        if dataset_resource is None:
+            dataset_resource = cat.create_wmslayer(
+                workspace, store, dataset_meta.id)
+            dataset_resource.projection = getattr(
                 settings, "DEFAULT_MAP_CRS", "EPSG:3857")
             # Do not use the geoserver.support.REPROJECT enumeration until
             # https://github.com/boundlessgeo/gsconfig/issues/174
             # has been fixed
-            layer_resource.projection_policy = "REPROJECT_TO_DECLARED"
-            cat.save(layer_resource)
-            if layer_resource is None:
-                raise RuntimeError(f"Could not cascade resource {layer_meta} through "
+            dataset_resource.projection_policy = "REPROJECT_TO_DECLARED"
+            cat.save(dataset_resource)
+            if dataset_resource is None:
+                raise RuntimeError(f"Could not cascade resource {dataset_meta} through "
                                    "geoserver")
-            layer_resource = layer_resource.resource
+            dataset_resource = dataset_resource.resource
         else:
-            logger.debug(f"Layer {layer_meta.id} is already present. Skipping...")
-        layer_resource.refresh()
-        return layer_resource
+            logger.debug(f"Dataset {dataset_meta.id} is already present. Skipping...")
+        dataset_resource.refresh()
+        return dataset_resource
 
     def _offers_geonode_projection(self):
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
         if len(list(self.get_resources())) > 0:
-            first_layer = list(self.get_resources())[0]
-            return geonode_projection in first_layer.crsOptions
+            first_dataset = list(self.get_resources())[0]
+            return geonode_projection in first_dataset.crsOptions
         else:
             return geonode_projection
 
@@ -493,7 +501,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
 
-        This method will try to create new ``geonode.layers.models.Layer``
+        This method will try to create new ``geonode.layers.models.Dataset``
         instance (and its related objects too).
 
         :arg resource_id: The resource's identifier
@@ -502,17 +510,17 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         :type geonode_service: geonode.services.models.Service
 
         """
-        layer_meta = self.get_resource(resource_id)
+        dataset_meta = self.get_resource(resource_id)
         if self.indexing_method == CASCADED:
             logger.debug("About to import cascaded layer...")
-            geoserver_resource = self._import_cascaded_resource(layer_meta)
-            resource_fields = self._get_cascaded_layer_fields(
+            geoserver_resource = self._import_cascaded_resource(dataset_meta)
+            resource_fields = self._get_cascaded_dataset_fields(
                 geoserver_resource)
             keywords = []
         else:
-            resource_fields = self._get_indexed_layer_fields(layer_meta)
+            resource_fields = self._get_indexed_dataset_fields(dataset_meta)
             keywords = resource_fields.pop("keywords")
-        existance_test_qs = Layer.objects.filter(
+        existance_test_qs = Dataset.objects.filter(
             name=resource_fields["name"],
             store=resource_fields["store"],
             workspace=resource_fields["workspace"]
@@ -527,10 +535,10 @@ class GeoNodeServiceHandler(WmsServiceHandler):
             resource_fields["is_approved"] = False
             resource_fields["is_published"] = False
         try:
-            geonode_layer = self._create_layer(geonode_service, **resource_fields)
-            self._enrich_layer_metadata(geonode_layer)
-            self._create_layer_service_link(geonode_layer)
-            self._create_layer_legend_link(geonode_layer)
+            geonode_dataset = self._create_dataset(geonode_service, **resource_fields)
+            self._enrich_dataset_metadata(geonode_dataset)
+            self._create_dataset_service_link(geonode_dataset)
+            self._create_dataset_legend_link(geonode_dataset)
         except Exception as e:
             logger.error(e)
 
@@ -564,13 +572,13 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         _url = f"{url.scheme}://{url.netloc}/geoserver/ows"
         return _url
 
-    def _enrich_layer_metadata(self, geonode_layer):
-        workspace, layername = geonode_layer.name.split(
-            ":") if ":" in geonode_layer.name else (None, geonode_layer.name)
+    def _enrich_dataset_metadata(self, geonode_dataset):
+        workspace, layername = geonode_dataset.name.split(
+            ":") if ":" in geonode_dataset.name else (None, geonode_dataset.name)
         url = urlsplit(self.url)
         base_url = f'{url.scheme}://{url.netloc}/'
         response = requests.get(
-            f'{base_url}api/layers/?name={layername}', {},
+            f'{base_url}api/datasets/?name={layername}', {},
             timeout=10,
             verify=False)
         content = response.content
@@ -583,26 +591,26 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                     content = content.decode('UTF-8')
                 _json_obj = json.loads(content)
                 if _json_obj['meta']['total_count'] == 1:
-                    _layer = _json_obj['objects'][0]
-                    if _layer:
+                    _dataset = _json_obj['objects'][0]
+                    if _dataset:
                         r_fields = {}
 
                         # Update plain fields
                         for field in GeoNodeServiceHandler.LAYER_FIELDS:
-                            if field in _layer and _layer[field]:
-                                r_fields[field] = _layer[field]
+                            if field in _dataset and _dataset[field]:
+                                r_fields[field] = _dataset[field]
                         if r_fields:
-                            Layer.objects.filter(
-                                id=geonode_layer.id).update(
+                            Dataset.objects.filter(
+                                id=geonode_dataset.id).update(
                                 **r_fields)
-                            geonode_layer.refresh_from_db()
+                            geonode_dataset.refresh_from_db()
 
                         # Update Thumbnail
-                        if "thumbnail_url" in _layer and _layer["thumbnail_url"]:
-                            thumbnail_remote_url = _layer["thumbnail_url"]
+                        if "thumbnail_url" in _dataset and _dataset["thumbnail_url"]:
+                            thumbnail_remote_url = _dataset["thumbnail_url"]
                             _url = urlsplit(thumbnail_remote_url)
                             if not _url.scheme:
-                                thumbnail_remote_url = f"{geonode_layer.remote_service.service_url}{_url.path}"
+                                thumbnail_remote_url = f"{geonode_dataset.remote_service.service_url}{_url.path}"
                             resp, image = http_client.request(
                                 thumbnail_remote_url)
                             if 'ServiceException' in str(image) or \
@@ -614,43 +622,43 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                                 image = None
 
                             if image is not None:
-                                thumbnail_name = f'layer-{geonode_layer.uuid}-thumb.png'
-                                geonode_layer.save_thumbnail(
+                                thumbnail_name = f'layer-{geonode_dataset.uuid}-thumb.png'
+                                geonode_dataset.save_thumbnail(
                                     thumbnail_name, image=image)
                             else:
-                                self._create_layer_thumbnail(geonode_layer)
+                                self._create_dataset_thumbnail(geonode_dataset)
                         else:
-                            self._create_layer_thumbnail(geonode_layer)
+                            self._create_dataset_thumbnail(geonode_dataset)
 
                         # Add Keywords
-                        if "keywords" in _layer and _layer["keywords"]:
-                            keywords = _layer["keywords"]
+                        if "keywords" in _dataset and _dataset["keywords"]:
+                            keywords = _dataset["keywords"]
                             if keywords:
-                                geonode_layer.keywords.clear()
-                                geonode_layer.keywords.add(*keywords)
+                                geonode_dataset.keywords.clear()
+                                geonode_dataset.keywords.add(*keywords)
 
                         # Add Regions
-                        if "regions" in _layer and _layer["regions"]:
+                        if "regions" in _dataset and _dataset["regions"]:
                             (regions_resolved, regions_unresolved) = resolve_regions(
-                                _layer["regions"])
+                                _dataset["regions"])
                             if regions_resolved:
-                                geonode_layer.regions.clear()
-                                geonode_layer.regions.add(*regions_resolved)
+                                geonode_dataset.regions.clear()
+                                geonode_dataset.regions.add(*regions_resolved)
 
                         # Add Topic Category
-                        if "category__gn_description" in _layer and _layer["category__gn_description"]:
+                        if "category__gn_description" in _dataset and _dataset["category__gn_description"]:
                             try:
                                 categories = TopicCategory.objects.filter(
-                                    Q(gn_description__iexact=_layer["category__gn_description"]))
+                                    Q(gn_description__iexact=_dataset["category__gn_description"]))
                                 if categories:
-                                    geonode_layer.category = categories[0]
+                                    geonode_dataset.category = categories[0]
                             except Exception:
                                 traceback.print_exc()
             except Exception:
                 traceback.print_exc()
             finally:
                 try:
-                    geonode_layer.save(notify=True)
+                    geonode_dataset.save(notify=True)
                 except Exception as e:
                     logger.error(e)
 

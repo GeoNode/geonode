@@ -139,7 +139,7 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
-        This method creates new ``geonode.layers.models.Layer``
+        This method creates new ``geonode.layers.models.Dataset``
         instances (and their related objects too) and save them in the
         database.
 

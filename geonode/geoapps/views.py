@@ -370,10 +370,10 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
         if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
             warnings.warn('The settings for Thesaurus has been moved to Model, \
             this feature will be removed in next releases', DeprecationWarning)
-            layer_tkeywords = geoapp_obj.tkeywords.all()
+            dataset_tkeywords = geoapp_obj.tkeywords.all()
             tkeywords_list = ''
-            if layer_tkeywords and len(layer_tkeywords) > 0:
-                tkeywords_ids = layer_tkeywords.values_list('id', flat=True)
+            if dataset_tkeywords and len(dataset_tkeywords) > 0:
+                tkeywords_ids = dataset_tkeywords.values_list('id', flat=True)
                 if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
                     el = settings.THESAURUS
                     thesaurus_name = el['name']

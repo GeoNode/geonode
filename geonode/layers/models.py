@@ -27,14 +27,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from tinymce.models import HTMLField
 
-from geonode.base import enumerations
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.base.models import (
     ResourceBase,
     ResourceBaseManager)
-
-from ..services.enumerations import INDEXED
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -95,39 +92,43 @@ class Style(models.Model, PermissionLevelMixin):
         """Get associated resource base."""
         # Associate this model with resource
         try:
-            layer = self.layer_styles.first()
-            """:type: Layer"""
-            return layer.get_self_resource()
+            dataset = self.dataset_styles.first()
+            """:type: Dataset"""
+            return dataset.get_self_resource()
         except Exception:
             return None
 
 
-class LayerManager(ResourceBaseManager):
+class DatasetManager(ResourceBaseManager):
 
     def __init__(self):
         models.Manager.__init__(self)
 
 
-class Layer(ResourceBase):
+class Dataset(ResourceBase):
 
     """
-    Layer (inherits ResourceBase fields)
+    Dataset (inherits ResourceBase fields)
     """
 
     PERMISSIONS = {
         'write': [
-            'change_layer_data',
-            'change_layer_style',
+            'change_dataset_data',
+            'change_dataset_style',
         ]
     }
 
     # internal fields
-    objects = LayerManager()
+    objects = DatasetManager()
     workspace = models.CharField(_('Workspace'), max_length=128)
     store = models.CharField(_('Store'), max_length=128)
-
     name = models.CharField(_('Name'), max_length=128)
     typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
+    ows_url = models.URLField(
+        _('ows URL'),
+        null=True,
+        blank=True,
+        help_text=_('The URL of the OWS service providing this layer, if any exists.'))
 
     is_mosaic = models.BooleanField(_('Is mosaic?'), default=False)
     has_time = models.BooleanField(_('Has time?'), default=False)
@@ -140,13 +141,22 @@ class Layer(ResourceBase):
         choices=TIME_REGEX)
     elevation_regex = models.CharField(_('Elevation regex'), max_length=128, null=True, blank=True)
 
+    ptype = models.CharField(
+        _('P-Type'),
+        null=False,
+        blank=False,
+        max_length=80,
+        default="gxp_wmscsource")
+
     default_style = models.ForeignKey(
         Style,
         on_delete=models.SET_NULL,
-        related_name='layer_default_style',
+        related_name='dataset_default_style',
         null=True,
         blank=True)
-    styles = models.ManyToManyField(Style, related_name='layer_styles')
+
+    styles = models.ManyToManyField(Style, related_name='dataset_styles')
+
     remote_service = models.ForeignKey("services.Service", null=True, blank=True, on_delete=models.CASCADE)
 
     charset = models.CharField(max_length=255, default='UTF-8')
@@ -165,14 +175,6 @@ class Layer(ResourceBase):
 
     def is_vector(self):
         return self.subtype == 'vector'
-
-    @property
-    def processed(self):
-        if self.state == enumerations.STATE_PROCESSED:
-            self.clear_dirty_state()
-        else:
-            self.set_dirty_state()
-        return not self.dirty_state
 
     @property
     def display_type(self):
@@ -200,31 +202,16 @@ class Layer(ResourceBase):
         return None
 
     @property
-    def ows_url(self):
-        if self.remote_service is not None and self.remote_service.method == INDEXED:
-            result = self.remote_service.service_url
-        else:
-            result = f"{(settings.OGC_SERVER['default']['PUBLIC_LOCATION'])}ows"
-        return result
-
-    @property
-    def ptype(self):
-        return self.remote_service.ptype if self.remote_service else "gxp_wmscsource"
-
-    @property
-    def service_typename(self):
-        if self.remote_service is not None:
-            return f"{self.remote_service.name}:{self.alternate}"
-        else:
-            return self.alternate
-
-    @property
     def attributes(self):
         if self.attribute_set and self.attribute_set.count():
             _attrs = self.attribute_set
         else:
-            _attrs = Attribute.objects.filter(layer=self)
+            _attrs = Attribute.objects.filter(dataset=self)
         return _attrs.exclude(attribute='the_geom').order_by('display_order')
+
+    @property
+    def service_typename(self):
+        return f"{self.remote_typename}:{self.alternate}" if self.remote_typename else self.alternate
 
     # layer geometry type.
     @property
@@ -233,7 +220,7 @@ class Layer(ResourceBase):
         if self.attribute_set and self.attribute_set.count():
             _attrs = self.attribute_set
         else:
-            _attrs = Attribute.objects.filter(layer=self)
+            _attrs = Attribute.objects.filter(dataset=self)
         if _attrs.filter(attribute='the_geom').exists():
             _att_type = _attrs.filter(attribute='the_geom').first().attribute_type
             _gtype = re.match(r'\(\'gml:(.*?)\',', _att_type)
@@ -281,13 +268,13 @@ class Layer(ResourceBase):
 
     def get_absolute_url(self):
         return reverse(
-            'layer_detail',
+            'dataset_detail',
             args=(f"{self.store}:{self.alternate}",)
         )
 
     @property
     def embed_url(self):
-        return reverse('layer_embed', kwargs={'layername': self.service_typename})
+        return reverse('dataset_embed', kwargs={'layername': self.service_typename})
 
     def attribute_config(self):
         # Get custom attribute sort order and labels if any
@@ -308,19 +295,19 @@ class Layer(ResourceBase):
     def __str__(self):
         return str(self.alternate)
 
-    class Meta:
+    class Meta(ResourceBase.Meta):
         # custom permissions,
         # change and delete are standard in django-guardian
         permissions = (
-            ('change_layer_data', 'Can edit layer data'),
-            ('change_layer_style', 'Can change layer style'),
+            ('change_dataset_data', 'Can edit layer data'),
+            ('change_dataset_style', 'Can change layer style'),
         )
 
     # Permission Level Constants
     # LEVEL_NONE inherited
-    LEVEL_READ = 'layer_readonly'
-    LEVEL_WRITE = 'layer_readwrite'
-    LEVEL_ADMIN = 'layer_admin'
+    LEVEL_READ = 'dataset_readonly'
+    LEVEL_WRITE = 'dataset_readwrite'
+    LEVEL_ADMIN = 'dataset_admin'
 
     def maps(self):
         from geonode.maps.models import MapLayer
@@ -343,11 +330,11 @@ class Layer(ResourceBase):
             return
         if not do_local:
             from geonode.messaging import producer
-            producer.viewing_layer(str(user), str(self.owner), self.id)
+            producer.viewing_dataset(str(user), str(self.owner), self.id)
 
         else:
-            Layer.objects.filter(id=self.id)\
-                         .update(popular_count=models.F('popular_count') + 1)
+            Dataset.objects.filter(id=self.id)\
+                .update(popular_count=models.F('popular_count') + 1)
 
 
 class AttributeManager(models.Manager):
@@ -369,8 +356,8 @@ class Attribute(models.Model):
        to other servers, and lets users customize attribute titles,
        sort order, and visibility.
     """
-    layer = models.ForeignKey(
-        Layer,
+    dataset = models.ForeignKey(
+        Dataset,
         blank=False,
         null=False,
         unique=False,

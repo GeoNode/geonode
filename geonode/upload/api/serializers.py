@@ -17,14 +17,15 @@
 #
 #########################################################################
 import os
-from geonode.base.models import ResourceBase
+
 from rest_framework import serializers
 
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
 from geonode.upload.models import Upload
+from geonode.base.models import ResourceBase
 from geonode.base.utils import build_absolute_uri
-from geonode.layers.api.serializers import LayerSerializer
+from geonode.layers.api.serializers import DatasetSerializer
 from geonode.base.api.serializers import BaseDynamicModelSerializer
 
 import logging
@@ -133,8 +134,8 @@ class SessionSerializer(serializers.Field):
                 'time_transforms': value.time_transforms,
                 'update_mode': value.update_mode,
                 'time': value.time,
-                'layer_title': value.layer_title,
-                'layer_abstract': value.layer_abstract,
+                'dataset_title': value.dataset_title,
+                'dataset_abstract': value.dataset_abstract,
                 'completed_step': value.completed_step,
                 'error_msg': value.error_msg,
                 'upload_type': value.upload_type,
@@ -206,8 +207,8 @@ class UploadSerializer(BaseDynamicModelSerializer):
 
         if 'request' in self.context and \
                 self.context['request'].query_params.get('full'):
-            self.fields['layer'] = DynamicRelationField(
-                LayerSerializer,
+            self.fields['resource'] = DynamicRelationField(
+                DatasetSerializer,
                 embed=True,
                 many=False,
                 read_only=True)

@@ -24,7 +24,7 @@ from django.urls import reverse
 from django.db.models import signals
 
 from geonode.base.models import Link
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 
 
@@ -59,6 +59,6 @@ def add_xsl_link(resourcebase):
 
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
-    signals.post_save.connect(xsl_post_save, sender=Layer)
+    signals.post_save.connect(xsl_post_save, sender=Dataset)
     signals.post_save.connect(xsl_post_save, sender=Document)
     # TODO: maps as well?

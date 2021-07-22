@@ -26,5 +26,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(set_resource_type),
+        migrations.RunPython(set_resource_type, migrations.RunPython.noop),
     ]
