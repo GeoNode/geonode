@@ -22,9 +22,9 @@ ADMIN_PERMISSIONS = [
     'publish_resourcebase',
 ]
 
-LAYER_ADMIN_PERMISSIONS = [
-    'change_layer_data',
-    'change_layer_style'
+DATASET_ADMIN_PERMISSIONS = [
+    'change_dataset_data',
+    'change_dataset_style'
 ]
 
 SERVICE_PERMISSIONS = [

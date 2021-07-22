@@ -29,7 +29,7 @@ from geonode.tasks.tasks import (
     AcquireLock,
     FaultTolerantTask)
 from geonode.base.models import Link
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase
 
 from .security import sync_resources_with_guardian
@@ -38,7 +38,7 @@ from .helpers import (
     gs_catalog,
     set_styles,
     get_sld_for,
-    set_layer_style,
+    set_dataset_style,
     cascading_delete,
     create_gs_thumbnail,
     sync_instance_with_geoserver)
@@ -49,7 +49,7 @@ logger = get_task_logger(__name__)
 @app.task(
     bind=True,
     base=FaultTolerantTask,
-    name='geonode.geoserver.tasks.geoserver_update_layers',
+    name='geonode.geoserver.tasks.geoserver_update_datasets',
     queue='geoserver.catalog',
     expires=600,
     acks_late=False,
@@ -58,7 +58,7 @@ logger = get_task_logger(__name__)
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
-def geoserver_update_layers(self, *args, **kwargs):
+def geoserver_update_datasets(self, *args, **kwargs):
     """
     Runs update layers.
     """
@@ -89,9 +89,9 @@ def geoserver_set_style(
     """
     instance = None
     try:
-        instance = Layer.objects.get(id=instance_id)
-    except Layer.DoesNotExist:
-        logger.debug(f"Layer id {instance_id} does not exist yet!")
+        instance = Dataset.objects.get(id=instance_id)
+    except Dataset.DoesNotExist:
+        logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
     lock_id = f'{self.request.id}'
@@ -99,7 +99,7 @@ def geoserver_set_style(
         if lock.acquire() is True:
             try:
                 sld = open(base_file, "rb").read()
-                set_layer_style(
+                set_dataset_style(
                     instance,
                     instance.alternate,
                     sld,
@@ -131,9 +131,9 @@ def geoserver_create_style(
     """
     instance = None
     try:
-        instance = Layer.objects.get(id=instance_id)
-    except Layer.DoesNotExist:
-        logger.debug(f"Layer id {instance_id} does not exist yet!")
+        instance = Dataset.objects.get(id=instance_id)
+    except Dataset.DoesNotExist:
+        logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
     lock_id = f'{self.request.id}'
@@ -161,10 +161,10 @@ def geoserver_create_style(
                             sld,
                             raw=True,
                             workspace=settings.DEFAULT_WORKSPACE)
-                        gs_layer = gs_catalog.get_layer(name)
-                        _default_style = gs_layer.default_style
-                        gs_layer.default_style = style
-                        gs_catalog.save(gs_layer)
+                        gs_dataset = gs_catalog.get_layer(name)
+                        _default_style = gs_dataset.default_style
+                        gs_dataset.default_style = style
+                        gs_catalog.save(gs_dataset)
                         set_styles(instance, gs_catalog)
                         try:
                             gs_catalog.delete(_default_style)
@@ -183,7 +183,7 @@ def geoserver_create_style(
 @app.task(
     bind=True,
     base=FaultTolerantTask,
-    name='geonode.geoserver.tasks.geoserver_post_save_layers',
+    name='geonode.geoserver.tasks.geoserver_post_save_datasets',
     queue='geoserver.catalog',
     expires=3600,
     acks_late=False,
@@ -192,7 +192,7 @@ def geoserver_create_style(
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
-def geoserver_post_save_layers(
+def geoserver_post_save_datasets(
         self,
         instance_id,
         *args, **kwargs):
@@ -237,7 +237,7 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
         if lock.acquire() is True:
             try:
                 create_gs_thumbnail(instance, overwrite=overwrite, check_bbox=check_bbox)
-                logger.debug(f"... Created Thumbnail for Layer {instance.title}")
+                logger.debug(f"... Created Thumbnail for Dataset {instance.title}")
             except Exception as e:
                 geoserver_create_thumbnail.retry(exc=e)
 
@@ -288,7 +288,7 @@ def geoserver_delete_map(self, object_id):
             except Map.DoesNotExist:
                 return
 
-            map_obj.layer_set.all().delete()
+            map_obj.dataset_set.all().delete()
             map_obj.delete()
 
 

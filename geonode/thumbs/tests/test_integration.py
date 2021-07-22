@@ -42,6 +42,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.utils import http_client, DisableDjangoSignals
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
+from geonode.layers.models import Dataset
 from geonode.thumbs.background import (
     OSMTileBackground,
     WikiMediaTileBackground,
@@ -52,7 +53,7 @@ from geonode.base.populate_test_data import (
     all_public,
     create_models,
     remove_models,
-    create_single_layer)
+    create_single_dataset)
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
 
 class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
 
-    layer_coast_line = None
+    dataset_coast_line = None
 
     fixtures = [
         'initial_data.json',
@@ -80,7 +81,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         cls.user_admin = get_user_model().objects.get(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            cls.layer_coast_line = create_single_layer('san_andres_y_providencia_coastline')
+            cls.dataset_coast_line = create_single_dataset('san_andres_y_providencia_coastline')
 
     @classmethod
     def tearDownClass(cls):
@@ -317,7 +318,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         THUMBNAIL_BACKGROUND={
             "options": {
                 "service_url": settings.OGC_SERVER["default"]["LOCATION"],
-                "layer_name": "san_andres_y_providencia_coastline_foo",
+                "dataset_name": "san_andres_y_providencia_coastline_foo",
                 "srid": "EPSG:3857",
                 "version": "1.1.1"
             }
@@ -355,7 +356,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         THUMBNAIL_BACKGROUND={
             "options": {
                 "service_url": f"{settings.OGC_SERVER['default']['LOCATION']}ows/",
-                "layer_name": "san_andres_y_providencia_coastline",
+                "dataset_name": "san_andres_y_providencia_coastline",
                 "srid": "EPSG:3857",
                 "version": "1.1.1"
             }
@@ -402,7 +403,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         THUMBNAIL_BACKGROUND={
             "options": {
                 "service_url": f"{settings.OGC_SERVER['default']['LOCATION']}ows/",
-                "layer_name": "san_andres_y_providencia_coastline",
+                "dataset_name": "san_andres_y_providencia_coastline",
                 "srid": "EPSG:4326",
                 "version": "1.1.1"
             }
@@ -447,8 +448,8 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
 
 class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
 
-    layer_coast_line = None
-    layer_highway = None
+    dataset_coast_line = None
+    dataset_highway = None
     map_composition = None
 
     @classmethod
@@ -459,20 +460,20 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         admin, _ = get_user_model().objects.get_or_create(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            cls.layer_coast_line = create_single_layer('san_andres_y_providencia_coastline')
-            cls.layer_highway = create_single_layer('san_andres_y_providencia_highway')
+            cls.dataset_coast_line = create_single_dataset('san_andres_y_providencia_coastline')
+            cls.dataset_highway = create_single_dataset('san_andres_y_providencia_highway')
 
             # create a map from loaded layers
             cls.map_composition = Map()
             admin_user = get_user_model().objects.get(username="admin")
-            cls.map_composition.create_from_layer_list(
-                admin_user, [cls.layer_coast_line, cls.layer_highway], "composition", "abstract"
+            cls.map_composition.create_from_dataset_list(
+                admin_user, [cls.dataset_coast_line, cls.dataset_highway], "composition", "abstract"
             )
 
             # update MapLayers to correctly show layers' location
             with DisableDjangoSignals():
-                for maplayer in cls.map_composition.layers:
-                    if maplayer.name in [cls.layer_coast_line.alternate, cls.layer_highway.alternate]:
+                for maplayer in cls.map_composition.datasets:
+                    if maplayer.name in [cls.dataset_coast_line.alternate, cls.dataset_highway.alternate]:
                         maplayer.local = True
                         maplayer.save(force_update=True)
                         maplayer.refresh_from_db()
@@ -481,7 +482,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
 
     def _fetch_thumb_and_compare(self, url, expected_image):
         if url == missing_thumbnail_url:
-            logger.error(f'It was not possible to fetch the remote layer WMS GetMap! thumb_url: {url}')
+            logger.error(f'It was not possible to fetch the remote dataset WMS GetMap! thumb_url: {url}')
             return
         _, img = http_client.request(url)
         content = BytesIO(img)
@@ -523,11 +524,11 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             "class": "geonode.thumbs.background.WikiMediaTileBackground",
         }
     )
-    def test_layer_default_thumb(self):
-        expected_thumb = Image.open(f"{EXPECTED_RESULTS_DIR}thumbnails/default_layer_coast_line_thumb.png")
-        create_gs_thumbnail_geonode(self.layer_coast_line, overwrite=True)
-        self.layer_coast_line.refresh_from_db()
-        self._fetch_thumb_and_compare(self.layer_coast_line.thumbnail_url, expected_thumb)
+    def test_dataset_default_thumb(self):
+        expected_thumb = Image.open(f"{EXPECTED_RESULTS_DIR}thumbnails/default_dataset_coast_line_thumb.png")
+        create_gs_thumbnail_geonode(self.dataset_coast_line, overwrite=True)
+        self.dataset_coast_line.refresh_from_db()
+        self._fetch_thumb_and_compare(self.dataset_coast_line.thumbnail_url, expected_thumb)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -536,7 +537,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             "class": "geonode.thumbs.background.WikiMediaTileBackground",
         }
     )
-    def test_layer_custom_thumbs(self):
+    def test_dataset_custom_thumbs(self):
 
         bboxes = [
             [-9072629.904175375, -9043966.018568434, 1491839.8773032012, 1507127.2829602365, "EPSG:3857"],
@@ -548,15 +549,16 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
 
         expected_results_dir = f"{EXPECTED_RESULTS_DIR}thumbnails/"
         expected_thumbs_paths = [
-            f"{expected_results_dir}layer_thumb1.png",
-            f"{expected_results_dir}layer_thumb2.png",
-            f"{expected_results_dir}layer_thumb3.png",
-            f"{expected_results_dir}layer_thumb4.png",
-            f"{expected_results_dir}layer_thumb5.png",
+            f"{expected_results_dir}dataset_thumb1.png",
+            f"{expected_results_dir}dataset_thumb2.png",
+            f"{expected_results_dir}dataset_thumb3.png",
+            f"{expected_results_dir}dataset_thumb4.png",
+            f"{expected_results_dir}dataset_thumb5.png",
         ]
 
         self.client.login(username="norman", password="norman")
-        thumbnail_post_url = reverse("layer_thumbnail", kwargs={"layername": "geonode:san_andres_y_providencia_coastline"})
+        dataset_id = Dataset.objects.get(alternate="geonode:san_andres_y_providencia_coastline").resourcebase_ptr_id
+        thumbnail_post_url = reverse('datasets-set-thumb-from-bbox', args=[dataset_id])
 
         for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):
             response = self.client.post(
@@ -568,8 +570,8 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             else:
                 expected_thumb = Image.open(expected_thumb_path)
 
-                self.layer_coast_line.refresh_from_db()
-                self._fetch_thumb_and_compare(self.layer_coast_line.thumbnail_url, expected_thumb)
+                self.dataset_coast_line.refresh_from_db()
+                self._fetch_thumb_and_compare(self.dataset_coast_line.thumbnail_url, expected_thumb)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)

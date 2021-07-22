@@ -318,6 +318,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
         self.fields['metadata_only'] = serializers.BooleanField()
         self.fields['processed'] = serializers.BooleanField(read_only=True)
         self.fields['state'] = serializers.CharField(read_only=True)
+        self.fields['sourcetype'] = serializers.CharField(read_only=True)
 
         self.fields['embed_url'] = EmbedUrlField()
         self.fields['thumbnail_url'] = ThumbnailUrlField()
@@ -333,7 +334,6 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             LicenseSerializer, embed=True, many=False)
         self.fields['spatial_representation_type'] = DynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False)
-        self.fields['storeType'] = serializers.CharField(read_only=True)
 
     class Meta:
         model = ResourceBase
@@ -352,7 +352,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
             'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', 'state',
-            'data', 'storetype'
+            'data', 'subtype', 'sourcetype'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
@@ -366,8 +366,6 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             _data = data.pop('data')
             if self.is_valid():
                 data['blob'] = _data
-        if 'storeType' in data:
-            data['storetype'] = data.pop('storeType')
         return data
 
     def to_representation(self, instance):
@@ -380,8 +378,6 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             if not request.user.is_anonymous:
                 favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
                 data['favorite'] = favorite > 0
-        if 'storetype' in data:
-            data['storeType'] = data.pop('storetype')
         # Adding links to resource_base api
         obj_id = data.get('pk', None)
         if obj_id:

@@ -44,7 +44,7 @@ from ..base.models import (
     SpatialRepresentationType)
 
 from ..maps.models import Map
-from ..layers.models import Layer
+from ..layers.models import Dataset
 from ..documents.models import Document
 from ..documents.enumerations import (
     DOCUMENT_TYPE_MAP,
@@ -60,7 +60,7 @@ class KeywordHandler:
     '''
     Object needed to handle the keywords coming from the XML
     The expected input are:
-     - instance (Layer/Document/Map): instance of any object inherited from ResourceBase.
+     - instance (Dataset/Document/Map): instance of any object inherited from ResourceBase.
      - keywords (list(dict)): Is required to analyze the keywords to find if some thesaurus is available.
     '''
 
@@ -186,8 +186,8 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
         defaults['date'] = instance.date or timezone.now()
 
     to_update = {}
-    if isinstance(instance, Layer):
-        for _key in ('name', 'workspace', 'store', 'storetype', 'alternate', 'typename'):
+    if isinstance(instance, Dataset):
+        for _key in ('name', 'workspace', 'store', 'subtype', 'alternate', 'typename'):
             if hasattr(instance, _key):
                 if _key in defaults:
                     to_update[_key] = defaults.pop(_key)
@@ -207,7 +207,7 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
     if isinstance(instance, Document):
         if 'links' in defaults:
             defaults.pop('links')
-        for _key in ('storetype', 'doc_url', 'doc_file', 'extension'):
+        for _key in ('subtype', 'doc_url', 'doc_file', 'extension'):
             if hasattr(instance, _key):
                 if _key in defaults:
                     to_update[_key] = defaults.pop(_key)
@@ -218,8 +218,8 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
 
     if hasattr(instance, 'charset') and 'charset' not in to_update:
         to_update['charset'] = defaults.pop('charset', instance.charset)
-    if hasattr(instance, 'storetype') and 'storetype' not in to_update:
-        to_update['storetype'] = defaults.pop('storetype', instance.storetype)
+    if hasattr(instance, 'subtype') and 'subtype' not in to_update:
+        to_update['subtype'] = defaults.pop('subtype', instance.subtype)
     if hasattr(instance, 'urlsuffix') and 'urlsuffix' not in to_update:
         to_update['urlsuffix'] = defaults.pop('urlsuffix', instance.urlsuffix)
 
@@ -258,7 +258,7 @@ def metadata_storers(instance, custom={}):
 
 def get_alternate_name(instance):
     try:
-        if isinstance(instance, Layer):
+        if isinstance(instance, Dataset):
             from ..services.enumerations import CASCADED
             from ..services.enumerations import INDEXED
 
@@ -302,11 +302,11 @@ def document_post_save(instance, *args, **kwargs):
         doc_type_map = DOCUMENT_TYPE_MAP
         doc_type_map.update(getattr(settings, 'DOCUMENT_TYPE_MAP', {}))
         if doc_type_map is None:
-            storetype = 'other'
+            subtype = 'other'
         else:
-            storetype = doc_type_map.get(
+            subtype = doc_type_map.get(
                 instance.extension.lower(), 'other')
-        instance.storetype = storetype
+        instance.subtype = subtype
     elif instance.doc_url:
         if '.' in urlparse(instance.doc_url).path:
             instance.extension = urlparse(instance.doc_url).path.rsplit('.')[-1]
@@ -328,7 +328,7 @@ def document_post_save(instance, *args, **kwargs):
 
     Document.objects.filter(id=instance.id).update(
         extension=instance.extension,
-        storetype=instance.storetype,
+        subtype=instance.subtype,
         doc_url=instance.doc_url,
         csw_type=instance.csw_type)
 
@@ -353,7 +353,7 @@ def document_post_save(instance, *args, **kwargs):
         instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
 
 
-def layer_post_save(instance, *args, **kwargs):
+def dataset_post_save(instance, *args, **kwargs):
     base_file, info = instance.get_base_file()
 
     if info:
@@ -363,22 +363,22 @@ def layer_post_save(instance, *args, **kwargs):
     if base_file is not None:
         extension = f'.{base_file.name}'
         if extension in vec_exts:
-            instance.storetype = 'vector'
+            instance.subtype = 'vector'
         elif extension in cov_exts:
-            instance.storetype = 'raster'
+            instance.subtype = 'raster'
 
-    Layer.objects.filter(id=instance.id).update(storetype=instance.storetype)
+    Dataset.objects.filter(id=instance.id).update(subtype=instance.subtype)
 
 
 def metadata_post_save(instance, *args, **kwargs):
-    logger.debug("handling UUID In pre_save_layer")
-    if isinstance(instance, Layer) and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
-        logger.debug("using custom uuid handler In pre_save_layer")
+    logger.debug("handling UUID In pre_save_dataset")
+    if isinstance(instance, Dataset) and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
+        logger.debug("using custom uuid handler In pre_save_dataset")
         from ..layers.utils import get_uuid_handler
         _uuid = get_uuid_handler()(instance).create_uuid()
         if _uuid != instance.uuid:
             instance.uuid = _uuid
-            Layer.objects.filter(id=instance.id).update(uuid=_uuid)
+            Dataset.objects.filter(id=instance.id).update(uuid=_uuid)
 
     # Fixup bbox
     if instance.bbox_polygon is None:
@@ -477,7 +477,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
 
         if isinstance(instance, Document):
             document_post_save(instance, *args, **kwargs)
-        if isinstance(instance, Layer):
-            layer_post_save(instance, *args, **kwargs)
+        if isinstance(instance, Dataset):
+            dataset_post_save(instance, *args, **kwargs)
 
         metadata_post_save(instance, *args, **kwargs)

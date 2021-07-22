@@ -876,7 +876,7 @@ AUTH_EXEMPT_URLS = (
     f'{FORCE_SCRIPT_NAME}/api/roles',
     f'{FORCE_SCRIPT_NAME}/api/adminRole',
     f'{FORCE_SCRIPT_NAME}/api/users',
-    f'{FORCE_SCRIPT_NAME}/api/layers',
+    f'{FORCE_SCRIPT_NAME}/api/datasets',
     f'{FORCE_SCRIPT_NAME}/monitoring',
     r'^/i18n/setlang/?$',
 )
@@ -911,8 +911,8 @@ PINAX_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {
         "map": "How good is this map?"
     },
-    "layers.Layer": {
-        "layer": "How good is this layer?"
+    "layers.Dataset": {
+        "dataset": "How good is this dataset?"
     },
     "documents.Document": {
         "document": "How good is this document?"
@@ -1408,7 +1408,9 @@ DEFAULT_LAYER_FORMAT = os.environ.get('DEFAULT_LAYER_FORMAT', "image/png")
 DEFAULT_TILE_SIZE = os.environ.get('DEFAULT_TILE_SIZE', 512)
 
 # Where should newly created maps be focused?
-DEFAULT_MAP_CENTER = (os.environ.get('DEFAULT_MAP_CENTER_X', 0), os.environ.get('DEFAULT_MAP_CENTER_Y', 0))
+DEFAULT_MAP_CENTER = (
+    ast.literal_eval(os.environ.get('DEFAULT_MAP_CENTER_X', '0')),
+    ast.literal_eval(os.environ.get('DEFAULT_MAP_CENTER_Y', '0')))
 
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
@@ -1856,7 +1858,7 @@ if os.name == 'nt':
 # option to enable/disable resource unpublishing for administrators and members
 RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
 
-# Each uploaded Layer must be approved by an Admin before becoming visible
+# Each uploaded Dataset must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
 # If this option is enabled, Resources belonging to a Group (with access private) won't be

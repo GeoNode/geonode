@@ -145,7 +145,7 @@ def error_response(req, exception=None, errors=None, force_ajax=True):
         exception = "<br>".join(errors)
     return render(
         req,
-        'upload/layer_upload_error.html',
+        'upload/dataset_upload_error.html',
         context={'error_msg': f'Unexpected error : {exception}'})
 
 
@@ -324,7 +324,7 @@ def next_step_response(req, upload_session, force_ajax=True):
     if next == 'time':
         store_type = import_session.tasks[0].target.store_type
         layer = import_session.tasks[0].layer
-        (has_time_dim, layer_values) = layer_eligible_for_time_dimension(
+        (has_time_dim, dataset_values) = dataset_eligible_for_time_dimension(
             req,
             layer,
             upload_session=upload_session)
@@ -453,7 +453,7 @@ def check_import_session_is_valid(request, upload_session, import_session):
             return layer
         except Exception as e:
             return render(request,
-                          'upload/layer_upload_error.html', context={'error_msg': str(e)})
+                          'upload/dataset_upload_error.html', context={'error_msg': str(e)})
     elif store_type == 'coverageStore':
         return True
 
@@ -475,15 +475,15 @@ def _get_time_dimensions(layer, upload_session):
 
     att_list = []
     try:
-        layer_values = _get_layer_values(layer, upload_session, expand=1)
-        if layer and layer_values:
-            ft = layer_values[0]
+        dataset_values = _get_dataset_values(layer, upload_session, expand=1)
+        if layer and dataset_values:
+            ft = dataset_values[0]
             attributes = [{'name': k, 'binding': ft[k]['binding'] or 0} for k in ft.keys()]
             for a in attributes:
                 if (('Integer' in a['binding'] or 'Long' in a['binding']) and 'id' != a['name'].lower()) \
                         and filter_name(a['name'].lower()):
-                    if layer_values:
-                        for feat in layer_values:
+                    if dataset_values:
+                        for feat in dataset_values:
                             if iso8601(str(feat.get(a['name'])['value'])):
                                 if a not in att_list:
                                     att_list.append(a)
@@ -491,8 +491,8 @@ def _get_time_dimensions(layer, upload_session):
                     att_list.append(a)
                 elif 'String' in a['binding'] \
                         and filter_name(a['name'].lower()):
-                    if layer_values:
-                        for feat in layer_values:
+                    if dataset_values:
+                        for feat in dataset_values:
                             if feat.get(a['name'])['value'] and \
                                     iso8601(str(feat.get(a['name'])['value'])):
                                 if a not in att_list:
@@ -526,8 +526,8 @@ def _fixup_base_file(absolute_base_file, tempdir=None):
         raise Exception(_(f'File does not exist: {absolute_base_file}'))
 
 
-def _get_layer_values(layer, upload_session, expand=0):
-    layer_values = []
+def _get_dataset_values(layer, upload_session, expand=0):
+    dataset_values = []
     if upload_session:
         absolute_base_file = _fixup_base_file(
             upload_session.base_file[0].base_file,
@@ -551,21 +551,21 @@ def _get_layer_values(layer, upload_session, expand=0):
                             feat_values[k] = ff
                         else:
                             feat_values[k] = feat_value
-                    layer_values.append(feat_values)
+                    dataset_values.append(feat_values)
         except Exception as e:
             logger.exception(e)
-    return layer_values
+    return dataset_values
 
 
-def layer_eligible_for_time_dimension(
+def dataset_eligible_for_time_dimension(
         request, layer, values=None, upload_session=None):
     _is_eligible = False
-    layer_values = values or _get_layer_values(layer, upload_session, expand=0)
+    dataset_values = values or _get_dataset_values(layer, upload_session, expand=0)
     att_list = _get_time_dimensions(layer, upload_session)
     _is_eligible = att_list or False
     if upload_session and _is_eligible:
         upload_session.time = True
-    return (_is_eligible, layer_values)
+    return (_is_eligible, dataset_values)
 
 
 def run_import(upload_session, async_upload=_ASYNC_UPLOAD):

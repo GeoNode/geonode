@@ -1,5 +1,38 @@
 # Change Log
 
+## [3.2.1](https://github.com/GeoNode/geonode/tree/3.2.1) (2021-07-16)
+
+### Breaking Changes
+
+ - Based on MapStore client [3.2.1](https://github.com/GeoNode/geonode-mapstore-client/releases/tag/3.2.1)
+ - MapStore client is no more compatible with 3.0.x train
+ - [GNIP 88: Upgrade from Django 2.2 to 3.2](https://github.com/GeoNode/geonode/issues/7366)
+   - Not compatible anymore with Django 2.2.*
+
+### Features
+
+ - Python upgrade 3.7+
+ - Django upgrade 2.2.20+
+ - GeoServer upgrade 2.18.3
+
+ - Highlights GeoNode 3.2:
+   - [Introduce the adoption of groups to define users permissions, and define add_resource permission for users](https://github.com/GeoNode/geonode/issues/7355)
+
+  - [Features](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.1+label%3Afeature)
+  - [Enhancements](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.1+label%3Aenhancement)
+  - [Security Fixes](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.1+label%3Asecurity)
+  - [Severe Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.1+label%3Ablocker)
+  - [Regressions](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.1+label%3Aregression)
+  - [Bug Fixes](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.1+label%3Amajor)
+  - [Minor Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.1+label%3Aminor)
+  - [Performance](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.1+label%3Aperformance)
+  - [Translations](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.1+label%3Atranslations)
+  - [Dependencies](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A3.2.1+label%3Adependencies)
+
+### Full Changelog
+
+[https://github.com/GeoNode/geonode/compare/3.2.0...3.2.1](https://github.com/GeoNode/geonode/compare/3.2.0...3.2.1)
+
 ## [3.2.0](https://github.com/GeoNode/geonode/tree/3.2.0) (2021-04-29)
 ### Breaking Changes
 

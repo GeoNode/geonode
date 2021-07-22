@@ -64,7 +64,7 @@ class FilesTests(GeoNodeBaseTestSupport):
         for t in files.types:
             self.assertTrue(t.code is not None)
             self.assertTrue(t.name is not None)
-            self.assertTrue(t.layer_type is not None)
+            self.assertTrue(t.dataset_type is not None)
 
     def test_contains_bad_names(self):
         self.assertTrue(_contains_bad_names(['1', 'a']))

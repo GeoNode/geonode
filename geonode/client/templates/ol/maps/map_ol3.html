@@ -36,7 +36,7 @@
             break;
         }
     }
-    {% for layer in resource.layers %}
+    {% for layer in resource.datasets %}
         {% if layer.ows_url != None %}
         layers.push(new ol.layer.Tile({
                 source: new ol.source.TileWMS({

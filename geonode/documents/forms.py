@@ -32,7 +32,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.resource.utils import get_related_resources
 from geonode.documents.models import (
     Document,
@@ -46,7 +46,7 @@ class DocumentFormMixin:
     def generate_link_choices(self, resources=None):
 
         if resources is None:
-            resources = list(Layer.objects.all())
+            resources = list(Dataset.objects.all())
             resources += list(Map.objects.all())
             resources.sort(key=lambda x: x.title)
 
@@ -119,7 +119,7 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
             'object_id',
             'doc_file',
             'extension',
-            'storetype',
+            'subtype',
             'doc_url')
 
 

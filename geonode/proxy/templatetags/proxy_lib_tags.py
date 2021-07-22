@@ -49,17 +49,17 @@ def original_link_available(context, resourceid, url):
             urlsplit(url).path != urlsplit(download_url).path:
         return True
 
-    layer_files = []
+    dataset_files = []
     if isinstance(instance, ResourceBase):
         try:
             for file in instance.files:
-                layer_files.append(file)
+                dataset_files.append(file)
                 if not storage_manager.exists(file):
                     return False
         except Exception:
             traceback.print_exc()
             return False
-    if layer_files:
+    if dataset_files:
         return True
     else:
         return False

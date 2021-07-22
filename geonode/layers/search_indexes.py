@@ -22,7 +22,7 @@ from dialogos.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from haystack import indexes
-from geonode.maps.models import Layer
+from geonode.maps.models import Dataset
 
 
 class LayerIndex(indexes.SearchIndex, indexes.Indexable):
@@ -84,20 +84,20 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     num_comments = indexes.IntegerField(stored=False)
 
     def get_model(self):
-        return Layer
+        return Dataset
 
     def prepare_type(self, obj):
         return "layer"
 
     def prepare_subtype(self, obj):
-        if obj.storetype == "vector":
+        if obj.subtype == "vector":
             if obj.has_time:
                 return "vector_time"
             else:
                 return "vector"
-        elif obj.storetype == "raster":
+        elif obj.subtype == "raster":
             return "raster"
-        elif obj.storetype in ['tileStore', 'remote']:
+        elif obj.subtype in ['tileStore', 'remote']:
             return "remote"
 
     def prepare_rating(self, obj):

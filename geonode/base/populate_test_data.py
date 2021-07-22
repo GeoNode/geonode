@@ -37,7 +37,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 from geonode.maps.models import Map
 from geonode.base import enumerations
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase, TopicCategory
@@ -58,7 +58,7 @@ dfile = [f"{settings.MEDIA_ROOT}/img.gif"]
 
 def all_public():
     '''ensure all layers, maps and documents are publicly available'''
-    for lyr in Layer.objects.all():
+    for lyr in Dataset.objects.all():
         lyr.set_default_permissions()
         lyr.clear_dirty_state()
         lyr.set_processing_state(enumerations.STATE_PROCESSED)
@@ -124,7 +124,7 @@ def create_fixtures():
 
     next_date = get_test_date()
 
-    layer_data = [
+    dataset_data = [
         ('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, next_date(), ('populartag', 'here'), elevation),
         ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, next_date(), ('populartag',), elevation),
         ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', world_extent, next_date(), ('populartag',), elevation),
@@ -133,7 +133,7 @@ def create_fixtures():
         ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], next_date(), ('populartag',), location),
         ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], next_date(), ('populartag',), biota),
         ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], next_date(), ('populartag',), biota),
-        ('layer metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [0, 22, 0, 22], next_date(), ('populartag',), farming)
+        ('dataset metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [0, 22, 0, 22], next_date(), ('populartag',), farming)
     ]
 
     document_data = [
@@ -149,14 +149,14 @@ def create_fixtures():
         ('doc metadata true', 'doc metadata true', ('populartag',), [0, 22, 0, 22], farming)
     ]
 
-    return map_data, user_data, people_data, layer_data, document_data
+    return map_data, user_data, people_data, dataset_data, document_data
 
 
 def create_models(type=None, integration=False):
     users = []
     obj_ids = []
     with transaction.atomic():
-        map_data, user_data, people_data, layer_data, document_data = create_fixtures()
+        map_data, user_data, people_data, dataset_data, document_data = create_fixtures()
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
         cont_group, created = Group.objects.get_or_create(name='contributors')
         perm = Permission.objects.get(codename='add_resourcebase')
@@ -239,12 +239,12 @@ def create_models(type=None, integration=False):
                         m.keywords.add(kw)
                         m.save()
 
-            if not type or ensure_string(type) == 'layer':
-                for ld, owner, storetype in zip(layer_data, cycle(users), cycle(('raster', 'vector'))):
+            if not type or ensure_string(type) == 'dataset':
+                for ld, owner, subtype in zip(dataset_data, cycle(users), cycle(('raster', 'vector'))):
                     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                     end = start + timedelta(days=365)
-                    logger.debug(f"[SetUp] Add layer {title}")
-                    layer = Layer(
+                    logger.debug(f"[SetUp] Add dataset {title}")
+                    dataset = Dataset(
                         title=title,
                         abstract=abstract,
                         name=name,
@@ -257,18 +257,18 @@ def create_models(type=None, integration=False):
                         temporal_extent_start=start,
                         temporal_extent_end=end,
                         date=start,
-                        storetype=storetype,
+                        subtype=subtype,
                         category=category,
-                        metadata_only=title == 'layer metadata true'
+                        metadata_only=title == 'dataset metadata true'
                     )
-                    layer.save()
-                    layer.set_default_permissions()
-                    layer.clear_dirty_state()
-                    layer.set_processing_state(enumerations.STATE_PROCESSED)
-                    obj_ids.append(layer.id)
+                    dataset.save()
+                    dataset.set_default_permissions()
+                    dataset.clear_dirty_state()
+                    dataset.set_processing_state(enumerations.STATE_PROCESSED)
+                    obj_ids.append(dataset.id)
                     for kw in kws:
-                        layer.keywords.add(kw)
-                        layer.save()
+                        dataset.keywords.add(kw)
+                        dataset.save()
     return obj_ids
 
 
@@ -277,7 +277,7 @@ def remove_models(obj_ids, type=None, integration=False):
     with DisableDjangoSignals(skip=integration):
         if not type:
             remove_models(None, type=b'map')
-            remove_models(None, type=b'layer')
+            remove_models(None, type=b'dataset')
             remove_models(None, type=b'document')
         if type == 'map':
             try:
@@ -287,12 +287,12 @@ def remove_models(obj_ids, type=None, integration=False):
                     m.delete()
             except Exception:
                 pass
-        elif type == 'layer':
+        elif type == 'dataset':
             try:
-                l_ids = obj_ids or [lyr.id for lyr in Layer.objects.all()]
+                l_ids = obj_ids or [lyr.id for lyr in Dataset.objects.all()]
                 for id in l_ids:
-                    layer = Layer.objects.get(pk=id)
-                    layer.delete()
+                    dataset = Dataset.objects.get(pk=id)
+                    dataset.delete()
             except Exception:
                 pass
         elif type == 'document':
@@ -308,7 +308,7 @@ def remove_models(obj_ids, type=None, integration=False):
 def dump_models(path=None):
     result = serialize("json", sum([list(x) for x in
                                     [get_user_model().objects.all(),
-                                     Layer.objects.all(),
+                                     Dataset.objects.all(),
                                      Map.objects.all(),
                                      Document.objects.all(),
                                      Tag.objects.all(),
@@ -321,7 +321,7 @@ def dump_models(path=None):
         f.write(result)
 
 
-def create_single_layer(name):
+def create_single_dataset(name):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -333,7 +333,7 @@ def create_single_layer(name):
     ll = (name, 'lorem ipsum', name, f'geonode:{name}', [
         0, 22, 0, 22], test_datetime, ('populartag',), "farming")
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ll
-    layer = Layer(
+    dataset = Dataset(
         title=title,
         abstract=abstract,
         name=name,
@@ -346,15 +346,15 @@ def create_single_layer(name):
         temporal_extent_start=test_datetime,
         temporal_extent_end=test_datetime,
         date=start,
-        storetype="vector",
-        resource_type="layer",
+        subtype="vector",
+        resource_type="dataset",
         typename=f"geonode:{title}"
     )
-    layer.save()
-    layer.set_default_permissions()
-    layer.clear_dirty_state()
-    layer.set_processing_state(enumerations.STATE_PROCESSED)
-    return layer
+    dataset.save()
+    dataset.set_default_permissions()
+    dataset.clear_dirty_state()
+    dataset.set_processing_state(enumerations.STATE_PROCESSED)
+    return dataset
 
 
 def create_single_map(name):

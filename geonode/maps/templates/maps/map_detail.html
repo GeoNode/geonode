@@ -214,21 +214,21 @@
           <h4 class="list-group-item-heading">{% trans "Map Layers" %}</h4>
           <p>{% trans "This map uses the following layers:" %}</p>
           <ul class="list-unstyled">
-            {% for layer in resource.layer_set.all %}
+            {% for layer in resource.dataset_set.all %}
             {% ifnotequal layer.group 'background' %}
             <li class="chevron-caret" id="legend-{{layer.id}}">
               <div class="map-layers">
               <i class="fa fa-chevron-right"></i>
               {% if layer.local %}
-                <a href="{% url "layer_detail" layer.name %}">
-                  {% if layer.layer_title %}
-                  {{ layer.layer_title }}
+                <a href="{% url "dataset_detail" layer.name %}">
+                  {% if layer.dataset_title %}
+                  {{ layer.dataset_title }}
                   {% else %}
                   {{ layer.name }}
                   {% endif %}
                 </a>
               {% else %}
-                {{ layer.layer_title }}
+                {{ layer.dataset_title }}
               {% endif %}
               </div>
               <ul class="list-unstyled">
@@ -275,7 +275,7 @@
           {% endif %}
         {% endif %}
 
-        {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
+        {% if "add_resource" in user.perms %}
           <li class="list-group-item">
             <h4>{% trans "Copy this map" %}</h4>
             <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>

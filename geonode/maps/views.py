@@ -49,14 +49,14 @@ from django.views.decorators.clickjacking import (
 
 from geonode import geoserver
 from geonode.maps.forms import MapForm
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.views import batch_modify
 from geonode.people.forms import ProfileForm
 from geonode.maps.models import Map, MapLayer
 from geonode.monitoring import register_event
 from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
-from geonode.layers.views import _resolve_layer
+from geonode.layers.views import _resolve_dataset
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
 from geonode.resource.manager import resource_manager
@@ -153,7 +153,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
     register_event(request, EventType.EVENT_VIEW, map_obj.title)
 
     config = json.dumps(config)
-    layers = MapLayer.objects.filter(map=map_obj.id)
+    datasets = MapLayer.objects.filter(map=map_obj.id)
     links = map_obj.link_set.download()
 
     # Call this first in order to be sure "perms_list" is correct
@@ -184,7 +184,7 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         'config': config,
         'resource': map_obj,
         'group': group,
-        'layers': layers,
+        'datasets': datasets,
         'perms_list': perms_list,
         'permissions_json': permissions_json,
         "documents": get_related_documents(map_obj),
@@ -512,13 +512,13 @@ def map_embed(
 
 
 @require_http_methods(["GET", ])
-def add_layer(request):
+def add_dataset(request):
     """
     The view that returns the map composer opened to
     a given map and adds a layer on top of it.
     """
     map_id = request.GET.get('map_id')
-    layer_name = request.GET.get('layer_name')
+    dataset_name = request.GET.get('dataset_name')
     try:
         map_obj = _resolve_map(
             request,
@@ -532,11 +532,11 @@ def add_layer(request):
     if not map_obj:
         raise Http404(_("Not found"))
 
-    return map_view(request, str(map_obj.id), layer_name=layer_name)
+    return map_view(request, str(map_obj.id), dataset_name=dataset_name)
 
 
 @xframe_options_sameorigin
-def map_view(request, mapid, layer_name=None,
+def map_view(request, mapid, dataset_name=None,
              template='maps/map_view.html'):
     """
     The view that returns the map composer opened to
@@ -560,9 +560,9 @@ def map_view(request, mapid, layer_name=None,
         map_obj.get_self_resource().get_user_perms(request.user)
         .union(map_obj.get_user_perms(request.user))
     )
-    if layer_name:
-        config = add_layers_to_map_config(
-            request, map_obj, (layer_name, ), False)
+    if dataset_name:
+        config = add_datasets_to_map_config(
+            request, map_obj, (dataset_name, ), False)
 
     register_event(request, EventType.EVENT_VIEW, request.path)
     return render(request, template, context={
@@ -717,16 +717,16 @@ def clean_config(conf):
 def new_map(request, template='maps/map_new.html'):
     map_obj, config = new_map_config(request)
     perms_list = []
-    layer_name = request.GET.get('layer')
-    if layer_name and request.GET.get('view'):
+    dataset_name = request.GET.get('layer')
+    if dataset_name and request.GET.get('view'):
         # Get permissions a user has on a layer when they click view layer.
         try:
-            if ':' in layer_name:
-                layer_name = layer_name.split(':')[1]
-            layer_obj = Layer.objects.get(name=layer_name)
+            if ':' in dataset_name:
+                dataset_name = dataset_name.split(':')[1]
+            dataset_obj = Dataset.objects.get(name=dataset_name)
             perms_list = list(
-                layer_obj.get_self_resource().get_user_perms(request.user)
-                .union(layer_obj.get_user_perms(request.user))
+                dataset_obj.get_self_resource().get_user_perms(request.user)
+                .union(dataset_obj.get_user_perms(request.user))
             )
         except Exception:
             pass
@@ -846,7 +846,7 @@ def new_map_config(request):
         if 'layer' in params:
             map_obj = Map(projection=getattr(settings, 'DEFAULT_MAP_CRS',
                                              'EPSG:3857'))
-            config = add_layers_to_map_config(
+            config = add_datasets_to_map_config(
                 request, map_obj, params.getlist('layer'))
         else:
             config = DEFAULT_MAP_CONFIG
@@ -855,15 +855,15 @@ def new_map_config(request):
     return map_obj, json.dumps(config)
 
 
-def add_layers_to_map_config(
-        request, map_obj, layer_names, add_base_layers=True):
+def add_datasets_to_map_config(
+        request, map_obj, dataset_names, add_base_datasets=True):
     DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(request)
 
     bbox = []
     layers = []
-    for layer_name in layer_names:
+    for dataset_name in dataset_names:
         try:
-            layer = _resolve_layer(request, layer_name)
+            layer = _resolve_dataset(request, dataset_name)
         except ObjectDoesNotExist:
             # bad layer, skip
             continue
@@ -877,13 +877,13 @@ def add_layers_to_map_config(
             # invisible layer, skip inclusion
             continue
 
-        layer_bbox = layer.bbox[0:4]
-        bbox = layer_bbox[:]
-        bbox[0] = layer_bbox[0]
-        bbox[1] = layer_bbox[2]
-        bbox[2] = layer_bbox[1]
-        bbox[3] = layer_bbox[3]
-        # assert False, str(layer_bbox)
+        dataset_bbox = layer.bbox[0:4]
+        bbox = dataset_bbox[:]
+        bbox[0] = dataset_bbox[0]
+        bbox[1] = dataset_bbox[2]
+        bbox[2] = dataset_bbox[1]
+        bbox[3] = dataset_bbox[3]
+        # assert False, str(dataset_bbox)
 
         def decimal_encode(bbox):
             import decimal
@@ -926,7 +926,7 @@ def add_layers_to_map_config(
         config["visibility"] = True
         config["srs"] = srs
         config["bbox"] = decimal_encode(
-            bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
+            bbox_to_projection([float(coord) for coord in dataset_bbox] + [layer.srid, ],
                                target_srid=int(srs.split(":")[1]))[:4])
         config["capability"] = {
             "abstract": layer.abstract,
@@ -935,7 +935,7 @@ def add_layers_to_map_config(
             "title": layer.title,
             "style": '',
             "queryable": True,
-            "storetype": layer.storetype,
+            "subtype": layer.subtype,
             "bbox": {
                 layer.srid: {
                     "srs": layer.srid,
@@ -944,20 +944,20 @@ def add_layers_to_map_config(
                 srs: {
                     "srs": srs,
                     "bbox": decimal_encode(
-                        bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
+                        bbox_to_projection([float(coord) for coord in dataset_bbox] + [layer.srid, ],
                                            target_srid=srs_srid)[:4])
                 },
                 "EPSG:4326": {
                     "srs": "EPSG:4326",
                     "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
                     bbox_to_projection(
-                        [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
+                        [float(coord) for coord in dataset_bbox] + [layer.srid, ], target_srid=4326)[:4]
                 },
                 "EPSG:900913": {
                     "srs": "EPSG:900913",
                     "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:900913' else
                     bbox_to_projection(
-                        [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=3857)[:4]
+                        [float(coord) for coord in dataset_bbox] + [layer.srid, ], target_srid=3857)[:4]
                 }
             },
             "srs": {
@@ -983,7 +983,7 @@ def add_layers_to_map_config(
             "keywords": [k.name for k in layer.keywords.all()] if layer.keywords else [],
             "llbbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
             bbox_to_projection(
-                [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
+                [float(coord) for coord in dataset_bbox] + [layer.srid, ], target_srid=4326)[:4]
         }
 
         all_times = None
@@ -1026,7 +1026,7 @@ def add_layers_to_map_config(
                         }
                     }
 
-        if layer.storetype in ['tileStore', 'remote']:
+        if layer.subtype in ['tileStore', 'remote']:
             service = layer.remote_service
             source_params = {}
             if service.type in ('REST_MAP', 'REST_IMG'):
@@ -1039,17 +1039,17 @@ def add_layers_to_map_config(
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,
-                                layer_params=json.dumps(config),
+                                dataset_params=json.dumps(config),
                                 visibility=True,
                                 source_params=json.dumps(source_params)
                                 )
         else:
             ogc_server_url = urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc
-            layer_url = urlsplit(layer.ows_url).netloc
+            dataset_url = urlsplit(layer.ows_url).netloc
 
             access_token = request.session['access_token'] if request and 'access_token' in request.session else None
-            if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
+            if access_token and ogc_server_url == dataset_url and 'access_token' not in layer.ows_url:
                 url = f'{layer.ows_url}?access_token={access_token}'
             else:
                 url = layer.ows_url
@@ -1058,7 +1058,7 @@ def add_layers_to_map_config(
                 name=layer.alternate,
                 ows_url=url,
                 # use DjangoJSONEncoder to handle Decimal values
-                layer_params=json.dumps(config, cls=DjangoJSONEncoder),
+                dataset_params=json.dumps(config, cls=DjangoJSONEncoder),
                 visibility=True
             )
 
@@ -1102,7 +1102,7 @@ def add_layers_to_map_config(
 
     map_obj.handle_moderated_uploads()
 
-    if add_base_layers:
+    if add_base_datasets:
         layers_to_add = DEFAULT_BASE_LAYERS + layers
     else:
         layers_to_add = layers
@@ -1146,13 +1146,13 @@ def map_download(request, mapid, template='maps/map_download.html'):
 
         # we need to remove duplicate layers
         j_map = json.loads(mapJson)
-        j_layers = j_map["layers"]
-        for j_layer in j_layers:
-            if j_layer["service"] is None:
-                j_layers.remove(j_layer)
+        j_datasets = j_map["layers"]
+        for j_dataset in j_datasets:
+            if j_dataset["service"] is None:
+                j_datasets.remove(j_dataset)
                 continue
-            if (len([_l for _l in j_layers if _l == j_layer])) > 1:
-                j_layers.remove(j_layer)
+            if (len([_l for _l in j_datasets if _l == j_dataset])) > 1:
+                j_datasets.remove(j_dataset)
         mapJson = json.dumps(j_map)
 
         # the path to geoserver backend continue here
@@ -1169,25 +1169,25 @@ def map_download(request, mapid, template='maps/map_download.html'):
             raise Exception(
                 f'Could not start the download of {map_obj.title}. Error was: {content}')
 
-    locked_layers = []
-    remote_layers = []
-    downloadable_layers = []
+    locked_datasets = []
+    remote_datasets = []
+    downloadable_datasets = []
 
-    for lyr in map_obj.layer_set.all():
+    for lyr in map_obj.dataset_set.all():
         if lyr.group != "background":
             if not lyr.local:
-                remote_layers.append(lyr)
+                remote_datasets.append(lyr)
             else:
-                ownable_layer = Layer.objects.get(alternate=lyr.name)
+                ownable_dataset = Dataset.objects.get(alternate=lyr.name)
                 if not request.user.has_perm(
                         'download_resourcebase',
-                        obj=ownable_layer.get_self_resource()):
-                    locked_layers.append(lyr)
+                        obj=ownable_dataset.get_self_resource()):
+                    locked_datasets.append(lyr)
                 else:
                     # we need to add the layer only once
                     if len(
-                            [_l for _l in downloadable_layers if _l.name == lyr.name]) == 0:
-                        downloadable_layers.append(lyr)
+                            [_l for _l in downloadable_datasets if _l.name == lyr.name]) == 0:
+                        downloadable_datasets.append(lyr)
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
 
     register_event(request, EventType.EVENT_DOWNLOAD, map_obj)
@@ -1196,9 +1196,9 @@ def map_download(request, mapid, template='maps/map_download.html'):
         "geoserver": ogc_server_settings.PUBLIC_LOCATION,
         "map_status": map_status,
         "map": map_obj,
-        "locked_layers": locked_layers,
-        "remote_layers": remote_layers,
-        "downloadable_layers": downloadable_layers,
+        "locked_datasets": locked_datasets,
+        "remote_datasets": remote_datasets,
+        "downloadable_datasets": downloadable_datasets,
         "site": site_url
     })
 
@@ -1250,7 +1250,7 @@ def map_wms(request, mapid):
 
     if request.method == 'PUT':
         try:
-            layerGroupName = map_obj.publish_layer_group()
+            layerGroupName = map_obj.publish_dataset_group()
             response = dict(
                 layerGroupName=layerGroupName,
                 ows=getattr(ogc_server_settings, 'ows', ''),
@@ -1264,7 +1264,7 @@ def map_wms(request, mapid):
 
     if request.method == 'GET':
         response = dict(
-            layerGroupName=getattr(map_obj.layer_group, 'name', ''),
+            layerGroupName=getattr(map_obj.dataset_group, 'name', ''),
             ows=getattr(ogc_server_settings, 'ows', ''),
         )
         return HttpResponse(
@@ -1274,9 +1274,9 @@ def map_wms(request, mapid):
     return HttpResponseNotAllowed(['PUT', 'GET'])
 
 
-def maplayer_attributes(request, layername):
+def mapdataset_attributes(request, layername):
     # Return custom layer attribute labels/order in JSON format
-    layer = Layer.objects.get(alternate=layername)
+    layer = Dataset.objects.get(alternate=layername)
     return HttpResponse(
         json.dumps(
             layer.attribute_config()),

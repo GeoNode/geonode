@@ -60,7 +60,7 @@ class BaseThumbBackground(ABC):
         Function fetching background image, based on the given BBOX.
         On error should raise an exception or return None.
 
-        :param bbox: a layer compliant BBOX: [west, east, south, north, CRS]
+        :param bbox: a dataset compliant BBOX: [west, east, south, north, CRS]
         """
         pass
 
@@ -78,11 +78,11 @@ class GenericWMSBackground(BaseThumbBackground):
         Generic WMS background generation class.
 
         Initialization options (valid in settings.THUMBNAIL_BACKGROUND['options']):
-        :key service_url: layer's provider (OGC server's location)
-        :key layer_name: name of a layer to be used as the background
+        :key service_url: dataset's provider (OGC server's location)
+        :key dataset_name: name of a dataset to be used as the background
         :key format: retrieve image's format/mime-type (defautl 'image/png')
         :key version: WMS service version (default '1.3.0')
-        :key styles: layer's style (default None)
+        :key styles: dataset's style (default None)
         :key srid: CRS which an image should be retrieved in (default 'EPSG:3857')
         """
         super().__init__(thumbnail_width, thumbnail_height, max_retries, retry_delay)
@@ -92,7 +92,7 @@ class GenericWMSBackground(BaseThumbBackground):
         # WMS specific attributes (to be overwritten in specific background classes)
         service_url = options.get("service_url", None)
         self.service_url = f"{service_url}/" if service_url and not service_url.endswith("/") else service_url
-        self.layer_name = options.get("layer_name", None)
+        self.dataset_name = options.get("dataset_name", None)
         self.format = options.get("format", "image/png")
         self.version = options.get("version", "1.3.0")
         self.styles = options.get("styles", None)
@@ -106,7 +106,7 @@ class GenericWMSBackground(BaseThumbBackground):
         To ensure no additional change is performed, conversion is based on top-left and bottom-right
         points conversion.
 
-        :param bbox: a layer compliant BBOX: [west, east, south, north, CRS]
+        :param bbox: a dataset compliant BBOX: [west, east, south, north, CRS]
         """
         transformer = Transformer.from_crs(bbox[-1].lower(), self.srid.lower(), always_xy=True)
 
@@ -120,19 +120,19 @@ class GenericWMSBackground(BaseThumbBackground):
         Function fetching background image, based on the given BBOX.
         On error should raise an exception or return None.
 
-        :param bbox: a layer compliant BBOX: [west, east, south, north, CRS]
+        :param bbox: a dataset compliant BBOX: [west, east, south, north, CRS]
         :param *args: not used, kept for API compatibility
         :param **kargs: not used, kept for API compatibility
         """
 
-        if not self.service_url or not self.layer_name:
-            logger.error("Thumbnail background configured improperly: service URL and layer name may not be empty")
+        if not self.service_url or not self.dataset_name:
+            logger.error("Thumbnail background configured improperly: service URL and dataset name may not be empty")
             return
 
         background = Image.new("RGB", (self.thumbnail_width, self.thumbnail_height), (250, 250, 250))
         img = utils.get_map(
             self.service_url,
-            [self.layer_name],
+            [self.dataset_name],
             self.bbox_to_projection(bbox) + [self.srid],
             wms_version=self.version,
             mime_type=self.format,
@@ -226,7 +226,7 @@ class GenericXYZBackground(BaseThumbBackground):
         to match the given BBOX. Retrieval of each tile is repeated self.max_retries times, waiting self.retry_delay
         seconds between consecutive requests.
 
-        :param bbox: bounding box of the background image, layer compliant format: [west, east, south, north, CRS]
+        :param bbox: bounding box of the background image, dataset compliant format: [west, east, south, north, CRS]
         :param zoom: zoom with which to retrieve Slippy Map's tiles (by default, it's calculated based on width, height)
         :return: None if the CRS is different from self.tiles_crs, or background Image
         """
@@ -251,7 +251,7 @@ class GenericXYZBackground(BaseThumbBackground):
 
         bbox4326 = self.bbox3857to4326(*bbox)
 
-        # change bbox from layer (left, right, bottom, top) to mercantile (left, bottom, right, top)
+        # change bbox from dataset (left, right, bottom, top) to mercantile (left, bottom, right, top)
         self._mercantile_bbox = [bbox4326[0], bbox4326[2], bbox4326[1], bbox4326[3]]
 
         # calculate zoom level

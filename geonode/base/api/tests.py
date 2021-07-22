@@ -42,7 +42,7 @@ from geonode.base.models import (
 )
 
 from geonode.favorite.models import Favorite
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
 from geonode.security.utils import get_resources_with_perms
@@ -64,7 +64,7 @@ class BaseApiTests(APITestCase):
     def setUp(self):
         create_models(b'document')
         create_models(b'map')
-        create_models(b'layer')
+        create_models(b'dataset')
 
     def test_gropus_list(self):
         """
@@ -183,8 +183,8 @@ class BaseApiTests(APITestCase):
         logger.debug(response.data)
 
         # Remove public permissions to Layers
-        from geonode.layers.utils import set_layers_permissions
-        set_layers_permissions(
+        from geonode.layers.utils import set_datasets_permissions
+        set_datasets_permissions(
             "read",  # permissions_name
             None,  # resources_names == None (all layers)
             [get_anonymous_user()],  # users_usernames
@@ -246,6 +246,7 @@ class BaseApiTests(APITestCase):
         # Admin
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertEqual(response.data['resource']['state'], enumerations.STATE_PROCESSED)
+        self.assertEqual(response.data['resource']['sourcetype'], enumerations.SOURCE_TYPE_LOCAL)
         self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
         # Annonymous
         self.assertIsNone(self.client.logout())
@@ -262,14 +263,14 @@ class BaseApiTests(APITestCase):
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
-        Layer(
+        Dataset(
             title='Test Remove User',
             abstract='abstract',
             name='Test Remove User',
             alternate='Test Remove User',
             uuid=str(uuid4()),
             owner=owner,
-            storetype='raster',
+            subtype='raster',
             category=TopicCategory.objects.get(identifier='elevation')
         ).save()
         # Delete user and check if default user is updated
@@ -321,7 +322,7 @@ class BaseApiTests(APITestCase):
 
         # Filter by resource_type == layer and title like 'common morx'
         response = self.client.get(
-            f"{url}?filter{{resource_type}}=layer&filter{{title.icontains}}=common morx", format='json')
+            f"{url}?filter{{resource_type}}=dataset&filter{{title.icontains}}=common morx", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 1)
@@ -521,7 +522,7 @@ class BaseApiTests(APITestCase):
         r_type_names = [item['name'] for item in response.data['resource_types']]
         self.assertEqual(response.status_code, 200)
         self.assertTrue('resource_types' in response.data)
-        self.assertTrue('layer' in r_type_names)
+        self.assertTrue('dataset' in r_type_names)
         self.assertTrue('map' in r_type_names)
         self.assertTrue('document' in r_type_names)
         self.assertFalse('service' in r_type_names)
@@ -530,7 +531,7 @@ class BaseApiTests(APITestCase):
         """
         Ensure we get user's favorite resources.
         """
-        layer = Layer.objects.first()
+        dataset = Dataset.objects.first()
         url = urljoin(f"{reverse('base-resources-list')}/", 'favorites/')
         # Anonymous
         response = self.client.get(url, format='json')
@@ -538,7 +539,7 @@ class BaseApiTests(APITestCase):
         # Authenticated user
         bobby = get_user_model().objects.get(username='bobby')
         self.assertTrue(self.client.login(username='bobby', password='bob'))
-        favorite = Favorite.objects.create_favorite(layer, bobby)
+        favorite = Favorite.objects.create_favorite(dataset, bobby)
         response = self.client.get(url, format='json')
         self.assertEqual(response.data['total'], 1)
         self.assertEqual(response.status_code, 200)
@@ -549,8 +550,8 @@ class BaseApiTests(APITestCase):
         """
         Ensure we can add and remove resources to user's favorite.
         """
-        layer = get_resources_with_perms(get_user_model().objects.get(pk=-1)).first()
-        url = urljoin(f"{reverse('base-resources-list')}/", f"{layer.pk}/favorite/")
+        dataset = get_resources_with_perms(get_user_model().objects.get(pk=-1)).first()
+        url = urljoin(f"{reverse('base-resources-list')}/", f"{dataset.pk}/favorite/")
         # Anonymous
         response = self.client.post(url, format='json')
         self.assertEqual(response.status_code, 403)
@@ -595,8 +596,8 @@ class BaseApiTests(APITestCase):
         url = reverse('base-resources-list')
         # Admin
         admin = get_user_model().objects.get(username='admin')
-        layer = Layer.objects.first()
-        Favorite.objects.create_favorite(layer, admin)
+        dataset = Dataset.objects.first()
+        Favorite.objects.create_favorite(dataset, admin)
 
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
@@ -679,7 +680,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(f"{url}?type=geoapp", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 0)
-        response = self.client.get(f"{url}?type=layer&title__icontains=CA", format='json')
+        response = self.client.get(f"{url}?type=dataset&title__icontains=CA", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 1)
         # response has link to the response

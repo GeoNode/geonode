@@ -26,13 +26,13 @@ from django.contrib.auth import get_user_model
 
 from geonode import geoserver
 from geonode.base import enumerations
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.layers.utils import get_files
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import gs_catalog
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.manager import GeoServerResourceManager
-from geonode.base.populate_test_data import create_single_layer
+from geonode.base.populate_test_data import create_single_dataset
 
 
 class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
@@ -42,7 +42,7 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
         self.files_as_dict, self.tmpdir = get_files(self.files)
         self.cat = gs_catalog
         self.user = get_user_model().objects.get(username="admin")
-        self.sut = create_single_layer("san_andres_y_providencia_water.shp")
+        self.sut = create_single_dataset("san_andres_y_providencia_water.shp")
         self.sut.name = 'san_andres_y_providencia_water'
         self.sut.save()
         self.geoserver_url = settings.GEOSERVER_LOCATION
@@ -55,7 +55,7 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_append_should_add_expected_rows_in_the_catalog(self):
-        layer = Layer.objects.get(name=self.sut.name)
+        layer = Dataset.objects.get(name=self.sut.name)
         _gs_import_session_info = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="append")
         result = requests.get(f'{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}')
         self.assertEqual(result.status_code, 200)
@@ -63,14 +63,14 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_add_expected_rows_in_the_catalog(self):
-        layer = Layer.objects.get(name=self.sut.name)
+        layer = Dataset.objects.get(name=self.sut.name)
         _gs_import_session_info = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
         result = requests.get(f'{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json().get('import').get('state'), enumerations.STATE_COMPLETE)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_revise_resource_value_in_replace_should_return_none_for_not_existing_layer(self):
-        layer = create_single_layer('fake_layer')
+    def test_revise_resource_value_in_replace_should_return_none_for_not_existing_dataset(self):
+        layer = create_single_dataset('fake_dataset')
         _gs_import_session_info = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
         self.assertEqual(_gs_import_session_info.import_session.state, enumerations.STATE_PENDING)

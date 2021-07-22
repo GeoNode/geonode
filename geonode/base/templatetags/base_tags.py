@@ -31,7 +31,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import ResourceBase
 from geonode.base.bbox_utils import filter_bbox
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
@@ -44,11 +44,11 @@ from collections import OrderedDict
 register = template.Library()
 
 FACETS = {
-    'raster': _('Raster Layer'),
-    'vector': _('Vector Layer'),
+    'raster': _('Raster Dataset'),
+    'vector': _('Vector Dataset'),
     'vector_time': _('Vector Temporal Serie'),
-    'remote': _('Remote Layer'),
-    'wms': _('WMS Cascade Layer')
+    'remote': _('Remote Dataset'),
+    'wms': _('WMS Cascade Dataset')
 }
 
 
@@ -177,12 +177,12 @@ def facets(context):
         if not settings.SKIP_PERMS_FILTER:
             documents = documents.filter(id__in=authorized)
 
-        counts = documents.values('storetype').annotate(count=Count('storetype'))
-        facets = {count['storetype']: count['count'] for count in counts}
+        counts = documents.values('subtype').annotate(count=Count('subtype'))
+        facets = {count['subtype']: count['count'] for count in counts}
 
         return facets
     else:
-        layers = Layer.objects.filter(
+        layers = Dataset.objects.filter(
             Q(title__icontains=title_filter) |
             Q(abstract__icontains=abstract_filter) |
             Q(purpose__icontains=purpose_filter)
@@ -226,19 +226,19 @@ def facets(context):
         if not settings.SKIP_PERMS_FILTER:
             layers = layers.filter(id__in=authorized)
 
-        counts = layers.values('storetype').annotate(count=Count('storetype'))
+        counts = layers.values('subtype').annotate(count=Count('subtype'))
 
         counts_array = []
         try:
             for count in counts:
-                counts_array.append((count['storetype'], count['count']))
+                counts_array.append((count['subtype'], count['count']))
         except Exception:
             pass
 
         count_dict = dict(counts_array)
 
-        vector_time_series = layers.exclude(has_time=False).filter(storetype='vector'). \
-            values('storetype').annotate(count=Count('storetype'))
+        vector_time_series = layers.exclude(has_time=False).filter(subtype='vector'). \
+            values('subtype').annotate(count=Count('subtype'))
 
         if vector_time_series:
             count_dict['vectorTimeSeries'] = vector_time_series[0]['count']
@@ -251,8 +251,8 @@ def facets(context):
             'wms': count_dict.get('wmsStore', 0),
         }
 
-        # Break early if only_layers is set.
-        if facet_type == 'layers':
+        # Break early if only_datasets is set.
+        if facet_type == 'datasets':
             return facets
 
         maps = Map.objects.filter(title__icontains=title_filter)
@@ -321,7 +321,7 @@ def facets(context):
             facets['group'] = GroupProfile.objects.exclude(
                 access="private").count()
 
-            facets['layer'] = facets['raster'] + facets['vector'] + facets['remote'] + facets['wms']
+            facets['dataset'] = facets['raster'] + facets['vector'] + facets['remote'] + facets['wms']
 
     return facets
 
@@ -343,7 +343,7 @@ def get_current_path(context):
 @register.simple_tag(takes_context=True)
 def get_context_resourcetype(context):
     c_path = get_current_path(context)
-    resource_types = ['layers', 'maps', 'geoapps', 'documents', 'search', 'people',
+    resource_types = ['datasets', 'maps', 'geoapps', 'documents', 'search', 'people',
                       'groups/categories', 'groups']
     for resource_type in resource_types:
         if f"/{resource_type}/" in c_path:
@@ -426,8 +426,8 @@ def display_change_perms_button(resource, user, perms):
 
 
 @register.simple_tag
-def get_layer_count_by_services(service_id, user):
+def get_dataset_count_by_services(service_id, user):
     return get_visible_resources(
-        queryset=Layer.objects.filter(remote_service=service_id),
+        queryset=Dataset.objects.filter(remote_service=service_id),
         user=user
     ).count()

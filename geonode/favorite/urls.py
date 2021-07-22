@@ -34,7 +34,7 @@ urlpatterns = [
     url(
         r'^layer/(?P<id>\d+)$',
         views.favorite, {'subject': 'layer'},
-        name='add_favorite_layer'
+        name='add_favorite_dataset'
     ),
     url(
         r'^user/(?P<id>\d+)$',

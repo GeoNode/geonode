@@ -131,7 +131,7 @@ class GeoNodeStyleAuthorization(GeoNodeAuthorization):
     def filter_by_resource_ids(self, object_list, permitted_ids):
         """Filter Style queryset by permitted resource ids."""
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            return object_list.filter(layer_styles__id__in=permitted_ids)
+            return object_list.filter(dataset_styles__id__in=permitted_ids)
 
     def read_list(self, object_list, bundle):
         permitted_ids = get_objects_for_user(
@@ -143,7 +143,7 @@ class GeoNodeStyleAuthorization(GeoNodeAuthorization):
     def delete_detail(self, object_list, bundle):
         permitted_ids = get_objects_for_user(
             bundle.request.user,
-            'layer.change_layer_style').values('id')
+            'layer.change_dataset_style').values('id')
 
         resource_obj = bundle.obj.get_self_resource()
         return resource_obj in permitted_ids

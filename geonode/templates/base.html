@@ -23,7 +23,7 @@
 {% load base_tags %}
 {% load client_lib_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="{% block html_class %}{% endblock %}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -62,77 +62,6 @@
       <link rel='stylesheet' id='cookie-law-info-gdpr-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-gdpr.css" %}" type='text/css' media='all' />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
       <style type="text/css">
-        /* Additional styles by custom themes */
-        {% if custom_theme.body_color %}
-        body {
-          background: {{ custom_theme.body_color }};
-          {% if custom_theme.body_text_color %}
-          color: {{ custom_theme.body_text_color }};
-          {% endif %}
-        }
-
-        .home #partners {
-          background: {{ custom_theme.body_color }};
-          padding: 2em 0;
-          text-align: center;
-        }
-        {% endif %}
-
-        {% if custom_theme.navbar_color %}
-        .home .navbar-inverse , .navbar-inverse {
-          background-color: {{ custom_theme.navbar_color }};
-        }
-        {% endif %}
-
-        {% if custom_theme.navbar_text_color %}
-        .navbar-inverse .navbar-nav > li > a {
-          color: {{ custom_theme.navbar_text_color }};
-          font-weight: 600;
-          padding-top: 25px;
-          padding-bottom: 25px;
-        }
-        {% endif %}
-
-        {% if custom_theme.navbar_text_hover %}
-        .navbar-inverse .navbar-nav > li > a:hover {
-          background-color: {{ custom_theme.navbar_text_hover }};
-        }
-        {% endif %}
-
-        {% if custom_theme.navbar_text_hover_focus %}
-        .navbar-inverse .navbar-nav > .open > a,
-        .navbar-inverse .navbar-nav > .open > a:hover,
-        .navbar-inverse .navbar-nav > .open > a:focus {
-          background-color: {{ custom_theme.navbar_text_hover_focus }};
-        }
-        {% endif %}
-
-        {% if custom_theme.navbar_dropdown_menu %}
-        .navbar-nav .dropdown-menu {
-          background-color: {{ custom_theme.navbar_dropdown_menu }};
-          border-top: 1px solid {{ custom_theme.navbar_dropdown_menu }};
-        }
-        {% endif %}
-
-        {% if custom_theme.navbar_dropdown_menu_text %}
-        .navbar-nav .dropdown-menu a {
-          color: {{ custom_theme.navbar_dropdown_menu_text }};
-        }
-        {% endif %}
-
-        {% if custom_theme.navbar_dropdown_menu_hover %}
-        .navbar-nav .dropdown-menu li a:hover {
-          background-color: {{ custom_theme.navbar_dropdown_menu_hover }};
-          color: {{ custom_theme.navbar_dropdown_menu_text }};
-        }
-        {% endif %}
-
-        {% if custom_theme.navbar_dropdown_menu_divider %}
-        .navbar-nav .dropdown-menu .divider {
-          background-color: {{ custom_theme.navbar_dropdown_menu_divider }};
-        }
-        {% endif %}
-
         {% if custom_theme.logo %}
         .navbar-brand {
           background-image: url({{ custom_theme.logo.url }});
@@ -193,37 +122,6 @@
           z-index: 0;
         }
         {% endif %}
-
-        {% if custom_theme.search_bg_color or custom_theme.search_title_color %}
-        .home .big-search {
-          background: {{ custom_theme.search_bg_color }};
-          color: {{ custom_theme.search_title_color }};
-          padding-bottom: 3em;
-          padding-top: 1em;
-        }
-        .home .big-search .btn-default {
-          background: transparent;
-          border: none;
-          color: {{ custom_theme.search_link_color }};
-        }
-        {% endif %}
-
-        {% if custom_theme.copyright_color %}
-        .footer-copyright {
-          background-color: {{ custom_theme.copyright_color }};
-        }
-        {% endif %}
-
-        {% if custom_theme.footer_bg_color or custom_theme.footer_text_color or custom_theme.footer_href_color %}
-        footer {
-          background-color: {{ custom_theme.footer_bg_color }};
-          color: {{ custom_theme.footer_text_color }};
-          padding: 1.5em;
-        }
-        footer a {
-          color: {{ custom_theme.footer_href_color }};
-        }
-        {% endif %}
       </style>
       {% block extra_head %}
       {% endblock %}
@@ -274,7 +172,7 @@
     {% endif %}
   </head>
 
-  <body class="{% block body_class %}{% endblock %}">
+  <body class="{% block body_class %}{% endblock %} {% block body_extra_class %}{% endblock %}">
     <!-- Loading Mask -->
     <div class='lmask'></div>
     <!-- Navbar -->
@@ -295,19 +193,19 @@
           <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
-                <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
+                <li><a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
                 <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
                 <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-                {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
+                {% if "add_resource" in user.perms %}
                     <li role="separator" class="divider"></li>
-                    <li><a href="{% url "layer_upload" %}">{% trans "Upload Dataset" %}</a></li>
+                    <li><a href="{% url "dataset_upload" %}">{% trans "Upload Dataset" %}</a></li>
                     {% if USE_GEOSERVER and CREATE_LAYER %}
-                        <li><a href="{% url "layer_create" %}">{% trans "Create Dataset" %}</a></li>
+                        <li><a href="{% url "dataset_create" %}">{% trans "Create Dataset" %}</a></li>
                     {% endif %}
                     <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
                 {% endif %}
                 {% if user.is_superuser or user.is_staff %}
-                  {%  if not READ_ONLY_MODE or "add_resource" in user.perms %}
+                  {%  if "add_resource" in user.perms %}
                     <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
                   {% endif %}
                 {% endif %}
@@ -318,7 +216,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
                 <ul class="dropdown-menu">
                   <li><a href="{% map_list_url %}">{% trans "Explore Maps" %}</a></li>
-                  {% if not READ_ONLY_MODE or "add_resource" in user.perms %}
+                  {% if "add_resource" in user.perms %}
                     <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
                   {% endif %}
                 </ul>
@@ -481,19 +379,19 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Data" %}</li>
-            <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
+            <li><a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-            {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
+            {% if "add_resource" in user.perms %}
                 <li role="separator" class="divider"></li>
-                <li><a href="{% url "layer_upload" %}">{% trans "Upload Dataset" %}</a></li>
+                <li><a href="{% url "dataset_upload" %}">{% trans "Upload Dataset" %}</a></li>
                 {% if USE_GEOSERVER and CREATE_LAYER %}
-                    <li><a href="{% url "layer_create" %}">{% trans "Create Dataset" %}</a></li>
+                    <li><a href="{% url "dataset_create" %}">{% trans "Create Dataset" %}</a></li>
                 {% endif %}
                 <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
             {% endif %}
             {% if user.is_staff or user.is_superuser %}
-              {% if not READ_ONLY_MODE or "add_resource" in user.perms %}
+              {% if "add_resource" in user.perms %}
                 <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
               {% endif %}
             {% endif %}
@@ -503,7 +401,7 @@
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
             <li><a href="{% map_list_url %}">{% trans "Explore Maps" %}</a></li>
-            {% if user.is_authenticated and not READ_ONLY_MODE or "add_resource" in user.perms %}
+            {% if "add_resource" in user.perms %}
               <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
             {% endif %}
           </ul>
@@ -528,22 +426,6 @@
 
         <div class="col-md-6 text-right">
           {% block contactus %}
-          {% if custom_theme.contactus %}
-          <ul class="list-unstyled">
-              <li style="text-align: left;"><h2 style="margin-top: 0px;">{% trans "Contact Us" %} </h2> </li>
-              {% if custom_theme.contact_name %}<li style="text-align: left;">{{ custom_theme.contact_name }}</li>{% endif %}
-              {% if custom_theme.contact_position %}<li style="text-align: left;">{{ custom_theme.contact_position }}</li>{% endif %}
-              {% if custom_theme.contact_administrative_area %}<li style="text-align: left;">{{ custom_theme.contact_administrative_area }}</li>{% endif %}
-              {% if custom_theme.contact_city %}<li style="text-align: left;">{{ custom_theme.contact_city }}</li>{% endif %}
-              {% if custom_theme.contact_street %}<li style="text-align: left;">{{ custom_theme.contact_street }}</li>{% endif %}
-              {% if custom_theme.contact_postal_code %}<li style="text-align: left;">{{ custom_theme.contact_postal_code }}</li>{% endif %}
-              {% if custom_theme.contact_country %}<li style="text-align: left;">{{ custom_theme.contact_country }}</li>{% endif %}
-              {% if custom_theme.contact_delivery_point %}<li style="text-align: left;">{{ custom_theme.contact_delivery_point }}</li>{% endif %}
-              {% if custom_theme.contact_voice %}<li style="text-align: left;">{% trans "Tel" %}: {{ custom_theme.contact_voice }}</li>{% endif %}
-              {% if custom_theme.contact_facsimile %}<li style="text-align: left;">{% trans "Fax" %}: {{ custom_theme.contact_facsimile }}</li>{% endif %}
-              {% if custom_theme.contact_email %}<li style="text-align: left;">{% trans "E-mail" %}: {{ custom_theme.contact_email }}</li>{% endif %}
-          </ul>
-          {% endif %}
           {% endblock contactus %}
           <ul class="list-unstyled">
             <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a>{% if user.is_staff %} <em>{% trans "version" %} {{ VERSION }}</em>{% endif %}</li>

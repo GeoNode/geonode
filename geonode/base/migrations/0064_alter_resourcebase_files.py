@@ -23,6 +23,6 @@ class Migration(migrations.Migration):
             name='files',
             field=models.JSONField(blank=True, default=list, null=True),
         ),
-        migrations.RunPython(change_value),
+        migrations.RunPython(change_value, migrations.RunPython.noop),
 
     ]

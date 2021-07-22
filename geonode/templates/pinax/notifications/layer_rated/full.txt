@@ -1,6 +1,6 @@
 {% load i18n %}
 {% trans "The user" %} {{ user.username }}<br/>
 {% trans "rated" %} {{ rating }}<br/>
-{% trans "the following layer" %}:<br/>
+{% trans "the following dataset" %}:<br/>
 {{ resource.title }}, {% trans "owned by" %} {{ resource.owner.username }}<br/>
-{% trans "You can visit the layer's detail page here" %}: http://{{ current_site }}{% url "layer_detail" resource.service_typename %}
+{% trans "You can visit the dataset's detail page here" %}: http://{{ current_site }}{% url "layer_detail" resource.service_typename %}

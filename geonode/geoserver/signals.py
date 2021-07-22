@@ -35,7 +35,7 @@ from geonode.geoserver.tasks import geoserver_create_thumbnail
 from geonode.services.enumerations import CASCADED
 
 from . import BACKEND_PACKAGE
-from .tasks import geoserver_cascading_delete, geoserver_post_save_layers
+from .tasks import geoserver_cascading_delete, geoserver_post_save_datasets
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
@@ -72,7 +72,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    geoserver_post_save_layers.apply_async(
+    geoserver_post_save_datasets.apply_async(
         (instance.id, args, kwargs))
 
 
@@ -108,11 +108,11 @@ def geoserver_post_save_map(instance, sender, created, **kwargs):
 
 @deprecated(version='3.2.1', reason="Use direct calls to the ReourceManager.")
 def geoserver_set_thumbnail(instance, **kwargs):
-    # Creating Layer Thumbnail
+    # Creating Dataset Thumbnail
     # some thumbnail generators will update thumbnail_url.  If so, don't
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     try:
-        logger.debug(f"... Creating Thumbnail for Layer {instance.title}")
+        logger.debug(f"... Creating Thumbnail for Dataset {instance.title}")
         _recreate_thumbnail = False
         if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
                 'thumbnail_url' in kwargs['update_fields']:
@@ -124,6 +124,6 @@ def geoserver_set_thumbnail(instance, **kwargs):
         if _recreate_thumbnail:
             geoserver_create_thumbnail.apply_async((instance.id, False, True, ))
         else:
-            logger.debug(f"... Thumbnail for Layer {instance.title} already exists: {instance.thumbnail_url}")
+            logger.debug(f"... Thumbnail for Dataset {instance.title} already exists: {instance.thumbnail_url}")
     except Exception as e:
         logger.exception(e)

@@ -43,7 +43,7 @@ from django.forms.models import model_to_dict
 from tastypie.utils.mime import build_content_type
 
 from geonode import get_version, geoserver
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
@@ -198,17 +198,17 @@ class CommonModelApi(ModelResource):
                     if filtered:
                         if 'time' in the_type:
                             filtered = filtered | semi_filtered.filter(
-                                Layer___storetype=super_type).exclude(Layer___has_time=False)
+                                Layer___subtype=super_type).exclude(Layer___has_time=False)
                         else:
                             filtered = filtered | semi_filtered.filter(
-                                Layer___storetype=super_type)
+                                Layer___subtype=super_type)
                     else:
                         if 'time' in the_type:
                             filtered = semi_filtered.filter(
-                                Layer___storetype=super_type).exclude(Layer___has_time=False)
+                                Layer___subtype=super_type).exclude(Layer___has_time=False)
                         else:
                             filtered = semi_filtered.filter(
-                                Layer___storetype=super_type)
+                                Layer___subtype=super_type)
                 else:
                     _type_filter = FILTER_TYPES[the_type].__name__.lower()
                     if filtered:
@@ -673,7 +673,7 @@ class FeaturedResourceBaseResource(CommonModelApi):
 
 class LayerResource(CommonModelApi):
 
-    """Layer API"""
+    """Dataset API"""
     links = fields.ListField(
         attribute='links',
         null=True,
@@ -742,9 +742,9 @@ class LayerResource(CommonModelApi):
             # Probe Remote Services
             formatted_obj['store_type'] = 'dataset'
             formatted_obj['online'] = True
-            if hasattr(obj, 'storetype'):
-                formatted_obj['store_type'] = obj.storetype
-                if obj.storetype in ['tileStore', 'remote'] and hasattr(obj, 'remote_service'):
+            if hasattr(obj, 'subtype'):
+                formatted_obj['store_type'] = obj.subtype
+                if obj.subtype in ['tileStore', 'remote'] and hasattr(obj, 'remote_service'):
                     if obj.remote_service:
                         formatted_obj['online'] = (obj.remote_service.probe == 200)
                     else:
@@ -813,8 +813,8 @@ class LayerResource(CommonModelApi):
     def populate_object(self, obj):
         """Populate results with necessary fields
 
-        :param obj: Layer obj
-        :type obj: Layer
+        :param obj: Dataset obj
+        :type obj: Dataset
         :return:
         """
         return obj
@@ -825,8 +825,8 @@ class LayerResource(CommonModelApi):
 
     class Meta(CommonMetaApi):
         paginator_class = CrossSiteXHRPaginator
-        queryset = Layer.objects.distinct().order_by('-date')
-        resource_name = 'layers'
+        queryset = Dataset.objects.distinct().order_by('-date')
+        resource_name = 'datasets'
         detail_uri_name = 'id'
         include_resource_uri = True
         allowed_methods = ['get', 'patch']
@@ -890,9 +890,9 @@ class MapResource(CommonModelApi):
             formatted_obj['online'] = True
 
             # get map layers
-            map_layers = obj.layers
-            formatted_layers = []
-            map_layer_fields = [
+            map_datasets = obj.datasets
+            formatted_datasets = []
+            map_dataset_fields = [
                 'id',
                 'stack_order',
                 'format',
@@ -902,15 +902,15 @@ class MapResource(CommonModelApi):
                 'visibility',
                 'transparent',
                 'ows_url',
-                'layer_params',
+                'dataset_params',
                 'source_params',
                 'local'
             ]
-            for layer in map_layers:
-                formatted_map_layer = model_to_dict(
-                    layer, fields=map_layer_fields)
-                formatted_layers.append(formatted_map_layer)
-            formatted_obj['layers'] = formatted_layers
+            for layer in map_datasets:
+                formatted_map_dataset = model_to_dict(
+                    layer, fields=map_dataset_fields)
+                formatted_datasets.append(formatted_map_dataset)
+            formatted_obj['layers'] = formatted_datasets
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
@@ -1051,7 +1051,7 @@ class DocumentResource(CommonModelApi):
     class Meta(CommonMetaApi):
         paginator_class = CrossSiteXHRPaginator
         filtering = CommonMetaApi.filtering
-        filtering.update({'storetype': ALL})
+        filtering.update({'subtype': ALL})
         queryset = Document.objects.distinct().order_by('-date')
         resource_name = 'documents'
         authentication = MultiAuthentication(SessionAuthentication(),
