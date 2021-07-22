@@ -23,6 +23,8 @@ from geonode.notifications_helper import NotificationsAppConfigBase
 
 class DatasetAppConfig(NotificationsAppConfigBase):
     name = 'geonode.layers'
+    verbose_name = "Dataset"
+    verbose_name_plural = "Datasets"
     NOTIFICATIONS = (
         ("dataset_created", _("Dataset Created"), _("A Dataset was created"),),
         ("dataset_updated", _("Dataset Updated"), _("A Dataset was updated"),),

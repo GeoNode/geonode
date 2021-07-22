@@ -412,6 +412,9 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         widget=TinyMCE())
 
+    ptype = forms.CharField(required=False)
+    sourcetype = forms.CharField(required=False)
+
     data_quality_statement = forms.CharField(
         label=_("Data quality statement"),
         required=False,
@@ -470,13 +473,6 @@ class ResourceBaseForm(TranslationModelForm):
         # widget=TreeWidget(url='autocomplete_hierachical_keyword'), #Needs updating to work with select2
         widget=TaggitSelect2Custom(url='autocomplete_hierachical_keyword'))
 
-    """
-    regions = TreeNodeMultipleChoiceField(
-        label=_("Regions"),
-        required=False,
-        queryset=Region.objects.all(),
-        level_indicator=u'___')
-    """
     regions = RegionsMultipleChoiceField(
         label=_("Regions"),
         required=False,

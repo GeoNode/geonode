@@ -1666,6 +1666,10 @@ class TestCustomUUidHandler(TestCase):
         actual = Dataset.objects.get(id=self.sut.id)
         self.assertEqual(expected, actual.uuid)
 
+        self.assertIsNotNone(self.sut.ows_url)
+        self.assertIsNotNone(self.sut.ptype)
+        self.assertIsNotNone(self.sut.sourcetype)
+
 
 class TestSetMetadata(TestCase):
 
