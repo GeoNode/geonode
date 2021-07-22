@@ -212,7 +212,32 @@ class BaseHarvesterWorker(abc.ABC):
             harvestable_resource: "HarvestableResource",  # noqa
             harvesting_session_id: int
     ) -> ResourceBase:
+        """Perform additional actions just after having created/updated a local GeoNode resource.
+
+        This method can be used to further manipulate the relevant GeoNode Resource that is being
+        created/updated in the context of a harvesting operation. It is typically called from within
+        `base.BaseHarvesterWorker.update_geonode_resource` as the last step, after having already
+        acted upon the GeoNode resource.
+        The default implementation does nothing.
+
+        """
+
         return geonode_resource
+
+    def finalize_harvestable_resource_deletion(
+            self,
+            harvestable_resource: "HarvestableResource"  # noqa
+    ) -> bool:
+        """Perform additional actions just before deleting a harvestable resource.
+
+        This method is typically called from within `models.HarvestableResource.delete()`, just before
+        deleting the actual harvestable resource. It can be useful for child classes that customize
+        resource creation in order to also customize the deletion of harvestable resources.
+        The default implementation does nothing.
+
+        """
+
+        return True
 
     def should_copy_resource(
             self,
