@@ -17,12 +17,13 @@
 #
 #########################################################################
 import os
-from geonode.base.models import ResourceBase
+
 from rest_framework import serializers
 
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
 from geonode.upload.models import Upload
+from geonode.base.models import ResourceBase
 from geonode.base.utils import build_absolute_uri
 from geonode.layers.api.serializers import DatasetSerializer
 from geonode.base.api.serializers import BaseDynamicModelSerializer
@@ -82,7 +83,7 @@ class SessionSerializer(serializers.Field):
         return obj
 
     @classmethod
-    def _decode_dataset(cls, obj):
+    def _decode_layer(cls, obj):
         if obj:
             return {
                 'name': getattr(obj, 'name', None),
@@ -90,15 +91,15 @@ class SessionSerializer(serializers.Field):
                 'originalName': getattr(obj, 'originalName', None),
                 'nativeName': getattr(obj, 'nativeName', None),
                 'srs': getattr(obj, 'srs', None),
-                'attributes': SessionSerializer._decode_dataset_attributes(
+                'attributes': SessionSerializer._decode_layer_attributes(
                     getattr(obj, 'attributes', None)),
-                'bbox': SessionSerializer._decode_dataset_bbox(
+                'bbox': SessionSerializer._decode_layer_bbox(
                     getattr(obj, 'bbox', None))
             }
         return obj
 
     @classmethod
-    def _decode_dataset_attributes(cls, objs):
+    def _decode_layer_attributes(cls, objs):
         if objs:
             _a = []
             for obj in objs:
@@ -110,7 +111,7 @@ class SessionSerializer(serializers.Field):
         return objs
 
     @classmethod
-    def _decode_dataset_bbox(cls, obj):
+    def _decode_layer_bbox(cls, obj):
         if obj:
             return {
                 'minx': getattr(obj, 'minx', None),
@@ -170,8 +171,8 @@ class SessionSerializer(serializers.Field):
                                 getattr(_task, 'data', None)),
                             'target': SessionSerializer._decode_target(
                                 getattr(_task, 'target', None)),
-                            'dataset': SessionSerializer._decode_dataset(
-                                getattr(_task, 'dataset', None))
+                            'layer': SessionSerializer._decode_layer(
+                                getattr(_task, 'layer', None))
                         }
                     )
             return _s
@@ -206,7 +207,7 @@ class UploadSerializer(BaseDynamicModelSerializer):
 
         if 'request' in self.context and \
                 self.context['request'].query_params.get('full'):
-            self.fields['dataset'] = DynamicRelationField(
+            self.fields['resource'] = DynamicRelationField(
                 DatasetSerializer,
                 embed=True,
                 many=False,

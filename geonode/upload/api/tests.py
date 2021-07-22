@@ -459,31 +459,34 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
 
-            self.assertNotIn('dataset', upload_data)
-            self.assertNotIn('session', upload_data)
-            response = self.client.get(f'{url}?full=true', format='json')
-            self.assertEqual(response.status_code, 200)
-            upload_data = response.data['upload']
-            self.assertIsNotNone(upload_data)
-            self.assertIn('dataset', upload_data)
-            self.assertIn('session', upload_data)
+        self.assertNotIn('resource', upload_data)
+        self.assertNotIn('session', upload_data)
 
-            self.assertIn('uploadfile_set', upload_data)
-            self.assertEqual(len(upload_data['uploadfile_set']), 1)
+        url = reverse('uploads-detail', kwargs={'pk': upload_data['id']})
+        response = self.client.get(f"{url}?full=true", format='json')
+        self.assertEqual(response.status_code, 200)
+        upload_data = response.data['upload']
+        self.assertIsNotNone(upload_data)
+        self.assertIn('resource', upload_data)
+        self.assertIn('ptype', upload_data['resource'])
+        self.assertIn('ows_url', upload_data['resource'])
+        self.assertIn('subtype', upload_data['resource'])
 
-        self.assertIsNotNone(upload_data['ows_url'])
-        self.assertIsNotNone(upload_data['ptype'])
-        self.assertIsNotNone(upload_data['sourcetype'])
+        self.assertIn('session', upload_data)
+
+        self.assertIn('uploadfile_set', upload_data)
+        self.assertGreaterEqual(len(upload_data['uploadfile_set']), 1)
 
         self.assertNotIn('upload_dir', upload_data)
 
-        response = self.client.get(upload_data['delete_url'], format='json')
-        self.assertEqual(response.status_code, 200)
+        if upload_data['delete_url'] is not None:
+            response = self.client.get(upload_data['delete_url'], format='json')
+            self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(reverse('uploads-list'), format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 0)
-        # Pagination
-        self.assertEqual(len(response.data['uploads']), 0)
-        logger.debug(response.data)
+            response = self.client.get(reverse('uploads-list'), format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 5)
+            self.assertEqual(response.data['total'], 0)
+            # Pagination
+            self.assertEqual(len(response.data['uploads']), 0)
+            logger.debug(response.data)
