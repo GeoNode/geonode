@@ -204,9 +204,7 @@ def set_permissions(self, permissions_names, resources_names,
                 verbose=True
             )
 
-app.conf.beat_schedule = {
-    "delete-incomplete-session-resources": {
-        "task": "geonode.upload.tasks.delete_incomplete_session_uploads",
-        "schedule": crontab(hour='*/12'),
-    }
+settings.CELERY_BEAT_SCHEDULE["delete-incomplete-session-resources"] = {
+    "task": "geonode.upload.tasks.delete_incomplete_session_uploads",
+    "schedule": crontab(hour='*/12'),
 }
