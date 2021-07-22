@@ -18,8 +18,7 @@
 #
 #########################################################################
 
-from datetime import timedelta, datetime
-
+from django.utils.timezone import timedelta, now
 from django.conf import settings
 
 from geonode.upload.models import Upload
@@ -32,5 +31,5 @@ def delete_incomplete_session_uploads():
     their session. We have to make sure To NOT Delete those Unprocessed Ones,
     which are in live sessions. """
 
-    expiry_time = datetime.now() - timedelta(hours=settings.SESSION_EXPIRY_HOURS)
+    expiry_time = now() - timedelta(hours=settings.SESSION_EXPIRY_HOURS)
     Upload.objects.exclude(state=Upload.STATE_PROCESSED).exclude(date__gt=expiry_time).delete()

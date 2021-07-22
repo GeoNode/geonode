@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from datetime import timedelta, datetime
+from django.utils.timezone import timedelta, now
 from django.test import TestCase
 from django.conf import settings
 
@@ -42,7 +42,7 @@ class TasksTest(GeoNodeBaseTestSupport):
 
 class TestDeleteIncompleteSessionUploadsTask(TestCase):
     def setUp(self):
-        self.expiry_time = datetime.now() - timedelta(hours=settings.SESSION_EXPIRY_HOURS)
+        self.expiry_time = now() - timedelta(hours=settings.SESSION_EXPIRY_HOURS)
         self.minutes_before = self.expiry_time - timedelta(minutes=2)
         self.minutes_after = self.expiry_time - timedelta(minutes=-2)
 
