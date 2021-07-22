@@ -46,6 +46,7 @@ class TestDeleteIncompleteSessionUploadsTask(TestCase):
         self.minutes_before = self.expiry_time - timedelta(minutes=2)
         self.minutes_after = self.expiry_time - timedelta(minutes=-2)
 
+        # Uploads either PROCESSED or within expiry time
         self.uploads_to_survive = [
             UploadFactory(state=Upload.STATE_INVALID, date=self.minutes_after),
             UploadFactory(state=Upload.STATE_COMPLETE, date=self.minutes_after),
@@ -59,21 +60,28 @@ class TestDeleteIncompleteSessionUploadsTask(TestCase):
         ]
         self.survived_upload_ids = {u.id for u in self.uploads_to_survive}
 
+        # Uploads not PROCESSED and before expiry time
         self.uploads_to_be_deleted = [
             UploadFactory(state=Upload.STATE_INVALID, date=self.minutes_before),
-            UploadFactory(state=Upload.STATE_COMPLETE, date=self.minutes_before)
+            UploadFactory(state=Upload.STATE_COMPLETE, date=self.minutes_before),
+            UploadFactory(state=Upload.STATE_INCOMPLETE, date=self.minutes_before),
+            UploadFactory(state=Upload.STATE_PENDING, date=self.minutes_before),
+            UploadFactory(state=Upload.STATE_READY, date=self.minutes_before),
+            UploadFactory(state=Upload.STATE_RUNNING, date=self.minutes_before),
+            UploadFactory(state=Upload.STATE_WAITING, date=self.minutes_before)
         ]
-        self.deleted_upload_ids = {u.id for u in self.uploads_to_be_deleted}
+        self.delete_upload_ids = {u.id for u in self.uploads_to_be_deleted}
 
 
     def test_only_expected_uploads_are_deleted(self):
         uploads = Upload.objects.all()
         upload_ids = {u.id for u in uploads}
         self.assertEqual(uploads.count(), len(self.uploads_to_survive) + len(self.uploads_to_be_deleted))
-        self.assertEqual(upload_ids, self.survived_upload_ids.union(self.deleted_upload_ids))
+        self.assertEqual(upload_ids, self.survived_upload_ids.union(self.delete_upload_ids))
 
         delete_incomplete_session_uploads.delay()
         uploads = Upload.objects.all()
         upload_ids = {u.id for u in uploads}
+        # Only uploads_to_survive are not deleted
         self.assertEqual(uploads.count(), len(self.uploads_to_survive))
         self.assertEqual(upload_ids, self.survived_upload_ids)
