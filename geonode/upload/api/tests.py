@@ -471,6 +471,10 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('uploadfile_set', upload_data)
             self.assertEqual(len(upload_data['uploadfile_set']), 1)
 
+        self.assertIsNotNone(upload_data['ows_url'])
+        self.assertIsNotNone(upload_data['ptype'])
+        self.assertIsNotNone(upload_data['sourcetype'])
+
         self.assertNotIn('upload_dir', upload_data)
 
         response = self.client.get(upload_data['delete_url'], format='json')

@@ -23,7 +23,7 @@ import logging
 import datetime
 import traceback
 
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 
 from django.urls import reverse
 from django.conf import settings
@@ -32,6 +32,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.gis.geos import (
     GEOSGeometry,
     MultiPolygon)
+
+from geonode.utils import OGC_Servers_Handler
 
 from ..base.models import (
     Link,
@@ -54,6 +56,8 @@ from ..layers.utils import resolve_regions
 from ..layers.metadata import convert_keyword
 
 logger = logging.getLogger(__name__)
+
+ogc_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
 
 
 class KeywordHandler:
@@ -222,6 +226,9 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
         to_update['subtype'] = defaults.pop('subtype', instance.subtype)
     if hasattr(instance, 'urlsuffix') and 'urlsuffix' not in to_update:
         to_update['urlsuffix'] = defaults.pop('urlsuffix', instance.urlsuffix)
+    if hasattr(instance, 'ows_url') and 'ows_url' not in to_update:
+        _default_ows_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
+        to_update['ows_url'] = defaults.pop('ows_url', getattr(instance, 'ows_url', None)) or _default_ows_url
 
     to_update.update(defaults)
     try:

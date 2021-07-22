@@ -32,9 +32,8 @@ import dataclasses
 
 from shutil import copyfile
 from itertools import cycle
-from collections import namedtuple, defaultdict
+from collections import defaultdict
 from os.path import basename, splitext, isfile
-from threading import local
 from urllib.parse import urlparse, urlencode, urlsplit, urljoin
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
@@ -73,6 +72,7 @@ from geonode.layers.models import Dataset, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 
 from geonode.utils import (
+    OGC_Servers_Handler,
     http_client,
     get_legend_url,
     is_monochromatic_image,
@@ -1448,151 +1448,6 @@ def get_store(cat, name, workspace=None):
             raise FailedRequestError(f"No store found named: {name}")
     else:
         raise FailedRequestError(f"No store found named: {name}")
-
-
-class ServerDoesNotExist(Exception):
-    pass
-
-
-class OGC_Server(object):  # LGTM: @property will not work in old-style classes
-
-    """
-    OGC Server object.
-    """
-
-    def __init__(self, ogc_server, alias):
-        self.alias = alias
-        self.server = ogc_server
-
-    def __getattr__(self, item):
-        return self.server.get(item)
-
-    @property
-    def credentials(self):
-        """
-        Returns a tuple of the server's credentials.
-        """
-        creds = namedtuple('OGC_SERVER_CREDENTIALS', ['username', 'password'])
-        return creds(username=self.USER, password=self.PASSWORD)
-
-    @property
-    def datastore_db(self):
-        """
-        Returns the server's datastore dict or None.
-        """
-        if self.DATASTORE and settings.DATABASES.get(self.DATASTORE, None):
-            datastore_dict = settings.DATABASES.get(self.DATASTORE, dict())
-            return datastore_dict
-        else:
-            return dict()
-
-    @property
-    def ows(self):
-        """
-        The Open Web Service url for the server.
-        """
-        location = self.PUBLIC_LOCATION if self.PUBLIC_LOCATION else self.LOCATION
-        return self.OWS_LOCATION if self.OWS_LOCATION else urljoin(location, 'ows')
-
-    @property
-    def rest(self):
-        """
-        The REST endpoint for the server.
-        """
-        return urljoin(self.LOCATION, 'rest') if not self.REST_LOCATION else self.REST_LOCATION
-
-    @property
-    def public_url(self):
-        """
-        The global public endpoint for the server.
-        """
-        return self.LOCATION if not self.PUBLIC_LOCATION else self.PUBLIC_LOCATION
-
-    @property
-    def internal_ows(self):
-        """
-        The Open Web Service url for the server used by GeoNode internally.
-        """
-        location = self.LOCATION
-        return urljoin(location, 'ows')
-
-    @property
-    def hostname(self):
-        return urlsplit(self.LOCATION).hostname
-
-    @property
-    def netloc(self):
-        return urlsplit(self.LOCATION).netloc
-
-    def __str__(self):
-        return str(self.alias)
-
-
-class OGC_Servers_Handler:
-
-    """
-    OGC Server Settings Convenience dict.
-    """
-
-    def __init__(self, ogc_server_dict):
-        self.servers = ogc_server_dict
-        # FIXME(Ariel): Are there better ways to do this without involving
-        # local?
-        self._servers = local()
-
-    def ensure_valid_configuration(self, alias):
-        """
-        Ensures the settings are valid.
-        """
-        try:
-            server = self.servers[alias]
-        except KeyError:
-            raise ServerDoesNotExist(f"The server {alias} doesn't exist")
-
-        if 'PRINTNG_ENABLED' in server:
-            raise ImproperlyConfigured("The PRINTNG_ENABLED setting has been removed, use 'PRINT_NG_ENABLED' instead.")
-
-    def ensure_defaults(self, alias):
-        """
-        Puts the defaults into the settings dictionary for a given connection where no settings is provided.
-        """
-        try:
-            server = self.servers[alias]
-        except KeyError:
-            raise ServerDoesNotExist(f"The server {alias} doesn't exist")
-
-        server.setdefault('BACKEND', 'geonode.geoserver')
-        server.setdefault('LOCATION', 'http://localhost:8080/geoserver/')
-        server.setdefault('USER', 'admin')
-        server.setdefault('PASSWORD', 'geoserver')
-        server.setdefault('DATASTORE', '')
-
-        for option in ['MAPFISH_PRINT_ENABLED', 'PRINT_NG_ENABLED', 'GEONODE_SECURITY_ENABLED',
-                       'GEOFENCE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
-            server.setdefault(option, True)
-
-        for option in ['WMST_ENABLED', 'WPS_ENABLED']:
-            server.setdefault(option, False)
-
-    def __getitem__(self, alias):
-        if hasattr(self._servers, alias):
-            return getattr(self._servers, alias)
-
-        self.ensure_defaults(alias)
-        self.ensure_valid_configuration(alias)
-        server = self.servers[alias]
-        server = OGC_Server(alias=alias, ogc_server=server)
-        setattr(self._servers, alias, server)
-        return server
-
-    def __setitem__(self, key, value):
-        setattr(self._servers, key, value)
-
-    def __iter__(self):
-        return iter(self.servers)
-
-    def all(self):
-        return [self[alias] for alias in self]
 
 
 def fetch_gs_resource(instance, values, tries):

@@ -295,7 +295,7 @@ class Dataset(ResourceBase):
     def __str__(self):
         return str(self.alternate)
 
-    class Meta:
+    class Meta(ResourceBase.Meta):
         # custom permissions,
         # change and delete are standard in django-guardian
         permissions = (
