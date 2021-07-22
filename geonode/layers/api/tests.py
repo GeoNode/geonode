@@ -67,7 +67,6 @@ class DatasetsApiTests(APITestCase):
         url = urljoin(f"{reverse('datasets-list')}/", f"{Dataset.objects.first().pk}")
         response = self.client.get(url, format='json')
         self.assertIsNotNone(response.data['dataset'].get('ptype'))
-        self.assertIsNotNone(response.data['dataset'].get('ows_url'))
         self.assertIsNotNone(response.data['dataset'].get('subtype'))
         self.assertIsNotNone(response.data['dataset'].get('attribute_set'))
 
