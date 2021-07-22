@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import ast
 import typing
 import logging
 
@@ -45,6 +46,12 @@ def _get_param_value(_param, _input_value):
         _param_value = resolve_type_serializer(_input_value)[0]
     elif _param.annotation == settings.AUTH_USER_MODEL:
         _param_value = get_user_model().objects.get(username=_input_value)
+    elif _param.annotation in (dict, list, tuple) and isinstance(_input_value, str):
+        _param_value = _param.annotation(ast.literal_eval(_input_value))
+        for _key in ['user', 'owner']:
+            _username = _param_value.pop(_key, None)
+            if _username:
+                _param_value[_key] = get_user_model().objects.get(username=_username)
     else:
         _param_value = _param.annotation(_input_value)
     return _param_value
@@ -101,7 +108,9 @@ def resouce_service_dispatcher(self, execution_id: int):
                                     }
                                 elif _signature.return_annotation == ResourceBase or isinstance(_output, ResourceBase):
                                     _output_params = {
-                                        "output": _output.uuid
+                                        "output": {
+                                            "uuid": _output.uuid
+                                        }
                                     }
                             else:
                                 _output_params = {
