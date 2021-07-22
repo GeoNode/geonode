@@ -19,15 +19,14 @@
 #########################################################################
 import celery
 from celery.utils.log import get_task_logger
+from celery.schedules import crontab
 
 from django.conf import settings
 from django.core.mail import send_mail
-
-from django.db import (
-    connections,
-    transaction)
+from django.db import (connections, transaction)
 
 from geonode.celery_app import app
+
 
 try:
     import pylibmc
@@ -204,3 +203,10 @@ def set_permissions(self, permissions_names, resources_names,
                 delete_flag,
                 verbose=True
             )
+
+app.conf.beat_schedule = {
+    "delete-incomplete-session-resources": {
+        "task": "geonode.upload.tasks.delete_incomplete_session_uploads",
+        "schedule": crontab(hour='*/12'),
+    }
+}

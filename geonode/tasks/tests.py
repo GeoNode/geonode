@@ -17,8 +17,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from datetime import timedelta, datetime
+from django.test import TestCase
+from django.conf import settings
 
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.upload.tasks import delete_incomplete_session_uploads
+from geonode.tests.factories import UploadFactory
+from geonode.upload.models import Upload
 
 
 class TasksTest(GeoNodeBaseTestSupport):
@@ -32,3 +38,42 @@ class TasksTest(GeoNodeBaseTestSupport):
 
         self.adm_un = "admin"
         self.adm_pw = "admin"
+
+
+class TestDeleteIncompleteSessionUploadsTask(TestCase):
+    def setUp(self):
+        self.expiry_time = datetime.now() - timedelta(hours=settings.SESSION_EXPIRY_HOURS)
+        self.minutes_before = self.expiry_time - timedelta(minutes=2)
+        self.minutes_after = self.expiry_time - timedelta(minutes=-2)
+
+        self.uploads_to_survive = [
+            UploadFactory(state=Upload.STATE_INVALID, date=self.minutes_after),
+            UploadFactory(state=Upload.STATE_COMPLETE, date=self.minutes_after),
+            UploadFactory(state=Upload.STATE_PROCESSED, date=self.minutes_after),
+            UploadFactory(state=Upload.STATE_PROCESSED, date=self.minutes_before),
+            UploadFactory(state=Upload.STATE_INCOMPLETE),
+            UploadFactory(state=Upload.STATE_PENDING),
+            UploadFactory(state=Upload.STATE_READY),
+            UploadFactory(state=Upload.STATE_RUNNING),
+            UploadFactory(state=Upload.STATE_WAITING)
+        ]
+        self.survived_upload_ids = {u.id for u in self.uploads_to_survive}
+
+        self.uploads_to_be_deleted = [
+            UploadFactory(state=Upload.STATE_INVALID, date=self.minutes_before),
+            UploadFactory(state=Upload.STATE_COMPLETE, date=self.minutes_before)
+        ]
+        self.deleted_upload_ids = {u.id for u in self.uploads_to_be_deleted}
+
+
+    def test_only_expected_uploads_are_deleted(self):
+        uploads = Upload.objects.all()
+        upload_ids = {u.id for u in uploads}
+        self.assertEqual(uploads.count(), len(self.uploads_to_survive) + len(self.uploads_to_be_deleted))
+        self.assertEqual(upload_ids, self.survived_upload_ids.union(self.deleted_upload_ids))
+
+        delete_incomplete_session_uploads.delay()
+        uploads = Upload.objects.all()
+        upload_ids = {u.id for u in uploads}
+        self.assertEqual(uploads.count(), len(self.uploads_to_survive))
+        self.assertEqual(upload_ids, self.survived_upload_ids)
