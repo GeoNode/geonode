@@ -173,6 +173,20 @@ class BaseHarvesterWorker(abc.ABC):
                     f"the remote resource {harvested_info.resource_descriptor.uuid!r}")
             geonode_resource = resource_manager.update(
                 str(harvested_info.resource_descriptor.uuid), vals=defaults)
+
+        keywords = list(
+            harvested_info.resource_descriptor.identification.other_keywords
+        ) + geonode_resource.keyword_list()
+        keywords.append(
+            harvester.name.lower().replace(
+                'harvester ', '').replace(
+                'harvester_', '').replace(
+                'harvester', '').strip()
+        )
+        regions = harvested_info.resource_descriptor.identification.place_keywords
+        resource_manager.update(
+            str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=list(set(keywords)))
+
         resource_manager.set_permissions(
             str(harvested_info.resource_descriptor.uuid),
             instance=geonode_resource,
@@ -230,7 +244,7 @@ class BaseHarvesterWorker(abc.ABC):
         #         "projection": resource_descriptor.projection,
         #         "last_modified": resource_descriptor.last_modified
         #     })
-        # elif geonode_resource_type == Layer:
+        # elif geonode_resource_type == Dataset:
         #     defaults.update({
         #         "charset": resource_descriptor.character_set
         #     })

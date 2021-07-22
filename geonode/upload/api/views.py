@@ -68,7 +68,7 @@ class UploadViewSet(DynamicModelViewSet):
     @extend_schema(methods=['put'],
                    responses={201: None},
                    description="""
-        Starts an upload session based on the Layer Upload Form.
+        Starts an upload session based on the Dataset Upload Form.
 
         the form params look like:
         ```

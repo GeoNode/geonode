@@ -35,12 +35,12 @@ from geonode.compat import ensure_string
 from geonode.client.hooks import hookset
 from geonode.utils import check_ogc_backend
 from geonode.base.models import ResourceBase
-from geonode.layers.models import Layer, Style
+from geonode.layers.models import Dataset, Style
 from geonode.maps.signals import map_changed_signal
 from geonode.utils import (
     GXPMapBase,
     GXPLayerBase,
-    layer_from_viewer_config,
+    dataset_from_viewer_config,
     default_map_config)
 
 logger = logging.getLogger("geonode.maps.models")
@@ -95,32 +95,32 @@ class Map(ResourceBase, GXPMapBase):
         return (self.center_x, self.center_y)
 
     @property
-    def layers(self):
+    def datasets(self):
         layers = MapLayer.objects.filter(map=self.id)
         return [layer for layer in layers]
 
     @property
-    def local_layers(self):
-        layer_names = MapLayer.objects.filter(map__id=self.id).values('name')
-        return Layer.objects.filter(alternate__in=layer_names) | \
-            Layer.objects.filter(name__in=layer_names)
+    def local_datasets(self):
+        dataset_names = MapLayer.objects.filter(map__id=self.id).values('name')
+        return Dataset.objects.filter(alternate__in=dataset_names) | \
+            Dataset.objects.filter(name__in=dataset_names)
 
-    def json(self, layer_filter):
+    def json(self, dataset_filter):
         """
         Get a JSON representation of this map suitable for sending to geoserver
         for creating a download of all layers
         """
-        map_layers = MapLayer.objects.filter(map=self.id)
+        map_datasets = MapLayer.objects.filter(map=self.id)
         layers = []
-        for map_layer in map_layers:
-            if map_layer.local:
-                layer = Layer.objects.get(alternate=map_layer.name)
+        for map_dataset in map_datasets:
+            if map_dataset.local:
+                layer = Dataset.objects.get(alternate=map_dataset.name)
                 layers.append(layer)
             else:
                 pass
 
-        if layer_filter:
-            layers = [lyr for lyr in layers if layer_filter(lyr)]
+        if dataset_filter:
+            layers = [lyr for lyr in layers if dataset_filter(lyr)]
 
         # the readme text will appear in a README file in the zip
         readme = (
@@ -136,7 +136,7 @@ class Map(ResourceBase, GXPMapBase):
         if self.constraints_other:
             readme += f"Additional constraints: {self.constraints_other}\n"
 
-        def layer_json(lyr):
+        def dataset_json(lyr):
             return {
                 "name": lyr.alternate,
                 "service": lyr.service_type if hasattr(lyr, 'service_type') else "",
@@ -147,7 +147,7 @@ class Map(ResourceBase, GXPMapBase):
         map_config = {
             # the title must be provided and is used for the zip file name
             "map": {"readme": readme, "title": self.title},
-            "layers": [layer_json(lyr) for lyr in layers]
+            "datasets": [dataset_json(lyr) for lyr in layers]
         }
 
         return json.dumps(map_config)
@@ -215,14 +215,14 @@ class Map(ResourceBase, GXPMapBase):
                     return {}
 
         layers = [lyr for lyr in _map.get("layers", [])]
-        layer_names = {lyr.alternate for lyr in self.local_layers}
+        dataset_names = {lyr.alternate for lyr in self.local_datasets}
 
-        self.layer_set.all().delete()
+        self.dataset_set.all().delete()
         self.keywords.add(*_map.get('keywords', []))
 
         for ordering, layer in enumerate(layers):
-            self.layer_set.add(
-                layer_from_viewer_config(
+            self.dataset_set.add(
+                dataset_from_viewer_config(
                     self.id, MapLayer, layer, source_for(layer), ordering
                 ))
 
@@ -230,8 +230,8 @@ class Map(ResourceBase, GXPMapBase):
         resource_manager.update(self.uuid, instance=self, notify=True)
         resource_manager.set_thumbnail(self.uuid, instance=self, overwrite=False)
 
-        if layer_names != {lyr.alternate for lyr in self.local_layers}:
-            map_changed_signal.send_robust(sender=self, what_changed='layers')
+        if dataset_names != {lyr.alternate for lyr in self.local_datasets}:
+            map_changed_signal.send_robust(sender=self, what_changed='datasets')
 
         return template_name
 
@@ -249,26 +249,26 @@ class Map(ResourceBase, GXPMapBase):
     def embed_url(self):
         return reverse('map_embed', kwargs={'mapid': self.pk})
 
-    def get_bbox_from_layers(self, layers):
+    def get_bbox_from_datasets(self, layers):
         """
-        Calculate the bbox from a given list of Layer objects
+        Calculate the bbox from a given list of Dataset objects
 
         bbox format: [xmin, xmax, ymin, ymax]
         """
         bbox = None
         for layer in layers:
-            layer_bbox = layer.bbox
+            dataset_bbox = layer.bbox
             if bbox is None:
-                bbox = list(layer_bbox[0:4])
+                bbox = list(dataset_bbox[0:4])
             else:
-                bbox[0] = min(bbox[0], layer_bbox[0])
-                bbox[1] = max(bbox[1], layer_bbox[1])
-                bbox[2] = min(bbox[2], layer_bbox[2])
-                bbox[3] = max(bbox[3], layer_bbox[3])
+                bbox[0] = min(bbox[0], dataset_bbox[0])
+                bbox[1] = max(bbox[1], dataset_bbox[1])
+                bbox[2] = min(bbox[2], dataset_bbox[2])
+                bbox[3] = max(bbox[3], dataset_bbox[3])
 
         return bbox
 
-    def create_from_layer_list(self, user, layers, title, abstract):
+    def create_from_dataset_list(self, user, layers, title, abstract):
         self.owner = user
         self.title = title
         self.abstract = abstract
@@ -282,11 +282,11 @@ class Map(ResourceBase, GXPMapBase):
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(None)
 
-        _layers = []
+        _datasets = []
         for layer in layers:
-            if not isinstance(layer, Layer):
+            if not isinstance(layer, Dataset):
                 try:
-                    layer = Layer.objects.get(alternate=layer)
+                    layer = Dataset.objects.get(alternate=layer)
                 except ObjectDoesNotExist:
                     raise Exception(
                         f'Could not find layer with name {layer}')
@@ -299,20 +299,20 @@ class Map(ResourceBase, GXPMapBase):
                     'User %s tried to create a map with layer %s without having premissions' %
                     (user, layer))
             else:
-                _layers.append(layer)
+                _datasets.append(layer)
 
         # Set bounding box based on all layers extents.
         # bbox format: [xmin, xmax, ymin, ymax]
-        bbox = self.get_bbox_from_layers(_layers)
+        bbox = self.get_bbox_from_datasets(_datasets)
         self.set_bounds_from_bbox(bbox, self.projection)
 
         # Save the map in order to create an id in the database
         # used below for the maplayers.
         self.save()
 
-        if _layers and len(_layers) > 0:
+        if _datasets and len(_datasets) > 0:
             index = 0
-            for layer in _layers:
+            for layer in _datasets:
                 MapLayer.objects.create(
                     map=self,
                     name=layer.alternate,
@@ -347,7 +347,7 @@ class Map(ResourceBase, GXPMapBase):
             obj=self.resourcebase_ptr)
 
     @property
-    def layer_group(self):
+    def dataset_group(self):
         """
         Returns layer group name from local OWS for this map instance.
         """
@@ -368,7 +368,7 @@ class Map(ResourceBase, GXPMapBase):
             return None
 
     @deprecated(version='2.10.1', reason="APIs have been changed on geospatial service")
-    def publish_layer_group(self):
+    def publish_dataset_group(self):
         """
         Publishes local map layers as WMS layer group on local OWS.
         """
@@ -384,34 +384,34 @@ class Map(ResourceBase, GXPMapBase):
         if not self.is_public:
             return 'Only public maps can be saved as layer group.'
 
-        map_layers = MapLayer.objects.filter(map=self.id)
+        map_datasets = MapLayer.objects.filter(map=self.id)
 
-        # Local Group Layer layers and corresponding styles
+        # Local Group Dataset layers and corresponding styles
         layers = []
         lg_styles = []
-        for ml in map_layers:
+        for ml in map_datasets:
             if ml.local:
-                layer = Layer.objects.get(alternate=ml.name)
+                layer = Dataset.objects.get(alternate=ml.name)
                 style = ml.styles or getattr(layer.default_style, 'name', '')
                 layers.append(layer)
                 lg_styles.append(style)
-        lg_layers = [lyr.name for lyr in layers]
+        lg_datasets = [lyr.name for lyr in layers]
 
         # Group layer bounds and name
         lg_bounds = [str(coord) for coord in self.bbox]
         lg_name = f'{slugify(self.title)}_{self.id}'
 
         # Update existing or add new group layer
-        lg = self.layer_group
+        lg = self.dataset_group
         if lg is None:
             lg = GsUnsavedLayerGroup(
                 gs_catalog,
                 lg_name,
-                lg_layers,
+                lg_datasets,
                 lg_styles,
                 lg_bounds)
         else:
-            lg.layers, lg.styles, lg.bounds = lg_layers, lg_styles, lg_bounds
+            lg.layers, lg.styles, lg.bounds = lg_datasets, lg_styles, lg_bounds
         gs_catalog.save(lg)
         return lg_name
 
@@ -427,7 +427,7 @@ class MapLayer(models.Model, GXPLayerBase):
     and the file format to use for image tiles.
     """
 
-    map = models.ForeignKey(Map, related_name="layer_set", on_delete=models.CASCADE)
+    map = models.ForeignKey(Map, related_name="dataset_set", on_delete=models.CASCADE)
     # The map containing this layer
 
     stack_order = models.IntegerField(_('stack order'))
@@ -471,13 +471,13 @@ class MapLayer(models.Model, GXPLayerBase):
     # A group label to apply to this layer.  This affects the hierarchy displayed
     # in the map viewer's layer tree.
 
-    visibility = models.BooleanField(_('visibility'), default=True)
-    # A boolean value, true if this layer should be visible when the map loads.
-
     ows_url = models.URLField(_('ows URL'), null=True, blank=True)
     # The URL of the OWS service providing this layer, if any exists.
 
-    layer_params = models.TextField(_('layer params'))
+    visibility = models.BooleanField(_('visibility'), default=True)
+    # A boolean value, true if this layer should be visible when the map loads.
+
+    dataset_params = models.TextField(_('dataset params'))
     # A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     # passed to the GXP viewer.
 
@@ -494,25 +494,25 @@ class MapLayer(models.Model, GXPLayerBase):
     local = models.BooleanField(default=False)
     # True if this layer is served by the local geoserver
 
-    def layer_config(self, user=None):
+    def dataset_config(self, user=None):
         # Try to use existing user-specific cache of layer config
         if self.id:
-            cfg = cache.get("layer_config" +
+            cfg = cache.get("dataset_config" +
                             str(self.id) +
                             "_" +
                             str(0 if user is None else user.id))
             if cfg is not None:
                 return cfg
 
-        cfg = GXPLayerBase.layer_config(self, user=user)
+        cfg = GXPLayerBase.dataset_config(self, user=user)
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
-        if Layer.objects.filter(alternate=self.name).exists():
+        if Dataset.objects.filter(alternate=self.name).exists():
             try:
                 if self.local:
-                    layer = Layer.objects.get(store=self.store, alternate=self.name)
+                    layer = Dataset.objects.get(store=self.store, alternate=self.name)
                 else:
-                    layer = Layer.objects.get(
+                    layer = Dataset.objects.get(
                         alternate=self.name,
                         remote_service__base_url=self.ows_url)
                 attribute_cfg = layer.attribute_config()
@@ -535,22 +535,22 @@ class MapLayer(models.Model, GXPLayerBase):
             # Create temporary cache of maplayer config, should not last too long in case
             # local layer permissions or configuration values change (default
             # is 5 minutes)
-            cache.set("layer_config" +
+            cache.set("dataset_config" +
                       str(self.id) +
                       "_" +
                       str(0 if user is None else user.id), cfg)
         return cfg
 
     @property
-    def layer_title(self):
+    def dataset_title(self):
         title = None
         try:
             if self.local:
                 if self.store:
-                    title = Layer.objects.get(
+                    title = Dataset.objects.get(
                         store=self.store, alternate=self.name).title
                 else:
-                    title = Layer.objects.get(alternate=self.name).title
+                    title = Dataset.objects.get(alternate=self.name).title
         except Exception:
             title = None
         if title is None:
@@ -563,10 +563,10 @@ class MapLayer(models.Model, GXPLayerBase):
         try:
             if self.local:
                 if self.store:
-                    layer = Layer.objects.get(
+                    layer = Dataset.objects.get(
                         store=self.store, alternate=self.name)
                 else:
-                    layer = Layer.objects.get(alternate=self.name)
+                    layer = Dataset.objects.get(alternate=self.name)
                 link = f"<a href=\"{layer.get_absolute_url()}\">{layer.title}</a>"
         except Exception:
             link = None
@@ -577,17 +577,17 @@ class MapLayer(models.Model, GXPLayerBase):
     @property
     def get_legend(self):
         try:
-            layer_params = json.loads(self.layer_params)
+            dataset_params = json.loads(self.dataset_params)
 
-            capability = layer_params.get('capability', {})
+            capability = dataset_params.get('capability', {})
             # Use '' to represent default layer style
             style_name = capability.get('style', '')
-            layer_obj = Layer.objects.filter(alternate=self.name).first()
+            dataset_obj = Dataset.objects.filter(alternate=self.name).first()
             if ':' in style_name:
                 style_name = style_name.split(':')[1]
-            elif layer_obj.default_style:
-                style_name = layer_obj.default_style.name
-            href = layer_obj.get_legend_url(style_name=style_name)
+            elif dataset_obj.default_style:
+                style_name = dataset_obj.default_style.name
+            href = dataset_obj.get_legend_url(style_name=style_name)
             style = Style.objects.filter(name=style_name).first()
             if style:
                 # replace map-legend display name if style has a title
@@ -601,4 +601,4 @@ class MapLayer(models.Model, GXPLayerBase):
         ordering = ["stack_order"]
 
     def __str__(self):
-        return f'{self.ows_url}?layers={self.name}'
+        return f'{self.ows_url}?datasets={self.name}'

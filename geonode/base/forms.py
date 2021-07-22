@@ -46,7 +46,7 @@ from geonode.base.models import (CuratedThumbnail, HierarchicalKeyword,
                                  TopicCategory)
 from geonode.base.widgets import TaggitSelect2Custom
 from geonode.documents.models import Document
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from django.utils.translation import get_language
 from .fields import MultiThesauriField
 
@@ -647,7 +647,7 @@ class UserAndGroupPermissionsForm(forms.Form):
         self.fields['layers'].label_from_instance = self.label_from_instance
 
     layers = forms.ModelMultipleChoiceField(
-        queryset=Layer.objects.all(),
+        queryset=Dataset.objects.all(),
         required=False)
     permission_type = forms.MultipleChoiceField(
         required=True,

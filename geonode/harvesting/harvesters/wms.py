@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 class OgcWmsHarvester(base.BaseHarvesterWorker):
     """Harvester for resources coming from OGC WMS web services"""
 
-    layer_title_filter: typing.Optional[str]
+    dataset_title_filter: typing.Optional[str]
     _base_wms_parameters: typing.Dict = {
         "service": "WMS",
         "version": "1.3.0",
@@ -43,7 +43,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
     def __init__(
             self,
             *args,
-            layer_title_filter: typing.Optional[str] = None,
+            dataset_title_filter: typing.Optional[str] = None,
             **kwargs
     ):
         super().__init__(*args, **kwargs)
@@ -51,7 +51,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         self.http_session.headers = {
             "Content-Type": "application/xml"
         }
-        self.layer_title_filter = layer_title_filter
+        self.dataset_title_filter = dataset_title_filter
 
     @property
     def allows_copying_resources(self) -> bool:
@@ -62,8 +62,8 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         return cls(
             record.remote_url,
             record.id,
-            layer_title_filter=record.harvester_type_specific_configuration.get(
-                "layer_title_filter")
+            dataset_title_filter=record.harvester_type_specific_configuration.get(
+                "dataset_title_filter")
         )
 
     @classmethod
@@ -78,7 +78,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             ),
             "type": "object",
             "properties": {
-                "layer_title_filter": {
+                "dataset_title_filter": {
                     "type": "string",
                 }
             },
@@ -119,20 +119,20 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         get_capabilities_response.raise_for_status()
         root = etree.fromstring(get_capabilities_response.content, parser=XML_PARSER)
         nsmap = _get_nsmap(root.nsmap)
-        useful_layers_elements = []
-        leaf_layers = root.xpath("//wms:Layer[not(.//wms:Layer)]", namespaces=nsmap)
-        for layer_element in leaf_layers:
+        useful_datasets_elements = []
+        leaf_datasets = root.xpath("//wms:Layer[not(.//wms:Layer)]", namespaces=nsmap)
+        for dataset_element in leaf_datasets:
             try:
-                title = layer_element.xpath("wms:Title/text()", namespaces=nsmap)[0]
+                title = dataset_element.xpath("wms:Title/text()", namespaces=nsmap)[0]
             except IndexError:
-                name = layer_element.xpath("wms:Name/text()", namespaces=nsmap)[0]
+                name = dataset_element.xpath("wms:Name/text()", namespaces=nsmap)[0]
                 title = name
-            if self.layer_title_filter is not None:
-                if self.layer_title_filter.lower() not in title.lower():
+            if self.dataset_title_filter is not None:
+                if self.dataset_title_filter.lower() not in title.lower():
                     continue
             logger.debug(f"Creating resource descriptor for layer {title!r}...")
         self.update_harvesting_session(
-            harvesting_session_id, total_records_found=len(useful_layers_elements))
+            harvesting_session_id, total_records_found=len(useful_datasets_elements))
         self.finish_harvesting_session(harvesting_session_id)
 
     def update_geonode_resource(
@@ -143,7 +143,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
     ):
         raise NotImplementedError
 
-    def _get_useful_layers(self) -> typing.List[etree.Element]:
+    def _get_useful_datasets(self) -> typing.List[etree.Element]:
         get_capabilities_response = self.http_session.get(
             self.remote_url,
             params={
@@ -155,15 +155,15 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         get_capabilities_response.raise_for_status()
         root = etree.fromstring(get_capabilities_response.content, parser=XML_PARSER)
         nsmap = _get_nsmap(root.nsmap)
-        useful_layers_elements = []
-        leaf_layers = root.xpath("//wms:Layer[not(.//wms:Layer)]", namespaces=nsmap)
-        for layer_element in leaf_layers:
-            title = layer_element.xpath("wms:Title/text()", namespaces=nsmap)[0]
-            if self.layer_title_filter is not None:
-                if self.layer_title_filter.lower() not in title.lower():
+        useful_datasets_elements = []
+        leaf_datasets = root.xpath("//wms:Layer[not(.//wms:Layer)]", namespaces=nsmap)
+        for dataset_element in leaf_datasets:
+            title = dataset_element.xpath("wms:Title/text()", namespaces=nsmap)[0]
+            if self.dataset_title_filter is not None:
+                if self.dataset_title_filter.lower() not in title.lower():
                     continue
-            useful_layers_elements.append(layer_element)
-        return useful_layers_elements
+            useful_datasets_elements.append(dataset_element)
+        return useful_datasets_elements
 
 
 def _get_nsmap(original: typing.Dict):

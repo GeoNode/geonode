@@ -68,7 +68,7 @@ export default function AnalyticsDetails({ maxCount = 10, match, history }) {
     const {
         date,
         resourceId,
-        resourceType = 'layer',
+        resourceType = 'dataset',
         eventType,
         timeRange = 'year'
     } = get(match, 'params') || {};

@@ -37,7 +37,7 @@ from django.http.request import validate_host
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import requires_csrf_token
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import storage_manager
@@ -254,7 +254,7 @@ def proxy(request, url=None, response_callback=None,
                 content_type=content_type)
 
 
-def download(request, resourceid, sender=Layer):
+def download(request, resourceid, sender=Dataset):
 
     _not_authorized = _("You are not authorized to download this resource.")
     _not_permitted = _("You are not permitted to save or edit this resource.")
@@ -274,13 +274,13 @@ def download(request, resourceid, sender=Layer):
         if not os.path.exists(target_folder):
             os.makedirs(target_folder)
 
-        layer_files = []
+        dataset_files = []
         try:
             files = instance.resourcebase_ptr.files
-            # Copy all Layer related files into a temporary folder
+            # Copy all Dataset related files into a temporary folder
             for file_path in files:
                 if storage_manager.exists(file_path):
-                    layer_files.append(file_path)
+                    dataset_files.append(file_path)
                     filename = os.path.basename(file_path)
                     with open(f"{target_folder}/{filename}", 'wb+') as f:
                         f.write(storage_manager.open(file_path).read())
@@ -295,7 +295,7 @@ def download(request, resourceid, sender=Layer):
                             request=request), status=404)
 
             # Check we can access the original files
-            if not layer_files:
+            if not dataset_files:
                 return HttpResponse(
                     loader.render_to_string(
                         '401.html',

@@ -20,7 +20,7 @@ from django.conf import settings
 from rest_framework.filters import BaseFilterBackend
 
 
-class LayerPermissionsFilter(BaseFilterBackend):
+class DatasetPermissionsFilter(BaseFilterBackend):
     """
     A filter backend that limits results to those where the requesting user
     has read object level permissions.
@@ -47,7 +47,7 @@ class LayerPermissionsFilter(BaseFilterBackend):
             user,
             'base.view_resourcebase',
             **self.shortcut_kwargs
-        ).filter(polymorphic_ctype__model='layer')
+        ).filter(polymorphic_ctype__model='dataset')
 
         obj_with_perms = get_visible_resources(
             resources,

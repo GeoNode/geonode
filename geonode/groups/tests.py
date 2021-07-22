@@ -27,7 +27,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 from guardian.shortcuts import get_anonymous_user
 from geonode.security.views import _perms_info_json
@@ -43,7 +43,7 @@ from geonode.base.populate_test_data import (
     all_public,
     create_models,
     remove_models,
-    create_single_layer)
+    create_single_dataset)
 
 logger = logging.getLogger(__name__)
 
@@ -321,7 +321,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Ensures that when a user is in a group, the group permissions
         extend to the user.
         """
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         # Set the default permissions
         layer.set_default_permissions()
 
@@ -390,7 +390,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Tests the resources method on a Group object.
         """
 
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         map = Map.objects.all()[0]
 
         perm_spec = {'groups': {'bar': ['change_resourcebase']}}
@@ -405,10 +405,10 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         # Test the resource filter
         self.assertTrue(
             layer.get_self_resource() in self.bar.resources(
-                resource_type='layer'))
+                resource_type='dataset'))
         self.assertTrue(
             map.get_self_resource() not in self.bar.resources(
-                resource_type='layer'))
+                resource_type='dataset'))
 
         # Revoke permissions on the layer from the self.bar group
         layer.set_permissions("{}")
@@ -421,7 +421,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Tests the perms_info function (which passes permissions to the response context).
         """
         # Add test to test perms being sent to the front end.
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         layer.set_default_permissions()
         perms_info = layer.get_all_level_info()
 
@@ -444,7 +444,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
         self.assertTrue(self.client.login(username="admin", password="admin"))
 
-        layer = Layer.objects.all()[0]
+        layer = Dataset.objects.all()[0]
         document = Document.objects.all()[0]
         map_obj = Map.objects.all()[0]
         layer.set_default_permissions()
@@ -819,10 +819,10 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
         response = self.client.get("/groups/group/bar/activity/")
         self.assertEqual(200, response.status_code)
-        logger.error(response.content)
+
         self.assertContains(response,
-                            'Layers',
-                            count=1,
+                            'Datasets',
+                            count=3,
                             status_code=200,
                             msg_prefix='',
                             html=False)
@@ -839,7 +839,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                             msg_prefix='',
                             html=False)
         self.assertContains(response,
-                            '<a href="/layers/:geonode:CA">CA</a>',
+                            '<a href="/datasets/:geonode:CA">CA</a>',
                             count=0,
                             status_code=200,
                             msg_prefix='',
@@ -850,33 +850,33 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                             status_code=200,
                             msg_prefix='',
                             html=False)
-        layer = create_single_layer('single_point.shp')
+        dataset = create_single_dataset('single_point.shp')
         try:
             # Add test to test perms being sent to the front end.
-            layer.set_default_permissions()
-            perms_info = layer.get_all_level_info()
+            dataset.set_default_permissions()
+            perms_info = dataset.get_all_level_info()
 
             # Ensure there is only one group 'anonymous' by default
             self.assertEqual(len(perms_info['groups'].keys()), 1)
 
-            # Add the foo group to the layer object groups
-            layer.set_permissions({'groups': {'bar': ['view_resourcebase']}})
+            # Add the foo group to the dataset object groups
+            dataset.set_permissions({'groups': {'bar': ['view_resourcebase']}})
 
-            perms_info = _perms_info_json(layer)
+            perms_info = _perms_info_json(dataset)
             # Ensure foo is in the perms_info output
             self.assertCountEqual(
                 json.loads(perms_info)['groups'], {
                     'bar': ['view_resourcebase']})
 
-            layer.group = self.bar.group
-            layer.save()
+            dataset.group = self.bar.group
+            dataset.save()
 
             response = self.client.get("/groups/group/bar/activity/")
             self.assertEqual(200, response.status_code)
             _log(response)
             self.assertContains(
                 response,
-                '<a href="/layers/:geonode:single_point.shp">geonode:single_point.shp</a>',
+                '<a href="/datasets/:geonode:single_point.shp">geonode:single_point.shp</a>',
                 count=2,
                 status_code=200,
                 msg_prefix='',
@@ -889,9 +889,9 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                 msg_prefix='',
                 html=False)
         finally:
-            layer.set_default_permissions()
-            layer.group = None
-            layer.save()
+            dataset.set_default_permissions()
+            dataset.group = None
+            dataset.save()
 
     """
     Group Categories tests

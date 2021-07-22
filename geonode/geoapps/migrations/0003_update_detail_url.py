@@ -17,5 +17,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        RunPython(update_geoapps_detail_url)
+        RunPython(update_geoapps_detail_url, migrations.RunPython.noop)
     ]

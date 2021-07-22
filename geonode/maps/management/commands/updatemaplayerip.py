@@ -27,7 +27,7 @@ class Command(BaseCommand):
         from geonode.maps.models import MapLayer
         from django.conf import settings
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-        map_layers = MapLayer.objects.filter(local=True)
-        for maplayer in map_layers:
+        map_datasets = MapLayer.objects.filter(local=True)
+        for maplayer in map_datasets:
             maplayer.ows_url = f"{site_url}/geoserver/wms"
             maplayer.save()

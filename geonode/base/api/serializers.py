@@ -318,6 +318,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
         self.fields['metadata_only'] = serializers.BooleanField()
         self.fields['processed'] = serializers.BooleanField(read_only=True)
         self.fields['state'] = serializers.CharField(read_only=True)
+        self.fields['sourcetype'] = serializers.CharField(read_only=True)
 
         self.fields['embed_url'] = EmbedUrlField()
         self.fields['thumbnail_url'] = ThumbnailUrlField()
@@ -351,7 +352,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
             'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', 'state',
-            'data', 'subtype'
+            'data', 'subtype', 'sourcetype'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,

@@ -175,7 +175,7 @@ define(function (require, exports) {
             perm = {}
         }
         else {
-            perm = permissionsString('#permission_form','layers');
+            perm = permissionsString('#permission_form','datasets');
         }
 
         if (time_enabled) {
@@ -265,14 +265,14 @@ define(function (require, exports) {
         form_data.append('charset', $('#charset').val());
         if ($('#id_metadata_upload_form').prop('checked')) {
              form_data.append('metadata_upload_form', true);
-             form_data.append('layer_title', $('#id_layer_title').val());
+             form_data.append('dataset_title', $('#id_dataset_title').val());
         }
         if ($('#id_metadata_uploaded_preserve').prop('checked')) {
              form_data.append('metadata_uploaded_preserve', true);
         }
         if ($('#id_style_upload_form').prop('checked')) {
              form_data.append('style_upload_form', true);
-             form_data.append('layer_title', $('#id_layer_title').val());
+             form_data.append('dataset_title', $('#id_ldataset_title').val());
         }
         return form_data;
     };
@@ -452,7 +452,7 @@ define(function (require, exports) {
 
     LayerInfo.prototype.displayUploadedLayerLinks = function(resp) {
         var self = this;
-        var resourceType = 'layer';
+        var resourceType = 'dataset';
         try {
             resourceType = /^\/(.*)s\/.*/.exec(resp.url)[1];
         } catch (err) {
@@ -463,8 +463,8 @@ define(function (require, exports) {
         var b = '<a href="' + resp.url + '/metadata" class="btn btn-warning">' + gettext('Edit Metadata') + '</a>&nbsp;&nbsp;&nbsp;';
         var c = '<a href="' + resp.url + '/metadata_upload" class="btn btn-warning">' + gettext('Upload Metadata') + '</a>&nbsp;&nbsp;&nbsp;';
         var d = '<a href="' + resp.url + '/style_upload" class="btn btn-warning">' + gettext('Upload SLD') + '</a>&nbsp;&nbsp;&nbsp;';
-        var e = '<a href="' + resp.url.replace(/^\/layers/, '/gs') + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>&nbsp;&nbsp;&nbsp;';
-        if(resourceType != 'layer') {
+        var e = '<a href="' + resp.url.replace(/^\/datasets/, '/gs') + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>&nbsp;&nbsp;&nbsp;';
+        if(resourceType != 'dataset') {
             // Only Layers have Metadata and SLD Upload features for the moment
             c = '';
             d = '';
@@ -839,7 +839,7 @@ define(function (require, exports) {
     LayerInfo.prototype.removeFileHandler = function (event) {
         var target = $(event.target),
             layer_info,
-            layer_name = target.data('layer'),
+            layer_name = target.data('dataset'),
             file_name  = target.data('file');
         this.removeFile(file_name);
         this.displayRefresh();
@@ -885,14 +885,14 @@ define(function (require, exports) {
             if (file_ext === 'xml') {
                 $('#metadata_uploaded_preserve_check').show();
             }
-            a.data('layer', self.name);
+            a.data('dataset', self.name);
             a.data('file',  file.name);
             a.attr('class', 'remove-file');
             a.appendTo(p);
             a.on('click', function (event) {
                 var target = $(event.target),
                     layer_info,
-                    layer_name = target.data('layer'),
+                    layer_name = target.data('dataset'),
                     file_name  = target.data('file');
                 self.removeFile(file_name);
                 if (self.files.length == 0) {
@@ -985,7 +985,7 @@ define(function (require, exports) {
             $(dropdown).empty();
             $("<option />", {
                 val: '',
-                text: 'Select one Mosaic layer ...',
+                text: 'Select one Mosaic dataset ...',
                 selected: 'selected'
             }).appendTo(dropdown);
             // Fill drop down list with new data

@@ -32,8 +32,8 @@ urlpatterns = [
         views.request_permissions, name='request_permissions'),
     url(r'^invalidate-permissions-cache/?$',
         views.invalidate_permissions_cache, name='invalidate_permissions_cache'),
-    url(r'^invalidate_tiledlayer_cache/?$',
-        views.invalidate_tiledlayer_cache, name='invalidate_tiledlayer_cache'),
+    url(r'^invalidate_tileddataset_cache/?$',
+        views.invalidate_tileddataset_cache, name='invalidate_tileddataset_cache'),
     url(r'^attributes_sats_refresh/?$',
         views.attributes_sats_refresh, name='attributes_sats_refresh'),
 ]

@@ -19,11 +19,11 @@
 
 from django.core.management.base import BaseCommand
 
-from geonode.layers.utils import delete_orphaned_layers
+from geonode.layers.utils import delete_orphaned_datasets
 
 
 class Command(BaseCommand):
     help = ("Delete orphaned layers.")
 
     def handle(self, *args, **options):
-        delete_orphaned_layers()
+        delete_orphaned_datasets()

@@ -25,7 +25,7 @@ class Command(BaseCommand):
     help = ('Change the title of a layer on a particular map.\n\n'
             'Arguments:\n'
             'map_id - numeric map ID\n'
-            'name - name of the layer (e.g., geonode:layer_name)\n'
+            'name - name of the layer (e.g., geonode:dataset_name)\n'
             'title - title of layer as it should appear on the specified map')
 
     args = 'map_id name title'
@@ -40,8 +40,8 @@ class Command(BaseCommand):
 
         maplayer = MapLayer.objects.filter(map_id=map_id, name=name)[0]
 
-        layer_params = json.loads(maplayer.layer_params)
-        layer_params['title'] = title
-        layer_params['capability']['title'] = title
-        maplayer.layer_params = json.dumps(layer_params)
+        dataset_params = json.loads(maplayer.dataset_params)
+        dataset_params['title'] = title
+        dataset_params['capability']['title'] = title
+        maplayer.dataset_params = json.dumps(dataset_params)
         maplayer.save()

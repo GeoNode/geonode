@@ -23,8 +23,8 @@ from geonode.services.views import (
     _register_cascaded_service,
     _register_indexed_service,
     _register_harvested_service,
-    _register_cascaded_layers,
-    _register_indexed_layers,
+    _register_cascaded_datasets,
+    _register_indexed_datasets,
 )
 import json
 import logging
@@ -63,7 +63,7 @@ class Command(BaseCommand):
     def handle(self, url, name, type, method, console=sys.stdout, **options):
         user = options.get('user')
         owner = get_valid_user(user)
-        register_layers = options.get('registerlayers')
+        register_datasets = options.get('registerlayers')
         username = options.get('username')
         password = options.get('password')
         perm_spec = options.get('permspec')
@@ -109,16 +109,16 @@ class Command(BaseCommand):
                 return
 
             print(service.id)
-            print(register_layers)
+            print(register_datasets)
 
-        if service and register_layers:
+        if service and register_datasets:
             layers = []
-            for layer in service.layer_set.all():
+            for layer in service.dataset_set.all():
                 layers.append(layer.alternate)
             if service.method == 'C':
-                response = _register_cascaded_layers(user, service, layers, perm_spec)
+                response = _register_cascaded_datasets(user, service, layers, perm_spec)
             elif service.method == 'I':
-                response = _register_indexed_layers(user, service, layers, perm_spec)
+                response = _register_indexed_datasets(user, service, layers, perm_spec)
             elif service.method == 'X':
                 print("Not Implemented (Yet)")
             elif service.method == 'L':

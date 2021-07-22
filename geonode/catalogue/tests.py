@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 
 from django.db.models import Q
 from django.test import RequestFactory
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.catalogue import get_catalogue
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -29,7 +29,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.catalogue.models import catalogue_post_save
 
 from geonode.catalogue.views import csw_global_dispatch
-from geonode.layers.populate_layers_data import create_layer_data
+from geonode.layers.populate_datasets_data import create_dataset_data
 
 from geonode.base.populate_test_data import (
     all_public,
@@ -55,7 +55,7 @@ class CatalogueTest(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
         self.request = self.__request_factory_single(123)
-        create_layer_data()
+        create_dataset_data()
         self.user = "admin"
         self.passwd = "admin"
 
@@ -65,64 +65,64 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(c)
 
     def test_update_metadata_records(self):
-        layer = Layer.objects.first()
-        self.assertIsNotNone(layer)
-        layer.abstract = "<p>Test HTML abstract</p>"
-        layer.save()
-        self.assertEqual(layer.abstract, "<p>Test HTML abstract</p>")
-        self.assertEqual(layer.raw_abstract, "Test HTML abstract")
+        dataset = Dataset.objects.first()
+        self.assertIsNotNone(dataset)
+        dataset.abstract = "<p>Test HTML abstract</p>"
+        dataset.save()
+        self.assertEqual(dataset.abstract, "<p>Test HTML abstract</p>")
+        self.assertEqual(dataset.raw_abstract, "Test HTML abstract")
         # refresh catalogue metadata records
-        catalogue_post_save(instance=layer, sender=layer.__class__)
+        catalogue_post_save(instance=dataset, sender=dataset.__class__)
         # get all records
         csw = get_catalogue()
-        record = csw.get_record(layer.uuid)
+        record = csw.get_record(dataset.uuid)
         self.assertIsNotNone(record)
-        self.assertEqual(record.identification.title, layer.title)
-        self.assertEqual(record.identification.abstract, layer.raw_abstract)
+        self.assertEqual(record.identification.title, dataset.title)
+        self.assertEqual(record.identification.abstract, dataset.raw_abstract)
         if len(record.identification.otherconstraints) > 0:
-            self.assertEqual(record.identification.otherconstraints[0], layer.raw_constraints_other)
+            self.assertEqual(record.identification.otherconstraints[0], dataset.raw_constraints_other)
 
     def test_given_a_simple_request_should_return_200(self):
         actual = csw_global_dispatch(self.request)
         self.assertEqual(200, actual.status_code)
 
-    def test_given_a_request_for_a_single_layer_should_return_single_value_in_xml_without_layer_filter(self):
-        layer = Layer.objects.first()
-        request = self.__request_factory_single(layer.uuid)
+    def test_given_a_request_for_a_single_dataset_should_return_single_value_in_xml_without_dataset_filter(self):
+        dataset = Dataset.objects.first()
+        request = self.__request_factory_single(dataset.uuid)
         response = csw_global_dispatch(request)
         root = ET.fromstring(response.content)
         actual = len(list(root))
         self.assertEqual(1, actual)
 
-    def test_given_a_request_for_a_single_layer_should_return_empty_value_in_xml_with_layer_filter(self):
-        layer = Layer.objects.first()
-        request = self.__request_factory_single(layer.uuid)
-        response = csw_global_dispatch(request, self.layer_filter)
+    def test_given_a_request_for_a_single_dataset_should_return_empty_value_in_xml_with_dataset_filter(self):
+        dataset = Dataset.objects.first()
+        request = self.__request_factory_single(dataset.uuid)
+        response = csw_global_dispatch(request, self.dataset_filter)
         root = ET.fromstring(response.content)
         actual = len(list(root))
         self.assertEqual(0, actual)
 
-    def test_given_a_request_for_multiple_layer_should_return_empty_value_in_xml_with_layer_filter(self):
+    def test_given_a_request_for_multiple_dataset_should_return_empty_value_in_xml_with_dataset_filter(self):
         request = self.__request_factory_multiple()
-        response = csw_global_dispatch(request, self.layer_filter)
+        response = csw_global_dispatch(request, self.dataset_filter)
         root = ET.fromstring(response.content)
         actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
         self.assertEqual(0, int(actual))
 
-    def test_given_a_request_for_multiple_layer_should_return_multiple_value_in_xml_with_layer_filter(self):
+    def test_given_a_request_for_multiple_dataset_should_return_multiple_value_in_xml_with_dataset_filter(self):
         request = self.__request_factory_multiple()
-        response = csw_global_dispatch(request, self.layer_filter_multiple)
+        response = csw_global_dispatch(request, self.dataset_filter_multiple)
         root = ET.fromstring(response.content)
         actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
         self.assertEqual(2, int(actual))
 
     @staticmethod
-    def layer_filter(layer):
-        return layer.filter(uuid__startswith="foo_uuid")
+    def dataset_filter(dataset):
+        return dataset.filter(uuid__startswith="foo_uuid")
 
     @staticmethod
-    def layer_filter_multiple(layer):
-        return layer.filter(Q(title="CA") | Q(title="uniquetitle"))
+    def dataset_filter_multiple(dataset):
+        return dataset.filter(Q(title="CA") | Q(title="uniquetitle"))
 
     @staticmethod
     def __request_factory_single(uuid):

@@ -40,7 +40,7 @@ class GeoAppsApiTests(APITestCase):
     def setUp(self):
         create_models(b'document')
         create_models(b'map')
-        create_models(b'layer')
+        create_models(b'dataset')
         self.admin = get_user_model().objects.get(username='admin')
         self.bobby = get_user_model().objects.get(username='bobby')
         self.norman = get_user_model().objects.get(username='norman')

@@ -36,7 +36,7 @@ from django.views.decorators.csrf import requires_csrf_token
 from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
 from geonode.security.views import _perms_info_json
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.proxy.views import proxy
 from urllib.parse import urljoin
 from urllib.parse import quote
@@ -47,7 +47,7 @@ from .models import HarvestJob
 from .models import Service
 from . import tasks
 
-logger = logging.getLogger("geonode.core.layers.views")
+logger = logging.getLogger("geonode.core.datasetsviews")
 
 
 @requires_csrf_token
@@ -208,7 +208,7 @@ def harvest_resources_handle_post(request, service, handler):
             'change_resourcebase_metadata', 'change_resourcebase',
             'delete_resourcebase'
         ]
-        layer = Layer.objects.filter(alternate=id)
+        layer = Dataset.objects.filter(alternate=id)
         if layer.exists():
             for perm in perms:
                 assign_perm(perm, request.user, layer.first().get_self_resource())
@@ -321,14 +321,14 @@ def service_detail(request, service_id):
         .union(service.get_user_perms(request.user))
     )
 
-    already_imported_layers = get_visible_resources(
-        queryset=Layer.objects.filter(remote_service=service),
+    already_imported_datasets = get_visible_resources(
+        queryset=Dataset.objects.filter(remote_service=service),
         user=request.user
     )
     resources_being_harvested = HarvestJob.objects.filter(service=service)
 
     service_list = service.service_set.all()
-    all_resources = (list(resources_being_harvested) + list(already_imported_layers) + list(service_list))
+    all_resources = (list(resources_being_harvested) + list(already_imported_datasets) + list(service_list))
 
     paginator = Paginator(
         all_resources,
@@ -358,14 +358,14 @@ def service_detail(request, service_id):
         template_name="services/service_detail.html",
         context={
             "service": service,
-            "layers": already_imported_layers,
+            "layers": already_imported_datasets,
             "resource_jobs": (
                 r for r in resources if isinstance(r, HarvestJob)),
             "permissions_json": permissions_json,
             "permissions_list": perms_list,
             "can_add_resorces": request.user.has_perm('base.add_resourcebase'),
             "resources": resources,
-            "total_resources": len(already_imported_layers),
+            "total_resources": len(already_imported_datasets),
         }
     )
 
@@ -415,7 +415,7 @@ def remove_service(request, service_id):
         return render(request, "services/service_remove.html",
                       {"service": service})
     elif request.method == 'POST':
-        service.layer_set.all().delete()
+        service.dataset_set.all().delete()
         service.delete()
         messages.add_message(
             request,

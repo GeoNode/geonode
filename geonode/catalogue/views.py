@@ -27,7 +27,7 @@ from pycsw import server
 from guardian.shortcuts import get_objects_for_user
 from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 from geonode.base.models import ResourceBase
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.base.auth import get_or_create_token
 from geonode.base.models import ContactRole, SpatialRepresentationType
 from geonode.groups.models import GroupProfile
@@ -36,7 +36,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 @csrf_exempt
-def csw_global_dispatch(request, layer_filter=None, config_updater=None):
+def csw_global_dispatch(request, dataset_filter=None, config_updater=None):
     """pycsw wrapper"""
 
     # this view should only operate if pycsw_local is the backend
@@ -86,21 +86,21 @@ def csw_global_dispatch(request, layer_filter=None, config_updater=None):
             layers = ResourceBase.objects.filter(
                 id__in=[d['id'] for d in authorized])
 
-            if layer_filter and layers:
-                layers = layer_filter(layers)
+            if dataset_filter and layers:
+                layers = dataset_filter(layers)
 
             if layers:
                 authorized_ids = [d.id for d in layers]
 
         if len(authorized_ids) > 0:
-            authorized_layers = f"({', '.join(str(e) for e in authorized_ids)})"
-            authorized_layers_filter = f"id IN {authorized_layers}"
-            mdict['repository']['filter'] += f" AND {authorized_layers_filter}"
+            authorized_datasets = f"({', '.join(str(e) for e in authorized_ids)})"
+            authorized_datasets_filter = f"id IN {authorized_datasets}"
+            mdict['repository']['filter'] += f" AND {authorized_datasets_filter}"
             if request.user and request.user.is_authenticated:
-                mdict['repository']['filter'] = f"({mdict['repository']['filter']}) OR ({authorized_layers_filter})"
+                mdict['repository']['filter'] = f"({mdict['repository']['filter']}) OR ({authorized_datasets_filter})"
         else:
-            authorized_layers_filter = "id = -9999"
-            mdict['repository']['filter'] += f" AND {authorized_layers_filter}"
+            authorized_datasets_filter = "id = -9999"
+            mdict['repository']['filter'] += f" AND {authorized_datasets_filter}"
 
         # Filter out Documents and Maps
         if 'ALTERNATES_ONLY' in settings.CATALOGUE['default'] and settings.CATALOGUE['default']['ALTERNATES_ONLY']:
@@ -279,8 +279,8 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
     content = content[:-1]
     content += sc
 
-    if resource.detail_url.find('/layers/') > -1:
-        layer = Layer.objects.get(resourcebase_ptr_id=resource.id)
+    if resource.detail_url.find('/datasets/') > -1:
+        layer = Dataset.objects.get(resourcebase_ptr_id=resource.id)
         content += f"attribute data{sc}"
         content += 'attribute name;label;description\n'
         for attr in layer.attribute_set.all():
@@ -316,8 +316,8 @@ def csw_render_extra_format_html(request, layeruuid, resname):
     else:
         extra_res_md['keywords'] = get_keywords(resource)
 
-    if resource.detail_url.find('/layers/') > -1:
-        layer = Layer.objects.get(resourcebase_ptr_id=resource.id)
+    if resource.detail_url.find('/datasets/') > -1:
+        layer = Dataset.objects.get(resourcebase_ptr_id=resource.id)
         extra_res_md['atrributes'] = ''
         for attr in layer.attribute_set.all():
             s = f"<tr><td>{attr.attribute}</td><td>{attr.attribute_label}</td><td>{attr.description}</td></tr>"
