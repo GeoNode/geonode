@@ -27,7 +27,7 @@ from geonode.storage.aws import AwsStorageManager
 from geonode.storage.manager import StorageManager
 from geonode.storage.gcs import GoogleStorageManager
 from geonode.storage.dropbox import DropboxStorageManager
-from geonode.base.populate_test_data import create_single_layer
+from geonode.base.populate_test_data import create_single_dataset
 
 
 class TestDropboxStorageManager(SimpleTestCase):
@@ -371,10 +371,10 @@ class TestStorageManager(TestCase):
         # strg.return_value = '/opt/full/path/to/file'
         old_files = ['/opt/full/path/to/file', '/opt/full/path/to/file']
         new_files = [os.path.join(f"{self.project_root}", "tests/data/test_sld.sld"), os.path.join(f"{self.project_root}", "tests/data/test_data.json")]
-        layer = create_single_layer('storage_manager')
-        layer.files = old_files
-        layer.save()
-        output = self.sut().replace(layer, new_files)
+        dataset = create_single_dataset('storage_manager')
+        dataset.files = old_files
+        dataset.save()
+        output = self.sut().replace(dataset, new_files)
         self.assertEqual(2, len(output['files']))
         self.assertTrue('file.sld' in output['files'][0])
         self.assertTrue('file.json' in output['files'][1])
@@ -389,9 +389,9 @@ class TestStorageManager(TestCase):
         path.return_value = '/opt/full/path/to/file'
         strg.return_value = '/opt/full/path/to/file'
         expected = '/opt/full/path/to/file'
-        layer = create_single_layer('storage_manager')
-        layer.files = ['/opt/full/path/to/file2']
-        layer.save()
+        dataset = create_single_dataset('storage_manager')
+        dataset.files = ['/opt/full/path/to/file2']
+        dataset.save()
         with open('geonode/base/fixtures/test_sld.sld') as new_file:
-            output = self.sut().replace(layer, new_file)
+            output = self.sut().replace(dataset, new_file)
         self.assertListEqual([expected], output['files'])

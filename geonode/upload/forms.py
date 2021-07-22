@@ -55,7 +55,7 @@ class LayerUploadForm(forms.Form):
     time_presentation_reference_value = forms.CharField(required=False)
 
     abstract = forms.CharField(required=False)
-    layer_title = forms.CharField(required=False)
+    dataset_title = forms.CharField(required=False)
     permissions = JSONField()
 
     metadata_uploaded_preserve = forms.BooleanField(required=False)

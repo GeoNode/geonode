@@ -2594,7 +2594,7 @@
       "service": 1,
       "event_type": 16,
       "host": "localhost:8000",
-      "request_path": "/layers/upload",
+      "request_path": "/datasets/upload",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 47916,
@@ -3408,7 +3408,7 @@
       "service": 1,
       "event_type": 16,
       "host": "localhost:8000",
-      "request_path": "/layers/geonode:roads",
+      "request_path": "/datasets/geonode:roads",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 109746,
@@ -3468,7 +3468,7 @@
       "service": 1,
       "event_type": 16,
       "host": "localhost:8000",
-      "request_path": "/layers/version.txt",
+      "request_path": "/datasets/version.txt",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 0,
@@ -3526,7 +3526,7 @@
       "service": 1,
       "event_type": 15,
       "host": "localhost:8000",
-      "request_path": "/layers/geonode:roads/metadata_detail",
+      "request_path": "/datasets/geonode:roads/metadata_detail",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 29141,
@@ -3557,7 +3557,7 @@
       "service": 1,
       "event_type": 16,
       "host": "localhost:8000",
-      "request_path": "/layers/upload",
+      "request_path": "/datasets/upload",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 47916,
@@ -3936,7 +3936,7 @@
       "service": 1,
       "event_type": 16,
       "host": "localhost:8000",
-      "request_path": "/layers/geonode:railways",
+      "request_path": "/datasets/geonode:railways",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 107317,
@@ -3996,7 +3996,7 @@
       "service": 1,
       "event_type": 16,
       "host": "localhost:8000",
-      "request_path": "/layers/version.txt",
+      "request_path": "/datasets/version.txt",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 0,
@@ -4963,7 +4963,7 @@
       "service": 1,
       "event_type": 16,
       "host": "localhost:8000",
-      "request_path": "/layers/upload",
+      "request_path": "/datasets/upload",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 47919,
@@ -5342,7 +5342,7 @@
       "service": 1,
       "event_type": 15,
       "host": "localhost:8000",
-      "request_path": "/layers/geonode:waterways/metadata",
+      "request_path": "/datasets/geonode:waterways/metadata",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 278895,
@@ -5460,7 +5460,7 @@
       "service": 1,
       "event_type": 14,
       "host": "localhost:8000",
-      "request_path": "/layers/geonode:waterways/metadata",
+      "request_path": "/datasets/geonode:waterways/metadata",
       "request_method": "POST",
       "response_status": 200,
       "response_size": 32,
@@ -5520,7 +5520,7 @@
       "service": 1,
       "event_type": 16,
       "host": "localhost:8000",
-      "request_path": "/layers/geonode:waterways",
+      "request_path": "/datasets/geonode:waterways",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 106491,
@@ -5580,7 +5580,7 @@
       "service": 1,
       "event_type": 16,
       "host": "localhost:8000",
-      "request_path": "/layers/version.txt",
+      "request_path": "/datasets/version.txt",
       "request_method": "GET",
       "response_status": 200,
       "response_size": 0,
@@ -6196,7 +6196,7 @@
       "service": 1,
       "error_type": "django.http.response.Http404",
       "error_message": "django.http.response.Http404",
-      "error_data": "Traceback (most recent call last):\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/core/handlers/base.py\", line 185, in _get_response\n    response = wrapped_callback(request, *callback_args, **callback_kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/layers/views.py\", line 339, in layer_detail\n    _PERMISSION_MSG_VIEW)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/layers/views.py\", line 155, in _resolve_layer\n    **kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/utils.py\", line 811, in resolve_object\n    obj = get_object_or_404(model, **query)\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/shortcuts.py\", line 93, in get_object_or_404\n    raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)\nHttp404: No Layer matches the given query.\n",
+      "error_data": "Traceback (most recent call last):\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/core/handlers/base.py\", line 185, in _get_response\n    response = wrapped_callback(request, *callback_args, **callback_kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/datasets/views.py\", line 339, in layer_detail\n    _PERMISSION_MSG_VIEW)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/datasets/views.py\", line 155, in _resolve_layer\n    **kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/utils.py\", line 811, in resolve_object\n    obj = get_object_or_404(model, **query)\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/shortcuts.py\", line 93, in get_object_or_404\n    raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)\nHttp404: No Layer matches the given query.\n",
       "request": 78
     }
   },
@@ -6209,7 +6209,7 @@
       "service": 1,
       "error_type": "django.http.response.Http404",
       "error_message": "django.http.response.Http404",
-      "error_data": "Traceback (most recent call last):\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/core/handlers/base.py\", line 185, in _get_response\n    response = wrapped_callback(request, *callback_args, **callback_kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/layers/views.py\", line 339, in layer_detail\n    _PERMISSION_MSG_VIEW)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/layers/views.py\", line 155, in _resolve_layer\n    **kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/utils.py\", line 811, in resolve_object\n    obj = get_object_or_404(model, **query)\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/shortcuts.py\", line 93, in get_object_or_404\n    raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)\nHttp404: No Layer matches the given query.\n",
+      "error_data": "Traceback (most recent call last):\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/core/handlers/base.py\", line 185, in _get_response\n    response = wrapped_callback(request, *callback_args, **callback_kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/datasets/views.py\", line 339, in layer_detail\n    _PERMISSION_MSG_VIEW)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/datasets/views.py\", line 155, in _resolve_layer\n    **kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/utils.py\", line 811, in resolve_object\n    obj = get_object_or_404(model, **query)\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/shortcuts.py\", line 93, in get_object_or_404\n    raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)\nHttp404: No Layer matches the given query.\n",
       "request": 96
     }
   },
@@ -6235,7 +6235,7 @@
       "service": 1,
       "error_type": "django.http.response.Http404",
       "error_message": "django.http.response.Http404",
-      "error_data": "Traceback (most recent call last):\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/core/handlers/base.py\", line 185, in _get_response\n    response = wrapped_callback(request, *callback_args, **callback_kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/layers/views.py\", line 339, in layer_detail\n    _PERMISSION_MSG_VIEW)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/layers/views.py\", line 155, in _resolve_layer\n    **kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/utils.py\", line 811, in resolve_object\n    obj = get_object_or_404(model, **query)\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/shortcuts.py\", line 93, in get_object_or_404\n    raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)\nHttp404: No Layer matches the given query.\n",
+      "error_data": "Traceback (most recent call last):\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/core/handlers/base.py\", line 185, in _get_response\n    response = wrapped_callback(request, *callback_args, **callback_kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/datasets/views.py\", line 339, in layer_detail\n    _PERMISSION_MSG_VIEW)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/datasets/views.py\", line 155, in _resolve_layer\n    **kwargs)\n  File \"/home/gioscarda/geosolutions/geonode/dev/geonode/geonode/utils.py\", line 811, in resolve_object\n    obj = get_object_or_404(model, **query)\n  File \"/home/gioscarda/geosolutions/geonode/dev/.venvs/geonode/local/lib/python2.7/site-packages/django/shortcuts.py\", line 93, in get_object_or_404\n    raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)\nHttp404: No Layer matches the given query.\n",
       "request": 150
     }
   },
@@ -6536,7 +6536,7 @@
     "model": "monitoring.metriclabel",
     "pk": 36,
     "fields": {
-      "name": "/layers/upload",
+      "name": "/datasets/upload",
       "user": null
     }
   },
@@ -6608,7 +6608,7 @@
     "model": "monitoring.metriclabel",
     "pk": 45,
     "fields": {
-      "name": "/layers/geonode:roads",
+      "name": "/datasets/geonode:roads",
       "user": null
     }
   },
@@ -6616,7 +6616,7 @@
     "model": "monitoring.metriclabel",
     "pk": 46,
     "fields": {
-      "name": "/layers/geonode:roads/metadata_detail",
+      "name": "/datasets/geonode:roads/metadata_detail",
       "user": null
     }
   },
@@ -6624,7 +6624,7 @@
     "model": "monitoring.metriclabel",
     "pk": 47,
     "fields": {
-      "name": "/layers/version.txt",
+      "name": "/datasets/version.txt",
       "user": null
     }
   },
@@ -6712,7 +6712,7 @@
     "model": "monitoring.metriclabel",
     "pk": 58,
     "fields": {
-      "name": "/layers/geonode:railways",
+      "name": "/datasets/geonode:railways",
       "user": null
     }
   },
@@ -6904,7 +6904,7 @@
     "model": "monitoring.metriclabel",
     "pk": 82,
     "fields": {
-      "name": "/layers/geonode:waterways/metadata",
+      "name": "/datasets/geonode:waterways/metadata",
       "user": null
     }
   },
@@ -6976,7 +6976,7 @@
     "model": "monitoring.metriclabel",
     "pk": 91,
     "fields": {
-      "name": "/layers/geonode:waterways",
+      "name": "/datasets/geonode:waterways",
       "user": null
     }
   },

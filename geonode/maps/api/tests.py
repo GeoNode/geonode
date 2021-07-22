@@ -41,7 +41,7 @@ class MapsApiTests(APITestCase):
     def setUp(self):
         create_models(b'document')
         create_models(b'map')
-        create_models(b'layer')
+        create_models(b'dataset')
         first = Map.objects.first()
         first.blob = DUMMY_MAPDATA
         first.save()
@@ -66,14 +66,14 @@ class MapsApiTests(APITestCase):
         # Get Layers List (backgrounds)
         resource = Map.objects.first()
 
-        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", 'layers/')
+        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", 'datasets/')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         layers_data = response.data
         self.assertIsNotNone(layers_data)
 
         # Get Local-Layers List (GeoNode)
-        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", 'local_layers/')
+        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", 'local_datasets/')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         layers_data = response.data

@@ -52,13 +52,13 @@ from geonode.compat import ensure_string
 from geonode.monitoring.collector import CollectorAPI
 from geonode.monitoring.utils import generate_periods, align_period_start
 from geonode.base.models import ResourceBase
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.monitoring.models import *  # noqa
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
     remove_models,
-    create_single_layer)
+    create_single_dataset)
 
 from geonode.tests.utils import Client
 from geonode.geoserver.helpers import ogc_server_settings
@@ -82,7 +82,7 @@ if created:
     u.set_password(GEONODE_PASSWD)
     u.save()
 else:
-    Layer.objects.filter(owner=u).delete()
+    Dataset.objects.filter(owner=u).delete()
 
 res_dir = os.path.join(os.path.dirname(__file__), 'resources')
 req_err_path = os.path.join(res_dir, 'req_err.xml')
@@ -155,7 +155,7 @@ class TestClient(DjangoTestClient):
 
 class MonitoringTestBase(GeoNodeLiveTestSupport):
 
-    type = 'layer'
+    type = 'dataset'
 
     #  loading test thesausuri and initial data
     fixtures = [
@@ -262,10 +262,10 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = create_single_layer('san_andres_y_providencia_poi')
+        _l = create_single_dataset('san_andres_y_providencia_poi')
 
         self.client.get(
-            reverse('layer_detail',
+            reverse('dataset_detail',
                     args=(_l.alternate,
                           )),
             **{"HTTP_USER_AGENT": self.ua})
@@ -274,7 +274,7 @@ class RequestsTestCase(MonitoringTestBase):
             rq = RequestEvent.objects.all().last()
             self.assertTrue(rq.response_time > 0)
             self.assertEqual(
-                list(rq.resources.all().values_list('name', 'type')), [(_l.alternate, 'layer',)])
+                list(rq.resources.all().values_list('name', 'type')), [(_l.alternate, 'dataset',)])
             self.assertEqual(rq.request_method, 'GET')
 
     def test_gn_error(self):
@@ -284,11 +284,11 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = create_single_layer('san_andres_y_providencia_poi')
+        _l = create_single_dataset('san_andres_y_providencia_poi')
 
         self.assertIsNotNone(_l)
         self.client.get(
-            reverse('layer_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
+            reverse('dataset_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
         eq = ExceptionEvent.objects.all().last()
         if eq:
             self.assertEqual('django.http.response.Http404', eq.error_type)
@@ -300,12 +300,12 @@ class RequestsTestCase(MonitoringTestBase):
         self.client.login_user(self.u)
         self.assertTrue(get_user(self.client).is_authenticated)
 
-        _l = create_single_layer('san_andres_y_providencia_poi')
+        _l = create_single_dataset('san_andres_y_providencia_poi')
 
-        for idx, _l in enumerate(Layer.objects.all()):
+        for idx, _l in enumerate(Dataset.objects.all()):
             for inum in range(0, idx + 1):
                 self.client.get(
-                    reverse('layer_detail',
+                    reverse('dataset_detail',
                             args=(_l.alternate,
                                   )),
                     **{"HTTP_USER_AGENT": self.ua})
@@ -471,9 +471,9 @@ class MonitoringChecksTestCase(MonitoringTestBase):
 
         event_type = EventType.objects.get(name='OWS:WFS')
         resource, _ = MonitoredResource.objects.get_or_create(
-            type='layer', name='test:test')
+            type='dataset', name='test:test')
         resource2, _ = MonitoredResource.objects.get_or_create(
-            type='layer', name='test:test2')
+            type='dataset', name='test:test2')
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         MetricValue.add(self.metric, start_aligned,
@@ -563,9 +563,9 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         self.assertTrue(start_aligned < start < end_aligned)
 
         resource, _ = MonitoredResource.objects.get_or_create(
-            type='layer', name='test:test')
+            type='dataset', name='test:test')
         resource2, _ = MonitoredResource.objects.get_or_create(
-            type='layer', name='test:test2')
+            type='dataset', name='test:test2')
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         MetricValue.add(self.metric, start_aligned, end_aligned, self.service,
@@ -626,7 +626,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         self.assertTrue(start_aligned < start < end_aligned)
 
         resource, _ = MonitoredResource.objects.get_or_create(
-            type='layer', name='test:test')
+            type='dataset', name='test:test')
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
 
@@ -908,8 +908,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.user.email = 'test_user@email.com'
         self.user.save()
 
-    def test_layer_view_endpoints(self):
-        layer_view_data = [
+    def test_dataset_view_endpoints(self):
+        dataset_view_data = [
             {'label': 'd2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10',
              'max': '1.0000',
              'metric_count': 2,
@@ -960,13 +960,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             if not len(month_data):
                 empty_months += 1
             else:
-                self.assertEqual(len(month_data), len(layer_view_data))
+                self.assertEqual(len(month_data), len(dataset_view_data))
                 for dd in month_data:
-                    self.assertIn(dd, layer_view_data)
+                    self.assertIn(dd, dataset_view_data)
         self.assertEqual(empty_months, 11)
 
-    def test_layer_upload_endpoints(self):
-        layer_upload_data = [
+    def test_dataset_upload_endpoints(self):
+        dataset_upload_data = [
             {'label': 'd2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10',
              'max': '1.0000',
              'metric_count': 2,
@@ -1017,13 +1017,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             if not len(month_data):
                 empty_months += 1
             else:
-                self.assertEqual(len(month_data), len(layer_upload_data))
+                self.assertEqual(len(month_data), len(dataset_upload_data))
                 for dd in month_data:
-                    self.assertIn(dd, layer_upload_data)
+                    self.assertIn(dd, dataset_upload_data)
         self.assertEqual(empty_months, 11)
 
-    def test_layer_view_metadata_endpoints(self):
-        layer_view_metadata_data = [
+    def test_dataset_view_metadata_endpoints(self):
+        dataset_view_metadata_data = [
             {'label': '68ce3486a49de17ac675ead5ba963cc31a0444bd7eb7c6da9db17c933637186b',
              'max': '1.0000',
              'metric_count': 1,
@@ -1074,13 +1074,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             if not len(month_data):
                 empty_months += 1
             else:
-                self.assertEqual(len(month_data), len(layer_view_metadata_data))
+                self.assertEqual(len(month_data), len(dataset_view_metadata_data))
                 for dd in month_data:
-                    self.assertIn(dd, layer_view_metadata_data)
+                    self.assertIn(dd, dataset_view_metadata_data)
         self.assertEqual(empty_months, 11)
 
-    def test_layer_change_metadata_endpoints(self):
-        layer_change_data = [
+    def test_dataset_change_metadata_endpoints(self):
+        dataset_change_data = [
             {'label': '68ce3486a49de17ac675ead5ba963cc31a0444bd7eb7c6da9db17c933637186b',
              'max': '1.0000',
              'metric_count': 1,
@@ -1123,13 +1123,13 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             if not len(month_data):
                 empty_months += 1
             else:
-                self.assertEqual(len(month_data), len(layer_change_data))
+                self.assertEqual(len(month_data), len(dataset_change_data))
                 for dd in month_data:
-                    self.assertIn(dd, layer_change_data)
+                    self.assertIn(dd, dataset_change_data)
         self.assertEqual(empty_months, 11)
 
-    def test_layer_download_endpoints(self):
-        layer_downloads_data = [
+    def test_dataset_download_endpoints(self):
+        dataset_downloads_data = [
             {'label': 'd2e837d24027cfd1ca361d60a63fc4f474993bd909bffbcc83117c3c76653c10',
              'max': '1.0000',
              'metric_count': 1,
@@ -1172,9 +1172,9 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             if not len(month_data):
                 empty_months += 1
             else:
-                self.assertEqual(len(month_data), len(layer_downloads_data))
+                self.assertEqual(len(month_data), len(dataset_downloads_data))
                 for dd in month_data:
-                    self.assertIn(dd, layer_downloads_data)
+                    self.assertIn(dd, dataset_downloads_data)
         self.assertEqual(empty_months, 11)
 
     def test_map_create_endpoints(self):
@@ -1540,10 +1540,10 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
 
     def test_resources_endpoint(self):
         resources_data = [
-            {'id': 2, 'name': 'geonode:roads', 'type': 'layer'},
-            {'id': 5, 'name': 'geonode:waterways', 'type': 'layer'},
+            {'id': 2, 'name': 'geonode:roads', 'type': 'dataset'},
+            {'id': 5, 'name': 'geonode:waterways', 'type': 'dataset'},
             {'id': 6, 'name': 'Amsterdam Waterways Map', 'type': 'map'},
-            {'id': 3, 'name': 'geonode:railways', 'type': 'layer'},
+            {'id': 3, 'name': 'geonode:railways', 'type': 'dataset'},
             {'id': 1, 'name': '/', 'type': 'url'},
             {'id': 4, 'name': 'San Francisco Transport Map', 'type': 'map'}
         ]
@@ -1572,7 +1572,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
     def test_resource_types_endpoint(self):
         resource_types = [
             {'name': '', 'type_label': 'No resource'},
-            {'name': 'layer', 'type_label': 'Layer'},
+            {'name': 'dataset', 'type_label': 'Dataset'},
             {'name': 'map', 'type_label': 'Map'},
             {'name': 'resource_base', 'type_label': 'Resource base'},
             {'name': 'document', 'type_label': 'Document'},
@@ -2332,7 +2332,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
     def test_hostgeonode_mem_endpoints(self):
         mem_data = [
             {
-                'label': '/layers/upload',
+                'label': '/datasets/upload',
                 'max': '88.7119',
                 'metric_count': 3,
                 'min': '75.1172',
@@ -2371,7 +2371,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
     def test_hostgeoserver_mem_endpoints(self):
         mem_data = [
             {
-                'label': '/layers/upload',
+                'label': '/datasets/upload',
                 'max': '95.5952',
                 'metric_count': 3,
                 'min': '81.1286',

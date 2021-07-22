@@ -13,8 +13,8 @@
 	// attach your plugin to the global 'L' variable
 	if (typeof window !== 'undefined' && window.L) {
 		window.L.Control.NavBar = factory(L);
-		window.L.control.navbar = function (layer, options) {
-			return new window.L.Control.NavBar(layer, options);
+		window.L.control.navbar = function (dataset, options) {
+			return new window.L.Control.NavBar(dataset, options);
 		};
 	}
 }(function (L) {

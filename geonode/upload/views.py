@@ -32,7 +32,7 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 import os
 import re
 import json
@@ -87,7 +87,7 @@ from .utils import (
     is_longitude,
     json_response,
     get_previous_step,
-    layer_eligible_for_time_dimension,
+    dataset_eligible_for_time_dimension,
     next_step_response)
 from .upload import (
     save_step,
@@ -135,7 +135,7 @@ def save_step_view(req, session):
     if req.method == 'GET':
         return render(
             req,
-            'upload/layer_upload.html',
+            'upload/dataset_upload.html',
             {
                 'async_upload': _ASYNC_UPLOAD,
                 'incomplete': Upload.objects.get_incomplete_uploads(req.user),
@@ -168,10 +168,10 @@ def save_step_view(req, session):
         logger.debug(f"spatial_files: {spatial_files}")
 
         if overwrite:
-            layer = Layer.objects.filter(id=req.GET['layer_id'])
-            if layer.exists():
-                name = layer.first().name
-                target_store = layer.first().store
+            dataset = Dataset.objects.filter(id=req.GET['dataset_id'])
+            if dataset.exists():
+                name = dataset.first().name
+                target_store = dataset.first().store
 
         import_session, upload = save_step(
             req.user,
@@ -210,8 +210,8 @@ def save_step_view(req, session):
             name=upload.name,
             charset=form.cleaned_data["charset"],
             import_session=import_session,
-            layer_abstract=form.cleaned_data["abstract"],
-            layer_title=form.cleaned_data["layer_title"],
+            dataset_abstract=form.cleaned_data["abstract"],
+            dataset_title=form.cleaned_data["dataset_title"],
             permissions=form.cleaned_data["permissions"],
             import_sld_file=sld,
             upload_type=spatial_files[0].file_type.code,
@@ -263,9 +263,9 @@ def srs_step_view(request, upload_session):
                 supported_crs=_SUPPORTED_CRS,
                 async_upload=False,
                 native_crs=native_crs or None,
-                layer_name=name,
+                dataset_name=name,
                 error=error)
-            return render(request, 'upload/layer_upload_crs.html', context=context)
+            return render(request, 'upload/dataset_upload_crs.html', context=context)
         else:
             upload_session.completed_step = 'srs'
             return next_step_response(request, upload_session)
@@ -375,11 +375,11 @@ def csv_step_view(request, upload_session):
                        selected_lat=selected_lat,
                        selected_lng=selected_lng,
                        guessed_lat_or_lng=guessed_lat_or_lng,
-                       layer_name=import_session.tasks[0].layer.name,
+                       dataset_name=import_session.tasks[0].layer.name,
                        error=error,
                        possible_data_problems=possible_data_problems
                        )
-        return render(request, 'upload/layer_upload_csv.html', context=context)
+        return render(request, 'upload/dataset_upload_csv.html', context=context)
     elif request.method == 'POST':
         if not lat_field or not lng_field:
             error = 'Please choose which columns contain the latitude and longitude data.'
@@ -419,8 +419,8 @@ def check_step_view(request, upload_session):
                 upload_session.completed_step = 'error'
                 upload_session.error_msg = 'Could not access/read the uploaded file!'
             else:
-                (has_time_dim, layer_values) = \
-                    layer_eligible_for_time_dimension(
+                (has_time_dim, dataset_values) = \
+                    dataset_eligible_for_time_dimension(
                         request,
                         import_session.tasks[0].layer, upload_session=upload_session)
                 if has_time_dim:
@@ -438,7 +438,7 @@ def create_time_form(request, upload_session, form_data):
         upload_session = _get_upload_session(request)
     feature_type = upload_session.import_session.tasks[0].layer
 
-    (has_time, layer_values) = layer_eligible_for_time_dimension(
+    (has_time, dataset_values) = dataset_eligible_for_time_dimension(
         request, feature_type, upload_session=upload_session)
     att_list = []
     if has_time:
@@ -469,18 +469,17 @@ def time_step_view(request, upload_session):
         layer = check_import_session_is_valid(
             request, upload_session, import_session)
         if layer:
-            (has_time_dim, layer_values) = layer_eligible_for_time_dimension(request,
-                                                                             layer, upload_session=upload_session)
-            if has_time_dim and layer_values:
+            (has_time_dim, dataset_values) = dataset_eligible_for_time_dimension(request, layer, upload_session=upload_session)
+            if has_time_dim and dataset_values:
                 context = {
                     'time_form': create_time_form(request, upload_session, None),
-                    'layer_name': layer.name,
-                    'layer_values': layer_values,
-                    'layer_attributes': list(layer_values[0].keys()),
+                    'dataset_name': layer.name,
+                    'dataset_values': dataset_values,
+                    'dataset_attributes': list(dataset_values[0].keys()),
                     'async_upload': is_async_step(upload_session)
                 }
                 upload_session.completed_step = 'check'
-                return render(request, 'upload/layer_upload_time.html', context=context)
+                return render(request, 'upload/dataset_upload_time.html', context=context)
             else:
                 upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
                 return next_step_response(request, upload_session)
@@ -557,7 +556,7 @@ def final_step_view(req, upload_session):
         if not check_import_session_is_valid(
                 req, upload_session, import_session):
             error_msg = upload_session.import_session.tasks[0].error_message
-            url = "/upload/layer_upload_invalid.html"
+            url = "/upload/dataset_upload_invalid.html"
             _json_response = json_response(
                 {
                     'url': url,
@@ -570,15 +569,15 @@ def final_step_view(req, upload_session):
             return _json_response
         else:
             try:
-                layer_id = None
-                if req and 'layer_id' in req.GET:
-                    layer = Layer.objects.filter(id=req.GET['layer_id'])
-                    if layer.exists():
-                        layer_id = layer.first().resourcebase_ptr_id
+                dataset_id = None
+                if req and 'dataset_id' in req.GET:
+                    dataset = Dataset.objects.filter(id=req.GET['dataset_id'])
+                    if dataset.exists():
+                        dataset_id = dataset.first().resourcebase_ptr_id
 
-                saved_layer = final_step(upload_session, upload_session.user, layer_id)
+                saved_dataset = final_step(upload_session, upload_session.user, dataset_id)
 
-                assert saved_layer
+                assert saved_dataset
 
                 # this response is different then all of the other views in the
                 # upload as it does not return a response as a json object
@@ -586,16 +585,16 @@ def final_step_view(req, upload_session):
                     {
                         'status': 'finished',
                         'id': import_session.id,
-                        'url': saved_layer.get_absolute_url(),
-                        'bbox': saved_layer.bbox_string,
+                        'url': saved_dataset.get_absolute_url(),
+                        'bbox': saved_dataset.bbox_string,
                         'crs': {
                             'type': 'name',
-                            'properties': saved_layer.srid
+                            'properties': saved_dataset.srid
                         },
                         'success': True
                     }
                 )
-                register_event(req, EventType.EVENT_UPLOAD, saved_layer)
+                register_event(req, EventType.EVENT_UPLOAD, saved_dataset)
                 return _json_response
             except LayerNotReady:
                 force_ajax = '&force_ajax=true' if req and 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
@@ -609,7 +608,7 @@ def final_step_view(req, upload_session):
                 )
             except Exception as e:
                 logger.exception(e)
-                url = "upload/layer_upload_invalid.html"
+                url = "upload/dataset_upload_invalid.html"
                 _json_response = json_response(
                     {
                         'status': 'error',
@@ -620,7 +619,7 @@ def final_step_view(req, upload_session):
                 )
                 return _json_response
     else:
-        url = "upload/layer_upload_invalid.html"
+        url = "upload/dataset_upload_invalid.html"
         _json_response = json_response(
             {
                 'status': 'error',
@@ -679,7 +678,7 @@ def view(req, step=None):
         if not upload_id:
             return render(
                 req,
-                "upload/layer_upload_invalid.html",
+                "upload/dataset_upload_invalid.html",
                 context={})
 
         upload_obj = get_object_or_404(

@@ -340,7 +340,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
     def resource_keywords_tree(cls, user, parent=None, resource_type=None, resource_name=None):
         """ Returns resource keywords tree as a dict object. """
         user = user or get_anonymous_user()
-        resource_types = [resource_type] if resource_type else ['layer', 'map', 'document'] + get_geoapp_subtypes()
+        resource_types = [resource_type] if resource_type else ['dataset', 'map', 'document'] + get_geoapp_subtypes()
         qset = cls.get_tree(parent)
 
         if settings.SKIP_PERMS_FILTER:
@@ -967,13 +967,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         max_length=512,
         help_text=_('Name of the Remote Service if any.'))
-
-    ows_url = models.URLField(
-        _('ows URL'),
-        null=True,
-        blank=True,
-        default=f"{(settings.OGC_SERVER['default']['PUBLIC_LOCATION'])}ows",
-        help_text=_('The URL of the OWS service providing this layer, if any exists.'))
 
     # fields controlling security state
     dirty_state = models.BooleanField(

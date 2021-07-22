@@ -148,17 +148,17 @@ class Config:
         else:
             self.gs_data_dt_filter = (None, None)
 
-        if config.has_option('geoserver', 'data_layername_filter'):
-            self.gs_data_layername_filter = \
-                config.get('geoserver', 'data_layername_filter').split(',')
+        if config.has_option('geoserver', 'data_datasetname_filter'):
+            self.gs_data_datasetname_filter = \
+                config.get('geoserver', 'data_datasetname_filter').split(',')
         else:
-            self.gs_data_layername_filter = ''
+            self.gs_data_datasetname_filter = ''
 
-        if config.has_option('geoserver', 'data_layername_exclude_filter'):
-            self.gs_data_layername_exclude_filter = \
-                config.get('geoserver', 'data_layername_exclude_filter').split(',')
+        if config.has_option('geoserver', 'data_datasetname_exclude_filter'):
+            self.gs_data_datasetname_exclude_filter = \
+                config.get('geoserver', 'data_datasetname_exclude_filter').split(',')
         else:
-            self.gs_data_layername_exclude_filter = ''
+            self.gs_data_datasetname_exclude_filter = ''
 
         self.app_names = config.get('fixtures', 'apps').split(',')
         self.dump_names = config.get('fixtures', 'dumps').split(',')
@@ -263,12 +263,12 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
         curs.execute(sql_dump)
         pg_all_tables = [table[0] for table in curs.fetchall()]
         pg_tables = []
-        if config.gs_data_layername_filter:
-            for pat in config.gs_data_layername_filter:
+        if config.gs_data_datasetname_filter:
+            for pat in config.gs_data_datasetname_filter:
                 pg_tables += glob_filter(pg_all_tables, pat)
-        elif config.gs_data_layername_exclude_filter:
+        elif config.gs_data_datasetname_exclude_filter:
             pg_tables = pg_all_tables
-            for pat in config.gs_data_layername_exclude_filter:
+            for pat in config.gs_data_datasetname_exclude_filter:
                 names = ','.join(glob_filter(pg_all_tables, pat))
                 for exclude_table in names.split(','):
                     pg_tables.remove(exclude_table)

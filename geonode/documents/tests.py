@@ -39,7 +39,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from guardian.shortcuts import get_perms, get_anonymous_user
 
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.base.thumb_utils import get_thumbs
 from geonode.base.models import License, Region
@@ -374,7 +374,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         assert('permissions' in ensure_string(response.content))
 
         # Test that a user is required to have
-        # documents.change_layer_permissions
+        # documents.change_dataset_permissions
 
         # First test un-authenticated
         response = self.client.post(
@@ -681,7 +681,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
     def setUp(self):
         create_models(b'document')
         create_models(b'map')
-        create_models(b'layer')
+        create_models(b'dataset')
 
         self.test_file = io.BytesIO(
             b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
@@ -702,7 +702,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(Document.objects.get(pk=d.id).title, 'theimg')
 
         maps = list(Map.objects.all())
-        layers = list(Layer.objects.all())
+        layers = list(Dataset.objects.all())
         resources = maps + layers
 
         # create document links

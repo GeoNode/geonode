@@ -44,10 +44,10 @@ from django.test.utils import override_settings
 
 from geonode import geoserver
 from geonode.base.models import Link
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.base.populate_test_data import create_models, create_single_layer
+from geonode.base.populate_test_data import create_models, create_single_dataset
 
 TEST_DOMAIN = '.github.com'
 TEST_URL = f'https://help{TEST_DOMAIN}/'
@@ -131,14 +131,14 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        create_models(type='layer')
+        create_models(type='dataset')
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_download_url_with_not_existing_file(self):
-        layer = Layer.objects.all().first()
+        dataset = Dataset.objects.all().first()
         self.client.login(username='admin', password='admin')
         # ... all should be good
-        response = self.client.get(reverse('download', args=(layer.id,)))
+        response = self.client.get(reverse('download', args=(dataset.id,)))
         # Espected 404 since there are no files available for this layer
         self.assertEqual(response.status_code, 404)
         content = response.content
@@ -154,29 +154,29 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
     def test_download_url_with_existing_files(self, fopen, fexists):
         fexists.return_value = True
         fopen.return_value = SimpleUploadedFile('foo_file.shp', b'scc')
-        layer = Layer.objects.all().first()
+        dataset = Dataset.objects.all().first()
 
-        layer.files = [
+        dataset.files = [
             "/tmpe1exb9e9/foo_file.dbf",
             "/tmpe1exb9e9/foo_file.prj",
             "/tmpe1exb9e9/foo_file.shp",
             "/tmpe1exb9e9/foo_file.shx"
         ]
 
-        layer.save()
+        dataset.save()
 
-        layer.refresh_from_db()
+        dataset.refresh_from_db()
 
         upload = Upload.objects.create(
             state='RUNNING',
-            resource=layer
+            resource=dataset
         )
 
         assert upload
 
         self.client.login(username='admin', password='admin')
         # ... all should be good
-        response = self.client.get(reverse('download', args=(layer.id,)))
+        response = self.client.get(reverse('download', args=(dataset.id,)))
         # Espected 404 since there are no files available for this layer
         self.assertEqual(response.status_code, 200)
         self.assertEqual('application/zip', response.headers.get('Content-Type'))
@@ -187,7 +187,7 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        create_models(type='layer')
+        create_models(type='dataset')
         # prepare some WMS endpoints
         q = Link.objects.all()
         for lyr in q[:3]:
@@ -209,7 +209,7 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
 @override_settings(SITEURL='http://localhost:8000')
 class TestProxyTags(GeoNodeBaseTestSupport):
     def setUp(self):
-        self.resource = create_single_layer('foo_layer')
+        self.resource = create_single_dataset('foo_dataset')
         r = RequestFactory()
         self.url = urljoin(settings.SITEURL, reverse("download", args={self.resource.id}))
         r.get(self.url)

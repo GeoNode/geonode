@@ -39,7 +39,7 @@
             </div>
             {% endverbatim %}
 
-            {% if facet_type == 'layers' %}
+            {% if facet_type == 'datasets' %}
             <div class="col-xs-2">
               <h4>
                 <button
@@ -77,7 +77,7 @@
                 {% endverbatim %}
                   {% if "add_resource" in user.perms %}
                     {% verbatim %}
-                    <li><a ng-if="item.detail_url.indexOf('/layers/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
+                    <li><a ng-if="item.detail_url.indexOf('/datasets/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
                       {% endverbatim %}
                       <i class="fa fa-map-marker"></i>{% trans "Create a Map" %}</a>
                     </li>

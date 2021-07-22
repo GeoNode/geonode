@@ -224,8 +224,8 @@
             $(this).text(changeTxt.reverse()[0]);
             $("#preview_map, #preview_image").toggle(1000);
             $("#set_thumbnail").toggle();
-            {% if layer_form %}
-            $('#preview_image_src').attr('src', '{{ layer_form.thumbnail_url.value }}');
+            {% if dataset_form %}
+            $('#preview_image_src').attr('src', '{{ dataset_form.thumbnail_url.value }}');
             {% elif map_form %}
             $('#preview_image_src').attr('src', '{{ map_form.thumbnail_url.value }}');
             {% endif %}

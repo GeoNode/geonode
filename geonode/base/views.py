@@ -38,7 +38,7 @@ from django.urls import reverse
 
 # Geonode dependencies
 from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.utils import resolve_object
 from geonode.monitoring import register_event
 from geonode.documents.models import Document
@@ -72,7 +72,10 @@ def get_url_for_app_model(model, model_class):
 
 
 def get_url_for_model(model):
-    return reverse(f'admin:{model.lower()}s_{model.lower()}_changelist')
+    url = f'admin:{model.lower()}s_{model.lower()}_changelist'
+    if model.lower() == 'dataset':
+        url = f'admin:layers_{model.lower()}_changelist'
+    return reverse(url)
     # was: f'/admin/{model.lower()}s/{model.lower()}/'
 
 
@@ -142,8 +145,8 @@ def batch_modify(request, model):
         raise PermissionDenied
     if model == 'Document':
         Resource = Document
-    if model == 'Layer':
-        Resource = Layer
+    if model == 'Dataset':
+        Resource = Dataset
     if model == 'Map':
         Resource = Map
     template = 'base/batch_edit.html'

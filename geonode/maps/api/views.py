@@ -29,7 +29,7 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.layers.api.serializers import LayerSerializer
+from geonode.layers.api.serializers import DatasetSerializer
 from geonode.maps.models import Map
 from geonode.maps.api.hook import hookset
 
@@ -58,18 +58,18 @@ class MapViewSet(DynamicModelViewSet):
     @extend_schema(methods=['get'], responses={200: MapLayerSerializer(many=True)},
                    description="API endpoint allowing to retrieve the MapLayers list.")
     @action(detail=True, methods=['get'])
-    def layers(self, request, pk=None):
+    def datasets(self, request, pk=None):
         map = self.get_object()
-        resources = map.layers
+        resources = map.datasets
         return Response(MapLayerSerializer(embed=True, many=True).to_representation(resources))
 
-    @extend_schema(methods=['get'], responses={200: LayerSerializer(many=True)},
+    @extend_schema(methods=['get'], responses={200: DatasetSerializer(many=True)},
                    description="API endpoint allowing to retrieve the local MapLayers.")
     @action(detail=True, methods=['get'])
-    def local_layers(self, request, pk=None):
+    def local_datasets(self, request, pk=None):
         map = self.get_object()
-        resources = map.local_layers
-        return Response(LayerSerializer(embed=True, many=True).to_representation(resources))
+        resources = map.local_datasets
+        return Response(DatasetSerializer(embed=True, many=True).to_representation(resources))
 
     def perform_create(self, serializer):
         if serializer.is_valid():

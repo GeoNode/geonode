@@ -24,18 +24,18 @@ from django.shortcuts import render
 from django.template.defaultfilters import slugify
 from django.shortcuts import redirect
 
-from .forms import NewLayerForm
-from .utils import create_layer
+from .forms import NewDatasetForm
+from .utils import create_dataset
 
 
 @login_required
-def layer_create(request, template='createlayer/layer_create.html'):
+def dataset_create(request, template='createlayer/dataset_create.html'):
     """
     Create an empty layer.
     """
     error = None
     if request.method == 'POST':
-        form = NewLayerForm(request.POST)
+        form = NewDatasetForm(request.POST)
         if form.is_valid():
             try:
                 name = form.cleaned_data['name']
@@ -44,17 +44,17 @@ def layer_create(request, template='createlayer/layer_create.html'):
                 geometry_type = form.cleaned_data['geometry_type']
                 attributes = form.cleaned_data['attributes']
                 permissions = form.cleaned_data["permissions"]
-                layer = create_layer(name, title, request.user.username, geometry_type, attributes)
+                layer = create_dataset(name, title, request.user.username, geometry_type, attributes)
                 layer.set_permissions(json.loads(permissions), created=True)
                 return redirect(layer)
             except Exception as e:
                 error = f'{e} ({type(e)})'
     else:
-        form = NewLayerForm()
+        form = NewDatasetForm()
 
     ctx = {
         'form': form,
-        'is_layer': True,
+        'is_dataset': True,
         'error': error,
     }
 

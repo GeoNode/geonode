@@ -18,18 +18,18 @@
 #########################################################################
 
 from django.contrib.sitemaps import Sitemap
-from geonode.maps.models import Layer, Map
+from geonode.maps.models import Dataset, Map
 from guardian.shortcuts import get_objects_for_user
 from django.contrib.auth.models import AnonymousUser
 
 
-class LayerSitemap(Sitemap):
+class DatasetSitemap(Sitemap):
     changefreq = "never"
     priority = 0.5
 
     def items(self):
         permitted = get_objects_for_user(AnonymousUser(), 'base.view_resourcebase')
-        return Layer.objects.filter(id__in=permitted)
+        return Dataset.objects.filter(id__in=permitted)
 
     def lastmod(self, obj):
         return obj.date

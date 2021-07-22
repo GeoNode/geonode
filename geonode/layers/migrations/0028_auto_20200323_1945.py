@@ -21,5 +21,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_polygon, lambda a, b: True),
+        migrations.RunPython(populate_polygon, migrations.RunPython.noop),
     ]

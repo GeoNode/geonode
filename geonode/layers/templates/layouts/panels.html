@@ -295,12 +295,12 @@ span.grippy::after {
                             <div id="basicDescriptiveInfo" class="container-fluid">
                               {% block thumbnail %}
                                 <div class="col-lg-3">
-                                    <span><label for="{{ layer_form.thumbnail_url|id }}">{% trans "Thumbnail" %}</label></span>
+                                    <span><label for="{{ dataset_form.thumbnail_url|id }}">{% trans "Thumbnail" %}</label></span>
                                     <div id="embedded_map" class="mrg-btm" style="height:250px;width: 250px;">
                                       <div id="preview_map" style="height: 90%;width: 100%;">
                                       </div>
                                       <div id="preview_image" style="height: 90%;width: 100%;">
-                                          <img id="preview_image_src" src="{{ layer_form.thumbnail_url.value }}" height="100%" width="100%"/>
+                                          <img id="preview_image_src" src="{{ dataset_form.thumbnail_url.value }}" height="100%" width="100%"/>
                                       </div>
                                       <div>
                                         <span class="btn-group btn-group-xs btn-group-justified">
@@ -317,37 +317,37 @@ span.grippy::after {
                                 </div>
                                 {% endblock thumbnail %}
                                 <div class="col-lg-4">
-                                    {% block layer_title %}
+                                    {% block dataset_title %}
                                     <div id="req_item">
-                                      <span><label for="{{ layer_form.title|id }}">{{ layer_form.title.label }}</label></span>
+                                      <span><label for="{{ dataset_form.title|id }}">{{ dataset_form.title.label }}</label></span>
                                       <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
-                                      {{ layer_form.title }}
+                                      {{ dataset_form.title }}
                                     </div>
-                                    {% endblock layer_title %}
-                                    {% block layer_abstract %}
+                                    {% endblock dataset_title %}
+                                    {% block dataset_abstract %}
                                     <div id="req_item">
-                                        <span><label for="{{ layer_form.abstract|id }}">{{ layer_form.abstract.label }}</label></span>
+                                        <span><label for="{{ dataset_form.abstract|id }}">{{ dataset_form.abstract.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
-                                        {{ layer_form.abstract }}
+                                        {{ dataset_form.abstract }}
                                     </div>
-                                    {% endblock layer_abstract %}
+                                    {% endblock dataset_abstract %}
                                 </div>
                                 <div class="col-lg-5">
-                                    {% block layer_date_type %}
+                                    {% block dataset_date_type %}
                                     <div class="col-lg-6 col-xs-12">
-                                        <span><label for="{{ layer_form.date_type|id }}">{{ layer_form.date_type.label }}</label></span>
+                                        <span><label for="{{ dataset_form.date_type|id }}">{{ dataset_form.date_type.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
-                                        {{ layer_form.date_type }}
+                                        {{ dataset_form.date_type }}
                                     </div>
-                                    {% endblock layer_date_type %}
-                                    {% block layer_date %}
+                                    {% endblock dataset_date_type %}
+                                    {% block dataset_date %}
                                     <div class="col-lg-6 col-xs-12" id="req_item">
-                                        <span><label for="{{ layer_form.date|id }}">{{ layer_form.date.label }}</label></span>
+                                        <span><label for="{{ dataset_form.date|id }}">{{ dataset_form.date.label }}</label></span>
                                         <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
-                                        {{ layer_form.date }}
+                                        {{ dataset_form.date }}
                                     </div>
-                                    {% endblock layer_date %}
-                                    {% block layer_category %}
+                                    {% endblock dataset_date %}
+                                    {% block dataset_category %}
                                     <div id="basicCategoryInfo" class="col-lg-12">
                                         <span><label for="{{ category_form.category_choice_field|id }}" class="control-label required-field">{% trans "Category" %}</label></span>
                                         <select
@@ -368,8 +368,8 @@ span.grippy::after {
                                           {% endfor %}
                                         </select>
                                     </div>
-                                    {% endblock layer_category %}
-                                    {% block layer_group %}
+                                    {% endblock dataset_category %}
+                                    {% block dataset_group %}
                                     <div id="basicGroupInfo" class="col-lg-12">
                                         <span><label for="id_resource-group" class="control-label required-field">{% trans "Group" %}</label></span>
                                         <select
@@ -391,13 +391,13 @@ span.grippy::after {
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    {% endblock layer_group %}
-                                    {% block layer_free_keyword %}
+                                    {% endblock dataset_group %}
+                                    {% block dataset_free_keyword %}
                                     <div class="col-lg-12">
-                                        <span><label for="{{ layer_form.date_type|id }}">{{ layer_form.keywords.label }}</label></span>
-                                        {{ layer_form.keywords }}
+                                        <span><label for="{{ dataset_form.date_type|id }}">{{ dataset_form.keywords.label }}</label></span>
+                                        {{ dataset_form.keywords }}
                                     </div>
-                                    {% endblock layer_free_keyword %}
+                                    {% endblock dataset_free_keyword %}
                                     {% if THESAURI_FILTERS %}
                                     <div class="col-lg-12 thesauri_keywords">
                                       {{tkeywords_form.as_p}}
@@ -420,51 +420,51 @@ span.grippy::after {
                     <div class="panel-body">
                         <div class="" id="mdinfo">
                             <div class="">
-                            {% block layer_attributes %}
+                            {% block dataset_attributes %}
                                 <div class="col-lg-4">
                                     <div>
-                                        <span><label for="{{ layer_form.language|id }}">{{ layer_form.language.label }}</label></span>
+                                        <span><label for="{{ dataset_form.language|id }}">{{ dataset_form.language.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Language used within the dataset)</p>-->
-                                        {{ layer_form.language }}
+                                        {{ dataset_form.language }}
                                     </div>
                                     <div>
-                                        <span><label for="{{ layer_form.license|id }}">{{ layer_form.license.label }}</label></span>
+                                        <span><label for="{{ dataset_form.license|id }}">{{ dataset_form.license.label }}</label></span>
                                         <!--<p class="xxs-font-size">(License of the dataset)</p>-->
-                                        {{ layer_form.license }}
+                                        {{ dataset_form.license }}
                                     </div>
                                     <div>
-                                        <span><label for="{{ layer_form.attribution|id }}">{{ layer_form.attribution.label }}</label></span>
-                                        {{ layer_form.attribution }}
+                                        <span><label for="{{ dataset_form.attribution|id }}">{{ dataset_form.attribution.label }}</label></span>
+                                        {{ dataset_form.attribution }}
                                     </div>
                                 </div>
-                                {% endblock layer_attributes %}
-                                {% block layer_regions %}
+                                {% endblock dataset_attributes %}
+                                {% block dataset_regions %}
                                 <div class="col-lg-4">
                                       <div id="regions_multiselect_container">
-                                          <span><label for="{{ layer_form.regions|id }}">{{ layer_form.regions.label }}</label></span>
-                                          {{ layer_form.regions }}
+                                          <span><label for="{{ dataset_form.regions|id }}">{{ dataset_form.regions.label }}</label></span>
+                                          {{ dataset_form.regions }}
                                       </div>
                                       <div>
-                                          <span><label for="{{ layer_form.data_quality_statement|id }}">{{ layer_form.data_quality_statement.label }}</label></span>
+                                          <span><label for="{{ dataset_form.data_quality_statement|id }}">{{ dataset_form.data_quality_statement.label }}</label></span>
                                           <!--<p class="xxs-font-size">(General explanation of the data producer's knowledge about the lineage)</p>-->
-                                          {{ layer_form.data_quality_statement }}
+                                          {{ dataset_form.data_quality_statement }}
                                       </div>
                                 </div>
-                                {% endblock layer_regions %}
-                                {% block layer_constraints %}
+                                {% endblock dataset_regions %}
+                                {% block dataset_constraints %}
                                 <div class="col-lg-4">
                                     <div>
-                                        <span><label for="{{ layer_form.restriction_code_type|id }}">{{ layer_form.restriction_code_type.label }}</label></span>
+                                        <span><label for="{{ dataset_form.restriction_code_type|id }}">{{ dataset_form.restriction_code_type.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Limitation/s placed upon the access or use of data)</p>-->
-                                        {{ layer_form.restriction_code_type }}
+                                        {{ dataset_form.restriction_code_type }}
                                     </div>
                                     <div>
-                                        <span><label for="{{ layer_form.constraints_other|id }}">{{ layer_form.constraints_other.label }}</label></span>
+                                        <span><label for="{{ dataset_form.constraints_other|id }}">{{ dataset_form.constraints_other.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Other restrictions and legal prerequisites for accessing or use data and metadata)</p>-->
-                                        {{ layer_form.constraints_other }}
+                                        {{ dataset_form.constraints_other }}
                                     </div>
                                 </div>
-                                {% endblock layer_constraints %}
+                                {% endblock dataset_constraints %}
                             </div>
                             <div class="row">
 
@@ -482,97 +482,97 @@ span.grippy::after {
         <div id="mdinfo">
             <div class="col-xs-12 col-lg-4">
               <p>{% trans "Other, Optional, Metadata" %}</p>
-                {% block layer_edition %}
+                {% block dataset_edition %}
                 <div>
-                    <span><label for="{{ layer_form.edition|id }}">{{ layer_form.edition.label }}</label></span>
+                    <span><label for="{{ dataset_form.edition|id }}">{{ dataset_form.edition.label }}</label></span>
                     <!--<p class="xxs-font-size">(Version of the cited resource)</p>-->
-                    {{ layer_form.edition }}
+                    {{ dataset_form.edition }}
                 </div>
-                {% endblock layer_edition %}
-                {% block layer_doi %}
+                {% endblock dataset_edition %}
+                {% block dataset_doi %}
                 <div>
-                    <span><label for="{{ layer_form.doi|id }}">{{ layer_form.doi.label }}</label></span>
-                    {{ layer_form.doi }}
+                    <span><label for="{{ dataset_form.doi|id }}">{{ dataset_form.doi.label }}</label></span>
+                    {{ dataset_form.doi }}
                 </div>
-                {% endblock layer_doi %}
-                {% block layer_purpose %}
+                {% endblock dataset_doi %}
+                {% block dataset_purpose %}
                 <div>
-                    <span><label for="{{ layer_form.purpose|id }}">{{ layer_form.purpose.label }}</label></span>
+                    <span><label for="{{ dataset_form.purpose|id }}">{{ dataset_form.purpose.label }}</label></span>
                     <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
-                    {{ layer_form.purpose }}
+                    {{ dataset_form.purpose }}
                 </div>
-                {% endblock layer_purpose %}
-                {% block layer_supplemental_information %}
+                {% endblock dataset_purpose %}
+                {% block dataset_supplemental_information %}
                 <div>
-                    <span><label for="{{ layer_form.supplemental_information|id }}">{{ layer_form.supplemental_information.label }}</label></span>
+                    <span><label for="{{ dataset_form.supplemental_information|id }}">{{ dataset_form.supplemental_information.label }}</label></span>
                     <!--<p class="xxs-font-size">(Any other descriptive information about the dataset)</p>-->
-                    {{ layer_form.supplemental_information }}
+                    {{ dataset_form.supplemental_information }}
                 </div>
-                {% endblock layer_supplemental_information %}
+                {% endblock dataset_supplemental_information %}
             </div>
             <div class="col-xs-12 col-lg-5">
-                   {% block layer_temporal_extent_start %}
+                   {% block dataset_temporal_extent_start %}
                     <div class="col-xs-12 col-lg-6 check-select">
                       <div class="input-group date">
-                        <span><label for="{{ layer_form.temporal_extent_start|id }}">{{ layer_form.temporal_extent_start.label }}</label></span>
+                        <span><label for="{{ dataset_form.temporal_extent_start|id }}">{{ dataset_form.temporal_extent_start.label }}</label></span>
                         <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
-                        {{ layer_form.temporal_extent_start }}
+                        {{ dataset_form.temporal_extent_start }}
                         </div>
                     </div>
-                    {% endblock layer_temporal_extent_start %}
-                    {% block layer_temporal_extent_end %}
+                    {% endblock dataset_temporal_extent_start %}
+                    {% block dataset_temporal_extent_end %}
                     <div class="col-xs-12 col-lg-6 check-select">
                         <div class="input-group date">
-                        <span><label for="{{ layer_form.temporal_extent_end|id }}">{{ layer_form.temporal_extent_end.label }}</label></span>
+                        <span><label for="{{ dataset_form.temporal_extent_end|id }}">{{ dataset_form.temporal_extent_end.label }}</label></span>
                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
-                        {{ layer_form.temporal_extent_end }}
+                        {{ dataset_form.temporal_extent_end }}
                         </div>
                     </div>
-                    {% endblock layer_temporal_extent_end %}
+                    {% endblock dataset_temporal_extent_end %}
                 <div class="col-xs-12">
-                    {% block layer_maintenance_frequency %}
+                    {% block dataset_maintenance_frequency %}
                     <div style="margin-top: 5px">
-                        <span><label for="{{ layer_form.maintenance_frequency|id }}">{{ layer_form.maintenance_frequency.label }}</label></span>
+                        <span><label for="{{ dataset_form.maintenance_frequency|id }}">{{ dataset_form.maintenance_frequency.label }}</label></span>
                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
-                        {{ layer_form.maintenance_frequency }}
+                        {{ dataset_form.maintenance_frequency }}
                     </div>
-                    {% endblock layer_maintenance_frequency %}
-                    {% block layer_spatial_representation_type %}
+                    {% endblock dataset_maintenance_frequency %}
+                    {% block dataset_spatial_representation_type %}
                     <div style="margin-top: 5px">
-                        <span><label for="{{ layer_form.spatial_representation_type|id }}">{{ layer_form.spatial_representation_type.label }}</label></span>
+                        <span><label for="{{ dataset_form.spatial_representation_type|id }}">{{ dataset_form.spatial_representation_type.label }}</label></span>
                         <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
-                        {{ layer_form.spatial_representation_type }}
+                        {{ dataset_form.spatial_representation_type }}
                     </div>
-                    {% endblock layer_spatial_representation_type %}
+                    {% endblock dataset_spatial_representation_type %}
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">
               <div class="panel panel-default" style="margin-top: 5px">
                   <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                    {% block layer_poc %}
+                    {% block dataset_poc %}
                     <div class="panel-body check-select">
-                        <span><label for="{{ layer_form.poc|id }}">{{ layer_form.poc.label }}</label></span>
-                        {{ layer_form.poc }}
+                        <span><label for="{{ dataset_form.poc|id }}">{{ dataset_form.poc.label }}</label></span>
+                        {{ dataset_form.poc }}
                     </div>
-                    {% endblock layer_poc %}
+                    {% endblock dataset_poc %}
               </div>
               <div class="panel panel-default">
                   <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
                   <div class="panel-body">
-                    {% block layer_owner %}
+                    {% block dataset_owner %}
                       <div>
-                          <span><label for="{{ layer_form.owner|id }}">{{ layer_form.owner.label }}</label></span>
+                          <span><label for="{{ dataset_form.owner|id }}">{{ dataset_form.owner.label }}</label></span>
                           <!--<p class="xxs-font-size">(Responsible of the cited resource)</p>-->
-                          {{ layer_form.owner }}
+                          {{ dataset_form.owner }}
                       </div>
-                    {% endblock layer_owner %}
-                    {% block layer_metadata_author %}
+                    {% endblock dataset_owner %}
+                    {% block dataset_metadata_author %}
                       <div>
-                          <span><label for="{{ layer_form.metadata_author|id }}">{{ layer_form.metadata_author.label }}</label></span>
+                          <span><label for="{{ dataset_form.metadata_author|id }}">{{ dataset_form.metadata_author.label }}</label></span>
                           <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
-                          {{ layer_form.metadata_author }}
+                          {{ dataset_form.metadata_author }}
                       </div>
-                    {% endblock layer_metadata_author %}
+                    {% endblock dataset_metadata_author %}
                   </div>
               </div>
             </div>
@@ -623,7 +623,7 @@ span.grippy::after {
                 </div>
                 <div id="layer-attributes-custom_template"
                   {% if not resource.use_featureinfo_custom_template %}style="visibility: collapse;" {% endif %}>
-                  {{layer_form.featureinfo_custom_template}}
+                  {{dataset_form.featureinfo_custom_template}}
                 </div>
               </div>
             </div>
@@ -635,7 +635,7 @@ span.grippy::after {
   </div>
 </div>
 <div id="preview" class="tab-pane fade" style="overflow: hidden;">
-    <!-- <iframe id="preview_encoder_iframe" height="100%" width="100%" style="width:0;height:0;border:0;border:none;" src="{% url 'layer_metadata_detail' resource.alternate %}"></iframe> -->
+    <!-- <iframe id="preview_encoder_iframe" height="100%" width="100%" style="width:0;height:0;border:0;border:none;" src="{% url 'dataset_metadata_detail' resource.alternate %}"></iframe> -->
     {% if metadataxsl %}
         <iframe id="preview_encoder_iframe" frameborder="0" scrolling="yes" onload="if(this.contentWindow.document.body) {$('#preview').height(this.contentWindow.document.body.scrollHeight)}" src="/showmetadata/xsl/{{resource.id}}"></iframe>
     {% else %}
@@ -652,20 +652,20 @@ span.grippy::after {
                     <div class="panel-heading">{% trans "Publishing" %}</div>
                       <div class="panel-body">
                         <div>
-                            <span><label for="{{ layer_form.metadata_uploaded_preserve|id }}">{{ layer_form.metadata_uploaded_preserve.label }}</label></span>
-                            {{ layer_form.metadata_uploaded_preserve }}
+                            <span><label for="{{ dataset_form.metadata_uploaded_preserve|id }}">{{ dataset_form.metadata_uploaded_preserve.label }}</label></span>
+                            {{ dataset_form.metadata_uploaded_preserve }}
                         </div>
                         <div>
-                            <span><label for="{{ layer_form.is_approved|id }}">{{ layer_form.is_approved.label }}</label></span>
-                            {{ layer_form.is_approved }}
+                            <span><label for="{{ dataset_form.is_approved|id }}">{{ dataset_form.is_approved.label }}</label></span>
+                            {{ dataset_form.is_approved }}
                         </div>
                         <div>
-                            <span><label for="{{ layer_form.is_published|id }}">{{ layer_form.is_published.label }}</label></span>
-                            {{ layer_form.is_published }}
+                            <span><label for="{{ dataset_form.is_published|id }}">{{ dataset_form.is_published.label }}</label></span>
+                            {{ dataset_form.is_published }}
                         </div>
                         <div>
-                            <span><label for="{{ layer_form.featured|id }}">{{ layer_form.featured.label }}</label></span>
-                            {{ layer_form.featured }}
+                            <span><label for="{{ dataset_form.featured|id }}">{{ dataset_form.featured.label }}</label></span>
+                            {{ dataset_form.featured }}
                         </div>
                       </div>
                 </div>
@@ -681,25 +681,25 @@ span.grippy::after {
                   <div class="panel-heading">{% trans "Other Settings" %}</div>
                   <div class="panel-body">
                     <div>
-                        <span><label for="{{ layer_form.is_mosaic|id }}">{{ layer_form.is_mosaic.label }}</label></span>
-                        {{ layer_form.is_mosaic }}
+                        <span><label for="{{ dataset_form.is_mosaic|id }}">{{ dataset_form.is_mosaic.label }}</label></span>
+                        {{ dataset_form.is_mosaic }}
                     </div>
                     <div>
-                        <span><label for="{{ layer_form.has_time|id }}">{{ layer_form.has_time.label }}</label></span>
-                        {{ layer_form.has_time }}
+                        <span><label for="{{ dataset_form.has_time|id }}">{{ dataset_form.has_time.label }}</label></span>
+                        {{ dataset_form.has_time }}
                     </div>
                     <div>
-                        <span><label for="{{ layer_form.has_elevation|id }}">{{ layer_form.has_elevation.label }}</label></span>
-                        {{ layer_form.has_elevation }}
+                        <span><label for="{{ dataset_form.has_elevation|id }}">{{ dataset_form.has_elevation.label }}</label></span>
+                        {{ dataset_form.has_elevation }}
                     </div>
 
                     <div>
-                        <span><label for="{{ layer_form.time_regex|id }}">{{ layer_form.time_regex.label }}</label></span>
-                        {{ layer_form.time_regex }}
+                        <span><label for="{{ dataset_form.time_regex|id }}">{{ dataset_form.time_regex.label }}</label></span>
+                        {{ dataset_form.time_regex }}
                     </div>
                     <div>
-                        <span><label for="{{ layer_form.elevation_regex|id }}">{{ layer_form.elevation_regex.label }}</label></span>
-                        {{ layer_form.elevation_regex }}
+                        <span><label for="{{ dataset_form.elevation_regex|id }}">{{ dataset_form.elevation_regex.label }}</label></span>
+                        {{ dataset_form.elevation_regex }}
                     </div>
                   </div>
                 </div>

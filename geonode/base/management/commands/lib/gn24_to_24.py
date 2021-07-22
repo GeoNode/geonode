@@ -94,7 +94,7 @@ class ResourceBaseMangler(DefaultMangler):
         obj = dict()
 
         obj['pk'] = pk
-        obj['model'] = 'layers.uploadsession'
+        obj['model'] = 'datasets.uploadsession'
 
         obj['fields'] = dict()
         obj['fields']['user'] = owner

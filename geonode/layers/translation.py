@@ -18,7 +18,7 @@
 #########################################################################
 
 from modeltranslation.translator import translator, TranslationOptions
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 
 
 class LayerTranslationOptions(TranslationOptions):
@@ -32,4 +32,4 @@ class LayerTranslationOptions(TranslationOptions):
     )
 
 
-translator.register(Layer, LayerTranslationOptions)
+translator.register(Dataset, LayerTranslationOptions)

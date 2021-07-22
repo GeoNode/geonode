@@ -205,8 +205,8 @@ sleep 5s
 
 # Run updatelayers
 geonode updatelayers
-geonode set_all_layers_alternate
-geonode set_all_layers_metadata -d
+geonode set_all_datasets_alternate
+geonode set_all_datasets_metadata -d
 
 # Run updatemaplayerip
 geonode updatemaplayerip

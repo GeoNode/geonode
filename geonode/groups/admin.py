@@ -19,7 +19,7 @@
 
 from django.contrib import admin
 from modeltranslation.admin import TranslationAdmin
-from geonode.base.admin import set_user_and_group_layer_permission
+from geonode.base.admin import set_user_and_group_dataset_permission
 
 from . import models
 
@@ -39,7 +39,7 @@ class GroupProfileAdmin(admin.ModelAdmin):
         GroupMemberInline
     ]
     exclude = ['group', ]
-    actions = [set_user_and_group_layer_permission]
+    actions = [set_user_and_group_dataset_permission]
 
 
 admin.site.register(models.GroupProfile, GroupProfileAdmin)
