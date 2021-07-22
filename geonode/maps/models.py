@@ -243,7 +243,7 @@ class Map(ResourceBase, GXPMapBase):
             return []
 
     def get_absolute_url(self):
-        return reverse('map_detail', None, [str(self.id)])
+        return hookset.map_detail_url(self)
 
     @property
     def embed_url(self):
