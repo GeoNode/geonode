@@ -50,6 +50,14 @@ class MapAdmin(TabbedTranslationAdmin):
     form = MapAdminForm
     actions = [metadata_batch_edit]
 
+    def delete_queryset(self, request, queryset):
+        """
+        We need to invoke the 'ResourceBase.delete' method even when deleting
+        through the admin batch action
+        """
+        for obj in queryset:
+            obj.delete()
+
 
 class MapLayerAdmin(admin.ModelAdmin):
     list_display = ('id', 'map', 'name')

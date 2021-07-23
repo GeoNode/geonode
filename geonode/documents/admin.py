@@ -54,5 +54,13 @@ class DocumentAdmin(TabbedTranslationAdmin):
     form = DocumentAdminForm
     actions = [metadata_batch_edit]
 
+    def delete_queryset(self, request, queryset):
+        """
+        We need to invoke the 'ResourceBase.delete' method even when deleting
+        through the admin batch action
+        """
+        for obj in queryset:
+            obj.delete()
+
 
 admin.site.register(Document, DocumentAdmin)
