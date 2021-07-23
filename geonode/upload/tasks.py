@@ -186,8 +186,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                             if session.state == enumerations.STATE_COMPLETE and _upload.state == enumerations.STATE_PENDING:
                                 if not _upload.resource or not _upload.resource.processed:
                                     final_step_view(None, _upload.get_session)
-                                _upload.state = enumerations.STATE_RUNNING
-                                Upload.objects.filter(id=_upload.id).update(state=enumerations.STATE_RUNNING)
+                                _upload.set_processing_state(enumerations.STATE_RUNNING)
                 except (NotFound, Exception) as e:
                     logger.exception(e)
                     if _upload.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):

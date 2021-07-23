@@ -116,6 +116,9 @@ class GeoServerResourceManager(ResourceManagerInterface):
             if isinstance(_real_instance, Dataset) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
                 if _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
                     geoserver_cascading_delete.apply_async((_real_instance.alternate,))
+                    if "geonode.upload" in settings.INSTALLED_APPS:
+                        from geonode.upload.models import Upload
+                        Upload.objects.filter(resource_id=_real_instance.id).delete()
             elif isinstance(_real_instance, Map):
                 geoserver_delete_map.apply_async((_real_instance.id, ))
 
