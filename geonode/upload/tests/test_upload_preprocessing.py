@@ -74,7 +74,7 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
             </Document>
             </kml>
         """.strip()
-        kml_doc, ns = get_kml_doc(kml_bytes)
+        kml_doc, ns = get_kml_doc(kml_bytes.encode())
         result = upload_preprocessing._extract_bbox_param(
             kml_doc, ns, "north")
         self.assertEqual(result, fake_north)

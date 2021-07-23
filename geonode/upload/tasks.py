@@ -31,14 +31,12 @@ from geonode.geoserver.helpers import gs_uploader
 
 from geonode.upload.models import Upload
 from geonode.upload.views import final_step_view
+from geonode.upload.utils import next_step_response
 from geonode.resource.manager import resource_manager
 
 from geonode.tasks.tasks import (
     AcquireLock,
     FaultTolerantTask)
-from geonode.upload.utils import (
-    get_next_step,
-    next_step_response)
 
 logger = logging.getLogger(__name__)
 
@@ -185,8 +183,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                         if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
                             _upload.set_processing_state(enumerations.STATE_WAITING)
                         else:
-                            next = get_next_step(_upload.get_session)
-                            if next == 'final' and session.state == enumerations.STATE_COMPLETE and _upload.state == enumerations.STATE_PENDING:
+                            if session.state == enumerations.STATE_COMPLETE and _upload.state == enumerations.STATE_PENDING:
                                 if not _upload.resource or not _upload.resource.processed:
                                     final_step_view(None, _upload.get_session)
                                 _upload.state = enumerations.STATE_RUNNING

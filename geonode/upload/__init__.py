@@ -16,8 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.apps import apps
-from django.apps import AppConfig as BaseAppConfig
+
+from django.apps import AppConfig
+from django.db.models.signals import post_migrate
 
 
 class UploadException(Exception):
@@ -35,7 +36,7 @@ class LayerNotReady(Exception):
     pass
 
 
-def run_setup_hooks(*args, **kwargs):
+def run_setup_hooks(sender, **kwargs):
     from django.utils import timezone
     from django_celery_beat.models import (
         IntervalSchedule,
@@ -62,14 +63,13 @@ def run_setup_hooks(*args, **kwargs):
     )
 
 
-class UploadAppConfig(BaseAppConfig):
+class UploadAppConfig(AppConfig):
 
     name = "geonode.upload"
 
     def ready(self):
         super(UploadAppConfig, self).ready()
-        if not apps.ready:
-            run_setup_hooks()
+        post_migrate.connect(run_setup_hooks, sender=self)
 
 
 default_app_config = "geonode.upload.UploadAppConfig"
