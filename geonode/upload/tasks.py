@@ -20,6 +20,7 @@
 
 from django.utils.timezone import timedelta, now
 from django.conf import settings
+from celery.schedules import crontab
 
 from geonode.upload.models import Upload
 from geonode.celery_app import app
@@ -33,3 +34,8 @@ def delete_incomplete_session_uploads():
 
     expiry_time = now() - timedelta(hours=settings.SESSION_EXPIRY_HOURS)
     Upload.objects.exclude(state=Upload.STATE_PROCESSED).exclude(date__gt=expiry_time).delete()
+
+settings.CELERY_BEAT_SCHEDULE["delete-incomplete-session-resources"] = {
+    "task": "geonode.upload.tasks.delete_incomplete_session_uploads",
+    "schedule": crontab(hour='*/12'),
+}
