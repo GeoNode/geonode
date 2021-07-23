@@ -27,9 +27,15 @@ except ImportError:
     from unittest import mock
 import os.path
 
+from django.conf import settings
+from django.utils.timezone import timedelta, now
+
 from geonode.upload import files
-from geonode.upload import upload_preprocessing
+from geonode.base import enumerations
+from geonode.upload.models import Upload
 from geonode.upload.utils import get_kml_doc
+from geonode.upload import upload_preprocessing
+from geonode.upload.tasks import finalize_incomplete_session_uploads
 
 
 class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
@@ -102,3 +108,47 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
                 fake_other_file_path,
                 os.path.splitext(fake_other_file_path)[0] + ".tif"
             ])
+
+    def test_only_expected_uploads_are_deleted(self):
+        UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, 'UPLOAD_SESSION_EXPIRY_HOURS', 24)
+        expiry_time = now() - timedelta(hours=UPLOAD_SESSION_EXPIRY_HOURS)
+        minutes_before = expiry_time - timedelta(minutes=2)
+        minutes_after = expiry_time - timedelta(minutes=-2)
+
+        # Uploads either PROCESSED or within expiry time
+        uploads_to_survive = [
+            Upload.objects.create(state=enumerations.STATE_INVALID, date=minutes_after),
+            Upload.objects.create(state=enumerations.STATE_COMPLETE, date=minutes_after),
+            Upload.objects.create(state=enumerations.STATE_PROCESSED, date=minutes_after),
+            Upload.objects.create(state=enumerations.STATE_PROCESSED, date=minutes_before),
+            Upload.objects.create(state=enumerations.STATE_INCOMPLETE),
+            Upload.objects.create(state=enumerations.STATE_PENDING),
+            Upload.objects.create(state=enumerations.STATE_READY),
+            Upload.objects.create(state=enumerations.STATE_RUNNING),
+            Upload.objects.create(state=enumerations.STATE_WAITING)
+        ]
+        survived_upload_ids = {u.id for u in uploads_to_survive}
+
+        # Uploads not PROCESSED and before expiry time
+        uploads_to_be_deleted = [
+            Upload.objects.create(state=enumerations.STATE_INVALID, date=minutes_before),
+            Upload.objects.create(state=enumerations.STATE_COMPLETE, date=minutes_before),
+            Upload.objects.create(state=enumerations.STATE_INCOMPLETE, date=minutes_before),
+            Upload.objects.create(state=enumerations.STATE_PENDING, date=minutes_before),
+            Upload.objects.create(state=enumerations.STATE_READY, date=minutes_before),
+            Upload.objects.create(state=enumerations.STATE_RUNNING, date=minutes_before),
+            Upload.objects.create(state=enumerations.STATE_WAITING, date=minutes_before)
+        ]
+        delete_upload_ids = {u.id for u in uploads_to_be_deleted}
+
+        uploads = Upload.objects.all()
+        upload_ids = {u.id for u in uploads}
+        self.assertEqual(uploads.count(), len(uploads_to_survive) + len(uploads_to_be_deleted))
+        self.assertEqual(upload_ids, survived_upload_ids.union(delete_upload_ids))
+
+        finalize_incomplete_session_uploads.delay()
+        uploads = Upload.objects.all()
+        upload_ids = {u.id for u in uploads}
+        # Only uploads_to_survive are not deleted
+        self.assertEqual(uploads.count(), len(uploads_to_survive))
+        self.assertEqual(upload_ids, survived_upload_ids)

@@ -53,9 +53,13 @@ UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, 'UPLOAD_SESSION_EXPIRY_HOURS', 2
     ignore_result=False,
 )
 def finalize_incomplete_session_uploads(self, *args, **kwargs):
-    """ Task is to delete resources which didn't complete the processes within
-    their session. We have to make sure To NOT Delete those Unprocessed Ones,
-    which are in live sessions. """
+    """The task periodically checks for pending and stale Upload sessions.
+    It runs every 25 seconds (see the PeriodTask on geonode.upload._init_),
+    checks first for expired stale Upload sessions and schedule them for cleanup.
+    We have to make sure To NOT Delete those Unprocessed Ones,
+    which are in live sessions.
+    After removing the stale ones, it collects all the unprocessed and runs them
+    in parallel."""
 
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
@@ -161,7 +165,7 @@ def _upload_workflow_error(self, task_name: str, upload_ids: list):
     ignore_result=False,
 )
 def _update_upload_session_state(self, upload_session_id: int):
-    """ TODO """
+    """Task invoked by 'upload_workflow.chord' in order to process all the 'PENDING' Upload tasks."""
 
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
@@ -203,7 +207,7 @@ def _update_upload_session_state(self, upload_session_id: int):
     ignore_result=False,
 )
 def _upload_session_cleanup(self, upload_session_id: int):
-    """ TODO """
+    """Task invoked by 'upload_workflow.chord' in order to remove and cleanup all the 'INVALID' stale Upload tasks."""
 
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:

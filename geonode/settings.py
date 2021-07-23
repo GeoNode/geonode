@@ -2071,3 +2071,5 @@ UI_DEFAULT_MANDATORY_FIELDS = [
     'id_resource-restriction_code_type'
 ]
 UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv('UI_REQUIRED_FIELDS ', '[]'))
+
+UPLOAD_SESSION_EXPIRY_HOURS = os.getenv('UPLOAD_SESSION_EXPIRY_HOURS ', 24)
