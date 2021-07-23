@@ -22,9 +22,7 @@ from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.mail import send_mail
 
-from django.db import (
-    connections,
-    transaction)
+from django.db import (connections, transaction)
 
 from geonode.celery_app import app
 

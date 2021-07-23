@@ -17,7 +17,14 @@
 #
 #########################################################################
 
+from django.utils.timezone import timedelta, now
+from django.test import TestCase
+from django.conf import settings
+
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.upload.tasks import delete_incomplete_session_uploads
+from geonode.tests.factories import UploadFactory
+from geonode.upload.models import Upload, enumerations
 
 
 class TasksTest(GeoNodeBaseTestSupport):
@@ -31,3 +38,49 @@ class TasksTest(GeoNodeBaseTestSupport):
 
         self.adm_un = "admin"
         self.adm_pw = "admin"
+
+
+class TestDeleteIncompleteSessionUploadsTask(TestCase):
+    def setUp(self):
+        self.expiry_time = now() - timedelta(hours=settings.SESSION_EXPIRY_HOURS)
+        self.minutes_before = self.expiry_time - timedelta(minutes=2)
+        self.minutes_after = self.expiry_time - timedelta(minutes=-2)
+
+        # Uploads either PROCESSED or within expiry time
+        self.uploads_to_survive = [
+            UploadFactory(state=enumerations.STATE_INVALID, date=self.minutes_after),
+            UploadFactory(state=enumerations.STATE_COMPLETE, date=self.minutes_after),
+            UploadFactory(state=enumerations.STATE_PROCESSED, date=self.minutes_after),
+            UploadFactory(state=enumerations.STATE_PROCESSED, date=self.minutes_before),
+            UploadFactory(state=enumerations.STATE_INCOMPLETE),
+            UploadFactory(state=enumerations.STATE_PENDING),
+            UploadFactory(state=enumerations.STATE_READY),
+            UploadFactory(state=enumerations.STATE_RUNNING),
+            UploadFactory(state=enumerations.STATE_WAITING)
+        ]
+        self.survived_upload_ids = {u.id for u in self.uploads_to_survive}
+
+        # Uploads not PROCESSED and before expiry time
+        self.uploads_to_be_deleted = [
+            UploadFactory(state=enumerations.STATE_INVALID, date=self.minutes_before),
+            UploadFactory(state=enumerations.STATE_COMPLETE, date=self.minutes_before),
+            UploadFactory(state=enumerations.STATE_INCOMPLETE, date=self.minutes_before),
+            UploadFactory(state=enumerations.STATE_PENDING, date=self.minutes_before),
+            UploadFactory(state=enumerations.STATE_READY, date=self.minutes_before),
+            UploadFactory(state=enumerations.STATE_RUNNING, date=self.minutes_before),
+            UploadFactory(state=enumerations.STATE_WAITING, date=self.minutes_before)
+        ]
+        self.delete_upload_ids = {u.id for u in self.uploads_to_be_deleted}
+
+    def test_only_expected_uploads_are_deleted(self):
+        uploads = Upload.objects.all()
+        upload_ids = {u.id for u in uploads}
+        self.assertEqual(uploads.count(), len(self.uploads_to_survive) + len(self.uploads_to_be_deleted))
+        self.assertEqual(upload_ids, self.survived_upload_ids.union(self.delete_upload_ids))
+
+        delete_incomplete_session_uploads.delay()
+        uploads = Upload.objects.all()
+        upload_ids = {u.id for u in uploads}
+        # Only uploads_to_survive are not deleted
+        self.assertEqual(uploads.count(), len(self.uploads_to_survive))
+        self.assertEqual(upload_ids, self.survived_upload_ids)
