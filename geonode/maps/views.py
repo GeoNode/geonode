@@ -60,7 +60,6 @@ from geonode.layers.views import _resolve_dataset
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
 from geonode.resource.manager import resource_manager
-from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.decorators import check_keyword_write_perms
 from geonode.documents.models import get_related_documents
 from geonode.base.utils import ManageResourceOwnerPermissions
@@ -1349,37 +1348,6 @@ def ajax_url_lookup(request):
         content=json.dumps(json_dict),
         content_type='text/plain'
     )
-
-
-@require_http_methods(["POST"])
-def map_thumbnail(request, mapid):
-    try:
-        map_obj = _resolve_map(request, mapid)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    try:
-
-        request_body = json.loads(request.body)
-        bbox = request_body['bbox'] + [request_body['srid']]
-        zoom = request_body.get('zoom', None)
-
-        create_thumbnail(map_obj, bbox=bbox, background_zoom=zoom, overwrite=True)
-
-        return HttpResponse('Thumbnail saved')
-
-    except Exception as e:
-        logger.exception(e)
-
-        return HttpResponse(
-            content=_('error saving thumbnail'),
-            status=500,
-            content_type='text/plain'
-        )
 
 
 def map_metadata_detail(
