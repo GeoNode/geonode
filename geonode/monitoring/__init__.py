@@ -18,24 +18,24 @@
 #########################################################################
 
 import logging
-from django.utils.translation import ugettext_noop as _
-from django.conf import settings
 from functools import wraps
 
-from geonode.notifications_helper import NotificationsAppConfigBase, has_notifications
+from django.conf import settings
 from django.db.models.signals import post_migrate
+from django.utils.translation import ugettext_noop as _
+
+from geonode.notifications_helper import NotificationsAppConfigBase, has_notifications
 
 log = logging.getLogger(__name__)
 
 
 def run_setup_hooks(*args, **kwargs):
-    from django.conf import settings
     from django.utils import timezone
     from geonode.monitoring.models import populate
 
     # Initialize periodic tasks
     if 'django_celery_beat' in settings.INSTALLED_APPS and \
-            settings.CELERY_BEAT_SCHEDULER == 'django_celery_beat.schedulers:DatabaseScheduler':
+            getattr(settings, 'CELERY_BEAT_SCHEDULER', None) == 'django_celery_beat.schedulers:DatabaseScheduler':
         from django_celery_beat.models import (
             IntervalSchedule,
             PeriodicTask,
@@ -59,11 +59,6 @@ def run_setup_hooks(*args, **kwargs):
                 start_time=timezone.now()
             )
         )
-    else:
-        settings.CELERY_BEAT_SCHEDULE['collect_metrics'] = {
-            'task': 'geonode.monitoring.tasks.collect_metrics',
-            'schedule': 300.0,
-        }
 
     # Initialize notifications
     if not has_notifications:
@@ -84,6 +79,10 @@ class MonitoringAppConfig(NotificationsAppConfigBase):
     def ready(self):
         super().ready()
         post_migrate.connect(run_setup_hooks, sender=self)
+        settings.CELERY_BEAT_SCHEDULE['collect_metrics'] = {
+            'task': 'geonode.monitoring.tasks.collect_metrics',
+            'schedule': 300.0,
+        }
 
 
 default_app_config = 'geonode.monitoring.MonitoringAppConfig'

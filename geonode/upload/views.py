@@ -716,8 +716,9 @@ def view(req, step=None):
             if 'upload/final' in resp_js.get('redirect_to', ''):
                 from geonode.upload.tasks import finalize_incomplete_session_uploads
                 finalize_incomplete_session_uploads.apply_async()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(e)
+            return error_response(req, errors=e.args)
 
         # must be put back to update object in session
         if upload_session:

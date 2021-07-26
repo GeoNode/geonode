@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+from django.conf import settings
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
@@ -37,12 +37,11 @@ class LayerNotReady(Exception):
 
 
 def run_setup_hooks(sender, **kwargs):
-    from django.conf import settings
     from django.utils import timezone
 
     # Initialize periodic tasks
     if 'django_celery_beat' in settings.INSTALLED_APPS and \
-            settings.CELERY_BEAT_SCHEDULER == 'django_celery_beat.schedulers:DatabaseScheduler':
+            getattr(settings, 'CELERY_BEAT_SCHEDULER', None) == 'django_celery_beat.schedulers:DatabaseScheduler':
         from django_celery_beat.models import (
             IntervalSchedule,
             PeriodicTask,
@@ -66,11 +65,6 @@ def run_setup_hooks(sender, **kwargs):
                 start_time=timezone.now()
             )
         )
-    else:
-        settings.CELERY_BEAT_SCHEDULE['finalize-incomplete-session-resources'] = {
-            'task': 'geonode.upload.tasks.finalize_incomplete_session_uploads',
-            'schedule': 600.0,
-        }
 
 
 class UploadAppConfig(AppConfig):
@@ -80,6 +74,10 @@ class UploadAppConfig(AppConfig):
     def ready(self):
         super().ready()
         post_migrate.connect(run_setup_hooks, sender=self)
+        settings.CELERY_BEAT_SCHEDULE['finalize-incomplete-session-resources'] = {
+            'task': 'geonode.upload.tasks.finalize_incomplete_session_uploads',
+            'schedule': 60.0,
+        }
 
 
 default_app_config = "geonode.upload.UploadAppConfig"
