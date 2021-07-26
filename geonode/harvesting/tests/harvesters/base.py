@@ -22,7 +22,7 @@ from django.contrib.auth import get_user_model
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.harvesting.models import Harvester, HarvestableResource
 from geonode.harvesting.tests.harvesters.test_harvester import TestHarvester
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 
 
 class TestBaseHarvester(GeoNodeBaseTestSupport):
@@ -81,7 +81,7 @@ class TestBaseHarvester(GeoNodeBaseTestSupport):
         self.assertTrue(self.worker.check_availability())
         self.assertEqual(self.worker.get_num_available_resources(), 1)
         self.assertEqual(len(self.worker.list_resources()), 1)
-        self.assertEqual(self.worker.get_geonode_resource_type('type'), Layer)
+        self.assertEqual(self.worker.get_geonode_resource_type('type'), Dataset)
 
         harvestable_resource = HarvestableResource(
             unique_identifier='1',

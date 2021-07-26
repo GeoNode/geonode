@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from .config import *
-from .model import *
-from .tasks import *
+from .test_config import *
+from .test_models import *
+from .test_tasks import *
 from .harvesters import *

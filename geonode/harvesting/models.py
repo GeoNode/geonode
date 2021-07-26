@@ -33,7 +33,7 @@ from django_celery_beat.models import (
 )
 
 from . import utils
-from .config import HARVESTER_CLASSES
+from .config import get_setting
 
 logger = logging.getLogger(__name__)
 
@@ -127,8 +127,8 @@ class Harvester(models.Model):
             "Harvester class used to perform harvesting sessions. New harvester types "
             "can be added by an admin by changing the main GeoNode `settings.py` file"
         ),
-        choices=(((i, i) for i in HARVESTER_CLASSES)),
-        default=HARVESTER_CLASSES[0]
+        choices=(((i, i) for i in get_setting("HARVESTER_CLASSES"))),
+        default=get_setting("HARVESTER_CLASSES")[0]
     )
     harvester_type_specific_configuration = models.JSONField(
         default=dict,

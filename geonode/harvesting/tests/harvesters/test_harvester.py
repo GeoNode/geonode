@@ -24,7 +24,7 @@ from geonode.harvesting.harvesters.base import (
     HarvestedResourceInfo
 )
 from geonode.harvesting.models import Harvester, HarvestableResource
-from geonode.layers.models import Layer
+from geonode.layers.models import Dataset
 from geonode.harvesting.tests.factories import brief_remote_resource_example
 
 
@@ -64,4 +64,4 @@ class TestHarvester(BaseHarvesterWorker):
 
     def get_geonode_resource_type(self, remote_resource_type: str):
         """Return resource type class from resource type string."""
-        return Layer
+        return Dataset
