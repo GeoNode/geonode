@@ -42,6 +42,8 @@ from geonode.favorite.models import Favorite
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
 from geonode.security.utils import (
     get_geoapp_subtypes,
     get_visible_resources,
@@ -428,6 +430,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     def set_thumbnail_from_bbox(self, request, resource_id):
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
+
+            if isinstance(resource.get_real_instance(), (Document, GeoApp)):
+                raise NotImplementedError("Not implemented: Endpoint available only for Dataset and Maps")
+
             request_body = request.data if request.data else json.loads(request.body)
             bbox = request_body["bbox"] + [request_body["srid"]]
             zoom = request_body.get("zoom", None)
@@ -437,9 +443,12 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         except ResourceBase.DoesNotExist:
             logger.error(f"Resource selected with id {resource_id} does not exists")
             return Response(data={"message": f"Resource selected with id {resource_id} does not exists"}, status=404, exception=True)
+        except NotImplementedError as e:
+            logger.error(e)
+            return Response(data={"message": e.args[0]}, status=405, exception=True)
         except ThumbnailError as e:
             logger.error(e)
-            return Response(data={"message": e.args[0]}, status=400, exception=True)
+            return Response(data={"message": e.args[0]}, status=500, exception=True)
         except Exception as e:
             logger.error(e)
             return Response(data={"message": e.args[0]}, status=500, exception=True)

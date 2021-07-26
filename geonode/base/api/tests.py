@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.thumbs.exceptions import ThumbnailError
 import logging
 import sys
 from uuid import uuid4
@@ -854,28 +855,43 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(expected, response.json())
 
-
     def test_set_thumbnail_from_bbox_from_logged_user_for_existing_doc(self):
         """
-        Given a logged User and an existing doc, should raise a ThumbnailError.
+        Given a logged User and an existing doc, should raise a NotImplemented.
         """
         # Admin
         self.client.login(username="admin", password="admin")
         dataset_id = Document.objects.first().resourcebase_ptr_id
         url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
         payload = {
-            "bbox": [
-                -9072629.904175375,
-                -9043966.018568434,
-                1491839.8773032012,
-                1507127.2829602365
-            ],
+            "bbox": [],
             "srid": "EPSG:3857"
         }
         response = self.client.post(url, data=payload, format='json')
 
         expected = {
-            "message": "Thumbnail generation didn't recognize the provided instance: it's neither a Dataset nor a Map."
+            "message": "Not implemented: Endpoint available only for Dataset and Maps"
         }
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(expected, response.json())
+
+    @patch("geonode.base.api.views.create_thumbnail", side_effect=ThumbnailError('Some exception during thumb creation'))
+    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset_raise_exp(self, mock_exp):
+        """
+        Given a logged User and an existing dataset, should raise a ThumbnailException.
+        """
+        # Admin
+        self.client.login(username="admin", password="admin")
+        dataset_id = Dataset.objects.first().resourcebase_ptr_id
+        url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
+        payload = {
+            "bbox": [],
+            "srid": "EPSG:3857"
+        }
+        response = self.client.post(url, data=payload, format='json')
+
+        expected = {
+            "message": "Some exception during thumb creation"
+        }
+        self.assertEqual(response.status_code, 500)
         self.assertEqual(expected, response.json())
