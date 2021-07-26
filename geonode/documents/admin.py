@@ -60,7 +60,8 @@ class DocumentAdmin(TabbedTranslationAdmin):
         through the admin batch action
         """
         for obj in queryset:
-            obj.delete()
+            from geonode.resource.manager import resource_manager
+            resource_manager.delete(obj.uuid, instance=obj)
 
 
 admin.site.register(Document, DocumentAdmin)

@@ -713,11 +713,9 @@ def view(req, step=None):
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             resp_js = json.loads(content)
-
-            if not settings.ASYNC_SIGNALS:
-                if 'upload/final' in resp_js.get('redirect_to', ''):
-                    from geonode.upload.tasks import finalize_incomplete_session_uploads
-                    finalize_incomplete_session_uploads.apply_async()
+            if 'upload/final' in resp_js.get('redirect_to', ''):
+                from geonode.upload.tasks import finalize_incomplete_session_uploads
+                finalize_incomplete_session_uploads.apply_async()
         except Exception:
             pass
 

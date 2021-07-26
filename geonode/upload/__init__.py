@@ -48,10 +48,10 @@ def run_setup_hooks(sender, **kwargs):
             PeriodicTask,
         )
 
-        check_intervals = IntervalSchedule.objects.filter(every=25, period="seconds")
+        check_intervals = IntervalSchedule.objects.filter(every=600, period="seconds")
         if not check_intervals.exists():
             check_interval, _ = IntervalSchedule.objects.get_or_create(
-                every=25,
+                every=600,
                 period="seconds"
             )
         else:
@@ -69,7 +69,7 @@ def run_setup_hooks(sender, **kwargs):
     else:
         settings.CELERY_BEAT_SCHEDULE['finalize-incomplete-session-resources'] = {
             'task': 'geonode.upload.tasks.finalize_incomplete_session_uploads',
-            'schedule': 25.0,
+            'schedule': 600.0,
         }
 
 

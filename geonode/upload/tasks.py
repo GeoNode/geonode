@@ -52,7 +52,7 @@ UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, 'UPLOAD_SESSION_EXPIRY_HOURS', 2
 )
 def finalize_incomplete_session_uploads(self, *args, **kwargs):
     """The task periodically checks for pending and stale Upload sessions.
-    It runs every 25 seconds (see the PeriodTask on geonode.upload._init_),
+    It runs every 600 seconds (see the PeriodTask on geonode.upload._init_),
     checks first for expired stale Upload sessions and schedule them for cleanup.
     We have to make sure To NOT Delete those Unprocessed Ones,
     which are in live sessions.
