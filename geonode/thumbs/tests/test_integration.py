@@ -566,7 +566,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
 
         self.client.login(username="norman", password="norman")
         dataset_id = Layer.objects.get(alternate="geonode:san_andres_y_providencia_coastline").resourcebase_ptr_id
-        thumbnail_post_url = reverse('layers-set-thumb-from-bbox', args=[dataset_id])
+        thumbnail_post_url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
 
         for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):
             response = self.client.post(
