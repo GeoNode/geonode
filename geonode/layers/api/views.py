@@ -62,7 +62,7 @@ class LayerViewSet(DynamicModelViewSet):
     )
     @action(
         detail=False,
-        url_path="(?P<dataset_id>\d+)/set_thumbnail_from_bbox", # noqa
+        url_path="(?P<dataset_id>\d+)/set_thumbnail_from_bbox",  # noqa
         url_name="set-thumb-from-bbox",
         methods=["post"],
         permission_classes=[

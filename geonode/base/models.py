@@ -73,7 +73,7 @@ from geonode.utils import (
     add_url_params,
     bbox_to_wkt,
     find_by_attr
-    )
+)
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
@@ -376,9 +376,9 @@ class HierarchicalKeyword(TagBase, MP_Node):
             tags_count = 0
 
             tags_count = TaggedContentItem.objects.filter(
-                    content_object__in=resources,
-                    tag=hkw
-                    ).count()
+                content_object__in=resources,
+                tag=hkw
+            ).count()
 
             if tags_count > 0:
                 newobj = {"id": hkw.pk, "text": hkw.name, "href": slug, 'tags': [tags_count]}
@@ -1298,12 +1298,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 return None
 
     def set_dirty_state(self):
-        self.dirty_state = True
-        ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
+        if not self.dirty_state:
+            self.dirty_state = True
+            ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
 
     def clear_dirty_state(self):
-        self.dirty_state = False
-        ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
+        if self.dirty_state:
+            self.dirty_state = False
+            ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
 
     @property
     def processed(self):
