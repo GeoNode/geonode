@@ -1340,37 +1340,6 @@ def ajax_url_lookup(request):
     )
 
 
-@require_http_methods(["POST"])
-def map_thumbnail(request, mapid):
-    try:
-        map_obj = _resolve_map(request, mapid)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    try:
-
-        request_body = json.loads(request.body)
-        bbox = request_body['bbox'] + [request_body['srid']]
-        zoom = request_body.get('zoom', None)
-
-        create_thumbnail(map_obj, bbox=bbox, background_zoom=zoom, overwrite=True)
-
-        return HttpResponse('Thumbnail saved')
-
-    except Exception as e:
-        logger.exception(e)
-
-        return HttpResponse(
-            content=_('error saving thumbnail'),
-            status=500,
-            content_type='text/plain'
-        )
-
-
 def map_metadata_detail(
         request,
         mapid,
