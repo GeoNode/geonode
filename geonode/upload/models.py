@@ -143,7 +143,7 @@ class Upload(models.Model):
             self.complete = True
         if self.resource and self.resource.processed:
             self.state = enumerations.STATE_PROCESSED
-        elif self.state in (enumerations.STATE_READY, enumerations.STATE_PENDING, enumerations.STATE_WAITING):
+        elif self.state in (enumerations.STATE_READY, enumerations.STATE_PENDING):
             self.state = upload_session.import_session.state
         self.save()
 

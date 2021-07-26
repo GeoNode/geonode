@@ -101,7 +101,8 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                     session = _upload.get_session.import_session
                     if not session or session.state != enumerations.STATE_COMPLETE:
                         session = gs_uploader.get_session(_upload.import_id)
-                except (NotFound, Exception):
+                except (NotFound, Exception) as e:
+                    logger.exception(e)
                     session = None
                     if _upload.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
                         _upload.set_processing_state(enumerations.STATE_INVALID)
