@@ -26,7 +26,7 @@
   {% endif %}
   <script type="text/javascript">
     // this is used by thumbnail.js to POST to the thumbnail update view
-    window.thumbnailUpdateUrl = '{% url 'datasets-set-thumb-from-bbox' resource.id %}';
+    window.thumbnailUpdateUrl = '{% url 'base-resources-set-thumb-from-bbox' resource.id %}';
   </script>
   <script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
   {% get_dataset_detail %}

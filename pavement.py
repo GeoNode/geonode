@@ -563,13 +563,12 @@ def start_django(options):
     sh(f'{settings} python -W ignore manage.py runserver {bind} {foreground}')
 
     if ASYNC_SIGNALS:
-        if 'django_celery_beat' not in INSTALLED_APPS:
-            sh(f"{settings} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
-    --statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG \
-    --concurrency=10 -n worker1@%h -f celery.log {foreground}")
-        else:
-            sh(f"{settings} celery -A geonode.celery_app:app worker -l DEBUG -s \
-                django_celery_beat.schedulers:DatabaseScheduler {foreground}")
+        scheduler = '--statedb=worker.state -s celerybeat-schedule'
+        if 'django_celery_beat' in INSTALLED_APPS:
+            scheduler = '-s django_celery_beat.schedulers:DatabaseScheduler'
+        sh(f"{settings} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
+            {scheduler} --loglevel=DEBUG \
+            --concurrency=2 -n worker1@%h -f celery.log {foreground}")
         sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
 
     # wait for Django to start
