@@ -32,7 +32,6 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
-from geonode.layers.models import Dataset
 import os
 import re
 import json
@@ -52,6 +51,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 
+from geonode.layers.models import Dataset
 from geonode.upload import UploadException
 from geonode.base.models import Configuration
 from geonode.base.enumerations import CHARSETS
@@ -707,15 +707,23 @@ def view(req, step=None):
                 return error_response(req, errors=e.args)
 
         resp = _steps[step](req, upload_session)
+
+        try:
+            content = resp.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            resp_js = json.loads(content)
+            if 'upload/final' in resp_js.get('redirect_to', ''):
+                from geonode.upload.tasks import finalize_incomplete_session_uploads
+                finalize_incomplete_session_uploads.apply_async()
+        except Exception:
+            pass
+
         # must be put back to update object in session
         if upload_session:
             if step == 'final':
                 delete_session = True
                 try:
-                    content = resp.content
-                    if isinstance(content, bytes):
-                        content = content.decode('UTF-8')
-                    resp_js = json.loads(content)
                     delete_session = resp_js.get('status') != 'pending'
 
                     if delete_session:
