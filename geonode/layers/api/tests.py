@@ -16,8 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import logging
 import sys
+import logging
+
 from unittest.mock import patch
 from urllib.parse import urljoin
 
@@ -65,6 +66,8 @@ class DatasetsApiTests(APITestCase):
         # Test detail response has attribute_set
         url = urljoin(f"{reverse('datasets-list')}/", f"{Dataset.objects.first().pk}")
         response = self.client.get(url, format='json')
+        self.assertIsNotNone(response.data['dataset'].get('ptype'))
+        self.assertIsNotNone(response.data['dataset'].get('subtype'))
         self.assertIsNotNone(response.data['dataset'].get('attribute_set'))
 
     def test_raw_HTML_stripped_properties(self):

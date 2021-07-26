@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from geonode.base.forms import ResourceBaseForm
 import os
 import tempfile
 import zipfile
@@ -30,6 +28,7 @@ from geonode.utils import check_ogc_backend
 
 import json
 from geonode.utils import unzip_file
+from geonode.base.forms import ResourceBaseForm
 from geonode.layers.models import Dataset, Attribute
 
 

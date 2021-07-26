@@ -4,7 +4,11 @@ from django.urls import reverse
 from django.conf import settings
 from urllib.parse import urljoin
 from django.db import migrations, models
+
+from geonode.utils import OGC_Servers_Handler
 from geonode.services.enumerations import INDEXED
+
+ogc_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
 
 
 def update_ows_url(apps, schema_editor):
@@ -32,7 +36,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='dataset',
             name='ows_url',
-            field=models.URLField(blank=True, default=urljoin(settings.SITEURL, '/geoserver/ows'), help_text='The URL of the OWS service providing this layer, if any exists.', null=True, verbose_name='ows URL'),
+            field=models.URLField(blank=True, default=urljoin(ogc_settings.PUBLIC_LOCATION, 'ows'),
+                                  help_text='The URL of the OWS service providing this layer, if any exists.', null=True, verbose_name='ows URL'),
         ),
         migrations.RunPython(update_ows_url, migrations.RunPython.noop),
         migrations.AlterField(

@@ -29,8 +29,8 @@ from django.utils.module_loading import import_string
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
+from geonode.utils import OGC_Servers_Handler
 from geonode.base.thumb_utils import thumb_exists
-from geonode.geoserver.helpers import OGC_Servers_Handler
 from geonode.utils import get_dataset_name, get_dataset_workspace
 from geonode.thumbs import utils
 from geonode.thumbs.exceptions import ThumbnailError

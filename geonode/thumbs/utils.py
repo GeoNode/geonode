@@ -30,9 +30,9 @@ from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
+from geonode.utils import OGC_Servers_Handler
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
-from geonode.geoserver.helpers import OGC_Servers_Handler
 
 logger = logging.getLogger(__name__)
 

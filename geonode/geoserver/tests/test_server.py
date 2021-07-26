@@ -39,6 +39,7 @@ from geonode import geoserver
 from geonode.base.models import Configuration
 from geonode.decorators import on_ogc_backend
 
+from geonode.utils import OGC_Servers_Handler
 from geonode.layers.models import Dataset, Style
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import (
@@ -49,7 +50,6 @@ from geonode.base.populate_test_data import (
 from geonode.geoserver.helpers import (
     gs_catalog,
     get_sld_for,
-    OGC_Servers_Handler,
     extract_name_from_sld)
 
 import logging

@@ -953,6 +953,9 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             ))
 
         self.assertIsNotNone(layer)
+        self.assertIsNotNone(layer.ows_url)
+        self.assertIsNotNone(layer.ptype)
+        self.assertIsNotNone(layer.sourcetype)
 
         # Reset GeoFence Rules
         purge_geofence_all()
