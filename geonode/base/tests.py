@@ -1128,7 +1128,7 @@ class ResourceKeywordsTreeTests(APITestCase):
             {'id': self.hkw1.id, 'text': self.hkw1.name, 'href': self.hkw1.slug, 'tags': [1], 'nodes':
                 [
                     {'id': self.hkw1child.id, 'text': self.hkw1child.name, 'href': self.hkw1child.slug, 'tags': [1]}
-                ]
+            ]
             },
             {'id': self.hkw2.id, 'text': self.hkw2.name, 'href': self.hkw2.slug, 'tags': [1], 'nodes': []}
         ]
@@ -1152,9 +1152,9 @@ class ResourceKeywordsTreeTests(APITestCase):
         create_single_layer(name="Test Layer", keywords=[self.hkw1, self.hkw1child])
 
         cases = [
-                {"id": self.hkw1.id, "nodes": [self.hkw1child.id]},
-                {"id": self.hkw2.id, "nodes": []},
-            ]
+            {"id": self.hkw1.id, "nodes": [self.hkw1child.id]},
+            {"id": self.hkw2.id, "nodes": []},
+        ]
 
         response_keywords = HierarchicalKeyword.resource_keywords_tree(self.user, resource_type='layer')
         for case in cases:
@@ -1192,10 +1192,10 @@ class ResourceKeywordsTreeTests(APITestCase):
         response_keywords = HierarchicalKeyword.resource_keywords_tree(self.user, resource_type='layer')
 
         cases = [
-                {"id": self.hkw1.id, "nodes": [self.hkw1child.id]},
-                {"id": self.hkw2.id, "nodes": []},
-                {"id": new_hkw1.id, "nodes": [new_hkw1child.id]}
-            ]
+            {"id": self.hkw1.id, "nodes": [self.hkw1child.id]},
+            {"id": self.hkw2.id, "nodes": []},
+            {"id": new_hkw1.id, "nodes": [new_hkw1child.id]}
+        ]
 
         for kw in exotic_keywords:
             cases.append({"id": kw.id, "nodes": []})
@@ -1234,14 +1234,14 @@ class ResourceKeywordsTreeTests(APITestCase):
         # We already have layer created in setup. Now create map & document
         create_single_map(name="Test Map", keywords=[map_hkw1, map_hkw2])
         map_expected_data = [
-                    {'id': map_hkw1.id, 'text': map_hkw1.name, 'href': map_hkw1.slug, 'tags': [1], 'nodes': []},
-                    {'id': map_hkw2.id, 'text': map_hkw2.name, 'href': map_hkw2.slug, 'tags': [1], 'nodes': []}
-                    ]
+            {'id': map_hkw1.id, 'text': map_hkw1.name, 'href': map_hkw1.slug, 'tags': [1], 'nodes': []},
+            {'id': map_hkw2.id, 'text': map_hkw2.name, 'href': map_hkw2.slug, 'tags': [1], 'nodes': []}
+        ]
 
         create_single_doc(name="Test Document", keywords=[doc_hkw])
         doc_expected_data = [
-                    {'id': doc_hkw.id, 'text': doc_hkw.name, 'href': doc_hkw.slug, 'tags': [1], 'nodes': []}
-                    ]
+            {'id': doc_hkw.id, 'text': doc_hkw.name, 'href': doc_hkw.slug, 'tags': [1], 'nodes': []}
+        ]
 
         cases = (
             {

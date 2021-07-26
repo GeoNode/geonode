@@ -278,7 +278,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
               time_presentation=None, time_presentation_res=None,
               time_presentation_default_value=None,
               time_presentation_reference_value=None,
-              charset_encoding="UTF-8"):
+              charset_encoding="UTF-8", target_store=None):
     logger.debug(
         f'Uploading layer: {layer}, files {spatial_files}')
     if len(spatial_files) > 1:
@@ -364,7 +364,8 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
                 use_url=False,
                 import_id=next_id,
                 mosaic=False,
-                target_store=None,
+                target_store=target_store,
+                name=name,
                 charset_encoding=charset_encoding
             )
         upload.import_id = import_session.id
@@ -397,8 +398,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
                         "Please ensure your files contain the correct formats.")
 
         if error_msg:
-            upload.state = upload.STATE_INVALID
-            upload.save()
+            upload.set_processing_state(Upload.STATE_INVALID)
 
         # @todo once the random tmp9723481758915 type of name is not
         # around, need to track the name computed above, for now, the
@@ -564,23 +564,26 @@ def srs_step(upload_session, source, target):
     Upload.objects.update_from_session(upload_session)
 
 
-def final_step(upload_session, user, charset="UTF-8"):
+def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     import_session = upload_session.import_session
-    _log('Reloading session %s to check validity', import_session.id)
+    import_id = import_session.id
+
+    _log(f'Reloading session {import_id} to check validity')
     try:
         import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
         Upload.objects.invalidate_from_session(upload_session)
         raise UploadException.from_exc(
             _("The GeoServer Import Session is no more available"), e)
+
+    if Upload.objects.filter(import_id=import_id).count():
+        Upload.objects.filter(import_id=import_id).update(complete=False)
+        upload = Upload.objects.filter(import_id=import_id).get()
+        if upload.state == Upload.STATE_RUNNING:
+            return
+
     upload_session.import_session = import_session
     Upload.objects.update_from_session(upload_session)
-
-    # the importer chooses an available featuretype name late in the game need
-    # to verify the resource.name otherwise things will fail.  This happens
-    # when the same data is uploaded a second time and the default name is
-    # chosen
-    cat = gs_catalog
 
     # Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
@@ -590,20 +593,26 @@ def final_step(upload_session, user, charset="UTF-8"):
     # @todo see above in save_step, regarding computed unique name
     name = task.layer.name
 
-    _log('Getting from catalog [%s]', name)
-    publishing = cat.get_layer(name)
+    if layer_id:
+        name = Layer.objects.get(resourcebase_ptr_id=layer_id).name
 
-    if import_session.state == 'INCOMPLETE':
-        if task.state != 'ERROR':
-            Upload.objects.invalidate_from_session(upload_session)
-            raise Exception(f'unknown item state: {task.state}')
-    elif import_session.state == 'READY':
+    _log(f'Getting from catalog [{name}]')
+    try:
+        # the importer chooses an available featuretype name late in the game need
+        # to verify the resource.name otherwise things will fail.  This happens
+        # when the same data is uploaded a second time and the default name is
+        # chosen
+        gs_catalog.get_layer(name)
+    except Exception:
+        Upload.objects.invalidate_from_session(upload_session)
+        raise LayerNotReady(
+            _(f"Expected to find layer named '{name}' in geoserver"))
+
+    if import_session.state == 'READY' or (import_session.state == 'PENDING' and task.state == 'READY'):
         import_session.commit()
-    elif import_session.state == 'PENDING':
-        if task.state == 'READY':
-            # if not task.data.format or task.data.format != 'Shapefile':
-            import_session.commit()
-
+    elif import_session.state == 'INCOMPLETE' and task.state != 'ERROR':
+        Upload.objects.invalidate_from_session(upload_session)
+        raise Exception(f'unknown item state: {task.state}')
     try:
         import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
@@ -612,11 +621,6 @@ def final_step(upload_session, user, charset="UTF-8"):
             _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
     Upload.objects.update_from_session(upload_session)
-
-    if not publishing:
-        Upload.objects.invalidate_from_session(upload_session)
-        raise LayerNotReady(
-            _(f"Expected to find layer named '{name}' in geoserver"))
 
     _log('Creating Django record for [%s]', name)
     target = task.target
@@ -652,9 +656,9 @@ def final_step(upload_session, user, charset="UTF-8"):
                 xml_file = None
 
             if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
-                metadata_uploaded = True
                 layer_uuid, vals, regions, keywords, custom = parse_metadata(
                     open(xml_file).read())
+                metadata_uploaded = True
         except Exception as e:
             Upload.objects.invalidate_from_session(upload_session)
             logger.error(e)
@@ -676,7 +680,6 @@ def final_step(upload_session, user, charset="UTF-8"):
         import datetime
         from geonode.layers.models import TIME_REGEX_FORMAT
 
-        # llbbox = publishing.resource.latlon_bbox
         start = None
         end = None
         if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
@@ -853,7 +856,6 @@ def final_step(upload_session, user, charset="UTF-8"):
             sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
         sld_file = sld_file[0]
         sld_uploaded = True
-        # geoserver_set_style.apply_async((saved_layer.id, sld_file))
     else:
         # get_files will not find the sld if it doesn't match the base name
         # so we've worked around that in the view - if provided, it will be here
@@ -862,7 +864,6 @@ def final_step(upload_session, user, charset="UTF-8"):
             base_file = upload_session.base_file
             sld_file = base_file[0].sld_files[0]
         sld_uploaded = False
-        # geoserver_create_style.apply_async((saved_layer.id, name, sld_file, upload_session.tempdir))
 
     if upload_session.time_info:
         set_time_info(saved_layer, **upload_session.time_info)
