@@ -156,7 +156,7 @@ def geoapp_detail(request, geoappid, template='apps/app_detail.html'):
 
     context_dict = {
         'appId': geoappid,
-        'appType': geoapp_obj.type,
+        'appType': geoapp_obj.resource_type,
         'config': _config,
         'user': request.user,
         'access_token': access_token,
@@ -240,7 +240,7 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
     _config = json.dumps(r.blob)
     _ctx = {
         'appId': geoappid,
-        'appType': geoapp_obj.type,
+        'appType': geoapp_obj.resource_type,
         'config': _config,
         'user': request.user,
         'access_token': access_token,
