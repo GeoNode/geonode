@@ -18,8 +18,6 @@
 #
 #########################################################################
 import logging
-import sys
-from unittest.mock import patch
 
 from django.urls import reverse
 from django.conf.urls import url

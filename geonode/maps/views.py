@@ -71,7 +71,6 @@ from geonode.base.views import batch_modify
 from .tasks import delete_map
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
-from geonode.thumbs.thumbnails import create_thumbnail
 from deprecated import deprecated
 
 from dal import autocomplete
