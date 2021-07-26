@@ -17,6 +17,7 @@
 #
 #########################################################################
 import ast
+from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
 import json
 from django.apps import apps
@@ -436,6 +437,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         except ResourceBase.DoesNotExist:
             logger.error(f"Resource selected with id {resource_id} does not exists")
             return Response(data={"message": f"Resource selected with id {resource_id} does not exists"}, status=404, exception=True)
+        except ThumbnailError as e:
+            logger.error(e)
+            return Response(data={"message": e.args[0]}, status=400, exception=True)
         except Exception as e:
             logger.error(e)
             return Response(data={"message": e.args[0]}, status=500, exception=True)
