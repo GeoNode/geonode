@@ -16,6 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import ast
+from geonode.thumbs.exceptions import ThumbnailError
+from geonode.thumbs.thumbnails import create_thumbnail
+import json
 from django.apps import apps
 from django.conf import settings
 from django.db.models import Subquery
@@ -38,6 +42,8 @@ from geonode.favorite.models import Favorite
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
+from geonode.layers.models import Dataset
+from geonode.maps.models import Map
 from geonode.security.utils import (
     get_geoapp_subtypes,
     get_visible_resources,
@@ -408,3 +414,41 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         resource = self.get_object()
         resource.set_permissions(request.data)
         return Response(request.data)
+
+    @extend_schema(
+        methods=["post"], responses={200}, description="API endpoint allowing to set the thumbnail url for an existing dataset."
+    )
+    @action(
+        detail=False,
+        url_path="(?P<resource_id>\d+)/set_thumbnail_from_bbox",  # noqa
+        url_name="set-thumb-from-bbox",
+        methods=["post"],
+        permission_classes=[
+            IsAuthenticated,
+        ],
+    )
+    def set_thumbnail_from_bbox(self, request, resource_id):
+        try:
+            resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
+
+            if not isinstance(resource.get_real_instance(), (Dataset, Map)):
+                raise NotImplementedError("Not implemented: Endpoint available only for Dataset and Maps")
+
+            request_body = request.data if request.data else json.loads(request.body)
+            bbox = request_body["bbox"] + [request_body["srid"]]
+            zoom = request_body.get("zoom", None)
+
+            thumbnail_url = create_thumbnail(resource.get_real_instance(), bbox=bbox, background_zoom=zoom, overwrite=True)
+            return Response({"thumbnail_url": thumbnail_url}, status=200)
+        except ResourceBase.DoesNotExist:
+            logger.error(f"Resource selected with id {resource_id} does not exists")
+            return Response(data={"message": f"Resource selected with id {resource_id} does not exists"}, status=404, exception=True)
+        except NotImplementedError as e:
+            logger.error(e)
+            return Response(data={"message": e.args[0]}, status=405, exception=True)
+        except ThumbnailError as e:
+            logger.error(e)
+            return Response(data={"message": e.args[0]}, status=500, exception=True)
+        except Exception as e:
+            logger.error(e)
+            return Response(data={"message": e.args[0]}, status=500, exception=True)
