@@ -42,8 +42,8 @@ from geonode.favorite.models import Favorite
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.documents.models import Document
-from geonode.geoapps.models import GeoApp
+from geonode.layers.models import Dataset
+from geonode.maps.models import Map
 from geonode.security.utils import (
     get_geoapp_subtypes,
     get_visible_resources,
@@ -431,7 +431,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
 
-            if isinstance(resource.get_real_instance(), (Document, GeoApp)):
+            if not isinstance(resource.get_real_instance(), (Dataset, Map)):
                 raise NotImplementedError("Not implemented: Endpoint available only for Dataset and Maps")
 
             request_body = request.data if request.data else json.loads(request.body)
