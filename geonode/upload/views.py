@@ -39,7 +39,6 @@ import json
 import logging
 import zipfile
 import tempfile
-import traceback
 import gsimporter
 
 from http.client import BadStatusLine
@@ -56,6 +55,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView, DeleteView
 from django.contrib.auth.decorators import login_required
 
+from geonode.layers.models import Layer
 from geonode.upload import UploadException
 from geonode.base.models import Configuration
 from geonode.base.enumerations import CHARSETS
@@ -170,6 +170,9 @@ def save_step_view(req, session):
             }
         )
     form = LayerUploadForm(req.POST, req.FILES)
+
+    overwrite = req.path_info.endswith('/replace')
+    target_store = None
     if form.is_valid():
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         logger.debug(f"valid_extensions: {form.cleaned_data['valid_extensions']}")
@@ -190,11 +193,18 @@ def save_step_view(req, session):
             charset=form.cleaned_data["charset"]
         )
         logger.debug(f"spatial_files: {spatial_files}")
+
+        if overwrite:
+            _layer = Layer.objects.filter(id=req.GET['layer_id'])
+            if _layer.exists():
+                name = _layer.first().name
+                target_store = _layer.first().store
+
         import_session, upload = save_step(
             req.user,
             name,
             spatial_files,
-            overwrite=False,
+            overwrite=overwrite,
             mosaic=form.cleaned_data['mosaic'] or scan_hint == 'zip-mosaic',
             append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
             append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
@@ -204,7 +214,8 @@ def save_step_view(req, session):
             time_presentation_res=form.cleaned_data['time_presentation_res'],
             time_presentation_default_value=form.cleaned_data['time_presentation_default_value'],
             time_presentation_reference_value=form.cleaned_data['time_presentation_reference_value'],
-            charset_encoding=form.cleaned_data["charset"]
+            charset_encoding=form.cleaned_data["charset"],
+            target_store=target_store
         )
         import_session.tasks[0].set_charset(form.cleaned_data["charset"])
         sld = None
@@ -585,7 +596,15 @@ def final_step_view(req, upload_session):
             return _json_response
         else:
             try:
-                saved_layer = final_step(upload_session, upload_session.user)
+                layer_id = None
+                if req and 'layer_id' in req.GET:
+                    _layer = Layer.objects.filter(id=req.GET['layer_id'])
+                    if _layer.exists():
+                        layer_id = _layer.first().resourcebase_ptr_id
+
+                saved_layer = final_step(upload_session, upload_session.user, layer_id)
+
+                assert saved_layer
 
                 # this response is different then all of the other views in the
                 # upload as it does not return a response as a json object
@@ -648,13 +667,13 @@ _steps = {
     'csv': csv_step_view,
     'check': check_step_view,
     'time': time_step_view,
-    'final': final_step_view,
+    'final': final_step_view
 }
 
 
 @login_required
 @logged_in_or_basicauth(realm="GeoNode")
-def view(req, step):
+def view(req, step=None):
     """Main uploader view"""
     if not auth.get_user(req).is_authenticated:
         return error_response(req, errors=["Not Authorized"])
@@ -697,33 +716,46 @@ def view(req, step):
                 upload_session = session
             else:
                 upload_session = _get_upload_session(req)
-        except Exception:
-            traceback.print_exc()
+        except Exception as e:
+            logger.exception(e)
     try:
         if req.method == 'GET' and upload_session:
             # set the current step to match the requested page - this
             # could happen if the form is ajax w/ progress monitoring as
             # the advance would have already happened @hacky
-            upload_session.completed_step = get_previous_step(
-                upload_session,
-                step)
+            _completed_step = upload_session.completed_step
+            try:
+                _completed_step = get_previous_step(
+                    upload_session,
+                    step)
+                upload_session.completed_step = _completed_step
+            except Exception as e:
+                logger.warning(e)
+                return error_response(req, errors=e.args)
 
         resp = _steps[step](req, upload_session)
+
+        try:
+            content = resp.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            resp_js = json.loads(content)
+            if 'upload/final' in resp_js.get('redirect_to', ''):
+                from geonode.upload.tasks import finalize_incomplete_session_uploads
+                finalize_incomplete_session_uploads.apply_async()
+        except Exception as e:
+            logger.warning(e)
+            return error_response(req, errors=e.args)
+
         # must be put back to update object in session
         if upload_session:
             if step == 'final':
                 delete_session = True
                 try:
-                    content = resp.content
-                    if isinstance(content, bytes):
-                        content = content.decode('UTF-8')
-                    resp_js = json.loads(content)
                     delete_session = resp_js.get('status') != 'pending'
 
                     if delete_session:
                         # we're done with this session, wax it
-                        if resp_js.get('status') != 'error':
-                            Upload.objects.update_from_session(upload_session)
                         upload_session = None
                         del req.session[upload_id]
                         req.session.modified = True
