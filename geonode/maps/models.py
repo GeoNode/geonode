@@ -582,16 +582,18 @@ class MapLayer(models.Model, GXPLayerBase):
             capability = dataset_params.get('capability', {})
             # Use '' to represent default layer style
             style_name = capability.get('style', '')
+            href = None
             dataset_obj = Dataset.objects.filter(alternate=self.name).first()
-            if ':' in style_name:
-                style_name = style_name.split(':')[1]
-            elif dataset_obj.default_style:
-                style_name = dataset_obj.default_style.name
-            href = dataset_obj.get_legend_url(style_name=style_name)
-            style = Style.objects.filter(name=style_name).first()
-            if style:
-                # replace map-legend display name if style has a title
-                style_name = style.sld_title or style_name
+            if dataset_obj:
+                if ':' in style_name:
+                    style_name = style_name.split(':')[1]
+                elif dataset_obj.default_style:
+                    style_name = dataset_obj.default_style.name
+                href = dataset_obj.get_legend_url(style_name=style_name)
+                style = Style.objects.filter(name=style_name).first()
+                if style:
+                    # replace map-legend display name if style has a title
+                    style_name = style.sld_title or style_name
             return {style_name: href}
         except Exception as e:
             logger.exception(e)

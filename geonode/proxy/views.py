@@ -54,7 +54,7 @@ from geonode.base.enumerations import LINK_TYPES as _LT
 from geonode import geoserver  # noqa
 from geonode.monitoring import register_event
 
-TIMEOUT = 600
+TIMEOUT = 30
 
 LINK_TYPES = [L for L in _LT if L.startswith("OGC:")]
 
