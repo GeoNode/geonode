@@ -45,7 +45,6 @@ from geonode.groups.models import GroupProfile, GroupMember
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.security.utils import (
-    get_geoapp_subtypes,
     get_visible_resources,
     get_resources_with_perms)
 
@@ -335,11 +334,17 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         for _model in apps.get_models():
             if _model.__name__ == "ResourceBase":
                 for _m in _model.__subclasses__():
-                    if _m.__name__.lower() not in ['geoapp', 'service']:
+                    if _m.__name__.lower() not in ['service']:
                         _types.append(_m.__name__.lower())
 
-        if settings.GEONODE_APPS_ENABLE:
-            _types.extend(get_geoapp_subtypes())
+        if settings.GEONODE_APPS_ENABLE and 'geoapp' in _types:
+            _types.remove('geoapp')
+            if hasattr(settings, 'MAPSTORE_CLIENT_APP_LIST') and settings.MAPSTORE_CLIENT_APP_LIST:
+                _types += settings.MAPSTORE_CLIENT_APP_LIST
+            else:
+                from geonode.geoapps.models import GeoApp
+                geoapp_types = [x for x in GeoApp.objects.values_list('resource_type', flat=True).all().distinct()]
+                _types += geoapp_types
 
         for _type in _types:
             resource_types.append({
