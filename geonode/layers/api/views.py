@@ -50,31 +50,3 @@ class LayerViewSet(DynamicModelViewSet):
     queryset = Layer.objects.all()
     serializer_class = LayerSerializer
     pagination_class = GeoNodeApiPagination
-
-    @extend_schema(
-        methods=["post"], responses={200}, description="API endpoint allowing to set the thumbnail url for an existing dataset."
-    )
-    @action(
-        detail=False,
-        url_path="(?P<dataset_id>\d+)/set_thumbnail_from_bbox",  # noqa
-        url_name="set-thumb-from-bbox",
-        methods=["post"],
-        permission_classes=[
-            IsAuthenticated,
-        ],
-    )
-    def set_thumbnail_from_bbox(self, request, dataset_id):
-        try:
-            layer = Layer.objects.get(resourcebase_ptr_id=ast.literal_eval(dataset_id))
-            request_body = request.data if request.data else json.loads(request.body)
-            bbox = request_body["bbox"] + [request_body["srid"]]
-            zoom = request_body.get("zoom", None)
-
-            thumbnail_url = create_thumbnail(layer, bbox=bbox, background_zoom=zoom, overwrite=True)
-            return Response({"thumbnail_url": thumbnail_url}, status=200)
-        except Layer.DoesNotExist:
-            logger.error(f"Dataset selected with id {dataset_id} does not exists")
-            return Response(data={"message": f"Dataset selected with id {dataset_id} does not exists"}, status=404, exception=True)
-        except Exception as e:
-            logger.error(e)
-            return Response(data={"message": e.args[0]}, status=500, exception=True)
