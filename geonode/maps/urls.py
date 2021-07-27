@@ -33,7 +33,7 @@ existing_map_view = views.map_view
 map_embed = views.map_embed
 map_edit = views.map_edit
 map_json = views.map_json
-map_thumbnail = views.map_thumbnail
+
 maps_list = register_url_event()(TemplateView.as_view(template_name='maps/map_list.html'))
 
 urlpatterns = [
@@ -55,7 +55,6 @@ urlpatterns = [
     url(r'^(?P<mapid>[^/]+)/metadata$', views.map_metadata, name='map_metadata'),
     url(r'^(?P<mapid>[^/]+)/metadata_advanced$', views.map_metadata_advanced, name='map_metadata_advanced'),
     url(r'^(?P<mapid>[^/]+)/embed$', map_embed, name='map_embed'),
-    url(r'^(?P<mapid>\d+)/thumbnail$', map_thumbnail, name='map_thumbnail'),
     url(r'^embed/$', views.map_embed, name='map_embed'),
     url(r'^metadata/batch/$', views.map_batch_metadata, name='map_batch_metadata'),
     url(r'^(?P<mapid>[^/]*)/metadata_detail$',

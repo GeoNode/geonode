@@ -17,7 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.thumbs.exceptions import ThumbnailError
 import logging
+import sys
 from uuid import uuid4
 from PIL import Image
 from io import BytesIO
@@ -48,7 +50,7 @@ from geonode.layers.models import Layer
 from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
 from geonode.security.utils import get_resources_with_perms
-
+from geonode.documents.models import Document
 logger = logging.getLogger(__name__)
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
@@ -798,3 +800,110 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())
+
+    def test_set_thumbnail_from_bbox_from_Anonymous_user_raise_permission_error(self):
+        """
+        Given a request with Anonymous user, should raise an authentication error.
+        """
+        dataset_id = sys.maxsize
+        url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
+        # Anonymous
+        expected = {
+            "detail": "Authentication credentials were not provided."
+        }
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(expected, response.json())
+
+    @patch("geonode.base.api.views.create_thumbnail")
+    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset(self, mock_create_thumbnail):
+        """
+        Given a logged User and an existing dataset, should create the expected thumbnail url.
+        """
+        mock_create_thumbnail.return_value = "http://localhost:8000/mocked_url.jpg"
+        # Admin
+        self.client.login(username="admin", password="admin")
+        dataset_id = Layer.objects.first().resourcebase_ptr_id
+        url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
+        payload = {
+            "bbox": [
+                -9072629.904175375,
+                -9043966.018568434,
+                1491839.8773032012,
+                1507127.2829602365
+            ],
+            "srid": "EPSG:3857"
+        }
+        response = self.client.post(url, data=payload, format='json')
+
+        expected = {
+            "thumbnail_url": "http://localhost:8000/mocked_url.jpg"
+        }
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(expected, response.json())
+
+    def test_set_thumbnail_from_bbox_from_logged_user_for_not_existing_dataset(self):
+        """
+        Given a logged User and an not existing dataset, should raise a 404 error.
+        """
+        # Admin
+        self.client.login(username="admin", password="admin")
+        dataset_id = sys.maxsize
+        url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
+        payload = {
+            "bbox": [
+                -9072629.904175375,
+                -9043966.018568434,
+                1491839.8773032012,
+                1507127.2829602365
+            ],
+            "srid": "EPSG:3857"
+        }
+        response = self.client.post(url, data=payload, format='json')
+
+        expected = {
+            "message": f"Resource selected with id {dataset_id} does not exists"
+        }
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(expected, response.json())
+
+    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_doc(self):
+        """
+        Given a logged User and an existing doc, should raise a NotImplemented.
+        """
+        # Admin
+        self.client.login(username="admin", password="admin")
+        dataset_id = Document.objects.first().resourcebase_ptr_id
+        url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
+        payload = {
+            "bbox": [],
+            "srid": "EPSG:3857"
+        }
+        response = self.client.post(url, data=payload, format='json')
+
+        expected = {
+            "message": "Not implemented: Endpoint available only for Dataset and Maps"
+        }
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(expected, response.json())
+
+    @patch("geonode.base.api.views.create_thumbnail", side_effect=ThumbnailError('Some exception during thumb creation'))
+    def test_set_thumbnail_from_bbox_from_logged_user_for_existing_dataset_raise_exp(self, mock_exp):
+        """
+        Given a logged User and an existing dataset, should raise a ThumbnailException.
+        """
+        # Admin
+        self.client.login(username="admin", password="admin")
+        dataset_id = Layer.objects.first().resourcebase_ptr_id
+        url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
+        payload = {
+            "bbox": [],
+            "srid": "EPSG:3857"
+        }
+        response = self.client.post(url, data=payload, format='json')
+
+        expected = {
+            "message": "Some exception during thumb creation"
+        }
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(expected, response.json())
