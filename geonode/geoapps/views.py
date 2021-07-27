@@ -76,12 +76,8 @@ def _resolve_geoapp(request, id, permission='base.change_resourcebase',
     '''
     Resolve the GeoApp by the provided typename and check the optional permission.
     '''
-    if GeoApp.objects.filter(urlsuffix=id).count() > 0:
-        key = 'urlsuffix'
-    else:
-        key = 'pk'
 
-    return resolve_object(request, GeoApp, {key: id}, permission=permission,
+    return resolve_object(request, GeoApp, {"pk": id}, permission=permission,
                           permission_msg=msg, **kwargs)
 
 
@@ -160,7 +156,7 @@ def geoapp_detail(request, geoappid, template='apps/app_detail.html'):
 
     context_dict = {
         'appId': geoappid,
-        'appType': geoapp_obj.type,
+        'appType': geoapp_obj.resource_type,
         'config': _config,
         'user': request.user,
         'access_token': access_token,
@@ -244,7 +240,7 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
     _config = json.dumps(r.blob)
     _ctx = {
         'appId': geoappid,
-        'appType': geoapp_obj.type,
+        'appType': geoapp_obj.resource_type,
         'config': _config,
         'user': request.user,
         'access_token': access_token,

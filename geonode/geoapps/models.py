@@ -45,29 +45,8 @@ class GeoApp(ResourceBase):
 
     name = models.TextField(_('Name'), null=False, blank=False)
 
-    # viewer configuration
-    zoom = models.IntegerField(_('zoom'), null=True, blank=True)
-    # The zoom level to use when initially loading this geoapp.  Zoom levels start
-    # at 0 (most zoomed out) and each increment doubles the resolution.
-
-    projection = models.CharField(_('projection'), max_length=32, null=True, blank=True)
-    # The projection used for this geoapp.  This is stored as a string with the
-    # projection's SRID.
-
-    center_x = models.FloatField(_('center X'), null=True, blank=True)
-    # The x coordinate to center on when loading this geoapp.  Its interpretation
-    # depends on the projection.
-
-    center_y = models.FloatField(_('center Y'), null=True, blank=True)
-    # The y coordinate to center on when loading this geoapp.  Its interpretation
-    # depends on the projection.
-
     last_modified = models.DateTimeField(auto_now_add=True)
     # The last time the geoapp was modified.
-
-    urlsuffix = models.CharField(_('Site URL'), max_length=255, null=True, blank=True)
-    # Alphanumeric alternative to referencing geoapps by id, appended to end of
-    # URL instead of id, ie http://domain/geoapps/someview
 
     def __str__(self):
         return f'{self.title} by {(self.owner.username if self.owner else "<Anonymous>")}'

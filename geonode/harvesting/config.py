@@ -39,3 +39,6 @@ try:
     )
 except AttributeError:
     HARVESTER_CLASSES = _default_harvesters
+
+HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE = getattr(
+    settings, "HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE", settings.FILE_UPLOAD_MAX_MEMORY_SIZE)
