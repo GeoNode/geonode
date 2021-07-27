@@ -506,23 +506,16 @@ define(function (require, exports) {
         var self = this;
         if (resp.hasOwnProperty('redirect_to') && resp.redirect_to.indexOf('upload/final') > -1) {
             common.make_request({
-                url: resp.redirect_to,
+                url: '#',
                 async: true,
                 beforeSend: function() {
                     self.logStatus({
-                        msg: '<p>' + gettext('Performing Final GeoServer Config Step') + '<img class="pull-right" src="../../static/geonode/img/loading.gif"></p>',
+                        msg: '<p>' + gettext('Performing Final GeoServer Config Step. Check the Upload status above!') + '</p>',
                         level: 'alert-success',
                         empty: 'true'
                     });
                     self.polling = true;
                     self.startPolling();
-                },
-                failure: function (resp, status) {
-                    self.polling = false;
-                    var error = (resp.errors != undefined ? resp.errors : resp.error_msg);
-                    self.markError(error, status);
-
-                    callback(array);
                 },
                 success: function (resp, status) {
                     self.polling = false;
@@ -539,11 +532,9 @@ define(function (require, exports) {
                     } else if (resp.status === 'error') {
                         self.polling = false;
                         self.markError(resp.error_msg, resp.status);
-
                         callback(array);
                     } else {
-                        self.displayUploadedLayerLinks(resp);
-
+                        // self.displayUploadedLayerLinks(resp);
                         callback(array);
                     }
                 }
@@ -695,8 +686,14 @@ define(function (require, exports) {
             },
             error: function (jqXHR) {
                 self.polling = false;
-                if(jqXHR.status === 500 || jqXHR.status === 0 || jqXHR.readyState === 0){
-                  self.markError('Server Error: ' + jqXHR.statusText + gettext('<br>Please check your network connection. In case of Layer Upload make sure GeoServer is running and accepting connections.'));
+                if (jqXHR.status === 500 || jqXHR.status === 0 || jqXHR.readyState === 0) {
+                  var error = 'Server Error: ' + jqXHR.statusText + gettext('<br>Please check your network connection. In case of Layer Upload make sure GeoServer is running and accepting connections.');
+                  if (jqXHR.responseJSON !== undefined && jqXHR.responseJSON !== null) {
+                      if (jqXHR.responseJSON.errors !== undefined || jqXHR.responseJSON.error_msg !== undefined) {
+                          error = jqXHR.responseJSON.errors !== undefined ? jqXHR.responseJSON.errors : jqXHR.responseJSON.error_msg;
+                      }
+                  }
+                  self.markError(error);
                 } else if (jqXHR.status === 400 || jqXHR.status === 404) {
                   if (jqXHR.responseJSON !== undefined && jqXHR.responseJSON !== null) {
                       if (jqXHR.responseJSON.errors !== undefined) {

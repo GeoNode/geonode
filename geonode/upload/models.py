@@ -18,7 +18,6 @@
 #
 #########################################################################
 import os
-import json
 import base64
 import pickle
 import shutil
@@ -35,10 +34,7 @@ from django.utils.timezone import now
 from django.core.files.storage import FileSystemStorage
 
 from geonode.layers.models import Layer
-from geonode.tasks.tasks import AcquireLock
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
-
-from .utils import next_step_response, get_next_step
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +75,6 @@ class Upload(models.Model):
 
     import_id = models.BigIntegerField(null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
-    # hold importer state or internal state (STATE_)
     state = models.CharField(max_length=16)
     create_date = models.DateTimeField('create_date', default=now)
     date = models.DateTimeField('date', default=now)
@@ -89,7 +84,7 @@ class Upload(models.Model):
     complete = models.BooleanField(default=False)
     # hold our serialized session object
     session = models.TextField(null=True, blank=True)
-    # hold a dict of any intermediate Layer metadata - not used for now
+    # hold a dict of any intermediate Dataset metadata - not used for now
     metadata = models.TextField(null=True)
 
     mosaic = models.BooleanField(default=False)
@@ -169,7 +164,10 @@ class Upload(models.Model):
 
         if "COMPLETE" == self.state:
             self.complete = True
-
+        if self.layer and self.layer.processed:
+            self.state = Upload.STATE_PROCESSED
+        elif self.state in (Upload.STATE_READY, Upload.STATE_PENDING):
+            self.state = upload_session.import_session.state
         self.save()
 
     @property
@@ -185,8 +183,7 @@ class Upload(models.Model):
             return 100.0
         elif self.complete or self.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
             if self.layer and self.layer.processed:
-                self.state = Upload.STATE_PROCESSED
-                Upload.objects.filter(id=self.id).update(state=Upload.STATE_PROCESSED)
+                self.set_processing_state(Upload.STATE_PROCESSED)
                 return 100.0
             elif self.state == Upload.STATE_RUNNING:
                 return 66.0
@@ -195,45 +192,6 @@ class Upload(models.Model):
     def get_resume_url(self):
         if self.state == Upload.STATE_WAITING and self.import_id:
             return f"{reverse('data_upload')}?id={self.import_id}"
-        else:
-            session = None
-            try:
-                if not self.import_id:
-                    raise NotFound
-                session = self.get_session.import_session
-                if not session or session.state != Upload.STATE_COMPLETE:
-                    session = gs_uploader.get_session(self.import_id)
-            except (NotFound, Exception):
-                if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
-                    self.state = Upload.STATE_INVALID
-                    Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
-            if session:
-                lock_id = f'{self.import_id}'
-                with AcquireLock(lock_id) as lock:
-                    if lock.acquire() is True:
-                        try:
-                            content = next_step_response(None, self.get_session).content
-                            if isinstance(content, bytes):
-                                content = content.decode('UTF-8')
-                            response_json = json.loads(content)
-                            if response_json['success'] and 'redirect_to' in response_json:
-                                if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
-                                    self.state = Upload.STATE_WAITING
-                                    Upload.objects.filter(id=self.id).update(state=Upload.STATE_WAITING)
-                                    return f"{reverse('data_upload')}?id={self.import_id}"
-                                else:
-                                    next = get_next_step(self.get_session)
-                                    if next == 'final' and session.state == Upload.STATE_COMPLETE and self.state == Upload.STATE_PENDING:
-                                        if not self.layer or not self.layer.processed:
-                                            from .views import final_step_view
-                                            final_step_view(None, self.get_session)
-                                        self.state = Upload.STATE_RUNNING
-                                        Upload.objects.filter(id=self.id).update(state=Upload.STATE_RUNNING)
-                        except (NotFound, Exception) as e:
-                            logger.exception(e)
-                            if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
-                                self.state = Upload.STATE_INVALID
-                                Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
         return None
 
     def get_delete_url(self):
@@ -251,8 +209,7 @@ class Upload(models.Model):
                 session = gs_uploader.get_session(self.import_id)
         except (NotFound, Exception):
             if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
-                self.state = Upload.STATE_INVALID
-                Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
+                self.set_processing_state(Upload.STATE_INVALID)
         if session and self.state != Upload.STATE_INVALID:
             return f"{ogc_server_settings.LOCATION}rest/imports/{session.id}"
         else:
@@ -292,11 +249,23 @@ class Upload(models.Model):
                 shutil.rmtree(_location)
             except Exception as e:
                 logger.warning(e)
+
+        # here we are deleting the local that soon will be removed
         if self.upload_dir and os.path.exists(self.upload_dir):
             try:
                 shutil.rmtree(self.upload_dir)
             except Exception as e:
                 logger.warning(e)
+
+    def set_processing_state(self, state):
+        if self.state != state:
+            self.state = state
+            Upload.objects.filter(id=self.id).update(state=state)
+        if self.layer:
+            if self.state == Upload.STATE_PROCESSED:
+                self.layer.clear_dirty_state()
+            else:
+                self.layer.set_dirty_state()
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'
