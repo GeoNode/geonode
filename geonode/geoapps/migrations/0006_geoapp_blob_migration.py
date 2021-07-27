@@ -21,5 +21,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(convert_geostory_blob)
+        migrations.RunPython(convert_geostory_blob, migrations.RunPython.noop)
     ]
