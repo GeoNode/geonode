@@ -17,17 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.thumbs.thumbnails import create_thumbnail
-import json
-from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
-from rest_framework.decorators import action
 
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework.response import Response
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
@@ -38,7 +33,6 @@ from .serializers import LayerSerializer
 from .permissions import LayerPermissionsFilter
 
 import logging
-import ast
 
 logger = logging.getLogger(__name__)
 
