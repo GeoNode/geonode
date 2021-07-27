@@ -5,7 +5,6 @@ from geonode.base.models import ResourceBaseManager
 
 
 def copy_doc_files(apps, _):
-    ResourceBase = apps.get_model('base', 'ResourceBase')
     Document = apps.get_model('documents', 'Document')
     for _doc in Document.objects.all():
         if _doc.doc_file:
@@ -17,6 +16,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('documents', '0031_auto_20201107_2241'),
+        ('base', '0062_resourcebase_files'),
     ]
 
     operations = [
