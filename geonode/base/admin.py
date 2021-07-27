@@ -383,7 +383,8 @@ class ResourceBaseAdminForm(autocomplete.FutureModelForm):
         through the admin batch action
         """
         for obj in queryset:
-            obj.delete()
+            from geonode.resource.manager import resource_manager
+            resource_manager.delete(obj.uuid, instance=obj)
 
     class Meta:
         pass

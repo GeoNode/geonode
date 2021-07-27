@@ -247,15 +247,15 @@ class ResourceManager(ResourceManagerInterface):
                     - Remove the layer default style.
                     """
                     try:
-                        from ..services.enumerations import INDEXED
-                        if _resource.get_real_instance().remote_service is not None and _resource.get_real_instance().remote_service.method == INDEXED:
+                        if _resource.get_real_instance().remote_service is not None:
                             from geonode.services.models import HarvestJob
+                            _resource_id = _resource.get_real_instance().alternate
                             HarvestJob.objects.filter(
-                                service=_resource.get_real_instance().remote_service, resource_id=_resource.get_real_instance().alternate).delete()
-                            resource_id = _resource.get_real_instance().alternate.split(":")[-1] if len(_resource.get_real_instance().alternate.split(":")) else None
-                            if resource_id:
+                                service=_resource.get_real_instance().remote_service, resource_id=_resource_id).delete()
+                            _resource_id = _resource.get_real_instance().alternate.split(":")[-1] if len(_resource.get_real_instance().alternate.split(":")) else None
+                            if _resource_id:
                                 HarvestJob.objects.filter(
-                                    service=_resource.get_real_instance().remote_service, resource_id=resource_id).delete()
+                                    service=_resource.get_real_instance().remote_service, resource_id=_resource_id).delete()
                     except Exception as e:
                         logger.exception(e)
 
@@ -700,7 +700,7 @@ class ResourceManager(ResourceManagerInterface):
                     if instance and instance.files and isinstance(instance.get_real_instance(), Document):
                         if overwrite or instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
                             from geonode.documents.tasks import create_document_thumbnail
-                            create_document_thumbnail.apply_async((instance.id,))
+                            create_document_thumbnail.apply((instance.id,))
                     self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
                     return True
             except Exception as e:
