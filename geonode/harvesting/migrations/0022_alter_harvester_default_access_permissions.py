@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='harvester',
             name='default_access_permissions',
-            field=models.JSONField(default=geonode.harvesting.models.get_default_access_permissions, help_text='Default access permissions of harvested resources'),
+            field=models.JSONField(help_text='Default access permissions of harvested resources'),
         ),
     ]

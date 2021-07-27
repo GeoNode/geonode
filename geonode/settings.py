@@ -1435,7 +1435,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
         INSTALLED_APPS += (
             'mapstore2_adapter',
             'mapstore2_adapter.geoapps',
-            'mapstore2_adapter.geoapps.geostories',
             'geonode_mapstore_client',)
 
     def get_geonode_catalogue_service():
