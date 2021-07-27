@@ -506,23 +506,16 @@ define(function (require, exports) {
         var self = this;
         if (resp.hasOwnProperty('redirect_to') && resp.redirect_to.indexOf('upload/final') > -1) {
             common.make_request({
-                url: resp.redirect_to,
+                url: '#',
                 async: true,
                 beforeSend: function() {
                     self.logStatus({
-                        msg: '<p>' + gettext('Performing Final GeoServer Config Step') + '<img class="pull-right" src="../../static/geonode/img/loading.gif"></p>',
+                        msg: '<p>' + gettext('Performing Final GeoServer Config Step. Check the Upload status above!') + '</p>',
                         level: 'alert-success',
                         empty: 'true'
                     });
                     self.polling = true;
                     self.startPolling();
-                },
-                failure: function (resp, status) {
-                    self.polling = false;
-                    var error = (resp.errors != undefined ? resp.errors : resp.error_msg);
-                    self.markError(error, status);
-
-                    callback(array);
                 },
                 success: function (resp, status) {
                     self.polling = false;
@@ -539,11 +532,9 @@ define(function (require, exports) {
                     } else if (resp.status === 'error') {
                         self.polling = false;
                         self.markError(resp.error_msg, resp.status);
-
                         callback(array);
                     } else {
-                        self.displayUploadedLayerLinks(resp);
-
+                        // self.displayUploadedLayerLinks(resp);
                         callback(array);
                     }
                 }

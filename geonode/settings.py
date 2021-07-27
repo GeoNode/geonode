@@ -1730,12 +1730,6 @@ if USE_GEOSERVER:
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_SCHEDULE = {}
 
-if 'geonode.services' in INSTALLED_APPS:
-    CELERY_BEAT_SCHEDULE['probe_services'] = {
-        'task': 'geonode.services.tasks.probe_services',
-        'schedule': 600.0,
-    }
-
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
 CELERY_ENABLE_UTC = ast.literal_eval(os.environ.get('CELERY_ENABLE_UTC', 'True'))
 CELERY_TIMEZONE = TIME_ZONE
@@ -2039,11 +2033,6 @@ if MONITORING_ENABLED:
         (timedelta(days=14), timedelta(days=1),),
     )
 
-    CELERY_BEAT_SCHEDULE['collect_metrics'] = {
-        'task': 'geonode.monitoring.tasks.collect_metrics',
-        'schedule': 300.0,
-    }
-
 USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))
 USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv('USER_ANALYTICS_GZIP', 'False'))
 
@@ -2070,3 +2059,5 @@ UI_DEFAULT_MANDATORY_FIELDS = [
     'id_resource-restriction_code_type'
 ]
 UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv('UI_REQUIRED_FIELDS ', '[]'))
+
+UPLOAD_SESSION_EXPIRY_HOURS = os.getenv('UPLOAD_SESSION_EXPIRY_HOURS ', 24)

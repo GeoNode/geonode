@@ -80,6 +80,15 @@ class DatasetAdmin(TabbedTranslationAdmin):
     form = DatasetAdminForm
     actions = [metadata_batch_edit, set_batch_permissions]
 
+    def delete_queryset(self, request, queryset):
+        """
+        We need to invoke the 'ResourceBase.delete' method even when deleting
+        through the admin batch action
+        """
+        for obj in queryset:
+            from geonode.resource.manager import resource_manager
+            resource_manager.delete(obj.uuid, instance=obj)
+
 
 class AttributeAdmin(admin.ModelAdmin):
     model = Attribute
