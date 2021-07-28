@@ -25,7 +25,6 @@ from lxml import etree
 from django.utils.timezone import now
 from django.utils.module_loading import import_string
 
-
 # explicitly disable resolving XML entities in order to prevent malicious attacks
 XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
 
@@ -53,3 +52,14 @@ def validate_worker_configuration(harvester_type, configuration: typing.Dict):
             jsonschema.validate(configuration, schema)
         except jsonschema.exceptions.SchemaError as exc:
             raise RuntimeError(f"Invalid schema: {exc}")
+
+
+def get_xpath_value(
+        element: etree.Element,
+        xpath_expression: str,
+        nsmap: typing.Optional[dict] = None
+) -> typing.Optional[str]:
+    if not nsmap:
+        nsmap = element.nsmap
+    values = element.xpath(f"{xpath_expression}//text()", namespaces=nsmap)
+    return "".join(values).strip() or None

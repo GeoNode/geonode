@@ -36,6 +36,7 @@ from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
+from geonode.harvesting.utils import get_xpath_value
 
 from .. import (
     models,
@@ -781,14 +782,6 @@ def get_temporal_extent(
     except IndexError:
         result = None
     return result
-
-
-def get_xpath_value(
-        element: etree.Element,
-        xpath_expression: str,
-) -> typing.Optional[str]:
-    values = element.xpath(f"{xpath_expression}//text()", namespaces=element.nsmap)
-    return "".join(values).strip() or None
 
 
 def _get_optional_attribute_value(
