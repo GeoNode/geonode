@@ -1625,10 +1625,11 @@ class HttpClient:
                 content = str(e)
         else:
             response = session.get(url, headers=headers, timeout=self.timeout)
+        if response:
             try:
                 content = ensure_string(response.content) if not stream else response.raw
-            except Exception:
-                content = None
+            except Exception as e:
+                content = str(e)
 
         return (response, content)
 
