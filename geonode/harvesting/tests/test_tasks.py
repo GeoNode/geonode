@@ -109,6 +109,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         with mock.patch("geonode.harvesting.tasks.models") as mock_models:
             mock_worker = mock.MagicMock()
             mock_worker.get_resource.return_value = "fake_gotten_resource"
+            mock_worker.should_copy_resource.return_value = False
             mock_harvestable_resource = mock.MagicMock(models.HarvestableResource)
             mock_harvestable_resource.harvester.get_harvester_worker.return_value = mock_worker
             mock_models.HarvestableResource.objects.get.return_value = mock_harvestable_resource
@@ -127,6 +128,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         with mock.patch("geonode.harvesting.tasks.models") as mock_models:
             mock_worker = mock.MagicMock()
             mock_worker.get_resource.return_value = None  # this means the remote resource was not harvested
+            mock_worker.should_copy_resource.return_value = False
             mock_harvestable_resource = mock.MagicMock(models.HarvestableResource)
             mock_harvestable_resource.harvester.get_harvester_worker.return_value = mock_worker
             mock_models.HarvestableResource.objects.get.return_value = mock_harvestable_resource
