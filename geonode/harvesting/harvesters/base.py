@@ -359,7 +359,8 @@ def download_resource_file(url: str, target_name: str) -> str:
     file_size = response.headers.get("Content-Length")
     content_type = response.headers.get("Content-Type")
     charset = response.apparent_encoding
-    if file_size is not None and int(file_size) < config.HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE:
+    size_threshold = config.get_setting("HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE")
+    if file_size is not None and int(file_size) < size_threshold:
         logger.debug("Downloading to an in-memory buffer...")
         file_ = uploadedfile.InMemoryUploadedFile(
             None, None, target_name, content_type, file_size, charset)
