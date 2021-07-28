@@ -26,7 +26,7 @@ from geonode.harvesting.harvesters.geonode import (
 from geonode.harvesting.harvesters.base import BriefRemoteResource
 
 test_resources = {
-    GeoNodeResourceType.LAYER: 1,
+    GeoNodeResourceType.DATASET: 1,
     GeoNodeResourceType.DOCUMENT: 2,
     GeoNodeResourceType.MAP: 3,
 }
@@ -96,8 +96,8 @@ class TestGeonodeHarvester(GeoNodeBaseTestSupport):
         )
         self.assertEqual(worker._get_num_available_resources_by_type(), test_resources)
         self.assertEqual(
-            worker._get_total_records(GeoNodeResourceType.LAYER),
-            test_resources[GeoNodeResourceType.LAYER])
+            worker._get_total_records(GeoNodeResourceType.DATASET),
+            test_resources[GeoNodeResourceType.DATASET])
         self.assertEqual(
             worker._get_total_records(GeoNodeResourceType.DOCUMENT),
             test_resources[GeoNodeResourceType.DOCUMENT])
@@ -149,11 +149,11 @@ class TestGeonodeHarvester(GeoNodeBaseTestSupport):
         Test _list_resources_by_type function for every type in GeonodeLegacyHarvester
         """
         self.assertEqual(
-            self.worker._list_resources_by_type(GeoNodeResourceType.LAYER, 0)[0].resource_type,
-            GeoNodeResourceType.LAYER.value)
+            self.worker._list_resources_by_type(GeoNodeResourceType.DATASET, 0)[0].resource_type,
+            GeoNodeResourceType.DATASET.value)
         self.assertEqual(
             self.worker._list_dataset_resources(1)[0].resource_type,
-            GeoNodeResourceType.LAYER.value)
+            GeoNodeResourceType.DATASET.value)
 
         self.assertEqual(
             self.worker._list_resources_by_type(GeoNodeResourceType.DOCUMENT, 0)[0].resource_type,

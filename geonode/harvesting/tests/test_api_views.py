@@ -1,19 +1,12 @@
-
+import datetime
 from django.contrib.auth import get_user_model
 from rest_framework import status
-from rest_framework.test import (
-    APIRequestFactory,
-    APITestCase,
-)
-
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 from .. import models
 
 
-_REQUEST_FACTORY = APIRequestFactory()
-
-
-class HarvesterViewSetTestCase(APITestCase):
+class HarvesterViewSetTestCase(GeoNodeBaseTestSupport):
     user = get_user_model().objects.get(username='AnonymousUser')
     harvester_type = "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester"
 
@@ -36,6 +29,35 @@ class HarvesterViewSetTestCase(APITestCase):
             harvester2
         ]
 
+        harvester_resource1 = models.HarvestableResource.objects.create(
+            unique_identifier="resource_1",
+            title="resource 1",
+            harvester=harvester1,
+            last_refreshed=datetime.datetime.now()
+        )
+        harvester_resource2 = models.HarvestableResource.objects.create(
+            unique_identifier="resource_2",
+            title="resource 2",
+            harvester=harvester2,
+            last_refreshed=datetime.datetime.now()
+        )
+        cls.resources = {
+            harvester1.id: harvester_resource1,
+            harvester2.id: harvester_resource2,
+        }
+
+        session1 = models.HarvestingSession.objects.create(
+            harvester=harvester1,
+            total_records_found=10,
+            records_harvested=10
+        )
+        session2 = models.HarvestingSession.objects.create(
+            harvester=harvester2,
+            total_records_found=5,
+            records_harvested=5
+        )
+        cls.sessions = [session1, session2]
+
     def test_get_harvester_list(self):
         response = self.client.get("/api/v2/harvesters/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -43,3 +65,36 @@ class HarvesterViewSetTestCase(APITestCase):
         for index, harvester in enumerate(self.harvesters):
             self.assertEqual(response.data["harvesters"][index]["id"], self.harvesters[index].pk)
             self.assertEqual(response.data["harvesters"][index]["name"], self.harvesters[index].name)
+
+    def test_post_harvester_list_non_admin(self):
+        response = self.client.post('/api/v2/harvesters/', {})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_harvester_detail_for_non_admin(self):
+        self.client.logout()
+        for index, harvester in enumerate(self.harvesters):
+            response = self.client.get("/api/v2/harvesters/{}/".format(harvester.id))
+            self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_harvester_detail_for_admin(self):
+        self.client.login(username="admin", password="admin")
+        for index, harvester in enumerate(self.harvesters):
+            response = self.client.get("/api/v2/harvesters/{}/".format(harvester.id))
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data["harvester"]["id"], harvester.pk)
+            self.assertEqual(response.data["harvester"]["name"], harvester.name)
+
+    def test_get_harvester_resources(self):
+        for index, harvester in enumerate(self.harvesters):
+            response = self.client.get("/api/v2/harvesters/{}/harvestable-resources/".format(harvester.id))
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data["harvestable_resources"][0]["unique_identifier"], self.resources[harvester.id].unique_identifier)
+            self.assertEqual(response.data["harvestable_resources"][0]["title"], self.resources[harvester.id].title)
+
+    def test_get_harvester_sessions(self):
+        response = self.client.get("/api/v2/harvesting-sessions/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["total"], len(self.sessions))
+        for index, harvester in enumerate(self.sessions):
+            self.assertEqual(response.data["harvesting_sessions"][index]["id"], self.sessions[index].pk)
+            self.assertEqual(response.data["harvesting_sessions"][index]["records_harvested"], self.sessions[index].records_harvested)
