@@ -12,10 +12,8 @@ def copy_uploaded_files(apps, _):
         for _uploaded_file in UploadFile.objects.filter(upload=_upload):
             files_to_copy.append(_uploaded_file.file.path)
         if _upload.layer is not None:
-            print(f"Copy Uploaded Files '{files_to_copy}' to ResourceBase '{_upload.layer.title}' Storage...")
-            _out = ResourceBaseManager.upload_files(
+            ResourceBaseManager.upload_files(
                 resource_id=_upload.layer.resourcebase_ptr_id, files=files_to_copy, force=True)
-            print(f"... finshed with output: {_out}")
 
 
 class Migration(migrations.Migration):

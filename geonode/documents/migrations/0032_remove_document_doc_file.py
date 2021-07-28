@@ -8,10 +8,8 @@ def copy_doc_files(apps, _):
     Document = apps.get_model('documents', 'Document')
     for _doc in Document.objects.all():
         if _doc.doc_file:
-            print(f"Copy Doc File '{_doc.doc_file.path}' to ResourceBase '{_doc.title}' Storage...")
-            _out = ResourceBaseManager.upload_files(
+            ResourceBaseManager.upload_files(
                 resource_id=_doc.resourcebase_ptr_id, files=[_doc.doc_file.path, ], force=True)
-            print(f"... finshed with output: {_out}")
 
 
 class Migration(migrations.Migration):
