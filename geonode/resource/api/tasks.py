@@ -53,7 +53,20 @@ def _get_param_value(_param, _input_value):
             if _username:
                 _param_value[_key] = get_user_model().objects.get(username=_username)
     else:
-        _param_value = _param.annotation(_input_value)
+        try:
+            def _literal_convert(_v): return ast.literal_eval(_v) if isinstance(_v, str) else _v
+
+            _value = _input_value
+            if 'typing.List' in str(_param.annotation):
+                _param_value = list(_literal_convert(_value))
+            elif 'typing.Dict' in str(_param.annotation):
+                _param_value = dict(_literal_convert(_value))
+            elif 'typing.Tuple' in str(_param.annotation):
+                _param_value = tuple(_literal_convert(_value))
+            else:
+                _param_value = _param.annotation(_input_value)
+        except TypeError:
+            _param_value = _input_value
     return _param_value
 
 

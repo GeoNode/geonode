@@ -382,7 +382,7 @@ class ResourceManager(ResourceManagerInterface):
             with transaction.atomic():
                 if resource_type == Document:
                     if files:
-                        to_update['files'] = files
+                        to_update['files'] = storage_manager.copy_files_list(files)
                     instance = self.create(
                         uuid,
                         resource_type=Document,
@@ -394,7 +394,12 @@ class ResourceManager(ResourceManagerInterface):
                             uuid,
                             resource_type=Dataset,
                             defaults=to_update)
-                instance = self._concrete_resource_manager.ingest(files, uuid=instance.uuid, resource_type=resource_type, defaults=to_update, **kwargs)
+                instance = self._concrete_resource_manager.ingest(
+                    storage_manager.copy_files_list(files),
+                    uuid=instance.uuid,
+                    resource_type=resource_type,
+                    defaults=to_update,
+                    **kwargs)
         except Exception as e:
             logger.exception(e)
         finally:

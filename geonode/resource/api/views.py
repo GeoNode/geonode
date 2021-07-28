@@ -212,6 +212,7 @@ def resource_service_ingest(request, resource_type: str = None):
 
      - input_params: {
          uuid: "<str: UUID>",
+         files: "<list(str) path>",
          defaults: "{\"owner\":\"<str: username>\",<list: str>}",  # WARNING: 'owner' is mandatory
          resource_type: "<enum: ['dataset', 'document', 'map', '<GeoApp: name>']>"
        }
@@ -228,8 +229,8 @@ def resource_service_ingest(request, resource_type: str = None):
 
     Sample Request:
 
-    1. curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d 'defaults={"owner":"admin","title":"pippo"}'
-          http://localhost:8000/api/v2/resource-service/create/dataset
+    1. curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d 'defaults={"owner":"admin","title":"pippo"}' -d 'files=["/mnt/c/Data/flowers.jpg"]'
+          http://localhost:8000/api/v2/resource-service/ingest/document
         OUTPUT: {
             "status": "ready",
             "execution_id": "90ca670d-df60-44b6-b358-d792c6aecc58",
@@ -246,6 +247,7 @@ def resource_service_ingest(request, resource_type: str = None):
             "last_updated": "2021-07-22T15:32:09.096129Z",
             "input_params": {
                 "uuid": "fa404f64-eb01-11eb-8f91-00155d41f2fb",
+                "files": "[\"/mnt/c/Data/flowers.jpg\"]",
                 "defaults": "{\"owner\":\"admin\",\"title\":\"pippo\"}",
                 "resource_type": "dataset"
             },
