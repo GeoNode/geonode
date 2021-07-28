@@ -1622,13 +1622,13 @@ class HttpClient:
                 msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
                 logger.exception(Exception(msg))
                 response = None
+                content = str(e)
         else:
             response = session.get(url, headers=headers, timeout=self.timeout)
-
-        try:
-            content = ensure_string(response.content) if not stream else response.raw
-        except Exception:
-            content = None
+            try:
+                content = ensure_string(response.content) if not stream else response.raw
+            except Exception:
+                content = None
 
         return (response, content)
 

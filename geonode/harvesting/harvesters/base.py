@@ -18,18 +18,27 @@
 #########################################################################
 
 import abc
-import typing
 import dataclasses
+import html
+import logging
+import typing
+import urllib.parse
 
+import requests
+from django.core.files import uploadedfile
 from django.db.models import F
 from django.utils import timezone
 from geonode.base.models import ResourceBase
 from geonode.resource.manager import resource_manager
+from geonode.storage.manager import storage_manager
 
 from .. import (
+    config,
     models,
     resourcedescriptor,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @dataclasses.dataclass()
@@ -44,6 +53,7 @@ class BriefRemoteResource:
 class HarvestedResourceInfo:
     resource_descriptor: resourcedescriptor.RecordDescription
     additional_information: typing.Optional[typing.Any]
+    copied_resources: typing.Optional[typing.List] = dataclasses.field(default_factory=list)
 
 
 class BaseHarvesterWorker(abc.ABC):
@@ -154,9 +164,8 @@ class BaseHarvesterWorker(abc.ABC):
             harvesting_session_id: int,
     ):
         """Create or update a local GeoNode resource with the input harvested information."""
-        harvester = models.Harvester.objects.get(pk=self.harvester_id)
         defaults = self.get_geonode_resource_defaults(
-            harvested_info.resource_descriptor, harvestable_resource)
+            harvested_info, harvestable_resource)
         geonode_resource = harvestable_resource.geonode_resource
         if geonode_resource is None:
             geonode_resource = resource_manager.create(
@@ -177,6 +186,7 @@ class BaseHarvesterWorker(abc.ABC):
         keywords = list(
             harvested_info.resource_descriptor.identification.other_keywords
         ) + geonode_resource.keyword_list()
+        harvester = models.Harvester.objects.get(pk=self.harvester_id)
         keywords.append(
             harvester.name.lower().replace(
                 'harvester ', '').replace(
@@ -186,11 +196,6 @@ class BaseHarvesterWorker(abc.ABC):
         regions = harvested_info.resource_descriptor.identification.place_keywords
         resource_manager.update(
             str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=list(set(keywords)))
-
-        resource_manager.set_permissions(
-            str(harvested_info.resource_descriptor.uuid),
-            instance=geonode_resource,
-            permissions=harvester.default_access_permissions)
         harvestable_resource.geonode_resource = geonode_resource
         harvestable_resource.save()
         self.finalize_resource_update(
@@ -209,9 +214,57 @@ class BaseHarvesterWorker(abc.ABC):
     ) -> ResourceBase:
         return geonode_resource
 
+    def should_copy_resource(
+            self,
+            harvestable_resource: "HarvestableResource",  # noqa
+    ) -> bool:
+        """Return True if the worker is able to copy the remote resource.
+
+        The base implementation just returns False. Subclasses must re-implement this method
+        if they support copying remote resources onto the local GeoNode.
+
+        """
+
+        return False
+
+    def copy_resource(
+            self,
+            harvestable_resource: "HarvestableResource",  # noqa
+            harvested_resource_info: HarvestedResourceInfo,
+    ) -> typing.Optional[str]:
+        """Copy a remote resource's data to the local GeoNode.
+
+        The base implementation provides a generic copy using GeoNode's `storage_manager`.
+        Subclasses may need to re-implement this method if they require specialized behavior.
+
+        """
+
+        url = harvested_resource_info.resource_descriptor.distribution.original_format_url
+        result = None
+        if url is not None:
+            parsed_url = urllib.parse.urlparse(url)
+            sanitized_base_name = _sanitize_file_name(parsed_url.path)
+            harvester = models.Harvester.objects.get(pk=self.harvester_id)
+            name_fragments = (
+                f"{harvester.name}-{harvester.id}",
+                str(harvested_resource_info.resource_descriptor.uuid),
+                sanitized_base_name
+            )
+            target_name = "_".join(name_fragments)
+            try:
+                result = download_resource_file(url, target_name)
+            except requests.exceptions.HTTPError:
+                logger.exception(f"Could not download resource file from {url!r}")
+        else:
+            logger.warning(
+                "harvested resource info does not provide a URL for retrieving the "
+                "resource, skipping..."
+            )
+        return result
+
     def get_geonode_resource_defaults(
             self,
-            resource_descriptor: resourcedescriptor.RecordDescription,
+            harvested_info: HarvestedResourceInfo,
             harvestable_resource: "HarvestableResource",  # noqa
     ) -> typing.Dict:
         """
@@ -220,19 +273,20 @@ class BaseHarvesterWorker(abc.ABC):
 
         defaults = {
             "owner": harvestable_resource.harvester.default_owner,
-            "uuid": str(resource_descriptor.uuid),
-            "abstract": resource_descriptor.identification.abstract,
-            "bbox_polygon": resource_descriptor.identification.spatial_extent,
-            "constraints_other": resource_descriptor.identification.other_constraints,
-            "created": resource_descriptor.date_stamp,
-            "data_quality_statement": resource_descriptor.data_quality,
-            "date": resource_descriptor.identification.date,
-            "date_type": resource_descriptor.identification.date_type,
-            "language": resource_descriptor.language,
-            "purpose": resource_descriptor.identification.purpose,
+            "uuid": str(harvested_info.resource_descriptor.uuid),
+            "abstract": harvested_info.resource_descriptor.identification.abstract,
+            "bbox_polygon": harvested_info.resource_descriptor.identification.spatial_extent,
+            "constraints_other": harvested_info.resource_descriptor.identification.other_constraints,
+            "created": harvested_info.resource_descriptor.date_stamp,
+            "data_quality_statement": harvested_info.resource_descriptor.data_quality,
+            "date": harvested_info.resource_descriptor.identification.date,
+            "date_type": harvested_info.resource_descriptor.identification.date_type,
+            "language": harvested_info.resource_descriptor.language,
+            "purpose": harvested_info.resource_descriptor.identification.purpose,
             "supplemental_information": (
-                resource_descriptor.identification.supplemental_information),
-            "title": resource_descriptor.identification.title
+                harvested_info.resource_descriptor.identification.supplemental_information),
+            "title": harvested_info.resource_descriptor.identification.title,
+            "files": harvested_info.copied_resources,
         }
         # geonode_resource_type = self.get_resource_type_class(
         #     harvestable_resource.remote_resource_type)
@@ -249,3 +303,48 @@ class BaseHarvesterWorker(abc.ABC):
         #         "charset": resource_descriptor.character_set
         #     })
         return {key: value for key, value in defaults.items() if value is not None}
+
+
+def download_resource_file(url: str, target_name: str) -> str:
+    """Download a resource file and store it using GeoNode's `storage_manager`.
+
+    Downloads use the django `UploadedFile` helper classes. Depending on the size of the
+    remote resource, we may download it into an in-memory buffer or store it on a
+    temporary location on disk. After having downloaded the file, we use `storage_manager`
+    to save it in the appropriate location.
+
+    """
+
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+    file_size = response.headers.get("Content-Length")
+    content_type = response.headers.get("Content-Type")
+    charset = response.apparent_encoding
+    if file_size is not None and int(file_size) < config.HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE:
+        logger.debug("Downloading to an in-memory buffer...")
+        file_ = uploadedfile.InMemoryUploadedFile(
+            None, None, target_name, content_type, file_size, charset)
+    else:
+        logger.debug("Downloading to a temporary file...")
+        file_ = uploadedfile.TemporaryUploadedFile(
+            target_name, content_type, file_size, charset)
+    with file_.open("wb+") as fd:
+        for chunk in response.iter_content(chunk_size=None, decode_unicode=False):
+            fd.write(chunk)
+        fd.seek(0)
+        result = storage_manager.save(target_name, fd)
+    return result
+
+
+def _sanitize_file_name(file_name: str) -> typing.Optional[str]:
+    """Inspired by django's `django.http.multipartparser.MultiPartParser.sanitize_file_name()` method."""
+
+    file_name = html.unescape(file_name)
+    file_name = file_name.rsplit("/")[-1]
+    file_name = file_name.rsplit("\\")[-1]
+
+    if file_name in {"", ".", ".."}:
+        result = None
+    else:
+        result = file_name
+    return result

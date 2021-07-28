@@ -106,7 +106,6 @@ class Upload(models.Model):
 
     def update_from_session(self, upload_session, resource: ResourceBase = None):
         self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
-        self.state = upload_session.import_session.state
         self.name = upload_session.name
         self.user = upload_session.user
         self.date = now()
@@ -142,7 +141,10 @@ class Upload(models.Model):
 
         if "COMPLETE" == self.state:
             self.complete = True
-
+        if self.resource and self.resource.processed:
+            self.state = enumerations.STATE_PROCESSED
+        elif self.state in (enumerations.STATE_READY, enumerations.STATE_PENDING):
+            self.state = upload_session.import_session.state
         self.save()
 
     @property
@@ -239,8 +241,9 @@ class Upload(models.Model):
                 logger.warning(e)
 
     def set_processing_state(self, state):
-        self.state = True
-        Upload.objects.filter(id=self.id).update(state=state)
+        if self.state != state:
+            self.state = state
+            Upload.objects.filter(id=self.id).update(state=state)
         if self.resource:
             self.resource.set_processing_state(state)
 

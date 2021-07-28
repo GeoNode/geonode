@@ -637,7 +637,7 @@ class ResourceBaseManager(PolymorphicManager):
         return super().get_queryset()
 
     @staticmethod
-    def upload_files(resource_id, files):
+    def upload_files(resource_id, files, force=False):
         try:
             out = []
             for f in files:
@@ -648,6 +648,8 @@ class ResourceBaseManager(PolymorphicManager):
                         filename = os.path.basename(f)
                         file_uploaded_path = storage_manager.save(f'{folder}/{filename}', ff)
                         out.append(storage_manager.path(file_uploaded_path))
+                elif force:
+                    out.append(f)
 
             # making an update instead of save in order to avoid others
             # signal like post_save and commiunication with geoserver

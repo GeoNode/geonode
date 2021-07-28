@@ -4,6 +4,11 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+def update_resource_id(apps, _):
+    Upload = apps.get_model('upload', 'Upload')
+    Upload.objects.filter().update(resource=models.F('layer'))
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -12,13 +17,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='upload',
-            name='layer',
-        ),
         migrations.AddField(
             model_name='upload',
             name='resource',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='base.resourcebase'),
+        ),
+        migrations.RunPython(update_resource_id, migrations.RunPython.noop),
+        migrations.RemoveField(
+            model_name='upload',
+            name='layer',
         ),
     ]

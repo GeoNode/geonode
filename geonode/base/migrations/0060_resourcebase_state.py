@@ -8,7 +8,7 @@ def update_state_value(apps, schema_editor):
     """Let's update the existing resources to the 'PROCESSED' state
     otherwise those will be set to 'dirty' later on and hidden by the APIs.
     """
-    MyModel = apps.get_model('resourcebase', 'ResourceBase')
+    MyModel = apps.get_model('base', 'ResourceBase')
     MyModel.objects.filter().update(state=enumerations.STATE_PROCESSED)
 
 

@@ -31,14 +31,12 @@ from geonode.geoserver.helpers import gs_uploader
 
 from geonode.upload.models import Upload
 from geonode.upload.views import final_step_view
+from geonode.upload.utils import next_step_response
 from geonode.resource.manager import resource_manager
 
 from geonode.tasks.tasks import (
     AcquireLock,
     FaultTolerantTask)
-from geonode.upload.utils import (
-    get_next_step,
-    next_step_response)
 
 logger = logging.getLogger(__name__)
 
@@ -53,9 +51,13 @@ UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, 'UPLOAD_SESSION_EXPIRY_HOURS', 2
     ignore_result=False,
 )
 def finalize_incomplete_session_uploads(self, *args, **kwargs):
-    """ Task is to delete resources which didn't complete the processes within
-    their session. We have to make sure To NOT Delete those Unprocessed Ones,
-    which are in live sessions. """
+    """The task periodically checks for pending and stale Upload sessions.
+    It runs every 600 seconds (see the PeriodTask on geonode.upload._init_),
+    checks first for expired stale Upload sessions and schedule them for cleanup.
+    We have to make sure To NOT Delete those Unprocessed Ones,
+    which are in live sessions.
+    After removing the stale ones, it collects all the unprocessed and runs them
+    in parallel."""
 
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
@@ -99,7 +101,8 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                     session = _upload.get_session.import_session
                     if not session or session.state != enumerations.STATE_COMPLETE:
                         session = gs_uploader.get_session(_upload.import_id)
-                except (NotFound, Exception):
+                except (NotFound, Exception) as e:
+                    logger.exception(e)
                     session = None
                     if _upload.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
                         _upload.set_processing_state(enumerations.STATE_INVALID)
@@ -161,7 +164,7 @@ def _upload_workflow_error(self, task_name: str, upload_ids: list):
     ignore_result=False,
 )
 def _update_upload_session_state(self, upload_session_id: int):
-    """ TODO """
+    """Task invoked by 'upload_workflow.chord' in order to process all the 'PENDING' Upload tasks."""
 
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
@@ -181,12 +184,10 @@ def _update_upload_session_state(self, upload_session_id: int):
                         if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
                             _upload.set_processing_state(enumerations.STATE_WAITING)
                         else:
-                            next = get_next_step(_upload.get_session)
-                            if next == 'final' and session.state == enumerations.STATE_COMPLETE and _upload.state == enumerations.STATE_PENDING:
+                            if session.state == enumerations.STATE_COMPLETE and _upload.state == enumerations.STATE_PENDING:
                                 if not _upload.resource or not _upload.resource.processed:
                                     final_step_view(None, _upload.get_session)
-                                _upload.state = enumerations.STATE_RUNNING
-                                Upload.objects.filter(id=_upload.id).update(state=enumerations.STATE_RUNNING)
+                                _upload.set_processing_state(enumerations.STATE_RUNNING)
                 except (NotFound, Exception) as e:
                     logger.exception(e)
                     if _upload.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
@@ -203,7 +204,7 @@ def _update_upload_session_state(self, upload_session_id: int):
     ignore_result=False,
 )
 def _upload_session_cleanup(self, upload_session_id: int):
-    """ TODO """
+    """Task invoked by 'upload_workflow.chord' in order to remove and cleanup all the 'INVALID' stale Upload tasks."""
 
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:

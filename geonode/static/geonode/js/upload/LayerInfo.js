@@ -510,7 +510,7 @@ define(function (require, exports) {
                 async: true,
                 beforeSend: function() {
                     self.logStatus({
-                        msg: '<p>' + gettext('Performing Final GeoServer Config Step') + '<img class="pull-right" src="../../static/geonode/img/loading.gif"></p>',
+                        msg: '<p>' + gettext('Performing Final GeoServer Config Step. Check the Upload status above!') + '</p>',
                         level: 'alert-success',
                         empty: 'true'
                     });

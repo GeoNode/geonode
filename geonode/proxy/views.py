@@ -54,7 +54,7 @@ from geonode.base.enumerations import LINK_TYPES as _LT
 from geonode import geoserver  # noqa
 from geonode.monitoring import register_event
 
-TIMEOUT = 300
+TIMEOUT = 30
 
 LINK_TYPES = [L for L in _LT if L.startswith("OGC:")]
 
@@ -182,6 +182,11 @@ def proxy(request, url=None, response_callback=None,
         headers=headers,
         timeout=timeout,
         user=request.user)
+    if response is None:
+        return HttpResponse(
+            content=content,
+            reason=content,
+            status=500)
     content = response.content or response.reason
     status = response.status_code
     content_type = response.headers.get('Content-Type')

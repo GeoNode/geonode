@@ -16,8 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.apps import apps
-from django.apps import AppConfig as BaseAppConfig
+from django.conf import settings
+from django.apps import AppConfig
+from django.db.models.signals import post_migrate
 
 
 class UploadException(Exception):
@@ -35,41 +36,48 @@ class LayerNotReady(Exception):
     pass
 
 
-def run_setup_hooks(*args, **kwargs):
+def run_setup_hooks(sender, **kwargs):
     from django.utils import timezone
-    from django_celery_beat.models import (
-        IntervalSchedule,
-        PeriodicTask,
-    )
 
-    check_intervals = IntervalSchedule.objects.filter(every=25, period="seconds")
-    if not check_intervals.exists():
-        check_interval, _ = IntervalSchedule.objects.get_or_create(
-            every=25,
-            period="seconds"
+    # Initialize periodic tasks
+    if 'django_celery_beat' in settings.INSTALLED_APPS and \
+            getattr(settings, 'CELERY_BEAT_SCHEDULER', None) == 'django_celery_beat.schedulers:DatabaseScheduler':
+        from django_celery_beat.models import (
+            IntervalSchedule,
+            PeriodicTask,
         )
-    else:
-        check_interval = check_intervals.first()
 
-    PeriodicTask.objects.update_or_create(
-        name="finalize-incomplete-session-resources",
-        defaults=dict(
-            task="geonode.upload.tasks.finalize_incomplete_session_uploads",
-            interval=check_interval,
-            args='',
-            start_time=timezone.now()
+        check_intervals = IntervalSchedule.objects.filter(every=600, period="seconds")
+        if not check_intervals.exists():
+            check_interval, _ = IntervalSchedule.objects.get_or_create(
+                every=600,
+                period="seconds"
+            )
+        else:
+            check_interval = check_intervals.first()
+
+        PeriodicTask.objects.update_or_create(
+            name="finalize-incomplete-session-resources",
+            defaults=dict(
+                task="geonode.upload.tasks.finalize_incomplete_session_uploads",
+                interval=check_interval,
+                args='',
+                start_time=timezone.now()
+            )
         )
-    )
 
 
-class UploadAppConfig(BaseAppConfig):
+class UploadAppConfig(AppConfig):
 
     name = "geonode.upload"
 
     def ready(self):
-        super(UploadAppConfig, self).ready()
-        if not apps.ready:
-            run_setup_hooks()
+        super().ready()
+        post_migrate.connect(run_setup_hooks, sender=self)
+        settings.CELERY_BEAT_SCHEDULE['finalize-incomplete-session-resources'] = {
+            'task': 'geonode.upload.tasks.finalize_incomplete_session_uploads',
+            'schedule': 60.0,
+        }
 
 
 default_app_config = "geonode.upload.UploadAppConfig"

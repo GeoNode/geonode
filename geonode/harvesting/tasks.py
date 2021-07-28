@@ -113,6 +113,10 @@ def _harvest_resource(
     worker: BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
     harvested_resource_info = worker.get_resource(
         harvestable_resource, harvesting_session_id)
+    if worker.should_copy_resource(harvestable_resource):
+        copied_name = worker.copy_resource(harvestable_resource, harvested_resource_info)
+        if copied_name is not None:
+            harvested_resource_info.copied_resources.append(copied_name)
     now_ = now()
     if harvested_resource_info is not None:
         worker.update_geonode_resource(
