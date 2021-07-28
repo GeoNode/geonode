@@ -2132,6 +2132,7 @@ def get_subclasses_by_model(model: str):
                 _app_subclasses.append(_geoapp.__name__)
     return _app_subclasses
 
+
 def find_by_attr(lst, val, attr="id"):
     """ Returns an object if the id matches in any list of objects """
     for item in lst:
