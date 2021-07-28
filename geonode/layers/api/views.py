@@ -16,17 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.thumbs.thumbnails import create_thumbnail
-import json
-from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
-from rest_framework.decorators import action
 
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework.response import Response
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
@@ -37,7 +32,6 @@ from .serializers import DatasetSerializer, DatasetListSerializer
 from .permissions import DatasetPermissionsFilter
 
 import logging
-import ast
 
 logger = logging.getLogger(__name__)
 
@@ -60,31 +54,3 @@ class DatasetViewSet(DynamicModelViewSet):
         if self.action == 'list':
             return DatasetListSerializer
         return DatasetSerializer
-
-    @extend_schema(
-        methods=["post"], responses={200}, description="API endpoint allowing to set the thumbnail url for an existing dataset."
-    )
-    @action(
-        detail=False,
-        url_path="(?P<dataset_id>\d+)/set_thumbnail_from_bbox",  # noqa
-        url_name="set-thumb-from-bbox",
-        methods=["post"],
-        permission_classes=[
-            IsAuthenticated,
-        ],
-    )
-    def set_thumbnail_from_bbox(self, request, dataset_id):
-        try:
-            dataset = Dataset.objects.get(resourcebase_ptr_id=ast.literal_eval(dataset_id))
-            request_body = request.data if request.data else json.loads(request.body)
-            bbox = request_body["bbox"] + [request_body["srid"]]
-            zoom = request_body.get("zoom", None)
-
-            thumbnail_url = create_thumbnail(dataset, bbox=bbox, background_zoom=zoom, overwrite=True)
-            return Response({"thumbnail_url": thumbnail_url}, status=200)
-        except Dataset.DoesNotExist:
-            logger.error(f"Dataset selected with id {dataset_id} does not exists")
-            return Response(data={"message": f"Dataset selected with id {dataset_id} does not exists"}, status=404, exception=True)
-        except Exception as e:
-            logger.error(e)
-            return Response(data={"message": e.args[0]}, status=500, exception=True)

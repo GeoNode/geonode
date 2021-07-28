@@ -637,7 +637,7 @@ class ResourceBaseManager(PolymorphicManager):
         return super().get_queryset()
 
     @staticmethod
-    def upload_files(resource_id, files):
+    def upload_files(resource_id, files, force=False):
         try:
             out = []
             for f in files:
@@ -648,6 +648,8 @@ class ResourceBaseManager(PolymorphicManager):
                         filename = os.path.basename(f)
                         file_uploaded_path = storage_manager.save(f'{folder}/{filename}', ff)
                         out.append(storage_manager.path(file_uploaded_path))
+                elif force:
+                    out.append(f)
 
             # making an update instead of save in order to avoid others
             # signal like post_save and commiunication with geoserver
@@ -1364,20 +1366,23 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 return None
 
     def set_dirty_state(self):
-        self.dirty_state = True
-        ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
+        if not self.dirty_state:
+            self.dirty_state = True
+            ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
 
     def clear_dirty_state(self):
-        self.dirty_state = False
-        ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
+        if self.dirty_state:
+            self.dirty_state = False
+            ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
 
     def set_processing_state(self, state):
-        self.state = state
-        ResourceBase.objects.filter(id=self.id).update(state=state)
-        if state == enumerations.STATE_PROCESSED:
-            self.clear_dirty_state()
-        else:
-            self.set_dirty_state()
+        if self.state != state:
+            self.state = state
+            ResourceBase.objects.filter(id=self.id).update(state=state)
+            if state == enumerations.STATE_PROCESSED:
+                self.clear_dirty_state()
+            else:
+                self.set_dirty_state()
 
     @property
     def processed(self):

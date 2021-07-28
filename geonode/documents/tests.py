@@ -859,3 +859,13 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         self.client.login(username=self.not_admin.username, password='very-secret')
         response = self.client.get(self.doc_link_url)
         self.assertEqual(response.status_code, 404)
+        # test document link with external url
+        doc = resource_manager.create(
+            None,
+            resource_type=Document,
+            defaults=dict(
+                doc_url="http://geonode.org/map.pdf",
+                owner=self.not_admin,
+                title="GeoNode Map Doc",
+            ))
+        self.assertEqual(doc.embed_url, 'http://geonode.org/map.pdf')

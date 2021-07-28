@@ -40,5 +40,14 @@ class GeoAppAdmin(TabbedTranslationAdmin):
     search_fields = ('title', 'abstract', 'purpose', 'is_approved', 'is_published',)
     form = GeoAppAdminForm
 
+    def delete_queryset(self, request, queryset):
+        """
+        We need to invoke the 'ResourceBase.delete' method even when deleting
+        through the admin batch action
+        """
+        for obj in queryset:
+            from geonode.resource.manager import resource_manager
+            resource_manager.delete(obj.uuid, instance=obj)
+
 
 admin.site.register(GeoApp, GeoAppAdmin)

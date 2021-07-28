@@ -17,26 +17,22 @@
 #
 #########################################################################
 import os
-import json
 import base64
 import pickle
 import shutil
 import logging
 
 from gsimporter.api import NotFound
+from django.utils.timezone import now
 
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
-from django.utils.timezone import now
 from geonode import GeoNodeException
 from geonode.base import enumerations
-from geonode.tasks.tasks import AcquireLock
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import storage_manager
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
-
-from .utils import next_step_response
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +106,6 @@ class Upload(models.Model):
 
     def update_from_session(self, upload_session, resource: ResourceBase = None):
         self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
-        self.state = upload_session.import_session.state
         self.name = upload_session.name
         self.user = upload_session.user
         self.date = now()
@@ -146,7 +141,10 @@ class Upload(models.Model):
 
         if "COMPLETE" == self.state:
             self.complete = True
-
+        if self.resource and self.resource.processed:
+            self.state = enumerations.STATE_PROCESSED
+        elif self.state in (enumerations.STATE_READY, enumerations.STATE_PENDING):
+            self.state = upload_session.import_session.state
         self.save()
 
     @property
@@ -171,34 +169,6 @@ class Upload(models.Model):
     def get_resume_url(self):
         if self.state == enumerations.STATE_WAITING and self.import_id:
             return f"{reverse('data_upload')}?id={self.import_id}"
-        elif self.state not in (enumerations.STATE_RUNNING, enumerations.STATE_PROCESSED):
-            session = None
-            try:
-                if not self.import_id:
-                    raise NotFound
-                session = self.get_session.import_session
-                if not session or session.state != enumerations.STATE_COMPLETE:
-                    session = gs_uploader.get_session(self.import_id)
-            except (NotFound, Exception):
-                if self.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
-                    self.set_processing_state(enumerations.STATE_INVALID)
-            if session:
-                lock_id = f'{self.import_id}'
-                with AcquireLock(lock_id) as lock:
-                    if lock.acquire() is True:
-                        try:
-                            content = next_step_response(None, self.get_session).content
-                            if isinstance(content, bytes):
-                                content = content.decode('UTF-8')
-                            response_json = json.loads(content)
-                            if response_json['success'] and 'redirect_to' in response_json:
-                                if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
-                                    self.set_processing_state(enumerations.STATE_WAITING)
-                                    return f"{reverse('data_upload')}?id={self.import_id}"
-                        except (NotFound, Exception) as e:
-                            logger.exception(e)
-                            if self.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
-                                self.set_processing_state(enumerations.STATE_INVALID)
         return None
 
     def get_delete_url(self):
@@ -271,8 +241,9 @@ class Upload(models.Model):
                 logger.warning(e)
 
     def set_processing_state(self, state):
-        self.state = True
-        Upload.objects.filter(id=self.id).update(state=state)
+        if self.state != state:
+            self.state = state
+            Upload.objects.filter(id=self.id).update(state=state)
         if self.resource:
             self.resource.set_processing_state(state)
 
