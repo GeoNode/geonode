@@ -10,7 +10,7 @@ def convert_geostory_blob(apps, _):
         if isinstance(item.blob, str):
             new_blob = json.loads(item.blob)
             model.objects.filter(id=item.id).update(blob=new_blob)
-        rtype = ContentType.objects.get(app_label="geoapps")
+        rtype = ContentType.objects.get(model="geoapp")
         model.objects.filter(id=item.id).update(polymorphic_ctype=rtype)
 
 
