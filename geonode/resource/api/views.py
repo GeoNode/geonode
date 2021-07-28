@@ -94,7 +94,7 @@ def resource_service_exists(request, uuid: str):
 def resource_service_execution_status(request, execution_id: str):
     """Main dispatcher endpoint to follow an API request status progress
 
-     - input: <str: execution id>
+     - GET input: <str: execution id>
      - output: <ExecutionRequest>
     """
     try:
@@ -127,7 +127,7 @@ def resource_service_create(request, resource_type: str = None):
     """Instructs the Async dispatcher to execute a 'CREATE' operation
      **WARNING**: This will create an empty dataset; if you need to upload a resource to GeoNode, consider using the endpoint "ingest" instead
 
-     - input_params: {
+     - POST input_params: {
          uuid: "<str: UUID>",
          defaults: "{\"owner\":\"<str: username>\",<list: str>}",  # WARNING: 'owner' is mandatory
          resource_type: "<enum: ['dataset', 'document', 'map', '<GeoApp: name>']>"
@@ -175,7 +175,7 @@ def resource_service_create(request, resource_type: str = None):
     """
     config = Configuration.load()
     if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated \
-    or not request.user.has_perm('base.add_resourcebase'):
+            or not request.user.has_perm('base.add_resourcebase'):
         return Response(status=status.HTTP_403_FORBIDDEN)
     try:
         request_params = QueryDict(request.body, mutable=True)
@@ -208,9 +208,8 @@ def resource_service_create(request, resource_type: str = None):
 @api_view(['POST'])
 def resource_service_ingest(request, resource_type: str = None):
     """Instructs the Async dispatcher to execute a 'INGEST' operation
-     **WARNING**: This will create an empty dataset; if you need to upload a resource to GeoNode, consider using the endpoint "ingest" instead
 
-     - input_params: {
+     - POST input_params: {
          uuid: "<str: UUID>",
          files: "<list(str) path>",
          defaults: "{\"owner\":\"<str: username>\",<list: str>}",  # WARNING: 'owner' is mandatory
@@ -260,7 +259,7 @@ def resource_service_ingest(request, resource_type: str = None):
     """
     config = Configuration.load()
     if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated \
-    or not request.user.has_perm('base.add_resourcebase'):
+            or not request.user.has_perm('base.add_resourcebase'):
         return Response(status=status.HTTP_403_FORBIDDEN)
     try:
         request_params = QueryDict(request.body, mutable=True)
@@ -295,7 +294,7 @@ def resource_service_ingest(request, resource_type: str = None):
 def resource_service_delete(request, uuid: str):
     """Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'
 
-     - input_params: {
+     - DELETE input_params: {
          uuid: "<str: UUID>"
        }
 
@@ -364,7 +363,7 @@ def resource_service_delete(request, uuid: str):
 def resource_service_update(request, uuid: str):
     """Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'
 
-     - input_params: {
+     - PUT input_params: {
          uuid: "<str: UUID>"
          xml_file: str = None
          metadata_uploaded: bool = False
@@ -447,6 +446,105 @@ def resource_service_update(request, uuid: str):
                 "notify": request_params.get('notify', True)
             }
         )
+        resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+        return Response(
+            {
+                'status': _exec_request.status,
+                'execution_id': _exec_request.exec_id,
+                'status_url':
+                    urljoin(
+                        settings.SITEURL,
+                        reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
+                    )
+            },
+            status=status.HTTP_200_OK)
+    except Exception as e:
+        logger.exception(e)
+        return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
+
+
+@api_view(['DELETE', 'PUT'])
+def resource_service_permissions(request, uuid: str):
+    """Instructs the Async dispatcher to execute a 'DELETE' or 'UPDATE' on the permissions of a valid 'uuid'
+
+     - DELETE input_params: {
+         uuid: "<str: UUID>"
+       }
+
+     - POST input_params: {
+         uuid: "<str: UUID>"
+         owner: str = None
+         permissions: dict = {}
+         created: bool = False
+       }
+
+     - output_params: {
+         output: {
+             uuid: "<str: UUID>"
+         }
+       }
+
+     - output: {
+            "status": "ready",
+            "execution_id": "<str: execution ID>",
+            "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/<str: execution ID>"
+        }
+
+    Sample Requests:
+     - Removes all the permissions (except owner and admin ones) from a Resource:
+      curl -v -X DELETE -u admin:admin -H "Content-Type: application/json" http://localhost:8000/api/v2/resource-service/permissions/<uuid>
+
+     - Changes the owner of a Resource:
+      curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'owner=afabiani' http://localhost:8000/api/v2/resource-service/permissions/<uuid>
+
+     - Assigns View permissions to some users:
+      curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'permissions={"users": {"admin": ["view_resourcebase"]}, "groups": {}}'
+         http://localhost:8000/api/v2/resource-service/permissions/<uuid>
+
+      curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'owner=afabiani' -d 'permissions={"users": {"admin": ["view_resourcebase"]}, "groups": {}}'
+         http://localhost:8000/api/v2/resource-service/permissions/<uuid>
+
+     - Assigns View permissions to anyone:
+      curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}'
+         http://localhost:8000/api/v2/resource-service/permissions/<uuid>
+
+     - Assigns View permissions to anyone and edit (style and data) permissions to a Group on a Dataset:
+      curl -v -X PUT -u admin:admin -H "Content-Type: application/json"
+         -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]},
+         "groups": {"registered-members": ["view_resourcebase", "download_resourcebase", "change_dataset_style", "change_dataset_data"]}}'
+         http://localhost:8000/api/v2/resource-service/permissions/<uuid>
+
+     - Assigns View permissions to anyone and edit permissions to a Group on a Document:
+       curl -v -X PUT -u admin:admin -H "Content-Type: application/json"
+         -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {"registered-members": ["view_resourcebase", "download_resourcebase", "change_resourcebase"]}}'
+         http://localhost:8000/api/v2/resource-service/permissions/<uuid>
+    """
+    config = Configuration.load()
+    resource = ResourceManager._get_instance(uuid)
+    if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
+            resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
+        return Response(status=status.HTTP_403_FORBIDDEN)
+    try:
+        request_params = QueryDict(request.body, mutable=True)
+        if request.method == 'DELETE':
+            _exec_request = ExecutionRequest.objects.create(
+                user=request.user,
+                func_name='remove_permissions',
+                input_params={
+                    "uuid": uuid
+                }
+            )
+        elif request.method == 'PUT':
+            _exec_request = ExecutionRequest.objects.create(
+                user=request.user,
+                func_name='set_permissions',
+                input_params={
+                    "uuid": uuid,
+                    "owner": request_params.get('owner', resource.owner.username),
+                    "permissions": request_params.get('permissions', '{}'),
+                    "created": request_params.get('created', False)
+                }
+            )
         resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
         return Response(
             {

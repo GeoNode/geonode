@@ -30,6 +30,7 @@ urlpatterns = [
     path('resource-service/ingest/<str:resource_type>', views.resource_service_ingest),
     path('resource-service/delete/<str:uuid>', views.resource_service_delete),
     path('resource-service/update/<str:uuid>', views.resource_service_update),
+    path('resource-service/permissions/<str:uuid>', views.resource_service_permissions),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

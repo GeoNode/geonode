@@ -320,6 +320,7 @@ class ResourceManager(ResourceManagerInterface):
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
                 _resource.delete()
                 raise e
             finally:
@@ -367,6 +368,7 @@ class ResourceManager(ResourceManagerInterface):
                             _task.execute(_resource)
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 _resource.save(notify=notify)
@@ -402,6 +404,7 @@ class ResourceManager(ResourceManagerInterface):
                     **kwargs)
         except Exception as e:
             logger.exception(e)
+            instance.set_processing_state(enumerations.STATE_INVALID)
         finally:
             instance.set_processing_state(enumerations.STATE_PROCESSED)
             instance.save(notify=False)
@@ -433,6 +436,7 @@ class ResourceManager(ResourceManagerInterface):
                         return self.update(_resource.uuid, _resource, vals=to_update)
             except Exception as e:
                 logger.exception(e)
+                instance.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 instance.set_processing_state(enumerations.STATE_PROCESSED)
                 instance.save(notify=False)
@@ -508,21 +512,22 @@ class ResourceManager(ResourceManagerInterface):
                     if _dataset:
                         UserObjectPermission.objects.filter(
                             content_type=ContentType.objects.get_for_model(_dataset),
-                            object_pk=instance.id
+                            object_pk=_resource.id
                         ).delete()
                         GroupObjectPermission.objects.filter(
                             content_type=ContentType.objects.get_for_model(_dataset),
-                            object_pk=instance.id
+                            object_pk=_resource.id
                         ).delete()
                     UserObjectPermission.objects.filter(
                         content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
-                        object_pk=instance.id).delete()
+                        object_pk=_resource.id).delete()
                     GroupObjectPermission.objects.filter(
                         content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
-                        object_pk=instance.id).delete()
+                        object_pk=_resource.id).delete()
                     return self._concrete_resource_manager.remove_permissions(uuid, instance=_resource)
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
@@ -536,11 +541,19 @@ class ResourceManager(ResourceManagerInterface):
             try:
                 with transaction.atomic():
                     logger.debug(f'Setting permissions {permissions} on {_resource}')
+
+                    # default permissions for owner
+                    if owner and owner != _resource.owner:
+                        _resource.owner = owner
+                        ResourceBase.objects.filter(uuid=_resource.uuid).update(owner=owner)
+                    _owner = _resource.owner
+
                     """
                     Remove all the permissions except for the owner and assign the
                     view permission to the anonymous group
                     """
                     self.remove_permissions(uuid, instance=_resource)
+
                     if permissions is not None:
                         """
                         Sets an object's the permission levels based on the perm_spec JSON.
@@ -562,7 +575,7 @@ class ResourceManager(ResourceManagerInterface):
                         """
 
                         # default permissions for resource owner
-                        set_owner_permissions(_resource)
+                        set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
 
                         # Anonymous User group
                         if 'users' in permissions and "AnonymousUser" in permissions['users']:
@@ -616,9 +629,6 @@ class ResourceManager(ResourceManagerInterface):
                         # default permissions for anonymous users
                         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
 
-                        # default permissions for owner
-                        _owner = owner or _resource.owner
-
                         if not anonymous_group:
                             raise Exception("Could not acquire 'anonymous' Group.")
 
@@ -655,6 +665,7 @@ class ResourceManager(ResourceManagerInterface):
                     return self._concrete_resource_manager.set_permissions(uuid, instance=_resource, owner=owner, permissions=permissions, created=created)
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
@@ -692,6 +703,7 @@ class ResourceManager(ResourceManagerInterface):
                     return self._concrete_resource_manager.set_workflow_permissions(uuid, instance=_resource, approved=approved, published=published)
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
@@ -710,6 +722,7 @@ class ResourceManager(ResourceManagerInterface):
                     return True
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
