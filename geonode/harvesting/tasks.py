@@ -28,7 +28,7 @@ from . import (
     models,
     utils,
 )
-from .harvesters.base import BaseHarvesterWorker
+from .harvesters import base
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +110,7 @@ def _harvest_resource(
     """Harvest a single resource from the input harvestable resource id"""
     harvestable_resource = models.HarvestableResource.objects.get(
         pk=harvestable_resource_id)
-    worker: BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
+    worker: base.BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
     harvested_resource_info = worker.get_resource(
         harvestable_resource, harvesting_session_id)
     if worker.should_copy_resource(harvestable_resource):
@@ -209,9 +209,9 @@ def update_harvestable_resources(self, harvester_id: int):
     worker = harvester.get_harvester_worker()
     try:
         num_resources = worker.get_num_available_resources()
-    except NotImplementedError:
+    except (NotImplementedError, base.HarvestingException) as exc:
         _handle_harvestable_resources_update_error(
-            self.request.id, harvester_id=harvester_id)
+            self.request.id, harvester_id=harvester_id, raised_exception=exc)
     else:
         page_size = 10
         total_pages = math.ceil(num_resources / page_size)
@@ -245,23 +245,27 @@ def _update_harvestable_resources_batch(
     harvester = models.Harvester.objects.get(pk=harvester_id)
     worker = harvester.get_harvester_worker()
     offset = page * page_size
-    found_resources = worker.list_resources(offset)
-    for remote_resource in found_resources:
-        resource, created = models.HarvestableResource.objects.get_or_create(
-            harvester=harvester,
-            unique_identifier=remote_resource.unique_identifier,
-            title=remote_resource.title,
-            defaults={
-                "should_be_harvested": harvester.harvest_new_resources_by_default,
-                "remote_resource_type": remote_resource.resource_type,
-                "last_refreshed": now()
-            }
-        )
-        # NOTE: make sure to save the resource because we need to have its
-        # `last_updated` property be refreshed - this is done in order to be able
-        # to compare when a resource has been found
-        resource.last_refreshed = now()
-        resource.save()
+    try:
+        found_resources = worker.list_resources(offset)
+    except base.HarvestingException:
+        logger.exception("Could not retrieve list of remote resources.")
+    else:
+        for remote_resource in found_resources:
+            resource, created = models.HarvestableResource.objects.get_or_create(
+                harvester=harvester,
+                unique_identifier=remote_resource.unique_identifier,
+                title=remote_resource.title,
+                defaults={
+                    "should_be_harvested": harvester.harvest_new_resources_by_default,
+                    "remote_resource_type": remote_resource.resource_type,
+                    "last_refreshed": now()
+                }
+            )
+            # NOTE: make sure to save the resource because we need to have its
+            # `last_updated` property be refreshed - this is done in order to be able
+            # to compare when a resource has been found
+            resource.last_refreshed = now()
+            resource.save()
 
 
 @app.task(
@@ -289,7 +293,6 @@ def _finish_harvestable_resources_update(self, harvester_id: int):
     ignore_result=False,
 )
 def _handle_harvestable_resources_update_error(self, task_id, *args, **kwargs):
-    logger.debug("Inside the handle_harvestable_resources_update_error task ---------------------------------------------------------------------------------------------")
     result = self.app.AsyncResult(str(task_id))
     print(f"locals: {locals()}")
     print(f"state: {result.state}")
@@ -300,7 +303,8 @@ def _handle_harvestable_resources_update_error(self, task_id, *args, **kwargs):
     now_ = now()
     harvester.last_checked_harvestable_resources = now_
     harvester.last_check_harvestable_resources_message = (
-        f"{now_} - There was an error retrieving information on available resources. "
+        f"{now_} - There was an error retrieving information on available "
+        f"resources: {result.traceback} - {args} {kwargs}"
         f"Please check the logs"
     )
     harvester.save()

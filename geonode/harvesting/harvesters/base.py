@@ -41,6 +41,10 @@ from .. import (
 logger = logging.getLogger(__name__)
 
 
+class HarvestingException(Exception):
+    pass
+
+
 @dataclasses.dataclass()
 class BriefRemoteResource:
     unique_identifier: str
@@ -85,14 +89,24 @@ class BaseHarvesterWorker(abc.ABC):
 
     @abc.abstractmethod
     def get_num_available_resources(self) -> int:
-        """Return the number of available resources on the remote service"""
+        """Return the number of available resources on the remote service.
+
+        If there is a problem retrieving the number of available resource, this
+        method shall raise `HarvestingException`.
+
+        """
 
     @abc.abstractmethod
     def list_resources(
             self,
             offset: typing.Optional[int] = 0
     ) -> typing.List[BriefRemoteResource]:
-        """Return a list of resources from the remote service"""
+        """Return a list of resources from the remote service.
+
+        If there is a problem listing resource, this method shall
+        raise `HarvestingException`.
+
+        """
 
     @abc.abstractmethod
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:

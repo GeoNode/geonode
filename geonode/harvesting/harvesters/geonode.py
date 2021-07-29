@@ -207,7 +207,14 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         except (requests.HTTPError, requests.ConnectionError):
             result = False
         else:
-            result = True
+            try:
+                response_payload = response.json()
+            except json.JSONDecodeError:
+                logger.exception(f"Could not decode server response as valid JSON")
+                result = False
+            else:
+                layers_endpoint_present = response_payload.get("layers") is not None
+                result = layers_endpoint_present
         return result
 
     def get_geonode_resource_type(self, remote_resource_type: str) -> ResourceBase:
@@ -410,8 +417,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         else:
             try:
                 result = response.json().get("meta", {}).get("total_count", 0)
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as exc:
                 logger.exception("Could not decode response as a JSON object")
+                raise base.HarvestingException(str(exc))
         return result
 
     def _get_resource_descriptor(
