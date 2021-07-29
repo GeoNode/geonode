@@ -210,7 +210,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             try:
                 response_payload = response.json()
             except json.JSONDecodeError:
-                logger.exception(f"Could not decode server response as valid JSON")
+                logger.exception("Could not decode server response as valid JSON")
                 result = False
             else:
                 layers_endpoint_present = response_payload.get("layers") is not None
