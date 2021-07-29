@@ -41,7 +41,10 @@ from .. import (
     models,
     resourcedescriptor,
 )
-from ..utils import XML_PARSER
+from ..utils import (
+    XML_PARSER,
+    get_xpath_value
+)
 from . import base
 
 logger = logging.getLogger(__name__)
@@ -207,7 +210,14 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         except (requests.HTTPError, requests.ConnectionError):
             result = False
         else:
-            result = True
+            try:
+                response_payload = response.json()
+            except json.JSONDecodeError:
+                logger.exception("Could not decode server response as valid JSON")
+                result = False
+            else:
+                layers_endpoint_present = response_payload.get("layers") is not None
+                result = layers_endpoint_present
         return result
 
     def get_geonode_resource_type(self, remote_resource_type: str) -> ResourceBase:
@@ -410,8 +420,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         else:
             try:
                 result = response.json().get("meta", {}).get("total_count", 0)
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as exc:
                 logger.exception("Could not decode response as a JSON object")
+                raise base.HarvestingException(str(exc))
         return result
 
     def _get_resource_descriptor(
@@ -781,14 +792,6 @@ def get_temporal_extent(
     except IndexError:
         result = None
     return result
-
-
-def get_xpath_value(
-        element: etree.Element,
-        xpath_expression: str,
-) -> typing.Optional[str]:
-    values = element.xpath(f"{xpath_expression}//text()", namespaces=element.nsmap)
-    return "".join(values).strip() or None
 
 
 def _get_optional_attribute_value(
