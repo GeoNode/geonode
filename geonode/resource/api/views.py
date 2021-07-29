@@ -471,7 +471,7 @@ def resource_service_permissions(request, uuid: str):
          uuid: "<str: UUID>"
        }
 
-     - POST input_params: {
+     - PUT input_params: {
          uuid: "<str: UUID>"
          owner: str = None
          permissions: dict = {}
