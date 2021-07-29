@@ -19,6 +19,7 @@
 import json
 from urllib.parse import urljoin
 
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
@@ -375,7 +376,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             data['perms'] = instance.get_user_perms(request.user).union(
                 instance.get_self_resource().get_user_perms(request.user)
             )
-            if not request.user.is_anonymous:
+            if not request.user.is_anonymous and getattr(settings, "FAVORITE_ENABLED", False):
                 favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
                 data['favorite'] = favorite > 0
         # Adding links to resource_base api
