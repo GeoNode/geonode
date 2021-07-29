@@ -25,12 +25,7 @@ urlpatterns = [
     path('resource-service/search/', views.resource_service_search),
     path('resource-service/search/<str:resource_type>', views.resource_service_search),
     path('resource-service/exists/<str:uuid>', views.resource_service_exists),
-    path('resource-service/execution-status/<str:execution_id>', views.resource_service_execution_status, name='rs-execution-status'),
-    path('resource-service/create/<str:resource_type>', views.resource_service_create),
-    path('resource-service/ingest/<str:resource_type>', views.resource_service_ingest),
-    path('resource-service/delete/<str:uuid>', views.resource_service_delete),
-    path('resource-service/update/<str:uuid>', views.resource_service_update),
-    path('resource-service/permissions/<str:uuid>', views.resource_service_permissions),
+    path('resource-service/execution-status/<str:execution_id>', views.resource_service_execution_status, name='rs-execution-status')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

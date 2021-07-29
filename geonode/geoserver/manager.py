@@ -149,7 +149,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 importer_session_opts=kwargs)
         return instance
 
-    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+    def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if instance and isinstance(instance.get_real_instance(), Dataset):
             return self.import_dataset(
                 'import_dataset',

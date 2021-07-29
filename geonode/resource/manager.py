@@ -142,7 +142,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+    def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         """The method makes a copy of the existing resource.
 
          - It makes a copy of the files
@@ -416,11 +416,11 @@ class ResourceManager(ResourceManagerInterface):
         self.set_thumbnail(instance.uuid, instance=instance)
         return instance
 
-    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+    def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if instance:
             try:
                 with transaction.atomic():
-                    _owner = instance.owner
+                    _owner = owner or instance.owner
                     _perms = instance.get_all_level_info()
                     _resource = copy.copy(instance)
                     _resource.pk = _resource.id = None
