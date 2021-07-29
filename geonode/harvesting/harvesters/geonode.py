@@ -41,7 +41,10 @@ from .. import (
     models,
     resourcedescriptor,
 )
-from ..utils import XML_PARSER
+from ..utils import (
+    XML_PARSER,
+    get_xpath_value
+)
 from . import base
 
 logger = logging.getLogger(__name__)
@@ -789,14 +792,6 @@ def get_temporal_extent(
     except IndexError:
         result = None
     return result
-
-
-def get_xpath_value(
-        element: etree.Element,
-        xpath_expression: str,
-) -> typing.Optional[str]:
-    values = element.xpath(f"{xpath_expression}//text()", namespaces=element.nsmap)
-    return "".join(values).strip() or None
 
 
 def _get_optional_attribute_value(
