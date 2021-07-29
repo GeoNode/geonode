@@ -2125,6 +2125,16 @@ def is_monochromatic_image(image_url, image_data=None):
         return False
 
 
+def get_subclasses_by_model(model: str):
+    from django.apps import apps
+    _app_subclasses = []
+    for _model in apps.get_models():
+        if _model.__name__ == model:
+            for _geoapp in _model.__subclasses__():
+                _app_subclasses.append(_geoapp.__name__)
+    return _app_subclasses
+
+
 def find_by_attr(lst, val, attr="id"):
     """ Returns an object if the id matches in any list of objects """
     for item in lst:
