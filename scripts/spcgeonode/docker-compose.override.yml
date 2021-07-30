@@ -18,7 +18,7 @@ services:
     command: "uwsgi --chdir=/spcgeonode --module=geonode.wsgi --socket=:8000 --http=127.0.0.1:8001 --processes=5 --py-autoreload=2"
   celery:
     << : *default-common-django
-    command: 'celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E --statedb=/spcgeonode-static/worker.state -s /spcgeonode-static/celerybeat-schedule --loglevel=ERROR --concurrency=10 -n worker1@%h'
+    command: 'celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E -s django_celery_beat.schedulers:DatabaseScheduler --loglevel=ERROR --concurrency=2 -n worker1@%h'
 
   nginx:
     image: geonode/spcgeonode:nginx-3.2
