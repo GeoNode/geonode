@@ -100,10 +100,15 @@ def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
     """
-    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, DATASET_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
+    from .permissions import (
+        VIEW_PERMISSIONS,
+        DOWNLOAD_PERMISSIONS,
+        ADMIN_PERMISSIONS,
+        DATASET_ADMIN_PERMISSIONS,
+        SERVICE_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
-    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DATASET_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + DATASET_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
 
     for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
         permissions[perm.id] = perm.codename
@@ -129,10 +134,15 @@ def get_users_with_perms(obj):
 
 def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
-    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, DATASET_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
+    from .permissions import (
+        VIEW_PERMISSIONS,
+        DOWNLOAD_PERMISSIONS,
+        ADMIN_PERMISSIONS,
+        DATASET_ADMIN_PERMISSIONS,
+        SERVICE_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
-        admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
+        admin_perms = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS
         for perm in admin_perms:
             if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
                 assign_perm(perm, resource.owner, resource.get_self_resource())

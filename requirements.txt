@@ -16,6 +16,8 @@ python-slugify==5.0.2
 decorator==5.0.9
 celery==5.1.2
 kombu==5.1.0
+pylibmc==1.6.1
+sherlock==0.3.2
 vine==5.0.0
 tqdm==4.61.2
 Deprecated==1.2.12

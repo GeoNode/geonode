@@ -52,6 +52,9 @@ from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
+from geonode.security.permissions import (
+    PermSpec,
+    PermSpecCompact)
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms)
@@ -364,7 +367,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             })
         return Response({"resource_types": resource_types})
 
-    @extend_schema(methods=['get', 'put', 'delete'],
+    @extend_schema(methods=['get', 'put', 'patch', 'delete'],
                    request=PermSpecSerialiazer(),
                    responses={200: None},
                    description="""
@@ -391,7 +394,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         detail=True,
         url_path="permissions",  # noqa
         url_name="perms-spec",
-        methods=['get', 'put', 'delete'],
+        methods=['get', 'put', 'patch', 'delete'],
         permission_classes=[
             IsOwnerOrAdmin,
         ])
@@ -460,21 +463,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            perms_spec = resource.get_all_level_info()
+            perms_spec = PermSpec(resource.get_all_level_info(), resource_type=resource.resource_type)
             request_params = QueryDict(request.body, mutable=True)
             if request.method == 'GET':
-                perms_spec_obj = {}
-                if "users" in perms_spec:
-                    perms_spec_obj["users"] = {}
-                    for user in perms_spec["users"]:
-                        perms = perms_spec["users"].get(user)
-                        perms_spec_obj["users"][str(user)] = perms
-                if "groups" in perms_spec:
-                    perms_spec_obj["groups"] = {}
-                    for group in perms_spec["groups"]:
-                        perms = perms_spec["groups"].get(group)
-                        perms_spec_obj["groups"][str(group)] = perms
-                return Response(perms_spec_obj)
+                return Response(perms_spec.compact)
             elif request.method == 'DELETE':
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
@@ -484,13 +476,28 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     }
                 )
             elif request.method == 'PUT':
+                perms_spec_compact = PermSpecCompact(request_params.get('permissions', '{}'), resource_type=resource.resource_type)
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name='set_permissions',
                     input_params={
                         "uuid": resource.uuid,
                         "owner": request_params.get('owner', resource.owner.username),
-                        "permissions": request_params.get('permissions', '{}'),
+                        "permissions": perms_spec_compact.expand,
+                        "created": request_params.get('created', False)
+                    }
+                )
+            elif request.method == 'PATCH':
+                perms_spec_compact_patch = PermSpecCompact(request_params.get('permissions', '{}'), resource_type=resource.resource_type)
+                perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource_type=resource.resource_type)
+                perms_spec_compact = perms_spec_compact_resource.merge(perms_spec_compact_patch)
+                _exec_request = ExecutionRequest.objects.create(
+                    user=request.user,
+                    func_name='set_permissions',
+                    input_params={
+                        "uuid": resource.uuid,
+                        "owner": request_params.get('owner', resource.owner.username),
+                        "permissions": perms_spec_compact.expand,
                         "created": request_params.get('created', False)
                     }
                 )

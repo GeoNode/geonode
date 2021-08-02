@@ -35,6 +35,7 @@ from geonode.groups.models import GroupProfile
 
 from .permissions import (
     VIEW_PERMISSIONS,
+    DOWNLOAD_PERMISSIONS,
     ADMIN_PERMISSIONS,
     DATASET_ADMIN_PERMISSIONS,
     SERVICE_PERMISSIONS
@@ -75,9 +76,9 @@ class PermissionLevelMixin:
                         for manager in managers:
                             if manager not in users and not manager.is_superuser and \
                                     manager != resource.owner:
-                                for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS:
+                                for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                                     assign_perm(perm, manager, resource)
-                                users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
+                                users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
                 except GroupProfile.DoesNotExist:
                     tb = traceback.format_exc()
                     logger.debug(tb)
@@ -89,9 +90,9 @@ class PermissionLevelMixin:
                     for manager in managers:
                         if manager not in users and not manager.is_superuser and \
                                 manager != resource.owner:
-                            for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS:
+                            for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                                 assign_perm(perm, manager, resource)
-                            users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
+                            users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
             except GroupProfile.DoesNotExist:
                 tb = traceback.format_exc()
                 logger.debug(tb)
@@ -151,7 +152,7 @@ class PermissionLevelMixin:
 
         config = Configuration.load()
         ctype = ContentType.objects.get_for_model(self)
-        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DATASET_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + DATASET_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
 
         resource_perms = Permission.objects.filter(
             codename__in=PERMISSIONS_TO_FETCH,

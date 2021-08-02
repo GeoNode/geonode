@@ -41,7 +41,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
 
 from geonode.documents.models import Document
-from geonode.security.permissions import VIEW_PERMISSIONS
+from geonode.security.permissions import VIEW_PERMISSIONS, DOWNLOAD_PERMISSIONS
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.utils import (
     get_user_groups,
@@ -688,15 +688,15 @@ class ResourceManager(ResourceManagerInterface):
                         if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
                             _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
                             _members_group_group = Group.objects.get(name=_members_group_name)
-                            for perm in VIEW_PERMISSIONS:
+                            for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                                 assign_perm(perm,
                                             _members_group_group, _resource.get_self_resource())
                         else:
-                            for perm in VIEW_PERMISSIONS:
+                            for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                                 assign_perm(perm,
                                             anonymous_group, _resource.get_self_resource())
                     if published:
-                        for perm in VIEW_PERMISSIONS:
+                        for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                             assign_perm(perm,
                                         anonymous_group, _resource.get_self_resource())
 
