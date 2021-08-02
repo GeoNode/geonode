@@ -464,7 +464,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource_type=resource.resource_type)
-            request_params = QueryDict(request.body, mutable=True)
+            request_body = request.body
+            request_params = QueryDict(request_body, mutable=True, encoding="UTF-8")
             if request.method == 'GET':
                 return Response(perms_spec.compact)
             elif request.method == 'DELETE':
@@ -476,28 +477,30 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     }
                 )
             elif request.method == 'PUT':
-                perms_spec_compact = PermSpecCompact(request_params.get('permissions', '{}'), resource_type=resource.resource_type)
+                perms_spec_compact = PermSpecCompact(
+                    json.loads(request_params.get('permissions', '{}')), resource_type=resource.resource_type)
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name='set_permissions',
                     input_params={
                         "uuid": resource.uuid,
                         "owner": request_params.get('owner', resource.owner.username),
-                        "permissions": perms_spec_compact.expand,
+                        "permissions": perms_spec_compact.extended,
                         "created": request_params.get('created', False)
                     }
                 )
             elif request.method == 'PATCH':
-                perms_spec_compact_patch = PermSpecCompact(request_params.get('permissions', '{}'), resource_type=resource.resource_type)
+                perms_spec_compact_patch = PermSpecCompact(
+                    json.loads(request_params.get('permissions', '{}')), resource_type=resource.resource_type)
                 perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource_type=resource.resource_type)
-                perms_spec_compact = perms_spec_compact_resource.merge(perms_spec_compact_patch)
+                perms_spec_compact_resource.merge(perms_spec_compact_patch)
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name='set_permissions',
                     input_params={
                         "uuid": resource.uuid,
                         "owner": request_params.get('owner', resource.owner.username),
-                        "permissions": perms_spec_compact.expand,
+                        "permissions": perms_spec_compact_resource.extended,
                         "created": request_params.get('created', False)
                     }
                 )

@@ -16,10 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.thumbs.exceptions import ThumbnailError
-import logging
 import sys
-from uuid import uuid4
+import json
+import logging
+
+from uuid import uuid1, uuid4
 from PIL import Image
 from io import BytesIO
 from unittest.mock import patch
@@ -33,6 +34,7 @@ from rest_framework.test import APITestCase
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.base import enumerations
+from geonode.thumbs.exceptions import ThumbnailError
 from geonode.base.models import (
     CuratedThumbnail,
     HierarchicalKeyword,
@@ -48,6 +50,7 @@ from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
 from geonode.security.utils import get_resources_with_perms
 from geonode.documents.models import Document
+
 logger = logging.getLogger(__name__)
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
@@ -435,8 +438,11 @@ class BaseApiTests(APITestCase):
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
-        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'set_perms/')
-        get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'get_perms/')
+        if not resource.uuid:
+            resource.uuid = str(uuid1())
+            resource.save()
+        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
+        get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
 
         url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
         response = self.client.get(url, format='json')
@@ -446,28 +452,138 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertTrue('bobby' in resource_perm_spec['users'])
-        self.assertFalse('norman' in resource_perm_spec['users'])
+        self.assertDictEqual(
+            resource_perm_spec,
+            {
+                'users': [
+                    {
+                        'id': 4,
+                        'username': 'bobby',
+                        'first_name': 'bobby',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'manage'
+                    }
+                ],
+                'organizations': [],
+                'groups': [
+                    {
+                        'id': 2,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'download'
+                    }
+                ]
+            }
+        )
 
         # Add perms to Norman
-        resource_perm_spec['users']['norman'] = resource_perm_spec['users']['bobby']
-        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
+        norman = get_user_model().objects.get(username='norman')
+        resource_perm_spec_patch = {
+            'users': [
+                    {
+                        'id': norman.id,
+                        'username': norman.username,
+                        'first_name': norman.first_name,
+                        'last_name': norman.last_name,
+                        'avatar': '',
+                        'permissions': 'edit'
+                    }
+                ]
+        }
+        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec_patch)}"
+        response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertTrue('norman' in resource_perm_spec['users'])
+        self.assertDictEqual(
+            resource_perm_spec,
+            {
+                'users': [
+                    {
+                        'id': 4,
+                        'username': 'bobby',
+                        'first_name': 'bobby',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'manage'
+                    },
+                    {
+                        'id': 2,
+                        'username': 'norman',
+                        'first_name': 'norman',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'edit'
+                    }
+                ],
+                'organizations': [],
+                'groups': [
+                    {
+                        'id': 2,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'download'
+                    }
+                ]
+            }
+        )
 
         # Remove perms to Norman
-        resource_perm_spec['users']['norman'] = []
-        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
+        resource_perm_spec = {
+                'users': [
+                    {
+                        'id': 4,
+                        'username': 'bobby',
+                        'first_name': 'bobby',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'manage'
+                    }
+                ],
+                'organizations': [],
+                'groups': [
+                    {
+                        'id': 2,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'download'
+                    }
+                ]
+            }
+        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
+        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertFalse('norman' in resource_perm_spec['users'])
+        self.assertDictEqual(
+            resource_perm_spec,
+            {
+                'users': [
+                    {
+                        'id': 4,
+                        'username': 'bobby',
+                        'first_name': 'bobby',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'manage'
+                    }
+                ],
+                'organizations': [],
+                'groups': [
+                    {
+                        'id': 2,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'download'
+                    }
+                ]
+            }
+        )
 
         # Ensure get_perms and set_perms are done by users with correct permissions.
         # logout admin user
@@ -476,7 +592,8 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 403)
         # set perms
-        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
+        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
+        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 403)
         # login resourse owner
         # get perms
@@ -484,7 +601,8 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         # set perms
-        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
+        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
+        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 200)
 
     def test_featured_and_published_resources(self):

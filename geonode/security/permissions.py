@@ -16,10 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 import pprint
 import collections
 
 from guardian.shortcuts import get_anonymous_user
+from avatar.templatetags.avatar_tags import avatar_url
 
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -136,7 +138,7 @@ _Binding = collections.namedtuple('Binding', [
 ])
 
 _User = collections.namedtuple('User', [
-    'id', 'username', 'last_name', 'first_name'
+    'id', 'username', 'last_name', 'first_name', 'avatar'
 ])
 
 _Group = collections.namedtuple('User', [
@@ -190,24 +192,27 @@ class PermSpecConverterBase(object):
         raise BindingFailed(f'[{type(self)}] {msg % args}')
 
     def _to_json_object(self, deep=True, top_level=True):
-        json = {}
+        _json = {}
         for binding in self._bindings:
             val = getattr(self, binding.name, None)
             if isinstance(val, PermSpecConverterBase):
                 val = val._to_json_object(top_level=False)
             if val is not None:
-                json[binding.name] = val
-        self._to_json_object_custom(json)
+                _json[binding.name] = val
+        self._to_json_object_custom(_json)
         if top_level and self._object_name:
-            json = {self._object_name: json}
-        return json.copy()
+            _json = {self._object_name: _json}
+        return _json.copy()
 
     def _to_json_object_custom(self, json):
         pass
 
     def __repr__(self):
-        jsonobj = self._to_json_object(deep=True, top_level=False)
-        return pprint.pformat(jsonobj, indent=2)
+        _json = self._to_json_object(deep=True, top_level=False)
+        try:
+            return json.dumps(_json)
+        except Exception:
+            return pprint.pformat(_json, indent=2)
 
 
 class PermSpec(PermSpecConverterBase):
@@ -236,6 +241,7 @@ class PermSpec(PermSpecConverterBase):
                     "username": "afabiani",
                     "first_name": "",
                     "last_name": "",
+                    "avatar": "",
                     "permissions": "manage"
                 }
             ],
@@ -257,6 +263,8 @@ class PermSpec(PermSpecConverterBase):
         }
         ```
         """
+        from geonode.base.utils import build_absolute_uri
+
         json = {}
         user_perms = []
         group_perms = []
@@ -264,15 +272,20 @@ class PermSpec(PermSpecConverterBase):
         organization_perms = []
 
         for _k in self.users:
+            _perms = self.users[_k]
+            if isinstance(_k, str):
+                _k = get_user_model().objects.get(username=_k)
             if not _k.is_anonymous and _k.username != 'AnonymousUser':
-                user = _User(_k.id, _k.username, _k.last_name, _k.first_name)
+                avatar = build_absolute_uri(avatar_url(_k, 240))
+                user = _User(_k.id, _k.username, _k.last_name, _k.first_name, avatar)
                 user_perms.append(
                     {
                         'id': user.id,
                         'username': user.username,
                         'first_name': user.first_name,
                         'last_name': user.last_name,
-                        'permissions': _to_compact_perms(self.users[_k])
+                        'avatar': user.avatar,
+                        'permissions': _to_compact_perms(_perms)
                     }
                 )
             else:
@@ -280,16 +293,19 @@ class PermSpec(PermSpecConverterBase):
                     'id': Group.objects.get(name='anonymous').id,
                     'title': 'anonymous',
                     'name': 'anonymous',
-                    'permissions': _to_compact_perms(self.users[_k])
+                    'permissions': _to_compact_perms(_perms)
                 }
 
         for _k in self.groups:
+            _perms = self.groups[_k]
+            if isinstance(_k, str):
+                _k = Group.objects.get(name=_k)
             if _k.name == 'anonymous':
                 anonymous_perms = {
                     'id': _k.id,
                     'title': 'anonymous',
                     'name': 'anonymous',
-                    'permissions': _to_compact_perms(self.groups[_k])
+                    'permissions': _to_compact_perms(_perms)
                 }
             elif hasattr(_k, 'groupprofile'):
                 group = _Group(_k.id, _k.groupprofile.title, _k.name)
@@ -299,7 +315,7 @@ class PermSpec(PermSpecConverterBase):
                             'id': group.id,
                             'title': group.title,
                             'name': group.name,
-                            'permissions': _to_compact_perms(self.groups[_k])
+                            'permissions': _to_compact_perms(_perms)
                         }
                     )
                 else:
@@ -308,7 +324,7 @@ class PermSpec(PermSpecConverterBase):
                             'id': group.id,
                             'title': group.title,
                             'name': group.name,
-                            'permissions': _to_compact_perms(self.groups[_k])
+                            'permissions': _to_compact_perms(_perms)
                         }
                     )
 
@@ -328,6 +344,7 @@ class PermSpecUserCompact(PermSpecConverterBase):
         _binding('username'),
         _binding('first_name'),
         _binding('last_name'),
+        _binding('avatar'),
         _binding('permissions'),
     )
 
@@ -353,7 +370,7 @@ class PermSpecCompact(PermSpecConverterBase):
     )
 
     @property
-    def expand(self):
+    def extended(self):
         """Converts a 'perm_spec' in 'compact mode' into standard and verbose one.
 
         e.g.:
@@ -385,19 +402,25 @@ class PermSpecCompact(PermSpecConverterBase):
         }
         for _u in self.users:
             _user_profile = get_user_model().objects.get(id=_u.id)
-            json['users'][_user_profile] = _to_extended_perms(_u.permissions)
+            json['users'][_user_profile.username] = _to_extended_perms(_u.permissions, self._resource_type)
         for _go in self.organizations:
             _group = Group.objects.get(id=_go.id)
-            json['groups'][_group] = _to_extended_perms(_go.permissions)
+            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource_type)
         for _go in self.groups:
             _group = Group.objects.get(id=_go.id)
-            json['groups'][_group] = _to_extended_perms(_go.permissions)
+            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource_type)
             if _go.name == 'anonymous':
                 _user_profile = get_anonymous_user()
-                json['users'][_user_profile] = _to_extended_perms(_go.permissions)
+                json['users'][_user_profile.username] = _to_extended_perms(_go.permissions, self._resource_type)
         return json.copy()
 
     def merge(self, perm_spec_compact_patch: "PermSpecCompact"):
+        """Merges 'perm_spec_compact_patch' to the current one.
+
+         - Existing elements will be overridden.
+         - Non existing elements will be added.
+         - If you need to delete elements you cannot use this method.
+        """
         for _elem in ('users', 'groups', 'organizations'):
             for _up in getattr(perm_spec_compact_patch, _elem, []) or []:
                 _merged = False
@@ -408,4 +431,7 @@ class PermSpecCompact(PermSpecConverterBase):
                         _merged = True
                         break
                 if not _merged:
-                    getattr(self, _elem).add(_up)
+                    if isinstance(getattr(self, _elem), list):
+                        getattr(self, _elem).append(_up)
+                    else:
+                        getattr(self, _elem).add(_up)

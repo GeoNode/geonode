@@ -268,11 +268,11 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             legend_url = layer_element.xpath(
                 "wms:Style/wms:LegendURL/wms:OnlineResource",
                 namespaces=nsmap
-            )[0].attrib['{' + layer_element.nsmap['xlink'] + '}href']
+            )[0].attrib[f"{{{layer_element.nsmap['xlink']}}}href"]
         except (IndexError, KeyError):
             legend_url = ''
         params = self._base_wms_parameters
-        wms_url = self.remote_url + '?' + urlencode(params)
+        wms_url = f"{self.remote_url}?{urlencode(params)}"
 
         csr = layer_element.xpath("wms:CRS//text()", namespaces=nsmap)[0]
         try:
