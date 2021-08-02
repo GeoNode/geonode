@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import migrations
 import json
 
-def convert_geostory_blob(apps, _):
+def convert_map_blob(apps, _):
     model = apps.get_model('base', 'ResourceBase')
     for item in model.objects.filter(resource_type='map'):
         if isinstance(item.blob, str):
@@ -19,5 +19,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(convert_geostory_blob, migrations.RunPython.noop)
+        migrations.RunPython(convert_map_blob, migrations.RunPython.noop)
     ]
