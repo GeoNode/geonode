@@ -153,7 +153,7 @@ class BindingFailed(Exception):
     pass
 
 
-class PermSpecConverterBase:
+class PermSpecConverterBase(object):
 
     _object_name = None
 
