@@ -520,6 +520,21 @@ define(['underscore',
                     resolve: function(response) {
 
                         uploads = response.uploads || [];
+                        
+                        // in case the upload ID is already present in the processed list
+                        // is removed from the processed in order to avoid row duplication
+                        // row duplication usually occours with async flow activated
+                        var processedCopy = [...processed]
+
+                        for (var i in uploads) {
+                            for (var j in processed) {
+                                if (uploads[i].id == processed[j].id) {
+                                    processedCopy.splice(i, 1)
+                                }
+                            }
+                        }
+
+                        processed = [...processedCopy]
 
                         var currentUploadIds = [];
                         for (var i = 0; i < uploads.length; i++) {
