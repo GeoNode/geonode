@@ -198,7 +198,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 with self.settings(DELAYED_SECURITY_SIGNALS=True,
                                    OGC_SERVER=_ogc_geofence_enabled,
                                    DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
-                    layer = Layer.objects.all()[0]
+                    layer = Layer.objects.all().first()
                     layer.set_default_permissions()
                     layer.refresh_from_db()
                     self.assertTrue(layer.dirty_state)

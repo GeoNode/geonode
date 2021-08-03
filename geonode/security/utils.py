@@ -903,3 +903,13 @@ def get_geoapp_subtypes():
                 if issubclass(_model, GeoApp):
                     subtypes.append(_model.__name__.lower())
     return subtypes
+
+
+def skip_registered_members_common_group(user_group):
+    from geonode.groups.conf import settings as groups_settings
+    if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
+        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+        if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
+                _members_group_name == user_group.name:
+            return True
+    return False

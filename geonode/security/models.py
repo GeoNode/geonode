@@ -60,7 +60,8 @@ from .utils import (
     remove_object_permissions,
     purge_geofence_layer_rules,
     sync_geofence_with_guardian,
-    set_geofence_invalidate_cache
+    set_geofence_invalidate_cache,
+    skip_registered_members_common_group
 )
 
 logger = logging.getLogger("geonode.security.models")
@@ -159,14 +160,6 @@ class PermissionLevelMixin(object):
                 remove_object_permissions(self, purge=False)
 
                 # default permissions for anonymous users
-                def skip_registered_members_common_group(user_group):
-                    if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-                        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                        if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
-                                _members_group_name == user_group.name:
-                            return True
-                    return False
-
                 anonymous_group, created = Group.objects.get_or_create(name='anonymous')
 
                 # default permissions for owner
@@ -224,7 +217,10 @@ class PermissionLevelMixin(object):
             if self.polymorphic_ctype.name == 'layer':
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-                        purge_geofence_layer_rules(self.get_self_resource())
+
+                        if not created:
+                            purge_geofence_layer_rules(self.get_self_resource())
+
                         # Owner & Managers
                         perms = [
                             "view_resourcebase",
@@ -248,9 +244,11 @@ class PermissionLevelMixin(object):
                         perms = ["download_resourcebase"]
                         if anonymous_can_download:
                             sync_geofence_with_guardian(self.layer, perms, user=None, group=None)
+
+                        # Force GeoFence rules cache invalidation
                         set_geofence_invalidate_cache()
-                else:
-                    self.set_dirty_state()
+                    else:
+                        self.set_dirty_state()
         except Exception as e:
             raise GeoNodeException(e)
 
@@ -333,11 +331,12 @@ class PermissionLevelMixin(object):
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
 
+                        if not created:
+                            purge_geofence_layer_rules(self.get_self_resource())
+
                         _disable_cache = []
 
                         # Owner
-                        if not created:
-                            purge_geofence_layer_rules(self.get_self_resource())
                         perms = [
                             "view_resourcebase",
                             "change_layer_data",
@@ -384,6 +383,10 @@ class PermissionLevelMixin(object):
                                 _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, _user, None, gf_services)
                                 _disable_cache.append(_disable_layer_cache)
 
+                        # Force GeoFence rules cache invalidation
+                        set_geofence_invalidate_cache()
+
+                        # Invalidate GWC Cache if Geo-limits have been activated
                         if _disable_cache:
                             if any(_disable_cache):
                                 filters = None
@@ -441,12 +444,15 @@ class PermissionLevelMixin(object):
 
                 # Set the GeoFence Rules (user = None)
                 if approved or published:
-                    if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                        if self.polymorphic_ctype.name == 'layer':
-                            if approved and members_group:
-                                sync_geofence_with_guardian(self.layer, VIEW_PERMISSIONS, group=members_group)
+                    if self.polymorphic_ctype.name == 'layer':
+                        if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                            if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                                if approved and members_group:
+                                    sync_geofence_with_guardian(self.layer, VIEW_PERMISSIONS, group=members_group)
+                                else:
+                                    sync_geofence_with_guardian(self.layer, VIEW_PERMISSIONS)
                             else:
-                                sync_geofence_with_guardian(self.layer, VIEW_PERMISSIONS)
+                                self.set_dirty_state()
         except Exception as e:
             raise GeoNodeException(e)
 
