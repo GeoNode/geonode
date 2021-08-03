@@ -131,7 +131,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         locations, bbox = thumbnails._layers_locations(layer)
 
         self.assertFalse(bbox, "Expected BBOX not to be calculated")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate], []]])
 
     def test_layers_locations_layer_default_bbox(self):
         expected_bbox = [-8238681.428369759, -8220320.787127878, 4969844.155936863, 4984363.9488296695, "epsg:3857"]
@@ -141,7 +141,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate], []]])
 
     def test_layers_locations_layer_bbox(self):
         layer = Layer.objects.get(title_en="theaters_nyc")
@@ -150,16 +150,24 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(bbox[0:4], layer.bbox[0:4], "Expected calculated BBOX to match layer's")
         self.assertEqual(bbox[-1].lower(), layer.bbox[-1].lower(), "Expected calculated BBOX's CRS to match layer's")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate], []]])
 
     def test_layers_locations_simple_map(self):
         layer = Layer.objects.get(title_en="theaters_nyc")
         map = Map.objects.get(title_en="theaters_nyc_map")
-
+        MapLayer(
+            map=map,
+            name="Meteorite_Landings_from_NASA_Open_Data_Portal1",
+            stack_order=1,
+            visibility=True,
+            ows_url="https://maps.geo-solutions.it/geoserver/wms",
+            layer_params="""{\"id\": 1, \"title\": \"Open Street Map\", \"style\": \"test_style\", \"type\": \"osm\", \"singleTile\": false, \"dimensions\": [], \"hideLoading\": false,
+            \"handleClickOnLayer\": false, \"useForElevation\": false, \"hidden\": false, \"extraParams\": {\"msId\": \"mapnik__0\"}, \"wrapDateLine\": true, \"displayOutsideMaxExtent\": true}"""
+            ).save()
         locations, bbox = thumbnails._layers_locations(map)
 
         self.assertFalse(bbox, "Expected BBOX not to be calculated")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], ["geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1", layer.alternate], ["test_style"]]])
 
     def test_layers_locations_simple_map_default_bbox(self):
         expected_bbox = [-8238681.428369759, -8220320.787127878, 4969844.155936863, 4984363.9488296695, "epsg:3857"]
@@ -171,7 +179,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]]])
+        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate], []]])
 
     def test_layers_locations_composition_map_default_bbox(self):
         expected_bbox = [-18411664.521739896, 1414810.0631394347, -20040289.59992574, 16329038.485056708, 'EPSG:3857']
@@ -179,11 +187,13 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             [
                 settings.GEOSERVER_LOCATION,
                 ["geonode:theaters_nyc", "geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1"],
+                []
             ],
             [
                 "http://www502.regione.toscana.it/wmsraster/com.rt.wms.RTmap/wms?map=wmsgeologia&map_resolution=91&",
                 ["rt_geologia.dbg_risorse_minerarie"],
-            ],
+                []
+            ]
         ]
 
         map = Map.objects.get(title_en="composition_map")
