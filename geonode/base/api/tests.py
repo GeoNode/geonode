@@ -20,9 +20,10 @@ import sys
 import json
 import logging
 
-from uuid import uuid1, uuid4
 from PIL import Image
 from io import BytesIO
+from time import sleep
+from uuid import uuid1, uuid4
 from unittest.mock import patch
 from urllib.parse import urljoin
 
@@ -46,12 +47,13 @@ from geonode.base.models import (
     ThesaurusKeyword,
 )
 
-from geonode.favorite.models import Favorite
 from geonode.layers.models import Dataset
+from geonode.favorite.models import Favorite
+from geonode.documents.models import Document
 from geonode.base.utils import build_absolute_uri
+from geonode.resource.api.tasks import ExecutionRequest
 from geonode.base.populate_test_data import create_models
 from geonode.security.utils import get_resources_with_perms
-from geonode.documents.models import Document
 
 logger = logging.getLogger(__name__)
 
@@ -501,6 +503,15 @@ class BaseApiTests(APITestCase):
         data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec_patch)}"
         response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data.get('status'))
+        self.assertIsNotNone(response.data.get('status_url'))
+        status = response.data.get('status')
+        status_url = response.data.get('status_url')
+        while status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+            response = self.client.get(status_url)
+            status = response.data.get('status')
+            sleep(3.0)
+        self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
@@ -564,6 +575,15 @@ class BaseApiTests(APITestCase):
         data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
         response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data.get('status'))
+        self.assertIsNotNone(response.data.get('status_url'))
+        status = response.data.get('status')
+        status_url = response.data.get('status_url')
+        while status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+            response = self.client.get(status_url)
+            status = response.data.get('status')
+            sleep(3.0)
+        self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
