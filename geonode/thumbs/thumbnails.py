@@ -28,7 +28,7 @@ from typing import List, Union, Optional, Tuple
 from django.conf import settings
 from django.utils.module_loading import import_string
 
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Layer
 from geonode.base.thumb_utils import thumb_exists
 from geonode.geoserver.helpers import OGC_Servers_Handler
@@ -108,6 +108,10 @@ def create_thumbnail(
     target_crs = forced_crs.upper() if forced_crs is not None else "EPSG:3857"
 
     compute_bbox_from_layers = False
+    is_map_with_datasets = True
+
+    if isinstance(instance, Map):
+        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(ows_url__isnull=True).exclude(ows_url__exact='').count() > 0
     if bbox:
         # make sure BBOX is provided with the CRS in a correct format
         source_crs = bbox[-1]
@@ -130,14 +134,14 @@ def create_thumbnail(
     # --- define layer locations ---
     locations, layers_bbox = _layers_locations(instance, compute_bbox=compute_bbox_from_layers, target_crs=target_crs)
 
-    if compute_bbox_from_layers:
+    if compute_bbox_from_layers and is_map_with_datasets:
         if not layers_bbox:
             raise ThumbnailError(f"Thumbnail generation couldn't determine a BBOX for: {instance}.")
         else:
             bbox = layers_bbox
 
     # --- expand the BBOX to match the set thumbnail's ratio (prevent thumbnail's distortions) ---
-    bbox = utils.expand_bbox_to_ratio(bbox)
+    bbox = utils.expand_bbox_to_ratio(bbox) if bbox else None
 
     # --- add default style ---
     if not styles and hasattr(instance, "default_style"):
@@ -163,7 +167,7 @@ def create_thumbnail(
             logger.error(f"Exception occurred while fetching partial thumbnail for {instance.name}.")
             logger.exception(e)
 
-    if not partial_thumbs:
+    if not partial_thumbs and is_map_with_datasets:
         utils.assign_missing_thumbnail(instance)
         raise ThumbnailError("Thumbnail generation failed - no image retrieved from WMS services.")
 
@@ -185,7 +189,7 @@ def create_thumbnail(
     # --- fetch background image ---
     try:
         BackgroundGenerator = import_string(settings.THUMBNAIL_BACKGROUND["class"])
-        background = BackgroundGenerator(width, height).fetch(bbox, background_zoom)
+        background = BackgroundGenerator(width, height).fetch(bbox, background_zoom) if bbox else None
     except Exception as e:
         logger.error(f"Thumbnail generation. Error occurred while fetching background image: {e}")
         logger.exception(e)
