@@ -78,26 +78,6 @@ jobs:
             done
             [[ $DJANGO_STATUS == '"healthy"' ]] && [[ $GEOSERVER_STATUS == '"healthy"' ]];
 
-      - run:
-          name: Show state (debug)
-          command: docker ps
-          when: on_fail
-
-      - run:
-          name: Geoserver logs (debug)
-          command: docker logs geoserver4geonode --tail 1000
-          when: on_fail
-
-      - run:
-          name: Django logs (debug)
-          command: docker logs django4geonode --tail 1000
-          when: on_fail
-
-      - run:
-          name: Celery logs (debug)
-          command: docker logs celery4geonode --tail 1000
-          when: on_fail
-
       - when:
           condition: <<parameters.test_suite>>
           steps:
@@ -119,6 +99,26 @@ jobs:
                   docker-compose -f docker-compose-test.yml exec django bash -c 'flake8 geonode'
                   docker-compose -f docker-compose-test.yml exec django bash -c 'codecov; bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
                 working_directory: ./
+
+      - run:
+          name: Show state (debug)
+          command: docker ps
+          when: on_fail
+
+      - run:
+          name: Geoserver logs (debug)
+          command: docker logs geoserver4geonode --tail 1000
+          when: on_fail
+
+      - run:
+          name: Django logs (debug)
+          command: docker logs django4geonode --tail 1000
+          when: on_fail
+
+      - run:
+          name: Celery logs (debug)
+          command: docker logs celery4geonode --tail 1000
+          when: on_fail
 
 workflows:
 
