@@ -150,7 +150,7 @@ pytest-splinter==3.3.1
 pytest-django==4.4.0
 setuptools==57.4.0
 pip==21.2.2
-Twisted==21.2.0
+Twisted==21.7.0
 pixelmatch==0.2.3
 factory-boy==3.2.0
 flaky==3.7.0
