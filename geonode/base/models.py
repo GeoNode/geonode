@@ -1646,10 +1646,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     image = None
 
             if upload_path and image:
-                name, ext = os.path.splitext(filename)
+                name = os.path.basename(filename)
                 remove_thumbs(name)
                 actual_name = storage_manager.save(upload_path, ContentFile(image))
-                url = storage_manager.url(actual_name)
+                actual_file_name = os.path.basename(actual_name)
+
+                if filename != actual_file_name:
+                    upload_path = upload_path.replace(filename, actual_file_name)
+
+                url = storage_manager.url(upload_path)
 
                 try:
                     # Optimize the Thumbnail size and resolution
