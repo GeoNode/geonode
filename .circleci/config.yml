@@ -85,12 +85,17 @@ jobs:
 
       - run:
           name: Geoserver logs (debug)
-          command: docker logs geoserver4geonode --tail 500
+          command: docker logs geoserver4geonode --tail 1000
           when: on_fail
 
       - run:
           name: Django logs (debug)
-          command: docker logs django4geonode --tail 500
+          command: docker logs django4geonode --tail 1000
+          when: on_fail
+
+      - run:
+          name: Celery logs (debug)
+          command: docker logs celery4geonode --tail 1000
           when: on_fail
 
       - when:

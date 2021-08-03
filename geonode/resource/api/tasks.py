@@ -80,8 +80,13 @@ def _get_param_value(_param, _input_value):
 def resouce_service_dispatcher(self, execution_id: str):
     """Performs a Resource Service request asynchronously.
 
-    This function
+    This is the main Resource Service API dispatcher.
+    The method looks for avaialable `ExecutionRequests` with status `READY` and triggers the
+    `func_name` method of the `resource_manager` with the `input_params`.
+    It finally updates the `status` of the request.
 
+    A client is able to query the `status_url` endpoint in order to get the current `status` other than
+    the `output_params`.
     """
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
@@ -155,3 +160,5 @@ def resouce_service_dispatcher(self, execution_id: str):
                             }
                         )
                         _request.refresh_from_db()
+
+            logger.error(f"WARNING: The requested ExecutionRequest with 'exec_id'={execution_id} was not found!")
