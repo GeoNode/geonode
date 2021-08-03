@@ -438,165 +438,124 @@ class BaseApiTests(APITestCase):
         """
         Ensure we can Get & Set Permissions across the Resource Base list.
         """
-        url = reverse('base-resources-list')
-        bobby = get_user_model().objects.get(username='bobby')
-        norman = get_user_model().objects.get(username='norman')
-        anonymous_group = Group.objects.get(name='anonymous')
+        with self.settings(ASYNC_SIGNALS=False):
+            url = reverse('base-resources-list')
+            bobby = get_user_model().objects.get(username='bobby')
+            norman = get_user_model().objects.get(username='norman')
+            anonymous_group = Group.objects.get(name='anonymous')
 
-        # Admin
-        self.assertTrue(self.client.login(username='admin', password='admin'))
+            # Admin
+            self.assertTrue(self.client.login(username='admin', password='admin'))
 
-        resource = ResourceBase.objects.filter(owner__username='bobby').first()
-        if not resource.uuid:
-            resource.uuid = str(uuid1())
-            resource.save()
-        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
-        get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
+            resource = ResourceBase.objects.filter(owner__username='bobby').first()
+            if not resource.uuid:
+                resource.uuid = str(uuid1())
+                resource.save()
+            set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
+            get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
 
-        url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
+            url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
 
-        response = self.client.get(get_perms_url, format='json')
-        self.assertEqual(response.status_code, 200)
-        resource_perm_spec = response.data
-        self.assertDictEqual(
-            resource_perm_spec,
-            {
-                'users': [
-                    {
-                        'id': bobby.id,
-                        'username': bobby.username,
-                        'first_name': bobby.first_name,
-                        'last_name': bobby.last_name,
-                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'manage'
-                    }
-                ],
-                'organizations': [],
-                'groups': [
-                    {
-                        'id': anonymous_group.id,
-                        'title': 'anonymous',
-                        'name': 'anonymous',
-                        'permissions': 'download'
-                    }
-                ]
-            },
-            resource_perm_spec
-        )
-
-        # Add perms to Norman
-        resource_perm_spec_patch = {
-            'users': [
+            response = self.client.get(get_perms_url, format='json')
+            self.assertEqual(response.status_code, 200)
+            resource_perm_spec = response.data
+            self.assertDictEqual(
+                resource_perm_spec,
                 {
-                    'id': norman.id,
-                    'username': norman.username,
-                    'first_name': norman.first_name,
-                    'last_name': norman.last_name,
-                    'avatar': '',
-                    'permissions': 'edit'
-                }
-            ]
-        }
-        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec_patch)}"
-        response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(response.data.get('status'))
-        self.assertIsNotNone(response.data.get('status_url'))
-        status = response.data.get('status')
-        status_url = response.data.get('status_url')
-        _counter = 0
-        while _counter < 200 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
-            response = self.client.get(status_url)
-            status = response.data.get('status')
-            sleep(3.0)
-            _counter += 1
-            logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
-        self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
+                    'users': [
+                        {
+                            'id': bobby.id,
+                            'username': bobby.username,
+                            'first_name': bobby.first_name,
+                            'last_name': bobby.last_name,
+                            'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                            'permissions': 'manage'
+                        }
+                    ],
+                    'organizations': [],
+                    'groups': [
+                        {
+                            'id': anonymous_group.id,
+                            'title': 'anonymous',
+                            'name': 'anonymous',
+                            'permissions': 'download'
+                        }
+                    ]
+                },
+                resource_perm_spec
+            )
 
-        response = self.client.get(get_perms_url, format='json')
-        self.assertEqual(response.status_code, 200)
-        resource_perm_spec = response.data
-        self.assertDictEqual(
-            resource_perm_spec,
-            {
+            # Add perms to Norman
+            resource_perm_spec_patch = {
                 'users': [
-                    {
-                        'id': bobby.id,
-                        'username': bobby.username,
-                        'first_name': bobby.first_name,
-                        'last_name': bobby.last_name,
-                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'manage'
-                    },
                     {
                         'id': norman.id,
                         'username': norman.username,
                         'first_name': norman.first_name,
                         'last_name': norman.last_name,
-                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'avatar': '',
                         'permissions': 'edit'
                     }
-                ],
-                'organizations': [],
-                'groups': [
-                    {
-                        'id': anonymous_group.id,
-                        'title': 'anonymous',
-                        'name': 'anonymous',
-                        'permissions': 'download'
-                    }
                 ]
-            },
-            resource_perm_spec
-        )
-
-        # Remove perms to Norman
-        resource_perm_spec = {
-            'users': [
-                {
-                    'id': bobby.id,
-                    'username': bobby.username,
-                    'first_name': bobby.first_name,
-                    'last_name': bobby.last_name,
-                    'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                    'permissions': 'manage'
-                }
-            ],
-            'organizations': [],
-            'groups': [
-                {
-                    'id': anonymous_group.id,
-                    'title': 'anonymous',
-                    'name': 'anonymous',
-                    'permissions': 'download'
-                }
-            ]
-        }
-        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
-        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(response.data.get('status'))
-        self.assertIsNotNone(response.data.get('status_url'))
-        status = response.data.get('status')
-        status_url = response.data.get('status_url')
-        _counter = 0
-        while _counter < 200 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
-            response = self.client.get(status_url)
+            }
+            data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec_patch)}"
+            response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+            self.assertEqual(response.status_code, 200)
+            self.assertIsNotNone(response.data.get('status'))
+            self.assertIsNotNone(response.data.get('status_url'))
             status = response.data.get('status')
-            sleep(3.0)
-            _counter += 1
-            logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
-        self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
+            status_url = response.data.get('status_url')
+            _counter = 0
+            while _counter < 200 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+                response = self.client.get(status_url)
+                status = response.data.get('status')
+                sleep(3.0)
+                _counter += 1
+                logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
+            self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
-        response = self.client.get(get_perms_url, format='json')
-        self.assertEqual(response.status_code, 200)
-        resource_perm_spec = response.data
-        self.assertDictEqual(
-            resource_perm_spec,
-            {
+            response = self.client.get(get_perms_url, format='json')
+            self.assertEqual(response.status_code, 200)
+            resource_perm_spec = response.data
+            self.assertDictEqual(
+                resource_perm_spec,
+                {
+                    'users': [
+                        {
+                            'id': bobby.id,
+                            'username': bobby.username,
+                            'first_name': bobby.first_name,
+                            'last_name': bobby.last_name,
+                            'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                            'permissions': 'manage'
+                        },
+                        {
+                            'id': norman.id,
+                            'username': norman.username,
+                            'first_name': norman.first_name,
+                            'last_name': norman.last_name,
+                            'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                            'permissions': 'edit'
+                        }
+                    ],
+                    'organizations': [],
+                    'groups': [
+                        {
+                            'id': anonymous_group.id,
+                            'title': 'anonymous',
+                            'name': 'anonymous',
+                            'permissions': 'download'
+                        }
+                    ]
+                },
+                resource_perm_spec
+            )
+
+            # Remove perms to Norman
+            resource_perm_spec = {
                 'users': [
                     {
                         'id': bobby.id,
@@ -616,29 +575,71 @@ class BaseApiTests(APITestCase):
                         'permissions': 'download'
                     }
                 ]
-            },
-            resource_perm_spec
-        )
+            }
+            data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
+            response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+            self.assertEqual(response.status_code, 200)
+            self.assertIsNotNone(response.data.get('status'))
+            self.assertIsNotNone(response.data.get('status_url'))
+            status = response.data.get('status')
+            status_url = response.data.get('status_url')
+            _counter = 0
+            while _counter < 200 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+                response = self.client.get(status_url)
+                status = response.data.get('status')
+                sleep(3.0)
+                _counter += 1
+                logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
+            self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
-        # Ensure get_perms and set_perms are done by users with correct permissions.
-        # logout admin user
-        self.assertIsNone(self.client.logout())
-        # get perms
-        response = self.client.get(get_perms_url, format='json')
-        self.assertEqual(response.status_code, 403)
-        # set perms
-        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
-        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
-        self.assertEqual(response.status_code, 403)
-        # login resourse owner
-        # get perms
-        self.assertTrue(self.client.login(username='bobby', password='bob'))
-        response = self.client.get(get_perms_url, format='json')
-        self.assertEqual(response.status_code, 200)
-        # set perms
-        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
-        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
-        self.assertEqual(response.status_code, 200)
+            response = self.client.get(get_perms_url, format='json')
+            self.assertEqual(response.status_code, 200)
+            resource_perm_spec = response.data
+            self.assertDictEqual(
+                resource_perm_spec,
+                {
+                    'users': [
+                        {
+                            'id': bobby.id,
+                            'username': bobby.username,
+                            'first_name': bobby.first_name,
+                            'last_name': bobby.last_name,
+                            'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                            'permissions': 'manage'
+                        }
+                    ],
+                    'organizations': [],
+                    'groups': [
+                        {
+                            'id': anonymous_group.id,
+                            'title': 'anonymous',
+                            'name': 'anonymous',
+                            'permissions': 'download'
+                        }
+                    ]
+                },
+                resource_perm_spec
+            )
+
+            # Ensure get_perms and set_perms are done by users with correct permissions.
+            # logout admin user
+            self.assertIsNone(self.client.logout())
+            # get perms
+            response = self.client.get(get_perms_url, format='json')
+            self.assertEqual(response.status_code, 403)
+            # set perms
+            data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
+            response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+            self.assertEqual(response.status_code, 403)
+            # login resourse owner
+            # get perms
+            self.assertTrue(self.client.login(username='bobby', password='bob'))
+            response = self.client.get(get_perms_url, format='json')
+            self.assertEqual(response.status_code, 200)
+            # set perms
+            data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
+            response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+            self.assertEqual(response.status_code, 200)
 
     def test_featured_and_published_resources(self):
         """

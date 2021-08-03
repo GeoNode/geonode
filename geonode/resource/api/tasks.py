@@ -77,7 +77,7 @@ def _get_param_value(_param, _input_value):
     acks_late=False,
     ignore_result=False,
 )
-def resouce_service_dispatcher(self, execution_id: int):
+def resouce_service_dispatcher(self, execution_id: str):
     """Performs a Resource Service request asynchronously.
 
     This function
