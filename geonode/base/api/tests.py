@@ -68,6 +68,7 @@ class BaseApiTests(APITestCase):
     ]
 
     def setUp(self):
+        self.maxDiff = None
         create_models(b'document')
         create_models(b'map')
         create_models(b'dataset')
@@ -504,7 +505,6 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        logger.error(f" ---------------------------------------------------------- {resource_perm_spec}")
         self.assertDictEqual(
             resource_perm_spec,
             {
