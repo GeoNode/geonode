@@ -16,8 +16,6 @@ python-slugify==5.0.2
 decorator==5.0.9
 celery==5.1.2
 kombu==5.1.0
-pylibmc==1.6.1
-sherlock==0.3.2
 vine==5.0.0
 tqdm==4.62.0
 Deprecated==1.2.12
@@ -122,6 +120,8 @@ python-dateutil==2.8.2
 pytz==2021.1
 requests==2.26.0
 timeout-decorator==0.5.0
+pylibmc==1.6.1
+sherlock==0.3.2
 
 # required by monitoring
 psutil==5.8.0
