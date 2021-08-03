@@ -480,7 +480,8 @@ class BaseApiTests(APITestCase):
                         'permissions': 'download'
                     }
                 ]
-            }
+            },
+            resource_perm_spec
         )
 
         # Add perms to Norman
@@ -503,6 +504,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
+        logger.error(f" ---------------------------------------------------------- {resource_perm_spec}")
         self.assertDictEqual(
             resource_perm_spec,
             {
@@ -533,7 +535,8 @@ class BaseApiTests(APITestCase):
                         'permissions': 'download'
                     }
                 ]
-            }
+            },
+            resource_perm_spec
         )
 
         # Remove perms to Norman
@@ -587,7 +590,8 @@ class BaseApiTests(APITestCase):
                         'permissions': 'download'
                     }
                 ]
-            }
+            },
+            resource_perm_spec
         )
 
         # Ensure get_perms and set_perms are done by users with correct permissions.
