@@ -2130,8 +2130,10 @@ def get_subclasses_by_model(model: str):
     _app_subclasses = []
     for _model in apps.get_models():
         if _model.__name__ == model:
-            for _geoapp in _model.__subclasses__():
-                _app_subclasses.append(_geoapp.__name__)
+            models = [(y.name, y.default_model) for x, y in apps.app_configs.items() if hasattr(y, 'default_model')]
+            for m in models:
+                if m[0] in settings.INSTALLED_APPS:
+                    _app_subclasses.append(m[1])
     return _app_subclasses
 
 
