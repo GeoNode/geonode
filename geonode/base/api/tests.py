@@ -507,10 +507,13 @@ class BaseApiTests(APITestCase):
         self.assertIsNotNone(response.data.get('status_url'))
         status = response.data.get('status')
         status_url = response.data.get('status_url')
-        while status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+        _counter = 0
+        while _counter < 200 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
             response = self.client.get(status_url)
             status = response.data.get('status')
             sleep(3.0)
+            _counter += 1
+            logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
         self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
         response = self.client.get(get_perms_url, format='json')
@@ -579,10 +582,13 @@ class BaseApiTests(APITestCase):
         self.assertIsNotNone(response.data.get('status_url'))
         status = response.data.get('status')
         status_url = response.data.get('status_url')
-        while status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+        _counter = 0
+        while _counter < 200 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
             response = self.client.get(status_url)
             status = response.data.get('status')
             sleep(3.0)
+            _counter += 1
+            logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
         self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
         response = self.client.get(get_perms_url, format='json')
