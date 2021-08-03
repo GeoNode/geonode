@@ -1679,7 +1679,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                                 'change_dataset_data',
                                 'change_dataset_style',
                                 'change_resourcebase'
-                        ],
+                            ],
                         'AnonymousUser': ['view_resourcebase']
                     },
                 'groups':

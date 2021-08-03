@@ -28,7 +28,9 @@ from urllib.parse import urljoin
 
 from django.urls import reverse
 from django.core.files import File
+from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import get_anonymous_user
@@ -434,6 +436,10 @@ class BaseApiTests(APITestCase):
         Ensure we can Get & Set Permissions across the Resource Base list.
         """
         url = reverse('base-resources-list')
+        bobby = get_user_model().objects.get(username='bobby')
+        norman = get_user_model().objects.get(username='norman')
+        anonymous_group = Group.objects.get(name='anonymous')
+
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
@@ -457,10 +463,10 @@ class BaseApiTests(APITestCase):
             {
                 'users': [
                     {
-                        'id': 4,
-                        'username': 'bobby',
-                        'first_name': 'bobby',
-                        'last_name': '',
+                        'id': bobby.id,
+                        'username': bobby.username,
+                        'first_name': bobby.first_name,
+                        'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'manage'
                     }
@@ -468,7 +474,7 @@ class BaseApiTests(APITestCase):
                 'organizations': [],
                 'groups': [
                     {
-                        'id': 2,
+                        'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
                         'permissions': 'download'
@@ -478,18 +484,17 @@ class BaseApiTests(APITestCase):
         )
 
         # Add perms to Norman
-        norman = get_user_model().objects.get(username='norman')
         resource_perm_spec_patch = {
             'users': [
-                    {
-                        'id': norman.id,
-                        'username': norman.username,
-                        'first_name': norman.first_name,
-                        'last_name': norman.last_name,
-                        'avatar': '',
-                        'permissions': 'edit'
-                    }
-                ]
+                {
+                    'id': norman.id,
+                    'username': norman.username,
+                    'first_name': norman.first_name,
+                    'last_name': norman.last_name,
+                    'avatar': '',
+                    'permissions': 'edit'
+                }
+            ]
         }
         data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec_patch)}"
         response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
@@ -503,18 +508,18 @@ class BaseApiTests(APITestCase):
             {
                 'users': [
                     {
-                        'id': 4,
-                        'username': 'bobby',
-                        'first_name': 'bobby',
-                        'last_name': '',
+                        'id': bobby.id,
+                        'username': bobby.username,
+                        'first_name': bobby.first_name,
+                        'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'manage'
                     },
                     {
-                        'id': 2,
-                        'username': 'norman',
-                        'first_name': 'norman',
-                        'last_name': '',
+                        'id': norman.id,
+                        'username': norman.username,
+                        'first_name': norman.first_name,
+                        'last_name': norman.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'edit'
                     }
@@ -522,7 +527,7 @@ class BaseApiTests(APITestCase):
                 'organizations': [],
                 'groups': [
                     {
-                        'id': 2,
+                        'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
                         'permissions': 'download'
@@ -533,26 +538,26 @@ class BaseApiTests(APITestCase):
 
         # Remove perms to Norman
         resource_perm_spec = {
-                'users': [
-                    {
-                        'id': 4,
-                        'username': 'bobby',
-                        'first_name': 'bobby',
-                        'last_name': '',
-                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'manage'
-                    }
-                ],
-                'organizations': [],
-                'groups': [
-                    {
-                        'id': 2,
-                        'title': 'anonymous',
-                        'name': 'anonymous',
-                        'permissions': 'download'
-                    }
-                ]
-            }
+            'users': [
+                {
+                    'id': bobby.id,
+                    'username': bobby.username,
+                    'first_name': bobby.first_name,
+                    'last_name': bobby.last_name,
+                    'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                    'permissions': 'manage'
+                }
+            ],
+            'organizations': [],
+            'groups': [
+                {
+                    'id': anonymous_group.id,
+                    'title': 'anonymous',
+                    'name': 'anonymous',
+                    'permissions': 'download'
+                }
+            ]
+        }
         data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
         response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 200)
@@ -565,10 +570,10 @@ class BaseApiTests(APITestCase):
             {
                 'users': [
                     {
-                        'id': 4,
-                        'username': 'bobby',
-                        'first_name': 'bobby',
-                        'last_name': '',
+                        'id': bobby.id,
+                        'username': bobby.username,
+                        'first_name': bobby.first_name,
+                        'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'manage'
                     }
@@ -576,7 +581,7 @@ class BaseApiTests(APITestCase):
                 'organizations': [],
                 'groups': [
                     {
-                        'id': 2,
+                        'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
                         'permissions': 'download'
