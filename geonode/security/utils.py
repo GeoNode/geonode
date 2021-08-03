@@ -686,7 +686,7 @@ def set_owner_permissions(resource, members=None):
                         assign_perm(perm, user, resource.service)
 
 
-def remove_object_permissions(instance):
+def remove_object_permissions(instance, purge=True):
     """Remove object permissions on given resource.
 
     If is a layer removes the layer specific permissions then the
@@ -705,17 +705,19 @@ def remove_object_permissions(instance):
                 content_type=ContentType.objects.get_for_model(resource.layer),
                 object_pk=instance.id
             ).delete()
+    except (ObjectDoesNotExist, RuntimeError):
+        pass  # This layer is not manageable by geofence
+    except Exception:
+        tb = traceback.format_exc()
+        logger.debug(tb)
+    finally:
+        if purge:
             if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
                 if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
                     purge_geofence_layer_rules(resource)
                     set_geofence_invalidate_cache()
             else:
                 resource.set_dirty_state()
-    except (ObjectDoesNotExist, RuntimeError):
-        pass  # This layer is not manageable by geofence
-    except Exception:
-        tb = traceback.format_exc()
-        logger.debug(tb)
     UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
                                         object_pk=instance.id).delete()
     GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
