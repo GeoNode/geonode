@@ -473,7 +473,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     user=request.user,
                     func_name='remove_permissions',
                     input_params={
-                        "uuid": resource.uuid
+                        "uuid": request_params.get('uuid', resource.uuid)
                     }
                 )
             elif request.method == 'PUT':
@@ -483,7 +483,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     user=request.user,
                     func_name='set_permissions',
                     input_params={
-                        "uuid": resource.uuid,
+                        "uuid": request_params.get('uuid', resource.uuid),
                         "owner": request_params.get('owner', resource.owner.username),
                         "permissions": perms_spec_compact.extended,
                         "created": request_params.get('created', False)
@@ -498,7 +498,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     user=request.user,
                     func_name='set_permissions',
                     input_params={
-                        "uuid": resource.uuid,
+                        "uuid": request_params.get('uuid', resource.uuid),
                         "owner": request_params.get('owner', resource.owner.username),
                         "permissions": perms_spec_compact_resource.extended,
                         "created": request_params.get('created', False)
@@ -908,7 +908,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 user=request.user,
                 func_name='update',
                 input_params={
-                    "uuid": resource.uuid,
+                    "uuid": request_params.get('uuid', resource.uuid),
                     "xml_file": request_params.get('xml_file', None),
                     "metadata_uploaded": request_params.get('metadata_uploaded', False),
                     "vals": request_params.get('vals', '{}'),
@@ -1005,7 +1005,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 user=request.user,
                 func_name='copy',
                 input_params={
-                    "uuid": resource.uuid,
+                    "uuid": request_params.get('uuid', resource.uuid),
                     "owner": request_params.get('owner', request.user.username),
                     "defaults": request_params.get('defaults', '{}')
                 }
