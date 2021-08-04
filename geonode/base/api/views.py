@@ -96,6 +96,7 @@ class UserViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdmin, ]
+    filter_backends = [DynamicSearchFilter, ]
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     pagination_class = GeoNodeApiPagination
@@ -145,6 +146,7 @@ class GroupViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticated, ]
+    filter_backends = [DynamicSearchFilter, ]
     queryset = GroupProfile.objects.all()
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
@@ -179,6 +181,7 @@ class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin,
     API endpoint that lists regions.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [DynamicSearchFilter, ]
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
     pagination_class = GeoNodeApiPagination
@@ -189,6 +192,7 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Retrie
     API endpoint that lists hierarchical keywords.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [DynamicSearchFilter, ]
     queryset = HierarchicalKeyword.objects.all()
     serializer_class = HierarchicalKeywordSerializer
     pagination_class = GeoNodeApiPagination
@@ -199,6 +203,7 @@ class ThesaurusKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveM
     API endpoint that lists Thesaurus keywords.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [DynamicSearchFilter, ]
     queryset = ThesaurusKeyword.objects.all()
     serializer_class = ThesaurusKeywordSerializer
     pagination_class = GeoNodeApiPagination
@@ -209,6 +214,7 @@ class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveMode
     API endpoint that lists categories.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [DynamicSearchFilter, ]
     queryset = TopicCategory.objects.all()
     serializer_class = TopicCategorySerializer
     pagination_class = GeoNodeApiPagination
@@ -220,6 +226,7 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [AllowAny, ]
+    filter_backends = [DynamicSearchFilter, ]
     serializer_class = OwnerSerializer
     pagination_class = GeoNodeApiPagination
 
