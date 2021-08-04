@@ -442,6 +442,7 @@ class BaseApiTests(APITestCase):
         bobby = get_user_model().objects.get(username='bobby')
         norman = get_user_model().objects.get(username='norman')
         anonymous_group = Group.objects.get(name='anonymous')
+        contributors_group = Group.objects.get(name='registered-members')
 
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
@@ -471,7 +472,7 @@ class BaseApiTests(APITestCase):
                         'first_name': bobby.first_name,
                         'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'manage'
+                        'permissions': 'owner'
                     }
                 ],
                 'organizations': [],
@@ -481,6 +482,12 @@ class BaseApiTests(APITestCase):
                         'title': 'anonymous',
                         'name': 'anonymous',
                         'permissions': 'download'
+                    },
+                    {
+                        'id': contributors_group.id,
+                        'title': contributors_group.groupprofile.title,
+                        'name': contributors_group.name,
+                        'permissions': 'none'
                     }
                 ]
             },
@@ -529,7 +536,7 @@ class BaseApiTests(APITestCase):
                         'first_name': bobby.first_name,
                         'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'manage'
+                        'permissions': 'owner'
                     },
                     {
                         'id': norman.id,
@@ -547,6 +554,12 @@ class BaseApiTests(APITestCase):
                         'title': 'anonymous',
                         'name': 'anonymous',
                         'permissions': 'download'
+                    },
+                    {
+                        'id': contributors_group.id,
+                        'title': contributors_group.groupprofile.title,
+                        'name': contributors_group.name,
+                        'permissions': 'none'
                     }
                 ]
             },
@@ -562,7 +575,7 @@ class BaseApiTests(APITestCase):
                     'first_name': bobby.first_name,
                     'last_name': bobby.last_name,
                     'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                    'permissions': 'manage'
+                    'permissions': 'owner'
                 }
             ],
             'organizations': [],
@@ -572,6 +585,12 @@ class BaseApiTests(APITestCase):
                     'title': 'anonymous',
                     'name': 'anonymous',
                     'permissions': 'download'
+                },
+                {
+                    'id': contributors_group.id,
+                    'title': contributors_group.groupprofile.title,
+                    'name': contributors_group.name,
+                    'permissions': 'none'
                 }
             ]
         }
@@ -604,7 +623,7 @@ class BaseApiTests(APITestCase):
                         'first_name': bobby.first_name,
                         'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'manage'
+                        'permissions': 'owner'
                     }
                 ],
                 'organizations': [],
@@ -614,6 +633,12 @@ class BaseApiTests(APITestCase):
                         'title': 'anonymous',
                         'name': 'anonymous',
                         'permissions': 'download'
+                    },
+                    {
+                        'id': contributors_group.id,
+                        'title': contributors_group.groupprofile.title,
+                        'name': contributors_group.name,
+                        'permissions': 'none'
                     }
                 ]
             },
