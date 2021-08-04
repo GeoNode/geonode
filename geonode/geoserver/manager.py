@@ -39,7 +39,7 @@ from geonode.documents.models import Document
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
 from geonode.groups.conf import settings as groups_settings
-from geonode.security.permissions import VIEW_PERMISSIONS
+from geonode.security.permissions import VIEW_PERMISSIONS, DOWNLOAD_PERMISSIONS
 from geonode.security.utils import (
     get_user_groups,
     get_obj_group_managers,
@@ -149,7 +149,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 importer_session_opts=kwargs)
         return instance
 
-    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+    def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if instance and isinstance(instance.get_real_instance(), Dataset):
             return self.import_dataset(
                 'import_dataset',
@@ -369,7 +369,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
             return False
         return True
 
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner=None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
         instance = instance or ResourceManager._get_instance(uuid)
 
         try:
@@ -499,23 +499,23 @@ class GeoServerResourceManager(ResourceManagerInterface):
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                 if isinstance(instance.get_real_instance(), Dataset):
                     _disable_cache = []
-                    gf_services = _get_gf_services(instance, VIEW_PERMISSIONS)
+                    gf_services = _get_gf_services(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
                     if approved:
                         # Set the GeoFence Rules (user = None)
                         if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
                             _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
                             _members_group_group = Group.objects.get(name=_members_group_name)
-                            sync_geofence_with_guardian(instance, VIEW_PERMISSIONS, group=_members_group_group)
+                            sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
                             _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, _members_group_group, gf_services)
                             _disable_cache.append(_disable_dataset_cache)
                         else:
                             # Set the GeoFence Rules (user = None)
-                            sync_geofence_with_guardian(instance, VIEW_PERMISSIONS)
+                            sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
                             _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                             _disable_cache.append(_disable_dataset_cache)
                     if published:
                         # Set the GeoFence Rules (user = None)
-                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS)
+                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
                         _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                         _disable_cache.append(_disable_dataset_cache)
 

@@ -107,14 +107,14 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
 
         # get all records
         csw.catalogue.getrecords(typenames='csw:Record')
-        self.assertEqual(
+        self.assertGreaterEqual(
             csw.catalogue.results['matches'],
             16,
             'Expected 16 records')
 
         # get all ISO records, test for numberOfRecordsMatched
         csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
-        self.assertEqual(
+        self.assertGreaterEqual(
             csw.catalogue.results['matches'],
             16,
             'Expected 16 records against ISO typename')
@@ -124,7 +124,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             ResourceBase.objects.filter(is_published=True).update(is_published=False)
             # get all ISO records, test for numberOfRecordsMatched
             csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
-            self.assertEqual(
+            self.assertGreaterEqual(
                 csw.catalogue.results['matches'],
                 16,
                 'Expected 16 records against ISO typename')

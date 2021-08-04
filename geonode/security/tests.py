@@ -80,6 +80,9 @@ from .utils import (
     get_users_with_perms
 )
 
+from .permissions import (
+    PermSpec,
+    PermSpecCompact)
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +106,7 @@ class StreamToLogger:
             self.logger.log(self.log_level, line.rstrip())
 
 
-class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     """
     Tests for the Geonode security app.
@@ -1602,8 +1605,123 @@ class SecurityTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             user=get_user_model().objects.get(username=self.user))
         self.assertIn(x.title, list(actual.values_list('title', flat=True)))
 
+    def test_perm_spec_conversion(self):
+        """
+        Perm Spec from extended to cmpact and viceversa
+        """
+        perm_spec = {
+            'users': {
+                'AnonymousUser': [
+                    'view_resourcebase'
+                ],
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                    'change_dataset_style'
+                ]
+            },
+            'groups': {}
+        }
 
-class SecurityRulesTest(TestCase):
+        _p = PermSpec(perm_spec, resource_type='dataset')
+        self.assertDictEqual(
+            json.loads(str(_p)),
+            {
+                "users":
+                    {
+                        "AnonymousUser": ["view_resourcebase"],
+                        "bobby":
+                            [
+                                "view_resourcebase",
+                                "download_resourcebase",
+                                "change_dataset_style"
+                        ]
+                    },
+                "groups": {}
+            }
+        )
+
+        self.assertDictEqual(
+            _p.compact,
+            {
+                'users':
+                [
+                    {
+                        'id': 4,
+                        'username': 'bobby',
+                        'first_name': 'bobby',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'edit'
+                    }
+                ],
+                'organizations': [],
+                'groups':
+                [
+                    {
+                        'id': 2,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'view'
+                    }
+                ]
+            }
+        )
+
+        _pp = PermSpecCompact(_p.compact, resource_type='dataset')
+        self.assertDictEqual(
+            _pp.extended,
+            {
+                'users':
+                    {
+                        'bobby':
+                            [
+                                'change_dataset_data',
+                                'change_dataset_style',
+                                'change_resourcebase'
+                            ],
+                        'AnonymousUser': ['view_resourcebase']
+                    },
+                'groups':
+                    {
+                        'anonymous': ['view_resourcebase']
+                    }
+            }
+        )
+
+        _pp2 = PermSpecCompact(
+            {
+                "users":
+                    [
+                        {
+                            "id": 4,
+                            "username": "bobby",
+                            "first_name": "bobby",
+                            "last_name": "",
+                            "avatar": "https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240",
+                            "permissions": "view"
+                        }
+                    ]
+            }
+        )
+        _pp.merge(_pp2)
+        self.assertDictEqual(
+            _pp.extended,
+            {
+                'users':
+                    {
+                        'bobby': ['view_resourcebase'],
+                        'AnonymousUser': ['view_resourcebase']
+                    },
+                'groups':
+                    {
+                        'anonymous': ['view_resourcebase']
+                    }
+            }
+        )
+
+
+class SecurityRulesTests(TestCase):
     """
     Test resources synchronization with Guardian and dirty states cleaning
     """
