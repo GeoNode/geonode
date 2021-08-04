@@ -360,8 +360,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
         if settings.GEONODE_APPS_ENABLE and 'geoapp' in _types:
             _types.remove('geoapp')
-            if hasattr(settings, 'MAPSTORE_CLIENT_APP_LIST') and settings.MAPSTORE_CLIENT_APP_LIST:
-                _types += settings.MAPSTORE_CLIENT_APP_LIST
+            if hasattr(settings, 'CLIENT_APP_LIST') and settings.CLIENT_APP_LIST:
+                _types += settings.CLIENT_APP_LIST
             else:
                 from geonode.geoapps.models import GeoApp
                 geoapp_types = [x for x in GeoApp.objects.values_list('resource_type', flat=True).all().distinct()]
