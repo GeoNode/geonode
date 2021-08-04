@@ -508,7 +508,7 @@ class BaseApiTests(APITestCase):
         status = response.data.get('status')
         status_url = response.data.get('status_url')
         _counter = 0
-        while _counter < 200 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+        while _counter < 100 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
             response = self.client.get(status_url)
             status = response.data.get('status')
             sleep(3.0)
@@ -583,7 +583,7 @@ class BaseApiTests(APITestCase):
         status = response.data.get('status')
         status_url = response.data.get('status_url')
         _counter = 0
-        while _counter < 200 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+        while _counter < 100 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
             response = self.client.get(status_url)
             status = response.data.get('status')
             sleep(3.0)

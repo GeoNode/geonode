@@ -88,8 +88,7 @@ def resouce_service_dispatcher(self, execution_id: str):
     A client is able to query the `status_url` endpoint in order to get the current `status` other than
     the `output_params`.
     """
-    lock_id = f'{self.request.id}'
-    with AcquireLock(lock_id) as lock:
+    with AcquireLock(execution_id) as lock:
         if lock.acquire() is True:
             _exec_request = ExecutionRequest.objects.filter(exec_id=execution_id)
             if _exec_request.exists():
