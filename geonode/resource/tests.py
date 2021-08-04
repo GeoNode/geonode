@@ -25,9 +25,11 @@ from unittest.mock import patch
 from django.conf import settings
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
+from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import ResourceManager
@@ -38,6 +40,8 @@ from geonode.base.populate_test_data import create_single_doc, create_single_dat
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.maps.models import MapLayer
 from geonode.services.models import Service, HarvestJob
+from geonode.groups.conf import settings as groups_settings
+from geonode.resource import settings as rm_settings
 
 from pinax.ratings.models import OverallRating
 
@@ -54,9 +58,9 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         User = get_user_model()
         self.user = User.objects.create(username='test', email='test@test.com')
         self.rm = ResourceManager()
-
-    # @patch('os.environ.get', return_value='geonode.resource.tests.ResourceManagerClassTest')
-    # def test_get_concrete_manager(self, mock_get):
+    
+    # def test_get_concrete_manager(self):
+    #     rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = 'geonode.resource.tests.ResourceManagerClassTest'
     #     self.assertEqual(self.rm._concrete_resource_manager.__class__.__name__, 'ResourceManagerClassTest')
 
     def test__get_instance(self):
@@ -211,4 +215,71 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             self.assertTrue(self.rm.remove_permissions(dt.uuid, instance=dt))
 
     def test_set_permissions(self):
-        perm_spec = {"users": {"test": ['view_resourcebase', 'change_resourcebase']}, "groups": {}}
+        norman = get_user_model().objects.get(username="norman")
+        anonymous = get_user_model().objects.get(username="AnonymousUser")
+        dt = create_single_dataset("test_perms_dataset")
+        public_group, _public_created = GroupProfile.objects.get_or_create(
+            slug='public_group',
+            title='public_group',
+            access='public')
+        private_group, _private_created = GroupProfile.objects.get_or_create(
+            slug='private_group',
+            title='private_group',
+            access='private')
+
+        perm_spec = {
+            "users": {
+                "AnonymousUser": ['change_dataset_style', 'view_resourcebase'],
+                "norman": ['view_resourcebase', 'change_dataset_style'],
+            },
+            "groups": {
+                "public_group": ['view_resourcebase'],
+                "private_group": ['view_resourcebase', 'change_resourcebase']
+            }
+        }
+        self.assertTrue(self.rm.set_permissions(dt.uuid, instance=dt, permissions=perm_spec))
+        self.assertFalse(self.rm.set_permissions("invalid_uuid", instance=None, permissions=perm_spec))
+        # Test permissions assigned
+        self.assertTrue(norman.has_perm('change_dataset_style', dt))
+        self.assertFalse(norman.has_perm('change_resourcebase', dt))
+        # Test with no specified permissions
+        self.assertTrue(self.rm.remove_permissions(dt.uuid, instance=dt))
+        self.assertTrue(self.rm.set_permissions(dt.uuid, instance=dt))
+        with self.settings(
+            DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=True,
+            DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
+            anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+            anonymous_group.user_set.add(anonymous)
+            # self.assertTrue(anonymous.has_perm('view_resourcebase', dt))
+            # self.assertTrue(anonymous.has_perm('download_resourcebase', dt))
+        with patch('geonode.security.utils.skip_registered_members_common_group') as mock_v:
+            mock_v.return_value = True
+            with self.settings(
+                DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False,
+                DEFAULT_ANONYMOUS_VIEW_PERMISSION=False):
+                self.assertFalse(anonymous.has_perm('view_resourcebase', dt))
+                self.assertFalse(anonymous.has_perm('download_resourcebase', dt))
+
+    def test_set_workflow_permissions(self):
+        dt = create_single_dataset("test_workflow_dataset")
+        anonymous_group = Group.objects.get(name='anonymous')
+        _members_group_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+
+        self.assertFalse(self.rm.set_workflow_permissions('invalid_uuid', instance=None))
+        groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME=True
+        self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, approved=True))
+        # check group member if has view perms
+        # self.assertIn("view_resourcebase", _members_group_group.permissions.values_list("codename", flat=True))
+
+        self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, approved=True, published=True))
+        groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME=False
+        self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, published=True))
+        # check anonymous group if has view perms
+        # self.assertIn("view_resourcebase", anonymous_group.permissions.values_list("codename", flat=True))
+
+    def test_set_thumbnail(self):
+        doc = create_single_doc("test_thumb_doc")
+        dt = create_single_dataset("test_thumb_dataset")
+        self.assertFalse(self.rm.set_thumbnail("invalid_uuid"))
+        self.assertTrue(self.rm.set_thumbnail(dt.uuid, instance=dt))
+        self.assertTrue(self.rm.set_thumbnail(doc.uuid, instance=doc))
