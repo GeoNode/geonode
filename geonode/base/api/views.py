@@ -470,7 +470,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            perms_spec = PermSpec(resource.get_all_level_info(), resource_type=resource.resource_type)
+            perms_spec = PermSpec(resource.get_all_level_info(), resource)
             request_body = request.body
             request_params = QueryDict(request_body, mutable=True, encoding="UTF-8")
             if request.method == 'GET':
@@ -485,7 +485,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 )
             elif request.method == 'PUT':
                 perms_spec_compact = PermSpecCompact(
-                    json.loads(request_params.get('permissions', '{}')), resource_type=resource.resource_type)
+                    json.loads(request_params.get('permissions', '{}')), resource)
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name='set_permissions',
@@ -498,8 +498,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 )
             elif request.method == 'PATCH':
                 perms_spec_compact_patch = PermSpecCompact(
-                    json.loads(request_params.get('permissions', '{}')), resource_type=resource.resource_type)
-                perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource_type=resource.resource_type)
+                    json.loads(request_params.get('permissions', '{}')), resource)
+                perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
                 perms_spec_compact_resource.merge(perms_spec_compact_patch)
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,

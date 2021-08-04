@@ -20,8 +20,8 @@ import json
 import pprint
 import collections
 
-from guardian.shortcuts import get_anonymous_user
 from avatar.templatetags.avatar_tags import avatar_url
+from guardian.shortcuts import get_group_perms, get_anonymous_user
 
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -72,54 +72,66 @@ SERVICE_PERMISSIONS = [
     "add_resourcebase_from_service"
 ]
 
+NONE_RIGHTS = "none"
 VIEW_RIGHTS = "view"
 DOWNLOAD_RIGHTS = "download"
 EDIT_RIGHTS = "edit"
 MANAGE_RIGHTS = "manage"
+OWNER_RIGHTS = "owner"
 
 COMPACT_RIGHT_MODES = (
     (VIEW_RIGHTS, "view"),
     (DOWNLOAD_RIGHTS, "download"),
     (EDIT_RIGHTS, "edit"),
     (MANAGE_RIGHTS, "manage"),
+    (OWNER_RIGHTS, "owner"),
 )
 
 
-def _to_extended_perms(perm: str, resource_type: str = None) -> list:
-    """Collects standard permissions into a "compact" set, accordingly to the schema below:
+def _to_extended_perms(perm: str, resource_type: str = None, is_owner: bool = False) -> list:
+    """Explode "compact" permissions into an "extended" set, accordingly to the schema below:
 
       - view: view resource
       - download: view and download
       - edit: view download and edit (metadata, style, data)
       - manage: change permissions, delete resource, etc.
+      - owner: admin permissions
 
     """
-    if perm is None or len(perm) == 0:
+    if is_owner:
+        if resource_type and resource_type.lower() in 'dataset':
+            return DATASET_ADMIN_PERMISSIONS + ADMIN_PERMISSIONS
+        else:
+            return ADMIN_PERMISSIONS
+    elif perm is None or len(perm) == 0 or perm == NONE_RIGHTS:
         return []
-    if perm == VIEW_RIGHTS:
+    elif perm == VIEW_RIGHTS:
         return VIEW_PERMISSIONS
-    if perm == DOWNLOAD_RIGHTS:
+    elif perm == DOWNLOAD_RIGHTS:
         return VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
-    if perm == EDIT_RIGHTS:
+    elif perm == EDIT_RIGHTS:
         if resource_type and resource_type.lower() in 'dataset':
             return DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS
         else:
             return EDIT_PERMISSIONS
-    if perm == MANAGE_RIGHTS:
+    elif perm == MANAGE_RIGHTS:
         return MANAGE_PERMISSIONS
 
 
-def _to_compact_perms(perms: list, resource_type: str = None) -> str:
-    """Collects standard permissions into a "compact" set, accordingly to the schema below:
+def _to_compact_perms(perms: list, resource_type: str = None, is_owner: bool = False) -> str:
+    """Compress standard permissions into a "compact" set, accordingly to the schema below:
 
       - view: view resource
       - download: view and download
       - edit: view download and edit (metadata, style, data)
       - manage: change permissions, delete resource, etc.
+      - owner: admin permissions
 
     """
+    if is_owner:
+        return OWNER_RIGHTS
     if perms is None or len(perms) == 0:
-        return None
+        return NONE_RIGHTS
     if any(_p in MANAGE_PERMISSIONS for _p in perms):
         return MANAGE_RIGHTS
     elif resource_type and resource_type.lower() in 'dataset' and any(_p in DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS for _p in perms):
@@ -130,7 +142,7 @@ def _to_compact_perms(perms: list, resource_type: str = None) -> str:
         return DOWNLOAD_RIGHTS
     elif any(_p in VIEW_PERMISSIONS for _p in perms):
         return VIEW_RIGHTS
-    return None
+    return NONE_RIGHTS
 
 
 _Binding = collections.namedtuple('Binding', [
@@ -159,8 +171,8 @@ class PermSpecConverterBase(object):
 
     _object_name = None
 
-    def __init__(self, json, resource_type=None, parent=None):
-        self._resource_type = resource_type
+    def __init__(self, json, resource, parent=None):
+        self._resource = resource
         self._parent = parent
         if parent == self:
             raise Exception('bogus')
@@ -177,10 +189,16 @@ class PermSpecConverterBase(object):
             if binding.expected and val is None:
                 self._binding_failed('expected val for %s', binding.name)
             if binding.binding and val is not None:
-                if isinstance(val, list):
-                    val = [binding.binding(v, parent=self) for v in val]
+                if issubclass(binding.binding, PermSpecConverterBase):
+                    if isinstance(val, list):
+                        val = [binding.binding(v, getattr(self, '_resource', None), parent=self) for v in val]
+                    else:
+                        val = binding.binding(val, getattr(self, '_resource', None), parent=self)
                 else:
-                    val = binding.binding(val, parent=self)
+                    if isinstance(val, list):
+                        val = [binding.binding(v, parent=self) for v in val]
+                    else:
+                        val = binding.binding(val, parent=self)
             setattr(self, binding.name, val)
         self._bind_custom_json(json)
 
@@ -269,6 +287,7 @@ class PermSpec(PermSpecConverterBase):
         user_perms = []
         group_perms = []
         anonymous_perms = None
+        contributors_perms = None
         organization_perms = []
 
         for _k in self.users:
@@ -278,6 +297,7 @@ class PermSpec(PermSpecConverterBase):
             if not _k.is_anonymous and _k.username != 'AnonymousUser':
                 avatar = build_absolute_uri(avatar_url(_k, 240))
                 user = _User(_k.id, _k.username, _k.last_name, _k.first_name, avatar)
+                is_owner = _k == self._resource.owner
                 user_perms.append(
                     {
                         'id': user.id,
@@ -285,7 +305,7 @@ class PermSpec(PermSpecConverterBase):
                         'first_name': user.first_name,
                         'last_name': user.last_name,
                         'avatar': user.avatar,
-                        'permissions': _to_compact_perms(_perms)
+                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, is_owner)
                     }
                 )
             else:
@@ -293,7 +313,7 @@ class PermSpec(PermSpecConverterBase):
                     'id': Group.objects.get(name='anonymous').id,
                     'title': 'anonymous',
                     'name': 'anonymous',
-                    'permissions': _to_compact_perms(_perms)
+                    'permissions': _to_compact_perms(_perms, self._resource.resource_type)
                 }
 
         for _k in self.groups:
@@ -305,31 +325,44 @@ class PermSpec(PermSpecConverterBase):
                     'id': _k.id,
                     'title': 'anonymous',
                     'name': 'anonymous',
-                    'permissions': _to_compact_perms(_perms)
+                    'permissions': _to_compact_perms(_perms, self._resource.resource_type)
                 }
             elif hasattr(_k, 'groupprofile'):
                 group = _Group(_k.id, _k.groupprofile.title, _k.name)
                 if _k.name == groups_settings.REGISTERED_MEMBERS_GROUP_NAME:
-                    group_perms.append(
-                        {
-                            'id': group.id,
-                            'title': group.title,
-                            'name': group.name,
-                            'permissions': _to_compact_perms(_perms)
-                        }
-                    )
+                    contributors_perms = {
+                        'id': group.id,
+                        'title': group.title,
+                        'name': group.name,
+                        'permissions': _to_compact_perms(_perms, self._resource.resource_type)
+                    }
                 else:
                     organization_perms.append(
                         {
                             'id': group.id,
                             'title': group.title,
                             'name': group.name,
-                            'permissions': _to_compact_perms(_perms)
+                            'permissions': _to_compact_perms(_perms, self._resource.resource_type)
                         }
                     )
 
         if anonymous_perms:
             group_perms.append(anonymous_perms)
+        if contributors_perms:
+            group_perms.append(contributors_perms)
+        elif Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).exists():
+            contributors_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+            group_perms.append(
+                {
+                    'id': contributors_group.id,
+                    'title': contributors_group.groupprofile.title,
+                    'name': contributors_group.name,
+                    'permissions': _to_compact_perms(
+                        get_group_perms(contributors_group, self._resource),
+                        self._resource.resource_type)
+                }
+            )
+
         json['users'] = user_perms
         json['organizations'] = organization_perms
         json['groups'] = group_perms
@@ -402,16 +435,17 @@ class PermSpecCompact(PermSpecConverterBase):
         }
         for _u in self.users:
             _user_profile = get_user_model().objects.get(id=_u.id)
-            json['users'][_user_profile.username] = _to_extended_perms(_u.permissions, self._resource_type)
+            _is_owner = _user_profile == self._resource.owner
+            json['users'][_user_profile.username] = _to_extended_perms(_u.permissions, self._resource.resource_type, _is_owner)
         for _go in self.organizations:
             _group = Group.objects.get(id=_go.id)
-            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource_type)
+            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type)
         for _go in self.groups:
             _group = Group.objects.get(id=_go.id)
-            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource_type)
+            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type)
             if _go.name == 'anonymous':
                 _user_profile = get_anonymous_user()
-                json['users'][_user_profile.username] = _to_extended_perms(_go.permissions, self._resource_type)
+                json['users'][_user_profile.username] = _to_extended_perms(_go.permissions, self._resource.resource_type)
         return json.copy()
 
     def merge(self, perm_spec_compact_patch: "PermSpecCompact"):
@@ -421,7 +455,7 @@ class PermSpecCompact(PermSpecConverterBase):
          - Non existing elements will be added.
          - If you need to delete elements you cannot use this method.
         """
-        for _elem in ('users', 'groups', 'organizations'):
+        for _elem in [_b.name for _b in self._bindings]:
             for _up in getattr(perm_spec_compact_patch, _elem, []) or []:
                 _merged = False
                 for _i, _u in enumerate(getattr(self, _elem, []) or []):
