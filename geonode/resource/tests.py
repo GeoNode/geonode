@@ -90,8 +90,8 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         dt = create_single_dataset("test_delete_dataset")
         map = create_single_map("test_delete_dataset")
         geonode_service = Service.objects.create(
-                base_url="http://fake_test",
-                owner=self.user)
+            base_url="http://fake_test",
+            owner=self.user)
         HarvestJob.objects.create(
             service=geonode_service,
             resource_id=dt.id

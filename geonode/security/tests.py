@@ -128,6 +128,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
 
+        self.maxDiff = None
         self.user = 'admin'
         self.passwd = 'admin'
         create_dataset_data()
@@ -1609,6 +1610,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
         Perm Spec from extended to cmpact and viceversa
         """
+        standard_user = get_user_model().objects.get(username="bobby")
+        dataset = Dataset.objects.filter(owner=standard_user).first()
         perm_spec = {
             'users': {
                 'AnonymousUser': [
@@ -1623,7 +1626,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'groups': {}
         }
 
-        _p = PermSpec(perm_spec, resource_type='dataset')
+        _p = PermSpec(perm_spec, dataset)
         self.assertDictEqual(
             json.loads(str(_p)),
             {
@@ -1647,12 +1650,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'users':
                 [
                     {
-                        'id': 4,
-                        'username': 'bobby',
-                        'first_name': 'bobby',
-                        'last_name': '',
+                        'id': standard_user.id,
+                        'username': standard_user.username,
+                        'first_name': standard_user.first_name,
+                        'last_name': standard_user.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'edit'
+                        'permissions': 'owner'
                     }
                 ],
                 'organizations': [],
@@ -1663,28 +1666,41 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'title': 'anonymous',
                         'name': 'anonymous',
                         'permissions': 'view'
+                    },
+                    {
+                        'id': 3,
+                        'name': 'registered-members',
+                        'permissions': 'none',
+                        'title': 'Registered Members'
                     }
                 ]
             }
         )
 
-        _pp = PermSpecCompact(_p.compact, resource_type='dataset')
+        _pp = PermSpecCompact(_p.compact, dataset)
         self.assertDictEqual(
             _pp.extended,
             {
                 'users':
                     {
                         'bobby':
-                            [
-                                'change_dataset_data',
-                                'change_dataset_style',
-                                'change_resourcebase'
-                            ],
+                        [
+                            'change_dataset_data',
+                            'change_dataset_style',
+                            'change_resourcebase_metadata',
+                            'delete_resourcebase',
+                            'change_resourcebase_permissions',
+                            'publish_resourcebase',
+                            'change_resourcebase',
+                            'view_resourcebase',
+                            'download_resourcebase'
+                        ],
                         'AnonymousUser': ['view_resourcebase']
                     },
                 'groups':
                     {
-                        'anonymous': ['view_resourcebase']
+                        'anonymous': ['view_resourcebase'],
+                        'registered-members': []
                     }
             }
         )
@@ -1694,15 +1710,16 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 "users":
                     [
                         {
-                            "id": 4,
-                            "username": "bobby",
-                            "first_name": "bobby",
-                            "last_name": "",
-                            "avatar": "https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240",
-                            "permissions": "view"
+                            'id': standard_user.id,
+                            'username': standard_user.username,
+                            'first_name': standard_user.first_name,
+                            'last_name': standard_user.last_name,
+                            'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                            'permissions': 'view'
                         }
                     ]
-            }
+            },
+            dataset
         )
         _pp.merge(_pp2)
         self.assertDictEqual(
@@ -1710,12 +1727,24 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             {
                 'users':
                     {
-                        'bobby': ['view_resourcebase'],
+                        'bobby':
+                        [
+                            'change_dataset_data',
+                            'change_dataset_style',
+                            'change_resourcebase_metadata',
+                            'delete_resourcebase',
+                            'change_resourcebase_permissions',
+                            'publish_resourcebase',
+                            'change_resourcebase',
+                            'view_resourcebase',
+                            'download_resourcebase'
+                        ],
                         'AnonymousUser': ['view_resourcebase']
                     },
                 'groups':
                     {
-                        'anonymous': ['view_resourcebase']
+                        'anonymous': ['view_resourcebase'],
+                        'registered-members': []
                     }
             }
         )

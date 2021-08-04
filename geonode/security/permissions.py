@@ -60,6 +60,8 @@ MANAGE_PERMISSIONS = [
 
 ADMIN_PERMISSIONS = MANAGE_PERMISSIONS + EDIT_PERMISSIONS
 
+OWNER_PERMISSIONS = ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+
 DATASET_ADMIN_PERMISSIONS = [
     'change_dataset_data',
     'change_dataset_style'
@@ -100,9 +102,9 @@ def _to_extended_perms(perm: str, resource_type: str = None, is_owner: bool = Fa
     """
     if is_owner:
         if resource_type and resource_type.lower() in 'dataset':
-            return DATASET_ADMIN_PERMISSIONS + ADMIN_PERMISSIONS
+            return DATASET_ADMIN_PERMISSIONS + OWNER_PERMISSIONS
         else:
-            return ADMIN_PERMISSIONS
+            return OWNER_PERMISSIONS
     elif perm is None or len(perm) == 0 or perm == NONE_RIGHTS:
         return []
     elif perm == VIEW_RIGHTS:
