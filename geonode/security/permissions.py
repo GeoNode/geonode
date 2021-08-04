@@ -341,10 +341,10 @@ class PermSpecUserCompact(PermSpecConverterBase):
     _object_name = 'perm_spec_user_compact'
     _bindings = (
         _binding('id'),
-        _binding('username'),
-        _binding('first_name'),
-        _binding('last_name'),
-        _binding('avatar'),
+        _binding('username', expected=False),
+        _binding('first_name', expected=False),
+        _binding('last_name', expected=False),
+        _binding('avatar', expected=False),
         _binding('permissions'),
     )
 
@@ -354,8 +354,8 @@ class PermSpecGroupCompact(PermSpecConverterBase):
     _object_name = 'perm_spec_group_compact'
     _bindings = (
         _binding('id'),
-        _binding('title'),
-        _binding('name'),
+        _binding('title', expected=False),
+        _binding('name', expected=False),
         _binding('permissions'),
     )
 
