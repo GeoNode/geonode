@@ -16,16 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import tempfile
-import shutil
 import os
 
 from uuid import uuid1
 from unittest.mock import patch
-from django.conf import settings
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
@@ -44,6 +40,7 @@ from geonode.groups.conf import settings as groups_settings
 from geonode.resource import settings as rm_settings
 
 from pinax.ratings.models import OverallRating
+from gisdata import GOOD_DATA
 
 
 class ResourceManagerClassTest:
@@ -58,10 +55,15 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         User = get_user_model()
         self.user = User.objects.create(username='test', email='test@test.com')
         self.rm = ResourceManager()
-    
-    # def test_get_concrete_manager(self):
-    #     rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = 'geonode.resource.tests.ResourceManagerClassTest'
-    #     self.assertEqual(self.rm._concrete_resource_manager.__class__.__name__, 'ResourceManagerClassTest')
+
+    def test_get_concrete_manager(self):
+        original_r_m_c_c = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS
+        # mock class
+        rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = 'geonode.resource.tests.ResourceManagerClassTest'
+        rm = ResourceManager()
+        self.assertEqual(rm._concrete_resource_manager.__class__.__name__, 'ResourceManagerClassTest')
+        # re assign class to original
+        rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS = original_r_m_c_c
 
     def test__get_instance(self):
         # test with invalid object
@@ -138,8 +140,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         # TODO test metadatauploaded and xml file
 
     def test_ingest(self):
-        doc_files = [f"{settings.MEDIA_ROOT}/img.gif"]
-        dt_files = ['/opt/full/path/to/file', '/opt/full/path/to/file']
+        dt_files = [os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')]
         defaults = {"owner": self.user}
         # raises an exception if resource_type is not provided
         with self.assertRaises((Exception, AttributeError)):
@@ -148,15 +149,13 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         res = self.rm.ingest(dt_files, resource_type=Document, defaults=defaults)
         self.assertTrue(isinstance(res, Document))
         # ingest with datasets
-        # res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
-        # self.assertTrue(isinstance(res, Dataset))
+        res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
+        self.assertTrue(isinstance(res, Dataset))
 
     def test_copy(self):
         dt = create_single_dataset("test_copy_dataset")
         # test with no reference object provided
         self.assertIsNone(self.rm.copy(None))
-        # test with existing uuid
-        # with self.assertRaises((Exception, AttributeError)):
         res = self.rm.copy(dt)
         self.assertEqual(res.perms, dt.perms)
 
@@ -184,7 +183,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         mock_validator.return_value = False
         self.rm.replace(dt, vals={"name": "new_name2"})
         self.assertEqual(dt.name, "new_name_test_replace_dataset")
-    
+
     def test_validate_resource(self):
         doc = create_single_doc("test_delete_doc")
         dt = create_single_dataset("test_delete_dataset")
@@ -194,18 +193,16 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             self.rm._validate_resource(doc, action_type="append")
         self.assertTrue(self.rm._validate_resource(doc, action_type="replace"))
         self.assertTrue(self.rm._validate_resource(dt, action_type="replace"))
-        # self.assertTrue(self.rm._validate_resource(map, action_type="replace"))
+        self.assertTrue(self.rm._validate_resource(map, action_type="replace"))
         with self.assertRaises(ObjectDoesNotExist):
             # TODO In function rais this only when object is not found
             self.rm._validate_resource(dt, action_type="invalid")
 
     def test_exec(self):
-        dt = create_single_dataset("san_andres_y_providencia")
         map = create_single_map("test_exec_map")
-        #  mock_rm.set_style.return_value = dt
         self.assertIsNone(self.rm.exec("set_style", None, instance=None))
         self.assertEqual(self.rm.exec("set_style", map.uuid, instance=map), map)
-    
+
     def test_remove_permissions(self):
         with self.settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
             dt = create_single_dataset("test_dataset")
@@ -243,39 +240,21 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertTrue(norman.has_perm('change_dataset_style', dt))
         self.assertFalse(norman.has_perm('change_resourcebase', dt))
         # Test with no specified permissions
-        self.assertTrue(self.rm.remove_permissions(dt.uuid, instance=dt))
-        self.assertTrue(self.rm.set_permissions(dt.uuid, instance=dt))
-        with self.settings(
-            DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=True,
-            DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
-            anonymous_group, created = Group.objects.get_or_create(name='anonymous')
-            anonymous_group.user_set.add(anonymous)
-            # self.assertTrue(anonymous.has_perm('view_resourcebase', dt))
-            # self.assertTrue(anonymous.has_perm('download_resourcebase', dt))
         with patch('geonode.security.utils.skip_registered_members_common_group') as mock_v:
             mock_v.return_value = True
-            with self.settings(
-                DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False,
-                DEFAULT_ANONYMOUS_VIEW_PERMISSION=False):
+            with self.settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False, DEFAULT_ANONYMOUS_VIEW_PERMISSION=False):
+                self.assertTrue(self.rm.remove_permissions(dt.uuid, instance=dt))
                 self.assertFalse(anonymous.has_perm('view_resourcebase', dt))
                 self.assertFalse(anonymous.has_perm('download_resourcebase', dt))
 
     def test_set_workflow_permissions(self):
         dt = create_single_dataset("test_workflow_dataset")
-        anonymous_group = Group.objects.get(name='anonymous')
-        _members_group_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
 
         self.assertFalse(self.rm.set_workflow_permissions('invalid_uuid', instance=None))
-        groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME=True
-        self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, approved=True))
-        # check group member if has view perms
-        # self.assertIn("view_resourcebase", _members_group_group.permissions.values_list("codename", flat=True))
-
         self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, approved=True, published=True))
-        groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME=False
+        groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME = False
+        self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, approved=True))
         self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, published=True))
-        # check anonymous group if has view perms
-        # self.assertIn("view_resourcebase", anonymous_group.permissions.values_list("codename", flat=True))
 
     def test_set_thumbnail(self):
         doc = create_single_doc("test_thumb_doc")

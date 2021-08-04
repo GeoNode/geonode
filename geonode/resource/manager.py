@@ -474,8 +474,10 @@ class ResourceManager(ResourceManagerInterface):
 
         exists = self._concrete_resource_manager.exists(instance.uuid, instance)
 
-        if exists and instance.is_vector() and action_type == "append":
-            is_valid = True
+        if exists and action_type == "append":
+            if isinstance(instance, Dataset):
+                if instance.is_vector():
+                    is_valid = True
         elif exists and action_type == "replace":
             is_valid = True
         else:
