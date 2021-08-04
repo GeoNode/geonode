@@ -445,9 +445,9 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         if upload_data['state'] != enumerations.STATE_PROCESSED:
             self.assertEqual(upload_data['progress'], 100.0)
-            self.assertIsNone(upload_data['detail_url'])
             self.assertIsNone(upload_data['resume_url'])
-            self.assertIsNotNone(upload_data['delete_url'])
+            self.assertIsNone(upload_data['delete_url'])
+            self.assertIsNotNone(upload_data['detail_url'])
 
             self.assertIn('uploadfile_set', upload_data)
             self.assertEqual(len(upload_data['uploadfile_set']), 2)
