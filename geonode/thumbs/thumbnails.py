@@ -133,7 +133,7 @@ def create_thumbnail(
     # --- define dataset locations ---
     locations, datasets_bbox = _datasets_locations(instance, compute_bbox=compute_bbox_from_datasets, target_crs=target_crs)
 
-    if compute_bbox_from_datasets:
+    if compute_bbox_from_datasets and is_map_with_datasets:
         if not datasets_bbox:
             raise ThumbnailError(f"Thumbnail generation couldn't determine a BBOX for: {instance}.")
         else:
