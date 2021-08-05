@@ -712,12 +712,13 @@ def remove_object_permissions(instance, purge=True):
         logger.debug(tb)
     finally:
         if purge:
-            if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
-                if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-                    purge_geofence_layer_rules(resource)
-                    set_geofence_invalidate_cache()
-            else:
-                resource.set_dirty_state()
+            if instance.polymorphic_ctype.name == 'layer':
+                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                    if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                        purge_geofence_layer_rules(resource)
+                        set_geofence_invalidate_cache()
+                    else:
+                        resource.set_dirty_state()
     UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
                                         object_pk=instance.id).delete()
     GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),

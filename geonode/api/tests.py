@@ -151,7 +151,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertValidJSONResponse(resp)
         # TODO: no way to pass authentication to Tastypie!
         # self.assertTrue(layer.id in self.deserialize(resp)['objects'])
-        self.assertEqual(len(self.deserialize(resp)['objects']), 7)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
 
         # with delayed security
         with self.settings(DELAYED_SECURITY_SIGNALS=True):
