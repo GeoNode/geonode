@@ -216,18 +216,20 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
         except GroupProfile.DoesNotExist:
             group = None
 
-    r = resource_manager.update(
-        geoapp_obj.uuid,
-        instance=geoapp_obj,
-        notify=True)
+    r = geoapp_obj
+    if request.method in ('POST', 'PATCH', 'PUT'):
+        r = resource_manager.update(
+            geoapp_obj.uuid,
+            instance=geoapp_obj,
+            notify=True)
 
-    resource_manager.set_permissions(
-        geoapp_obj.uuid,
-        instance=geoapp_obj,
-        permissions=ast.literal_eval(permissions_json)
-    )
+        resource_manager.set_permissions(
+            geoapp_obj.uuid,
+            instance=geoapp_obj,
+            permissions=ast.literal_eval(permissions_json)
+        )
 
-    resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
+        resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
 
     access_token = None
     if request and request.user:
