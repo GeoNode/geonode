@@ -96,7 +96,9 @@ class UserViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdmin, ]
-    filter_backends = [DynamicSearchFilter, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     pagination_class = GeoNodeApiPagination
@@ -146,7 +148,9 @@ class GroupViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticated, ]
-    filter_backends = [DynamicSearchFilter, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     queryset = GroupProfile.objects.all()
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
