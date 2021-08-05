@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -32,7 +31,7 @@ import logging
 import zipfile
 import tempfile
 
-from mock import patch
+from unittest.mock import patch
 from pinax.ratings.models import OverallRating
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -89,7 +88,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     type = 'layer'
 
     def setUp(self):
-        super(LayersTest, self).setUp()
+        super().setUp()
         create_layer_data()
         self.user = 'admin'
         self.passwd = 'admin'
@@ -435,82 +434,82 @@ class LayersTest(GeoNodeBaseTestSupport):
 
     def testShapefileValidation(self):
         files = dict(
-            base_file=SimpleUploadedFile('foo.shp', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.dbf', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.prj', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.shp', b' '),
+            shx_file=SimpleUploadedFile('foo.shx', b' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', b' '),
+            prj_file=SimpleUploadedFile('foo.prj', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.SHP', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.SHX', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.DBF', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.PRJ', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.SHP', b' '),
+            shx_file=SimpleUploadedFile('foo.SHX', b' '),
+            dbf_file=SimpleUploadedFile('foo.DBF', b' '),
+            prj_file=SimpleUploadedFile('foo.PRJ', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.SHP', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.dbf', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.SHP', b' '),
+            shx_file=SimpleUploadedFile('foo.shx', b' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.SHP', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.dbf', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.PRJ', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.SHP', b' '),
+            shx_file=SimpleUploadedFile('foo.shx', b' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', b' '),
+            prj_file=SimpleUploadedFile('foo.PRJ', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.SHP', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('bar.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('bar.dbf', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('bar.PRJ', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.SHP', b' '),
+            shx_file=SimpleUploadedFile('bar.shx', b' '),
+            dbf_file=SimpleUploadedFile('bar.dbf', b' '),
+            prj_file=SimpleUploadedFile('bar.PRJ', b' '))
         self.assertFalse(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.shp', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.dbf', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.PRJ', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.shp', b' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', b' '),
+            prj_file=SimpleUploadedFile('foo.PRJ', b' '))
         self.assertFalse(LayerUploadForm(dict(), files).is_valid())
 
         files = dict(
-            base_file=SimpleUploadedFile('foo.txt', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.sld', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.prj', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.txt', b' '),
+            shx_file=SimpleUploadedFile('foo.shx', b' '),
+            dbf_file=SimpleUploadedFile('foo.sld', b' '),
+            prj_file=SimpleUploadedFile('foo.prj', b' '))
         self.assertFalse(LayerUploadForm(dict(), files).is_valid())
 
     def testGeoTiffValidation(self):
-        files = dict(base_file=SimpleUploadedFile('foo.tif', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.tif', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.TIF', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.TIF', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.tiff', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.tiff', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.TIF', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.TIF', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.geotif', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.geotif', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.geotiff', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.geotiff', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
     def testASCIIValidation(self):
-        files = dict(base_file=SimpleUploadedFile('foo.asc', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.asc', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
-        files = dict(base_file=SimpleUploadedFile('foo.ASC', ' '.encode("UTF-8")))
+        files = dict(base_file=SimpleUploadedFile('foo.ASC', b' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
     def testZipValidation(self):
@@ -529,10 +528,10 @@ class LayersTest(GeoNodeBaseTestSupport):
 
     def testWriteFiles(self):
         files = dict(
-            base_file=SimpleUploadedFile('foo.shp', ' '.encode("UTF-8")),
-            shx_file=SimpleUploadedFile('foo.shx', ' '.encode("UTF-8")),
-            dbf_file=SimpleUploadedFile('foo.dbf', ' '.encode("UTF-8")),
-            prj_file=SimpleUploadedFile('foo.prj', ' '.encode("UTF-8")))
+            base_file=SimpleUploadedFile('foo.shp', b' '),
+            shx_file=SimpleUploadedFile('foo.shx', b' '),
+            dbf_file=SimpleUploadedFile('foo.dbf', b' '),
+            prj_file=SimpleUploadedFile('foo.prj', b' '))
         form = LayerUploadForm(dict(), files)
         self.assertTrue(form.is_valid())
 
@@ -1074,7 +1073,7 @@ class UnpublishedObjectTests(GeoNodeBaseTestSupport):
     type = 'layer'
 
     def setUp(self):
-        super(UnpublishedObjectTests, self).setUp()
+        super().setUp()
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -1141,7 +1140,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
     type = 'layer'
 
     def setUp(self):
-        super(LayerNotificationsTestCase, self).setUp()
+        super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
         create_layer_data()
@@ -1211,7 +1210,7 @@ class SetLayersPermissions(GeoNodeBaseTestSupport):
     type = 'layer'
 
     def setUp(self):
-        super(SetLayersPermissions, self).setUp()
+        super().setUp()
         create_layer_data()
         self.username = 'test_username'
         self.passwd = 'test_password'
@@ -1276,7 +1275,7 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
     }
 
     def setUp(self):
-        super(LayersUploaderTests, self).setUp()
+        super().setUp()
         create_layer_data()
         self.user = 'admin'
         self.passwd = 'admin'
@@ -1285,7 +1284,7 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
     def setUp(self):
-        super(TestLayerDetailMapViewRights, self).setUp()
+        super().setUp()
         create_layer_data()
         self.user = get_user_model().objects.create(username='dybala', email='dybala@gmail.com')
         self.user.set_password('very-secret')

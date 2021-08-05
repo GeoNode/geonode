@@ -13,7 +13,7 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(WmsServiceHarvestingTestCase, cls).setUpClass()
+        super().setUpClass()
 
         try:
             cls.client = Client()
@@ -51,7 +51,7 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
     def tearDownClass(cls):
         if cls.selenium:
             cls.selenium.quit()
-            super(WmsServiceHarvestingTestCase, cls).tearDownClass()
+            super().tearDownClass()
 
     def test_harvest_resources(self):
         if self.selenium:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -419,7 +418,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     )
     @action(
         detail=False,
-        url_path="(?P<resource_id>\d+)/set_thumbnail_from_bbox",  # noqa
+        url_path=r"(?P<resource_id>\d+)/set_thumbnail_from_bbox",  # noqa
         url_name="set-thumb-from-bbox",
         methods=["post"],
         permission_classes=[

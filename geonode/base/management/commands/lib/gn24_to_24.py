@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -33,7 +32,7 @@ class DefaultMangler(json.JSONDecoder):
         self.datastore = kwargs.get('datastore', '')
         self.siteurl = kwargs.get('siteurl', '')
 
-        super(DefaultMangler, self).__init__(*args)
+        super().__init__(*args)
 
     def default(self, obj):
         # Let the base class default method raise the TypeError
@@ -43,7 +42,7 @@ class DefaultMangler(json.JSONDecoder):
         """
         json_string is basicly string that you give to json.loads method
         """
-        default_obj = super(DefaultMangler, self).decode(json_string)
+        default_obj = super().decode(json_string)
 
         # manipulate your object any way you want
         # ....
@@ -63,7 +62,7 @@ class ResourceBaseMangler(DefaultMangler):
         """
         json_string is basicly string that you give to json.loads method
         """
-        default_obj = super(ResourceBaseMangler, self).decode(json_string)
+        default_obj = super().decode(json_string)
 
         # manipulate your object any way you want
         # ....
@@ -118,7 +117,7 @@ class LayerMangler(DefaultMangler):
         """
         json_string is basicly string that you give to json.loads method
         """
-        default_obj = super(LayerMangler, self).decode(json_string)
+        default_obj = super().decode(json_string)
 
         # manipulate your object any way you want
         # ....
@@ -146,7 +145,7 @@ class LayerAttributesMangler(DefaultMangler):
         """
         json_string is basicly string that you give to json.loads method
         """
-        default_obj = super(LayerAttributesMangler, self).decode(json_string)
+        default_obj = super().decode(json_string)
 
         # manipulate your object any way you want
         # ....
@@ -168,7 +167,7 @@ class MapLayersMangler(DefaultMangler):
         """
         json_string is basicly string that you give to json.loads method
         """
-        default_obj = super(MapLayersMangler, self).decode(json_string)
+        default_obj = super().decode(json_string)
 
         # manipulate your object any way you want
         # ....

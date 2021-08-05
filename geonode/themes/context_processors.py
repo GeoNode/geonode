@@ -1,4 +1,3 @@
-
 from django.core.cache import cache
 
 from .models import GeoNodeThemeCustomization, THEME_CACHE_KEY

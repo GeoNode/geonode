@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2021 OSGeo
@@ -103,7 +102,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         super().tearDownClass()
 
     def setUp(self):
-        super(UploadApiTests, self).setUp()
+        super().setUp()
         self.temp_folder = tempfile.mkdtemp(dir=CURRENT_LOCATION)
         self.session_id = None
         self.csrf_token = None

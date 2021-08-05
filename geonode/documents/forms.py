@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -42,7 +41,7 @@ from geonode.layers.models import Layer
 logger = logging.getLogger(__name__)
 
 
-class DocumentFormMixin(object):
+class DocumentFormMixin:
 
     def generate_link_choices(self, resources=None):
 
@@ -91,7 +90,7 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
         required=False)
 
     def __init__(self, *args, **kwargs):
-        super(DocumentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['links'].choices = self.generate_link_choices()
         self.fields['links'].initial = self.generate_link_values(
             resources=get_related_resources(self.instance)
@@ -142,7 +141,7 @@ class DocumentReplaceForm(forms.ModelForm):
         """
         Ensures the doc_file or the doc_url field is populated.
         """
-        cleaned_data = super(DocumentReplaceForm, self).clean()
+        cleaned_data = super().clean()
         doc_file = self.cleaned_data.get('doc_file')
         doc_url = self.cleaned_data.get('doc_url')
 
@@ -193,7 +192,7 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         }
 
     def __init__(self, *args, **kwargs):
-        super(DocumentCreateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['links'].choices = self.generate_link_choices()
 
     def clean_permissions(self):
@@ -211,7 +210,7 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         """
         Ensures the doc_file or the doc_url field is populated.
         """
-        cleaned_data = super(DocumentCreateForm, self).clean()
+        cleaned_data = super().clean()
         doc_file = self.cleaned_data.get('doc_file')
         doc_url = self.cleaned_data.get('doc_url')
 

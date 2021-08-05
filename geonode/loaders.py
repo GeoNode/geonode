@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -32,4 +31,4 @@ class GeoNodeCeleryTaksLoader(DjangoLoader):
                     conn.close()
             except Exception:
                 pass
-        super(GeoNodeCeleryTaksLoader, self).on_task_init(task_id, task)
+        super().on_task_init(task_id, task)

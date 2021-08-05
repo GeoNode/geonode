@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2019 OSGeo
@@ -548,7 +547,7 @@ class LayerTests(GeoNodeBaseTestSupport):
     type = 'layer'
 
     def setUp(self):
-        super(LayerTests, self).setUp()
+        super().setUp()
         self.user = 'admin'
         self.passwd = 'admin'
         create_layer_data()
@@ -771,7 +770,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
     type = 'layer'
 
     def setUp(self):
-        super(UtilsTests, self).setUp()
+        super().setUp()
         self.OGC_DEFAULT_SETTINGS = {
             'default': {
                 'BACKEND': 'geonode.geoserver',
@@ -785,7 +784,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
                 'WMST_ENABLED': False,
                 'BACKEND_WRITE_ENABLED': True,
                 'WPS_ENABLED': False,
-                'DATASTORE': str(),
+                'DATASTORE': '',
             }
         }
 
@@ -822,7 +821,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
                 default.get('PUBLIC_LOCATION'))
             self.assertEqual(ogc_settings.USER, default.get('USER'))
             self.assertEqual(ogc_settings.PASSWORD, default.get('PASSWORD'))
-            self.assertEqual(ogc_settings.DATASTORE, str())
+            self.assertEqual(ogc_settings.DATASTORE, '')
             self.assertEqual(ogc_settings.credentials, ('admin', 'geoserver'))
             self.assertTrue(ogc_settings.MAPFISH_PRINT_ENABLED)
             self.assertTrue(ogc_settings.PRINT_NG_ENABLED)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -541,7 +540,7 @@ def layer_from_viewer_config(map_id, model, layer, source, ordering, save_map=Tr
     return _model
 
 
-class GXPMapBase(object):
+class GXPMapBase:
 
     def viewer_json(self, request, *added_layers):
         """
@@ -707,7 +706,7 @@ class GXPMap(GXPMapBase):
         self.layers = []
 
 
-class GXPLayerBase(object):
+class GXPLayerBase:
 
     def source_config(self, access_token):
         """
@@ -1399,7 +1398,7 @@ def check_ogc_backend(backend_package):
     return False
 
 
-class HttpClient(object):
+class HttpClient:
 
     def __init__(self):
         self.timeout = 5

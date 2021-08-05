@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -78,7 +77,7 @@ class MonitoringAppConfig(NotificationsAppConfigBase):
                      )
 
     def ready(self):
-        super(MonitoringAppConfig, self).ready()
+        super().ready()
         post_migrate.connect(run_setup_hooks, sender=self)
         settings.CELERY_BEAT_SCHEDULE['collect_metrics'] = {
             'task': 'geonode.monitoring.tasks.collect_metrics',

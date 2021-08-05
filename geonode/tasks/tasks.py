@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -51,7 +50,7 @@ except Exception:
     ref.
     http://docs.celeryproject.org/en/latest/tutorials/task-cookbook.html#ensuring-a-task-is-only-executed-one-at-a-time
     """
-    class Lock(object):
+    class Lock:
 
         def __init__(self, lock_id, *args, **kwargs):
             self.lock_id = lock_id

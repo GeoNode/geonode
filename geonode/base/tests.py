@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -81,7 +80,7 @@ test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 class ThumbnailTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(ThumbnailTests, self).setUp()
+        super().setUp()
         self.rb = ResourceBase.objects.create(owner=get_user_model().objects.get(username='admin'))
 
     def tearDown(self):
@@ -142,7 +141,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 class TestThumbnailUrl(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(TestThumbnailUrl, self).setUp()
+        super().setUp()
         rb = ResourceBase.objects.create(owner=get_user_model().objects.get(username='admin'))
         f = BytesIO(test_image.tobytes())
         f.name = 'test_image.jpeg'
@@ -184,7 +183,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
     """
 
     def setUp(self):
-        super(RenderMenuTagTest, self).setUp()
+        super().setUp()
         self.placeholder_0 = MenuPlaceholder.objects.create(
             name='test_menu_placeholder_0'
         )
