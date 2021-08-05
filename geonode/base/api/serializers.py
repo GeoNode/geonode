@@ -21,8 +21,8 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
+from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 from rest_framework_gis import fields

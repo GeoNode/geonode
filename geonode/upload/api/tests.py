@@ -17,7 +17,6 @@
 #
 #########################################################################
 import os
-# import time
 import shutil
 import logging
 import tempfile
@@ -310,7 +309,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                     f"probably not json, status {response.status_code} / {response.content}"))
             return response, response.content
 
-    # AF: This test must be revised with the new incoming changes to the client
+    # AF: Intermittent failures on CircleCI
     # @as_superuser
     # def test_live_login(self):
     #     """
@@ -318,6 +317,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
     #     """
     #     pass
 
+    # AF: Intermittent failures on CircleCI
     # @as_superuser
     # def test_live_uploads(self):
     #     """
@@ -329,13 +329,11 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
     #     self.assertEqual(resp.status_code, 200)
     #     self.assertTrue(data['success'])
     #     self.assertIn('redirect_to', data)
-
     #     headers = {
     #         'X-CSRFToken': self.csrf_token,
     #         'X-Requested-With': 'XMLHttpRequest',
     #         'Cookie': f'csrftoken={self.csrf_token}; sessionid={self.session_id}'
     #     }
-
     #     url = urljoin(
     #         settings.SITEURL,
     #         f"{reverse('uploads-list')}.json")
@@ -351,39 +349,32 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
     #     upload_data = response_data['uploads'][0]
     #     self.assertIsNotNone(upload_data)
     #     self.assertIn('relief_san_andres', upload_data['name'])
-
     #     self.assertEqual(upload_data['state'], enumerations.STATE_PENDING)
     #     self.assertEqual(upload_data['progress'], 33.0)
-
     #     self.assertIsNone(upload_data['detail_url'])
     #     self.assertIsNone(upload_data['resume_url'])
     #     self.assertIsNotNone(upload_data['delete_url'])
-
     #     delete_url = urljoin(
     #         settings.SITEURL,
     #         f"{upload_data['delete_url']}"
     #     )
-
     #     url = urljoin(
     #         settings.SITEURL,
     #         f"{reverse('data_upload')}?id={upload_data['import_id']}"
     #     )
     #     response = self.selenium.request('GET', url, headers=headers)
     #     self.assertEqual(response.status_code, 200)
-
     #     url = urljoin(
     #         settings.SITEURL,
     #         f"{self.do_upload_step('final')}?id={response_data['uploads'][0]['import_id']}")
     #     response = self.selenium.request('GET', url, headers=headers)
     #     self.assertEqual(response.status_code, 200)
     #     upload_data = response_data['uploads'][0]
-
     #     for _cnt in range(1, 10):
     #         logger.error(f"[{_cnt}] Wait a bit until GeoNode finalizes the Dataset configuration...")
     #         if upload_data['state'] == enumerations.STATE_PROCESSED:
     #             break
     #         time.sleep(10.0)
-
     #     if upload_data['state'] == enumerations.STATE_PROCESSED:
     #         self.assertGreaterEqual(upload_data['progress'], 80.0)
     #         self.assertIsNotNone(upload_data['detail_url'])
@@ -394,10 +385,8 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
     #         self.assertIsNone(upload_data['detail_url'])
     #         self.assertIsNone(upload_data['resume_url'])
     #         self.assertIsNotNone(upload_data['delete_url'])
-
     #     response = self.selenium.request('GET', delete_url, headers=headers)
     #     self.assertEqual(response.status_code, 200)
-
     #     url = urljoin(
     #         settings.SITEURL,
     #         f"{reverse('uploads-list')}.json"
@@ -419,7 +408,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
         resp, data = self.rest_upload_file(fname)
         self.assertEqual(resp.status_code, 201)
-        self.assertTrue(data['success'])
 
         url = reverse('uploads-list')
         # Anonymous
@@ -447,9 +435,9 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         if upload_data['state'] != enumerations.STATE_PROCESSED:
             self.assertEqual(upload_data['progress'], 100.0)
-            self.assertIsNone(upload_data['detail_url'])
             self.assertIsNone(upload_data['resume_url'])
-            self.assertIsNotNone(upload_data['delete_url'])
+            self.assertIsNone(upload_data['delete_url'])
+            self.assertIsNotNone(upload_data['detail_url'])
 
             self.assertIn('uploadfile_set', upload_data)
             self.assertEqual(len(upload_data['uploadfile_set']), 2)

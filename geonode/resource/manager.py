@@ -41,7 +41,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
 
 from geonode.documents.models import Document
-from geonode.security.permissions import VIEW_PERMISSIONS
+from geonode.security.permissions import VIEW_PERMISSIONS, DOWNLOAD_PERMISSIONS
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.utils import (
     get_user_groups,
@@ -142,7 +142,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+    def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         """The method makes a copy of the existing resource.
 
          - It makes a copy of the files
@@ -181,7 +181,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner=None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
         """Sets the permissions of a resource.
 
          - It optionally gets a JSON 'perm_spec' through the 'permissions' parameter
@@ -320,6 +320,7 @@ class ResourceManager(ResourceManagerInterface):
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
                 _resource.delete()
                 raise e
             finally:
@@ -367,6 +368,7 @@ class ResourceManager(ResourceManagerInterface):
                             _task.execute(_resource)
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 _resource.save(notify=notify)
@@ -382,7 +384,7 @@ class ResourceManager(ResourceManagerInterface):
             with transaction.atomic():
                 if resource_type == Document:
                     if files:
-                        to_update['files'] = files
+                        to_update['files'] = storage_manager.copy_files_list(files)
                     instance = self.create(
                         uuid,
                         resource_type=Document,
@@ -394,9 +396,15 @@ class ResourceManager(ResourceManagerInterface):
                             uuid,
                             resource_type=Dataset,
                             defaults=to_update)
-                instance = self._concrete_resource_manager.ingest(files, uuid=instance.uuid, resource_type=resource_type, defaults=to_update, **kwargs)
+                instance = self._concrete_resource_manager.ingest(
+                    storage_manager.copy_files_list(files),
+                    uuid=instance.uuid,
+                    resource_type=resource_type,
+                    defaults=to_update,
+                    **kwargs)
         except Exception as e:
             logger.exception(e)
+            instance.set_processing_state(enumerations.STATE_INVALID)
         finally:
             instance.set_processing_state(enumerations.STATE_PROCESSED)
             instance.save(notify=False)
@@ -408,11 +416,11 @@ class ResourceManager(ResourceManagerInterface):
         self.set_thumbnail(instance.uuid, instance=instance)
         return instance
 
-    def copy(self, instance: ResourceBase, /, uuid: str = None, defaults: dict = {}) -> ResourceBase:
+    def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if instance:
             try:
                 with transaction.atomic():
-                    _owner = instance.owner
+                    _owner = owner or instance.owner
                     _perms = instance.get_all_level_info()
                     _resource = copy.copy(instance)
                     _resource.pk = _resource.id = None
@@ -428,6 +436,7 @@ class ResourceManager(ResourceManagerInterface):
                         return self.update(_resource.uuid, _resource, vals=to_update)
             except Exception as e:
                 logger.exception(e)
+                instance.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 instance.set_processing_state(enumerations.STATE_PROCESSED)
                 instance.save(notify=False)
@@ -465,8 +474,10 @@ class ResourceManager(ResourceManagerInterface):
 
         exists = self._concrete_resource_manager.exists(instance.uuid, instance)
 
-        if exists and instance.is_vector() and action_type == "append":
-            is_valid = True
+        if exists and action_type == "append":
+            if isinstance(instance, Dataset):
+                if instance.is_vector():
+                    is_valid = True
         elif exists and action_type == "replace":
             is_valid = True
         else:
@@ -503,26 +514,27 @@ class ResourceManager(ResourceManagerInterface):
                     if _dataset:
                         UserObjectPermission.objects.filter(
                             content_type=ContentType.objects.get_for_model(_dataset),
-                            object_pk=instance.id
+                            object_pk=_resource.id
                         ).delete()
                         GroupObjectPermission.objects.filter(
                             content_type=ContentType.objects.get_for_model(_dataset),
-                            object_pk=instance.id
+                            object_pk=_resource.id
                         ).delete()
                     UserObjectPermission.objects.filter(
                         content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
-                        object_pk=instance.id).delete()
+                        object_pk=_resource.id).delete()
                     GroupObjectPermission.objects.filter(
                         content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
-                        object_pk=instance.id).delete()
+                        object_pk=_resource.id).delete()
                     return self._concrete_resource_manager.remove_permissions(uuid, instance=_resource)
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner=None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource = _resource.get_real_instance()
@@ -531,11 +543,19 @@ class ResourceManager(ResourceManagerInterface):
             try:
                 with transaction.atomic():
                     logger.debug(f'Setting permissions {permissions} on {_resource}')
+
+                    # default permissions for owner
+                    if owner and owner != _resource.owner:
+                        _resource.owner = owner
+                        ResourceBase.objects.filter(uuid=_resource.uuid).update(owner=owner)
+                    _owner = _resource.owner
+
                     """
                     Remove all the permissions except for the owner and assign the
                     view permission to the anonymous group
                     """
                     self.remove_permissions(uuid, instance=_resource)
+
                     if permissions is not None:
                         """
                         Sets an object's the permission levels based on the perm_spec JSON.
@@ -557,7 +577,7 @@ class ResourceManager(ResourceManagerInterface):
                         """
 
                         # default permissions for resource owner
-                        set_owner_permissions(_resource)
+                        set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
 
                         # Anonymous User group
                         if 'users' in permissions and "AnonymousUser" in permissions['users']:
@@ -611,9 +631,6 @@ class ResourceManager(ResourceManagerInterface):
                         # default permissions for anonymous users
                         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
 
-                        # default permissions for owner
-                        _owner = owner or _resource.owner
-
                         if not anonymous_group:
                             raise Exception("Could not acquire 'anonymous' Group.")
 
@@ -650,6 +667,7 @@ class ResourceManager(ResourceManagerInterface):
                     return self._concrete_resource_manager.set_permissions(uuid, instance=_resource, owner=owner, permissions=permissions, created=created)
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
@@ -672,21 +690,22 @@ class ResourceManager(ResourceManagerInterface):
                         if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
                             _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
                             _members_group_group = Group.objects.get(name=_members_group_name)
-                            for perm in VIEW_PERMISSIONS:
+                            for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                                 assign_perm(perm,
                                             _members_group_group, _resource.get_self_resource())
                         else:
-                            for perm in VIEW_PERMISSIONS:
+                            for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                                 assign_perm(perm,
                                             anonymous_group, _resource.get_self_resource())
                     if published:
-                        for perm in VIEW_PERMISSIONS:
+                        for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                             assign_perm(perm,
                                         anonymous_group, _resource.get_self_resource())
 
                     return self._concrete_resource_manager.set_workflow_permissions(uuid, instance=_resource, approved=approved, published=published)
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
@@ -705,6 +724,7 @@ class ResourceManager(ResourceManagerInterface):
                     return True
             except Exception as e:
                 logger.exception(e)
+                _resource.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
