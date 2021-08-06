@@ -421,6 +421,7 @@ GEONODE_CORE_APPS = (
     'geonode.catalogue',
     'geonode.catalogue.metadataxsl',
     'geonode.harvesting',
+    'geonode.commands'
 )
 
 # GeoNode Apps

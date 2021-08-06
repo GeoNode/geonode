@@ -28,6 +28,7 @@ from django.contrib import admin
 from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import JavaScriptCatalog
 from django.contrib.sitemaps.views import sitemap
+from django.urls import path
 
 import geonode.proxy.urls
 from . import views
@@ -117,6 +118,9 @@ urlpatterns += [
 
     # Harvesting views
     url(r'^harvesters/', include('geonode.harvesting.urls')),
+
+    # Commands view
+    path("management/", include("geonode.commands.urls")),
 
     # ident
     url(r'^ident.json$',

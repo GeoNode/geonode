@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import rest_framework.permissions
 
 from dynamic_rest.viewsets import (
     DynamicModelViewSet,
@@ -35,22 +34,11 @@ from geonode.base.api.pagination import GeoNodeApiPagination
 from .. import models
 from . import serializers
 from .mixins import UpdateListModelMixin
+from geonode.permissions import IsAdminOrListOnly
 
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-class IsAdminOrListOnly(rest_framework.permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        if request.user.is_superuser:
-            result = True
-        elif view.action == "list":
-            result = True
-        else:
-            result = False
-        return result
 
 
 class HarvesterViewSet(NestedViewSetMixin, DynamicModelViewSet):
