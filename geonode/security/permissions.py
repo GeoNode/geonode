@@ -329,13 +329,13 @@ class PermSpec(PermSpecConverterBase):
                     'permissions': _to_compact_perms(_perms, self._resource.resource_type)
                 }
             elif hasattr(_k, 'groupprofile'):
-                group = _Group(_k.id, _k.groupprofile.title, _k.name, _k.groupprofile.logo)
+                group = _Group(_k.id, _k.groupprofile.title, _k.name, _k.groupprofile.logo_url)
                 if _k.name == groups_settings.REGISTERED_MEMBERS_GROUP_NAME:
                     contributors_perms = {
                         'id': group.id,
                         'title': group.title,
                         'name': group.name,
-                        'logo': group.logo_url,
+                        'logo': group.logo,
                         'permissions': _to_compact_perms(_perms, self._resource.resource_type)
                     }
                 else:
@@ -344,7 +344,7 @@ class PermSpec(PermSpecConverterBase):
                             'id': group.id,
                             'title': group.title,
                             'name': group.name,
-                            'logo': group.logo_url,
+                            'logo': group.logo,
                             'permissions': _to_compact_perms(_perms, self._resource.resource_type)
                         }
                     )
