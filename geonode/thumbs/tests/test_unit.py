@@ -163,7 +163,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             ows_url="https://maps.geo-solutions.it/geoserver/wms",
             layer_params="""{\"id\": 1, \"title\": \"Open Street Map\", \"style\": \"test_style\", \"type\": \"osm\", \"singleTile\": false, \"dimensions\": [], \"hideLoading\": false,
             \"handleClickOnLayer\": false, \"useForElevation\": false, \"hidden\": false, \"extraParams\": {\"msId\": \"mapnik__0\"}, \"wrapDateLine\": true, \"displayOutsideMaxExtent\": true}"""
-            ).save()
+        ).save()
         locations, bbox = thumbnails._layers_locations(map)
 
         self.assertFalse(bbox, "Expected BBOX not to be calculated")
