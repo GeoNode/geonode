@@ -18,6 +18,7 @@
 #########################################################################
 import json
 import logging
+import typing
 import requests
 import traceback
 import xml.etree.ElementTree as ET
@@ -653,3 +654,24 @@ def _get_gf_services(layer, perms):
         ('view_resourcebase' in perms or 'change_dataset_style' in perms)
 
     return gf_services
+
+
+def _get_gwc_filters_and_formats(disable_cache: list = []) -> typing.Tuple[list, list]:
+    filters = [{
+        "styleParameterFilter": {
+            "STYLES": ""
+        }
+    }]
+    formats = [
+        'application/json;type=utfgrid',
+        'image/gif',
+        'image/jpeg',
+        'image/png',
+        'image/png8',
+        'image/vnd.jpeg-png',
+        'image/vnd.jpeg-png8'
+    ]
+    if disable_cache and any(disable_cache):
+        filters = None
+        formats = None
+    return (filters, formats)
