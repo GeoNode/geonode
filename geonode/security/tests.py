@@ -1669,6 +1669,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     },
                     {
                         'id': 3,
+                        'logo': 'http://localhost:8000/static/geonode/img/missing_thumb.png',
                         'name': 'registered-members',
                         'permissions': 'none',
                         'title': 'Registered Members'

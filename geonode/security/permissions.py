@@ -26,6 +26,7 @@ from guardian.shortcuts import get_group_perms, get_anonymous_user
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
+from geonode.utils import build_absolute_uri
 from geonode.groups.conf import settings as groups_settings
 
 # Permissions mapping
@@ -155,8 +156,8 @@ _User = collections.namedtuple('User', [
     'id', 'username', 'last_name', 'first_name', 'avatar'
 ])
 
-_Group = collections.namedtuple('User', [
-    'id', 'title', 'name'
+_Group = collections.namedtuple('Group', [
+    'id', 'title', 'name', 'logo'
 ])
 
 
@@ -283,8 +284,6 @@ class PermSpec(PermSpecConverterBase):
         }
         ```
         """
-        from geonode.base.utils import build_absolute_uri
-
         json = {}
         user_perms = []
         group_perms = []
@@ -330,12 +329,13 @@ class PermSpec(PermSpecConverterBase):
                     'permissions': _to_compact_perms(_perms, self._resource.resource_type)
                 }
             elif hasattr(_k, 'groupprofile'):
-                group = _Group(_k.id, _k.groupprofile.title, _k.name)
+                group = _Group(_k.id, _k.groupprofile.title, _k.name, _k.groupprofile.logo)
                 if _k.name == groups_settings.REGISTERED_MEMBERS_GROUP_NAME:
                     contributors_perms = {
                         'id': group.id,
                         'title': group.title,
                         'name': group.name,
+                        'logo': group.logo_url,
                         'permissions': _to_compact_perms(_perms, self._resource.resource_type)
                     }
                 else:
@@ -344,6 +344,7 @@ class PermSpec(PermSpecConverterBase):
                             'id': group.id,
                             'title': group.title,
                             'name': group.name,
+                            'logo': group.logo_url,
                             'permissions': _to_compact_perms(_perms, self._resource.resource_type)
                         }
                     )
@@ -359,6 +360,7 @@ class PermSpec(PermSpecConverterBase):
                     'id': contributors_group.id,
                     'title': contributors_group.groupprofile.title,
                     'name': contributors_group.name,
+                    'logo': contributors_group.groupprofile.logo_url,
                     'permissions': _to_compact_perms(
                         get_group_perms(contributors_group, self._resource),
                         self._resource.resource_type)
@@ -391,6 +393,7 @@ class PermSpecGroupCompact(PermSpecConverterBase):
         _binding('id'),
         _binding('title', expected=False),
         _binding('name', expected=False),
+        _binding('logo', expected=False),
         _binding('permissions'),
     )
 
