@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -1109,7 +1108,7 @@ class LayersStylesApiInteractionTests(
     port = 8005
 
     def setUp(self):
-        super(LayersStylesApiInteractionTests, self).setUp()
+        super().setUp()
 
         self.layer_list_url = reverse(
             'api_dispatch_list',

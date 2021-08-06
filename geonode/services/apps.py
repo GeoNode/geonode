@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -58,7 +57,7 @@ class ServicesAppConfig(NotificationsAppConfigBase):
 
     def ready(self):
         """Connect relevant signals to their corresponding handlers"""
-        super(ServicesAppConfig, self).ready()
+        super().ready()
         post_migrate.connect(run_setup_hooks, sender=self)
         settings.CELERY_BEAT_SCHEDULE['probe_services'] = {
             'task': 'geonode.services.tasks.probe_services',

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -98,7 +97,7 @@ def create_document(number):
     img_filename = f'{number}_img.jpg'
     doc = Document(title=title, owner=get_random_user())
     doc.save()
-    with open(file_uri, 'r') as f:
+    with open(file_uri) as f:
         img_file = File(f)
         doc.doc_file.save(img_filename, img_file, True)
     assign_keywords(doc)

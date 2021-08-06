@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -121,7 +120,7 @@ class _ValidFromToLastForm(forms.Form):
                 'Cannot use last and valid_from/valid_to at the same time')
 
     def clean(self):
-        super(_ValidFromToLastForm, self).clean()
+        super().clean()
         self._check_timestamps()
 
 
@@ -211,7 +210,7 @@ class MetricsFilters(CheckTypeForm):
                 "Cannot use service and service type at the same time")
 
     def clean(self):
-        super(MetricsFilters, self).clean()
+        super().clean()
         self._check_services()
 
 
@@ -716,7 +715,7 @@ class StatusCheckView(View):
         d['problems'] = problems = []
         d['health_level'] = 'ok'
         _levels = ('fatal', 'error', 'warning',)
-        levels = set([])
+        levels = set()
 
         for nc, ncdata in checks:
             for ncd in ncdata:

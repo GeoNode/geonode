@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -71,7 +70,7 @@ class PermissionLevelError(Exception):
     pass
 
 
-class PermissionLevelMixin(object):
+class PermissionLevelMixin:
 
     """
     Mixin for adding "Permission Level" methods

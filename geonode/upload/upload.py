@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -77,7 +76,7 @@ def _log(msg, *args):
     logger.debug(msg, *args)
 
 
-class UploaderSession(object):
+class UploaderSession:
 
     """All objects held must be able to survive a good pickling"""
 

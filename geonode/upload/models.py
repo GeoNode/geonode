@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -224,7 +223,7 @@ class Upload(models.Model):
     def delete(self, *args, **kwargs):
         importer_locations = []
         upload_files = [_file.file for _file in UploadFile.objects.filter(upload=self)]
-        super(Upload, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
         try:
             session = gs_uploader.get_session(self.import_id)
         except (NotFound, Exception):
@@ -325,8 +324,8 @@ class UploadFile(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = self.file.name
-        super(UploadFile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         self.file.delete(False)
-        super(UploadFile, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)

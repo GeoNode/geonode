@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -28,7 +27,7 @@ class TasksTest(GeoNodeBaseTestSupport):
     """
 
     def setUp(self):
-        super(TasksTest, self).setUp()
+        super().setUp()
 
         self.adm_un = "admin"
         self.adm_pw = "admin"

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -149,10 +148,10 @@ class GroupDetailView(ListView):
         if self.group.access == 'private' and \
                 not self.group.user_is_member(request.user):
             raise Http404
-        return super(GroupDetailView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(GroupDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['object'] = self.group
         context['maps'] = self.group.resources(resource_type='map')
         context['layers'] = self.group.resources(resource_type='layer')
@@ -295,13 +294,13 @@ class GroupActivityView(ListView):
 
         self.group = group
 
-        return super(GroupActivityView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         def getKey(action):
             return action.timestamp
 
-        context = super(GroupActivityView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['group'] = self.group
         members = ([(member.user.id) for member in self.group.member_queryset()])
         # Additional Filtered Lists Below

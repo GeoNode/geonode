@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2017 OSGeo
@@ -533,7 +532,7 @@ class RequestEvent(models.Model):
         Returns event type based on events
         """
         rqmeta = getattr(request, '_monitoring', {})
-        events = set(e[0] for e in rqmeta['events'])
+        events = {e[0] for e in rqmeta['events']}
         event_name = default_event_type
         if len(events) == 1:
             event_name = events.pop()
@@ -1287,7 +1286,7 @@ class NotificationCheck(models.Model):
                     'active': this.active,
                     'grace_period': this.grace_period}
                 kwargs['initial'] = initial
-                super(F, self).__init__(*args, **kwargs)
+                super().__init__(*args, **kwargs)
                 fields = self.fields
                 for d in defs:
                     # def.get_fields() can return several fields,
@@ -1378,7 +1377,7 @@ class NotificationReceiver(models.Model):
     def save(self, *args, **kwargs):
         if not (self.user or self.email):
             raise ValueError("Cannot save empty notification receiver")
-        super(NotificationReceiver, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class NotificationMetricDefinition(models.Model):
@@ -1700,7 +1699,7 @@ class MetricNotificationCheck(models.Model):
         return True
 
 
-class BuiltIns(object):
+class BuiltIns:
     service_types = (ServiceType.TYPE_GEONODE, ServiceType.TYPE_GEOSERVER,)
     host_service_types = (ServiceType.TYPE_HOST_GN, ServiceType.TYPE_HOST_GS,)
 

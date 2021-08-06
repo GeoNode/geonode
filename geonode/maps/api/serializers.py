@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
@@ -49,7 +48,7 @@ class MapSerializer(ResourceBaseSerializer):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
-        super(MapSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = Map

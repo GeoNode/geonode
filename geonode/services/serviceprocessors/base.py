@@ -166,7 +166,7 @@ class ServiceHandlerBase(object):
         return result
 
 
-class CascadableServiceHandlerMixin(object):
+class CascadableServiceHandlerMixin:
 
     def create_cascaded_store(self):
         raise NotImplementedError

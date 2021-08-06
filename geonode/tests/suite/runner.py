@@ -1,4 +1,3 @@
-
 import sys
 import time
 import logging
@@ -52,7 +51,7 @@ class GeoNodeBaseSuiteDiscoverRunner(DiscoverRunner):
         self.exclude_tags = set(exclude_tags or [])
 
 
-class BufferWritesDevice(object):
+class BufferWritesDevice:
 
     def __init__(self):
         self._data = []
@@ -76,7 +75,7 @@ class BufferWritesDevice(object):
 sys.stdout = null_file
 
 
-class ParallelTestSuiteRunner(object):
+class ParallelTestSuiteRunner:
 
     def __init__(self, pattern=None, top_level=None, verbosity=1,
                  interactive=True, failfast=True, keepdb=False,
@@ -469,17 +468,17 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
 class DjangoParallelTestRunner(DiscoverRunner):
     def __init__(self, verbosity=2, failfast=True, **kwargs):
         stream = BufferWritesDevice()
-        super(DjangoParallelTestRunner, self).__init__(stream=stream,
-                                                       verbosity=verbosity,
-                                                       failfast=failfast)
+        super().__init__(stream=stream,
+                         verbosity=verbosity,
+                         failfast=failfast)
 
 
 class TwistedParallelTestSuiteRunner(ParallelTestSuiteRunner):
     def __init__(self, config, verbosity=1, interactive=False, failfast=True,
                  **kwargs):
         self.config = config
-        super(TwistedParallelTestSuiteRunner, self).__init__(verbosity, interactive,
-                                                             failfast, **kwargs)
+        super().__init__(verbosity, interactive,
+                         failfast, **kwargs)
 
     def run_tests(self, test_labels, extra_tests=None, **kwargs):
         app_tests = self._group_by_app(test_labels)
@@ -528,7 +527,7 @@ class TwistedParallelTestSuiteRunner(ParallelTestSuiteRunner):
                            forceGarbageCollection=config['force-gc'])
 
 
-class TestResult(object):
+class TestResult:
     dots = False
     errors = None
     failures = None

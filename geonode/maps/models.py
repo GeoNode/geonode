@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -221,7 +220,7 @@ class Map(ResourceBase, GXPMapBase):
                     return {}
 
         layers = [lyr for lyr in _map.get("layers", [])]
-        layer_names = set(lyr.alternate for lyr in self.local_layers)
+        layer_names = {lyr.alternate for lyr in self.local_layers}
 
         self.layer_set.all().delete()
         self.keywords.add(*_map.get('keywords', []))
@@ -234,7 +233,7 @@ class Map(ResourceBase, GXPMapBase):
 
         self.save(notify=True)
 
-        if layer_names != set(lyr.alternate for lyr in self.local_layers):
+        if layer_names != {lyr.alternate for lyr in self.local_layers}:
             map_changed_signal.send_robust(sender=self, what_changed='layers')
 
         return template_name

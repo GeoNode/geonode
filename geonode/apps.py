@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2018 OSGeo
@@ -33,5 +32,5 @@ class AppConfig(BaseAppConfig):
     label = "geonode"
 
     def ready(self):
-        super(AppConfig, self).ready()
+        super().ready()
         run_setup_hooks()

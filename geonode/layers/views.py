@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -137,7 +136,7 @@ def log_snippet(log_file):
     if not log_file or not os.path.isfile(log_file):
         return f"No log file at {log_file}"
 
-    with open(log_file, "r") as f:
+    with open(log_file) as f:
         f.seek(0, 2)  # Seek @ EOF
         fsize = f.tell()  # Get Size
         f.seek(max(fsize - 10024, 0), 0)  # Set pos @ last n chars
@@ -1351,7 +1350,7 @@ def layer_append(request, layername, template='layers/layer_append.html'):
                     layer.save()
                 else:
                     out['success'] = False
-                    out['errors'] = str("Please select a valid Geoserver backend")
+                    out['errors'] = "Please select a valid Geoserver backend"
             except Exception as e:
                 logger.exception(e)
                 out['success'] = False

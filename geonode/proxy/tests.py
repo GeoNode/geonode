@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -29,7 +28,7 @@ import json
 try:
     from unittest.mock import MagicMock
 except ImportError:
-    from mock import MagicMock
+    from unittest.mock import MagicMock
 
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -49,7 +48,7 @@ TEST_URL = f'https://help{TEST_DOMAIN}/'
 class ProxyTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(ProxyTest, self).setUp()
+        super().setUp()
         self.admin = get_user_model().objects.get(username='admin')
 
         # FIXME(Ariel): These tests do not work when the computer is offline.
@@ -105,7 +104,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         an absolute path before calling the remote URL."""
         import geonode.proxy.views
 
-        class Response(object):
+        class Response:
             status_code = 200
             content = 'Hello World'
             headers = {'Content-Type': 'text/html'}
@@ -123,7 +122,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
 class DownloadResourceTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(DownloadResourceTestCase, self).setUp()
+        super().setUp()
         create_models(type='layer')
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -145,7 +144,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
 class OWSApiTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        super(OWSApiTestCase, self).setUp()
+        super().setUp()
         create_models(type='layer')
         # prepare some WMS endpoints
         q = Link.objects.all()
