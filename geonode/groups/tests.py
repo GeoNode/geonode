@@ -876,7 +876,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
             _log(response)
             self.assertContains(
                 response,
-                '<a href="/datasets/:geonode:single_point.shp">geonode:single_point.shp</a>',
+                f'<a href="{dataset.detail_url}">geonode:single_point.shp</a>',
                 count=2,
                 status_code=200,
                 msg_prefix='',

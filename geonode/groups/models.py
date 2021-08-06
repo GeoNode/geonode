@@ -18,29 +18,29 @@
 #########################################################################
 import os
 import logging
+
 from shutil import copyfile
-
-from django.conf import settings
-from django.urls import reverse
-from django.contrib.auth.models import Group
-from django.contrib.auth import get_user_model
-from django.db import models
-from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
-from django.utils.text import slugify
-from django.db.models import signals
-from django.utils.timezone import now
-
-from django.templatetags.static import static
-
-
 from taggit.managers import TaggableManager
 
+from django.db import models
+from django.db.models import Q
+from django.urls import reverse
+from django.conf import settings
+from django.db.models import signals
+from django.utils.text import slugify
+from django.utils.timezone import now
+from django.contrib.auth.models import Group
+from django.templatetags.static import static
+from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext_lazy as _
+
+from geonode.utils import build_absolute_uri
+
 from guardian.shortcuts import (
-    get_objects_for_user,
-    get_objects_for_group,
     assign_perm,
-    remove_perm
+    remove_perm,
+    get_objects_for_user,
+    get_objects_for_group
 )
 
 logger = logging.getLogger(__name__)
@@ -240,8 +240,8 @@ class GroupProfile(models.Model):
             _url = self.logo.url
         except Exception as e:
             logger.debug(e)
-            return _missing_thumbnail_url
-        return _url
+            return build_absolute_uri(_missing_thumbnail_url)
+        return build_absolute_uri(_url)
 
 
 class GroupMember(models.Model):

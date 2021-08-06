@@ -17,12 +17,16 @@
 #
 #########################################################################
 import ast
-from geonode.thumbs.exceptions import ThumbnailError
-from geonode.thumbs.thumbnails import create_thumbnail
 import json
+
+from uuid import uuid1
+from urllib.parse import urljoin
+
 from django.apps import apps
+from django.urls import reverse
 from django.conf import settings
 from django.db.models import Subquery
+from django.http.request import QueryDict
 from django.contrib.auth import get_user_model
 
 from drf_spectacular.utils import extend_schema
@@ -31,6 +35,7 @@ from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import GenericViewSet
@@ -38,15 +43,24 @@ from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
+from geonode.maps.models import Map
+from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
+from geonode.base.models import Configuration
+from geonode.thumbs.exceptions import ThumbnailError
+from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.layers.models import Dataset
-from geonode.maps.models import Map
+from geonode.security.permissions import (
+    PermSpec,
+    PermSpecCompact)
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms)
+
+from geonode.resource.models import ExecutionRequest
+from geonode.resource.api.tasks import resouce_service_dispatcher
 
 from guardian.shortcuts import get_objects_for_user
 
@@ -82,6 +96,9 @@ class UserViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdmin, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     pagination_class = GeoNodeApiPagination
@@ -131,6 +148,9 @@ class GroupViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticated, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     queryset = GroupProfile.objects.all()
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
@@ -165,6 +185,7 @@ class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin,
     API endpoint that lists regions.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [DynamicSearchFilter, ]
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
     pagination_class = GeoNodeApiPagination
@@ -175,6 +196,7 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Retrie
     API endpoint that lists hierarchical keywords.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [DynamicSearchFilter, ]
     queryset = HierarchicalKeyword.objects.all()
     serializer_class = HierarchicalKeywordSerializer
     pagination_class = GeoNodeApiPagination
@@ -185,6 +207,7 @@ class ThesaurusKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveM
     API endpoint that lists Thesaurus keywords.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [DynamicSearchFilter, ]
     queryset = ThesaurusKeyword.objects.all()
     serializer_class = ThesaurusKeywordSerializer
     pagination_class = GeoNodeApiPagination
@@ -195,6 +218,7 @@ class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveMode
     API endpoint that lists categories.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [DynamicSearchFilter, ]
     queryset = TopicCategory.objects.all()
     serializer_class = TopicCategorySerializer
     pagination_class = GeoNodeApiPagination
@@ -206,6 +230,7 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [AllowAny, ]
+    filter_backends = [DynamicSearchFilter, ]
     serializer_class = OwnerSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -339,8 +364,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
         if settings.GEONODE_APPS_ENABLE and 'geoapp' in _types:
             _types.remove('geoapp')
-            if hasattr(settings, 'MAPSTORE_CLIENT_APP_LIST') and settings.MAPSTORE_CLIENT_APP_LIST:
-                _types += settings.MAPSTORE_CLIENT_APP_LIST
+            if hasattr(settings, 'CLIENT_APP_LIST') and settings.CLIENT_APP_LIST:
+                _types += settings.CLIENT_APP_LIST
             else:
                 from geonode.geoapps.models import GeoApp
                 geoapp_types = [x for x in GeoApp.objects.values_list('resource_type', flat=True).all().distinct()]
@@ -353,45 +378,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             })
         return Response({"resource_types": resource_types})
 
-    @extend_schema(methods=['get'], responses={200: PermSpecSerialiazer()},
-                   description="""
-        Gets an object's the permission levels based on the perm_spec JSON.
-
-        the mapping looks like:
-        ```
-        {
-            'users': [
-                'AnonymousUser': ['view'],
-                <username>: ['perm1','perm2','perm3'],
-                <username2>: ['perm1','perm2','perm3']
-                ...
-            ],
-            'groups': [
-                <groupname>: ['perm1','perm2','perm3'],
-                <groupname2>: ['perm1','perm2','perm3'],
-                ...
-            ]
-        }
-        ```
-        """)
-    @action(detail=True, methods=['get'], permission_classes=[IsOwnerOrAdmin, ])
-    def get_perms(self, request, pk=None):
-        resource = self.get_object()
-        perms_spec = resource.get_all_level_info()
-        perms_spec_obj = {}
-        if "users" in perms_spec:
-            perms_spec_obj["users"] = {}
-            for user in perms_spec["users"]:
-                perms = perms_spec["users"].get(user)
-                perms_spec_obj["users"][str(user)] = perms
-        if "groups" in perms_spec:
-            perms_spec_obj["groups"] = {}
-            for group in perms_spec["groups"]:
-                perms = perms_spec["groups"].get(group)
-                perms_spec_obj["groups"][str(group)] = perms
-        return Response(perms_spec_obj)
-
-    @extend_schema(methods=['put'],
+    @extend_schema(methods=['get', 'put', 'patch', 'delete'],
                    request=PermSpecSerialiazer(),
                    responses={200: None},
                    description="""
@@ -400,25 +387,149 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         the mapping looks like:
         ```
         {
-            'users': [
+            'users': {
                 'AnonymousUser': ['view'],
                 <username>: ['perm1','perm2','perm3'],
                 <username2>: ['perm1','perm2','perm3']
                 ...
-            ],
-            'groups': [
+            },
+            'groups': {
                 <groupname>: ['perm1','perm2','perm3'],
                 <groupname2>: ['perm1','perm2','perm3'],
                 ...
-            ]
+            }
         }
         ```
         """)
-    @action(detail=True, methods=['put'], permission_classes=[IsOwnerOrAdmin, ])
-    def set_perms(self, request, pk=None):
+    @action(
+        detail=True,
+        url_path="permissions",  # noqa
+        url_name="perms-spec",
+        methods=['get', 'put', 'patch', 'delete'],
+        permission_classes=[
+            IsOwnerOrAdmin,
+        ])
+    def resource_service_permissions(self, request, pk=None):
+        """Instructs the Async dispatcher to execute a 'DELETE' or 'UPDATE' on the permissions of a valid 'uuid'
+
+        - GET input_params: {
+            id: "<str: ID>"
+        }
+
+        - DELETE input_params: {
+            id: "<str: ID>"
+        }
+
+        - PUT input_params: {
+            id: "<str: ID>"
+            owner: str = None
+            permissions: dict = {}
+            created: bool = False
+        }
+
+        - output_params: {
+            output: {
+                uuid: "<str: UUID>"
+            }
+        }
+
+        - output: {
+                "status": "ready",
+                "execution_id": "<str: execution ID>",
+                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/<str: execution ID>"
+            }
+
+        Sample Requests:
+        - Removes all the permissions (except owner and admin ones) from a Resource:
+        curl -v -X DELETE -u admin:admin -H "Content-Type: application/json" http://localhost:8000/api/v2/resources/<id>/permissions
+
+        - Changes the owner of a Resource:
+        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'owner=afabiani' http://localhost:8000/api/v2/resources/<id>/permissions
+
+        - Assigns View permissions to some users:
+        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'permissions={"users": {"admin": ["view_resourcebase"]}, "groups": {}}'
+            http://localhost:8000/api/v2/resources/<id>/permissions
+
+        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'owner=afabiani' -d 'permissions={"users": {"admin": ["view_resourcebase"]}, "groups": {}}'
+            http://localhost:8000/api/v2/resources/<id>/permissions
+
+        - Assigns View permissions to anyone:
+        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}'
+            http://localhost:8000/api/v2/resources/<id>/permissions
+
+        - Assigns View permissions to anyone and edit (style and data) permissions to a Group on a Dataset:
+        curl -v -X PUT -u admin:admin -H "Content-Type: application/json"
+            -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]},
+            "groups": {"registered-members": ["view_resourcebase", "download_resourcebase", "change_dataset_style", "change_dataset_data"]}}'
+            http://localhost:8000/api/v2/resources/<id>/permissions
+
+        - Assigns View permissions to anyone and edit permissions to a Group on a Document:
+        curl -v -X PUT -u admin:admin -H "Content-Type: application/json"
+            -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {"registered-members": ["view_resourcebase", "download_resourcebase", "change_resourcebase"]}}'
+            http://localhost:8000/api/v2/resources/<id>/permissions
+        """
+        config = Configuration.load()
         resource = self.get_object()
-        resource.set_permissions(request.data)
-        return Response(request.data)
+        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
+                resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        try:
+            perms_spec = PermSpec(resource.get_all_level_info(), resource)
+            request_body = request.body
+            request_params = QueryDict(request_body, mutable=True, encoding="UTF-8")
+            if request.method == 'GET':
+                return Response(perms_spec.compact)
+            elif request.method == 'DELETE':
+                _exec_request = ExecutionRequest.objects.create(
+                    user=request.user,
+                    func_name='remove_permissions',
+                    input_params={
+                        "uuid": request_params.get('uuid', resource.uuid)
+                    }
+                )
+            elif request.method == 'PUT':
+                perms_spec_compact = PermSpecCompact(
+                    json.loads(request_params.get('permissions', '{}')), resource)
+                _exec_request = ExecutionRequest.objects.create(
+                    user=request.user,
+                    func_name='set_permissions',
+                    input_params={
+                        "uuid": request_params.get('uuid', resource.uuid),
+                        "owner": request_params.get('owner', resource.owner.username),
+                        "permissions": perms_spec_compact.extended,
+                        "created": request_params.get('created', False)
+                    }
+                )
+            elif request.method == 'PATCH':
+                perms_spec_compact_patch = PermSpecCompact(
+                    json.loads(request_params.get('permissions', '{}')), resource)
+                perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
+                perms_spec_compact_resource.merge(perms_spec_compact_patch)
+                _exec_request = ExecutionRequest.objects.create(
+                    user=request.user,
+                    func_name='set_permissions',
+                    input_params={
+                        "uuid": request_params.get('uuid', resource.uuid),
+                        "owner": request_params.get('owner', resource.owner.username),
+                        "permissions": perms_spec_compact_resource.extended,
+                        "created": request_params.get('created', False)
+                    }
+                )
+            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            return Response(
+                {
+                    'status': _exec_request.status,
+                    'execution_id': _exec_request.exec_id,
+                    'status_url':
+                        urljoin(
+                            settings.SITEURL,
+                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
+                        )
+                },
+                status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.exception(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
     @extend_schema(
         methods=["post"], responses={200}, description="API endpoint allowing to set the thumbnail url for an existing dataset."
@@ -430,8 +541,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         methods=["post"],
         permission_classes=[
             IsAuthenticated,
-        ],
-    )
+        ])
     def set_thumbnail_from_bbox(self, request, resource_id):
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
@@ -457,3 +567,472 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         except Exception as e:
             logger.error(e)
             return Response(data={"message": e.args[0]}, status=500, exception=True)
+
+    @extend_schema(
+        methods=["post"], responses={200}, description="Instructs the Async dispatcher to execute a 'INGEST' operation."
+    )
+    @action(
+        detail=False,
+        url_path="ingest/(?P<resource_type>\w+)",  # noqa
+        url_name="resource-service-ingest",
+        methods=["post"],
+        permission_classes=[
+            IsAuthenticated,
+        ])
+    def resource_service_ingest(self, request, resource_type: str = None):
+        """Instructs the Async dispatcher to execute a 'INGEST' operation
+
+        - POST input_params: {
+            uuid: "<str: UUID>",
+            files: "<list(str) path>",
+            defaults: "{\"owner\":\"<str: username>\",<list: str>}",  # WARNING: 'owner' is mandatory
+            resource_type: "<enum: ['dataset', 'document', 'map', '<GeoApp: name>']>"
+        }
+
+        - output_params: {
+            output: <int: number of resources deleted / 0 if none>
+        }
+
+        - output: {
+                "status": "ready",
+                "execution_id": "<str: execution ID>",
+                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/<str: execution ID>"
+            }
+
+        Sample Request:
+
+        1. curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d 'defaults={"owner":"admin","title":"pippo"}' -d 'files=["/mnt/c/Data/flowers.jpg"]'
+            http://localhost:8000/api/v2/resources/ingest/document
+            OUTPUT: {
+                "status": "ready",
+                "execution_id": "90ca670d-df60-44b6-b358-d792c6aecc58",
+                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/90ca670d-df60-44b6-b358-d792c6aecc58"
+            }
+
+        2. curl -v -X GET -u admin:admin http://localhost:8000/api/v2/resource-service/execution-status/90ca670d-df60-44b6-b358-d792c6aecc58
+            OUTPUT: {
+                "user": "admin",
+                "status": "finished",
+                "func_name": "create",
+                "created": "2021-07-22T15:32:09.096075Z",
+                "finished": "2021-07-22T15:32:26.936683Z",
+                "last_updated": "2021-07-22T15:32:09.096129Z",
+                "input_params": {
+                    "uuid": "fa404f64-eb01-11eb-8f91-00155d41f2fb",
+                    "files": "[\"/mnt/c/Data/flowers.jpg\"]",
+                    "defaults": "{\"owner\":\"admin\",\"title\":\"pippo\"}",
+                    "resource_type": "dataset"
+                },
+                "output_params": {
+                    "output": {
+                        "uuid": "fa404f64-eb01-11eb-8f91-00155d41f2fb"
+                    }
+                }
+            }
+        """
+        config = Configuration.load()
+        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated \
+                or not request.user.has_perm('base.add_resourcebase'):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        try:
+            request_params = QueryDict(request.body, mutable=True)
+            _exec_request = ExecutionRequest.objects.create(
+                user=request.user,
+                func_name='ingest',
+                input_params={
+                    "uuid": request_params.get('uuid', str(uuid1())),
+                    "files": request_params.get('files', '[]'),
+                    "resource_type": resource_type,
+                    "defaults": request_params.get('defaults', f"{{\"owner\":\"{request.user.username}\"}}")
+                }
+            )
+            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            return Response(
+                {
+                    'status': _exec_request.status,
+                    'execution_id': _exec_request.exec_id,
+                    'status_url':
+                        urljoin(
+                            settings.SITEURL,
+                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
+                        )
+                },
+                status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.exception(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
+
+    @extend_schema(
+        methods=["post"], responses={200}, description="Instructs the Async dispatcher to execute a 'CREATE' operation."
+    )
+    @action(
+        detail=False,
+        url_path="create/(?P<resource_type>\w+)",  # noqa
+        url_name="resource-service-create",
+        methods=["post"],
+        permission_classes=[
+            IsAuthenticated,
+        ])
+    def resource_service_create(self, request, resource_type: str = None):
+        """Instructs the Async dispatcher to execute a 'CREATE' operation
+        **WARNING**: This will create an empty dataset; if you need to upload a resource to GeoNode, consider using the endpoint "ingest" instead
+
+        - POST input_params: {
+            uuid: "<str: UUID>",
+            defaults: "{\"owner\":\"<str: username>\",<list: str>}",  # WARNING: 'owner' is mandatory
+            resource_type: "<enum: ['dataset', 'document', 'map', '<GeoApp: name>']>"
+        }
+
+        - output_params: {
+            output: <int: number of resources deleted / 0 if none>
+        }
+
+        - output: {
+                "status": "ready",
+                "execution_id": "<str: execution ID>",
+                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/<str: execution ID>"
+            }
+
+        Sample Request:
+
+        1. curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d 'defaults={"owner":"admin","title":"pippo"}'
+            http://localhost:8000/api/v2/resources/create/dataset
+            OUTPUT: {
+                "status": "ready",
+                "execution_id": "90ca670d-df60-44b6-b358-d792c6aecc58",
+                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/90ca670d-df60-44b6-b358-d792c6aecc58"
+            }
+
+        2. curl -v -X GET -u admin:admin http://localhost:8000/api/v2/resource-service/execution-status/90ca670d-df60-44b6-b358-d792c6aecc58
+            OUTPUT: {
+                "user": "admin",
+                "status": "finished",
+                "func_name": "create",
+                "created": "2021-07-22T15:32:09.096075Z",
+                "finished": "2021-07-22T15:32:26.936683Z",
+                "last_updated": "2021-07-22T15:32:09.096129Z",
+                "input_params": {
+                    "uuid": "fa404f64-eb01-11eb-8f91-00155d41f2fb",
+                    "defaults": "{\"owner\":\"admin\",\"title\":\"pippo\"}",
+                    "resource_type": "dataset"
+                },
+                "output_params": {
+                    "output": {
+                        "uuid": "fa404f64-eb01-11eb-8f91-00155d41f2fb"
+                    }
+                }
+            }
+        """
+        config = Configuration.load()
+        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated \
+                or not request.user.has_perm('base.add_resourcebase'):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        try:
+            request_params = QueryDict(request.body, mutable=True)
+            _exec_request = ExecutionRequest.objects.create(
+                user=request.user,
+                func_name='create',
+                input_params={
+                    "uuid": request_params.get('uuid', str(uuid1())),
+                    "resource_type": resource_type,
+                    "defaults": request_params.get('defaults', f"{{\"owner\":\"{request.user.username}\"}}")
+                }
+            )
+            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            return Response(
+                {
+                    'status': _exec_request.status,
+                    'execution_id': _exec_request.exec_id,
+                    'status_url':
+                        urljoin(
+                            settings.SITEURL,
+                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
+                        )
+                },
+                status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.exception(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
+
+    @extend_schema(
+        methods=["delete"], responses={200}, description="Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'."
+    )
+    @action(
+        detail=True,
+        url_path="delete",  # noqa
+        url_name="resource-service-delete",
+        methods=["delete"],
+        permission_classes=[
+            IsAuthenticated,
+        ])
+    def resource_service_delete(self, request, pk=None):
+        """Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'
+
+        - DELETE input_params: {
+            id: "<str: ID>"
+        }
+
+        - output_params: {
+            output: <int: number of resources deleted / 0 if none>
+        }
+
+        - output: {
+                "status": "ready",
+                "execution_id": "<str: execution ID>",
+                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/<str: execution ID>"
+            }
+
+        Sample request:
+
+        1. curl -v -X DELETE -u admin:admin http://localhost:8000/api/v2/resources/<id>/delete
+            OUTPUT: {
+                "status":"ready",
+                "execution_id":"7ed0b141-cf85-434f-bbfb-c02447a5221b",
+                "status_url":"http://localhost:8000/api/v2/resource-service/execution-status/7ed0b141-cf85-434f-bbfb-c02447a5221b"
+            }
+
+        2. curl -v -X GET -u admin:admin http://localhost:8000/api/v2/resource-service/execution-status/7ed0b141-cf85-434f-bbfb-c02447a5221b
+            OUTPUT: {
+                "user":"admin",
+                "status":"finished",
+                "func_name":"delete",
+                "created":"2021-07-19T14:09:59.930619Z",
+                "finished":"2021-07-19T14:10:00.054915Z",
+                "last_updated":"2021-07-19T14:09:59.930647Z",
+                "input_params":{"uuid":"1234"},
+                "output_params":{"output":0}
+            }
+        """
+        config = Configuration.load()
+        resource = self.get_object()
+        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
+                resource is None or not request.user.has_perm('delete_resourcebase', resource.get_self_resource()):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        try:
+            _exec_request = ExecutionRequest.objects.create(
+                user=request.user,
+                func_name='delete',
+                input_params={
+                    "uuid": resource.uuid
+                }
+            )
+            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            return Response(
+                {
+                    'status': _exec_request.status,
+                    'execution_id': _exec_request.exec_id,
+                    'status_url':
+                        urljoin(
+                            settings.SITEURL,
+                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
+                        )
+                },
+                status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.exception(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
+
+    @extend_schema(
+        methods=["put"], responses={200}, description="Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'."
+    )
+    @action(
+        detail=True,
+        url_path="update",  # noqa
+        url_name="resource-service-update",
+        methods=["put"],
+        permission_classes=[
+            IsAuthenticated,
+        ])
+    def resource_service_update(self, request, pk=None):
+        """Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'
+
+        - PUT input_params: {
+            id: "<str: ID>"
+            xml_file: str = None
+            metadata_uploaded: bool = False
+            vals: dict = {}
+            regions: list = []
+            keywords: list = []
+            custom: dict = {}
+            notify: bool = True
+        }
+
+        - output_params: {
+            output: {
+                uuid: "<str: UUID>"
+            }
+        }
+
+        - output: {
+                "status": "ready",
+                "execution_id": "<str: execution ID>",
+                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/<str: execution ID>"
+            }
+
+        Sample Request:
+
+        1. curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'vals={"title":"pippo"}' http://localhost:8000/api/v2/resources/<id>/update
+            OUTPUT: {
+                "status":"ready",
+                "execution_id":"08846e84-eae4-11eb-84be-00155d41f2fb",
+                "status_url":"http://localhost:8000/api/v2/resource-service/execution-status/08846e84-eae4-11eb-84be-00155d41f2fb"
+            }
+
+        2. curl -v -X GET -u admin:admin http://localhost:8000/api/v2/resource-service/execution-status/08846e84-eae4-11eb-84be-00155d41f2fb
+            OUTPUT: {
+                "user": "admin",
+                "status": "finished",
+                "func_name": "update",
+                "created": "2021-07-22T14:42:56.284740Z",
+                "finished": "2021-07-22T14:43:01.813971Z",
+                "last_updated": "2021-07-22T14:42:56.284797Z",
+                "input_params": {
+                    "uuid": "ee11541c-eaee-11eb-942c-00155d41f2fb",
+                    "vals": "{\"title\":\"pippo\"}",
+                    "custom": {},
+                    "notify": true,
+                    "regions": [],
+                    "keywords": [],
+                    "xml_file": null,
+                    "metadata_uploaded": false
+                },
+                "output_params": {
+                    "output": {
+                        "uuid": "ee11541c-eaee-11eb-942c-00155d41f2fb"
+                    }
+                }
+            }
+
+        Sample Request with more parameters:
+
+        1. curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'vals={"title":"pippo"}' -d 'metadata_uploaded=true' -d 'keywords=["k1", "k2", "k3"]'
+            http://localhost:8000/api/v2/resources/<id>/update
+        """
+        config = Configuration.load()
+        resource = self.get_object()
+        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
+                resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        try:
+            request_params = QueryDict(request.body, mutable=True)
+            _exec_request = ExecutionRequest.objects.create(
+                user=request.user,
+                func_name='update',
+                input_params={
+                    "uuid": request_params.get('uuid', resource.uuid),
+                    "xml_file": request_params.get('xml_file', None),
+                    "metadata_uploaded": request_params.get('metadata_uploaded', False),
+                    "vals": request_params.get('vals', '{}'),
+                    "regions": request_params.get('regions', '[]'),
+                    "keywords": request_params.get('keywords', '[]'),
+                    "custom": request_params.get('custom', '{}'),
+                    "notify": request_params.get('notify', True)
+                }
+            )
+            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            return Response(
+                {
+                    'status': _exec_request.status,
+                    'execution_id': _exec_request.exec_id,
+                    'status_url':
+                        urljoin(
+                            settings.SITEURL,
+                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
+                        )
+                },
+                status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.exception(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
+
+    @extend_schema(
+        methods=["put"], responses={200}, description="Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'uuid'."
+    )
+    @action(
+        detail=True,
+        url_path="copy",  # noqa
+        url_name="resource-service-copy",
+        methods=["put"],
+        permission_classes=[
+            IsAuthenticated,
+        ])
+    def resource_service_copy(self, request, pk=None):
+        """Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'uuid'
+
+        - PUT input_params: {
+            id: "<str: ID>"
+            owner: "<str: username = <current_user>>"
+            defaults: dict = {}
+        }
+
+        - output_params: {
+            output: {
+                uuid: "<str: UUID>"
+            }
+        }
+
+        - output: {
+                "status": "ready",
+                "execution_id": "<str: execution ID>",
+                "status_url": "http://localhost:8000/api/v2/resource-service/execution-status/<str: execution ID>"
+            }
+
+        Sample Request:
+
+        1. curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'vals={"title":"pippo"}' http://localhost:8000/api/v2/resources/<id>/copy
+            OUTPUT: {
+                "status":"ready",
+                "execution_id":"08846e84-eae4-11eb-84be-00155d41f2fb",
+                "status_url":"http://localhost:8000/api/v2/resource-service/execution-status/08846e84-eae4-11eb-84be-00155d41f2fb"
+            }
+
+        2. curl -v -X GET -u admin:admin http://localhost:8000/api/v2/resource-service/execution-status/08846e84-eae4-11eb-84be-00155d41f2fb
+            OUTPUT: {
+                "user": "admin",
+                "status": "finished",
+                "func_name": "update",
+                "created": "2021-07-22T14:42:56.284740Z",
+                "finished": "2021-07-22T14:43:01.813971Z",
+                "last_updated": "2021-07-22T14:42:56.284797Z",
+                "input_params": {
+                    "uuid": "ee11541c-eaee-11eb-942c-00155d41f2fb",
+                    "defaults": "{\"title\":\"pippo\"}"
+                },
+                "output_params": {
+                    "output": {
+                        "uuid": "ee11541c-eaee-11eb-942c-00155d41f2fb"
+                    }
+                }
+            }
+        """
+        config = Configuration.load()
+        resource = self.get_object()
+        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
+                resource is None or not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        try:
+            request_params = QueryDict(request.body, mutable=True)
+            _exec_request = ExecutionRequest.objects.create(
+                user=request.user,
+                func_name='copy',
+                input_params={
+                    "uuid": request_params.get('uuid', resource.uuid),
+                    "owner": request_params.get('owner', request.user.username),
+                    "defaults": request_params.get('defaults', '{}')
+                }
+            )
+            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            return Response(
+                {
+                    'status': _exec_request.status,
+                    'execution_id': _exec_request.exec_id,
+                    'status_url':
+                        urljoin(
+                            settings.SITEURL,
+                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
+                        )
+                },
+                status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.exception(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)

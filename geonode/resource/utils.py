@@ -409,7 +409,6 @@ def metadata_post_save(instance, *args, **kwargs):
             instance.license = license[0]
 
     instance.thumbnail_url = instance.get_thumbnail_url()
-    instance.detail_url = instance.get_absolute_url()
     instance.csw_insert_date = datetime.datetime.now(timezone.get_current_timezone())
     instance.set_missing_info()
 
@@ -419,7 +418,6 @@ def metadata_post_save(instance, *args, **kwargs):
         alternate=instance.alternate,
         bbox_polygon=instance.bbox_polygon,
         thumbnail_url=instance.get_thumbnail_url(),
-        detail_url=instance.get_absolute_url(),
         csw_insert_date=datetime.datetime.now(timezone.get_current_timezone())
     )
 

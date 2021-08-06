@@ -24,7 +24,7 @@ from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedFiel
 
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
-from geonode.base.utils import build_absolute_uri
+from geonode.utils import build_absolute_uri
 from geonode.layers.api.serializers import DatasetSerializer
 from geonode.base.api.serializers import BaseDynamicModelSerializer
 

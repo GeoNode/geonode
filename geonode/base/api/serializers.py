@@ -21,8 +21,8 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
+from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 from rest_framework_gis import fields
@@ -49,7 +49,7 @@ from geonode.groups.models import (
     GroupCategory,
     GroupProfile)
 
-from geonode.base.utils import build_absolute_uri
+from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms
 
 import logging

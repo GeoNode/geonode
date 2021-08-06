@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2021 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,16 +16,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from geonode.catalogue.backends.generic import CatalogueBackend \
-    as GenericCatalogueBackend
-
-
-class CatalogueBackend(GenericCatalogueBackend):
-    """pycsw HTTP CSW backend"""
-
-    def __init__(self, *args, **kwargs):
-        """initialize pycsw HTTP CSW backend"""
-        GenericCatalogueBackend.__init__(CatalogueBackend, self, *args, **kwargs)
-        self.catalogue.formats = \
-            ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO']

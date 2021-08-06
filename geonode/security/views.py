@@ -188,7 +188,7 @@ def resource_geolimits(request, resource_id):
         elif group_id:
             if wkt:
                 geo_limit, _ = GroupGeoLimit.objects.update_or_create(
-                    group=GroupProfile.objects.get(id=group_id),
+                    group=GroupProfile.objects.get(group__id=group_id),
                     resource=resource
                 )
                 geo_limit.wkt = wkt
@@ -196,7 +196,7 @@ def resource_geolimits(request, resource_id):
                 resource.groups_geolimits.add(geo_limit)
             else:
                 geo_limits = GroupGeoLimit.objects.filter(
-                    group=GroupProfile.objects.get(id=group_id),
+                    group=GroupProfile.objects.get(group__id=group_id),
                     resource=resource
                 )
                 for geo_limit in geo_limits:
@@ -232,7 +232,7 @@ def resource_geolimits(request, resource_id):
         elif group_id:
             try:
                 geo_limits = GroupGeoLimit.objects.filter(
-                    group=GroupProfile.objects.get(id=group_id),
+                    group=GroupProfile.objects.get(group__id=group_id),
                     resource=resource
                 )
                 for geo_limit in geo_limits:
@@ -268,7 +268,7 @@ def resource_geolimits(request, resource_id):
         elif group_id:
             try:
                 _geo_limit = GroupGeoLimit.objects.get(
-                    group=GroupProfile.objects.get(id=group_id),
+                    group=GroupProfile.objects.get(group__id=group_id),
                     resource=resource
                 ).wkt
                 return HttpResponse(

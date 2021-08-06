@@ -49,7 +49,7 @@ def harvesting_dispatcher(self, harvester_id: int):
     The implementation briefly consists of:
 
     - start a harvesting session
-    - determine which of the known harvestable resources are to be harvested
+    - determine which of the known harvestable resources have to be harvested
     - schedule each harvestable resource to be harvested asynchronously
     - when all resources have been harvested, finish the harvesting session
 

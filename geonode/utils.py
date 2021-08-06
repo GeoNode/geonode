@@ -2279,3 +2279,9 @@ def find_by_attr(lst, val, attr="id"):
             return item
 
     return None
+
+
+def build_absolute_uri(url):
+    if url and 'http' not in url:
+        url = urljoin(settings.SITEURL, url)
+    return url
