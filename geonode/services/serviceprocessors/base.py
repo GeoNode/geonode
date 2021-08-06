@@ -94,7 +94,7 @@ def get_geoserver_cascading_workspace(create=True):
     return workspace
 
 
-class ServiceHandlerBase:
+class ServiceHandlerBase(object):
     """Base class for remote service handlers
 
     This class is not to be instantiated directly, but rather subclassed by

@@ -1441,7 +1441,7 @@ class ServerDoesNotExist(Exception):
     pass
 
 
-class OGC_Server:
+class OGC_Server(object):
 
     """
     OGC Server object.
