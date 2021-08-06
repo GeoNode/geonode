@@ -32,7 +32,7 @@ class Command(BaseCommand):
         parser.add_argument("type")
 
     def handle(self, *args, **options):
-        # PLEASE IGNORE THIS FOR NOW. THESE ARE SOME FOR SOME
+        # PLEASE IGNORE THE FOLLOWING FOR NOW. THESE ARE FOR SOME
         # LOCAL MANUAL TESTING WITH CELERY RUNNING
         print(args)
         print(options)

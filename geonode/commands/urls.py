@@ -23,5 +23,5 @@ from .views import CommandView
 app_name = 'geonode.commands'
 
 urlpatterns = [
-    path("command/", CommandView.as_view(), name="command"),
+    path("enque/", CommandView.as_view(), name="enque"),
 ]

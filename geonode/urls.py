@@ -120,7 +120,7 @@ urlpatterns += [
     url(r'^harvesters/', include('geonode.harvesting.urls')),
 
     # Commands view
-    path("management/", include("geonode.commands.urls")),
+    path("commands/", include("geonode.commands.urls")),
 
     # ident
     url(r'^ident.json$',

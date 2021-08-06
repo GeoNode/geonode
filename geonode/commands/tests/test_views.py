@@ -29,7 +29,7 @@ class CommandViewTests(APITestCase):
     - Test the Validations done inside the POST
     """
     def setUp(self):
-        self.url = "geonode.commands:command"
+        self.url = "geonode.commands:enque"
         self.standard_user = get_user_model().objects.create(
             username="test", email="test@test.com"
         )
