@@ -18,10 +18,10 @@
 #########################################################################
 
 from django.urls import path
-from .views import CommandView
+from .views import JobsView
 
 app_name = 'geonode.commands'
 
 urlpatterns = [
-    path("enque/", CommandView.as_view(), name="enque"),
+    path("jobs/", JobsView.as_view(), name="jobs"),
 ]

@@ -18,10 +18,9 @@
 #########################################################################
 
 from django.core.management import call_command
-from django.conf import settings
 from celery import shared_task
 
 
 @shared_task
-def enqueue_jobs(user, cmd, *args, **kwargs):
+def enqueue_jobs(user_id, cmd, *args, **kwargs):
     call_command(cmd, *args, **kwargs)

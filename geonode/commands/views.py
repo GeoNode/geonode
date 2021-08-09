@@ -24,7 +24,8 @@ from rest_framework.permissions import IsAuthenticated
 from .tasks import enqueue_jobs
 from geonode.permissions import IsSuperUser
 
-class CommandView(views.APIView):
+
+class JobsView(views.APIView):
     permission_classes = [IsAuthenticated, IsSuperUser]
 
     def get(self, request):
@@ -36,7 +37,7 @@ class CommandView(views.APIView):
 
     def post(self, request):
         """
-        API to enque management commands into Celery as cron jobs
+        API to enqueue management commands into Celery as cron jobs
 
         Expected Payload Format
         {
@@ -44,18 +45,8 @@ class CommandView(views.APIView):
             "args": [<arg1>, <arg2>],
             "kwargs: {<key1>: <val1>, <key2>: <val2>}
         }
-
-        Example Payload:
-        {
-        "cmd": "test_command",
-        "args": ["delta"],
-        "kwargs": {
-                "cpair": [10, 40],
-                "ppair": ["a", "b"]
-            }
-        }
         """
-        
+
         args = request.data.get("args", [])
         kwargs = request.data.get("kwargs", {})
         cmd = request.data.get("cmd", None)
@@ -73,10 +64,10 @@ class CommandView(views.APIView):
             )
 
         try:
-            enqueue_jobs.delay(request.user.username, cmd, *args, **kwargs)
+            job = enqueue_jobs.delay(request.user.id, cmd, *args, **kwargs)
             return Response(
-                {"success": True, "message": "Job Queued"},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"success": True, "user_id": request.user.id, "job_id": job.id, "task_id": job.task_id},
+                status=status.HTTP_200_OK,
             )
 
         except Exception as e:

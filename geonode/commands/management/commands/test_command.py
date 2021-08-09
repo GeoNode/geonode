@@ -22,22 +22,30 @@ import time
 
 
 class Command(BaseCommand):
-    """ This is just a fixture command to run basic tests """
+    """
+    This, 'test_command', is just a fixture command to run tests.
+
+    It needs one args, 'type', and 2 kwargs: cpair, ppair
+    'type' can't be empty, while 'cpair' and 'ppair' can have max two optional
+    elements.
+
+    # TODO!! After we add commands.models.job's status update logic we should
+    add code here to demonstrate how a command can ideally log commands.job 
+    reference or how commands.job status will be updated.
+    """
+
     help = "A fixture command for basic tests"
 
     def add_arguments(self, parser):
-        # parser.add_argument("some_ids", nargs="+", type=int)
         parser.add_argument("--cpair", nargs=2)
         parser.add_argument("--ppair", nargs=2)
         parser.add_argument("type")
 
     def handle(self, *args, **options):
-        # PLEASE IGNORE THE FOLLOWING FOR NOW. THESE ARE FOR SOME
-        # LOCAL MANUAL TESTING WITH CELERY RUNNING
-        print(args)
-        print(options)
 
+        # Just some command process, for the sake of process/test
         if not all(isinstance(x, int) for x in options["cpair"]):
             raise CommandError("All cpair elements should be integer")
 
-        time.sleep(15)
+        # To test blocking/async nature.
+        time.sleep(5)
