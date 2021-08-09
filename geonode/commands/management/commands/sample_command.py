@@ -23,14 +23,14 @@ import time
 
 class Command(BaseCommand):
     """
-    This, 'test_command', is just a fixture command to run tests.
+    This, 'sample_command', is just a fixture command to run tests.
 
     It needs one args, 'type', and 2 kwargs: cpair, ppair
     'type' can't be empty, while 'cpair' and 'ppair' can have max two optional
     elements.
 
     # TODO!! After we add commands.models.job's status update logic we should
-    add code here to demonstrate how a command can ideally log commands.job 
+    add code here to demonstrate how a command can ideally log commands.job
     reference or how commands.job status will be updated.
     """
 

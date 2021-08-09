@@ -28,9 +28,9 @@ class TestEnqueueJobs(TestCase):
 
     def setUp(self):
 
-        # Our test_command needs 1 args, 'type' and 2 kwargs: cpair, ppair
+        # Our sample_command needs 1 args, 'type' and 2 kwargs: cpair, ppair
         self.payload = {
-        "cmd": "test_command",
+        "cmd": "sample_command",
         "args": ["delta"],
         "kwargs": {
                 "cpair": [10, 40],
@@ -68,7 +68,7 @@ class TestEnqueueJobs(TestCase):
 
     def test_function_is_non_blocking_for_any_process_length(self):
         """
-        Our test_command's process has 5 seconds' sleep time. Ensure
+        Our sample_command's process has 5 seconds' sleep time. Ensure
         async implementation does not block for this time.
         """
         got_error = False

@@ -38,8 +38,9 @@ class CommandViewTests(APITestCase):
             username="superuser", is_staff=True, is_superuser=True
         )
 
+        # Our sample_command needs 1 args, 'type' and 2 kwargs: cpair, ppair
         self.payload = {
-        "cmd": "test_command",
+        "cmd": "sample_command",
         "args": ["delta"],
         "kwargs": {
                 "cpair": [10, 40],
@@ -47,15 +48,15 @@ class CommandViewTests(APITestCase):
             }
         }
 
-    def test_permissions_on_GET_endpoint(self):
-        cases = (
+        self.cases = (
             {"user": None, "status": status.HTTP_401_UNAUTHORIZED},
             {"user": self.standard_user, "status": status.HTTP_403_FORBIDDEN},
             {"user": self.staff_user, "status": status.HTTP_403_FORBIDDEN},
             {"user": self.super_user, "status": status.HTTP_200_OK},
         )
 
-        for case in cases:
+    def test_permissions_on_GET_endpoint(self):
+        for case in self.cases:
             with self.subTest(case=case):
                 if case.get("user"):
                     self.client.force_authenticate(user=case["user"])
@@ -63,14 +64,7 @@ class CommandViewTests(APITestCase):
                 self.assertEqual(case["status"], response.status_code)
 
     def test_permissions_on_POST_endpoint(self):
-        cases = (
-            {"user": None, "status": status.HTTP_401_UNAUTHORIZED},
-            {"user": self.standard_user, "status": status.HTTP_403_FORBIDDEN},
-            {"user": self.staff_user, "status": status.HTTP_403_FORBIDDEN},
-            {"user": self.super_user, "status": status.HTTP_200_OK},
-        )
-
-        for case in cases:
+        for case in self.cases:
             with self.subTest(case=case):
                 if case.get("user"):
                     self.client.force_authenticate(user=case["user"])
