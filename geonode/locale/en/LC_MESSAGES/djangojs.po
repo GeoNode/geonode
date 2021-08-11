@@ -23,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-07 15:01+0200\n"
-"PO-Revision-Date: 2020-12-23 16:22+0100\n"
+"POT-Creation-Date: 2021-08-11 14:19+0000\n"
+"PO-Revision-Date: 2021-08-11 09:43-0600\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
 "en/)\n"
@@ -33,10 +33,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.4.2\n"
-
-msgid "STORE_UPDATED"
-msgstr "STORE_UPDATED"
+"X-Generator: Poedit 3.0\n"
 
 #, javascript-format
 msgid "Missing a %s file, which is required"
@@ -381,6 +378,9 @@ msgstr ""
 "HTTP request is not supported by the web server. To resolve the issue, you "
 "may need to update the server."
 
+msgid "Unknwon"
+msgstr "Unknwon"
+
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
@@ -388,8 +388,11 @@ msgstr ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
 
+msgid "Additional info: "
+msgstr "Additional info: "
+
 msgid "Finalizing"
-msgstr ""
+msgstr "Finalizing"
 
 msgid "Unexpected Error"
 msgstr "Unexpected Error"
@@ -413,7 +416,7 @@ msgid "Manage Styles"
 msgstr "Manage Styles"
 
 msgid "Please wait until GeoNode finished configuring it!"
-msgstr ""
+msgstr "Please wait until GeoNode finished configuring it!"
 
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "The column %1 was renamed to %2 <br/>"
@@ -470,216 +473,100 @@ msgstr ""
 "\n"
 "Please check for errors in the form!"
 
-#, javascript-format
-msgid "Available %s"
-msgstr "Available %s"
+#~ msgid "STORE_UPDATED"
+#~ msgstr "STORE_UPDATED"
 
 #, javascript-format
-msgid ""
-"This is the list of available %s. You may choose some by selecting them in "
-"the box below and then clicking the \"Choose\" arrow between the two boxes."
-msgstr ""
-"This is the list of available %s. You may choose some by selecting them in "
-"the box below and then clicking the \"Choose\" arrow between the two boxes."
+#~ msgid "Available %s"
+#~ msgstr "Available %s"
 
 #, javascript-format
-msgid "Type into this box to filter down the list of available %s."
-msgstr "Type into this box to filter down the list of available %s."
-
-msgid "Filter"
-msgstr "Filter"
-
-msgid "Choose all"
-msgstr "Choose all"
-
-#, javascript-format
-msgid "Click to choose all %s at once."
-msgstr "Click to choose all %s at once."
-
-msgid "Choose"
-msgstr "Choose"
+#~ msgid ""
+#~ "This is the list of available %s. You may choose some by selecting them "
+#~ "in the box below and then clicking the \"Choose\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "This is the list of available %s. You may choose some by selecting them "
+#~ "in the box below and then clicking the \"Choose\" arrow between the two "
+#~ "boxes."
 
 #, javascript-format
-msgid "Chosen %s"
-msgstr "Chosen %s"
+#~ msgid "Type into this box to filter down the list of available %s."
+#~ msgstr "Type into this box to filter down the list of available %s."
+
+#~ msgid "Filter"
+#~ msgstr "Filter"
+
+#~ msgid "Choose all"
+#~ msgstr "Choose all"
 
 #, javascript-format
-msgid ""
-"This is the list of chosen %s. You may remove some by selecting them in the "
-"box below and then clicking the \"Remove\" arrow between the two boxes."
-msgstr ""
-"This is the list of chosen %s. You may remove some by selecting them in the "
-"box below and then clicking the \"Remove\" arrow between the two boxes."
+#~ msgid "Click to choose all %s at once."
+#~ msgstr "Click to choose all %s at once."
 
-msgid "Remove all"
-msgstr "Remove all"
+#~ msgid "Choose"
+#~ msgstr "Choose"
 
 #, javascript-format
-msgid "Click to remove all chosen %s at once."
-msgstr "Click to remove all chosen %s at once."
+#~ msgid "Chosen %s"
+#~ msgstr "Chosen %s"
 
-msgid "%(sel)s of %(cnt)s selected"
-msgid_plural "%(sel)s of %(cnt)s selected"
-msgstr[0] "94d7ef36d54e81afde607d8fd121772b_pl_0"
-msgstr[1] "94d7ef36d54e81afde607d8fd121772b_pl_1"
+#, javascript-format
+#~ msgid ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in "
+#~ "the box below and then clicking the \"Remove\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in "
+#~ "the box below and then clicking the \"Remove\" arrow between the two "
+#~ "boxes."
 
-msgid ""
-"You have unsaved changes on individual editable fields. If you run an "
-"action, your unsaved changes will be lost."
-msgstr ""
-"You have unsaved changes on individual editable fields. If you run an "
-"action, your unsaved changes will be lost."
+#~ msgid "Remove all"
+#~ msgstr "Remove all"
 
-msgid ""
-"You have selected an action, but you haven't saved your changes to "
-"individual fields yet. Please click OK to save. You'll need to re-run the "
-"action."
-msgstr ""
-"You have selected an action, but you haven't saved your changes to "
-"individual fields yet. Please click OK to save. You'll need to re-run the "
-"action."
+#, javascript-format
+#~ msgid "Click to remove all chosen %s at once."
+#~ msgstr "Click to remove all chosen %s at once."
 
-msgid ""
-"You have selected an action, and you haven't made any changes on individual "
-"fields. You're probably looking for the Go button rather than the Save "
-"button."
-msgstr ""
-"You have selected an action, and you haven't made any changes on individual "
-"fields. You're probably looking for the Go button rather than the Save "
-"button."
+#~ msgid "%(sel)s of %(cnt)s selected"
+#~ msgid_plural "%(sel)s of %(cnt)s selected"
+#~ msgstr[0] "94d7ef36d54e81afde607d8fd121772b_pl_0"
+#~ msgstr[1] "94d7ef36d54e81afde607d8fd121772b_pl_1"
 
-msgid "'"
-msgstr ""
+#~ msgid ""
+#~ "You have unsaved changes on individual editable fields. If you run an "
+#~ "action, your unsaved changes will be lost."
+#~ msgstr ""
+#~ "You have unsaved changes on individual editable fields. If you run an "
+#~ "action, your unsaved changes will be lost."
 
-msgid "trailingComments"
-msgstr ""
+#~ msgid ""
+#~ "You have selected an action, but you haven't saved your changes to "
+#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
+#~ "action."
+#~ msgstr ""
+#~ "You have selected an action, but you haven't saved your changes to "
+#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
+#~ "action."
 
-msgid "leadingComments"
-msgstr ""
+#~ msgid ""
+#~ "You have selected an action, and you haven't made any changes on "
+#~ "individual fields. You're probably looking for the Go button rather than "
+#~ "the Save button."
+#~ msgstr ""
+#~ "You have selected an action, and you haven't made any changes on "
+#~ "individual fields. You're probably looking for the Go button rather than "
+#~ "the Save button."
 
 #, fuzzy
-#| msgid "Enter comments here."
-msgid "innerComments"
-msgstr "Enter comments here."
-
-msgid "Multiselect"
-msgstr ""
+#~| msgid "Enter comments here."
+#~ msgid "innerComments"
+#~ msgstr "Enter comments here."
 
 #, fuzzy
-#| msgid "Select"
-msgid "SelectList"
-msgstr "Select"
-
-msgid "error"
-msgstr ""
-
-msgid "show:"
-msgstr ""
-
-msgid "uirevision"
-msgstr ""
-
-msgid "bgcolor"
-msgstr ""
-
-msgid "bordercolor"
-msgstr ""
-
-msgid "borderwidth"
-msgstr ""
-
-msgid "orientation"
-msgstr ""
-
-msgid "traceorder"
-msgstr ""
-
-msgid "tracegroupgap"
-msgstr ""
-
-msgid "itemsizing"
-msgstr ""
-
-msgid "itemclick"
-msgstr ""
-
-msgid "itemdoubleclick"
-msgstr ""
-
-msgid "x"
-msgstr ""
-
-msgid "xanchor"
-msgstr ""
-
-msgid "y"
-msgstr ""
-
-msgid "yanchor"
-msgstr ""
-
-msgid "valign"
-msgstr ""
-
-msgid "title.text"
-msgstr ""
-
-msgid "title.side"
-msgstr ""
-
-msgid "visible"
-msgstr ""
-
-msgid "thickness"
-msgstr ""
-
-msgid "autorange"
-msgstr ""
-
-msgid "range"
-msgstr ""
-
-msgid "bingroup"
-msgstr ""
-
-msgid "layerProperties.visibilityLimits.rangeError"
-msgstr ""
-
-msgid "layerProperties.visibilityLimits.serverValuesError"
-msgstr ""
-
-msgid "typed_constructor"
-msgstr ""
-
-msgid "def_constructor"
-msgstr ""
-
-msgid "POP"
-msgstr ""
-
-msgid "PUSH"
-msgstr ""
-
-msgid "layerdownload.exportResultsMessages.newExport"
-msgstr ""
-
-msgid "layerdownload.exportResultsMessages.exportSuccess"
-msgstr ""
-
-msgid "layerdownload.exportResultsMessages.exportFailure"
-msgstr ""
-
-msgid "data-grid"
-msgstr ""
-
-msgid "Abort"
-msgstr ""
-
-msgid "As Sibling"
-msgstr ""
-
-msgid "As child"
-msgstr ""
+#~| msgid "Select"
+#~ msgid "SelectList"
+#~ msgstr "Select"
 
 #~ msgid " - "
 #~ msgstr " - "
