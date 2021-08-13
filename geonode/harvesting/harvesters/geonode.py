@@ -76,6 +76,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             *args,
             harvest_documents: typing.Optional[bool] = True,
             harvest_datasets: typing.Optional[bool] = True,
+            copy_datasets: typing.Optional[bool] = False,
             harvest_maps: typing.Optional[bool] = True,
             copy_documents: typing.Optional[bool] = False,
             resource_title_filter: typing.Optional[str] = None,
@@ -91,6 +92,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         self.harvest_documents = (
             harvest_documents if harvest_documents is not None else True)
         self.harvest_datasets = harvest_datasets if harvest_datasets is not None else True
+        self.copy_datasets = copy_datasets
         self.harvest_maps = harvest_maps if harvest_maps is not None else True
         self.copy_documents = copy_documents
         self.resource_title_filter = resource_title_filter
@@ -116,6 +118,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "harvest_documents", True),
             harvest_datasets=record.harvester_type_specific_configuration.get(
                 "harvest_datasets", True),
+            copy_datasets=record.harvester_type_specific_configuration.get(
+                "copy_datasets", False),
             harvest_maps=record.harvester_type_specific_configuration.get(
                 "harvest_maps", True),
             copy_documents=record.harvester_type_specific_configuration.get(
@@ -156,6 +160,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "harvest_datasets": {
                     "type": "boolean",
                     "default": True
+                },
+                "copy_datasets": {
+                    "type": "boolean",
+                    "default": False
                 },
                 "harvest_maps": {
                     "type": "boolean",
@@ -300,7 +308,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     ) -> bool:
         return {
             GeoNodeResourceType.DOCUMENT.value: self.copy_documents,
-            GeoNodeResourceType.DATASET.value: False,
+            GeoNodeResourceType.DATASET.value: self.copy_datasets,
             GeoNodeResourceType.MAP.value: False,
         }[harvestable_resource.remote_resource_type]
 
@@ -620,6 +628,12 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                     "bbox": f"{min_x},{min_y},{max_x},{max_y}"
                 }
                 original = f"{wcs}?{urllib.parse.urlencode(query_params)}"
+            else:
+                try:
+                    original = [record_link.get('url') for record_link in api_record.get("links", []) if record_link.get('name') == 'Zipped Shapefile'][0]
+                except IndexError:
+                    pass
+
         return resourcedescriptor.RecordDistribution(
             link_url=link,
             wms_url=wms,
