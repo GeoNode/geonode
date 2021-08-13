@@ -117,6 +117,10 @@ def _harvest_resource(
         copied_name = worker.copy_resource(harvestable_resource, harvested_resource_info)
         if copied_name is not None:
             harvested_resource_info.copied_resources.append(copied_name)
+            files = base.unzip_file(copied_name)
+            for filename in files:
+                harvested_resource_info.copied_resources.append(filename)
+
     now_ = now()
     if harvested_resource_info is not None:
         worker.update_geonode_resource(

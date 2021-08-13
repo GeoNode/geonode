@@ -23,12 +23,15 @@ import html
 import logging
 import typing
 import urllib.parse
+import os
+import zipfile
 
 import requests
 from django.core.files import uploadedfile
 from django.db.models import F
 from django.utils import timezone
 from geonode.base.models import ResourceBase
+from geonode.layers.models import Dataset
 from geonode.resource.manager import resource_manager
 from geonode.storage.manager import storage_manager
 
@@ -181,6 +184,18 @@ class BaseHarvesterWorker(abc.ABC):
         defaults = self.get_geonode_resource_defaults(
             harvested_info, harvestable_resource)
         geonode_resource = harvestable_resource.geonode_resource
+        if geonode_resource is None:
+            geonode_resource_type = self.get_geonode_resource_type(
+                harvestable_resource.remote_resource_type)
+            if geonode_resource_type == Dataset:
+                if len(harvested_info.copied_resources) > 0:
+                    geonode_resource = resource_manager.ingest(
+                        harvested_info.copied_resources,
+                        uuid=str(harvested_info.resource_descriptor.uuid),
+                        resource_type=self.get_geonode_resource_type(
+                            harvestable_resource.remote_resource_type),
+                        defaults=defaults)
+
         if geonode_resource is None:
             geonode_resource = resource_manager.create(
                 str(harvested_info.resource_descriptor.uuid),
@@ -373,6 +388,23 @@ def download_resource_file(url: str, target_name: str) -> str:
         fd.seek(0)
         result = storage_manager.save(target_name, fd)
     return result
+
+
+def unzip_file(file_name: str) -> list:
+    """ Unzip file and return the list path of extracted files
+    """
+    filepath = storage_manager.path(file_name)
+    files = []
+    try:
+        with zipfile.ZipFile(filepath) as zipdata:
+            folder = filepath + '_folder'
+            folder_name = file_name + '_folder'
+            os.makedirs(folder)
+            zipdata.extractall(folder)
+            files = [folder_name + '/' + filename for filename in storage_manager.listdir(folder)[1]]
+    except zipfile.BadZipFile:
+        pass
+    return files
 
 
 def _sanitize_file_name(file_name: str) -> typing.Optional[str]:
