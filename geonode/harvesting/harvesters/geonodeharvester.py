@@ -33,6 +33,7 @@ import requests
 from django.contrib.gis import geos
 from lxml import etree
 
+from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
