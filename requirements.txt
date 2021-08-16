@@ -103,7 +103,7 @@ django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
 django-storages==1.11.1
-dropbox==11.15.0
+dropbox==11.16.0
 google-cloud-storage==1.41.1
 google-cloud-core==1.7.2
 boto3==1.18.12
