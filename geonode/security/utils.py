@@ -620,6 +620,7 @@ def get_user_geolimits(layer, user, group, gf_services):
     users_geolimits = None
     groups_geolimits = None
     anonymous_geolimits = None
+    _disable_layer_cache = False
     if user:
         _user = user if isinstance(user, str) else user.username
         users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
