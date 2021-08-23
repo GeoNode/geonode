@@ -25,6 +25,7 @@ from django.utils.translation import ugettext_lazy as _
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.base.models import ResourceBase
+from geonode.client.hooks import hookset
 
 logger = logging.getLogger("geonode.geoapps.models")
 
@@ -94,7 +95,7 @@ class GeoApp(ResourceBase):
             return []
 
     def get_absolute_url(self):
-        return reverse('geoapp_detail', None, [str(self.id)])
+        return hookset.geoapp_detail_url(self)
 
     @property
     def embed_url(self):

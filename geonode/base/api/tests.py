@@ -50,7 +50,7 @@ from geonode.base.models import (
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
 from geonode.documents.models import Document
-from geonode.base.utils import build_absolute_uri
+from geonode.utils import build_absolute_uri
 from geonode.resource.api.tasks import ExecutionRequest
 from geonode.base.populate_test_data import create_models
 from geonode.security.utils import get_resources_with_perms
@@ -485,6 +485,7 @@ class BaseApiTests(APITestCase):
                     },
                     {
                         'id': contributors_group.id,
+                        'logo': contributors_group.groupprofile.logo_url,
                         'title': contributors_group.groupprofile.title,
                         'name': contributors_group.name,
                         'permissions': 'none'
@@ -557,6 +558,7 @@ class BaseApiTests(APITestCase):
                     },
                     {
                         'id': contributors_group.id,
+                        'logo': contributors_group.groupprofile.logo_url,
                         'title': contributors_group.groupprofile.title,
                         'name': contributors_group.name,
                         'permissions': 'none'
@@ -588,6 +590,7 @@ class BaseApiTests(APITestCase):
                 },
                 {
                     'id': contributors_group.id,
+                    'logo': contributors_group.groupprofile.logo_url,
                     'title': contributors_group.groupprofile.title,
                     'name': contributors_group.name,
                     'permissions': 'none'
@@ -636,6 +639,7 @@ class BaseApiTests(APITestCase):
                     },
                     {
                         'id': contributors_group.id,
+                        'logo': contributors_group.groupprofile.logo_url,
                         'title': contributors_group.groupprofile.title,
                         'name': contributors_group.name,
                         'permissions': 'none'

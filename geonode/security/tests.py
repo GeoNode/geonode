@@ -73,6 +73,7 @@ from geonode.geoserver.security import (
     purge_geofence_all,
     sync_geofence_with_guardian,
     sync_resources_with_guardian,
+    _get_gwc_filters_and_formats
 )
 
 from .utils import (
@@ -604,6 +605,23 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer = Dataset.objects.first()
         # grab bobby
         bobby = get_user_model().objects.get(username="bobby")
+        gf_services = _get_gf_services(layer, layer.get_all_level_info())
+        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(layer, None, None, gf_services)
+        filters, formats = _get_gwc_filters_and_formats([_disable_dataset_cache])
+        self.assertListEqual(filters, [{
+            "styleParameterFilter": {
+                "STYLES": ""
+            }
+        }])
+        self.assertListEqual(formats, [
+            'application/json;type=utfgrid',
+            'image/gif',
+            'image/jpeg',
+            'image/png',
+            'image/png8',
+            'image/vnd.jpeg-png',
+            'image/vnd.jpeg-png8'
+        ])
 
         geo_limit, _ = UserGeoLimit.objects.get_or_create(
             user=bobby,
@@ -615,6 +633,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         geo_limit.save()
         layer.users_geolimits.add(geo_limit)
         self.assertEqual(layer.users_geolimits.all().count(), 1)
+        gf_services = _get_gf_services(layer, layer.get_all_level_info())
+        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(layer, bobby, None, gf_services)
+        filters, formats = _get_gwc_filters_and_formats([_disable_dataset_cache])
+        self.assertIsNone(filters)
+        self.assertIsNone(formats)
 
         perm_spec = {
             "users": {"bobby": ["view_resourcebase"]}, "groups": []}
@@ -1669,6 +1692,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     },
                     {
                         'id': 3,
+                        'logo': f'{settings.SITEURL}static/geonode/img/missing_thumb.png',
                         'name': 'registered-members',
                         'permissions': 'none',
                         'title': 'Registered Members'

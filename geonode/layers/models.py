@@ -27,6 +27,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tinymce.models import HTMLField
 
+from geonode.client.hooks import hookset
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.base.models import (
@@ -267,10 +268,7 @@ class Dataset(ResourceBase):
         return base_files.get(), list_col
 
     def get_absolute_url(self):
-        return reverse(
-            'dataset_detail',
-            args=(f"{self.store}:{self.alternate}",)
-        )
+        return hookset.dataset_detail_url(self)
 
     @property
     def embed_url(self):
