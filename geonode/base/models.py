@@ -1667,7 +1667,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
 
                     # Saving the thumb into a temporary directory on file system
-                    tmp_location = f"{settings.MEDIA_ROOT}/{upload_path}"
+                    tmp_location = os.path.abspath(f"{settings.MEDIA_ROOT}/{upload_path}")
                     cover.save(tmp_location, format='PNG')
 
                     with open(tmp_location, 'rb+') as img:
