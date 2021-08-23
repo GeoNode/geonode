@@ -875,6 +875,11 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 8)
 
+        # Owners Filtering
+        response = self.client.get(f"{url}?filter{{username.icontains}}=bobby", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
+
     def test_categories_list(self):
         """
         Ensure we can access the list of categories.
@@ -898,6 +903,11 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], TopicCategory.objects.count())
+
+        # Categories Filtering
+        response = self.client.get(f"{url}?filter{{identifier.icontains}}=biota", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
 
     def test_regions_list(self):
         """
@@ -923,6 +933,11 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], Region.objects.count())
 
+        # Regions Filtering
+        response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 8)
+
     def test_keywords_list(self):
         """
         Ensure we can access the list of keywords.
@@ -946,6 +961,11 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+
+        # Keywords Filtering
+        response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 0)
 
     def test_tkeywords_list(self):
         """
