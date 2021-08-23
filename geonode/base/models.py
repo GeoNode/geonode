@@ -1407,7 +1407,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             return ''
 
     def get_absolute_url(self):
-        return ''
+        return self.get_real_instance().get_absolute_url()
 
     def set_bbox_polygon(self, bbox, srid):
         """
@@ -1555,7 +1555,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def embed_url(self):
-        return NotImplemented
+        return self.get_real_instance().embed_url
 
     def get_tiles_url(self):
         """Return URL for Z/Y/X mapping clients or None if it does not exist.
