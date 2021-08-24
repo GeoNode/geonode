@@ -494,17 +494,11 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     gf_services = _get_gf_services(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
                     if approved:
                         # Set the GeoFence Rules (user = None)
-                        if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-                            _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                            _members_group_group = Group.objects.get(name=_members_group_name)
-                            sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
-                            _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, _members_group_group, gf_services)
-                            _disable_cache.append(_disable_dataset_cache)
-                        else:
-                            # Set the GeoFence Rules (user = None)
-                            sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
-                            _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
-                            _disable_cache.append(_disable_dataset_cache)
+                        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                        _members_group_group = Group.objects.get(name=_members_group_name)
+                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
+                        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, _members_group_group, gf_services)
+                        _disable_cache.append(_disable_dataset_cache)
                     if published:
                         # Set the GeoFence Rules (user = None)
                         sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)

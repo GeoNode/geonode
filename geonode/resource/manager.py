@@ -687,16 +687,11 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     anonymous_group = Group.objects.get(name='anonymous')
                     if approved:
-                        if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-                            _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                            _members_group_group = Group.objects.get(name=_members_group_name)
-                            for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
-                                assign_perm(perm,
-                                            _members_group_group, _resource.get_self_resource())
-                        else:
-                            for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
-                                assign_perm(perm,
-                                            anonymous_group, _resource.get_self_resource())
+                        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                        _members_group_group = Group.objects.get(name=_members_group_name)
+                        for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
+                            assign_perm(perm,
+                                        _members_group_group, _resource.get_self_resource())
                     if published:
                         for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                             assign_perm(perm,

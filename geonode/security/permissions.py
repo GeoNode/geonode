@@ -335,7 +335,6 @@ class PermSpec(PermSpecConverterBase):
                         'id': group.id,
                         'title': group.title,
                         'name': group.name,
-                        'logo': group.logo,
                         'permissions': _to_compact_perms(_perms, self._resource.resource_type)
                     }
                 else:
@@ -358,9 +357,8 @@ class PermSpec(PermSpecConverterBase):
             group_perms.append(
                 {
                     'id': contributors_group.id,
-                    'title': contributors_group.groupprofile.title,
+                    'title': 'Registered Members',
                     'name': contributors_group.name,
-                    'logo': contributors_group.groupprofile.logo_url,
                     'permissions': _to_compact_perms(
                         get_group_perms(contributors_group, self._resource),
                         self._resource.resource_type)
