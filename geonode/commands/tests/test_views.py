@@ -17,68 +17,65 @@
 #
 #########################################################################
 
-# import json
+import json
 from rest_framework.test import APITestCase
-# from rest_framework import status
-# from django.contrib.auth import get_user_model
-# from django.urls import reverse
+from rest_framework import status
+from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 
 class CommandViewTests(APITestCase):
 
-    # def setUp(self):
-    #     self.url = "geonode.commands:jobs"
-    #     self.standard_user = get_user_model().objects.create(
-    #         username="standard_user", email="test@test.com"
-    #     )
-    #     self.staff_user, _ = get_user_model().objects.get_or_create(
-    #         username="staff_user", is_staff=True
-    #     )
-    #     self.super_user, _ = get_user_model().objects.get_or_create(
-    #         username="superuser", is_staff=True, is_superuser=True
-    #     )
+    def setUp(self):
+        self.url = "geonode.commands:jobs"
+        self.standard_user = get_user_model().objects.create(
+            username="standard_user", email="test@test.com"
+        )
+        self.staff_user, _ = get_user_model().objects.get_or_create(
+            username="staff_user", is_staff=True
+        )
+        self.super_user, _ = get_user_model().objects.get_or_create(
+            username="superuser", is_staff=True, is_superuser=True
+        )
 
-    #     # Our sample_command needs 1 args, 'type' and 2 kwargs: cpair, ppair
-    #     self.payload = {
-    #     "cmd": "sample_command",
-    #     "args": ["delta"],
-    #     "kwargs": {
-    #             "cpair": [10, 40],
-    #             "ppair": ["a", "b"]
-    #         }
-    #     }
+        # Our sample_command needs 1 args, 'type' and 2 kwargs: cpair, ppair
+        self.payload = {
+        "cmd": "sample_command",
+        "args": ["delta"],
+        "kwargs": {
+                "cpair": [10, 40],
+                "ppair": ["a", "b"]
+            }
+        }
 
-    #     self.permission_cases = (
-    #         {"user": None, "status": status.HTTP_401_UNAUTHORIZED},
-    #         {"user": self.standard_user, "status": status.HTTP_403_FORBIDDEN},
-    #         {"user": self.staff_user, "status": status.HTTP_403_FORBIDDEN},
-    #         {"user": self.super_user, "status": status.HTTP_200_OK},
-    #     )
+        self.permission_cases = (
+            {"user": None, "status": status.HTTP_401_UNAUTHORIZED},
+            {"user": self.standard_user, "status": status.HTTP_403_FORBIDDEN},
+            {"user": self.staff_user, "status": status.HTTP_403_FORBIDDEN},
+            {"user": self.super_user, "status": status.HTTP_200_OK},
+        )
 
-    # def test_permissions_on_GET_endpoint(self):
-    #     for case in self.permission_cases:
-    #         with self.subTest(case=case):
-    #             if case.get("user"):
-    #                 self.client.force_authenticate(user=case["user"])
-    #             response = self.client.get(reverse(self.url))
-    #             self.assertEqual(case["status"], response.status_code)
+    def test_permissions_on_GET_endpoint(self):
+        for case in self.permission_cases:
+            with self.subTest(case=case):
+                if case.get("user"):
+                    self.client.force_authenticate(user=case["user"])
+                response = self.client.get(reverse(self.url))
+                self.assertEqual(case["status"], response.status_code)
 
-    # def test_permissions_on_POST_endpoint(self):
-    #     for case in self.permission_cases:
-    #         with self.subTest(case=case):
-    #             if case.get("user"):
-    #                 self.client.force_authenticate(user=case["user"])
-    #             response = self.client.post(reverse(self.url), json.dumps(self.payload), content_type="application/json")
-    #             self.assertEqual(case["status"], response.status_code)
+    def test_permissions_on_POST_endpoint(self):
+        for case in self.permission_cases:
+            with self.subTest(case=case):
+                if case.get("user"):
+                    self.client.force_authenticate(user=case["user"])
+                response = self.client.post(reverse(self.url), json.dumps(self.payload), content_type="application/json")
+                self.assertEqual(case["status"], response.status_code)
 
-    # def test_POST_api_response(self):
-    #     self.client.force_authenticate(user=self.super_user)
-    #     response = self.client.post(reverse(self.url), json.dumps(self.payload), content_type="application/json")
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertTrue(response.data["success"])
-    #     self.assertIn("job_id", response.data)
-    #     self.assertIn("task_id", response.data)
-    #     self.assertEqual(self.super_user.id, response.data["user_id"])
-
-    def test_just_a_test(self):
-        self.assertNotEqual(1,0)
+    def test_POST_api_response(self):
+        self.client.force_authenticate(user=self.super_user)
+        response = self.client.post(reverse(self.url), json.dumps(self.payload), content_type="application/json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["success"])
+        self.assertIn("job_id", response.data)
+        self.assertIn("task_id", response.data)
+        self.assertEqual(self.super_user.id, response.data["user_id"])
