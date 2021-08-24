@@ -228,6 +228,11 @@ span.grippy::after {
     <li id="settings_tab" dhref="#settings">
         <a data-toggle="tab" href="#settings"><i class="fa fa-cog"></i>{% trans "Settings" %}</a>
     </li>
+    <li class="pull-right">
+      <div class="form-actions">
+        <a href="{% url "map_metadata_advanced" resource.id %}" class="btn btn-primary">{% trans "Advanced Metadata" %}</a>
+      </div>
+    </li>
 </ul>
 
 <div class="tab-content">
