@@ -17,7 +17,7 @@ decorator==5.0.9
 celery==5.1.2
 kombu==5.1.0
 vine==5.0.0
-tqdm==4.62.0
+tqdm==4.62.1
 Deprecated==1.2.12
 wrapt==1.12.1
 jsonschema==3.2.0
@@ -31,7 +31,7 @@ django-filter==2.4.0
 django-imagekit==4.0.2
 django-taggit==1.5.1
 django-markdownify==0.9.0
-django-mptt==0.12.0
+django-mptt==0.13.1
 django-modeltranslation>=0.11,<0.18.0
 django-treebeard==4.5.1
 django-guardian<2.4.1
@@ -50,7 +50,7 @@ pyopenssl==20.0.1
 pyproj==3.1.0
 OWSLib==0.24.1
 pycsw==2.6.0
-SQLAlchemy==1.4.22 # required by PyCSW
+SQLAlchemy==1.4.23 # required by PyCSW
 Shapely==1.7.1
 mercantile==1.2.1
 geoip2==4.2.0
@@ -103,10 +103,10 @@ django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
 django-storages==1.11.1
-dropbox==11.15.0
-google-cloud-storage==1.41.1
-google-cloud-core==1.7.2
-boto3==1.18.12
+dropbox==11.17.0
+google-cloud-storage==1.42.0
+google-cloud-core==2.0.0
+boto3==1.18.26
 
 # Django Caches
 python-memcached<=1.59
@@ -125,10 +125,10 @@ sherlock==0.3.2
 
 # required by monitoring
 psutil==5.8.0
-django-cors-headers==3.7.0
+django-cors-headers==3.8.0
 user-agents
 xmljson
-django-ipware<3.1
+django-ipware<4.1
 # no version here, use latest one with fresh data
 pycountry
 
@@ -149,7 +149,7 @@ splinter==0.15.0
 pytest-splinter==3.3.1
 pytest-django==4.4.0
 setuptools==57.4.0
-pip==21.2.2
+pip==21.2.4
 Twisted==21.7.0
 pixelmatch==0.2.3
 factory-boy==3.2.0
