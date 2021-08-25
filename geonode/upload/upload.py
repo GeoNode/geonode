@@ -621,7 +621,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     upload_session.import_session = import_session
     Upload.objects.update_from_session(upload_session)
 
-    _log('Creating Django record for [%s]', name)
+    _log(f'Creating Django record for [{name}]')
     target = task.target
     alternate = task.get_target_layer_name()
     layer_uuid = None

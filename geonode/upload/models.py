@@ -118,7 +118,6 @@ class Upload(models.Model):
 
     def update_from_session(self, upload_session, layer=None):
         self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
-        self.state = upload_session.import_session.state
         self.name = upload_session.name
         self.user = upload_session.user
         self.date = now()
@@ -244,12 +243,15 @@ class Upload(models.Model):
                 session.delete()
             except Exception:
                 logging.warning('error deleting upload session')
-        for _file in upload_files:
-            try:
-                if os.path.isfile(_file.path):
-                    os.remove(_file.path)
-            except Exception as e:
-                logger.warning(e)
+
+        # we delete directly the folder with the files of the resource
+        if self.layer:
+            for _file in upload_files:
+                try:
+                    if os.path.isfile(_file.path):
+                        os.remove(_file.path)
+                except Exception as e:
+                    logger.warning(e)
         for _location in importer_locations:
             try:
                 shutil.rmtree(_location)
