@@ -163,7 +163,7 @@ class HarvesterAdmin(admin.ModelAdmin):
 
     @admin.display(description="Number of existing harvestable resources")
     def get_num_harvestable_resources(self, harvester: models.Harvester):
-        return harvester.harvestable_resources.count()
+        return harvester.num_harvestable_resources
 
     @admin.action(description="Perform harvesting on selected harvesters")
     def perform_harvesting(self, request, queryset):
