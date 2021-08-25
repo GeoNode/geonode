@@ -238,6 +238,7 @@ class ResourceManager(ResourceManagerInterface):
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
+                _resource.set_processing_state(enumerations.STATE_RUNNING)
                 self._concrete_resource_manager.delete(uuid, instance=_resource)
                 if isinstance(_resource.get_real_instance(), Dataset):
                     """
@@ -320,8 +321,7 @@ class ResourceManager(ResourceManagerInterface):
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
             except Exception as e:
                 logger.exception(e)
-                _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.delete()
+                self.delete(instance=_resource)
                 raise e
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
@@ -419,6 +419,7 @@ class ResourceManager(ResourceManagerInterface):
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if instance:
             try:
+                instance.set_processing_state(enumerations.STATE_RUNNING)
                 with transaction.atomic():
                     _owner = owner or instance.owner
                     _perms = instance.get_all_level_info()
