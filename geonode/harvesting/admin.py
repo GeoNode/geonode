@@ -60,6 +60,7 @@ class HarvesterAdmin(admin.ModelAdmin):
         "last_checked_availability",
         "last_checked_harvestable_resources",
         "last_check_harvestable_resources_message",
+        'task_ids'
     )
 
     list_editable = (
@@ -69,7 +70,8 @@ class HarvesterAdmin(admin.ModelAdmin):
     actions = [
         "update_harvester_availability",
         "update_harvestable_resources",
-        "perform_harvesting"
+        "perform_harvesting",
+        "stop_process",
     ]
 
     def save_model(self, request, obj: models.Harvester, form, change):
@@ -181,6 +183,11 @@ class HarvesterAdmin(admin.ModelAdmin):
         if len(being_harvested) > 0:
             self.message_user(
                 request, f"Performing harvesting asynchronously for {being_harvested}")
+
+    @admin.action(description="Stop current processing")
+    def stop_process(self, request, queryset):
+        for harvester in queryset:
+            harvester.stop()
 
 
 def _should_act(harvester: models.Harvester) -> typing.Tuple[bool, str]:

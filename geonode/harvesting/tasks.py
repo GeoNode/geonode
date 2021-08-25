@@ -61,6 +61,7 @@ def harvesting_dispatcher(self, harvester_id: int):
     """
 
     harvester = models.Harvester.objects.get(pk=harvester_id)
+    harvester.update_task_id(self.request.id)
     available = utils.update_harvester_availability(harvester)
     if available:
         harvester.status = harvester.STATUS_PERFORMING_HARVESTING
@@ -110,6 +111,9 @@ def _harvest_resource(
     """Harvest a single resource from the input harvestable resource id"""
     harvestable_resource = models.HarvestableResource.objects.get(
         pk=harvestable_resource_id)
+    if harvestable_resource.harvester.status == harvestable_resource.harvester.STATUS_READY:
+        return
+    harvestable_resource.harvester.update_task_id(self.request.id)
     worker: base.BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
     harvested_resource_info = worker.get_resource(
         harvestable_resource, harvesting_session_id)
@@ -185,6 +189,7 @@ def _handle_harvesting_error(self, task_id, *args, **kwargs):
 )
 def check_harvester_available(self, harvester_id: int):
     harvester = models.Harvester.objects.get(pk=harvester_id)
+    harvester.update_task_id(self.request.id)
     available = utils.update_harvester_availability(harvester)
     logger.info(
         f"Harvester {harvester!r}: remote server is "
@@ -205,6 +210,7 @@ def update_harvestable_resources(self, harvester_id: int):
     # user, which means we are not interested in all of them
     harvester = models.Harvester.objects.get(pk=harvester_id)
     harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
+    harvester.update_task_id(self.request.id)
     harvester.save()
     worker = harvester.get_harvester_worker()
     try:
@@ -245,6 +251,9 @@ def update_harvestable_resources(self, harvester_id: int):
 def _update_harvestable_resources_batch(
         self, harvester_id: int, page: int, page_size: int):
     harvester = models.Harvester.objects.get(pk=harvester_id)
+    if harvester.status == harvester.STATUS_READY:
+        return
+    harvester.update_task_id(self.request.id)
     worker = harvester.get_harvester_worker()
     offset = page * page_size
     try:
@@ -278,6 +287,7 @@ def _update_harvestable_resources_batch(
 )
 def _finish_harvestable_resources_update(self, harvester_id: int):
     harvester = models.Harvester.objects.get(pk=harvester_id)
+    harvester.update_task_id(self.request.id)
     if harvester.last_checked_harvestable_resources is not None:
         _delete_stale_harvestable_resources(harvester)
     harvester.status = harvester.STATUS_READY
@@ -304,11 +314,13 @@ def _handle_harvestable_resources_update_error(self, task_id, *args, **kwargs):
     harvester.status = harvester.STATUS_READY
     now_ = now()
     harvester.last_checked_harvestable_resources = now_
-    harvester.last_check_harvestable_resources_message = (
+    message = (
         f"{now_} - There was an error retrieving information on available "
         f"resources: {result.traceback} - {args} {kwargs}"
         f"Please check the logs"
     )
+    if 'TaskRevokedError' not in message:
+        harvester.last_check_harvestable_resources_message = message
     harvester.save()
 
 

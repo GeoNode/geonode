@@ -22,6 +22,7 @@ import logging
 import jsonschema.exceptions
 
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -31,6 +32,7 @@ from django_celery_beat.models import (
     IntervalSchedule,
     PeriodicTask,
 )
+from geonode.celery_app import app
 
 from . import utils
 from .config import HARVESTER_CLASSES
@@ -157,7 +159,13 @@ class Harvester(models.Model):
         editable=False,
     )
     num_harvestable_resources = models.IntegerField(
-        default=0)
+        default=0
+    )
+    task_ids = ArrayField(
+        models.CharField(
+            max_length=512, null=True, blank=True
+        ), blank=True, null=True
+    )
 
     def __str__(self):
         return f"{self.name}({self.id})"
@@ -219,6 +227,22 @@ class Harvester(models.Model):
     def get_harvester_worker(self) -> "BaseHarvesterWorker":  # noqa
         worker_class = import_string(self.harvester_type)
         return worker_class.from_django_record(self)
+
+    def update_task_id(self, task_id: str):
+        if not self.task_ids:
+            self.task_ids = []
+        self.task_ids.append(task_id)
+        self.save()
+
+    def stop(self):
+        """ Stop any process of harvester
+        """
+        if self.task_ids:
+            self.status = self.STATUS_READY
+            for task_id in self.task_ids:
+                app.control.revoke(task_id, terminate=True)
+            self.task_ids = None
+            self.save()
 
 
 class HarvestingSession(models.Model):
