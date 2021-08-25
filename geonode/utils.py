@@ -1439,6 +1439,7 @@ class HttpClient:
                     f"{self.username}:{self.password}".encode()).decode()
                 headers['Authorization'] = f'Basic {valid_uname_pw}'
 
+        headers['User-Agent'] = 'GeoNode'
         response = None
         content = None
         session = requests.Session()
