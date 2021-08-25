@@ -213,6 +213,8 @@ def update_harvestable_resources(self, harvester_id: int):
         _handle_harvestable_resources_update_error(
             self.request.id, harvester_id=harvester_id, raised_exception=exc)
     else:
+        harvester.num_harvestable_resources = num_resources
+        harvester.save()
         page_size = 10
         total_pages = math.ceil(num_resources / page_size)
         batches = []
