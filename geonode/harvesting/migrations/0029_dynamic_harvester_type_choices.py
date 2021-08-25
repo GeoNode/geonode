@@ -11,7 +11,7 @@ from .. import config
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('harvesting', '0027_remove_harvester_default_access_permissions'),
+        ('harvesting', '0028_harvester_num_harvestable_resources'),
     ]
 
     operations = [
