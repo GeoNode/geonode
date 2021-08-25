@@ -16,17 +16,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import logging
 import pytz
 import hashlib
+import logging
 
 from datetime import datetime
+
 from django.conf import settings
-from geonode.monitoring.models import Service, Host
-from geonode.monitoring.utils import MonitoringHandler
 from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
+
+from geonode.monitoring.models import Service, Host
+from geonode.monitoring.utils import MonitoringHandler
 
 
 FILTER_URLS = (settings.MEDIA_URL,
