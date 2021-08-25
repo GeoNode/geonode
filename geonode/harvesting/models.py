@@ -156,6 +156,8 @@ class Harvester(models.Model):
         blank=True,
         editable=False,
     )
+    num_harvestable_resources = models.IntegerField(
+        default=0)
 
     def __str__(self):
         return f"{self.name}({self.id})"
