@@ -132,9 +132,9 @@ def json_response(*args, **kw):
 
 def error_response(req, exception=None, errors=None, force_ajax=True):
     if exception:
-        logger.exception('Unexpected error in upload step')
+        logger.exception(f'Unexpected error in upload step: {exception}')
     else:
-        logger.error(f'upload error: {errors}')
+        logger.error(f'Upload error response: {errors}')
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
         return json_response(exception=exception, errors=errors,
@@ -264,6 +264,8 @@ def get_next_step(upload_session, offset=1):
 
 
 def get_previous_step(upload_session, post_to):
+    assert upload_session.upload_type is not None
+
     pages = _pages[upload_session.upload_type]
     if post_to == "undefined":
         post_to = "final"
@@ -304,78 +306,87 @@ def next_step_response(req, upload_session, force_ajax=True):
         )
 
     if next == 'check':
-        # @TODO we skip time steps for coverages currently
         store_type = import_session.tasks[0].target.store_type
         if store_type == 'coverageStore' or _force_ajax:
+            # @TODO we skip time steps for coverages currently
             upload_session.completed_step = 'check'
             return next_step_response(req, upload_session, force_ajax=True)
-    if next == 'check' and force_ajax:
-        url = f"{reverse('data_upload')}?id={import_session.id}"
-        return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
-             }
-        )
+        if force_ajax:
+            url = f"{reverse('data_upload')}?id={import_session.id}"
+            return json_response(
+                {
+                    'url': url,
+                    'status': 'incomplete',
+                    'success': True,
+                    'id': import_session.id,
+                    'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
+                }
+            )
 
     if next == 'time':
-        # @TODO we skip time steps for coverages currently
         store_type = import_session.tasks[0].target.store_type
         layer = import_session.tasks[0].layer
         (has_time_dim, layer_values) = layer_eligible_for_time_dimension(req,
                                                                          layer,
                                                                          upload_session=upload_session)
         if store_type == 'coverageStore' or not has_time_dim:
+            # @TODO we skip time steps for coverages currently
             upload_session.completed_step = 'time'
             return next_step_response(req, upload_session, False)
-    if next == 'time' and (
-            upload_session.time is None or not upload_session.time):
-        upload_session.completed_step = 'time'
-        return next_step_response(req, upload_session, force_ajax)
-    if next == 'time' and force_ajax:
-        url = f"{reverse('data_upload')}?id={import_session.id}"
-        return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
-             }
-        )
+        if upload_session.time is None or not upload_session.time:
+            upload_session.completed_step = 'time'
+        if force_ajax:
+            url = f"{reverse('data_upload')}?id={import_session.id}"
+            return json_response(
+                {
+                    'url': url,
+                    'status': 'incomplete',
+                    'required_input': has_time_dim,
+                    'success': True,
+                    'id': import_session.id,
+                    'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
+                }
+            )
+        else:
+            return next_step_response(req, upload_session, force_ajax)
 
     if next == 'mosaic' and force_ajax:
         url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/mosaic?id={import_session.id}{_force_ajax}",
-             }
+            {
+                'url': url,
+                'status': 'incomplete',
+                'required_input': len(_force_ajax) == 0,
+                'success': True,
+                'id': import_session.id,
+                'redirect_to': f"{settings.SITEURL}upload/mosaic?id={import_session.id}{_force_ajax}",
+            }
         )
 
     if next == 'srs' and force_ajax:
         url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/srs?id={import_session.id}{_force_ajax}",
-             }
+            {
+                'url': url,
+                'status': 'incomplete',
+                'required_input': len(_force_ajax) == 0,
+                'success': True,
+                'id': import_session.id,
+                'redirect_to': f"{settings.SITEURL}upload/srs?id={import_session.id}{_force_ajax}",
+            }
         )
 
     if next == 'csv' and force_ajax:
         url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/csv?id={import_session.id}{_force_ajax}",
-             }
+            {
+                'url': url,
+                'status': 'incomplete',
+                'required_input': len(_force_ajax) == 0,
+                'success': True,
+                'id': import_session.id,
+                'redirect_to': f"{settings.SITEURL}upload/csv?id={import_session.id}{_force_ajax}",
+            }
         )
 
     # @todo this is not handled cleanly - run is not a real step in that it
@@ -534,8 +545,8 @@ def _get_layer_values(layer, upload_session, expand=0):
         inDataSource = ogr.Open(absolute_base_file)
         lyr = inDataSource.GetLayer(str(layer.name))
         limit = 10
-        for feat in islice(lyr, 0, limit):
-            try:
+        try:
+            for feat in islice(lyr, 0, limit):
                 feat_values = json_loads_byteified(
                     feat.ExportToJson(),
                     upload_session.charset).get('properties')
@@ -550,8 +561,8 @@ def _get_layer_values(layer, upload_session, expand=0):
                         else:
                             feat_values[k] = feat_value
                     layer_values.append(feat_values)
-            except Exception as e:
-                logger.exception(e)
+        except Exception as e:
+            logger.exception(e)
     return layer_values
 
 
