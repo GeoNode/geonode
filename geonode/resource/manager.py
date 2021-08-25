@@ -420,9 +420,9 @@ class ResourceManager(ResourceManagerInterface):
         if instance:
             try:
                 with transaction.atomic():
-                    _owner = owner or instance.owner
-                    _perms = instance.get_all_level_info()
-                    _resource = copy.copy(instance)
+                    _owner = owner or instance.get_real_instance().owner
+                    _perms = instance.get_real_instance().get_all_level_info()
+                    _resource = copy.copy(instance.get_real_instance())
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid1())
                     _resource.save()
@@ -444,25 +444,25 @@ class ResourceManager(ResourceManagerInterface):
         return instance
 
     def append(self, instance: ResourceBase, vals: dict = {}):
-        if self._validate_resource(instance, 'append'):
-            self._concrete_resource_manager.append(instance, vals=vals)
+        if self._validate_resource(instance.get_real_instance(), 'append'):
+            self._concrete_resource_manager.append(instance.get_real_instance(), vals=vals)
             to_update = vals.copy()
             if instance:
                 if 'user' in to_update:
                     to_update.pop('user')
-                return self.update(instance.uuid, instance, vals=to_update)
+                return self.update(instance.uuid, instance.get_real_instance(), vals=to_update)
         return instance
 
     def replace(self, instance: ResourceBase, vals: dict = {}):
-        if self._validate_resource(instance, 'replace'):
+        if self._validate_resource(instance.get_real_instance(), 'replace'):
             if vals.get('files', None):
-                vals.update(storage_manager.replace(instance, vals.get('files')))
-            self._concrete_resource_manager.replace(instance, vals=vals)
+                vals.update(storage_manager.replace(instance.get_real_instance(), vals.get('files')))
+            self._concrete_resource_manager.replace(instance.get_real_instance(), vals=vals)
             to_update = vals.copy()
             if instance:
                 if 'user' in to_update:
                     to_update.pop('user')
-                return self.update(instance.uuid, instance, vals=to_update)
+                return self.update(instance.uuid, instance.get_real_instance(), vals=to_update)
         return instance
 
     def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:
