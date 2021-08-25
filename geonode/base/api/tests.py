@@ -97,10 +97,6 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         logger.debug(response.data)
-        self.assertEqual(response.data['group_profile']['title'], 'Registered Members')
-        self.assertEqual(response.data['group_profile']['description'], 'Registered Members')
-        self.assertEqual(response.data['group_profile']['access'], 'private')
-        self.assertEqual(response.data['group_profile']['group']['name'], response.data['group_profile']['slug'])
 
     def test_users_list(self):
         """
