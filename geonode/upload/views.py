@@ -738,14 +738,12 @@ def view(req, step=None):
         resp = _steps[step](req, upload_session)
         resp_js = None
         try:
-            if 'json' in resp.headers.get('Content-Type', ''):
-                content = resp.content
-                if isinstance(content, bytes):
-                    content = content.decode('UTF-8')
-                resp_js = json.loads(content)
+            content = resp.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            resp_js = json.loads(content)
         except Exception as e:
             logger.warning(e)
-            return error_response(req, errors=e.args)
 
         # must be put back to update object in session
         if upload_session:
