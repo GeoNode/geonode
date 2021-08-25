@@ -90,8 +90,8 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         logger.debug(response.data)
-        self.assertEqual(response.data['total'], 2)
-        self.assertEqual(len(response.data['group_profiles']), 2)
+        self.assertEqual(response.data['total'], 1)
+        self.assertEqual(len(response.data['group_profiles']), 1)
 
         url = reverse('group-profiles-detail', kwargs={'pk': 1})
         response = self.client.get(url, format='json')
@@ -481,8 +481,7 @@ class BaseApiTests(APITestCase):
                     },
                     {
                         'id': contributors_group.id,
-                        'logo': contributors_group.groupprofile.logo_url,
-                        'title': contributors_group.groupprofile.title,
+                        'title': 'Registered Members',
                         'name': contributors_group.name,
                         'permissions': 'none'
                     }
@@ -554,8 +553,7 @@ class BaseApiTests(APITestCase):
                     },
                     {
                         'id': contributors_group.id,
-                        'logo': contributors_group.groupprofile.logo_url,
-                        'title': contributors_group.groupprofile.title,
+                        'title': 'Registered Members',
                         'name': contributors_group.name,
                         'permissions': 'none'
                     }
@@ -586,8 +584,7 @@ class BaseApiTests(APITestCase):
                 },
                 {
                     'id': contributors_group.id,
-                    'logo': contributors_group.groupprofile.logo_url,
-                    'title': contributors_group.groupprofile.title,
+                    'title': 'Registered Members',
                     'name': contributors_group.name,
                     'permissions': 'none'
                 }
@@ -635,8 +632,7 @@ class BaseApiTests(APITestCase):
                     },
                     {
                         'id': contributors_group.id,
-                        'logo': contributors_group.groupprofile.logo_url,
-                        'title': contributors_group.groupprofile.title,
+                        'title': 'Registered Members',
                         'name': contributors_group.name,
                         'permissions': 'none'
                     }

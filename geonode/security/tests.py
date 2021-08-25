@@ -1340,7 +1340,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 17)
+            self.assertEqual(geofence_rules_count, 12)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 
@@ -1578,10 +1578,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Test private groups
         private_groups = GroupProfile.objects.filter(
             access="private")
-        private_groups.first().leave(standard_user)
-        Dataset.objects.filter(
-            ~Q(owner=standard_user)).update(
-                group=private_groups.first().group)
+        if private_groups.first():
+            private_groups.first().leave(standard_user)
+            Dataset.objects.filter(
+                ~Q(owner=standard_user)).update(
+                    group=private_groups.first().group)
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=admin_user,
@@ -1685,13 +1686,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'groups':
                 [
                     {
-                        'id': 2,
+                        'id': 3,
                         'title': 'anonymous',
                         'name': 'anonymous',
                         'permissions': 'view'
                     },
                     {
-                        'id': 3,
+                        'id': 2,
                         'logo': f'{settings.SITEURL}static/geonode/img/missing_thumb.png',
                         'name': 'registered-members',
                         'permissions': 'none',
