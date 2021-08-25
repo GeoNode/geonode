@@ -274,8 +274,8 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         params = self._base_wms_parameters
         wms_url = f"{self.remote_url}?{urlencode(params)}"
 
-        csr = layer_element.xpath("wms:CRS//text()", namespaces=nsmap)[0]
         try:
+            csr = layer_element.xpath("wms:CRS//text()", namespaces=nsmap)[0]
             left_x = get_xpath_value(
                 layer_element, "wms:EX_GeographicBoundingBox/wms:westBoundLongitude", nsmap)
             right_x = get_xpath_value(
