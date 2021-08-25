@@ -66,7 +66,7 @@ def sync_geonode_layers(ignore_errors,
                 # remove duplicates
                 print("Removing duplicate links...")
                 remove_duplicate_links(layer)
-        except Exception:
+        except (Exception, RuntimeError):
             layer_errors.append(layer.alternate)
             exception_type, error, traceback = sys.exc_info()
             print(exception_type, error, traceback)
