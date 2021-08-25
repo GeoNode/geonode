@@ -27,6 +27,7 @@ import typing
 import urllib.parse
 import uuid
 
+import datetime
 import dateutil.parser
 import requests
 from django.contrib.gis import geos
@@ -78,6 +79,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             harvest_maps: typing.Optional[bool] = True,
             copy_documents: typing.Optional[bool] = False,
             resource_title_filter: typing.Optional[str] = None,
+            start_date_filter: typing.Optional[str] = None,
+            end_date_filter: typing.Optional[str] = None,
+            keywords_filter: typing.Optional[list] = None,
+            categories_filter: typing.Optional[list] = None,
             **kwargs
     ):
         """A harvester for remote GeoNode instances."""
@@ -89,6 +94,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         self.harvest_maps = harvest_maps if harvest_maps is not None else True
         self.copy_documents = copy_documents
         self.resource_title_filter = resource_title_filter
+        self.start_date_filter = start_date_filter
+        self.end_date_filter = end_date_filter
+        self.keywords_filter = keywords_filter
+        self.categories_filter = categories_filter
 
     @property
     def base_api_url(self):
@@ -113,6 +122,14 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "copy_documents", False),
             resource_title_filter=record.harvester_type_specific_configuration.get(
                 "resource_title_filter"),
+            start_date_filter=record.harvester_type_specific_configuration.get(
+                "start_date_filter"),
+            end_date_filter=record.harvester_type_specific_configuration.get(
+                "end_date_filter"),
+            keywords_filter=record.harvester_type_specific_configuration.get(
+                "keywords_filter"),
+            categories_filter=record.harvester_type_specific_configuration.get(
+                "categories_filter")
         )
 
     @classmethod
@@ -146,6 +163,26 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 },
                 "resource_title_filter": {
                     "type": "string",
+                },
+                "start_date_filter": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "end_date_filter": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "keywords_filter": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "categories_filter": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
             },
             "additionalProperties": False,
@@ -403,6 +440,20 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         }
         if self.resource_title_filter is not None:
             result["title__icontains"] = self.resource_title_filter
+        if self.start_date_filter is not None:
+            start_date = dateutil.parser.parse(self.start_date_filter)
+            result["date__gte"] = start_date.astimezone(
+                datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0] + 'Z'
+        if self.end_date_filter is not None:
+            end_date = dateutil.parser.parse(self.end_date_filter)
+            result["date__lte"] = end_date.astimezone(
+                datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0] + 'Z'
+        if self.keywords_filter is not None:
+            result["keywords__slug__in"] = ','.join(self.keywords_filter)
+        if self.categories_filter is not None:
+            result["category__identifier__in"] = ','.join(self.categories_filter)
+        if self.categories_filter is not None:
+            result["category__identifier__in"] = ','.join(self.categories_filter)
         return result
 
     def _get_total_records(
