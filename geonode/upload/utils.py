@@ -133,9 +133,9 @@ def json_response(*args, **kw):
 
 def error_response(req, exception=None, errors=None, force_ajax=True):
     if exception:
-        logger.exception('Unexpected error in upload step')
+        logger.exception(f'Unexpected error in upload step: {exception}')
     else:
-        logger.error(f'upload error: {errors}')
+        logger.error(f'Upload error response: {errors}')
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
         return json_response(exception=exception, errors=errors,
@@ -265,6 +265,8 @@ def get_next_step(upload_session, offset=1):
 
 
 def get_previous_step(upload_session, post_to):
+    assert upload_session.upload_type is not None
+
     pages = _pages[upload_session.upload_type]
     if post_to == "undefined":
         post_to = "final"
@@ -313,12 +315,13 @@ def next_step_response(req, upload_session, force_ajax=True):
         if force_ajax:
             url = f"{reverse('data_upload')}?id={import_session.id}"
             return json_response(
-                {'url': url,
-                 'status': 'incomplete',
-                 'success': True,
-                 'id': import_session.id,
-                 'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
-                 }
+                {
+                    'url': url,
+                    'status': 'incomplete',
+                    'success': True,
+                    'id': import_session.id,
+                    'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
+                }
             )
 
     if next == 'time':
@@ -337,12 +340,14 @@ def next_step_response(req, upload_session, force_ajax=True):
         if force_ajax:
             url = f"{reverse('data_upload')}?id={import_session.id}"
             return json_response(
-                {'url': url,
-                 'status': 'incomplete',
-                 'success': True,
-                 'id': import_session.id,
-                 'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
-                 }
+                {
+                    'url': url,
+                    'status': 'incomplete',
+                    'required_input': has_time_dim,
+                    'success': True,
+                    'id': import_session.id,
+                    'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
+                }
             )
         else:
             return next_step_response(req, upload_session, force_ajax)
@@ -350,34 +355,40 @@ def next_step_response(req, upload_session, force_ajax=True):
     if next == 'mosaic' and force_ajax:
         url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/mosaic?id={import_session.id}{_force_ajax}",
-             }
+            {
+                'url': url,
+                'status': 'incomplete',
+                'required_input': len(_force_ajax) == 0,
+                'success': True,
+                'id': import_session.id,
+                'redirect_to': f"{settings.SITEURL}upload/mosaic?id={import_session.id}{_force_ajax}",
+            }
         )
 
     if next == 'srs' and force_ajax:
         url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/srs?id={import_session.id}{_force_ajax}",
-             }
+            {
+                'url': url,
+                'status': 'incomplete',
+                'required_input': len(_force_ajax) == 0,
+                'success': True,
+                'id': import_session.id,
+                'redirect_to': f"{settings.SITEURL}upload/srs?id={import_session.id}{_force_ajax}",
+            }
         )
 
     if next == 'csv' and force_ajax:
         url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
-            {'url': url,
-             'status': 'incomplete',
-             'success': True,
-             'id': import_session.id,
-             'redirect_to': f"{settings.SITEURL}upload/csv?id={import_session.id}{_force_ajax}",
-             }
+            {
+                'url': url,
+                'status': 'incomplete',
+                'required_input': len(_force_ajax) == 0,
+                'success': True,
+                'id': import_session.id,
+                'redirect_to': f"{settings.SITEURL}upload/csv?id={import_session.id}{_force_ajax}",
+            }
         )
 
     # @todo this is not handled cleanly - run is not a real step in that it
