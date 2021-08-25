@@ -989,7 +989,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
         Sample Request:
 
-        1. curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'vals={"title":"pippo"}' http://localhost:8000/api/v2/resources/<id>/copy
+        1. curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'defaults={"title":"pippo"}' http://localhost:8000/api/v2/resources/<id>/copy
             OUTPUT: {
                 "status":"ready",
                 "execution_id":"08846e84-eae4-11eb-84be-00155d41f2fb",
