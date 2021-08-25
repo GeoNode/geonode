@@ -95,6 +95,16 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             "additionalProperties": False,
         }
 
+    def get_capabilities(self) -> requests.Response:
+        params = self._base_wms_parameters.copy()
+        params.update({
+            "request": "GetCapabilities",
+        })
+        get_capabilities_response = self.http_session.get(
+            self.remote_url, params=params)
+        get_capabilities_response.raise_for_status()
+        return get_capabilities_response
+
     def get_num_available_resources(self) -> int:
         data = self._get_data()
         return len(data['layers'])
@@ -127,12 +137,19 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
         try:
-            response = self.http_session.get(f"{self.remote_url}")
-            response.raise_for_status()
+            response = self.get_capabilities()
         except (requests.HTTPError, requests.ConnectionError):
             result = False
         else:
-            result = True
+            try:
+                root = etree.fromstring(response.content, parser=XML_PARSER)
+            except etree.XMLSyntaxError:
+                result = False
+            else:
+                if 'WMS_Capabilities' in root.tag:
+                    result = True
+                else:
+                    result = False
         return result
 
     def get_geonode_resource_type(self, remote_resource_type: str) -> ResourceBase:
@@ -194,14 +211,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
 
     def _get_data(self) -> typing.Dict:
         """Return data from the harvester URL in JSON format."""
-        params = self._base_wms_parameters.copy()
-        params.update({
-            "request": "GetCapabilities",
-        })
-        get_capabilities_response = self.http_session.get(
-            self.remote_url, params=params)
-        get_capabilities_response.raise_for_status()
-
+        get_capabilities_response = self.get_capabilities()
         root = etree.fromstring(get_capabilities_response.content, parser=XML_PARSER)
         nsmap = _get_nsmap(root.nsmap)
 
