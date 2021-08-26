@@ -47,7 +47,7 @@
            url: siteUrl + "security/bulk-permissions",
            data: {
              permissions: JSON.stringify(permissions),
-             resources: selected_ids
+             resources: JSON.stringify(selected_ids)
            },
            success: function(data) {
              var not_changed = $.parseJSON(data).not_changed;
