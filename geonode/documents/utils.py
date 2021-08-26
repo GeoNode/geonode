@@ -35,7 +35,7 @@ from django_downloadview.response import DownloadResponse
 
 # Geonode functionality
 from geonode.documents.models import Document
-from geonode.monitoring import register_event
+from geonode.base import register_event
 from geonode.monitoring.models import EventType
 
 logger = logging.getLogger(__name__)

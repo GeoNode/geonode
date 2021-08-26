@@ -38,7 +38,7 @@ from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
 from geonode.geoapps.models import GeoApp, GeoAppData
 from geonode.decorators import check_keyword_write_perms
-from geonode.monitoring import register_event
+from geonode.base import register_event
 from geonode.monitoring.models import EventType
 
 from geonode.people.forms import ProfileForm
