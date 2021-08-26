@@ -279,22 +279,24 @@ def srs_step_view(request, upload_session):
         if form:
             name = task.layer.name
 
+    force_ajax = '&force_ajax=true' if request and 'force_ajax' in request.GET and request.GET['force_ajax'] == 'true' else ''
     if request.method == 'GET':
-        # layer = check_import_session_is_valid(
-        #     request, upload_session, import_session)
+        if not force_ajax:
+            # layer = check_import_session_is_valid(
+            #     request, upload_session, import_session)
 
-        if not _crs_already_configured:
-            context = dict(
-                form=form,
-                supported_crs=_SUPPORTED_CRS,
-                async_upload=False,
-                native_crs=native_crs or None,
-                layer_name=name,
-                error=error)
-            return render(request, 'upload/layer_upload_crs.html', context=context)
-        else:
+            if not _crs_already_configured:
+                context = dict(
+                    form=form,
+                    supported_crs=_SUPPORTED_CRS,
+                    async_upload=False,
+                    native_crs=native_crs or None,
+                    dataset_name=name,
+                    error=error)
+                return render(request, 'upload/layer_upload_crs.html', context=context)
+        if _crs_already_configured:
             upload_session.completed_step = 'srs'
-            return next_step_response(request, upload_session)
+        return next_step_response(request, upload_session)
     elif request.method != 'POST':
         raise Exception("405 Method Not Allowed")
 
@@ -360,52 +362,55 @@ def csv_step_view(request, upload_session):
     lat_field = request.POST.get('lat', '')
     lng_field = request.POST.get('lng', '')
 
+    force_ajax = '&force_ajax=true' if request and 'force_ajax' in request.GET and request.GET['force_ajax'] == 'true' else ''
     if request.method == 'GET':
-        # layer = check_import_session_is_valid(
-        #     request, upload_session, import_session)
+        if not force_ajax:
+            # layer = check_import_session_is_valid(
+            #     request, upload_session, import_session)
 
-        # try to guess the lat/lng fields from the candidates
-        lat_candidate = None
-        lng_candidate = None
-        non_str_in_headers = []
-        for candidate in attributes:
-            if not isinstance(candidate.name, str):
-                non_str_in_headers.append(str(candidate.name))
-            if is_latitude(candidate.name):
-                lat_candidate = candidate.name
-                if lat_candidate and lat_candidate not in point_candidates:
-                    point_candidates.append(lat_candidate)
-            elif is_longitude(candidate.name):
-                lng_candidate = candidate.name
-                if lng_candidate and lng_candidate not in point_candidates:
-                    point_candidates.append(lng_candidate)
-        if request.method == 'POST':
-            guessed_lat_or_lng = False
-            selected_lat = lat_field
-            selected_lng = lng_field
-        else:
-            guessed_lat_or_lng = bool(lat_candidate or lng_candidate)
-            selected_lat = lat_candidate
-            selected_lng = lng_candidate
-        present_choices = len(point_candidates) >= 2
-        possible_data_problems = None
-        if non_str_in_headers:
-            possible_data_problems = "There are some suspicious column names in \
-                                     your data. Did you provide column names in the header? \
-                                     The following names look wrong: "
-            possible_data_problems += ','.join(non_str_in_headers)
+            # try to guess the lat/lng fields from the candidates
+            lat_candidate = None
+            lng_candidate = None
+            non_str_in_headers = []
+            for candidate in attributes:
+                if not isinstance(candidate.name, str):
+                    non_str_in_headers.append(str(candidate.name))
+                if is_latitude(candidate.name):
+                    lat_candidate = candidate.name
+                    if lat_candidate and lat_candidate not in point_candidates:
+                        point_candidates.append(lat_candidate)
+                elif is_longitude(candidate.name):
+                    lng_candidate = candidate.name
+                    if lng_candidate and lng_candidate not in point_candidates:
+                        point_candidates.append(lng_candidate)
+            if request.method == 'POST':
+                guessed_lat_or_lng = False
+                selected_lat = lat_field
+                selected_lng = lng_field
+            else:
+                guessed_lat_or_lng = bool(lat_candidate or lng_candidate)
+                selected_lat = lat_candidate
+                selected_lng = lng_candidate
+            present_choices = len(point_candidates) >= 2
+            possible_data_problems = None
+            if non_str_in_headers:
+                possible_data_problems = ("There are some suspicious column names in your data. "
+                                          "Did you provide column names in the header? The following names look wrong: ")
+                possible_data_problems += ','.join(non_str_in_headers)
 
-        context = dict(present_choices=present_choices,
-                       point_candidates=point_candidates,
-                       async_upload=False,
-                       selected_lat=selected_lat,
-                       selected_lng=selected_lng,
-                       guessed_lat_or_lng=guessed_lat_or_lng,
-                       layer_name=import_session.tasks[0].layer.name,
-                       error=error,
-                       possible_data_problems=possible_data_problems
-                       )
-        return render(request, 'upload/layer_upload_csv.html', context=context)
+            context = dict(
+                present_choices=present_choices,
+                point_candidates=point_candidates,
+                async_upload=False,
+                selected_lat=selected_lat,
+                selected_lng=selected_lng,
+                guessed_lat_or_lng=guessed_lat_or_lng,
+                layer_name=import_session.tasks[0].layer.name,
+                error=error,
+                possible_data_problems=possible_data_problems
+            )
+            return render(request, 'upload/layer_upload_csv.html', context=context)
+        return next_step_response(request, upload_session)
     elif request.method == 'POST':
         if not lat_field or not lng_field:
             error = 'Please choose which columns contain the latitude and longitude data.'
@@ -490,6 +495,7 @@ def time_step_view(request, upload_session):
     import_session = upload_session.import_session
     assert import_session is not None
 
+    force_ajax = '&force_ajax=true' if request and 'force_ajax' in request.GET and request.GET['force_ajax'] == 'true' else ''
     if request.method == 'GET':
         layer = check_import_session_is_valid(
             request, upload_session, import_session)
@@ -497,22 +503,19 @@ def time_step_view(request, upload_session):
             (has_time_dim, layer_values) = layer_eligible_for_time_dimension(request,
                                                                              layer, upload_session=upload_session)
             if has_time_dim and layer_values:
-                context = {
-                    'time_form': create_time_form(request, upload_session, None),
-                    'layer_name': layer.name,
-                    'layer_values': layer_values,
-                    'layer_attributes': list(layer_values[0].keys()),
-                    'async_upload': is_async_step(upload_session)
-                }
                 upload_session.completed_step = 'check'
-                return render(request, 'upload/layer_upload_time.html', context=context)
+                if not force_ajax:
+                    context = {
+                        'time_form': create_time_form(request, upload_session, None),
+                        'layer_name': layer.name,
+                        'layer_values': layer_values,
+                        'layer_attributes': list(layer_values[0].keys()),
+                        'async_upload': is_async_step(upload_session)
+                    }
+                    return render(request, 'upload/layer_upload_time.html', context=context)
             else:
                 upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
-                return next_step_response(request, upload_session)
-        else:
-            # TODO: Error
-            upload_session.completed_step = 'check'
-            return next_step_response(request, upload_session)
+        return next_step_response(request, upload_session)
     elif request.method != 'POST':
         raise Exception()
 
@@ -622,7 +625,7 @@ def final_step_view(req, upload_session):
                 )
                 register_event(req, EventType.EVENT_UPLOAD, saved_layer)
                 return _json_response
-            except LayerNotReady:
+            except (LayerNotReady, AssertionError):
                 force_ajax = '&force_ajax=true' if req and 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
                 return json_response(
                     {
@@ -733,26 +736,20 @@ def view(req, step=None):
                 return error_response(req, errors=e.args)
 
         resp = _steps[step](req, upload_session)
-
+        resp_js = None
         try:
             content = resp.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             resp_js = json.loads(content)
-            if 'upload/final' in resp_js.get('redirect_to', ''):
-                from geonode.upload.tasks import finalize_incomplete_session_uploads
-                finalize_incomplete_session_uploads.apply_async()
         except Exception as e:
             logger.warning(e)
-            return error_response(req, errors=e.args)
 
         # must be put back to update object in session
         if upload_session:
-            if step == 'final':
-                delete_session = True
+            if resp_js and step == 'final':
                 try:
                     delete_session = resp_js.get('status') != 'pending'
-
                     if delete_session:
                         # we're done with this session, wax it
                         upload_session = None
@@ -764,6 +761,13 @@ def view(req, step=None):
             upload_session = _get_upload_session(req)
         if upload_session:
             Upload.objects.update_from_session(upload_session)
+        if resp_js:
+            _success = resp_js.get('success', False)
+            _redirect_to = resp_js.get('redirect_to', '')
+            _required_input = resp_js.get('required_input', False)
+            if _success and (_required_input or 'upload/final' in _redirect_to):
+                from geonode.upload.tasks import finalize_incomplete_session_uploads
+                finalize_incomplete_session_uploads.apply_async()
         return resp
     except BadStatusLine:
         logger.exception('bad status line, geoserver down?')
