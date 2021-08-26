@@ -197,8 +197,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     kwargs.get('files', None),
                     kwargs.get('user', instance.owner),
                     action_type=kwargs.get('action_type', 'create'))
-                upload_session = _gs_import_session_info.upload_session
-                upload_session.save()
                 import_session = _gs_import_session_info.import_session
                 if import_session and import_session.state == enumerations.STATE_COMPLETE:
                     _alternate = f'{_gs_import_session_info.workspace}:{_gs_import_session_info.dataset_name}'
@@ -244,7 +242,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
         upload_session, _ = Upload.objects.get_or_create(resource=instance.get_real_instance().resourcebase_ptr, user=user)
         upload_session.resource = instance.get_real_instance().resourcebase_ptr
-        upload_session.processed = False
         upload_session.save()
 
         _name = instance.get_real_instance().name
@@ -283,6 +280,13 @@ class GeoServerResourceManager(ResourceManagerInterface):
             name=_name,
             target_store=_target_store
         )
+
+        upload_session.set_processing_state(enumerations.STATE_PROCESSED)
+        upload_session.import_id = import_session.id
+        upload_session.name = _name
+        upload_session.complete = True
+        upload_session.processed = True
+        upload_session.save()
 
         _gs_import_session_info = GeoServerImporterSessionInfo(
             upload_session=upload_session,

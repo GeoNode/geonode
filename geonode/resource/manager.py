@@ -419,6 +419,7 @@ class ResourceManager(ResourceManagerInterface):
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if instance:
             try:
+                _resource = None
                 instance.set_processing_state(enumerations.STATE_RUNNING)
                 with transaction.atomic():
                     _owner = owner or instance.get_real_instance().owner
@@ -427,17 +428,18 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid1())
                     _resource.save()
-                    to_update = defaults.copy()
-                    to_update.update(storage_manager.copy(_resource))
+                    to_update = storage_manager.copy(_resource).copy()
                     self._concrete_resource_manager.copy(_resource, uuid=_resource.uuid, defaults=to_update)
-                    if _resource:
-                        if 'user' in to_update:
-                            to_update.pop('user')
-                        self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
-                        return self.update(_resource.uuid, _resource, vals=to_update)
+                if _resource:
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                    _resource.save(notify=False)
+                    to_update.update(defaults)
+                    if 'user' in to_update:
+                        to_update.pop('user')
+                    self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                    return self.update(_resource.uuid, _resource, vals=to_update)
             except Exception as e:
                 logger.exception(e)
-                instance.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 instance.set_processing_state(enumerations.STATE_PROCESSED)
                 instance.save(notify=False)
