@@ -402,7 +402,7 @@ def invalidate_tiledlayer_cache(request):
 @require_POST
 def set_bulk_permissions(request):
     permission_spec = json.loads(request.POST.get('permissions', None))
-    resource_ids = request.POST.getlist('resources', [])
+    resource_ids = json.loads(request.POST.get('resources', '[]'))
     if permission_spec is not None:
         not_permitted = []
         for resource_id in resource_ids:
