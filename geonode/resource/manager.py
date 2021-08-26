@@ -238,6 +238,7 @@ class ResourceManager(ResourceManagerInterface):
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
+                _resource.set_processing_state(enumerations.STATE_RUNNING)
                 self._concrete_resource_manager.delete(uuid, instance=_resource)
                 if isinstance(_resource.get_real_instance(), Dataset):
                     """
@@ -320,8 +321,7 @@ class ResourceManager(ResourceManagerInterface):
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
             except Exception as e:
                 logger.exception(e)
-                _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.delete()
+                self.delete(instance=_resource)
                 raise e
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
@@ -419,10 +419,11 @@ class ResourceManager(ResourceManagerInterface):
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if instance:
             try:
+                instance.set_processing_state(enumerations.STATE_RUNNING)
                 with transaction.atomic():
-                    _owner = owner or instance.owner
-                    _perms = instance.get_all_level_info()
-                    _resource = copy.copy(instance)
+                    _owner = owner or instance.get_real_instance().owner
+                    _perms = instance.get_real_instance().get_all_level_info()
+                    _resource = copy.copy(instance.get_real_instance())
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid1())
                     _resource.save()
@@ -444,25 +445,25 @@ class ResourceManager(ResourceManagerInterface):
         return instance
 
     def append(self, instance: ResourceBase, vals: dict = {}):
-        if self._validate_resource(instance, 'append'):
-            self._concrete_resource_manager.append(instance, vals=vals)
+        if self._validate_resource(instance.get_real_instance(), 'append'):
+            self._concrete_resource_manager.append(instance.get_real_instance(), vals=vals)
             to_update = vals.copy()
             if instance:
                 if 'user' in to_update:
                     to_update.pop('user')
-                return self.update(instance.uuid, instance, vals=to_update)
+                return self.update(instance.uuid, instance.get_real_instance(), vals=to_update)
         return instance
 
     def replace(self, instance: ResourceBase, vals: dict = {}):
-        if self._validate_resource(instance, 'replace'):
+        if self._validate_resource(instance.get_real_instance(), 'replace'):
             if vals.get('files', None):
-                vals.update(storage_manager.replace(instance, vals.get('files')))
-            self._concrete_resource_manager.replace(instance, vals=vals)
+                vals.update(storage_manager.replace(instance.get_real_instance(), vals.get('files')))
+            self._concrete_resource_manager.replace(instance.get_real_instance(), vals=vals)
             to_update = vals.copy()
             if instance:
                 if 'user' in to_update:
                     to_update.pop('user')
-                return self.update(instance.uuid, instance, vals=to_update)
+                return self.update(instance.uuid, instance.get_real_instance(), vals=to_update)
         return instance
 
     def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:
