@@ -52,7 +52,7 @@ def sync_geonode_maps(ignore_errors,
                 # remove duplicates
                 print("Removing duplicate links...")
                 remove_duplicate_links(map)
-        except Exception:
+        except (Exception, RuntimeError):
             map_errors.append(map.title)
             exception_type, error, traceback = sys.exc_info()
             print(exception_type, error, traceback)

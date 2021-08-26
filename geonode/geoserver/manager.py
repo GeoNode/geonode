@@ -197,8 +197,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     kwargs.get('files', None),
                     kwargs.get('user', instance.owner),
                     action_type=kwargs.get('action_type', 'create'))
-                upload_session = _gs_import_session_info.upload_session
-                upload_session.save()
                 import_session = _gs_import_session_info.import_session
                 if import_session and import_session.state == enumerations.STATE_COMPLETE:
                     _alternate = f'{_gs_import_session_info.workspace}:{_gs_import_session_info.dataset_name}'
@@ -244,7 +242,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
         upload_session, _ = Upload.objects.get_or_create(resource=instance.get_real_instance().resourcebase_ptr, user=user)
         upload_session.resource = instance.get_real_instance().resourcebase_ptr
-        upload_session.processed = False
         upload_session.save()
 
         _name = instance.get_real_instance().name
@@ -283,6 +280,13 @@ class GeoServerResourceManager(ResourceManagerInterface):
             name=_name,
             target_store=_target_store
         )
+
+        upload_session.set_processing_state(enumerations.STATE_PROCESSED)
+        upload_session.import_id = import_session.id
+        upload_session.name = _name
+        upload_session.complete = True
+        upload_session.processed = True
+        upload_session.save()
 
         _gs_import_session_info = GeoServerImporterSessionInfo(
             upload_session=upload_session,
@@ -494,17 +498,11 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     gf_services = _get_gf_services(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
                     if approved:
                         # Set the GeoFence Rules (user = None)
-                        if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-                            _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                            _members_group_group = Group.objects.get(name=_members_group_name)
-                            sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
-                            _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, _members_group_group, gf_services)
-                            _disable_cache.append(_disable_dataset_cache)
-                        else:
-                            # Set the GeoFence Rules (user = None)
-                            sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
-                            _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
-                            _disable_cache.append(_disable_dataset_cache)
+                        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                        _members_group_group = Group.objects.get(name=_members_group_name)
+                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
+                        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, _members_group_group, gf_services)
+                        _disable_cache.append(_disable_dataset_cache)
                     if published:
                         # Set the GeoFence Rules (user = None)
                         sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)

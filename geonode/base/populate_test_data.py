@@ -157,6 +157,7 @@ def create_models(type=None, integration=False):
     obj_ids = []
     with transaction.atomic():
         map_data, user_data, people_data, dataset_data, document_data = create_fixtures()
+        registeredmembers_group, created = Group.objects.get_or_create(name='registered-members')
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
         cont_group, created = Group.objects.get_or_create(name='contributors')
         perm = Permission.objects.get(codename='add_resourcebase')

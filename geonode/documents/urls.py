@@ -23,7 +23,7 @@ from django.views.generic import TemplateView
 from .views import DocumentUploadView, DocumentUpdateView
 from .views import DocumentAutocomplete
 from . import views
-from geonode.monitoring import register_url_event
+from geonode.base import register_url_event
 
 js_info_dict = {
     'packages': ('geonode.documents',),

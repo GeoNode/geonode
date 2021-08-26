@@ -238,6 +238,7 @@ class ResourceManager(ResourceManagerInterface):
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
+                _resource.set_processing_state(enumerations.STATE_RUNNING)
                 self._concrete_resource_manager.delete(uuid, instance=_resource)
                 if isinstance(_resource.get_real_instance(), Dataset):
                     """
@@ -320,8 +321,7 @@ class ResourceManager(ResourceManagerInterface):
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
             except Exception as e:
                 logger.exception(e)
-                _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.delete()
+                self.delete(instance=_resource)
                 raise e
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
@@ -419,24 +419,27 @@ class ResourceManager(ResourceManagerInterface):
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if instance:
             try:
+                _resource = None
+                instance.set_processing_state(enumerations.STATE_RUNNING)
                 with transaction.atomic():
-                    _owner = owner or instance.owner
-                    _perms = instance.get_all_level_info()
-                    _resource = copy.copy(instance)
+                    _owner = owner or instance.get_real_instance().owner
+                    _perms = instance.get_real_instance().get_all_level_info()
+                    _resource = copy.copy(instance.get_real_instance())
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid1())
                     _resource.save()
-                    to_update = defaults.copy()
-                    to_update.update(storage_manager.copy(_resource))
+                    to_update = storage_manager.copy(_resource).copy()
                     self._concrete_resource_manager.copy(_resource, uuid=_resource.uuid, defaults=to_update)
-                    if _resource:
-                        if 'user' in to_update:
-                            to_update.pop('user')
-                        self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
-                        return self.update(_resource.uuid, _resource, vals=to_update)
+                if _resource:
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                    _resource.save(notify=False)
+                    to_update.update(defaults)
+                    if 'user' in to_update:
+                        to_update.pop('user')
+                    self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                    return self.update(_resource.uuid, _resource, vals=to_update)
             except Exception as e:
                 logger.exception(e)
-                instance.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 instance.set_processing_state(enumerations.STATE_PROCESSED)
                 instance.save(notify=False)
@@ -444,25 +447,25 @@ class ResourceManager(ResourceManagerInterface):
         return instance
 
     def append(self, instance: ResourceBase, vals: dict = {}):
-        if self._validate_resource(instance, 'append'):
-            self._concrete_resource_manager.append(instance, vals=vals)
+        if self._validate_resource(instance.get_real_instance(), 'append'):
+            self._concrete_resource_manager.append(instance.get_real_instance(), vals=vals)
             to_update = vals.copy()
             if instance:
                 if 'user' in to_update:
                     to_update.pop('user')
-                return self.update(instance.uuid, instance, vals=to_update)
+                return self.update(instance.uuid, instance.get_real_instance(), vals=to_update)
         return instance
 
     def replace(self, instance: ResourceBase, vals: dict = {}):
-        if self._validate_resource(instance, 'replace'):
+        if self._validate_resource(instance.get_real_instance(), 'replace'):
             if vals.get('files', None):
-                vals.update(storage_manager.replace(instance, vals.get('files')))
-            self._concrete_resource_manager.replace(instance, vals=vals)
+                vals.update(storage_manager.replace(instance.get_real_instance(), vals.get('files')))
+            self._concrete_resource_manager.replace(instance.get_real_instance(), vals=vals)
             to_update = vals.copy()
             if instance:
                 if 'user' in to_update:
                     to_update.pop('user')
-                return self.update(instance.uuid, instance, vals=to_update)
+                return self.update(instance.uuid, instance.get_real_instance(), vals=to_update)
         return instance
 
     def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:
@@ -687,16 +690,11 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     anonymous_group = Group.objects.get(name='anonymous')
                     if approved:
-                        if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-                            _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                            _members_group_group = Group.objects.get(name=_members_group_name)
-                            for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
-                                assign_perm(perm,
-                                            _members_group_group, _resource.get_self_resource())
-                        else:
-                            for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
-                                assign_perm(perm,
-                                            anonymous_group, _resource.get_self_resource())
+                        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                        _members_group_group = Group.objects.get(name=_members_group_name)
+                        for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
+                            assign_perm(perm,
+                                        _members_group_group, _resource.get_self_resource())
                     if published:
                         for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                             assign_perm(perm,
