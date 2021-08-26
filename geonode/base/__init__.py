@@ -86,3 +86,6 @@ def register_proxy_event(request):
     """
     Process request to geoserver proxy. Extract layer and ows type
     """
+
+
+default_app_config = 'geonode.base.BaseAppConfig'
