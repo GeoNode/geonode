@@ -20,7 +20,7 @@
 
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
-from geonode.monitoring import register_url_event
+from geonode.base import register_url_event
 
 from . import views
 
