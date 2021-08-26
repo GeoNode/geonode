@@ -56,7 +56,7 @@ from geonode.utils import (
 from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver  # noqa
-from geonode.monitoring import register_event
+from geonode.base import register_event
 
 TIMEOUT = 30
 

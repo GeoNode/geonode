@@ -68,7 +68,7 @@ from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.base.views import batch_modify
 from .tasks import delete_map
-from geonode.monitoring import register_event
+from geonode.base import register_event
 from geonode.monitoring.models import EventType
 from deprecated import deprecated
 
