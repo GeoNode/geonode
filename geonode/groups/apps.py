@@ -17,27 +17,11 @@
 #
 #########################################################################
 import logging
-from . import init_registered_members_groupprofile
 from django.apps import AppConfig
-from geonode.groups.conf import settings
-
-try:
-    from django.db.models.signals import post_migrate
-except Exception:
-    # OR for Django 2.0+
-    from django.db.backends.signals import post_migrate
 
 logger = logging.getLogger(__name__)
 
 
-def post_migration_callback(sender, **kwargs):
-    if settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-        logger.debug("Invoking 'init_registered_members_groupprofile'")
-        init_registered_members_groupprofile()
-
-
 class GroupsAppConfig(AppConfig):
-    name = 'geonode.groups'
 
-    def ready(self):
-        post_migrate.connect(post_migration_callback, sender=self)
+    name = 'geonode.groups'

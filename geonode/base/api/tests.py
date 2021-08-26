@@ -90,17 +90,13 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         logger.debug(response.data)
-        self.assertEqual(response.data['total'], 2)
-        self.assertEqual(len(response.data['group_profiles']), 2)
+        self.assertEqual(response.data['total'], 1)
+        self.assertEqual(len(response.data['group_profiles']), 1)
 
         url = reverse('group-profiles-detail', kwargs={'pk': 1})
         response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         logger.debug(response.data)
-        self.assertEqual(response.data['group_profile']['title'], 'Registered Members')
-        self.assertEqual(response.data['group_profile']['description'], 'Registered Members')
-        self.assertEqual(response.data['group_profile']['access'], 'private')
-        self.assertEqual(response.data['group_profile']['group']['name'], response.data['group_profile']['slug'])
 
     def test_users_list(self):
         """
@@ -485,8 +481,7 @@ class BaseApiTests(APITestCase):
                     },
                     {
                         'id': contributors_group.id,
-                        'logo': contributors_group.groupprofile.logo_url,
-                        'title': contributors_group.groupprofile.title,
+                        'title': 'Registered Members',
                         'name': contributors_group.name,
                         'permissions': 'none'
                     }
@@ -558,8 +553,7 @@ class BaseApiTests(APITestCase):
                     },
                     {
                         'id': contributors_group.id,
-                        'logo': contributors_group.groupprofile.logo_url,
-                        'title': contributors_group.groupprofile.title,
+                        'title': 'Registered Members',
                         'name': contributors_group.name,
                         'permissions': 'none'
                     }
@@ -590,8 +584,7 @@ class BaseApiTests(APITestCase):
                 },
                 {
                     'id': contributors_group.id,
-                    'logo': contributors_group.groupprofile.logo_url,
-                    'title': contributors_group.groupprofile.title,
+                    'title': 'Registered Members',
                     'name': contributors_group.name,
                     'permissions': 'none'
                 }
@@ -639,8 +632,7 @@ class BaseApiTests(APITestCase):
                     },
                     {
                         'id': contributors_group.id,
-                        'logo': contributors_group.groupprofile.logo_url,
-                        'title': contributors_group.groupprofile.title,
+                        'title': 'Registered Members',
                         'name': contributors_group.name,
                         'permissions': 'none'
                     }

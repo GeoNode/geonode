@@ -99,54 +99,9 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Ensures that a default group and grouprofile 'registered-users' has been
         created at initialization time.
         """
-        self.assertTrue(
-            groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME)
         group = Group.objects.filter(
             name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
-        groupprofile = GroupProfile.objects.filter(
-            slug=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
         self.assertTrue(group)
-        self.assertTrue(groupprofile)
-        self.assertEqual(groupprofile.group, group)
-        self.assertEqual(group.groupprofile, groupprofile)
-
-    def test_users_belongs_registered_group(self):
-        """
-        1. Ensures that a superuser is manager of a group despite the actual membership.
-
-        2. Ensures that any user on the system, except "AnonymousUser" belongs to
-           groups_settings.REGISTERED_MEMBERS_GROUP_NAME.
-        """
-        self.assertEqual(
-            groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME, True)
-
-        self.assertEqual(
-            groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT, 'activation')
-
-        anonymous = get_user_model().objects.get(username="AnonymousUser")
-        norman = get_user_model().objects.get(username="norman")
-        admin = get_user_model().objects.get(username='admin')
-
-        # Make sure norman is a member by default (active and created)
-        groupprofile = GroupProfile.objects.filter(
-            slug=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
-        self.assertTrue(groupprofile.user_is_member(norman))
-
-        norman.is_active = False
-        norman.save()
-        # the signal is triggered when a user "becomes" active
-        self.assertFalse(groupprofile.user_is_member(norman))
-
-        # Ensure anonymous is not in the managers queryset
-        self.assertFalse(groupprofile.user_is_member(anonymous))
-
-        # Ensure norman is not in the managers queryset
-        self.assertTrue(norman not in groupprofile.get_managers())
-
-        # Ensure admin is in the managers queryset
-        self.assertTrue(groupprofile.user_is_member(admin))
-        self.assertTrue(groupprofile.user_is_role(admin, 'manager'))
-        self.assertFalse(admin in groupprofile.get_managers())
 
     def test_users_group_list_view(self):
         """

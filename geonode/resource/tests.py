@@ -36,7 +36,6 @@ from geonode.base.populate_test_data import create_single_doc, create_single_dat
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.maps.models import MapLayer
 from geonode.services.models import Service, HarvestJob
-from geonode.groups.conf import settings as groups_settings
 from geonode.resource import settings as rm_settings
 
 from pinax.ratings.models import OverallRating
@@ -252,9 +251,6 @@ class TestResourceManager(GeoNodeBaseTestSupport):
 
         self.assertFalse(self.rm.set_workflow_permissions('invalid_uuid', instance=None))
         self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, approved=True, published=True))
-        groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME = False
-        self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, approved=True))
-        self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, published=True))
 
     def test_set_thumbnail(self):
         doc = create_single_doc("test_thumb_doc")
