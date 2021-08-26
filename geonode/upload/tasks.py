@@ -178,8 +178,11 @@ def _update_upload_session_state(self, upload_session_id: int):
                     if isinstance(content, bytes):
                         content = content.decode('UTF-8')
                     response_json = json.loads(content)
-                    if response_json['success'] and 'redirect_to' in response_json:
-                        if 'upload/final' not in response_json['redirect_to'] and 'upload/check' not in response_json['redirect_to']:
+                    _success = response_json.get('success', False)
+                    _redirect_to = response_json.get('redirect_to', '')
+                    if _success:
+                        if 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to:
+                            _upload.set_resume_url(_redirect_to)
                             _upload.set_processing_state(Upload.STATE_WAITING)
                         else:
                             if session.state == Upload.STATE_COMPLETE and _upload.state == Upload.STATE_PENDING:

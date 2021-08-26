@@ -97,6 +97,8 @@ class Upload(models.Model):
     mosaic_elev_regex = models.CharField(max_length=128, null=True)
     mosaic_elev_value = models.CharField(max_length=128, null=True)
 
+    resume_url = models.CharField(max_length=256, null=True, blank=True)
+
     class Meta:
         ordering = ['-date']
 
@@ -117,7 +119,6 @@ class Upload(models.Model):
 
     def update_from_session(self, upload_session, layer=None):
         self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
-        self.state = upload_session.import_session.state
         self.name = upload_session.name
         self.user = upload_session.user
         self.date = now()
@@ -189,9 +190,14 @@ class Upload(models.Model):
                 return 66.0
             return 80.0
 
+    def set_resume_url(self, resume_url):
+        if self.resume_url != resume_url:
+            self.resume_url = resume_url
+            Upload.objects.filter(id=self.id).update(resume_url=resume_url)
+
     def get_resume_url(self):
         if self.state == Upload.STATE_WAITING and self.import_id:
-            return f"{reverse('data_upload')}?id={self.import_id}"
+            return self.resume_url
         return None
 
     def get_delete_url(self):
@@ -238,12 +244,15 @@ class Upload(models.Model):
                 session.delete()
             except Exception:
                 logging.warning('error deleting upload session')
-        for _file in upload_files:
-            try:
-                if os.path.isfile(_file.path):
-                    os.remove(_file.path)
-            except Exception as e:
-                logger.warning(e)
+
+        # we delete directly the folder with the files of the resource
+        if self.layer:
+            for _file in upload_files:
+                try:
+                    if os.path.isfile(_file.path):
+                        os.remove(_file.path)
+                except Exception as e:
+                    logger.warning(e)
         for _location in importer_locations:
             try:
                 shutil.rmtree(_location)
