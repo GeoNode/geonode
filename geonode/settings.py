@@ -445,7 +445,6 @@ GEONODE_INTERNAL_APPS = (
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
-    'geonode.monitoring',
 )
 
 GEONODE_CONTRIB_APPS = (
