@@ -98,7 +98,7 @@ class TestGroupResAuthorization(GeoNodeBaseTestSupport):
         mock_bundle.configure_mock(**attrs)
 
         groups = GroupAuthorization().read_list(['not_empty_but_fake'], mock_bundle)
-        self.assertEqual(1, groups.count())
+        self.assertEqual(2, groups.count())
 
 
 class TestGroupProfileResAuthorization(GeoNodeBaseTestSupport):

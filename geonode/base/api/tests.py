@@ -95,7 +95,7 @@ class BaseApiTests(APITestCase):
 
         url = reverse('group-profiles-detail', kwargs={'pk': 1})
         response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         logger.debug(response.data)
 
     def test_users_list(self):

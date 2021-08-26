@@ -1415,7 +1415,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"3. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 14)
+            self.assertGreaterEqual(geofence_rules_count, 12)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
@@ -1598,7 +1598,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(1, actual.count())
+        self.assertEqual(8, actual.count())
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=None,
@@ -1606,7 +1606,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(1, actual.count())
+        self.assertEqual(8, actual.count())
 
     def test_get_visible_resources(self):
         standard_user = get_user_model().objects.get(username="bobby")
@@ -1693,7 +1693,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     },
                     {
                         'id': 2,
-                        'logo': f'{settings.SITEURL}static/geonode/img/missing_thumb.png',
                         'name': 'registered-members',
                         'permissions': 'none',
                         'title': 'Registered Members'
