@@ -233,11 +233,10 @@ def get_geoapp_subtypes():
 
 
 def skip_registered_members_common_group(user_group):
-    if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-        if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
-                _members_group_name == user_group.name:
-            return True
+    _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+    if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
+            _members_group_name == user_group.name:
+        return True
     return False
 
 

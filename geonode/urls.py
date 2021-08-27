@@ -40,7 +40,7 @@ from geonode.base.views import thumbnail_upload
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
-from geonode.monitoring import register_url_event
+from geonode.base import register_url_event
 from geonode.messaging.urls import urlpatterns as msg_urls
 from .people.views import CustomSignupView
 from oauth2_provider.urls import (

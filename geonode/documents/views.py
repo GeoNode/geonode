@@ -44,7 +44,7 @@ from geonode.utils import resolve_object
 from geonode.base.views import batch_modify
 from geonode.utils import build_social_links
 from geonode.people.forms import ProfileForm
-from geonode.monitoring import register_event
+from geonode.base import register_event
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType

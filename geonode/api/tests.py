@@ -365,7 +365,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
     @override_settings(API_LOCKDOWN=True)
     def test_regions_lockdown(self):
