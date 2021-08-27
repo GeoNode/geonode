@@ -17,19 +17,12 @@
 #
 #########################################################################
 
-from django.db import models
-from django.conf import settings
+from rest_framework import serializers
+from geonode.commands.models import Job
 
-class Job(models.Model):
-    STATUS_CHOICES = (
-        ("QUEUED", "Queued"),
-        ("RUNNING", "Running"),
-        ("SUCCESS", "Success"),
-        ("FAILED", "Failed")
-    )
 
-    name = models.CharField(max_length=100, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, on_delete=models.CASCADE)
-    # Need suggestion on payload. Can be JSON. If CharField, what be a good length?
-    payload = models.CharField(max_length=400, blank=True, help_text="Stores payloads that a command is called with.")
-    staus = models.CharField(max_length=100, blank=True, choices=STATUS_CHOICES, help_text="Celery Job Status")
+class JobSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Job
+        fields = ("name", "user", "payload", "status")

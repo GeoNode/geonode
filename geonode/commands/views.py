@@ -17,23 +17,23 @@
 #
 #########################################################################
 
-from rest_framework import status, views
+from rest_framework import serializers, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from .tasks import enqueue_jobs
 from geonode.permissions import IsSuperUser
+from geonode.commands.models import Job
+from geonode.commands.serializers import JobSerializer
 
 
 class JobsView(views.APIView):
     permission_classes = [IsAuthenticated, IsSuperUser]
 
     def get(self, request):
-        # TODO: This may return a list of user's jobs
-        return Response(
-                {"message": "yet to be implemented!"},
-                status=status.HTTP_200_OK,
-            )
+        jobs = Job.objects.all()
+        serializer = JobSerializer(jobs, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         """
