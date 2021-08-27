@@ -373,7 +373,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(len(self.deserialize(resp)['objects']), 8)
         data = {
             'permissions': json.dumps(self.perm_spec),
-            'resources': layers_id
+            'resources': json.dumps(layers_id)
         }
         resp = self.client.post(self.bulk_perms_url, data)
         self.assertHttpOK(resp)
@@ -478,7 +478,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         layer2 = Layer.objects.all().exclude(owner=bobby)[1]
         data = {
             'permissions': json.dumps({"users": {"bobby": ["view_resourcebase"]}, "groups": []}),
-            'resources': [layer.id, layer2.id]
+            'resources': json.dumps([layer.id, layer2.id])
         }
         resp = self.client.post(self.bulk_perms_url, data)
         content = resp.content
