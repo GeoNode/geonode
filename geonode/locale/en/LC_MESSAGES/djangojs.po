@@ -24,7 +24,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-08-11 14:19+0000\n"
-"PO-Revision-Date: 2021-08-11 09:43-0600\n"
+"PO-Revision-Date: 2020-12-23 16:22+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
 "en/)\n"
@@ -33,7 +33,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #, javascript-format
 msgid "Missing a %s file, which is required"
@@ -378,8 +378,10 @@ msgstr ""
 "HTTP request is not supported by the web server. To resolve the issue, you "
 "may need to update the server."
 
+#, fuzzy
+#| msgid "<br>Unknown."
 msgid "Unknwon"
-msgstr "Unknwon"
+msgstr "<br>Unknown."
 
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
@@ -389,10 +391,10 @@ msgstr ""
 "this error message."
 
 msgid "Additional info: "
-msgstr "Additional info: "
+msgstr ""
 
 msgid "Finalizing"
-msgstr "Finalizing"
+msgstr ""
 
 msgid "Unexpected Error"
 msgstr "Unexpected Error"
@@ -416,7 +418,7 @@ msgid "Manage Styles"
 msgstr "Manage Styles"
 
 msgid "Please wait until GeoNode finished configuring it!"
-msgstr "Please wait until GeoNode finished configuring it!"
+msgstr ""
 
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "The column %1 was renamed to %2 <br/>"
