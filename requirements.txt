@@ -95,7 +95,7 @@ gn-gsimporter>=2.0.2
 gisdata==0.5.4
 
 # haystack/elasticsearch
-django-haystack==3.0
+django-haystack==3.1.1
 elasticsearch>=2.0.0,<8.0.0
 
 # datetimepicker widget
