@@ -93,31 +93,31 @@ class FeatureInfoTemplateField(DynamicComputedField):
                     elif _field.featureinfo_type == Attribute.TYPE_IMAGE:
                         _template += '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
                             <a href="${properties.%s}" target="_new"><img width="100%%" height="auto" src="${properties.%s}" title="%s" alt="%s"/></a></div>' % \
-                            (_field, _field, _label, _label)
+                            (_field.attribute, _field.attribute, _label, _label)
                     elif _field.featureinfo_type in (
                             Attribute.TYPE_VIDEO_3GP, Attribute.TYPE_VIDEO_FLV, Attribute.TYPE_VIDEO_MP4,
                             Attribute.TYPE_VIDEO_OGG, Attribute.TYPE_VIDEO_WEBM, Attribute.TYPE_VIDEO_YOUTUBE):
                         if 'youtube' in _field.featureinfo_type:
                             _template += '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
                                 <iframe src="${properties.%s}" width="100%%" height="360" frameborder="0" allowfullscreen></iframe></div>' % \
-                                (_field)
+                                (_field.attribute)
                         else:
                             _type = f"video/{_field.featureinfo_type[11:]}"
                             _template += '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
                                 <video width="100%%" height="360" controls><source src="${properties.%s}" type="%s">Your browser does not support the video tag.</video></div>' % \
-                                (_field, _type)
+                                (_field.attribute, _type)
                     elif _field.featureinfo_type == Attribute.TYPE_AUDIO:
                         _template += '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
                             <audio controls><source src="${properties.%s}" type="audio/mpeg">Your browser does not support the audio element.</audio></div>' % \
-                            (_field)
+                            (_field.attribute)
                     elif _field.featureinfo_type == Attribute.TYPE_IFRAME:
                         _template += '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
                             <iframe src="/proxy/?url=${properties.%s}" width="100%%" height="360" frameborder="0" allowfullscreen></iframe></div>' % \
-                            (_field)
+                            (_field.attribute)
                     elif _field.featureinfo_type == Attribute.TYPE_PROPERTY:
                         _template += '<div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">%s:</div> \
                             <div class="col-xs-6" style="word-wrap: break-word;">${properties.%s}</div>' % \
-                            (_label, _field)
+                            (_label, _field.attribute)
                     _template += '</div>'
                 _template += '</div>'
                 return _template
