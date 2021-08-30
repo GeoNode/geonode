@@ -81,7 +81,7 @@ class FeatureInfoTemplateField(DynamicComputedField):
             return instance.featureinfo_custom_template
         else:
             _attributes = instance.attributes.filter(visible=True).order_by('display_order')
-            if _attributes.count():
+            if _attributes.exists():
                 _template = '<div>'
                 for _field in _attributes:
                     _label = _field.attribute_label or _field.attribute
