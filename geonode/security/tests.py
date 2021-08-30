@@ -1695,7 +1695,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'groups':
                 [
                     {
-                        'id': 3,
+                        'id': 4,
                         'title': 'anonymous',
                         'name': 'anonymous',
                         'permissions': 'view'
