@@ -23,7 +23,7 @@ from urllib.parse import urlparse
 from django.conf import settings
 
 from dynamic_rest.serializers import DynamicModelSerializer
-from dynamic_rest.fields.fields import DynamicRelationField
+from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
 from geonode.layers.models import Dataset, Style, Attribute
 from geonode.base.api.serializers import ResourceBaseSerializer
@@ -71,6 +71,59 @@ class AttributeSerializer(DynamicModelSerializer):
     attribute = serializers.CharField(read_only=True)
 
 
+class FeatureInfoTemplateField(DynamicComputedField):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        if instance.use_featureinfo_custom_template and instance.featureinfo_custom_template:
+            return instance.featureinfo_custom_template
+        else:
+            _attributes = instance.attributes.filter(visible=True).order_by('display_order')
+            if _attributes.count():
+                _template = '<div>'
+                for _field in _attributes:
+                    _label = _field.attribute_label or _field.attribute
+                    _template += '<div class="row">'
+                    if _field.featureinfo_type == Attribute.TYPE_HREF:
+                        _template += '<div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">%s:</div> \
+                            <div class="col-xs-6" style="word-wrap: break-word;"><a href="${properties.%s}" target="_new">${properties.%s}</a></div>' % \
+                            (_label, _field, _field)
+                    elif _field.featureinfo_type == Attribute.TYPE_IMAGE:
+                        _template += '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
+                            <a href="${properties.%s}" target="_new"><img width="100%%" height="auto" src="${properties.%s}" title="%s" alt="%s"/></a></div>' % \
+                            (_field, _field, _label, _label)
+                    elif _field.featureinfo_type in (
+                            Attribute.TYPE_VIDEO_3GP, Attribute.TYPE_VIDEO_FLV, Attribute.TYPE_VIDEO_MP4,
+                            Attribute.TYPE_VIDEO_OGG, Attribute.TYPE_VIDEO_WEBM, Attribute.TYPE_VIDEO_YOUTUBE):
+                        if 'youtube' in _field.featureinfo_type:
+                            _template += '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
+                                <iframe src="${properties.%s}" width="100%%" height="360" frameborder="0" allowfullscreen></iframe></div>' % \
+                                (_field)
+                        else:
+                            _type = f"video/{_field.featureinfo_type[11:]}"
+                            _template += '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
+                                <video width="100%%" height="360" controls><source src="${properties.%s}" type="%s">Your browser does not support the video tag.</video></div>' % \
+                                (_field, _type)
+                    elif _field.featureinfo_type == Attribute.TYPE_AUDIO:
+                        _template += '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
+                            <audio controls><source src="${properties.%s}" type="audio/mpeg">Your browser does not support the audio element.</audio></div>' % \
+                            (_field)
+                    elif _field.featureinfo_type == Attribute.TYPE_IFRAME:
+                        _template += '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
+                            <iframe src="/proxy/?url=${properties.%s}" width="100%%" height="360" frameborder="0" allowfullscreen></iframe></div>' % \
+                            (_field)
+                    elif _field.featureinfo_type == Attribute.TYPE_PROPERTY:
+                        _template += '<div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">%s:</div> \
+                            <div class="col-xs-6" style="word-wrap: break-word;">${properties.%s}</div>' % \
+                            (_label, _field)
+                    _template += '</div>'
+                _template += '</div>'
+                return _template
+            return None
+
+
 class DatasetSerializer(ResourceBaseSerializer):
 
     def __init__(self, *args, **kwargs):
@@ -84,8 +137,7 @@ class DatasetSerializer(ResourceBaseSerializer):
         fields = (
             'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',
-            'use_featureinfo_custom_template', 'featureinfo_custom_template',
-            'ows_url', 'ptype', 'default_style', 'styles', 'attribute_set'
+            'featureinfo_custom_template', 'ows_url', 'ptype', 'default_style', 'styles', 'attribute_set'
         )
 
     name = serializers.CharField(read_only=True)
@@ -98,12 +150,15 @@ class DatasetSerializer(ResourceBaseSerializer):
 
     attribute_set = DynamicRelationField(AttributeSerializer, embed=True, many=True, read_only=True)
 
+    featureinfo_custom_template = FeatureInfoTemplateField()
+
 
 class DatasetListSerializer(DatasetSerializer):
     class Meta(DatasetSerializer.Meta):
         fields = (
             'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',
-            'use_featureinfo_custom_template', 'featureinfo_custom_template',
-            'default_style', 'styles'
+            'featureinfo_custom_template', 'default_style', 'styles'
         )
+
+    featureinfo_custom_template = FeatureInfoTemplateField()
