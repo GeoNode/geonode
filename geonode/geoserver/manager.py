@@ -151,17 +151,29 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
-        if instance and isinstance(instance.get_real_instance(), Dataset):
-            return self.import_dataset(
-                'import_dataset',
-                instance.uuid,
-                instance=instance,
-                files=defaults.get('files', None),
-                user=defaults.get('user', instance.owner),
-                defaults=defaults,
-                action_type='create',
-                importer_session_opts=defaults.get('importer_session_opts', None))
-        return instance
+        if uuid and instance:
+            _resource = ResourceManager._get_instance(uuid)
+            if isinstance(_resource.get_real_instance(), Dataset):
+                importer_session_opts = defaults.get('importer_session_opts', {})
+                if not importer_session_opts:
+                    _src_upload_session = Upload.objects.filter(resource=instance.get_real_instance().resourcebase_ptr)
+                    if _src_upload_session.exists():
+                        _src_upload_session = _src_upload_session.get()
+                        try:
+                            _src_importer_session = _src_upload_session.get_session.import_session.reload()
+                            importer_session_opts.update({'transforms': _src_importer_session.tasks[0].transforms})
+                        except Exception as e:
+                            logger.exception(e)
+                return self.import_dataset(
+                    'import_dataset',
+                    uuid,
+                    instance=_resource,
+                    files=defaults.get('files', None),
+                    user=defaults.get('user', _resource.owner),
+                    defaults=defaults,
+                    action_type='create',
+                    importer_session_opts=importer_session_opts)
+        return ResourceManager._get_instance(uuid) if uuid else instance
 
     def append(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
         if instance and isinstance(instance.get_real_instance(), Dataset):
@@ -196,7 +208,8 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     instance,
                     kwargs.get('files', None),
                     kwargs.get('user', instance.owner),
-                    action_type=kwargs.get('action_type', 'create'))
+                    action_type=kwargs.get('action_type', 'create'),
+                    importer_session_opts=kwargs.get('importer_session_opts', None))
                 import_session = _gs_import_session_info.import_session
                 if import_session and import_session.state == enumerations.STATE_COMPLETE:
                     _alternate = f'{_gs_import_session_info.workspace}:{_gs_import_session_info.dataset_name}'
@@ -236,9 +249,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
         if not spatial_files_type:
             raise Exception("No suitable Spatial Files avaialable for 'ALLOWED_EXTENSIONS' = {ALLOWED_EXTENSIONS}.")
-        if importer_session_opts:
-            # TODO: not supported yet
-            pass
 
         upload_session, _ = Upload.objects.get_or_create(resource=instance.get_real_instance().resourcebase_ptr, user=user)
         upload_session.resource = instance.get_real_instance().resourcebase_ptr
@@ -333,20 +343,26 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     store_name=_target_store,
                     workspace=_workspace
                 )
+                transforms = importer_session_opts.get('transforms', None)
+                if transforms:
+                    task.set_transforms(transforms)
                 #  Starting import process
                 import_session.commit()
+                import_session = import_session.reload()
 
-                # Updating Resource with the files replaced
-                if action_type.lower() == 'replace':
-                    updated_files_list = storage_manager.replace(instance, files)
-                    # Using update instead of save in order to avoid calling
-                    # side-effect function of the resource
-                    r = ResourceBase.objects.filter(id=instance.id)
-                    r.update(**updated_files_list)
-                else:
-                    instance.files = files
+                try:
+                    # Updating Resource with the files replaced
+                    if action_type.lower() == 'replace':
+                        updated_files_list = storage_manager.replace(instance, files)
+                        # Using update instead of save in order to avoid calling
+                        # side-effect function of the resource
+                        r = ResourceBase.objects.filter(id=instance.id)
+                        r.update(**updated_files_list)
+                    else:
+                        instance.files = files
+                except Exception as e:
+                    logger.exception(e)
 
-                import_session = gs_uploader.get_session(import_session.id)
                 _gs_import_session_info.import_session = import_session
                 _gs_import_session_info.dataset_name = import_session.tasks[0].layer.name
             finally:

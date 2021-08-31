@@ -449,7 +449,7 @@ class ResourceManager(ResourceManagerInterface):
                             _dataset.map = _resource.get_real_instance()
                             _dataset.save()
                     to_update = storage_manager.copy(_resource).copy()
-                    self._concrete_resource_manager.copy(_resource, uuid=_resource.uuid, defaults=to_update)
+                    _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
                 if _resource:
                     _resource.set_processing_state(enumerations.STATE_PROCESSED)
                     _resource.save(notify=False)
