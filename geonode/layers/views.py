@@ -349,6 +349,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
         status=500)
 
 
+def layer_export(request, layername, template='layers/layer_export.html'):
+    return layer_detail(request, layername, template)
+
+
 def layer_detail(request, layername, template='layers/layer_detail.html'):
     try:
         layer = _resolve_layer(
