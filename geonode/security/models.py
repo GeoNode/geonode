@@ -152,7 +152,9 @@ class PermissionLevelMixin:
 
         config = Configuration.load()
         ctype = ContentType.objects.get_for_model(self)
-        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + DATASET_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+        if self.subtype == 'vector':
+            PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
 
         resource_perms = Permission.objects.filter(
             codename__in=PERMISSIONS_TO_FETCH,
