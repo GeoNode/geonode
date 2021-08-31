@@ -163,7 +163,7 @@ class PermissionLevelMixin:
         ).values_list('codename', flat=True)
 
         # Don't filter for admin users
-        if not (user.is_superuser or user.is_staff):
+        if not user.is_superuser:
             user_model = get_user_obj_perms_model(self)
             user_resource_perms = user_model.objects.filter(
                 object_pk=self.pk,
@@ -175,7 +175,7 @@ class PermissionLevelMixin:
             implicit_perms = get_perms(user, self)
             # filter out implicit permissions unappliable to "subtype != 'vector'"
             if self.subtype != 'vector':
-                implicit_perms = [_p not in DATASET_ADMIN_PERMISSIONS for _p in implicit_perms]
+                implicit_perms = list(set(implicit_perms) - set(DATASET_ADMIN_PERMISSIONS))
 
             resource_perms = user_resource_perms.union(
                 user_model.objects.filter(permission__codename__in=implicit_perms)
@@ -186,7 +186,7 @@ class PermissionLevelMixin:
         if config.read_only:
             clauses = (Q(codename__contains=prefix) for prefix in perm_prefixes)
             query = reduce(operator.or_, clauses)
-            if (user.is_superuser or user.is_staff):
+            if user.is_superuser:
                 resource_perms = resource_perms.exclude(query)
             else:
                 perm_objects = Permission.objects.filter(codename__in=resource_perms)
