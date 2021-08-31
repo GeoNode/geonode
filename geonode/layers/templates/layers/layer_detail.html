@@ -315,23 +315,18 @@
                     <div class="tab-pane" id="download_tab2">
                     {% endif %}
                       </br>
-
-                      <h4>{% trans "Pick your download format:" %}</h4>
-                      <ul>
+                      <div class="form-actions">
+                        <a href="#" class="btn btn-primary">{% trans "Export Dataset" %}</a>
+                        <br></br>
+                      </div>
                         {% for link in links_download %}
                           {% if link.name == 'Original Dataset' %}
                             {% original_link_available resource.id link.url as original_dwn_link_available %}
                             {% if original_dwn_link_available %}
-                            <li><a href="{{ link.url }}" target="_blank" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li>
-                            {% else %}
-                            <!-- Hide the link instead. Uncomment the lines below to present a warning to the users. -->
-                            <!-- li><a href="javascript:thumbnailFeedbacks('{% trans "No data available for this resource. Please contact a system administrator or a manager." %}', '{% trans "Warning" %}');" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li -->
+                              <a href="{{ link.url }}" target="_blank" id="{{ link.name | slugify }}" class="urls">{% trans "Download original files" %}</a>
                             {% endif %}
-                          {% else %}
-                            <li><a href="{{ link.url }}" target="_blank" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li>
                           {% endif %}
                         {% endfor %}
-                      </ul>
                     </div>
                 {% endif %}
                 </div>
