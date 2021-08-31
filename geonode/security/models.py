@@ -153,6 +153,7 @@ class PermissionLevelMixin:
         config = Configuration.load()
         ctype = ContentType.objects.get_for_model(self)
         PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+        # include explicit permissions appliable to "subtype == 'vector'"
         if self.subtype == 'vector':
             PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
 
@@ -172,6 +173,9 @@ class PermissionLevelMixin:
             )
             # get user's implicit perms for anyone flag
             implicit_perms = get_perms(user, self)
+            # filter out implicit permissions unappliable to "subtype != 'vector'"
+            if self.subtype != 'vector':
+                implicit_perms = [_p not in DATASET_ADMIN_PERMISSIONS for _p in implicit_perms]
 
             resource_perms = user_resource_perms.union(
                 user_model.objects.filter(permission__codename__in=implicit_perms)
