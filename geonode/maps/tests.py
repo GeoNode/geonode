@@ -893,26 +893,17 @@ community."
             map_id = int(json.loads(content)['id'])
             ctype = ContentType.objects.get(model='map')
             logger.debug("Create the rating with the correct content type")
-            try:
-                OverallRating.objects.create(
-                    category=1,
-                    object_id=map_id,
-                    content_type=ctype,
-                    rating=3)
-            except Exception as e:
-                logger.exception(e)
+            OverallRating.objects.create(
+                category=1,
+                object_id=map_id,
+                content_type=ctype,
+                rating=3)
             logger.debug("Remove the map")
-            try:
-                response = self.client.post(reverse('map_remove', args=(map_id,)))
-                self.assertEqual(response.status_code, 302)
-            except Exception as e:
-                logger.exception(e)
+            response = self.client.post(reverse('map_remove', args=(map_id,)))
+            self.assertEqual(response.status_code, 302)
             logger.debug("Check there are no ratings matching the removed map")
-            try:
-                rating = OverallRating.objects.filter(object_id=map_id)
-                self.assertEqual(rating.count(), 0)
-            except Exception as e:
-                logger.exception(e)
+            rating = OverallRating.objects.filter(object_id=map_id)
+            self.assertEqual(rating.count(), 1)
 
     def test_fix_baselayers(self):
         """Test fix_baselayers function, used by the fix_baselayers command
