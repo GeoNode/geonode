@@ -1968,7 +1968,7 @@ THUMBNAIL_BACKGROUND = {
     # example options for a TMS service
     # 'class': 'geonode.thumbs.background.GenericXYZBackground',
     #'options': {
-    #    'url': 'http://backoffice-maps.geosolutionsgroup.com/geoserver/gwc/service/tms/1.0.0/osm%3Aosm_simple_light@EPSG%3A900913@png/{z}/{x}/{y}.png',
+    #    'url': 'http://maps.geosolutionsgroup.com/geoserver/gwc/service/tms/1.0.0/osm%3Aosm_simple_light@EPSG%3A900913@png/{z}/{x}/{y}.png',
     #    'tms': True
     #},
 }
