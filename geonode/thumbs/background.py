@@ -18,6 +18,7 @@
 #########################################################################
 
 import time
+import ast
 import typing
 import logging
 import mercantile
@@ -182,7 +183,11 @@ class GenericXYZBackground(BaseThumbBackground):
         # Slippy Maps specific attributes (to be overwritten in specific background classes)
         self.url = options.get("url", None)
         self.tile_size = options.get("tile_size", 256)
-        self.tms = True if options.get("tms") and options.get("tms") == True else False
+        self.tms = False
+        try:
+            self.tms = ast.literal_eval(str(options.get('tms')))
+        except Exception:
+            pass
         # ---
 
         # class's internal attributes
