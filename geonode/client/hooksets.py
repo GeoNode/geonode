@@ -49,6 +49,9 @@ class BaseHookSet:
     def layer_style_edit_template(self, context=None):
         return NotImplemented
 
+    def layer_export_template(self, context=None):
+        return NotImplemented
+
     # Maps
     def map_list_template(self, context=None):
         return 'maps/map_list_default.html'
