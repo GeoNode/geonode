@@ -475,7 +475,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         dataset.set_permissions(perm_spec)
         # Test user has permission with read_only=False
         self.assertFalse(dataset.user_can(bobby, 'change_dataset_data'))
-        self.assertFalse(dataset.user_can(bobby, 'change_dataset_style'))
+        self.assertTrue(dataset.user_can(bobby, 'change_dataset_style'))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):
@@ -1031,8 +1031,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Set the layer private for not authenticated users
         layer.set_permissions({'users': {'AnonymousUser': []}, 'groups': []})
 
-        url = f'{settings.GEOSERVER_LOCATION}geonode/ows?' \
-            'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
+        url = f'{settings.SITEURL}gs/ows?' \
+            f'LAYERS={layer.alternate}&STYLES=' \
             '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
             '&SRS=EPSG%3A4326' \
             '&BBOX=-81.394599749999,13.316009005566,' \
@@ -1040,25 +1040,29 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             '&WIDTH=217&HEIGHT=512'
 
         # test view_resourcebase permission on anonymous user
+        from urllib.error import HTTPError
         request = Request(url)
-        response = urlopen(request)
-        _content_type = response.getheader('Content-Type').lower()
-        self.assertEqual(
-            _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
-        )
+        request.remove_header("Authorization")
+        with self.assertRaises(HTTPError):
+            response = urlopen(request)
+            _content_type = response.getheader('Content-Type').lower()
+            self.assertEqual(
+                _content_type,
+                'application/vnd.ogc.se_xml;charset=utf-8'
+            )
 
         # test WMS with authenticated user that has not view_resourcebase:
         # the layer must be not accessible (response is xml)
         request = Request(url)
         basic_auth = base64.b64encode(b'bobby:bob')
         request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
-        response = urlopen(request)
-        _content_type = response.getheader('Content-Type').lower()
-        self.assertEqual(
-            _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
-        )
+        with self.assertRaises(HTTPError):
+            response = urlopen(request)
+            _content_type = response.getheader('Content-Type').lower()
+            self.assertEqual(
+                _content_type,
+                'application/vnd.ogc.se_xml;charset=utf-8'
+            )
 
         # test WMS with authenticated user that has view_resourcebase: the layer
         # must be accessible (response is image)
@@ -1081,7 +1085,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         )
 
         # test change_dataset_style
-        url = f'{settings.GEOSERVER_LOCATION}rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
+        url = f'{settings.SITEURL}gs/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
         sld = """<?xml version="1.0" encoding="UTF-8"?>
     <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld"
     xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
