@@ -792,6 +792,22 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
         self.assertFalse("#modal_perms" in content)
 
+    def test_layer_export(self):
+        """Test export layer view
+        """
+        layer = Layer.objects.all().first()
+        url = reverse('layer_export', args=(layer.alternate,))
+        response = self.client.get(url)
+        content = response.content.decode('utf-8')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse("Export Data" in content)
+        # Now test with a logged-in user
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(url)
+        content = response.content.decode('utf-8')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse("Export Data" in content)
+
     def test_layer_remove(self):
         """Test layer remove functionality
         """

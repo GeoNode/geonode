@@ -32,7 +32,6 @@ from itertools import chain
 from dal import autocomplete
 from requests import Request
 from urllib.parse import quote
-# from owslib.wfs import WebFeatureService
 
 from django.conf import settings
 
