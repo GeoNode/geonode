@@ -59,7 +59,7 @@ def sync_geonode_datasets(ignore_errors, filter, username, removeduplicates, upd
                 # remove duplicates
                 print("Removing duplicate links...")
                 remove_duplicate_links(layer)
-        except Exception:
+        except (Exception, RuntimeError):
             dataset_errors.append(layer.alternate)
             exception_type, error, traceback = sys.exc_info()
             print(exception_type, error, traceback)

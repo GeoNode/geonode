@@ -37,8 +37,10 @@ from .permissions import (
     VIEW_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
     ADMIN_PERMISSIONS,
+    SERVICE_PERMISSIONS,
     DATASET_ADMIN_PERMISSIONS,
-    SERVICE_PERMISSIONS
+    DATASET_EDIT_DATA_PERMISSIONS,
+    DATASET_EDIT_STYLE_PERMISSIONS,
 )
 
 from .utils import (
@@ -152,7 +154,12 @@ class PermissionLevelMixin:
 
         config = Configuration.load()
         ctype = ContentType.objects.get_for_model(self)
-        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + DATASET_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+        # include explicit permissions appliable to "subtype == 'vector'"
+        if self.subtype == 'vector':
+            PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
+        elif self.subtype == 'raster':
+            PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
 
         resource_perms = Permission.objects.filter(
             codename__in=PERMISSIONS_TO_FETCH,
@@ -160,7 +167,7 @@ class PermissionLevelMixin:
         ).values_list('codename', flat=True)
 
         # Don't filter for admin users
-        if not (user.is_superuser or user.is_staff):
+        if not user.is_superuser:
             user_model = get_user_obj_perms_model(self)
             user_resource_perms = user_model.objects.filter(
                 object_pk=self.pk,
@@ -170,6 +177,11 @@ class PermissionLevelMixin:
             )
             # get user's implicit perms for anyone flag
             implicit_perms = get_perms(user, self)
+            # filter out implicit permissions unappliable to "subtype != 'vector'"
+            if self.subtype == 'raster':
+                implicit_perms = list(set(implicit_perms) - set(DATASET_EDIT_DATA_PERMISSIONS))
+            elif self.subtype != 'vector':
+                implicit_perms = list(set(implicit_perms) - set(DATASET_ADMIN_PERMISSIONS))
 
             resource_perms = user_resource_perms.union(
                 user_model.objects.filter(permission__codename__in=implicit_perms)
@@ -180,7 +192,7 @@ class PermissionLevelMixin:
         if config.read_only:
             clauses = (Q(codename__contains=prefix) for prefix in perm_prefixes)
             query = reduce(operator.or_, clauses)
-            if (user.is_superuser or user.is_staff):
+            if user.is_superuser:
                 resource_perms = resource_perms.exclude(query)
             else:
                 perm_objects = Permission.objects.filter(codename__in=resource_perms)

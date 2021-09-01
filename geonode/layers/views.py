@@ -82,7 +82,7 @@ from geonode.layers.utils import (
     validate_input_source)
 from geonode.maps.models import Map
 from geonode.services.models import Service
-from geonode.monitoring import register_event
+from geonode.base import register_event
 from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json

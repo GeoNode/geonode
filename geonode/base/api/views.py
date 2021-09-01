@@ -967,10 +967,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             IsAuthenticated,
         ])
     def resource_service_copy(self, request, pk=None):
-        """Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'uuid'
+        """Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'pk'
 
         - PUT input_params: {
-            id: "<str: ID>"
+            instance: "<str: ID>"
             owner: "<str: username = <current_user>>"
             defaults: dict = {}
         }
@@ -989,7 +989,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
         Sample Request:
 
-        1. curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'vals={"title":"pippo"}' http://localhost:8000/api/v2/resources/<id>/copy
+        1. curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'defaults={"title":"pippo"}' http://localhost:8000/api/v2/resources/<id>/copy
             OUTPUT: {
                 "status":"ready",
                 "execution_id":"08846e84-eae4-11eb-84be-00155d41f2fb",
@@ -1026,7 +1026,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 user=request.user,
                 func_name='copy',
                 input_params={
-                    "uuid": request_params.get('uuid', resource.uuid),
+                    "instance": resource.id,
                     "owner": request_params.get('owner', request.user.username),
                     "defaults": request_params.get('defaults', '{}')
                 }

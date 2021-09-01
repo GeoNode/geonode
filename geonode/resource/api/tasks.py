@@ -44,6 +44,8 @@ def _get_param_value(_param, _input_value):
     _param_value = None
     if _param.annotation == typing.Union[object, None]:
         _param_value = resolve_type_serializer(_input_value)[0]
+    elif _param.annotation == ResourceBase:
+        _param_value = ResourceBase.objects.get(id=_input_value)
     elif _param.annotation == settings.AUTH_USER_MODEL:
         _param_value = get_user_model().objects.get(username=_input_value)
     elif _param.annotation in (dict, list, tuple) and isinstance(_input_value, str):

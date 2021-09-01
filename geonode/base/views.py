@@ -40,7 +40,7 @@ from django.urls import reverse
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.utils import resolve_object
-from geonode.monitoring import register_event
+from geonode.base import register_event
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 from geonode.tasks.tasks import set_permissions

@@ -53,7 +53,7 @@ from geonode.layers.models import Dataset
 from geonode.base.views import batch_modify
 from geonode.people.forms import ProfileForm
 from geonode.maps.models import Map, MapLayer
-from geonode.monitoring import register_event
+from geonode.base import register_event
 from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
 from geonode.layers.views import _resolve_dataset

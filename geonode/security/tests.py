@@ -452,6 +452,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'bobby': [
                     'view_resourcebase',
                     'download_resourcebase',
+                    'change_dataset_data',
                     'change_dataset_style'
                 ]
             },
@@ -467,6 +468,14 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertFalse(dataset.user_can(bobby, 'change_dataset_style'))
         # Test with view permission and read_only=True
         self.assertTrue(dataset.user_can(bobby, 'view_resourcebase'))
+        # Test on a 'raster' subtype
+        self.config.read_only = False
+        self.config.save()
+        dataset = Dataset.objects.filter(subtype='raster').first()
+        dataset.set_permissions(perm_spec)
+        # Test user has permission with read_only=False
+        self.assertFalse(dataset.user_can(bobby, 'change_dataset_data'))
+        self.assertTrue(dataset.user_can(bobby, 'change_dataset_style'))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):
@@ -1340,7 +1349,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 17)
+            self.assertEqual(geofence_rules_count, 12)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 
@@ -1415,7 +1424,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"3. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 14)
+            self.assertGreaterEqual(geofence_rules_count, 12)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
@@ -1578,10 +1587,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Test private groups
         private_groups = GroupProfile.objects.filter(
             access="private")
-        private_groups.first().leave(standard_user)
-        Dataset.objects.filter(
-            ~Q(owner=standard_user)).update(
-                group=private_groups.first().group)
+        if private_groups.first():
+            private_groups.first().leave(standard_user)
+            Dataset.objects.filter(
+                ~Q(owner=standard_user)).update(
+                    group=private_groups.first().group)
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=admin_user,
@@ -1597,7 +1607,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(1, actual.count())
+        self.assertEqual(8, actual.count())
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=None,
@@ -1685,14 +1695,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'groups':
                 [
                     {
-                        'id': 2,
+                        'id': 3,
                         'title': 'anonymous',
                         'name': 'anonymous',
                         'permissions': 'view'
                     },
                     {
-                        'id': 3,
-                        'logo': f'{settings.SITEURL}static/geonode/img/missing_thumb.png',
+                        'id': 2,
                         'name': 'registered-members',
                         'permissions': 'none',
                         'title': 'Registered Members'

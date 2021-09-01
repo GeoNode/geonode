@@ -35,7 +35,7 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from geonode.people.forms import ProfileForm
-from geonode.monitoring import register_event
+from geonode.base import register_event
 from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
 from geonode.base.auth import get_or_create_token

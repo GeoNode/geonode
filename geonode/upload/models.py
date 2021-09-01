@@ -95,6 +95,8 @@ class Upload(models.Model):
     mosaic_elev_regex = models.CharField(max_length=128, null=True)
     mosaic_elev_value = models.CharField(max_length=128, null=True)
 
+    resume_url = models.CharField(max_length=256, null=True, blank=True)
+
     class Meta:
         ordering = ['-date']
 
@@ -166,9 +168,14 @@ class Upload(models.Model):
                 return 66.0
             return 80.0
 
+    def set_resume_url(self, resume_url):
+        if self.resume_url != resume_url:
+            self.resume_url = resume_url
+            Upload.objects.filter(id=self.id).update(resume_url=resume_url)
+
     def get_resume_url(self):
         if self.state == enumerations.STATE_WAITING and self.import_id:
-            return f"{reverse('data_upload')}?id={self.import_id}"
+            return self.resume_url
         return None
 
     def get_delete_url(self):
@@ -246,6 +253,8 @@ class Upload(models.Model):
             Upload.objects.filter(id=self.id).update(state=state)
         if self.resource:
             self.resource.set_processing_state(state)
+            if state != enumerations.STATE_PROCESSED:
+                self.resource.set_dirty_state()
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'

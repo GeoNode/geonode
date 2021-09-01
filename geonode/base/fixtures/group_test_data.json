@@ -8,27 +8,6 @@
       }
     },
     {
-      "pk": 3,
-      "model": "auth.group",
-      "fields": {
-        "name": "registered-members",
-        "permissions": []
-      }
-    },
-    {
-        "fields": {
-            "access": "private",
-            "description": "Registered Members",
-            "slug": "registered-members",
-            "last_modified": "2019-09-09 15:45:34",
-            "created": "2019-09-09 15:45:34",
-            "group": 3,
-            "title": "Registered Members"
-        },
-        "model": "groups.groupprofile",
-        "pk": 1
-    },
-    {
         "fields": {
             "access": "public",
             "description": "baz",
