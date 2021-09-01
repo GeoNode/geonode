@@ -37,8 +37,10 @@ from .permissions import (
     VIEW_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
     ADMIN_PERMISSIONS,
+    SERVICE_PERMISSIONS,
     DATASET_ADMIN_PERMISSIONS,
-    SERVICE_PERMISSIONS
+    DATASET_EDIT_DATA_PERMISSIONS,
+    DATASET_EDIT_STYLE_PERMISSIONS,
 )
 
 from .utils import (
@@ -156,6 +158,8 @@ class PermissionLevelMixin:
         # include explicit permissions appliable to "subtype == 'vector'"
         if self.subtype == 'vector':
             PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
+        elif self.subtype == 'raster':
+            PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
 
         resource_perms = Permission.objects.filter(
             codename__in=PERMISSIONS_TO_FETCH,
@@ -174,7 +178,9 @@ class PermissionLevelMixin:
             # get user's implicit perms for anyone flag
             implicit_perms = get_perms(user, self)
             # filter out implicit permissions unappliable to "subtype != 'vector'"
-            if self.subtype != 'vector':
+            if self.subtype == 'raster':
+                implicit_perms = list(set(implicit_perms) - set(DATASET_EDIT_DATA_PERMISSIONS))
+            elif self.subtype != 'vector':
                 implicit_perms = list(set(implicit_perms) - set(DATASET_ADMIN_PERMISSIONS))
 
             resource_perms = user_resource_perms.union(

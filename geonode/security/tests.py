@@ -475,7 +475,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         dataset.set_permissions(perm_spec)
         # Test user has permission with read_only=False
         self.assertFalse(dataset.user_can(bobby, 'change_dataset_data'))
-        self.assertFalse(dataset.user_can(bobby, 'change_dataset_style'))
+        self.assertTrue(dataset.user_can(bobby, 'change_dataset_style'))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):

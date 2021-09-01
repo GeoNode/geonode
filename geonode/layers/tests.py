@@ -932,7 +932,8 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         user = get_anonymous_user()
         layer.set_permissions({'users': {user.username: ['change_dataset_data']}})
         perms = layer.get_all_level_info()
-        self.assertIn('change_dataset_data', perms['users'][user])
+        self.assertNotIn(user, perms['users'])
+        self.assertNotIn(user.username, perms['users'])
 
     def test_batch_edit(self):
         """
