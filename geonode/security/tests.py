@@ -452,6 +452,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'bobby': [
                     'view_resourcebase',
                     'download_resourcebase',
+                    'change_dataset_data',
                     'change_dataset_style'
                 ]
             },
@@ -467,6 +468,14 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertFalse(dataset.user_can(bobby, 'change_dataset_style'))
         # Test with view permission and read_only=True
         self.assertTrue(dataset.user_can(bobby, 'view_resourcebase'))
+        # Test on a 'raster' subtype
+        self.config.read_only = False
+        self.config.save()
+        dataset = Dataset.objects.filter(subtype='raster').first()
+        dataset.set_permissions(perm_spec)
+        # Test user has permission with read_only=False
+        self.assertFalse(dataset.user_can(bobby, 'change_dataset_data'))
+        self.assertTrue(dataset.user_can(bobby, 'change_dataset_style'))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_perm_specs_synchronization(self):

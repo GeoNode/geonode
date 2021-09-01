@@ -185,8 +185,9 @@ def update(ctx):
 def migrations(ctx):
     print("**************************migrations*******************************")
     ctx.run(f"python manage.py migrate --noinput --settings={_localsettings()}", pty=True)
-    ctx.run(f"python manage.py updategeoip --settings={_localsettings()}", pty=True)
     try:
+        if os.environ.get('MONITORING_ENABLED', False):
+            ctx.run(f"python manage.py updategeoip --settings={_localsettings()}", pty=True)
         ctx.run(f"python manage.py rebuild_index --noinput --settings={_localsettings()}", pty=True)
     except Exception:
         pass
@@ -267,8 +268,8 @@ def monitoringfixture(ctx):
 @task
 def updategeoip(ctx):
     print("**************************update geoip*******************************")
-    ctx.run(f"django-admin.py updategeoip \
---settings={_localsettings()}", pty=True)
+    if os.environ.get('MONITORING_ENABLED', False):
+        ctx.run(f"django-admin.py updategeoip --settings={_localsettings()}", pty=True)
 
 
 @task

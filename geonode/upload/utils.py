@@ -57,7 +57,7 @@ def _log(msg, *args):
 
 
 iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
-                     r'([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:T(?P<hour>([01][0-9])' +
+                     r'([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:[ T]?(?P<hour>([01][0-9])' +
                      r'|(?:2[0123]))(\:?(?P<min>[0-5][0-9])(\:?(?P<sec>[0-5][0-9]([\,\.]\d{1,10})?))?)' +
                      r'?(?:Z|([\-+](?:([01][0-9])|(?:2[0123]))(\:?(?:[0-5][0-9]))?))?)?))$').match
 
@@ -469,7 +469,7 @@ def check_import_session_is_valid(request, upload_session, import_session):
         return True
 
 
-def _get_time_dimensions(layer, upload_session):
+def _get_time_dimensions(layer, upload_session, values=None):
     date_time_keywords = [
         'date',
         'time',
@@ -482,11 +482,11 @@ def _get_time_dimensions(layer, upload_session):
         'enddate']
 
     def filter_name(b):
-        return any([_kw in b for _kw in date_time_keywords])
+        return any([_kw in b.lower() for _kw in date_time_keywords])
 
     att_list = []
     try:
-        dataset_values = _get_dataset_values(layer, upload_session, expand=1)
+        dataset_values = values or _get_dataset_values(layer, upload_session, expand=1)
         if layer and dataset_values:
             ft = dataset_values[0]
             attributes = [{'name': k, 'binding': ft[k]['binding'] or 0} for k in ft.keys()]

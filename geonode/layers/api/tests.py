@@ -23,7 +23,7 @@ from urllib.parse import urljoin
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from geonode.layers.models import Dataset
+from geonode.layers.models import Dataset, Attribute
 from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
@@ -61,12 +61,58 @@ class DatasetsApiTests(APITestCase):
             self.assertTrue(_l['resource_type'], 'dataset')
         # Test list response doesn't have attribute_set
         self.assertIsNone(response.data['datasets'][0].get('attribute_set'))
+        self.assertIsNone(response.data['datasets'][0].get('featureinfo_custom_template'))
+
+        _dataset = Dataset.objects.first()
+
         # Test detail response has attribute_set
-        url = urljoin(f"{reverse('datasets-list')}/", f"{Dataset.objects.first().pk}")
+        url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
         response = self.client.get(url, format='json')
         self.assertIsNotNone(response.data['dataset'].get('ptype'))
         self.assertIsNotNone(response.data['dataset'].get('subtype'))
         self.assertIsNotNone(response.data['dataset'].get('attribute_set'))
+
+        # Test "featureinfo_custom_template"
+        _attribute, _ = Attribute.objects.get_or_create(dataset=_dataset, attribute='name')
+        try:
+            _attribute.visible = True
+            _attribute.attribute_type = Attribute.TYPE_PROPERTY
+            _attribute.description = "The Name"
+            _attribute.attribute_label = "Name"
+            _attribute.display_order = 1
+            _attribute.save()
+
+            url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
+            response = self.client.get(url, format='json')
+            self.assertIsNotNone(response.data['dataset'].get('featureinfo_custom_template'))
+            self.assertEqual(
+                response.data['dataset'].get('featureinfo_custom_template'),
+                '<div><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
+                             <div class="col-xs-6" style="word-wrap: break-word;">${properties.name}</div></div></div>')
+
+            _dataset.featureinfo_custom_template = '<div>Foo Bar</div>'
+            _dataset.save()
+            url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
+            response = self.client.get(url, format='json')
+            self.assertIsNotNone(response.data['dataset'].get('featureinfo_custom_template'))
+            self.assertEqual(
+                response.data['dataset'].get('featureinfo_custom_template'),
+                '<div><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
+                             <div class="col-xs-6" style="word-wrap: break-word;">${properties.name}</div></div></div>')
+
+            _dataset.use_featureinfo_custom_template = True
+            _dataset.save()
+            url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
+            response = self.client.get(url, format='json')
+            self.assertIsNotNone(response.data['dataset'].get('featureinfo_custom_template'))
+            self.assertEqual(
+                response.data['dataset'].get('featureinfo_custom_template'),
+                '<div>Foo Bar</div>')
+        finally:
+            _attribute.delete()
+            _dataset.featureinfo_custom_template = None
+            _dataset.use_featureinfo_custom_template = False
+            _dataset.save()
 
     def test_raw_HTML_stripped_properties(self):
         """
