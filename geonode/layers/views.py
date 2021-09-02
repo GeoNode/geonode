@@ -32,7 +32,6 @@ from itertools import chain
 from dal import autocomplete
 from requests import Request
 from urllib.parse import quote
-from owslib.wfs import WebFeatureService
 
 from django.conf import settings
 
@@ -347,6 +346,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
         json.dumps(out),
         content_type='application/json',
         status=500)
+
+
+def layer_export(request, layername, template='layers/layer_export.html'):
+    return layer_detail(request, layername, template)
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
@@ -700,62 +703,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                                   request.user.has_perm('view_resourcebase', map_layer.map.get_self_resource())]
     return TemplateResponse(
         request, template, context=context_dict)
-
-
-# Loads the data using the OWS lib when the "Do you want to filter it"
-# button is clicked.
-def load_layer_data(request, template='layers/layer_detail.html'):
-    context_dict = {}
-    data_dict = json.loads(request.POST.get('json_data'))
-    layername = data_dict['layer_name']
-    filtered_attributes = ''
-    if not isinstance(data_dict['filtered_attributes'], str):
-        filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
-    name = layername if ':' not in layername else layername.split(':')[1]
-    location = f"{(settings.OGC_SERVER['default']['LOCATION'])}wms"
-    headers = {}
-    if request and 'access_token' in request.session:
-        access_token = request.session['access_token']
-        headers['Authorization'] = f'Bearer {access_token}'
-
-    try:
-        wfs = WebFeatureService(
-            location,
-            version='1.1.0',
-            headers=headers
-        )
-        response = wfs.getfeature(
-            typename=name,
-            propertyname=filtered_attributes,
-            outputFormat='application/json')
-        x = response.read()
-        x = json.loads(x)
-        features_response = json.dumps(x)
-        decoded = json.loads(features_response)
-        decoded_features = decoded['features']
-        properties = {}
-        for key in decoded_features[0]['properties']:
-            properties[key] = []
-
-        # loop the dictionary based on the values on the list and add the properties
-        # in the dictionary (if doesn't exist) together with the value
-        from collections.abc import Iterable
-        for i in range(len(decoded_features)):
-            for key, value in decoded_features[i]['properties'].items():
-                if value != '' and isinstance(value, (str, int, float)) and (
-                        (isinstance(value, Iterable) and '/load_layer_data' not in value) or value):
-                    properties[key].append(value)
-
-        for key in properties:
-            properties[key] = list(set(properties[key]))
-            properties[key].sort()
-
-        context_dict["feature_properties"] = properties
-    except Exception:
-        traceback.print_exc()
-        logger.error("Possible error with OWSLib.")
-    return HttpResponse(json.dumps(context_dict),
-                        content_type="application/json")
 
 
 def layer_feature_catalogue(
