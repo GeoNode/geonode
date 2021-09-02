@@ -47,7 +47,34 @@
            url: siteUrl + "security/bulk-permissions",
            data: {
              permissions: JSON.stringify(permissions),
-             resources: selected_ids
+             resources: JSON.stringify(selected_ids)
+           },
+           beforeSend: function(){
+              // Handle the beforeSend event
+              try {
+                  $(".lmask").modal("show");
+              } catch(err) {
+                  console.log(err);
+              }
+              try {
+                  $("#_perms_processing").modal("show");
+              } catch(err) {
+                  console.log(err);
+                }
+            },
+            complete: function(){
+                  // Handle the complete event
+                  try {
+                      $(".lmask").modal("hide");
+                  } catch(err) {
+                      console.log(err);
+                  }
+                  try {
+                      $("#_perms_processing").modal("hide");
+                  } catch(err) {
+                      console.log(err);
+                  }
+
            },
            success: function(data) {
              var not_changed = $.parseJSON(data).not_changed;

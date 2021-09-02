@@ -35,4 +35,8 @@
   {% with include_spatial='true' %}
     {% include 'search/search_scripts.html' %}
   {% endwith %}
+
+  {% if GEONODE_SECURITY_ENABLED %}
+  {% include "_permissions_form_js.html" %}
+  {% endif %}
 {% endblock extra_script %}

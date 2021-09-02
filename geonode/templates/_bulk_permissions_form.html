@@ -17,9 +17,10 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
-          <button class="btn btn-primary" ng-click="bulk_perms_submit()" id="bulk_perms_submit">{% trans "Apply Changes" %}</button>
+          <button class="btn btn-primary" ng-click="bulk_perms_submit()" id="bulk_perms_submit" type="button">{% trans "Apply Changes" %}</button>
         </div>
       </div>
     </div>
   </form>
 </div>
+{% include "_update_permissions_modal.html" %}
