@@ -158,23 +158,28 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         new_url = ParseResult(
             parsed_url.scheme, parsed_url.netloc, parsed_url.path,
             parsed_url.params, encoded_get_args, parsed_url.fragment
-        ).geturl()
+        )
         return (new_url, _service, _version, _request)
 
     @property
     def parsed_service(self):
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
-        ogc_server_settings = settings.OGC_SERVER['default']
         _url, _parsed_service = WebMapService(
-            cleaned_url,
+            cleaned_url.geturl(),
             version=version,
-            proxy_base=None,
-            timeout=ogc_server_settings.get('TIMEOUT', 60))
+            proxy_base=None)
         return _parsed_service
 
-    def create_cascaded_store(self):
+    def create_cascaded_store(self, service):
+        ogc_wms_url = service.service_url
+        ogc_wms_get_capabilities = service.operations.get('GetCapabilities', None)
+        if ogc_wms_get_capabilities and ogc_wms_get_capabilities.get('methods', None):
+            for _op_method in ogc_wms_get_capabilities.get('methods'):
+                if _op_method.get('type', None).upper() == 'GET' and _op_method.get('url', None):
+                    ogc_wms_url = _op_method.get('url')
+
         store = self._get_store(create=True)
-        store.capabilitiesURL = self.url
+        store.capabilitiesURL = ogc_wms_url
         cat = store.catalog
         cat.save(store)
         return store
@@ -185,23 +190,47 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         :type owner: geonode.people.models.Profile
 
         """
+        cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
+        operations = {}
+        for _op in self.parsed_service.operations:
+            try:
+                _methods = []
+                for _op_method in _op.get('methods', []):
+                    _methods.append(
+                        {
+                            'type': _op_method.get('type', None),
+                            'url': _op_method.get('url', None)
+                        }
+                    )
+
+                _name = getattr(_op, 'name', None) if hasattr(_op, 'name') else _op.get('name', None)
+                _formatOptions = getattr(_op, 'formatOptions', []) if hasattr(_op, 'formatOptions') else _op.get('formatOptions', [])
+                if _name:
+                    operations[_name] = {
+                        'name': _name,
+                        'methods': _methods,
+                        'formatOptions': _formatOptions
+                    }
+            except Exception as e:
+                logger.exception(e)
         instance = models.Service(
             uuid=str(uuid4()),
-            base_url=self.url,
+            base_url=f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}".encode("utf-8", "ignore").decode('utf-8'),
+            extra_queryparams=cleaned_url.query,
             proxy_base=None,  # self.proxy_base,
             type=self.service_type,
             method=self.indexing_method,
             owner=owner,
             parent=parent,
             metadata_only=True,
-            version=self.parsed_service.identification.version,
+            version=str(self.parsed_service.identification.version).encode("utf-8", "ignore").decode('utf-8'),
             name=self.name,
-            title=self.parsed_service.identification.title or self.name,
-            abstract=self.parsed_service.identification.abstract or _(
+            title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode('utf-8') or self.name,
+            abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode('utf-8') or _(
                 "Not provided"),
+            operations=operations,
             online_resource=self.parsed_service.provider.url,
         )
-        instance.save()
         return instance
 
     def get_keywords(self):
@@ -236,7 +265,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         logger.debug(f"dataset_meta: {dataset_meta}")
         if self.indexing_method == CASCADED:
             logger.debug("About to import cascaded layer...")
-            geoserver_resource = self._import_cascaded_resource(dataset_meta)
+            geoserver_resource = self._import_cascaded_resource(geonode_service, dataset_meta)
             resource_fields = self._get_cascaded_dataset_fields(
                 geoserver_resource)
             keywords = []
@@ -258,9 +287,9 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             resource_fields["is_approved"] = False
             resource_fields["is_published"] = False
         geonode_dataset = self._create_dataset(geonode_service, **resource_fields)
-        self._create_dataset_service_link(geonode_dataset)
-        self._create_dataset_legend_link(geonode_dataset)
-        self._create_dataset_thumbnail(geonode_dataset)
+        self._create_dataset_service_link(geonode_service, geonode_dataset)
+        self._create_dataset_legend_link(geonode_service, geonode_dataset)
+        self._create_dataset_thumbnail(geonode_service, geonode_dataset)
 
     def has_resources(self):
         return True if len(self.parsed_service.contents) > 0 else False
@@ -277,7 +306,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             remote_service=geonode_service,
             remote_typename=geonode_service.name,
             sourcetype=base_enumerations.SOURCE_TYPE_REMOTE,
-            ptype=getattr(geonode_service, "ptype", "gxp_wmscsource"),
+            ptype=getattr(geonode_service, "ptype", "gxp_wmscsource") or "gxp_wmscsource",
             **resource_fields
         )
         if geonode_service.method == INDEXED:
@@ -293,7 +322,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
         return geonode_dataset
 
-    def _create_dataset_thumbnail(self, geonode_dataset):
+    def _create_dataset_thumbnail(self, geonode_service, geonode_dataset):
         """Create a thumbnail with a WMS request."""
         create_thumbnail(
             instance=geonode_dataset,
@@ -303,21 +332,19 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             overwrite=True,
         )
 
-    def _create_dataset_legend_link(self, geonode_dataset):
+    def _create_dataset_legend_link(self, geonode_service, geonode_dataset):
         """Get the layer's legend and save it locally
 
         Regardless of the service being INDEXED or CASCADED we're always
         creating the legend by making a request directly to the original
         service.
         """
-        cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
-        _p_url = urlparse(self.url)
         legend_url = get_legend_url(
             geonode_dataset, "",
-            service_url=f"{_p_url.scheme}://{_p_url.netloc}{_p_url.path}",
+            service_url=geonode_service.base_url,
             dataset_name=geonode_dataset.name,
-            version=version,
-            params=_p_url.query
+            version=geonode_service.version,
+            params=geonode_service.extra_queryparams
         )
         logger.debug(f"legend_url: {legend_url}")
         try:
@@ -337,10 +364,19 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             logger.exception(e)
         return legend_url
 
-    def _create_dataset_service_link(self, geonode_dataset):
-        ogc_wms_url = geonode_dataset.ows_url
-        ogc_wms_name = f'OGC WMS: {geonode_dataset.store} Service'
+    def _create_dataset_service_link(self, geonode_service, geonode_dataset):
         ogc_wms_link_type = 'OGC:WMS'
+        ogc_wms_name = f'OGC WMS: {geonode_dataset.store} Service'
+
+        ogc_wms_url = geonode_dataset.ows_url
+        ogc_wms_get_capabilities = geonode_service.operations.get('GetCapabilities', None)
+        if ogc_wms_get_capabilities and ogc_wms_get_capabilities.get('methods', None):
+            for _op_method in ogc_wms_get_capabilities.get('methods'):
+                if _op_method.get('type', None).upper() == 'GET' and _op_method.get('url', None):
+                    ogc_wms_url = _op_method.get('url')
+                    geonode_dataset.ows_url = ogc_wms_url
+                    Dataset.objects.filter(id=geonode_dataset.id).update(ows_url=ogc_wms_url)
+
         if Link.objects.filter(resource=geonode_dataset.resourcebase_ptr,
                                name=ogc_wms_name,
                                link_type=ogc_wms_link_type,).count() < 2:
@@ -416,11 +452,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             )
         return store
 
-    def _import_cascaded_resource(self, dataset_meta):
+    def _import_cascaded_resource(self, service, dataset_meta):
         """Import a layer into geoserver in order to enable cascading."""
         store = self._get_store(create=False)
         if not store:
-            store = self.create_cascaded_store()
+            store = self.create_cascaded_store(service)
         if not store:
             raise RuntimeError("Could not create WMS CASCADE store.")
         cat = store.catalog
@@ -488,12 +524,10 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     def __init__(self, url):
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
-        ogc_server_settings = settings.OGC_SERVER['default']
         url = self._probe_geonode_wms(url)
         self.url, _ = WebMapService(
             url,
-            proxy_base=None,
-            timeout=ogc_server_settings.get('TIMEOUT', 60))
+            proxy_base=None)
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
         self.name = slugify(self.url)[:255]
@@ -513,7 +547,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         dataset_meta = self.get_resource(resource_id)
         if self.indexing_method == CASCADED:
             logger.debug("About to import cascaded layer...")
-            geoserver_resource = self._import_cascaded_resource(dataset_meta)
+            geoserver_resource = self._import_cascaded_resource(geonode_service, dataset_meta)
             resource_fields = self._get_cascaded_dataset_fields(
                 geoserver_resource)
             keywords = []
@@ -536,9 +570,9 @@ class GeoNodeServiceHandler(WmsServiceHandler):
             resource_fields["is_published"] = False
         try:
             geonode_dataset = self._create_dataset(geonode_service, **resource_fields)
-            self._enrich_dataset_metadata(geonode_dataset)
-            self._create_dataset_service_link(geonode_dataset)
-            self._create_dataset_legend_link(geonode_dataset)
+            self._enrich_dataset_metadata(geonode_service, geonode_dataset)
+            self._create_dataset_service_link(geonode_service, geonode_dataset)
+            self._create_dataset_legend_link(geonode_service, geonode_dataset)
         except Exception as e:
             logger.error(e)
 
@@ -572,7 +606,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         _url = f"{url.scheme}://{url.netloc}/geoserver/ows"
         return _url
 
-    def _enrich_dataset_metadata(self, geonode_dataset):
+    def _enrich_dataset_metadata(self, geonode_service, geonode_dataset):
         workspace, layername = geonode_dataset.name.split(
             ":") if ":" in geonode_dataset.name else (None, geonode_dataset.name)
         url = urlsplit(self.url)
