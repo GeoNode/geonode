@@ -68,7 +68,6 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         base.ServiceHandlerBase.__init__(self, url)
         self.proxy_base = None
         self.url = url
-        self.parsed_service = ArcMapService(self.url)
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
@@ -88,9 +87,13 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
         self.indexing_method = INDEXED
         self.name = slugify(self.url)[:255]
-        self.title = _title
+        self.title = str(_title).encode("utf-8", "ignore").decode('utf-8')
 
-    def create_cascaded_store(self):
+    @property
+    def parsed_service(self):
+        return ArcMapService(self.url)
+
+    def create_cascaded_store(self, service):
         return None
 
     def create_geonode_service(self, owner, parent=None):
@@ -100,7 +103,6 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         :type owner: geonode.people.models.Profile
 
         """
-
         instance = models.Service(
             uuid=str(uuid4()),
             base_url=self.url,
@@ -110,14 +112,13 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             owner=owner,
             parent=parent,
             metadata_only=True,
-            version=self.parsed_service._json_struct.get("currentVersion", 0.0),
+            version=str(self.parsed_service._json_struct.get("currentVersion", 0.0)).encode("utf-8", "ignore").decode('utf-8'),
             name=self.name,
             title=self.title,
-            abstract=self.parsed_service._json_struct.get("serviceDescription") or _(
+            abstract=str(self.parsed_service._json_struct.get("serviceDescription")).encode("utf-8", "ignore").decode('utf-8') or _(
                 "Not provided"),
             online_resource=self.parsed_service.url,
         )
-        instance.save()
         return instance
 
     def get_keywords(self):
@@ -202,9 +203,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             resource_fields["is_published"] = False
         geonode_dataset = self._create_dataset(
             geonode_service, **resource_fields)
-        # self._enrich_dataset_metadata(geonode_dataset)
-        self._create_dataset_service_link(geonode_dataset)
-        # self._create_dataset_legend_link(geonode_dataset)
+        self._create_dataset_service_link(geonode_service, geonode_dataset)
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
@@ -292,7 +291,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         # URL); in order to create a thumbnail for ESRI layer, a user must upload one.
         logger.debug("Skipping thumbnail execution for layer from ESRI service.")
 
-    def _create_dataset_service_link(self, geonode_dataset):
+    def _create_dataset_service_link(self, geonode_service, geonode_dataset):
         Link.objects.get_or_create(
             resource=geonode_dataset.resourcebase_ptr,
             url=geonode_dataset.ows_url,
@@ -316,7 +315,6 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         ArcMapServiceHandler.__init__(self, url)
         self.proxy_base = None
         self.url = url
-        self.parsed_service = ArcImageService(self.url)
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
@@ -337,3 +335,7 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         self.indexing_method = INDEXED
         self.name = slugify(self.url)[:255]
         self.title = _title
+
+    @property
+    def parsed_service(self):
+        return ArcImageService(self.url)

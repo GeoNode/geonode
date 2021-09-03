@@ -59,7 +59,7 @@ def harvest_resource(self, harvest_job_id):
     layer = None
     try:
         handler = get_service_handler(
-            base_url=harvest_job.service.base_url,
+            base_url=harvest_job.service.service_url,
             proxy_base=harvest_job.service.proxy_base,
             service_type=harvest_job.service.type
         )
@@ -131,9 +131,12 @@ def probe_services(self):
     lock_id = f'{name.decode()}-lock-{hexdigest}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            for service in models.Service.objects.all():
-                try:
-                    service.probe = service.probe_service()
-                    service.save()
-                except Exception as e:
-                    logger.error(e)
+            try:
+                for service in models.Service.objects.all():
+                    try:
+                        _probe = service.probe_service()
+                        models.Service.objects.filter(id=service.id).update(probe=_probe)
+                    except Exception as e:
+                        logger.error(e)
+            except Exception as e:
+                logger.error(e)
