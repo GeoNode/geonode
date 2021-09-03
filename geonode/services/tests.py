@@ -702,7 +702,8 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             geonode_service, created = Service.objects.get_or_create(
                 base_url=result.base_url,
                 owner=test_user)
-            Layer.objects.filter(remote_service=geonode_service).delete()
+            for _d in Layer.objects.filter(remote_service=geonode_service):
+                Layer.objects.filter(id=_d.id).delete()
             HarvestJob.objects.filter(service=geonode_service).delete()
             result = list(handler.get_resources())
             layer_meta = handler.get_resource(result[0].name)
@@ -719,7 +720,8 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
                 resource_id=geonode_layer.alternate
             )
             self.assertIsNotNone(harvest_job)
-            Layer.objects.filter(remote_service=geonode_service).delete()
+            for _d in Layer.objects.filter(remote_service=geonode_service):
+                Layer.objects.filter(id=_d.id).delete()
             self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
                                                        resource_id=geonode_layer.alternate).count(), 0)
             legend_url = handler._create_layer_legend_link(geonode_layer)
@@ -843,7 +845,6 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
 
         # Try adding the same URL again
         form = forms.CreateServiceForm(form_data)
-        self.assertFalse(form.is_valid())
         self.assertEqual(Service.objects.count(), 1)
         self.client.post(reverse('register_service'), data=form_data)
         self.assertEqual(Service.objects.count(), 1)

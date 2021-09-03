@@ -189,7 +189,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
                 []
             ],
             [
-                "http://www502.regione.toscana.it/wmsraster/com.rt.wms.RTmap/wms?map=wmsgeologia&map_resolution=91&",
+                "http://www502.regione.toscana.it/wmsraster/com.rt.wms.RTmap/wms",
                 ["rt_geologia.dbg_risorse_minerarie"],
                 []
             ]
