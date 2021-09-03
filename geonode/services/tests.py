@@ -511,7 +511,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
                                                        resource_id=geonode_layer.alternate).count(), 0)
         except (Service.DoesNotExist, HTTPError) as e:
             # In the case the Service URL becomes inaccessible for some reason
-            logger.info(e)
+            logger.error(e)
 
 
 class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
@@ -534,6 +534,16 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_parsed_wms.identification.title = self.phony_title
         mock_parsed_wms.identification.version = self.phony_version
         mock_parsed_wms.identification.keywords = self.phony_keywords
+        mock_parsed_wms_getcapa_operation = {
+            'name': 'GetCapabilities',
+            'methods': [
+                {
+                    'type': 'Get',
+                    'url': self.phony_url
+                }
+            ]
+        }
+        mock_parsed_wms.operations = [mock_parsed_wms_getcapa_operation, ]
         mock_layer_meta = mock.MagicMock(ContentMetadata)
         mock_layer_meta.name = self.phony_layer_name
         mock_layer_meta.title = self.phony_layer_name
@@ -630,6 +640,35 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(result.title, self.phony_title)
         # mata_data_only is set to Try
         self.assertTrue(result.metadata_only)
+
+    @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
+                autospec=True)
+    def test_geonode_service_uses_given_getmap_params(self, mock_wms):
+        phony_url = ('https://www.geoportal.hessen.de/mapbender/php/wms.php?'
+                     'layer_id=36995&PHPSESSID=27jb139lqk29rmul77beuji261&'
+                     'withChilds=1&'
+                     'version=1.1.1&'
+                     'REQUEST=GetCapabilities&'
+                     'SERVICE=WMS')
+        mock_wms.return_value = (
+            phony_url, self.parsed_wms)
+        handler = wms.WmsServiceHandler(phony_url)
+        result = handler.create_geonode_service(self.test_user)
+        self.assertEqual(result.base_url, 'https://www.geoportal.hessen.de/mapbender/php/wms.php')
+        self.assertEqual(
+            result.extra_queryparams,
+            'layer_id=36995&PHPSESSID=27jb139lqk29rmul77beuji261&withChilds=1&REQUEST=GetCapabilities&SERVICE=WMS')
+        self.assertEqual(result.service_url, f"{result.base_url}?{result.extra_queryparams}")
+        self.assertEqual(result.type, handler.service_type)
+        self.assertEqual(result.method, handler.indexing_method)
+        self.assertEqual(result.owner, self.test_user)
+        self.assertEqual(result.version, self.phony_version)
+        self.assertEqual(result.name, handler.name)
+        self.assertEqual(result.title, self.phony_title)
+        # mata_data_only is set to Try
+        self.assertTrue(result.metadata_only)
+        self.assertDictEqual(result.operations, {'GetCapabilities': {'name': 'GetCapabilities', 'methods': [
+                             {'type': 'Get', 'url': 'http://a-really-long-and-fake-name-here-so-that-we-use-it-in-tests'}], 'formatOptions': []}})
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)

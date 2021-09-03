@@ -121,9 +121,12 @@ def probe_services(self):
     lock_id = f'{name.decode()}-lock-{hexdigest}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            for service in models.Service.objects.all():
-                try:
-                    service.probe = service.probe_service()
-                    service.save()
-                except Exception as e:
-                    logger.error(e)
+            try:
+                for service in models.Service.objects.all():
+                    try:
+                        _probe = service.probe_service()
+                        models.Service.objects.filter(id=service.id).update(probe=_probe)
+                    except Exception as e:
+                        logger.error(e)
+            except Exception as e:
+                logger.error(e)

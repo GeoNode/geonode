@@ -16,15 +16,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import logging
+
+from urllib.parse import (
+    urljoin,
+    urlparse,
+    ParseResult)
+
 from django.db import models
-from django.conf import settings
 from django.urls import reverse
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django_jsonfield_backport.models import JSONField
+
 from geonode.base.models import ResourceBase
 from geonode.people.enumerations import ROLE_VALUES
-from urllib.parse import urljoin
 
 from . import enumerations
 
@@ -93,6 +99,15 @@ class Service(ResourceBase):
         null=True,
         blank=True
     )
+    extra_queryparams = models.TextField(
+        null=True,
+        blank=True
+    )
+    operations = JSONField(
+        default=dict,
+        null=True,
+        blank=True
+    )
     username = models.CharField(
         max_length=50,
         null=True,
@@ -155,7 +170,13 @@ class Service(ResourceBase):
 
     @property
     def service_url(self):
-        service_url = self.base_url if not self.proxy_base else urljoin(
+        parsed_url = urlparse(self.base_url)
+        encoded_get_args = self.extra_queryparams
+        service_url = ParseResult(
+            parsed_url.scheme, parsed_url.netloc, parsed_url.path,
+            parsed_url.params, encoded_get_args, parsed_url.fragment
+        )
+        service_url = service_url.geturl() if not self.proxy_base else urljoin(
             settings.SITEURL, reverse('service_proxy', args=[self.id]))
         return service_url
 
