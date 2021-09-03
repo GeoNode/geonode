@@ -63,13 +63,15 @@
       <style type="text/css">
         /* Additional styles by custom themes */
         {% if custom_theme.body_color %}
-        body {
-          background: {{ custom_theme.body_color }};
-          {% if custom_theme.body_text_color %}
-          color: {{ custom_theme.body_text_color }};
-          {% endif %}
-        }
-
+          body {
+            background: {{ custom_theme.body_color }};
+            {% if custom_theme.body_text_color %}
+            color: {{ custom_theme.body_text_color }};
+            {% endif %}
+          }
+          #wrap {
+            background: {{ custom_theme.body_color }};
+          }
         .home #partners {
           background: {{ custom_theme.body_color }};
           padding: 2em 0;
