@@ -195,7 +195,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         for _op in self.parsed_service.operations:
             try:
                 _methods = []
-                for _op_method in _op.get('methods', []):
+                for _op_method in (getattr(_op, 'methods', []) if hasattr(_op, 'methods') else _op.get('methods', [])):
                     _methods.append(
                         {
                             'type': _op_method.get('type', None),
