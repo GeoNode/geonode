@@ -377,16 +377,14 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def _create_layer_service_link(self, geonode_service, geonode_layer):
         ogc_wms_link_type = 'OGC:WMS'
-        ogc_wms_name = f'OGC WMS: {geonode_dataset.store} Service'
+        ogc_wms_name = f'OGC WMS: {geonode_layer.store} Service'
 
-        ogc_wms_url = geonode_dataset.ows_url
+        ogc_wms_url = geonode_layer.ows_url
         ogc_wms_get_capabilities = geonode_service.operations.get('GetCapabilities', None)
         if ogc_wms_get_capabilities and ogc_wms_get_capabilities.get('methods', None):
             for _op_method in ogc_wms_get_capabilities.get('methods'):
                 if _op_method.get('type', None).upper() == 'GET' and _op_method.get('url', None):
                     ogc_wms_url = _op_method.get('url')
-                    geonode_dataset.ows_url = ogc_wms_url
-                    Dataset.objects.filter(id=geonode_dataset.id).update(ows_url=ogc_wms_url)
                     break
 
         if Link.objects.filter(resource=geonode_layer.resourcebase_ptr,
