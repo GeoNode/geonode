@@ -376,6 +376,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                     ogc_wms_url = _op_method.get('url')
                     geonode_dataset.ows_url = ogc_wms_url
                     Dataset.objects.filter(id=geonode_dataset.id).update(ows_url=ogc_wms_url)
+                    break
 
         if Link.objects.filter(resource=geonode_dataset.resourcebase_ptr,
                                name=ogc_wms_name,
