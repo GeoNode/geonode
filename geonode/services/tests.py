@@ -465,7 +465,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             'units': 'esriMeters'
         }
 
-        phony_url = "http://sportellotelematico.provincia.foggia.it/arcgis/rest/services/ProvFoggia/ptcp_a2/MapServer"
+        phony_url = "http://sit.cittametropolitana.na.it/arcgis/rest/services/basemap_ortofoto_AGEA2011/MapServer"
         mock_parsed_arcgis = mock.MagicMock(ArcMapService).return_value
         (url, mock_parsed_arcgis) = mock.MagicMock(ArcMapService,
                                                    return_value=(phony_url,
@@ -495,7 +495,8 @@ class ModuleFunctionsTestCase(StandardTestCase):
             geonode_service, created = Service.objects.get_or_create(
                 base_url=result.base_url,
                 owner=test_user)
-            Layer.objects.filter(remote_service=geonode_service).delete()
+            for _d in Layer.objects.filter(remote_service=geonode_service):
+                Layer.objects.filter(id=_d.id).delete()
             HarvestJob.objects.filter(service=geonode_service).delete()
             handler._harvest_resource(layer_meta, geonode_service)
             geonode_layer = Layer.objects.filter(remote_service=geonode_service).get()
@@ -506,7 +507,8 @@ class ModuleFunctionsTestCase(StandardTestCase):
                 resource_id=geonode_layer.alternate
             )
             self.assertIsNotNone(harvest_job)
-            Layer.objects.filter(remote_service=geonode_service).delete()
+            for _d in Layer.objects.filter(remote_service=geonode_service):
+                Layer.objects.filter(id=_d.id).delete()
             self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
                                                        resource_id=geonode_layer.alternate).count(), 0)
         except (Service.DoesNotExist, HTTPError) as e:

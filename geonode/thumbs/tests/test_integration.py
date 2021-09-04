@@ -44,7 +44,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.utils import http_client, DisableDjangoSignals
-from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
 from geonode.thumbs.background import (
     OSMTileBackground,
@@ -61,7 +61,7 @@ LOCAL_TIMEOUT = 300
 EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
 
 
-class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
+class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
 
     layer_coast_line = None
 
