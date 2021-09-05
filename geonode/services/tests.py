@@ -18,7 +18,7 @@
 #########################################################################
 import logging
 
-from requests.models import HTTPError
+from urllib.error import HTTPError
 from geonode.services.enumerations import WMS, INDEXED
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import Client
