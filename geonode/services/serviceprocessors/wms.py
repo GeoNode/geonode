@@ -557,7 +557,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         layer_meta = self.get_resource(resource_id)
         if self.indexing_method == CASCADED:
             logger.debug("About to import cascaded layer...")
-            geoserver_resource = self._import_cascaded_resource(layer_meta)
+            geoserver_resource = self._import_cascaded_resource(geonode_service, layer_meta)
             resource_fields = self._get_cascaded_layer_fields(
                 geoserver_resource)
             keywords = []
