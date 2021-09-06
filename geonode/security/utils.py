@@ -44,6 +44,7 @@ def get_visible_resources(queryset,
                           private_groups_not_visibile=False):
     # Get the list of objects the user has access to
     is_admin = user.is_superuser if user and user.is_authenticated else False
+    is_moderator = user.is_member_of_group("moderators")
     anonymous_group = None
     public_groups = GroupProfile.objects.exclude(access="private").values('group')
     groups = []
@@ -64,7 +65,7 @@ def get_visible_resources(queryset,
     filter_set = queryset.filter(
         Q(dirty_state=False) & Q(metadata_only=metadata_only))
 
-    if not is_admin:
+    if not (is_admin or is_moderator):
         if user:
             _allowed_resources = get_objects_for_user(user, 'base.view_resourcebase')
             filter_set = filter_set.filter(id__in=_allowed_resources.values('id'))
@@ -106,10 +107,11 @@ def get_users_with_perms(obj):
         ADMIN_PERMISSIONS,
         SERVICE_PERMISSIONS,
         DATASET_ADMIN_PERMISSIONS,
-        DATASET_EDIT_STYLE_PERMISSIONS)
+        DATASET_EDIT_STYLE_PERMISSIONS,
+        GENERAL_MANAGE_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
-    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS + GENERAL_MANAGE_PERMISSIONS
     # include explicit permissions appliable to "subtype == 'vector'"
     if obj.subtype == 'vector':
         PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
@@ -283,7 +285,7 @@ def check_user_resource_approve_and_publish(user, resource):
     can_publish = True
 
     if settings.ADMIN_MODERATE_UPLOADS:
-        if not (user.is_superuser or user.is_staff):
+        if not (user.is_superuser or user.is_staff or user.perms.get("approve_resources")):
             can_change_metadata = user.has_perm(
                 'change_resourcebase_metadata', resource.get_self_resource())
             try:
