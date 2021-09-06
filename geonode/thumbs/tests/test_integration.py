@@ -44,7 +44,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.utils import http_client, DisableDjangoSignals
-from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
 from geonode.thumbs.background import (
     OSMTileBackground,
@@ -61,7 +61,27 @@ LOCAL_TIMEOUT = 300
 EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
 
 
-class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
+class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
+
+    layer_coast_line = None
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user_admin = get_user_model().objects.get(username="admin")
+
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # upload shape files
+            shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
+            cls.layer_coast_line = file_upload(shp_file, overwrite=True, user=cls.user_admin)
+
+    @classmethod
+    def tearDownClass(cls):
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            if cls.layer_coast_line:
+                cls.layer_coast_line.delete()
+
+        super().tearDownClass()
 
     @override_settings(
         THUMBNAIL_BACKGROUND={
@@ -288,29 +308,6 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
 
         for bbox, expected_image_path in zip(bboxes_3857, expected_images_paths):
             self._fetch_and_compare_background(background, bbox, expected_image_path)
-
-
-class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
-
-    layer_coast_line = None
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.user_admin = get_user_model().objects.get(username="admin")
-
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # upload shape files
-            shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
-            cls.layer_coast_line = file_upload(shp_file, overwrite=True, user=cls.user_admin)
-
-    @classmethod
-    def tearDownClass(cls):
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            if cls.layer_coast_line:
-                cls.layer_coast_line.delete()
-
-        super().tearDownClass()
 
     @override_settings(
         THUMBNAIL_BACKGROUND={

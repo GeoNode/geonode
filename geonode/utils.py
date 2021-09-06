@@ -1880,7 +1880,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             else:
                 from geonode.services.serviceprocessors.handler import get_service_handler
                 handler = get_service_handler(
-                    instance.remote_service.base_url, service_type=instance.remote_service.type)
+                    instance.remote_service.service_url, service_type=instance.remote_service.type)
                 if hasattr(handler, '_create_layer_legend_link'):
                     handler._create_layer_legend_link(instance)
 

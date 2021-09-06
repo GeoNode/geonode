@@ -16,9 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 """Utilities for enabling ESRI:ArcGIS:MapServer and ESRI:ArcGIS:ImageServer remote services in geonode."""
-
 import os
 import re
 import logging
@@ -27,8 +25,8 @@ import traceback
 from uuid import uuid4
 
 from django.conf import settings
-from django.template.defaultfilters import slugify, safe
 from django.utils.translation import ugettext as _
+from django.template.defaultfilters import slugify, safe
 
 from geonode.base.models import Link
 from geonode.layers.models import Layer
@@ -69,7 +67,6 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         base.ServiceHandlerBase.__init__(self, url)
         self.proxy_base = None
         self.url = url
-        self.parsed_service = ArcMapService(self.url)
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
@@ -89,9 +86,13 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
         self.indexing_method = INDEXED
         self.name = slugify(self.url)[:255]
-        self.title = _title
+        self.title = str(_title).encode("utf-8", "ignore").decode('utf-8')
 
-    def create_cascaded_store(self):
+    @property
+    def parsed_service(self):
+        return ArcMapService(self.url)
+
+    def create_cascaded_store(self, service):
         return None
 
     def create_geonode_service(self, owner, parent=None):
@@ -101,7 +102,6 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         :type owner: geonode.people.models.Profile
 
         """
-
         instance = models.Service(
             uuid=str(uuid4()),
             base_url=self.url,
@@ -111,14 +111,13 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             owner=owner,
             parent=parent,
             metadata_only=True,
-            version=self.parsed_service._json_struct.get("currentVersion", 0.0),
+            version=str(self.parsed_service._json_struct.get("currentVersion", 0.0)).encode("utf-8", "ignore").decode('utf-8'),
             name=self.name,
             title=self.title,
-            abstract=self.parsed_service._json_struct.get("serviceDescription") or _(
+            abstract=str(self.parsed_service._json_struct.get("serviceDescription")).encode("utf-8", "ignore").decode('utf-8') or _(
                 "Not provided"),
             online_resource=self.parsed_service.url,
         )
-        instance.save()
         return instance
 
     def get_keywords(self):
@@ -203,9 +202,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             resource_fields["is_published"] = False
         geonode_layer = self._create_layer(
             geonode_service, **resource_fields)
-        # self._enrich_layer_metadata(geonode_layer)
         self._create_layer_service_link(geonode_layer)
-        # self._create_layer_legend_link(geonode_layer)
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
@@ -324,7 +321,6 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         ArcMapServiceHandler.__init__(self, url)
         self.proxy_base = None
         self.url = url
-        self.parsed_service = ArcImageService(self.url)
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
@@ -345,3 +341,7 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         self.indexing_method = INDEXED
         self.name = slugify(self.url)[:255]
         self.title = _title
+
+    @property
+    def parsed_service(self):
+        return ArcImageService(self.url)

@@ -55,9 +55,10 @@ logger = logging.getLogger("geonode.core.layers.views")
 def service_proxy(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     if not service.proxy_base:
-        service_url = service.base_url
+        service_url = service.service_url
     else:
-        service_url = f"{service.base_url}?{request.META['QUERY_STRING']}"
+        _query_separator = '?' if '?' not in service.service_url else '&'
+        service_url = f"{service.service_url}{_query_separator}{request.META['QUERY_STRING']}"
         if urljoin(settings.SITEURL, reverse('proxy')) != service.proxy_base:
             service_url = f"{service.proxy_base}?url={quote(service_url, safe='')}"
     return proxy(request, url=service_url, sec_chk_hosts=False)
@@ -93,7 +94,7 @@ def register_service(request):
             service.keywords.add(*service_handler.get_keywords())
 
             if service_handler.indexing_method == enumerations.CASCADED:
-                service_handler.create_cascaded_store()
+                service_handler.create_cascaded_store(service)
             request.session[service_handler.url] = service_handler
             logger.debug("Added handler to the session")
             messages.add_message(
@@ -123,8 +124,8 @@ def _get_service_handler(request, service):
     feature many layers.
     """
     service_handler = get_service_handler(
-        service.base_url, service.proxy_base, service.type)
-    request.session[service.base_url] = service_handler
+        service.service_url, service.proxy_base, service.type)
+    request.session[service.service_url] = service_handler
     logger.debug("Added handler to the session")
     return service_handler
 
@@ -232,7 +233,7 @@ def harvest_resources(request, service_id):
 
     service = get_object_or_404(Service, pk=service_id)
     try:
-        handler = request.session[service.base_url]
+        handler = request.session[service.service_url]
     except KeyError:  # handler is not saved on the session, recreate it
         return redirect(
             reverse("rescan_service", kwargs={"service_id": service.id})
@@ -349,7 +350,7 @@ def service_detail(request, service_id):
     # with many resources, keeping the handler in the session leads to degraded
     # performance
     try:
-        request.session.pop(service.base_url)
+        request.session.pop(service.service_url)
     except KeyError:
         pass
 

@@ -702,21 +702,23 @@ def pre_delete_layer(instance, sender, **kwargs):
 
 def post_delete_layer(instance, sender, **kwargs):
     """
-    Removed the layer from any associated map, if any.
-    Remove the layer default style.
+    - Remove any associated style to the layer, if it is not used by other layers.
+    - Default style will be deleted in post_delete_dataset.
+    - Remove the layer from any associated map, if any.
+    - Remove the layer default style.
     """
-    if instance.remote_service is not None and instance.remote_service.method == INDEXED:
-        try:
+    try:
+        if instance.get_real_instance().remote_service is not None:
             from geonode.services.models import HarvestJob
+            _resource_id = instance.get_real_instance().alternate
             HarvestJob.objects.filter(
-                service=instance.remote_service, resource_id=instance.alternate).delete()
-            resource_id = instance.alternate.split(":")[-1] if len(instance.alternate.split(":")) else None
-            if resource_id:
+                service=instance.get_real_instance().remote_service, resource_id=_resource_id).delete()
+            _resource_id = instance.get_real_instance().alternate.split(":")[-1] if len(instance.get_real_instance().alternate.split(":")) else None
+            if _resource_id:
                 HarvestJob.objects.filter(
-                    service=instance.remote_service, resource_id=resource_id).delete()
-        except Exception as e:
-            logger.exception(e)
-        return
+                    service=instance.get_real_instance().remote_service, resource_id=_resource_id).delete()
+    except Exception as e:
+        logger.exception(e)
 
     from geonode.maps.models import MapLayer
     logger.debug(
