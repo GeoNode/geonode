@@ -1113,22 +1113,12 @@ def dataset_metadata(
         layer.save(notify=True)
         return HttpResponse(json.dumps({'message': message}))
 
-    if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser:
-            can_change_metadata = request.user.has_perm(
-                'change_resourcebase_metadata',
-                layer.get_self_resource())
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-
-            if not is_manager or not can_change_metadata:
-                if settings.RESOURCE_PUBLISHING:
-                    dataset_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-                dataset_form.fields['is_approved'].widget.attrs.update(
-                    {'disabled': 'true'})
+    if not request.user.can_appprove(layer):
+        if not request.user.can_publish(layer):
+            dataset_form.fields['is_published'].widget.attrs.update(
+                {'disabled': 'true'})
+        dataset_form.fields['is_approved'].widget.attrs.update(
+            {'disabled': 'true'})
 
     if poc is not None:
         dataset_form.fields['poc'].initial = poc.id

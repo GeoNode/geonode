@@ -39,6 +39,7 @@ from geonode.base.enumerations import COUNTRIES
 from geonode.base.models import Configuration, ResourceBase
 from geonode.groups.models import GroupProfile
 from geonode.security.permissions import PERMISSIONS, READ_ONLY_AFFECTED_PERMISSIONS
+from geonode.security.utils import check_user_resource_approve_and_publish
 
 from allauth.account.signals import user_signed_up
 from allauth.socialaccount.signals import social_account_added
@@ -261,6 +262,14 @@ class Profile(AbstractUser):
     def send_mail(self, template_prefix, context):
         if self.email:
             get_adapter().send_mail(template_prefix, self.email, context)
+
+    def can_approve(self, resource):
+        can_approve, _ = check_user_resource_approve_and_publish(self, resource)
+        return can_approve
+
+    def can_publish(self, resource):
+        _, can_publish = check_user_resource_approve_and_publish(self, resource)
+        return can_publish
 
 
 def get_anonymous_user_instance(user_model):

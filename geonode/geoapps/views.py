@@ -527,21 +527,12 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
-    if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser:
-            can_change_metadata = request.user.has_perm(
-                'change_resourcebase_metadata',
-                geoapp_obj.get_self_resource())
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-            if not is_manager or not can_change_metadata:
-                if settings.RESOURCE_PUBLISHING:
-                    geoapp_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-                geoapp_form.fields['is_approved'].widget.attrs.update(
-                    {'disabled': 'true'})
+    if not request.user.can_appprove(geoapp_obj):
+        if not request.user.can_publish(geoapp_obj):
+            geoapp_form.fields['is_published'].widget.attrs.update(
+                {'disabled': 'true'})
+        geoapp_form.fields['is_approved'].widget.attrs.update(
+            {'disabled': 'true'})
 
     register_event(request, EventType.EVENT_VIEW_METADATA, geoapp_obj)
     return render(request, template, context={

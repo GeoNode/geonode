@@ -273,3 +273,26 @@ def get_obj_group_managers(owner):
                 except GroupProfile.DoesNotExist as e:
                     logger.exception(e)
     return obj_group_managers
+
+
+def check_user_resource_approve_and_publish(user, resource):
+    """Checks if a user has permissions to approve or publish a given resource
+    considering the advanced workflow.
+    """
+    can_approve = True
+    can_publish = True
+
+    if settings.ADMIN_MODERATE_UPLOADS:
+        if not (user.is_superuser or user.is_staff):
+            can_change_metadata = user.has_perm(
+                'change_resourcebase_metadata', resource.get_self_resource())
+            try:
+                is_manager = user.groupmember_set.all().filter(role='manager').exists()
+            except Exception:
+                is_manager = False
+            if not is_manager or not can_change_metadata:
+                if settings.RESOURCE_PUBLISHING:
+                    can_publish = False
+                can_approve = False
+
+    return can_approve, can_publish
