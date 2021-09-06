@@ -59,6 +59,7 @@ MANAGE_PERMISSIONS = [
     'delete_resourcebase',
     'change_resourcebase_permissions',
     'publish_resourcebase',
+    'approve_resourcebase',
 ]
 
 GENERAL_MANAGE_PERMISSIONS = [

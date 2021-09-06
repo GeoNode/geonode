@@ -45,10 +45,10 @@ class Command(BaseCommand):
                 perm_spec = {"users": {}, "groups": {}}
                 perm_spec["users"]["admin"] = ['view_resourcebase', 'change_resourcebase_permissions',
                                                'download_resourcebase', 'publish_resourcebase',
-                                               'change_resourcebase_metadata']
+                                               'approve_resourcebase', 'change_resourcebase_metadata']
                 perm_spec["users"][str(layer.owner)] = ['view_resourcebase', 'change_resourcebase_permissions',
                                                         'download_resourcebase', 'publish_resourcebase',
-                                                        'change_resourcebase_metadata']
+                                                        'approve_resourcebase', 'change_resourcebase_metadata']
                 perm_spec["users"]["AnonymousUser"] = ['view_resourcebase', 'download_resourcebase']
                 layer.set_permissions(perm_spec)
             except Exception:

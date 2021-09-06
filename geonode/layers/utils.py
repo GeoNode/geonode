@@ -64,7 +64,8 @@ OWNER_PERMISSIONS = [
     'change_resourcebase',
     'delete_resourcebase',
     'change_resourcebase_permissions',
-    'publish_resourcebase'
+    'publish_resourcebase',
+    'approve_resourcebase'
 ]
 
 logger = logging.getLogger('geonode.layers.utils')

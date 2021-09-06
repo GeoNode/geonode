@@ -1076,6 +1076,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             elif not is_admin:
                 if is_manager and user in obj_group_managers:
                     if (not user.has_perm('publish_resourcebase', obj_to_check)) and (
+                        not user.has_perm('approve_resourcebase', obj_to_check)) and (
                         not user.has_perm('view_resourcebase', obj_to_check)) and (
                             not user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
                                 not is_owner and not settings.ADMIN_MODERATE_UPLOADS):
@@ -1085,6 +1086,10 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                             'view_resourcebase', user, obj_to_check)
                         assign_perm(
                             'publish_resourcebase',
+                            user,
+                            obj_to_check)
+                        assign_perm(
+                            'approve_resourcebase',
                             user,
                             obj_to_check)
                         assign_perm(

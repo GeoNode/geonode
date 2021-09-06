@@ -673,7 +673,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             'change_resourcebase',
             'delete_resourcebase',
             'change_resourcebase_permissions',
-            'publish_resourcebase'
+            'publish_resourcebase',
+            'approve_resourcebase'
         ]
     }
 
@@ -1017,6 +1018,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             ('change_resourcebase_permissions', 'Can change resource permissions'),
             ('download_resourcebase', 'Can download resource'),
             ('publish_resourcebase', 'Can publish resource'),
+            ('approve_resourcebase', 'Can approve resource'),
             ('change_resourcebase_metadata', 'Can change resource metadata'),
         )
 

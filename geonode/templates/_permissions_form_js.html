@@ -60,7 +60,13 @@
           perm_groups_found = true;
       }
       if(perm.startsWith('manage_resourcebase')){
-          perms_to_assign = ['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'];
+          perms_to_assign = [
+            'change_resourcebase',
+            'delete_resourcebase',
+            'change_resourcebase_permissions',
+            'publish_resourcebase',
+            'approve_resourcebase',
+          ];
       }
       
       if (perm_users_found || perm_groups_found) {
@@ -143,7 +149,7 @@
                 }
               }else{
                 for (var i=0;i<user_perms.length;i++){
-                  if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'].indexOf(user_perms[i]) >= 0){
+                  if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase', 'approve_resourcebase'].indexOf(user_perms[i]) >= 0){
                     if(users['manage_resourcebase'].indexOf(user)<0){
                       users['manage_resourcebase'].push(user);
                     }
@@ -172,7 +178,7 @@
             }
 
             for (var perm in users){
-              if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'].indexOf(user_perms[i]) >= 0){
+              if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase', 'approve_resourcebase'].indexOf(user_perms[i]) >= 0){
                 if(users['manage_resourcebase'].indexOf(user)<0){
                   users['manage_resourcebase'].push(user);
                 }
@@ -201,7 +207,7 @@
               if (group !== 'anonymous'){
                 var group_perms = perms_groups[group];
                 for (var i=0;i<group_perms.length;i++){
-                  if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'].indexOf(group_perms[i]) >= 0){
+                  if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase', 'approve_resourcebase'].indexOf(group_perms[i]) >= 0){
                     if(groups['manage_resourcebase'].indexOf(group)<0){
                       groups['manage_resourcebase'].push(group);
                     }

@@ -158,6 +158,7 @@ class PermissionLevelMixin:
                 'download_resourcebase',
                 'change_resoucebase_metadata',
                 'publish_resourcebase',
+                'approve_resourcebase'
             ]
         else:
             config = Configuration.load()
