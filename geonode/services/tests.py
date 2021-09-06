@@ -726,7 +726,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
                 Layer.objects.filter(id=_d.id).delete()
             self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
                                                        resource_id=geonode_layer.alternate).count(), 0)
-            legend_url = handler._create_layer_legend_link(geonode_layer)
+            legend_url = handler._create_layer_legend_link(geonode_service, geonode_layer)
             self.assertTrue('sld_version=1.1.0' in str(legend_url))
         except Service.DoesNotExist as e:
             # In the case the Service URL becomes inaccessible for some reason
