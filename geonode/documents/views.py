@@ -203,23 +203,29 @@ def document_download(request, docid):
     response = get_download_response(request, docid, attachment=True)
     return response
 
+
 def document_link(request, docid):
+    response = get_download_response(request, docid)
+    return response
+
+def document_embed(request, docid):
     response = get_download_response(request, docid)
     fileurl = response.file.name.replace(settings.PROJECT_ROOT, "")
     IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'image']
     extension = get_doc_extension(request, docid)
     context_dict = {
-            "image_url":  fileurl
+            "image_url":  fileurl,
     }
     if extension in IMGTYPES:
         return render(
             request,
-            "documents/document_link.html",
+            "documents/document_embed.html",
             context_dict
         )
 
     response = get_download_response(request, docid)
     return response
+
 
 class DocumentUploadView(CreateView):
     template_name = 'documents/document_upload.html'
