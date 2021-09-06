@@ -11,12 +11,12 @@ def create_group_and_assign_perms_forward_func(apps, schema_editor):
     moderators_group, _ = Group.objects.get_or_create(name='moderators')
     ctype = ContentType.objects.get_for_model(moderators_group)
     approve_perm, _ = Permission.objects.get_or_create(
-        codename='approve_resourcebase',
+        codename='approve_resources',
         name='Can approve resources',
         content_type=ctype,
         )
     publish_perm, _ = Permission.objects.get_or_create(
-        codename='publish_resorcebase',
+        codename='publish_resources',
         name='Can publish resources',
         content_type=ctype,
         )

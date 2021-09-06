@@ -32,8 +32,8 @@ from geonode.groups.conf import settings as groups_settings
 # Permissions mapping
 PERMISSIONS = {
     'add_resourcebase': 'add_resource',
-    'approve_resourcebase': 'approve_resource',
-    'publish_resorcebase': 'publish_resorce',
+    'approve_resources': 'approve_resource',
+    'publish_resources': 'publish_resource',
 }
 
 # The following permissions will be filtered out when READ_ONLY mode is active
