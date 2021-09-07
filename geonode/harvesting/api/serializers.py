@@ -269,7 +269,6 @@ class HarvestableResourceSerializer(DynamicModelSerializer):
             "remote_resource_type",
         ]
 
-
     def create(self, validated_data):
         # NOTE: We are implementing `create()` rather than `update` intentionally, even if the
         # user is not allowed to create new records (check the `views.py` module) - the rationale

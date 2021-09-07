@@ -16,13 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import collections
-import datetime
 import mock
 from django.contrib.auth import get_user_model
-from django.utils.timezone import now
 from geonode.tests.base import (
-    GeoNodeBaseSimpleTestSupport,
     GeoNodeBaseTestSupport
 )
 
@@ -30,8 +26,6 @@ from .. import (
     models,
     tasks,
 )
-from .harvesters.test_harvester import TestHarvester
-from .factories import resource_info_example
 
 
 class TasksTestCase(GeoNodeBaseTestSupport):

@@ -80,7 +80,7 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
             "harvester_type_specific_configuration": {"something": "fake config"},
         }
 
-        request = _REQUEST_FACTORY.post(f"/api/v2/harvesters/")
+        request = _REQUEST_FACTORY.post("/api/v2/harvesters/")
         request.user = self.user
 
         serializer = serializers.HarvesterSerializer(data=input_data, context={"request": request})
@@ -97,7 +97,7 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
             "status": "updating-harvestable-resources",
         }
 
-        request = _REQUEST_FACTORY.post(f"/api/v2/harvesters/")
+        request = _REQUEST_FACTORY.post("/api/v2/harvesters/")
         request.user = self.user
 
         serializer = serializers.HarvesterSerializer(data=input_data, context={"request": request})

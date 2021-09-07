@@ -16,8 +16,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from .test_config import *
-from .test_models import *
-from .test_tasks import *
-from .harvesters import *

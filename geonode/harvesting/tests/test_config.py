@@ -23,7 +23,6 @@ from geonode.harvesting import config
 from geonode.tests.base import GeoNodeBaseSimpleTestSupport
 
 
-
 class ConfigTestCase(GeoNodeBaseSimpleTestSupport):
 
     @override_settings(HARVESTER_CLASSES=[])

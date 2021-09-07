@@ -1,7 +1,9 @@
-from mock import patch
+from unittest import mock
+
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from rest_framework import status
+
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from .. import models
@@ -21,10 +23,10 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
             harvester_type=self.harvester_type
         )
 
-    @patch(
+    @mock.patch(
         "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester.check_availability")
-    def test_add_harvester(self, mock):
-        mock.return_value = True
+    def test_add_harvester(self, mock_check_availability):
+        mock_check_availability.return_value = True
         data = {
             'remote_url': "http://fake.com",
             'name': 'harvester',
@@ -36,18 +38,19 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
             'default_owner': self.user.pk
 
         }
+        self.assertFalse(models.Harvester.objects.filter(name=data["name"]).exists())
         response = self.client.post(reverse('admin:harvesting_harvester_add'), data)
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)  # response from admin
-        harvester = models.Harvester.objects.last()
+        harvester = models.Harvester.objects.get(name=data["name"])
         self.assertEqual(harvester.name, data['name'])
         self.assertEqual(harvester.remote_url, data['remote_url'])
         self.assertEqual(harvester.status, models.Harvester.STATUS_READY)
         self.assertEqual(harvester.remote_available, True)
 
-    @patch(
+    @mock.patch(
         "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester.check_availability")
-    def test_update_harvester_availability(self, mock):
-        mock.return_value = True
+    def test_update_harvester_availability(self, mock_check_availability):
+        mock_check_availability.return_value = True
         data = {'action': 'update_harvester_availability',
                 '_selected_action': [self.harvester.pk]}
         response = self.client.post(reverse('admin:harvesting_harvester_changelist'), data)
@@ -55,18 +58,10 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
         self.harvester.refresh_from_db()
         self.assertEqual(self.harvester.remote_available, True)
 
-    def test_update_harvestable_resources(self):
-        data = {'action': 'update_harvestable_resources',
-                '_selected_action': [self.harvester.pk]}
-        response = self.client.post(reverse('admin:harvesting_harvester_changelist'), data)
-        self.assertEqual(response.status_code, status.HTTP_302_FOUND)  # response from admin
-        self.harvester.refresh_from_db()
-        self.assertEqual(self.harvester.status, models.Harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES)
-
-    @patch(
+    @mock.patch(
         "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester.check_availability")
-    def test_perform_harvesting(self, mock):
-        mock.return_value = True
+    def test_perform_harvesting(self, mock_check_availability):
+        mock_check_availability.return_value = True
         data = {'action': 'perform_harvesting',
                 '_selected_action': [self.harvester.pk]}
         self.harvester.status = models.Harvester.STATUS_READY

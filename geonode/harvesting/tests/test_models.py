@@ -18,10 +18,8 @@
 #########################################################################
 
 import datetime
-from unittest import mock
 
 from django.contrib.auth import get_user_model
-from geonode.layers.models import Dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from .. import models
