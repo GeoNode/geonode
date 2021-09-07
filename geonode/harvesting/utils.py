@@ -18,12 +18,11 @@
 #########################################################################
 
 import typing
-import jsonschema
-
-from lxml import etree
 
 from django.utils.timezone import now
 from django.utils.module_loading import import_string
+import jsonschema
+from lxml import etree
 
 
 # explicitly disable resolving XML entities in order to prevent malicious attacks
