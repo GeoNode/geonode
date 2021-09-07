@@ -23,16 +23,14 @@ from rest_framework.response import Response
 
 from geonode.management_commands_http.models import ManagementCommandJob
 from geonode.management_commands_http.serializers import (
-    ManagementCommandJobSerializer
+    ManagementCommandJobSerializer,
+    ManagementCommandJobCreateSerializer,
 )
 from geonode.management_commands_http.utils.commands import (
     get_management_command_details,
     get_management_commands,
 )
-from geonode.management_commands_http.utils.jobs import (
-    start_task,
-    stop_task,
-)
+from geonode.management_commands_http.utils.jobs import start_task
 
 
 class ManagementCommandView(views.APIView):
@@ -87,9 +85,13 @@ class ManagementCommandView(views.APIView):
         }
         By default, autostart is set to true.
         """
-        args = request.data.get("args", [])
-        kwargs = request.data.get("kwargs", {})
-        autostart = json.loads(request.data.get("autostart", 'true'))
+        create_serializer = ManagementCommandJobCreateSerializer(
+            data=request.data
+        )
+        create_serializer.is_valid(raise_exception=True)
+        args = create_serializer.validated_data.get('args', [])
+        kwargs = create_serializer.validated_data.get('kwargs', {})
+        autostart = create_serializer.validated_data.get('autostart', True)
         self.available_commands = get_management_commands()
 
         # Missing details

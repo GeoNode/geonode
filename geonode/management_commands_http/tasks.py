@@ -21,6 +21,7 @@ from geonode.management_commands_http.utils.job_runner import (
     run_management_command
 )
 
+
 @shared_task(
     bind=True,
     name='geonode.management_commands_http.tasks.run_management_command_async',

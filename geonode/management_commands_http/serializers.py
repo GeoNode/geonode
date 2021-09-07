@@ -37,3 +37,9 @@ class ManagementCommandJobSerializer(serializers.ModelSerializer):
             'celery_result_id',
             'output_message',
         ]
+
+
+class ManagementCommandJobCreateSerializer(serializers.Serializer):
+    args = serializers.JSONField(required=False, default=[])
+    kwargs = serializers.JSONField(required=False, default={})
+    autostart = serializers.BooleanField(required=False, default=True)

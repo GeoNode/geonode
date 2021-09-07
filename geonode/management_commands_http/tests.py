@@ -95,7 +95,7 @@ class ManagementCommandsTestCase(APITestCase):
     def test_management_commands_create_autostart_off(self, mocked_async_task):
         cmd_name = "ping_mngmt_commands_http"
         resource_url = f"/api/v2/management/{cmd_name}/"
-        response = self.client.post(resource_url, data={"autostart": "false"})
+        response = self.client.post(resource_url, data={"autostart": False})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             response.json()['data']["status"], ManagementCommandJob.CREATED

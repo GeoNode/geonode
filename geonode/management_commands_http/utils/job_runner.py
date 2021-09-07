@@ -26,7 +26,6 @@ from django.utils import timezone
 from geonode.management_commands_http.models import ManagementCommandJob
 
 
-
 class JobRunner:
     """
     With-statement context used to execute a ManagementCommandJob.
