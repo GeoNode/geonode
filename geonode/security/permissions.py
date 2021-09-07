@@ -63,10 +63,9 @@ ADMIN_PERMISSIONS = MANAGE_PERMISSIONS + EDIT_PERMISSIONS
 
 OWNER_PERMISSIONS = ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
 
-DATASET_ADMIN_PERMISSIONS = [
-    'change_dataset_data',
-    'change_dataset_style'
-]
+DATASET_EDIT_DATA_PERMISSIONS = ['change_dataset_data', ]
+DATASET_EDIT_STYLE_PERMISSIONS = ['change_dataset_style', ]
+DATASET_ADMIN_PERMISSIONS = DATASET_EDIT_DATA_PERMISSIONS + DATASET_EDIT_STYLE_PERMISSIONS
 
 SERVICE_PERMISSIONS = [
     "add_service",
@@ -91,7 +90,7 @@ COMPACT_RIGHT_MODES = (
 )
 
 
-def _to_extended_perms(perm: str, resource_type: str = None, is_owner: bool = False) -> list:
+def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False) -> list:
     """Explode "compact" permissions into an "extended" set, accordingly to the schema below:
 
       - view: view resource
@@ -103,7 +102,10 @@ def _to_extended_perms(perm: str, resource_type: str = None, is_owner: bool = Fa
     """
     if is_owner:
         if resource_type and resource_type.lower() in 'dataset':
-            return DATASET_ADMIN_PERMISSIONS + OWNER_PERMISSIONS
+            if resource_subtype and resource_subtype.lower() in 'vector':
+                return DATASET_ADMIN_PERMISSIONS + OWNER_PERMISSIONS
+            else:
+                return OWNER_PERMISSIONS
         else:
             return OWNER_PERMISSIONS
     elif perm is None or len(perm) == 0 or perm == NONE_RIGHTS:
@@ -114,14 +116,17 @@ def _to_extended_perms(perm: str, resource_type: str = None, is_owner: bool = Fa
         return VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
     elif perm == EDIT_RIGHTS:
         if resource_type and resource_type.lower() in 'dataset':
-            return DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS
+            if resource_subtype and resource_subtype.lower() in 'vector':
+                return DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS
+            else:
+                return EDIT_PERMISSIONS
         else:
             return EDIT_PERMISSIONS
     elif perm == MANAGE_RIGHTS:
         return MANAGE_PERMISSIONS
 
 
-def _to_compact_perms(perms: list, resource_type: str = None, is_owner: bool = False) -> str:
+def _to_compact_perms(perms: list, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False) -> str:
     """Compress standard permissions into a "compact" set, accordingly to the schema below:
 
       - view: view resource
@@ -306,7 +311,7 @@ class PermSpec(PermSpecConverterBase):
                         'first_name': user.first_name,
                         'last_name': user.last_name,
                         'avatar': user.avatar,
-                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, is_owner)
+                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype, is_owner)
                     }
                 )
             else:
@@ -314,7 +319,7 @@ class PermSpec(PermSpecConverterBase):
                     'id': Group.objects.get(name='anonymous').id,
                     'title': 'anonymous',
                     'name': 'anonymous',
-                    'permissions': _to_compact_perms(_perms, self._resource.resource_type)
+                    'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype)
                 }
 
         for _k in self.groups:
@@ -326,7 +331,7 @@ class PermSpec(PermSpecConverterBase):
                     'id': _k.id,
                     'title': 'anonymous',
                     'name': 'anonymous',
-                    'permissions': _to_compact_perms(_perms, self._resource.resource_type)
+                    'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype)
                 }
             elif hasattr(_k, 'groupprofile'):
                 group = _Group(_k.id, _k.groupprofile.title, _k.name, _k.groupprofile.logo_url)
@@ -335,8 +340,7 @@ class PermSpec(PermSpecConverterBase):
                         'id': group.id,
                         'title': group.title,
                         'name': group.name,
-                        'logo': group.logo,
-                        'permissions': _to_compact_perms(_perms, self._resource.resource_type)
+                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype)
                     }
                 else:
                     organization_perms.append(
@@ -345,7 +349,7 @@ class PermSpec(PermSpecConverterBase):
                             'title': group.title,
                             'name': group.name,
                             'logo': group.logo,
-                            'permissions': _to_compact_perms(_perms, self._resource.resource_type)
+                            'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype)
                         }
                     )
 
@@ -358,12 +362,11 @@ class PermSpec(PermSpecConverterBase):
             group_perms.append(
                 {
                     'id': contributors_group.id,
-                    'title': contributors_group.groupprofile.title,
+                    'title': 'Registered Members',
                     'name': contributors_group.name,
-                    'logo': contributors_group.groupprofile.logo_url,
                     'permissions': _to_compact_perms(
                         get_group_perms(contributors_group, self._resource),
-                        self._resource.resource_type)
+                        self._resource.resource_type, self._resource.subtype)
                 }
             )
 
@@ -441,16 +444,16 @@ class PermSpecCompact(PermSpecConverterBase):
         for _u in self.users:
             _user_profile = get_user_model().objects.get(id=_u.id)
             _is_owner = _user_profile == self._resource.owner
-            json['users'][_user_profile.username] = _to_extended_perms(_u.permissions, self._resource.resource_type, _is_owner)
+            json['users'][_user_profile.username] = _to_extended_perms(_u.permissions, self._resource.resource_type, self._resource.subtype, _is_owner)
         for _go in self.organizations:
             _group = Group.objects.get(id=_go.id)
-            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type)
+            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.subtype)
         for _go in self.groups:
             _group = Group.objects.get(id=_go.id)
-            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type)
+            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.subtype)
             if _go.name == 'anonymous':
                 _user_profile = get_anonymous_user()
-                json['users'][_user_profile.username] = _to_extended_perms(_go.permissions, self._resource.resource_type)
+                json['users'][_user_profile.username] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.subtype)
         return json.copy()
 
     def merge(self, perm_spec_compact_patch: "PermSpecCompact"):

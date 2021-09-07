@@ -211,7 +211,10 @@ def get_map(
         else:
             headers["Authorization"] = f"Berarer {additional_kwargs['access_token']}"
 
-    wms = WebMapService(f"{thumbnail_url}{wms_endpoint}", version=wms_version, headers=headers)
+    wms = WebMapService(
+        f"{thumbnail_url}{wms_endpoint}",
+        version=wms_version,
+        headers=headers)
 
     image = None
     for retry in range(max_retries):
@@ -220,8 +223,8 @@ def get_map(
             image = wms.getmap(
                 layers=layers,
                 styles=styles,
-                srs=bbox[-1],
-                bbox=[bbox[0], bbox[2], bbox[1], bbox[3]],
+                srs=bbox[-1] if bbox else None,
+                bbox=[bbox[0], bbox[2], bbox[1], bbox[3]] if bbox else None,
                 size=(width, height),
                 format=mime_type,
                 transparent=True,

@@ -752,16 +752,12 @@ class TestUploadDBDataStore(UploaderBase):
             resp_js = resp.json()
             if resp_js['success']:
                 url = resp_js['redirect_to']
-
                 resp = self.client.make_request(url, data)
-
                 url = resp.json()['url']
-
                 self.assertTrue(
                     url.endswith(dataset_name),
                     f'expected url to end with {dataset_name}, but got {url}')
                 self.assertEqual(resp.status_code, 200)
-
                 url = unquote(url)
                 self.check_dataset_complete(url, dataset_name)
                 wms = get_wms(

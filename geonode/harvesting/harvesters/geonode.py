@@ -442,12 +442,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             result["title__icontains"] = self.resource_title_filter
         if self.start_date_filter is not None:
             start_date = dateutil.parser.parse(self.start_date_filter)
-            result["date__gte"] = start_date.astimezone(
-                datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0] + 'Z'
+            result["date__gte"] = f"{start_date.astimezone(datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.end_date_filter is not None:
             end_date = dateutil.parser.parse(self.end_date_filter)
-            result["date__lte"] = end_date.astimezone(
-                datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0] + 'Z'
+            result["date__lte"] = f"{end_date.astimezone(datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.keywords_filter is not None:
             result["keywords__slug__in"] = ','.join(self.keywords_filter)
         if self.categories_filter is not None:

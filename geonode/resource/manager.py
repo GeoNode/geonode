@@ -40,7 +40,6 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
 
-from geonode.documents.models import Document
 from geonode.security.permissions import VIEW_PERMISSIONS, DOWNLOAD_PERMISSIONS
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.utils import (
@@ -58,8 +57,9 @@ from .utils import (
 from ..base import enumerations
 from ..base.models import ResourceBase
 from ..layers.metadata import parse_metadata
-from ..layers.models import Dataset
-
+from ..documents.models import Document, DocumentResourceLink
+from ..layers.models import Dataset, Attribute
+from ..maps.models import Map
 from ..storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
@@ -369,6 +369,7 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
+                _resource.set_dirty_state()
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 _resource.save(notify=notify)
@@ -405,6 +406,7 @@ class ResourceManager(ResourceManagerInterface):
         except Exception as e:
             logger.exception(e)
             instance.set_processing_state(enumerations.STATE_INVALID)
+            instance.set_dirty_state()
         finally:
             instance.set_processing_state(enumerations.STATE_PROCESSED)
             instance.save(notify=False)
@@ -419,6 +421,7 @@ class ResourceManager(ResourceManagerInterface):
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if instance:
             try:
+                _resource = None
                 instance.set_processing_state(enumerations.STATE_RUNNING)
                 with transaction.atomic():
                     _owner = owner or instance.get_real_instance().owner
@@ -427,17 +430,36 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid1())
                     _resource.save()
-                    to_update = defaults.copy()
-                    to_update.update(storage_manager.copy(_resource))
-                    self._concrete_resource_manager.copy(_resource, uuid=_resource.uuid, defaults=to_update)
-                    if _resource:
-                        if 'user' in to_update:
-                            to_update.pop('user')
-                        self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
-                        return self.update(_resource.uuid, _resource, vals=to_update)
+                    if isinstance(instance.get_real_instance(), Document):
+                        for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
+                            _resource_link = copy.copy(resource_link)
+                            _resource_link.pk = _resource_link.id = None
+                            _resource_link.document = _resource.get_real_instance()
+                            _resource_link.save()
+                    if isinstance(instance.get_real_instance(), Dataset):
+                        for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
+                            _attribute = copy.copy(attribute)
+                            _attribute.pk = _attribute.id = None
+                            _attribute.dataset = _resource.get_real_instance()
+                            _attribute.save()
+                    if isinstance(instance.get_real_instance(), Map):
+                        for dataset in instance.get_real_instance().datasets:
+                            _dataset = copy.copy(dataset)
+                            _dataset.pk = _dataset.id = None
+                            _dataset.map = _resource.get_real_instance()
+                            _dataset.save()
+                    to_update = storage_manager.copy(_resource).copy()
+                    _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
+                if _resource:
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                    _resource.save(notify=False)
+                    to_update.update(defaults)
+                    if 'user' in to_update:
+                        to_update.pop('user')
+                    self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                    return self.update(_resource.uuid, _resource, vals=to_update)
             except Exception as e:
                 logger.exception(e)
-                instance.set_processing_state(enumerations.STATE_INVALID)
             finally:
                 instance.set_processing_state(enumerations.STATE_PROCESSED)
                 instance.save(notify=False)
@@ -531,6 +553,7 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
+                _resource.set_dirty_state()
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
@@ -669,6 +692,7 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
+                _resource.set_dirty_state()
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
@@ -688,16 +712,11 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     anonymous_group = Group.objects.get(name='anonymous')
                     if approved:
-                        if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-                            _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                            _members_group_group = Group.objects.get(name=_members_group_name)
-                            for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
-                                assign_perm(perm,
-                                            _members_group_group, _resource.get_self_resource())
-                        else:
-                            for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
-                                assign_perm(perm,
-                                            anonymous_group, _resource.get_self_resource())
+                        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                        _members_group_group = Group.objects.get(name=_members_group_name)
+                        for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
+                            assign_perm(perm,
+                                        _members_group_group, _resource.get_self_resource())
                     if published:
                         for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
                             assign_perm(perm,
@@ -707,6 +726,7 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
+                _resource.set_dirty_state()
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
@@ -726,6 +746,7 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
+                _resource.set_dirty_state()
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
