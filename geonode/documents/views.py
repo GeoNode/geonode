@@ -64,7 +64,10 @@ from geonode.base.models import (
     Thesaurus,
     TopicCategory)
 
-from .utils import get_download_response
+from .utils import (
+    get_download_response,
+    get_doc_extension)
+
 from .enumerations import (
     DOCUMENT_TYPE_MAP,
     DOCUMENT_MIMETYPE_MAP)
@@ -203,6 +206,24 @@ def document_download(request, docid):
 
 def document_link(request, docid):
     response = get_download_response(request, docid)
+    return response
+
+
+def document_embed(request, docid):
+    response = get_download_response(request, docid)
+    fileurl = response.file.name.replace(settings.PROJECT_ROOT, "")
+    IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'image']
+    extension = get_doc_extension(request, docid)
+    context_dict = {
+        "image_url":  fileurl,
+    }
+    if extension in IMGTYPES:
+        return render(
+            request,
+            "documents/document_embed.html",
+            context_dict
+        )
+
     return response
 
 
