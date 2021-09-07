@@ -90,7 +90,7 @@ def get_download_response(request, docid, attachment=False):
         status=404
     )
 
-def get_doc_extension(request, docid, attachment=False):
-     document = get_object_or_404(Document, pk=docid)
 
-     return (document.extension)
+def get_doc_extension(request, docid, attachment=False):
+    document = get_object_or_404(Document, pk=docid)
+    return (document.extension)
