@@ -45,7 +45,8 @@ from .permissions import (
 
 from .utils import (
     get_users_with_perms,
-    get_user_obj_perms_model)
+    get_user_obj_perms_model,
+    has_moderator_permissions)
 
 logger = logging.getLogger(__name__)
 
@@ -151,7 +152,7 @@ class PermissionLevelMixin:
         """
         # To avoid circular import
         from geonode.base.models import Configuration
-        is_moderator = user.is_member_of_group("moderators")
+        is_moderator = has_moderator_permissions(user)
         if is_moderator:
             resource_perms = [
                 'view_resourcebase',

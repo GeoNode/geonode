@@ -1036,6 +1036,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
 
     from guardian.shortcuts import assign_perm, get_groups_with_perms
     from geonode.groups.models import GroupProfile
+    from geonode.security.utils import has_moderator_permissions
 
     groups = get_groups_with_perms(obj_to_check,
                                    attach_perms=True)
@@ -1114,7 +1115,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             obj_to_check = obj
     if permission:
         if permission_required or request.method != 'GET':
-            if user in obj_group_managers or user.is_member_of_group("moderators"):
+            if user in obj_group_managers or has_moderator_permissions(user):
                 allowed = True
             else:
                 allowed = user.has_perm(

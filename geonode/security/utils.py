@@ -44,7 +44,7 @@ def get_visible_resources(queryset,
                           private_groups_not_visibile=False):
     # Get the list of objects the user has access to
     is_admin = user.is_superuser if user and user.is_authenticated else False
-    is_moderator = user.is_member_of_group("moderators")
+    is_moderator = has_moderator_permissions(user)
     anonymous_group = None
     public_groups = GroupProfile.objects.exclude(access="private").values('group')
     groups = []
@@ -285,7 +285,7 @@ def check_user_resource_approve_and_publish(user, resource):
     can_publish = True
 
     if settings.ADMIN_MODERATE_UPLOADS:
-        if not (user.is_superuser or user.is_staff or user.perms.get("approve_resources")):
+        if not (user.is_superuser or user.is_staff or has_moderator_permissions(user)):
             can_change_metadata = user.has_perm(
                 'change_resourcebase_metadata', resource.get_self_resource())
             try:
@@ -298,3 +298,9 @@ def check_user_resource_approve_and_publish(user, resource):
                 can_approve = False
 
     return can_approve, can_publish
+
+
+def has_moderator_permissions(user):
+    if not user.is_anonymous:
+        return all(perm in user.perms for perm in ['approve_resources', 'publish_resources'])
+    return False
