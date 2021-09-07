@@ -20,8 +20,10 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
-from .models import ManagementCommandJob
-from .utils import run_management_command
+from geonode.management_commands_http.models import ManagementCommandJob
+from geonode.management_commands_http.utils.job_runner import (
+    run_management_command
+)
 
 
 class ManagementCommandsTestCase(APITestCase):
@@ -69,7 +71,10 @@ class ManagementCommandsTestCase(APITestCase):
         response = self.client.get(resource_url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    @patch("geonode.mngmt_commands_http.tasks.run_management_command_async")
+    @patch(
+        "geonode.management_commands_http.utils"
+        ".jobs.run_management_command_async"
+    )
     def test_management_commands_create(self, mocked_async_task):
         cmd_name = "ping_mngmt_commands_http"
         resource_url = f"/api/v2/management/{cmd_name}/"
@@ -83,7 +88,10 @@ class ManagementCommandsTestCase(APITestCase):
         )
         mocked_async_task.delay.assert_called_once()
 
-    @patch("geonode.mngmt_commands_http.tasks.run_management_command_async")
+    @patch(
+        "geonode.management_commands_http.utils"
+        ".jobs.run_management_command_async"
+    )
     def test_management_commands_create_autostart_off(self, mocked_async_task):
         cmd_name = "ping_mngmt_commands_http"
         resource_url = f"/api/v2/management/{cmd_name}/"

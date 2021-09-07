@@ -18,7 +18,9 @@
 #########################################################################
 from time import sleep
 from django.core.management.base import BaseCommand
-from geonode.mngmt_commands_http.decorators import expose_command_over_http
+from geonode.management_commands_http.decorators import (
+    expose_command_over_http
+)
 
 
 @expose_command_over_http

@@ -18,7 +18,7 @@
 #########################################################################
 from django.urls import re_path
 
-from .views import ManagementCommandView
+from geonode.management_commands_http.views import ManagementCommandView
 
 urlpatterns = [
     re_path(r"management/$", ManagementCommandView.as_view()),

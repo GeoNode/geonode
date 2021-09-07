@@ -18,7 +18,12 @@
 #########################################################################
 from django.contrib import admin
 
-from .models import ManagementCommandJob
+from geonode.management_commands_http.models import ManagementCommandJob
+from geonode.management_commands_http.utils.jobs import (
+    start_task,
+    stop_task,
+    get_celery_task_meta,
+)
 
 
 @admin.register(ManagementCommandJob)
@@ -62,18 +67,18 @@ class ManagementCommandJobAdmin(admin.ModelAdmin):
     actions = ["execute", "stop"]
 
     def execute(self, request, queryset):
-        for job in queryset.iterator():
-            job.start_task()
+        for job in queryset:
+            start_task(job)
 
     def stop(self, request, queryset):
-        for job in queryset.iterator():
-            job.stop_task()
+        for job in queryset:
+            stop_task(job)
 
     def celery_state(self, instance):
-        return instance.celery_task_meta.get("status")
+        return get_celery_task_meta(instance).get("status")
 
     def celery_traceback(self, instance):
-        return instance.celery_task_meta.get("traceback")
+        return get_celery_task_meta(instance).get("traceback")
 
     def has_add_permission(self, request, obj=None):
         return False

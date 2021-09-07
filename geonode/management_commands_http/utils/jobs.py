@@ -16,24 +16,26 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from rest_framework import serializers
-from .models import ManagementCommandJob
+from geonode.celery_app import app as celery_app
+from geonode.management_commands_http.tasks import run_management_command_async
+from geonode.management_commands_http.models import ManagementCommandJob
 
 
-class ManagementCommandJobSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ManagementCommandJob
-        fields = [
-            'id',
-            'command',
-            'app_name',
-            'user',
-            'status',
-            'created_at',
-            'start_time',
-            'end_time',
-            'args',
-            'kwargs',
-            'celery_result_id',
-            'output_message',
-        ]
+def start_task(job: ManagementCommandJob):
+    job.status = job.QUEUED
+    job.save()
+    run_management_command_async.delay(job_id=job.id)
+
+
+def stop_task(job: ManagementCommandJob):
+    celery_app.control.terminate(job.celery_result_id)
+
+
+def get_celery_task_meta(job: ManagementCommandJob):
+    if not job.celery_result_id:
+        return {}
+    async_result = run_management_command_async.AsyncResult(
+        job.celery_result_id
+    )
+    task_meta = async_result.backend.get_task_meta(job.celery_result_id)
+    return task_meta

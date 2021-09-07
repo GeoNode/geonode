@@ -17,12 +17,13 @@
 #
 #########################################################################
 from celery import shared_task
-from .utils import run_management_command
-
+from geonode.management_commands_http.utils.job_runner import (
+    run_management_command
+)
 
 @shared_task(
     bind=True,
-    name='geonode.mngmt_commands_http.tasks.run_management_command_async',
+    name='geonode.management_commands_http.tasks.run_management_command_async',
     ignore_result=False,
 )
 def run_management_command_async(self, job_id):

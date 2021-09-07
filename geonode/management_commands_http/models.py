@@ -63,23 +63,3 @@ class ManagementCommandJob(models.Model):
             f"ManagementCommandJob"
             f"({self.id}, {self.command}, {self.user}, {self.created_at})"
         )
-
-    def start_task(self):
-        from .tasks import run_management_command_async
-        self.status = self.QUEUED
-        self.save()
-        run_management_command_async.delay(job_id=self.id)
-
-    def stop_task(self):
-        from geonode.celery_app import app as celery_app
-        celery_app.control.terminate(self.celery_result_id)
-
-    @property
-    def celery_task_meta(self):
-        from .tasks import run_management_command_async
-
-        if not self.celery_result_id:
-            return {}
-        async_result = run_management_command_async.AsyncResult(self.celery_result_id)
-        task_meta = async_result.backend.get_task_meta(self.celery_result_id)
-        return task_meta

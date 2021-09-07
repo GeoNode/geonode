@@ -21,9 +21,18 @@ import json
 from rest_framework import permissions, status, views
 from rest_framework.response import Response
 
-from .models import ManagementCommandJob
-from .serializers import ManagementCommandJobSerializer
-from .utils import get_management_command_details, get_management_commands
+from geonode.management_commands_http.models import ManagementCommandJob
+from geonode.management_commands_http.serializers import (
+    ManagementCommandJobSerializer
+)
+from geonode.management_commands_http.utils.commands import (
+    get_management_command_details,
+    get_management_commands,
+)
+from geonode.management_commands_http.utils.jobs import (
+    start_task,
+    stop_task,
+)
 
 
 class ManagementCommandView(views.APIView):
@@ -121,7 +130,7 @@ class ManagementCommandView(views.APIView):
 
         # Start Job
         if autostart:
-            job.start_task()
+            start_task(job)
 
         serializer = ManagementCommandJobSerializer(instance=job)
         return Response(
