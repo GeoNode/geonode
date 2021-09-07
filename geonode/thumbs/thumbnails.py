@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import json
 import re
 import logging
 
@@ -27,7 +27,7 @@ from typing import List, Union, Optional, Tuple
 from django.conf import settings
 from django.utils.module_loading import import_string
 
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Dataset
 from geonode.utils import OGC_Servers_Handler
 from geonode.base.thumb_utils import thumb_exists
@@ -65,7 +65,7 @@ def create_thumbnail(
 ) -> None:
     """
     Function generating and saving a thumbnail of the given instance (Dataset or Map), which is composed of
-    outcomes of WMS GetMap queries to the instance's layers providers, and an outcome of querying background
+    outcomes of WMS GetMap queries to the instance's datasets providers, and an outcome of querying background
     provider for thumbnail's background (by default Slippy Map provider).
 
     :param instance: instance of Dataset or Map models
@@ -90,7 +90,7 @@ def create_thumbnail(
     height = settings.THUMBNAIL_SIZE["height"]
 
     if default_thumbnail_name is None:
-        # instance is Map and has no layers defined
+        # instance is Map and has no datasets defined
         utils.assign_missing_thumbnail(instance)
         return
 
@@ -107,6 +107,10 @@ def create_thumbnail(
     target_crs = forced_crs.upper() if forced_crs is not None else "EPSG:3857"
 
     compute_bbox_from_datasets = False
+    is_map_with_datasets = True
+
+    if isinstance(instance, Map):
+        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(ows_url__isnull=True).exclude(ows_url__exact='').count() > 0
     if bbox:
         # make sure BBOX is provided with the CRS in a correct format
         source_crs = bbox[-1]
@@ -127,30 +131,32 @@ def create_thumbnail(
         compute_bbox_from_datasets = True
 
     # --- define dataset locations ---
-    locations, layers_bbox = _datasets_locations(instance, compute_bbox=compute_bbox_from_datasets, target_crs=target_crs)
+    locations, datasets_bbox = _datasets_locations(instance, compute_bbox=compute_bbox_from_datasets, target_crs=target_crs)
 
-    if compute_bbox_from_datasets:
-        if not layers_bbox:
+    if compute_bbox_from_datasets and is_map_with_datasets:
+        if not datasets_bbox:
             raise ThumbnailError(f"Thumbnail generation couldn't determine a BBOX for: {instance}.")
         else:
-            bbox = layers_bbox
+            bbox = datasets_bbox
 
     # --- expand the BBOX to match the set thumbnail's ratio (prevent thumbnail's distortions) ---
-    bbox = utils.expand_bbox_to_ratio(bbox)
+    bbox = utils.expand_bbox_to_ratio(bbox) if bbox else None
 
     # --- add default style ---
     if not styles and hasattr(instance, "default_style"):
         if instance.default_style:
             styles = [instance.default_style.name]
 
-    # --- fetch WMS layers ---
+    # --- fetch WMS datasets ---
     partial_thumbs = []
 
-    for ogc_server, layers in locations:
+    for ogc_server, datasets, _styles in locations:
+        if isinstance(instance, Map) and len(datasets) == len(_styles):
+            styles = _styles
         try:
             partial_thumbs.append(utils.get_map(
                 ogc_server,
-                layers,
+                datasets,
                 wms_version=wms_version,
                 bbox=bbox,
                 mime_type=mime_type,
@@ -162,7 +168,7 @@ def create_thumbnail(
             logger.error(f"Exception occurred while fetching partial thumbnail for {instance.name}.")
             logger.exception(e)
 
-    if not partial_thumbs:
+    if not partial_thumbs and is_map_with_datasets:
         utils.assign_missing_thumbnail(instance)
         raise ThumbnailError("Thumbnail generation failed - no image retrieved from WMS services.")
 
@@ -184,7 +190,7 @@ def create_thumbnail(
     # --- fetch background image ---
     try:
         BackgroundGenerator = import_string(settings.THUMBNAIL_BACKGROUND["class"])
-        background = BackgroundGenerator(width, height).fetch(bbox, background_zoom)
+        background = BackgroundGenerator(width, height).fetch(bbox, background_zoom) if bbox else None
     except Exception as e:
         logger.error(f"Thumbnail generation. Error occurred while fetching background image: {e}")
         logger.exception(e)
@@ -211,7 +217,7 @@ def create_thumbnail(
 def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
     """
     Method returning file name for the thumbnail.
-    If provided instance is a Map, and doesn't have any defined layers, None is returned.
+    If provided instance is a Map, and doesn't have any defined datasets, None is returned.
 
     :param instance: instance of Dataset or Map models
     :return: file name for the thumbnail
@@ -224,7 +230,7 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
     elif isinstance(instance, Map):
         # if a Map is empty - nothing to do here
         if not instance.datasets:
-            logger.debug(f"Thumbnail generation skipped - Map {instance.title} has no defined layers")
+            logger.debug(f"Thumbnail generation skipped - Map {instance.title} has no defined datasets")
             return None
 
         file_name = f"map-{instance.uuid}-thumb.png"
@@ -240,14 +246,14 @@ def _datasets_locations(
     instance: Union[Dataset, Map], compute_bbox: bool = False, target_crs: str = "EPSG:3857"
 ) -> Tuple[List[List], List]:
     """
-    Function returning a list mapping instance's layers to their locations, enabling to construct a minimum
-    number of  WMS request for multiple layers of the same OGC source (ensuring layers order for Maps)
+    Function returning a list mapping instance's datasets to their locations, enabling to construct a minimum
+    number of  WMS request for multiple datasets of the same OGC source (ensuring datasets order for Maps)
 
     :param instance: instance of Dataset or Map models
     :param compute_bbox: flag determining whether a BBOX containing the instance should be computed,
-                         based on instance's layers
+                         based on instance's datasets
     :param target_crs: valid only when compute_bbox is True - CRS of the returned BBOX
-    :return: a tuple with a list, which maps layers to their locations in a correct layers order
+    :return: a tuple with a list, which maps datasets to their locations in a correct datasets order
              e.g.
                 [
                     ["http://localhost:8080/geoserver/": ["geonode:layer1", "geonode:layer2]]
@@ -262,12 +268,12 @@ def _datasets_locations(
 
     if isinstance(instance, Dataset):
 
-        # for local layers
+        # for local datasets
         if instance.remote_service is None:
-            locations.append([ogc_server_settings.LOCATION, [instance.alternate]])
-        # for remote layers
+            locations.append([ogc_server_settings.LOCATION, [instance.alternate], []])
+        # for remote datasets
         else:
-            locations.append([instance.remote_service.service_url, [instance.alternate]])
+            locations.append([instance.remote_service.service_url, [instance.alternate], []])
 
         if compute_bbox:
             # handle exceeding the area of use of the default thumb's CRS
@@ -283,7 +289,7 @@ def _datasets_locations(
     elif isinstance(instance, Map):
 
         map_datasets = instance.datasets.copy()
-        # ensure correct order of layers in the map (higher stack_order are printed on top of lower)
+        # ensure correct order of datasets in the map (higher stack_order are printed on top of lower)
         map_datasets.sort(key=lambda l: l.stack_order)
 
         for map_dataset in map_datasets:
@@ -302,6 +308,10 @@ def _datasets_locations(
             name = get_dataset_name(map_dataset)
             store = map_dataset.store
             workspace = get_dataset_workspace(map_dataset)
+            try:
+                map_dataset_style = json.loads(map_dataset.dataset_params).get('style')
+            except json.decoder.JSONDecodeError:
+                map_dataset_style = None
 
             if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
                 dataset = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()
@@ -321,15 +331,29 @@ def _datasets_locations(
                 if len(locations) and locations[-1][0] == dataset.remote_service.service_url:
                     # if previous dataset's location is the same as the current one - append current dataset there
                     locations[-1][1].append(dataset.alternate)
+                    # update the styles too
+                    if map_dataset_style:
+                        locations[-1][2].append(map_dataset_style)
                 else:
-                    locations.append([dataset.remote_service.service_url, [dataset.alternate]])
+                    locations.append([
+                        dataset.remote_service.service_url,
+                        [dataset.alternate],
+                        [map_dataset_style] if map_dataset_style else []
+                    ])
             else:
                 # limit number of locations, ensuring dataset order
                 if len(locations) and locations[-1][0] == settings.OGC_SERVER["default"]["LOCATION"]:
                     # if previous dataset's location is the same as the current one - append current dataset there
                     locations[-1][1].append(dataset.alternate)
+                    # update the styles too
+                    if map_dataset_style:
+                        locations[-1][2].append(map_dataset_style)
                 else:
-                    locations.append([settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate]])
+                    locations.append([
+                        settings.OGC_SERVER["default"]["LOCATION"],
+                        [dataset.alternate],
+                        [map_dataset_style] if map_dataset_style else []
+                    ])
 
             if compute_bbox:
                 # handle exceeding the area of use of the default thumb's CRS

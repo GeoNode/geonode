@@ -16,23 +16,28 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.thumbs.exceptions import ThumbnailError
-import logging
 import sys
-from uuid import uuid4
+import json
+import logging
+
 from PIL import Image
 from io import BytesIO
+from time import sleep
+from uuid import uuid1, uuid4
 from unittest.mock import patch
 from urllib.parse import urljoin
 
 from django.urls import reverse
 from django.core.files import File
+from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.base import enumerations
+from geonode.thumbs.exceptions import ThumbnailError
 from geonode.base.models import (
     CuratedThumbnail,
     HierarchicalKeyword,
@@ -42,12 +47,14 @@ from geonode.base.models import (
     ThesaurusKeyword,
 )
 
-from geonode.favorite.models import Favorite
 from geonode.layers.models import Dataset
-from geonode.base.utils import build_absolute_uri
+from geonode.favorite.models import Favorite
+from geonode.documents.models import Document
+from geonode.utils import build_absolute_uri
+from geonode.resource.api.tasks import ExecutionRequest
 from geonode.base.populate_test_data import create_models
 from geonode.security.utils import get_resources_with_perms
-from geonode.documents.models import Document
+
 logger = logging.getLogger(__name__)
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
@@ -63,6 +70,7 @@ class BaseApiTests(APITestCase):
     ]
 
     def setUp(self):
+        self.maxDiff = None
         create_models(b'document')
         create_models(b'map')
         create_models(b'dataset')
@@ -82,17 +90,13 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         logger.debug(response.data)
-        self.assertEqual(response.data['total'], 2)
-        self.assertEqual(len(response.data['group_profiles']), 2)
+        self.assertEqual(response.data['total'], 1)
+        self.assertEqual(len(response.data['group_profiles']), 1)
 
         url = reverse('group-profiles-detail', kwargs={'pk': 1})
         response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         logger.debug(response.data)
-        self.assertEqual(response.data['group_profile']['title'], 'Registered Members')
-        self.assertEqual(response.data['group_profile']['description'], 'Registered Members')
-        self.assertEqual(response.data['group_profile']['access'], 'private')
-        self.assertEqual(response.data['group_profile']['group']['name'], response.data['group_profile']['slug'])
 
     def test_users_list(self):
         """
@@ -431,12 +435,20 @@ class BaseApiTests(APITestCase):
         Ensure we can Get & Set Permissions across the Resource Base list.
         """
         url = reverse('base-resources-list')
+        bobby = get_user_model().objects.get(username='bobby')
+        norman = get_user_model().objects.get(username='norman')
+        anonymous_group = Group.objects.get(name='anonymous')
+        contributors_group = Group.objects.get(name='registered-members')
+
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
-        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'set_perms/')
-        get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'get_perms/')
+        if not resource.uuid:
+            resource.uuid = str(uuid1())
+            resource.save()
+        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
+        get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
 
         url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
         response = self.client.get(url, format='json')
@@ -446,28 +458,188 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertTrue('bobby' in resource_perm_spec['users'])
-        self.assertFalse('norman' in resource_perm_spec['users'])
+        self.assertDictEqual(
+            resource_perm_spec,
+            {
+                'users': [
+                    {
+                        'id': bobby.id,
+                        'username': bobby.username,
+                        'first_name': bobby.first_name,
+                        'last_name': bobby.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'owner'
+                    }
+                ],
+                'organizations': [],
+                'groups': [
+                    {
+                        'id': anonymous_group.id,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'download'
+                    },
+                    {
+                        'id': contributors_group.id,
+                        'title': 'Registered Members',
+                        'name': contributors_group.name,
+                        'permissions': 'none'
+                    }
+                ]
+            },
+            resource_perm_spec
+        )
 
         # Add perms to Norman
-        resource_perm_spec['users']['norman'] = resource_perm_spec['users']['bobby']
-        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
+        resource_perm_spec_patch = {
+            'users': [
+                {
+                    'id': norman.id,
+                    'username': norman.username,
+                    'first_name': norman.first_name,
+                    'last_name': norman.last_name,
+                    'avatar': '',
+                    'permissions': 'edit'
+                }
+            ]
+        }
+        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec_patch)}"
+        response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data.get('status'))
+        self.assertIsNotNone(response.data.get('status_url'))
+        status = response.data.get('status')
+        status_url = response.data.get('status_url')
+        _counter = 0
+        while _counter < 100 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+            response = self.client.get(status_url)
+            status = response.data.get('status')
+            sleep(3.0)
+            _counter += 1
+            logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
+        self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertTrue('norman' in resource_perm_spec['users'])
+        self.assertDictEqual(
+            resource_perm_spec,
+            {
+                'users': [
+                    {
+                        'id': bobby.id,
+                        'username': bobby.username,
+                        'first_name': bobby.first_name,
+                        'last_name': bobby.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'owner'
+                    },
+                    {
+                        'id': norman.id,
+                        'username': norman.username,
+                        'first_name': norman.first_name,
+                        'last_name': norman.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'edit'
+                    }
+                ],
+                'organizations': [],
+                'groups': [
+                    {
+                        'id': anonymous_group.id,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'download'
+                    },
+                    {
+                        'id': contributors_group.id,
+                        'title': 'Registered Members',
+                        'name': contributors_group.name,
+                        'permissions': 'none'
+                    }
+                ]
+            },
+            resource_perm_spec
+        )
 
         # Remove perms to Norman
-        resource_perm_spec['users']['norman'] = []
-        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
+        resource_perm_spec = {
+            'users': [
+                {
+                    'id': bobby.id,
+                    'username': bobby.username,
+                    'first_name': bobby.first_name,
+                    'last_name': bobby.last_name,
+                    'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                    'permissions': 'owner'
+                }
+            ],
+            'organizations': [],
+            'groups': [
+                {
+                    'id': anonymous_group.id,
+                    'title': 'anonymous',
+                    'name': 'anonymous',
+                    'permissions': 'download'
+                },
+                {
+                    'id': contributors_group.id,
+                    'title': 'Registered Members',
+                    'name': contributors_group.name,
+                    'permissions': 'none'
+                }
+            ]
+        }
+        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
+        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data.get('status'))
+        self.assertIsNotNone(response.data.get('status_url'))
+        status = response.data.get('status')
+        status_url = response.data.get('status_url')
+        _counter = 0
+        while _counter < 100 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+            response = self.client.get(status_url)
+            status = response.data.get('status')
+            sleep(3.0)
+            _counter += 1
+            logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
+        self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertFalse('norman' in resource_perm_spec['users'])
+        self.assertDictEqual(
+            resource_perm_spec,
+            {
+                'users': [
+                    {
+                        'id': bobby.id,
+                        'username': bobby.username,
+                        'first_name': bobby.first_name,
+                        'last_name': bobby.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'owner'
+                    }
+                ],
+                'organizations': [],
+                'groups': [
+                    {
+                        'id': anonymous_group.id,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'download'
+                    },
+                    {
+                        'id': contributors_group.id,
+                        'title': 'Registered Members',
+                        'name': contributors_group.name,
+                        'permissions': 'none'
+                    }
+                ]
+            },
+            resource_perm_spec
+        )
 
         # Ensure get_perms and set_perms are done by users with correct permissions.
         # logout admin user
@@ -476,7 +648,8 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 403)
         # set perms
-        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
+        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
+        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 403)
         # login resourse owner
         # get perms
@@ -484,7 +657,8 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         # set perms
-        response = self.client.put(set_perms_url, data=resource_perm_spec, format='json')
+        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
+        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 200)
 
     def test_featured_and_published_resources(self):
@@ -693,6 +867,11 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 8)
 
+        # Owners Filtering
+        response = self.client.get(f"{url}?filter{{username.icontains}}=bobby", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
+
     def test_categories_list(self):
         """
         Ensure we can access the list of categories.
@@ -716,6 +895,11 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], TopicCategory.objects.count())
+
+        # Categories Filtering
+        response = self.client.get(f"{url}?filter{{identifier.icontains}}=biota", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
 
     def test_regions_list(self):
         """
@@ -741,6 +925,11 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], Region.objects.count())
 
+        # Regions Filtering
+        response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 8)
+
     def test_keywords_list(self):
         """
         Ensure we can access the list of keywords.
@@ -764,6 +953,11 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+
+        # Keywords Filtering
+        response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 0)
 
     def test_tkeywords_list(self):
         """

@@ -317,6 +317,39 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
     @override_settings(
         THUMBNAIL_BACKGROUND={
             "options": {
+                "url": "http://maps.geosolutionsgroup.com/geoserver/gwc/service/tms/1.0.0/osm%3Aosm_simple_light@EPSG%3A900913@png/{z}/{x}/{y}.png",
+                "tms": True,
+            }
+        }
+    )
+    def test_tile_background_tms_fetch(self):
+
+        width = 240
+        height = 200
+
+        bboxes_3857 = [
+            [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"],
+            [-9990526.32372507, -6321548.96603661, 3335075.3607465066, 6392556.492153557, "EPSG:3857"],
+            [-107776710.17911679, 9630565.26691392, -50681609.070756994, 47157787.134268604, "EPSG:3857"],
+            [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, "EPSG:3857"],
+        ]
+
+        expected_results_dir = f"{EXPECTED_RESULTS_DIR}background/"
+        expected_images_paths = [
+            f"{expected_results_dir}tms_outcome1.png",
+            f"{expected_results_dir}tms_outcome2.png",
+            f"{expected_results_dir}tms_outcome3.png",
+            f"{expected_results_dir}tms_outcome4.png",
+        ]
+
+        background = GenericXYZBackground(thumbnail_width=width, thumbnail_height=height)
+
+        for bbox, expected_image_path in zip(bboxes_3857, expected_images_paths):
+            self._fetch_and_compare_background(background, bbox, expected_image_path)
+
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "options": {
                 "service_url": settings.OGC_SERVER["default"]["LOCATION"],
                 "dataset_name": "san_andres_y_providencia_coastline_foo",
                 "srid": "EPSG:3857",

@@ -1589,6 +1589,7 @@ class HttpClient:
                     f"{self.username}:{self.password}".encode()).decode()
                 headers['Authorization'] = f'Basic {valid_uname_pw}'
 
+        headers['User-Agent'] = 'GeoNode'
         response = None
         content = None
         session = requests.Session()
@@ -2028,7 +2029,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             else:
                 from geonode.services.serviceprocessors.handler import get_service_handler
                 handler = get_service_handler(
-                    instance.remote_service.base_url, service_type=instance.remote_service.type)
+                    instance.remote_service.service_url, service_type=instance.remote_service.type)
                 if handler and hasattr(handler, '_create_dataset_legend_link'):
                     handler._create_dataset_legend_link(instance)
 
@@ -2279,3 +2280,9 @@ def find_by_attr(lst, val, attr="id"):
             return item
 
     return None
+
+
+def build_absolute_uri(url):
+    if url and 'http' not in url:
+        url = urljoin(settings.SITEURL, url)
+    return url

@@ -100,10 +100,21 @@ def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
     """
-    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, DATASET_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
+    from .permissions import (
+        VIEW_PERMISSIONS,
+        DOWNLOAD_PERMISSIONS,
+        ADMIN_PERMISSIONS,
+        SERVICE_PERMISSIONS,
+        DATASET_ADMIN_PERMISSIONS,
+        DATASET_EDIT_STYLE_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
-    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DATASET_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+    # include explicit permissions appliable to "subtype == 'vector'"
+    if obj.subtype == 'vector':
+        PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
+    elif obj.subtype == 'raster':
+        PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
 
     for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
         permissions[perm.id] = perm.codename
@@ -129,10 +140,16 @@ def get_users_with_perms(obj):
 
 def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
-    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, DATASET_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
+    from .permissions import (
+        VIEW_PERMISSIONS,
+        DOWNLOAD_PERMISSIONS,
+        ADMIN_PERMISSIONS,
+        SERVICE_PERMISSIONS,
+        DATASET_ADMIN_PERMISSIONS,
+        DATASET_EDIT_STYLE_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
-        admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
+        admin_perms = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS
         for perm in admin_perms:
             if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
@@ -144,7 +161,12 @@ def set_owner_permissions(resource, members=None):
 
         # Set the GeoFence Owner Rule
         if resource.polymorphic_ctype.name == 'dataset':
-            for perm in DATASET_ADMIN_PERMISSIONS:
+            DATA_EDIT_PERMISSIONS = []
+            if resource.get_real_instance().subtype == 'vector':
+                DATA_EDIT_PERMISSIONS = DATASET_ADMIN_PERMISSIONS
+            elif resource.get_real_instance().subtype == 'raster':
+                DATA_EDIT_PERMISSIONS = DATASET_EDIT_STYLE_PERMISSIONS
+            for perm in DATA_EDIT_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.dataset)
                 if members:
                     for user in members:
@@ -223,11 +245,10 @@ def get_geoapp_subtypes():
 
 
 def skip_registered_members_common_group(user_group):
-    if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-        if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
-                _members_group_name == user_group.name:
-            return True
+    _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+    if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
+            _members_group_name == user_group.name:
+        return True
     return False
 
 

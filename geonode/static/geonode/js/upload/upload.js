@@ -317,36 +317,6 @@ define(['underscore',
                 .fail(function () {});
         }
 
-        function handleResume(options) {
-            $.ajax({
-                url: options.url,
-                async: false,
-                mode: "queue",
-                contentType: false,
-            })
-                .done(function (data) {
-                    if('redirect_to' in data) {
-                        common.make_request({
-                            url: data.redirect_to,
-                            async: false,
-                            failure: function (resp, status) {
-                                common.logError(resp, status);
-                            },
-                            success: function (resp, status) {
-                                window.location = resp.url;
-                            }
-                        });
-                    } else if ('url' in data) {
-                        window.location = data.url;
-                    } else {
-                        common.logError("unexpected response");
-                    }
-                })
-                .fail(function (resp) {
-                    common.logError(resp);
-                });
-        }
-
         function progressBar(properties) {
             properties.parent.style.position = 'relative';
             // add a small progress bar in the progressNode
@@ -421,7 +391,7 @@ define(['underscore',
                 resumeTool.setAttribute('data-toggle', 'tooltip');
                 resumeTool.setAttribute('data-placement', 'top');
                 resumeTool.innerHTML = '<i class="fa fa-play"></i>';
-                resumeTool.onclick = function() { handleResume({ id: properties.id, url: properties.resume_url }); };
+                resumeTool.onclick = function () { window.location = properties.resume_url; };
                 infoTools.appendChild(resumeTool);
                 $(resumeTool).tooltip();
             } else {
@@ -520,6 +490,21 @@ define(['underscore',
                     resolve: function(response) {
 
                         uploads = response.uploads || [];
+                        
+                        // in case the upload ID is already present in the processed list
+                        // is removed from the processed in order to avoid row duplication
+                        // row duplication usually occours with async flow activated
+                        var processedCopy = [...processed]
+
+                        for (var i in uploads) {
+                            for (var j in processed) {
+                                if (uploads[i].id == processed[j].id) {
+                                    processedCopy.splice(i, 1)
+                                }
+                            }
+                        }
+
+                        processed = [...processedCopy]
 
                         var currentUploadIds = [];
                         for (var i = 0; i < uploads.length; i++) {

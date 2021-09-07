@@ -156,6 +156,8 @@ class Harvester(models.Model):
         blank=True,
         editable=False,
     )
+    num_harvestable_resources = models.IntegerField(
+        default=0)
 
     def __str__(self):
         return f"{self.name}({self.id})"
@@ -287,7 +289,10 @@ class HarvestableResource(models.Model):
         ]
 
     def delete(self, using=None, keep_parents=False):
-        delete_geonode_resource = self.harvester.delete_orphan_resources_automatically
-        if self.geonode_resource is not None and delete_geonode_resource:
+        delete_orphan_resource = self.harvester.delete_orphan_resources_automatically
+        worker = self.harvester.get_harvester_worker()
+        if self.geonode_resource is not None and delete_orphan_resource:
             self.geonode_resource.delete()
+        if delete_orphan_resource:
+            worker.finalize_harvestable_resource_deletion(self)
         return super().delete(using, keep_parents)

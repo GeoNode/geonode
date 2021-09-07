@@ -8,8 +8,11 @@ from django.db.migrations.operations import RunPython
 
 
 def forwards_func(apps, schema_editor):
+    from geonode.groups.conf import settings as groups_settings
+
     # assign contributors group to users
     cont_group, _ = Group.objects.get_or_create(name='contributors')
+    registeredmembers_group, _ = Group.objects.get_or_create(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
     ctype = ContentType.objects.get_for_model(cont_group)
     perm, _ = Permission.objects.get_or_create(
         codename='base_addresourcebase',
@@ -19,10 +22,10 @@ def forwards_func(apps, schema_editor):
     if perm:
         cont_group.permissions.add(perm)
     # Exclude admins and anonymous user
-    users_to_update = get_user_model().objects.filter(
-        pk__gt=0, is_staff=False, is_superuser=False
-        )
+    users_to_update = get_user_model().objects.filter(pk__gt=0)
     for user in users_to_update:
+        registeredmembers_group.user_set.add(user)
+    for user in users_to_update.exclude(is_staff=True, is_superuser=True):
         cont_group.user_set.add(user)
 
 def reverse_func(apps, schema_editor):

@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==8.3.1
+Pillow==8.3.2
 lxml==4.6.3
 psycopg2==2.9.1
 Django==3.2.4
@@ -17,8 +17,8 @@ decorator==5.0.9
 celery==5.1.2
 kombu==5.1.0
 vine==5.0.0
-tqdm==4.61.2
-Deprecated==1.2.12
+tqdm==4.62.2
+Deprecated==1.2.13
 wrapt==1.12.1
 jsonschema==3.2.0
 
@@ -31,7 +31,7 @@ django-filter==2.4.0
 django-imagekit==4.0.2
 django-taggit==1.5.1
 django-markdownify==0.9.0
-django-mptt==0.12.0
+django-mptt==0.13.2
 django-modeltranslation>=0.11,<0.18.0
 django-treebeard==4.5.1
 django-guardian<2.4.1
@@ -47,10 +47,10 @@ oauthlib==3.1.1
 pyopenssl==20.0.1
 
 # geopython dependencies
-pyproj==3.1.0
-OWSLib==0.24.1
+pyproj==3.2.0
+OWSLib==0.25.0
 pycsw==2.6.0
-SQLAlchemy==1.4.22 # required by PyCSW
+SQLAlchemy==1.4.23 # required by PyCSW
 Shapely==1.7.1
 mercantile==1.2.1
 geoip2==4.2.0
@@ -71,9 +71,9 @@ django-recaptcha==2.0.6
 djangorestframework<3.12.0,>=3.8.0
 djangorestframework-gis==0.17
 djangorestframework-guardian==0.3.0
-drf-extensions==0.7.0
+drf-extensions==0.7.1
 drf-writable-nested==0.6.3
-drf-spectacular==0.17.2
+drf-spectacular==0.18.2
 git+https://github.com/GeoNode/dynamic-rest.git@v2.0.1#egg=dynamic-rest
 Markdown==3.3.4
 
@@ -91,11 +91,11 @@ geonode-django-activity-stream==0.10.0
 gn-arcrest==10.5.4
 geonode-dialogos==3.0.1
 geoserver-restconfig==2.0.4.9
-gn-gsimporter>=2.0.2
+gn-gsimporter==2.0.3
 gisdata==0.5.4
 
 # haystack/elasticsearch
-django-haystack==3.0
+django-haystack==3.1.1
 elasticsearch>=2.0.0,<8.0.0
 
 # datetimepicker widget
@@ -103,10 +103,10 @@ django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
 django-storages==1.11.1
-dropbox==11.14.0
-google-cloud-storage==1.41.1
-google-cloud-core==1.7.1
-boto3==1.18.6
+dropbox==11.18.0
+google-cloud-storage==1.42.0
+google-cloud-core==2.0.0
+boto3==1.18.36
 
 # Django Caches
 python-memcached<=1.59
@@ -120,38 +120,40 @@ python-dateutil==2.8.2
 pytz==2021.1
 requests==2.26.0
 timeout-decorator==0.5.0
+pylibmc==1.6.1
+sherlock==0.3.2
 
 # required by monitoring
 psutil==5.8.0
-django-cors-headers==3.7.0
+django-cors-headers==3.8.0
 user-agents
 xmljson
-django-ipware<3.1
+django-ipware<4.1
 # no version here, use latest one with fresh data
 pycountry
 
 # production
 uWSGI==2.0.19.1
 gunicorn==20.1.0
-ipython==7.25.0
-docker==4.4.4
+ipython==7.27.0
+docker==5.0.2
 invoke==1.6.0
 
 # tests
 coverage==5.5
 requests-toolbelt==0.9.1
 flake8==3.9.2
-pytest==6.2.4
+pytest==6.2.5
 pytest-bdd==4.1.0
 splinter==0.15.0
 pytest-splinter==3.3.1
 pytest-django==4.4.0
-setuptools==57.4.0
-pip==21.2.1
-Twisted==21.2.0
+setuptools==58.0.0
+pip==21.2.4
+Twisted==21.7.0
 pixelmatch==0.2.3
 factory-boy==3.2.0
 flaky==3.7.0
 selenium==3.141.0
-selenium-requests==1.3
+selenium-requests==1.3.3
 webdriver_manager==3.4.2

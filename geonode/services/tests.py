@@ -539,6 +539,16 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_parsed_wms.identification.title = self.phony_title
         mock_parsed_wms.identification.version = self.phony_version
         mock_parsed_wms.identification.keywords = self.phony_keywords
+        mock_parsed_wms_getcapa_operation = {
+            'name': 'GetCapabilities',
+            'methods': [
+                {
+                    'type': 'Get',
+                    'url': self.phony_url
+                }
+            ]
+        }
+        mock_parsed_wms.operations = [mock_parsed_wms_getcapa_operation, ]
         mock_dataset_meta = mock.MagicMock(ContentMetadata)
         mock_dataset_meta.name = self.phony_dataset_name
         mock_dataset_meta.title = self.phony_dataset_name
@@ -638,6 +648,35 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
                 autospec=True)
+    def test_geonode_service_uses_given_getmap_params(self, mock_wms):
+        phony_url = ('https://www.geoportal.hessen.de/mapbender/php/wms.php?'
+                     'layer_id=36995&PHPSESSID=27jb139lqk29rmul77beuji261&'
+                     'withChilds=1&'
+                     'version=1.1.1&'
+                     'REQUEST=GetCapabilities&'
+                     'SERVICE=WMS')
+        mock_wms.return_value = (
+            phony_url, self.parsed_wms)
+        handler = wms.WmsServiceHandler(phony_url)
+        result = handler.create_geonode_service(self.test_user)
+        self.assertEqual(result.base_url, 'https://www.geoportal.hessen.de/mapbender/php/wms.php')
+        self.assertEqual(
+            result.extra_queryparams,
+            'layer_id=36995&PHPSESSID=27jb139lqk29rmul77beuji261&withChilds=1&REQUEST=GetCapabilities&SERVICE=WMS')
+        self.assertEqual(result.service_url, f"{result.base_url}?{result.extra_queryparams}")
+        self.assertEqual(result.type, handler.service_type)
+        self.assertEqual(result.method, handler.indexing_method)
+        self.assertEqual(result.owner, self.test_user)
+        self.assertEqual(result.version, self.phony_version)
+        self.assertEqual(result.name, handler.name)
+        self.assertEqual(result.title, self.phony_title)
+        # mata_data_only is set to Try
+        self.assertTrue(result.metadata_only)
+        self.assertDictEqual(result.operations, {'GetCapabilities': {'name': 'GetCapabilities', 'methods': [
+                             {'type': 'Get', 'url': 'http://a-really-long-and-fake-name-here-so-that-we-use-it-in-tests'}], 'formatOptions': []}})
+
+    @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
+                autospec=True)
     def test_get_keywords(self, mock_wms):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         handler = wms.WmsServiceHandler(self.phony_url)
@@ -691,7 +730,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
                 resource_manager.delete(_d.uuid, instance=_d)
             self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
                                                        resource_id=geonode_dataset.alternate).count(), 0)
-            legend_url = handler._create_dataset_legend_link(geonode_dataset)
+            legend_url = handler._create_dataset_legend_link(geonode_service, geonode_dataset)
             self.assertTrue('sld_version=1.1.0' in str(legend_url))
         except Service.DoesNotExist as e:
             # In the case the Service URL becomes inaccessible for some reason
@@ -812,7 +851,6 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
 
         # Try adding the same URL again
         form = forms.CreateServiceForm(form_data)
-        self.assertFalse(form.is_valid())
         self.assertEqual(Service.objects.count(), 1)
         self.client.post(reverse('register_service'), data=form_data)
         self.assertEqual(Service.objects.count(), 1)

@@ -82,12 +82,12 @@ else
             invoke fixtures
             invoke monitoringfixture
             invoke initialized
+            invoke updateadmin
         fi
 
         invoke statics
         invoke waitforgeoserver
         invoke geoserverfixture
-        invoke updateadmin
 
         echo "Executing UWSGI server $cmd for Production"
     fi

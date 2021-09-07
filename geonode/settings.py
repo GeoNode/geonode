@@ -43,7 +43,9 @@ SILENCED_SYSTEM_CHECKS = [
     '1_8.W001',
     'fields.W340',
     'auth.W004',
-    'urls.W002'
+    'urls.W002',
+    'drf_spectacular.W001',
+    'drf_spectacular.W002'
 ]
 
 # GeoNode Version
@@ -219,6 +221,7 @@ _DEFAULT_LANGUAGES = """(
     ('zh-cn', '中文'),
     ('ja', '日本語'),
     ('ko', '한국어'),
+    ('sk', 'Slovensky'),
 )"""
 
 LANGUAGES = ast.literal_eval(os.getenv('LANGUAGES', _DEFAULT_LANGUAGES))
@@ -450,7 +453,6 @@ GEONODE_INTERNAL_APPS = (
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
-    'geonode.monitoring',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -1961,9 +1963,16 @@ THUMBNAIL_BACKGROUND = {
     # 'class': 'geonode.thumbs.background.GenericXYZBackground',
     # initialization parameters for generator instance, valid only for generic classes
     'options': {
-        # 'url': URL for the generic xyz service
+        # 'url': URL for the generic xyz / tms service
+        # 'tms': False by default. Set to True if the service is TMS
         # 'tile_size': tile size for the generic xyz service, default is 256
     },
+    # example options for a TMS service
+    # 'class': 'geonode.thumbs.background.GenericXYZBackground',
+    # 'options': {
+    #    'url': 'http://maps.geosolutionsgroup.com/geoserver/gwc/service/tms/1.0.0/osm%3Aosm_simple_light@EPSG%3A900913@png/{z}/{x}/{y}.png',
+    #    'tms': True
+    # },
 }
 
 # define the urls after the settings are overridden
