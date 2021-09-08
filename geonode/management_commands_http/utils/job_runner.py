@@ -22,6 +22,7 @@ import sys
 
 from django.core.management import call_command
 from django.utils import timezone
+from rest_framework import exceptions
 
 from geonode.management_commands_http.models import ManagementCommandJob
 
@@ -74,7 +75,12 @@ def run_management_command(job_id, async_result_id: str = ""):
     context responsible to updating the status and redirecting stdout and
     stderr.
     """
-    job = ManagementCommandJob.objects.get(id=job_id)
+    try:
+        job = ManagementCommandJob.objects.get(id=job_id)
+    except ManagementCommandJob.DoesNotExist:
+        raise exceptions.NotFound(
+            f"ManagementCommandJob with id {job_id} was not found."
+        )
     with io.StringIO() as output:
         with JobRunner(job, output, async_result_id):
             job_args = json.loads(job.args)
