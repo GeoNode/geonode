@@ -89,7 +89,7 @@ if _ALLOW_MOSAIC_STEP:
         'MOSAIC_ENABLED',
         False)
 
-_ASYNC_UPLOAD = ogc_server_settings and ogc_server_settings.DATASTORE
+_ASYNC_UPLOAD = (ogc_server_settings and ogc_server_settings.DATASTORE is not None and len(ogc_server_settings.DATASTORE) > 0)
 
 # at the moment, the various time support transformations require the database
 if _ALLOW_TIME_STEP and not _ASYNC_UPLOAD:
