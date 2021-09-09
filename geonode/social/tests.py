@@ -51,11 +51,9 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(RecentActivityTest, self).setUp()
-
         registry.register(Layer)
         registry.register(Comment)
         registry.register(get_user_model())
-        registry.register(Comment)
         create_layer_data()
         self.user = get_user_model().objects.filter(username='admin')[0]
 
