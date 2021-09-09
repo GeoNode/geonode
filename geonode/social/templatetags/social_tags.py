@@ -79,6 +79,9 @@ def activity_item(action, **kwargs):
         if object_type == 'map':
             activity_class = 'map'
 
+        if object_type == 'geostory':
+            activity_class = 'geostory'
+
         if object_type == 'layer':
             activity_class = 'layer'
 
