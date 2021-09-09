@@ -3,6 +3,8 @@
 import logging
 from django.db import migrations, models
 import django_jsonfield_backport.models
+from django_jsonfield_backport.features import extend_features
+from django.db import connection
 
 logger = logging.getLogger(__name__)
 
@@ -10,6 +12,7 @@ logger = logging.getLogger(__name__)
 def forwards_func(apps, schema_editor):
     from geonode.services.enumerations import WMS, GN_WMS
     from geonode.services.serviceprocessors.wms import WebMapService, WmsServiceHandler
+    extend_features(connection)
     MyModel = apps.get_model('services', 'Service')
     _services_with_empty_params = MyModel.objects.filter(
         models.Q(type__in=(WMS, GN_WMS)) & (
