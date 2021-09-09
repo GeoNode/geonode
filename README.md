@@ -55,8 +55,8 @@ GeoNode can be setup in different ways, flavors and plattforms. If
 you´re planning to do development or install for production please visit
 the offical GeoNode installation documentation:
 
-- [Docker](https://docs.geonode.org/en/3.x/install/advanced/core/index.html#docker)
-- [Ubuntu 20.04lts](https://docs.geonode.org/en/3.x/install/advanced/core/index.html#ubuntu-20-04lts)
+- [Docker](https://docs.geonode.org/en/master/install/advanced/core/index.html#docker)
+- [Ubuntu 20.04 LTS](https://docs.geonode.org/en/master/install/advanced/core/index.html#ubuntu-20-04lts)
 
 Learn GeoNode
 -------------

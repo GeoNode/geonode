@@ -89,7 +89,7 @@ if _ALLOW_MOSAIC_STEP:
         'MOSAIC_ENABLED',
         False)
 
-_ASYNC_UPLOAD = ogc_server_settings and ogc_server_settings.DATASTORE
+_ASYNC_UPLOAD = (ogc_server_settings and ogc_server_settings.DATASTORE is not None and len(ogc_server_settings.DATASTORE) > 0)
 
 # at the moment, the various time support transformations require the database
 if _ALLOW_TIME_STEP and not _ASYNC_UPLOAD:
@@ -395,7 +395,7 @@ def next_step_response(req, upload_session, force_ajax=True):
     # has no corresponding view served by the 'view' function.
     if next == 'run':
         upload_session.completed_step = next
-        if _ASYNC_UPLOAD and not req or req.is_ajax():
+        if (_ASYNC_UPLOAD and not req) or (req and req.is_ajax()):
             return run_response(req, upload_session)
         else:
             # on sync we want to run the import and advance to the next step
