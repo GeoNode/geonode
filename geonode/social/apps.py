@@ -33,5 +33,6 @@ class SocialConfig(AppConfig):
         registry.register(apps.get_app_config('documents').get_model('Document'))
         registry.register(apps.get_app_config('services').get_model('Service'))
         registry.register(apps.get_app_config('dialogos').get_model('Comment'))
+        registry.register(apps.get_app_config('geoapp_geostories').get_model('GeoStory'))
         _auth_user_model = settings.AUTH_USER_MODEL.split('.')
         registry.register(apps.get_app_config(_auth_user_model[0]).get_model(_auth_user_model[1]))

@@ -32,6 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 
 # from actstream.exceptions import ModelNotActionable
 
+from mapstore2_adapter.geoapps.geostories.models import GeoStory
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
@@ -110,6 +111,11 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
         logger.exception(e)
 
     try:
+        action_settings['geostory'].update(object_name=getattr(instance, 'title', None),)
+    except Exception as e:
+        logger.exception(e)
+
+    try:
         action = action_settings[obj_type]
         if created:
             # object was created
@@ -120,7 +126,8 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                 # object was saved.
                 if not isinstance(instance, Layer) and \
                         not isinstance(instance, Document) and \
-                        not isinstance(instance, Map):
+                        not isinstance(instance, Map) and \
+                        not isinstance(instance, GeoStory):
                     verb = action.get('updated_verb')
                     raw_action = 'updated'
 
@@ -169,6 +176,9 @@ if activity:
 
     signals.post_save.connect(activity_post_modify_object, sender=Document)
     signals.post_delete.connect(activity_post_modify_object, sender=Document)
+
+    signals.post_save.connect(activity_post_modify_object, sender=GeoStory)
+    signals.post_delete.connect(activity_post_modify_object, sender=GeoStory)
 
 
 def rating_post_save(instance, sender, created, **kwargs):
