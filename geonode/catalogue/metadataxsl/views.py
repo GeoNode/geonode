@@ -62,13 +62,9 @@ def prefix_xsl_line(req, id):
     except PermissionDenied:
         return HttpResponse(_("Not allowed"), status=403)
     except Exception:
-        raise Http404(_("Not found"))
-    except Exception:
         logger.debug(traceback.format_exc())
         msg = f'Could not connect to catalogue to save information for layer "{str(resource)}"'
-        return HttpResponse(
-            msg
-        )
+        return HttpResponse(msg, status=404)
 
     try:
         # generate an XML document (GeoNode's default is ISO)
