@@ -17,8 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.upload.upload import _update_layer_with_xml_info
-from geonode.layers.metadata import parse_metadata
 import re
 import os
 import json
@@ -59,6 +57,8 @@ from guardian.shortcuts import get_objects_for_user
 
 from geonode import geoserver
 from geonode.base.auth import get_or_create_token
+from geonode.layers.metadata import parse_metadata
+from geonode.upload.upload import _update_layer_with_xml_info
 from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify, get_url_for_model
 from geonode.base.models import (
