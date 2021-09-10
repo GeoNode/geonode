@@ -147,14 +147,11 @@ def _resolve_dataset(request, alternate, permission='base.view_resourcebase', ms
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
     service_typename = alternate.split(":", 1)
-    if Service.objects.filter(name=service_typename[0]).exists():
+    if Service.objects.filter(name=service_typename[0]).count() == 1:
         query = {
-            'alternate': service_typename[1]
+            'alternate': service_typename[1],
+            'remote_service': Service.objects.filter(name=service_typename[0]).get()
         }
-        if len(service_typename) > 1:
-            query['store'] = service_typename[0]
-        else:
-            query['subtype'] = 'remote'
         return resolve_object(
             request,
             Dataset,
