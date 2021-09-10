@@ -503,6 +503,9 @@ class ModuleFunctionsTestCase(StandardTestCase):
             geonode_layer = Layer.objects.filter(remote_service=geonode_service).get()
             self.assertIsNotNone(geonode_layer)
             self.assertNotEqual(geonode_layer.srid, "EPSG:4326")
+            self.client.login(username='admin', password='admin')
+            response = self.client.get(reverse('layer_detail', args=(geonode_layer.name,)))
+            self.assertEqual(response.status_code, 200)
             harvest_job, created = HarvestJob.objects.get_or_create(
                 service=geonode_service,
                 resource_id=geonode_layer.alternate
@@ -718,6 +721,9 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             geonode_layer = handler._create_layer(geonode_service, **resource_fields)
             self.assertIsNotNone(geonode_layer)
             self.assertNotEqual(geonode_layer.srid, "EPSG:4326")
+            self.client.login(username='admin', password='admin')
+            response = self.client.get(reverse('layer_detail', args=(geonode_layer.name,)))
+            self.assertEqual(response.status_code, 200)
             harvest_job, created = HarvestJob.objects.get_or_create(
                 service=geonode_service,
                 resource_id=geonode_layer.alternate
