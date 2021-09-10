@@ -218,7 +218,7 @@ def document_embed(request, docid):
             loader.render_to_string(
                 '401.html', context={
                     'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
-    if document.files and storage_manager.exists(document.files[0]) and document.extension and document.is_image:
+    if document.is_image:
         context_dict = {
             "image_url":  reverse('document_link', args=(document.id,)),
         }
