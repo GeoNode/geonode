@@ -265,12 +265,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """/documents/1 -> Test accessing the embed view of a document"""
         d = Document.objects.all().first()
         d.set_default_permissions()
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f'---- {d.files[0]} ----')
-        logger.error(f"---- {reverse('document_embed', args=(str(d.id),))} ----")
+
         response = self.client.get(reverse('document_embed', args=(str(d.id),)))
-        logger.error(f'---- {response.content} -----')
         self.assertEqual(response.status_code, 200)
 
     @patch("geonode.documents.tasks.create_document_thumbnail")
