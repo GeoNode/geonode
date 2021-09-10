@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.upload.upload import _update_layer_with_xml_info
-from geonode.layers.metadata import parse_metadata
 import re
 import os
 import json
@@ -57,6 +55,8 @@ from guardian.shortcuts import get_objects_for_user
 
 from geonode import geoserver
 from geonode.base.auth import get_or_create_token
+from geonode.layers.metadata import parse_metadata
+from geonode.upload.upload import _update_layer_with_xml_info
 from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify, get_url_for_model
 from geonode.base.models import (
@@ -148,14 +148,11 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
     service_typename = alternate.split(":", 1)
-    if Service.objects.filter(name=service_typename[0]).exists():
+    if Service.objects.filter(name=service_typename[0]).count() == 1:
         query = {
-            'alternate': service_typename[1]
+            'alternate': service_typename[1],
+            'remote_service': Service.objects.filter(name=service_typename[0]).get()
         }
-        if len(service_typename) > 1:
-            query['store'] = service_typename[0]
-        else:
-            query['storeType'] = 'remoteStore'
         return resolve_object(
             request,
             Layer,
@@ -365,7 +362,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         raise Http404(_("Not found"))
     if not layer:
         raise Http404(_("Not found"))
-
     permission_manager = ManageResourceOwnerPermissions(layer)
     permission_manager.set_owner_permissions_according_to_workflow()
 
