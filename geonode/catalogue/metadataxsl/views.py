@@ -25,7 +25,6 @@ from lxml import etree
 from defusedxml import lxml as dlxml
 
 from django.conf import settings
-from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
