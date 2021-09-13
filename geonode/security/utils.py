@@ -52,7 +52,7 @@ class GeofenceRequestError(exceptions.APIException):
     pass
 
 
-class GeofenceLayerAdapter:
+class GeofenceLayerAdapter(object):
     def __init__(self, resource):
         self.resource = resource
         self.__has_committed_changes = False
@@ -131,7 +131,7 @@ class GeofenceLayerAdapter:
             return True
 
 
-class GeofenceLayerRulesUnitOfWork:
+class GeofenceLayerRulesUnitOfWork(object):
     def __init__(self, geofence_adapter):
         self.adapter = geofence_adapter
         self.requests_list = []
