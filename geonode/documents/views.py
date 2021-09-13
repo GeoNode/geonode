@@ -220,9 +220,7 @@ def document_embed(request, docid):
                 '401.html', context={
                     'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
     
-    if document.doc_url:
-        return HttpResponseRedirect(document.doc_url)
-    elif document.is_image:
+    if document.is_image:
         if document.doc_url:
             imageurl = document.doc_url
         else:
@@ -235,6 +233,8 @@ def document_embed(request, docid):
             "documents/document_embed.html",
             context_dict
         )
+    if document.doc_url:
+        return HttpResponseRedirect(document.doc_url)
     else:
         return get_download_response(request, docid)
 
