@@ -177,6 +177,11 @@ def geoapp_detail(request, geoappid, template='apps/app_detail.html'):
             'EPSG:3857')
     }
 
+    if request.user.is_authenticated:
+        if getattr(settings, 'FAVORITE_ENABLED', False):
+            from geonode.favorite.utils import get_favorite_info
+            context_dict["favorite_info"] = get_favorite_info(request.user, geoapp_obj)
+
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, geoapp_obj)
 

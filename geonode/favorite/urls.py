@@ -38,6 +38,11 @@ urlpatterns = [
         name='add_favorite_layer'
     ),
     url(
+        r'^app/(?P<id>\d+)$',
+        views.favorite, {'subject': 'geoapp'},
+        name='add_favorite_geoapp'
+    ),
+    url(
         r'^user/(?P<id>\d+)$',
         views.favorite, {'subject': 'user'},
         name='add_favorite_user'
