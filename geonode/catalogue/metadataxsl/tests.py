@@ -21,12 +21,36 @@ from django.urls import reverse
 from geonode.base.models import ResourceBase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
+
 
 class MetadataXSLTest(GeoNodeBaseTestSupport):
 
     """
     Tests geonode.catalogue.metadataxsl app/module
     """
+    type = 'dataset'
+
+    #  loading test initial data
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
         super().setUp()
@@ -35,6 +59,7 @@ class MetadataXSLTest(GeoNodeBaseTestSupport):
 
     def test_showmetadata_access_perms(self):
         _dataset = ResourceBase.objects.first()
+        self.assertIsNotNone(_dataset)
         _dataset.set_permissions({"users": {}, "groups": {}})
         _dataset.save()
         self.client.login(username=self.adm_un, password=self.adm_pw)
