@@ -209,6 +209,7 @@ def document_link(request, docid):
 
 
 def document_embed(request, docid):
+    from django.http.response import HttpResponseRedirect
     document = get_object_or_404(Document, pk=docid)
 
     if not request.user.has_perm(
@@ -218,9 +219,16 @@ def document_embed(request, docid):
             loader.render_to_string(
                 '401.html', context={
                     'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
-    if document.is_image:
+    
+    if document.doc_url:
+        return HttpResponseRedirect(document.doc_url)
+    elif document.is_image:
+        if document.doc_url:
+            imageurl = document.doc_url
+        else:
+            imageurl = reverse('document_link', args=(document.id,))
         context_dict = {
-            "image_url":  reverse('document_link', args=(document.id,)),
+            "image_url":  imageurl,
         }
         return render(
             request,
