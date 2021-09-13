@@ -876,4 +876,4 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
                 owner=self.not_admin,
                 title="GeoNode Map Doc",
             ))
-        self.assertEqual(doc.embed_url, 'http://geonode.org/map.pdf')
+        self.assertEqual(doc.href, 'http://geonode.org/map.pdf')
