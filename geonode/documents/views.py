@@ -40,6 +40,7 @@ from django.views.generic.edit import UpdateView, CreateView
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
+from geonode.client.hooks import hookset
 from geonode.utils import resolve_object
 from geonode.base.views import batch_modify
 from geonode.utils import build_social_links
@@ -301,6 +302,7 @@ class DocumentUploadView(CreateView):
         regions = []
         keywords = []
         bbox = None
+        url = hookset.document_detail_url(self.object)
 
         out = {'success': False}
 
@@ -334,11 +336,7 @@ class DocumentUploadView(CreateView):
 
         if self.request.GET.get('no__redirect', False):
             out['success'] = True
-            out['url'] = reverse(
-                'document_detail',
-                args=(
-                    self.object.id,
-                ))
+            out['url'] = url
             if out['success']:
                 status_code = 200
             else:
@@ -348,12 +346,7 @@ class DocumentUploadView(CreateView):
                 content_type='application/json',
                 status=status_code)
         else:
-            return HttpResponseRedirect(
-                reverse(
-                    'document_detail',
-                    args=(
-                        self.object.id,
-                    )))
+            return HttpResponseRedirect(url)
 
 
 class DocumentUpdateView(UpdateView):
@@ -379,15 +372,10 @@ class DocumentUpdateView(UpdateView):
                 'doc_url': form.cleaned_data.get('doc_url'),
                 'user': self.request.user
             })
-
+        url = hookset.document_detail_url(self.object)
         register_event(self.request, EventType.EVENT_CHANGE, self.object)
 
-        return HttpResponseRedirect(
-            reverse(
-                'document_detail',
-                args=(
-                    self.object.id,
-                )))
+        return HttpResponseRedirect(url)
 
 
 @login_required
@@ -536,13 +524,9 @@ def document_metadata(
         document_form.save_many2many()
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, document)
+        url = hookset.document_detail_url(document)
         if not ajax:
-            return HttpResponseRedirect(
-                reverse(
-                    'document_detail',
-                    args=(
-                        document.id,
-                    )))
+            return HttpResponseRedirect(url)
         message = document.id
 
         try:
