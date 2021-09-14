@@ -60,7 +60,7 @@
       </div>
       {% endif %}
       <div class="form-actions">
-        <a href="{% geoapp_detail_url resource %}" class="btn btn-primary">{% trans "Return to GeoApp" %}</a>     
+        <a href="{% url 'geoapp_detail' geoappid=resource.id %}" class="btn btn-primary">{% trans "Return to" %} {% trans resource.resource_type %}</a>     
         <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update" %}"/>
       </div>
       {% csrf_token %}
@@ -132,7 +132,7 @@
               </fieldset>
 
               <div class="form-actions">
-                <a href="{% geoapp_detail_url resource %}" class="btn btn-primary">{% trans "Return to GeoApp" %}</a>                 
+                <a href="{% url 'geoapp_detail' geoappid=resource.id %}" class="btn btn-primary">{% trans "Return to" %} {% trans resource.resource_type %}</a>                 
                 <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
               </div>
           </div>
