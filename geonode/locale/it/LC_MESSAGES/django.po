@@ -1186,7 +1186,7 @@ msgstr "Imposta"
 #: geonode/geoapps/templates/apps/app_detail.html:152
 #: geonode/geoapps/templates/apps/app_detail.html:154
 msgid "View"
-msgstr "View"
+msgstr "Visualizza"
 
 #: geonode/geoapps/templates/apps/app_detail.html:163
 #: geonode/maps/templates/maps/map_detail.html:271
