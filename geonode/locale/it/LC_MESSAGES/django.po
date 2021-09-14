@@ -1189,6 +1189,9 @@ msgid "View"
 msgstr "Visualizza"
 
 #: geonode/geoapps/templates/apps/app_detail.html:163
+msgid "Specify which users can view or modify this"
+msgstr "Specifica quali utenti possono visualizzare o modificare questa"
+
 #: geonode/maps/templates/maps/map_detail.html:271
 msgid "Specify which users can view or modify this map"
 msgstr "Specifica quali utenti possono visualizzare o modificare questa mappa"
