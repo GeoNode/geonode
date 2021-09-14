@@ -99,7 +99,8 @@ class HarvesterAdmin(admin.ModelAdmin):
                         (
                             "Harvester worker specific configuration has been changed. "
                             "Updating list of this harvester's harvestable "
-                            "resources asynchronously... "
+                            "resources asynchronously. When this is done the harvester "
+                            "status will be set to `ready`. Refresh this page in order to monitor it."
                         ),
                         level=messages.WARNING
                     )
@@ -255,6 +256,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
 
     actions = [
         "toggle_should_be_harvested",
+        "harvest_selected_resources",
     ]
 
     def delete_queryset(self, request, queryset):
@@ -287,10 +289,33 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         self.message_user(
             request, "Toggled harvestable resources' `should_be_harvested` attribute")
 
+    @admin.action(description="Harvest selected resources")
+    def harvest_selected_resources(self, request, queryset):
+        selected_harvestable_resources = {}
+        for harvestable_resource in queryset:
+            harvester_resources = selected_harvestable_resources.setdefault(harvestable_resource.harvester, [])
+            harvester_resources.append(harvestable_resource.id)
+        for harvester, harvestable_resource_ids in selected_harvestable_resources.items():
+            if harvester.status == models.Harvester.STATUS_READY:
+                self.message_user(
+                    request,
+                    f"Harvesting {len(harvestable_resource_ids)} resources from {harvester.name!r} harvester..."
+                )
+                tasks.harvest_resources.apply_async(args=(harvestable_resource_ids,))
+            else:
+                self.message_user(
+                    request,
+                    (
+                        f"Not harvesting resources from harvester {harvester!r}. The harvester is "
+                        f"currently busy. Wait for its status to be {models.Harvester.STATUS_READY!r} "
+                        f"and try again"
+                    ),
+                    level=messages.ERROR
+                )
+
 
 def _worker_config_changed(form) -> bool:
     field_name = "harvester_type_specific_configuration"
-    # original = eval(form.data[f"initial-{field_name}"], {})
     original = json.loads(form.data[f"initial-{field_name}"])
     cleaned = form.cleaned_data.get(field_name)
     return original != cleaned

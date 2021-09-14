@@ -19,6 +19,7 @@
 
 import math
 import logging
+import typing
 
 from celery import chord
 from django.utils.timezone import now
@@ -39,7 +40,7 @@ logger = logging.getLogger(__name__)
     acks_late=False,
     ignore_result=False,
 )
-def harvesting_dispatcher(self, harvester_id: int):
+def old_harvesting_dispatcher(self, harvester_id: int):
     """Perform harvesting asynchronously.
 
     This function kicks-off a harvesting session for the input harvester id.
@@ -102,6 +103,89 @@ def harvesting_dispatcher(self, harvester_id: int):
     acks_late=False,
     ignore_result=False,
 )
+def harvesting_dispatcher(self, harvester_id: int):
+    """Perform harvesting asynchronously.
+
+    This function kicks-off a harvesting session for the input harvester id.
+    It defines an async workflow that results in the harvestable resources being
+    checked and harvested onto the local GeoNode.
+
+    The implementation briefly consists of:
+
+    - start a harvesting session
+    - determine which of the known harvestable resources have to be harvested
+    - schedule each harvestable resource to be harvested asynchronously
+    - when all resources have been harvested, finish the harvesting session
+
+    Internally, the code uses celery's `chord` workflow primitive. This is used to
+    allow the harvesting of individual resources to be done in parallel (as much
+    as the celery worker config allows for) and still have a final synchronization
+    step, once all resources are harvested, that finalizes the harvesting session.
+
+    """
+
+    harvester = models.Harvester.objects.get(pk=harvester_id)
+    harvestable_resources = harvester.harvestable_resources.filter(
+        should_be_harvested=True).values_list("id", flat=True)
+    if len(harvestable_resources) > 0:
+        harvest_resources.apply_async(args=(harvestable_resources,))
+    else:
+        pass
+
+
+@app.task(
+    bind=True,
+    queue='geonode',
+    acks_late=False,
+    ignore_result=False,
+)
+def harvest_resources(self, harvestable_resource_ids: typing.List[int]):
+    """Harvest a list of remote resources that all belong to the same harvester."""
+    try:
+        sample_id = harvestable_resource_ids[0]
+        sample_harvestable_resource = models.HarvestableResource.objects.get(pk=sample_id)
+    except (IndexError, models.HarvestableResource.DoesNotExist):
+        logger.warning(f"harvestable resource {sample_id!r} does not exist.")
+    else:
+        harvester = sample_harvestable_resource.harvester
+        available = utils.update_harvester_availability(harvester)
+        if available:
+            harvester.status = harvester.STATUS_PERFORMING_HARVESTING
+            harvester.save()
+            harvesting_session = models.HarvestingSession.objects.create(harvester=harvester)
+            resource_tasks = []
+            for harvestable_resource_id in harvestable_resource_ids:
+                resource_tasks.append(
+                    _harvest_resource.signature(
+                        args=(harvestable_resource_id, harvesting_session.id)
+                    )
+                )
+            harvesting_finalizer = _finish_harvesting.signature(
+                args=(harvester.id, harvesting_session.id),
+                immutable=True
+            ).on_error(
+                _handle_harvesting_error.signature(
+                    kwargs={
+                        "harvester_id": harvester.id,
+                        "harvesting_session_id": harvesting_session.id,
+                    }
+                )
+            )
+            harvesting_workflow = chord(resource_tasks, body=harvesting_finalizer)
+            harvesting_workflow.apply_async()
+        else:
+            logger.warning(
+                f"Skipping harvesting for harvester {harvester.name!r} because the "
+                f"remote {harvester.remote_url!r} seems to be unavailable"
+            )
+
+
+@app.task(
+    bind=True,
+    queue='geonode',
+    acks_late=False,
+    ignore_result=False,
+)
 def _harvest_resource(
         self,
         harvestable_resource_id: int,
@@ -113,16 +197,16 @@ def _harvest_resource(
     worker: base.BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
     harvested_resource_info = worker.get_resource(
         harvestable_resource, harvesting_session_id)
-    if worker.should_copy_resource(harvestable_resource):
-        copied_name = worker.copy_resource(harvestable_resource, harvested_resource_info)
-        if copied_name is not None:
-            harvested_resource_info.copied_resources.append(copied_name)
-            files = base.unzip_file(copied_name)
-            for filename in files:
-                harvested_resource_info.copied_resources.append(filename)
-
     now_ = now()
     if harvested_resource_info is not None:
+        if worker.should_copy_resource(harvestable_resource):
+            copied_path = worker.copy_resource(harvestable_resource, harvested_resource_info)
+            if copied_path is not None:
+                harvested_resource_info.copied_resources.append(copied_path)
+                # # TODO: do we really need to unzip the files here? Or does the resource_manager cope with zip files?
+                # files = base.unzip_file(copied_path)
+                # for filename in files:
+                #     harvested_resource_info.copied_resources.append(filename)
         worker.update_geonode_resource(
             harvested_resource_info,
             harvestable_resource,
