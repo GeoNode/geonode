@@ -80,7 +80,7 @@ class GeofenceLayerAdapter(object):
         layer_name = (
             layer.name
             if layer and hasattr(layer, 'name') else
-            layer.alternate.split(":")[0]
+            layer.alternate
         )
         if xml:
             rules = list_geofence_layer_rules_xml(workspace, layer_name)
@@ -490,7 +490,7 @@ def purge_geofence_layer_rules(resource):
     """
     layer = resource.layer
     workspace = get_layer_workspace(layer)
-    layer_name = layer.name if layer and hasattr(layer, "name") else layer.alternate.split(":")[0]
+    layer_name = layer.name if layer and hasattr(layer, "name") else layer.alternate
     try:
         rules = list_geofence_layer_rules(workspace, layer_name)
         if not rules or len(rules) == 0:
@@ -694,7 +694,7 @@ def set_geofence_all(instance):
     logger.debug(f"Inside set_geofence_all for instance {instance}")
     workspace = get_layer_workspace(resource.layer)
     layer_name = resource.layer.name if resource.layer and hasattr(resource.layer, 'name') \
-        else resource.layer.alternate.split(":")[0]
+        else resource.layer.alternate
     logger.debug(f"going to work in workspace {workspace}")
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
@@ -739,11 +739,8 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     """
     Sync Guardian permissions to GeoFence.
     """
-    _layer_name = layer.name if layer and hasattr(layer, 'name') else layer.alternate.split(":")[0]
+    _layer_name = layer.name if layer and hasattr(layer, 'name') else layer.alternate
     _layer_workspace = get_layer_workspace(layer)
-    _rules = list_geofence_layer_rules(_layer_workspace, _layer_name)
-    if not _rules or len(_rules) == 0:
-        _layer_name = layer.alternate
     # Create new rule-set
     gf_services = _get_gf_services(layer, perms)
 
