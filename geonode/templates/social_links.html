@@ -9,7 +9,9 @@
 	<article class="tab-pane" id="share">
         <!-- TODO: Move this to a reusable template snippet -->
         <header>
-            <h3>{% trans "Share This" %} {% trans resource.resource_type|title %} </h3>
+            {% with resource.resource_type|title as resource_type %}
+            <h3>{% trans "Share This" %} {% trans resource_type %} </h3>
+            {% endwith %}
         </header>
         <div>
               <ul class="social">
