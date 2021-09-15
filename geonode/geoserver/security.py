@@ -71,7 +71,7 @@ class GeofenceLayerAdapter(object):
         dataset_name = (
             dataset.name
             if dataset and hasattr(dataset, 'name') else
-            dataset.alternate.split(":")[0]
+            dataset.alternate
         )
         if xml:
             rules = list_geofence_layer_rules_xml(workspace, dataset_name)
@@ -487,7 +487,7 @@ def purge_geofence_dataset_rules(resource):
     """
     dataset = resource.dataset
     workspace = get_dataset_workspace(dataset)
-    dataset_name = dataset.name if dataset and hasattr(dataset, 'name') else dataset.alternate.split(":")[0]
+    dataset_name = dataset.name if dataset and hasattr(dataset, 'name') else dataset.alternate
     try:
         rules = list_geofence_layer_rules(workspace, dataset_name)
         if not rules or len(rules) == 0:
@@ -687,7 +687,7 @@ def set_geofence_all(instance):
     logger.debug(f"Inside set_geofence_all for instance {instance}")
     workspace = get_dataset_workspace(resource.dataset)
     dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
-        else resource.dataset.alternate.split(":")[0]
+        else resource.dataset.alternate
     logger.debug(f"going to work in workspace {workspace}")
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
@@ -731,11 +731,8 @@ def sync_geofence_with_guardian(dataset, perms, user=None, group=None, group_per
     """
     Sync Guardian permissions to GeoFence.
     """
-    _dataset_name = dataset.name if dataset and hasattr(dataset, 'name') else dataset.alternate.split(":")[0]
+    _dataset_name = dataset.name if dataset and hasattr(dataset, 'name') else dataset.alternate
     _dataset_workspace = get_dataset_workspace(dataset)
-    _rules = list_geofence_layer_rules(_dataset_workspace, _dataset_name)
-    if not _rules or len(_rules) == 0:
-        _dataset_name = dataset.alternate
     # Create new rule-set
     gf_services = _get_gf_services(dataset, perms)
 
