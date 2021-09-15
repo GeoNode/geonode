@@ -675,7 +675,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             if rule['service'] is None and rule['userName'] == 'bobby':
                 self.assertEqual(rule['userName'], 'bobby')
                 self.assertEqual(rule['workspace'], 'CA')
-                self.assertEqual(rule['layer'], 'CA')
+                self.assertEqual(rule['layer'], 'geonode:CA')
                 self.assertEqual(rule['access'], 'LIMIT')
 
                 self.assertTrue('limits' in rule)
@@ -715,7 +715,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                 if rule['service'] is None:
                     self.assertEqual(rule['userName'], None)
                     self.assertEqual(rule['workspace'], 'CA')
-                    self.assertEqual(rule['layer'], 'CA')
+                    self.assertEqual(rule['layer'], 'geonode:CA')
                     self.assertEqual(rule['access'], 'LIMIT')
 
                     self.assertTrue('limits' in rule)
@@ -750,7 +750,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                     self.assertEqual(rule['service'], None)
                     self.assertEqual(rule['userName'], None)
                     self.assertEqual(rule['workspace'], 'CA')
-                    self.assertEqual(rule['layer'], 'CA')
+                    self.assertEqual(rule['layer'], 'geonode:CA')
                     self.assertEqual(rule['access'], 'LIMIT')
 
                     self.assertTrue('limits' in rule)
