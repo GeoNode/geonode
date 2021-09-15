@@ -261,6 +261,14 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('document_detail', args=(str(d.id),)))
         self.assertEqual(response.status_code, 200)
 
+    def test_document_embed(self):
+        """/documents/1 -> Test accessing the embed view of a document"""
+        d = Document.objects.all().first()
+        d.set_default_permissions()
+
+        response = self.client.get(reverse('document_embed', args=(str(d.id),)))
+        self.assertEqual(response.status_code, 200)
+
     @patch("geonode.documents.tasks.create_document_thumbnail")
     def test_document_metadata_details(self, thumb):
         thumb.return_value = True
@@ -868,4 +876,4 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
                 owner=self.not_admin,
                 title="GeoNode Map Doc",
             ))
-        self.assertEqual(doc.embed_url, 'http://geonode.org/map.pdf')
+        self.assertEqual(doc.href, 'http://geonode.org/map.pdf')
