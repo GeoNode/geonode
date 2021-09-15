@@ -83,8 +83,14 @@ class GeofenceLayerAdapter(object):
             layer.alternate.split(":")[0]
         )
         if xml:
-            return list_geofence_layer_rules_xml(workspace, layer_name)
-        return list_geofence_layer_rules(workspace, layer_name)
+            rules = list_geofence_layer_rules_xml(workspace, layer_name)
+            if not rules or len(rules) == 0:
+                rules = list_geofence_layer_rules_xml(workspace, layer.alternate)
+            return rules
+        rules = list_geofence_layer_rules(workspace, layer_name)
+        if not rules or len(rules) == 0:
+            rules = list_geofence_layer_rules(workspace, layer.alternate)
+        return rules
 
     def delete_rules(self, ids):
         self.set_has_committed_changes()
@@ -487,6 +493,8 @@ def purge_geofence_layer_rules(resource):
     layer_name = layer.name if layer and hasattr(layer, "name") else layer.alternate.split(":")[0]
     try:
         rules = list_geofence_layer_rules(workspace, layer_name)
+        if not rules or len(rules) == 0:
+            rules = list_geofence_layer_rules(workspace, layer.alternate)
         batch_delete_geofence_layer_rules([rule["id"] for rule in rules])
     except Exception as e:
         logger.exception(e)
@@ -733,6 +741,9 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     """
     _layer_name = layer.name if layer and hasattr(layer, 'name') else layer.alternate.split(":")[0]
     _layer_workspace = get_layer_workspace(layer)
+    _rules = list_geofence_layer_rules(_layer_workspace, _layer_name)
+    if not _rules or len(_rules) == 0:
+        _layer_name = layer.alternate
     # Create new rule-set
     gf_services = _get_gf_services(layer, perms)
 
