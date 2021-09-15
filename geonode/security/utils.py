@@ -129,6 +129,7 @@ class GeofenceLayerAdapter(object):
                 self.set_invalidate_cache()
                 self.purge_rules()
                 self.restore_saved_rules(fail_silently=True)
+                self.__has_committed_changes = False
                 return True
             except Exception as e:
                 logger.debug(e)
@@ -141,6 +142,7 @@ class GeofenceLayerRulesUnitOfWork(object):
     def __init__(self, geofence_adapter):
         self.adapter = geofence_adapter
         self.requests_list = []
+        self.nested_contexts = 0
         self.adapter_requests_map = {
             "purge_rules": self.adapter.purge_rules,
             "delete_rules": self.adapter.delete_rules,
@@ -150,17 +152,26 @@ class GeofenceLayerRulesUnitOfWork(object):
         }
 
     def __enter__(self):
+        self.nested_contexts += 1
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        if not exc_type:
-            self._execute_requests()
+        self.nested_contexts -= 1
+        if self.nested_contexts == 0:
+            if not exc_type:
+                self._execute_requests()
+            else:
+                self.rollback()
 
     def _execute_requests(self):
         for request in self.requests_list:
             self.adapter_requests_map[request["name"]](
                 *request["args"], **request["kwargs"]
             )
+
+    def rollback(self):
+        self.adapter.rollback()
+        self.requests_list = []
 
     def _add_request(self, request_details):
         self.requests_list.append(request_details)
@@ -444,7 +455,7 @@ def list_geofence_layer_rules(workspace, layer_name):
     auth = HTTPBasicAuth(user, passwd)
 
     rules = []
-    resource_url = f"{url}rest/geofence/rules.json" f"?workspace={workspace}&layer={layer_name}"
+    resource_url = f"{url}rest/geofence/rules.json?workspace={workspace}&layer={layer_name}"
     response = requests.get(resource_url, headers=headers, auth=auth, timeout=10, verify=False)
     if response.status_code >= 200 and response.status_code < 300:
         gs_rules = response.json()
@@ -469,7 +480,7 @@ def list_geofence_layer_rules_xml(workspace, layer_name):
     auth = HTTPBasicAuth(user, passwd)
 
     rules = []
-    resource_url = f"{url}rest/geofence/rules" f"?workspace={workspace}&layer={layer_name}"
+    resource_url = f"{url}rest/geofence/rules?workspace={workspace}&layer={layer_name}"
     response = requests.get(resource_url, headers=headers, auth=auth, timeout=10, verify=False)
     if response.status_code >= 200 and response.status_code < 300:
         gs_rules = etree.fromstring(response.content)

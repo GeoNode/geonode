@@ -154,9 +154,9 @@ class PermissionLevelMixin:
         Remove all the permissions except for the owner and assign the
         view permission to the anonymous group
         """
-        geofence_adapter = GeofenceLayerAdapter(self.get_self_resource())
+        geofence_uow = GeofenceLayerRulesUnitOfWork(GeofenceLayerAdapter(self.get_self_resource()))
         try:
-            with GeofenceLayerRulesUnitOfWork(geofence_adapter) as geofence_uow:
+            with geofence_uow:
                 with transaction.atomic():
                     remove_object_permissions(self, purge=False, geofence_uow=geofence_uow)
 
@@ -251,7 +251,7 @@ class PermissionLevelMixin:
                         else:
                             self.set_dirty_state()
         except Exception as e:
-            geofence_adapter.rollback()
+            geofence_uow.rollback()
             raise GeoNodeException(e)
 
     def set_permissions(self, perm_spec, created=False):
@@ -273,9 +273,9 @@ class PermissionLevelMixin:
                 ]
         }
         """
-        geofence_adapter = GeofenceLayerAdapter(self.get_self_resource())
+        geofence_uow = GeofenceLayerRulesUnitOfWork(GeofenceLayerAdapter(self.get_self_resource()))
         try:
-            with GeofenceLayerRulesUnitOfWork(geofence_adapter) as geofence_uow:
+            with geofence_uow:
                 with transaction.atomic():
                     remove_object_permissions(self, purge=False, geofence_uow=geofence_uow)
 
@@ -421,7 +421,7 @@ class PermissionLevelMixin:
                         else:
                             self.set_dirty_state()
         except Exception as e:
-            geofence_adapter.rollback()
+            geofence_uow.rollback()
             raise GeoNodeException(e)
 
     def set_workflow_perms(self, approved=False, published=False):
