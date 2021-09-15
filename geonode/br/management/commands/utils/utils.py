@@ -308,7 +308,7 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
             print(f"Restoring GeoServer Vectorial Data : {db_name}:{os.path.splitext(table)[0]} ")
             pg_rstcmd = (f"PGPASSWORD=\"{db_passwd}\" {config.pg_restore_cmd} -h {db_host} -p {str(db_port)} -U {db_user} "
                          f"--role={db_user} -F c -t \"{os.path.splitext(table)[0]}\" {os.path.join(source_folder, table)} -d {db_name}"
-                         " -c" if preserve_tables else "")
+                         " -c" if not preserve_tables else "")
             os.system(pg_rstcmd)
         conn.commit()
     except Exception:
