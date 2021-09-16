@@ -672,7 +672,6 @@ def pre_delete_layer(instance, sender, **kwargs):
         MapLayer.objects.filter(
             name=instance.alternate,
             ows_url=instance.ows_url).delete()
-        return
 
     logger.debug(
         "Going to delete the styles associated for [%s]",
