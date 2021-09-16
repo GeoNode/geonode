@@ -67,6 +67,7 @@ from .helpers import (
     set_attributes_from_geoserver,
     create_geoserver_db_featurestore)
 from .security import (
+    GeofenceLayerRulesUnitOfWork,
     _get_gf_services,
     _get_gwc_filters_and_formats,
     get_user_geolimits,
@@ -374,23 +375,32 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
         return _gs_import_session_info
 
-    def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
+    def remove_permissions(self, uuid: str, /, instance: ResourceBase = None, geofence_uow: GeofenceLayerRulesUnitOfWork = None) -> bool:
         instance = instance or ResourceManager._get_instance(uuid)
 
         try:
             if instance and isinstance(instance.get_real_instance(), Dataset):
                 if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
                     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-                        purge_geofence_dataset_rules(instance.get_real_instance())
-                        set_geofence_invalidate_cache()
+                        if geofence_uow:
+                            geofence_uow.purge_rules()
+                            geofence_uow.set_invalidate_cache()
+                        else:
+                            purge_geofence_dataset_rules(instance.get_real_instance())
+                            set_geofence_invalidate_cache()
                     else:
                         instance.set_dirty_state()
         except Exception as e:
+            if geofence_uow:
+                geofence_uow.rollback()
             logger.exception(e)
             return False
         return True
 
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(
+        self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None,
+        permissions: dict = {}, created: bool = False, geofence_uow: GeofenceLayerRulesUnitOfWork = None
+    ) -> bool:
         instance = instance or ResourceManager._get_instance(uuid)
 
         try:
@@ -401,7 +411,10 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         _owner = owner or instance.owner
                         if permissions is not None:
                             if not created:
-                                purge_geofence_dataset_rules(instance.get_self_resource())
+                                if geofence_uow:
+                                    geofence_uow.purge_rules()
+                                else:
+                                    purge_geofence_dataset_rules(instance.get_self_resource())
 
                             # Owner
                             perms = [
@@ -411,7 +424,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                 "change_resourcebase",
                                 "change_resourcebase_permissions",
                                 "download_resourcebase"]
-                            sync_geofence_with_guardian(instance, perms, user=_owner)
+                            sync_geofence_with_guardian(instance, perms, user=_owner, geofence_uow=geofence_uow)
                             gf_services = _get_gf_services(instance, perms)
                             _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, _owner, None, gf_services)
                             _disable_cache.append(_disable_dataset_cache)
@@ -427,7 +440,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                             group_perms = permissions['groups']
                                         if user == "AnonymousUser":
                                             _user = None
-                                        sync_geofence_with_guardian(instance, perms, user=_user, group_perms=group_perms)
+                                        sync_geofence_with_guardian(instance, perms, user=_user, group_perms=group_perms, geofence_uow=geofence_uow)
                                         gf_services = _get_gf_services(instance, perms)
                                         _group = list(group_perms.keys())[0] if group_perms else None
                                         _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, _user, _group, gf_services)
@@ -440,7 +453,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                     # Set the GeoFence Rules
                                     if _group and _group.name and _group.name == 'anonymous':
                                         _group = None
-                                    sync_geofence_with_guardian(instance, perms, group=_group)
+                                    sync_geofence_with_guardian(instance, perms, group=_group, geofence_uow=geofence_uow)
                                     gf_services = _get_gf_services(instance, perms)
                                     _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, _group, gf_services)
                                     _disable_cache.append(_disable_dataset_cache)
@@ -449,7 +462,10 @@ class GeoServerResourceManager(ResourceManagerInterface):
                             anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
 
                             if not created:
-                                purge_geofence_dataset_rules(instance.get_self_resource())
+                                if geofence_uow:
+                                    geofence_uow.purge_rules()
+                                else:
+                                    purge_geofence_dataset_rules(instance.get_self_resource())
 
                             # Owner & Managers
                             perms = [
@@ -459,33 +475,33 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                 "change_resourcebase",
                                 "change_resourcebase_permissions",
                                 "download_resourcebase"]
-                            sync_geofence_with_guardian(instance, perms, user=_owner)
+                            sync_geofence_with_guardian(instance, perms, user=_owner, geofence_uow=geofence_uow)
                             gf_services = _get_gf_services(instance, perms)
                             _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, _owner, None, gf_services)
                             _disable_cache.append(_disable_dataset_cache)
 
                             for _group_manager in get_obj_group_managers(_owner):
-                                sync_geofence_with_guardian(instance, perms, user=_group_manager)
+                                sync_geofence_with_guardian(instance, perms, user=_group_manager, geofence_uow=geofence_uow)
                                 _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, _group_manager, None, gf_services)
                                 _disable_cache.append(_disable_dataset_cache)
 
                             for user_group in get_user_groups(_owner):
                                 if not skip_registered_members_common_group(user_group):
-                                    sync_geofence_with_guardian(instance, perms, group=user_group)
+                                    sync_geofence_with_guardian(instance, perms, group=user_group, geofence_uow=geofence_uow)
                                     _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, user_group, gf_services)
                                     _disable_cache.append(_disable_dataset_cache)
 
                             # Anonymous
                             perms = ["view_resourcebase"]
                             if anonymous_can_view:
-                                sync_geofence_with_guardian(instance, perms, user=None, group=None)
+                                sync_geofence_with_guardian(instance, perms, user=None, group=None, geofence_uow=geofence_uow)
                                 gf_services = _get_gf_services(instance, perms)
                                 _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                                 _disable_cache.append(_disable_dataset_cache)
 
                             perms = ["download_resourcebase"]
                             if anonymous_can_download:
-                                sync_geofence_with_guardian(instance, perms, user=None, group=None)
+                                sync_geofence_with_guardian(instance, perms, user=None, group=None, geofence_uow=geofence_uow)
                                 gf_services = _get_gf_services(instance, perms)
                                 _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                                 _disable_cache.append(_disable_dataset_cache)
@@ -494,17 +510,19 @@ class GeoServerResourceManager(ResourceManagerInterface):
                             filters, formats = _get_gwc_filters_and_formats(_disable_cache)
                             try:
                                 _dataset_workspace = get_dataset_workspace(instance.get_real_instance())
-                                toggle_dataset_cache(f'{_dataset_workspace}:{instance.get_real_instance().name}', filters=filters, formats=formats)
+                                toggle_dataset_cache(f'{_dataset_workspace}:{instance.get_real_instance().name}', filters=filters, formats=formats, geofence_uow=geofence_uow)
                             except Dataset.DoesNotExist:
                                 pass
                     else:
                         instance.set_dirty_state()
         except Exception as e:
+            if geofence_uow:
+                geofence_uow.rollback()
             logger.exception(e)
             return False
         return True
 
-    def set_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, approved: bool = False, published: bool = False) -> bool:
+    def set_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, approved: bool = False, published: bool = False, geofence_uow: GeofenceLayerRulesUnitOfWork = None) -> bool:
         instance = instance or ResourceManager._get_instance(uuid)
 
         try:
@@ -516,12 +534,12 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         # Set the GeoFence Rules (user = None)
                         _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
                         _members_group_group = Group.objects.get(name=_members_group_name)
-                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
+                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group, geofence_uow=geofence_uow)
                         _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, _members_group_group, gf_services)
                         _disable_cache.append(_disable_dataset_cache)
                     if published:
                         # Set the GeoFence Rules (user = None)
-                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
+                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, geofence_uow=geofence_uow)
                         _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                         _disable_cache.append(_disable_dataset_cache)
 
@@ -544,10 +562,12 @@ class GeoServerResourceManager(ResourceManagerInterface):
                             'image/vnd.jpeg-png8'
                         ]
                     try:
-                        toggle_dataset_cache(f'{get_dataset_workspace(instance.get_real_instance())}:{instance.get_real_instance().name}', filters=filters, formats=formats)
+                        toggle_dataset_cache(f'{get_dataset_workspace(instance.get_real_instance())}:{instance.get_real_instance().name}', filters=filters, formats=formats, geofence_uow=geofence_uow)
                     except Dataset.DoesNotExist:
                         pass
         except Exception as e:
+            if geofence_uow:
+                geofence_uow.rollback()
             logger.exception(e)
             return False
         return True
