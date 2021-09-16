@@ -22,6 +22,7 @@ import logging
 import requests
 import importlib
 
+from urllib.error import HTTPError
 from requests.auth import HTTPBasicAuth
 from urllib.request import urlopen, Request
 from tastypie.test import ResourceTestCaseMixin
@@ -1040,13 +1041,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             '&WIDTH=217&HEIGHT=512'
 
         # test view_resourcebase permission on anonymous user
-        request = Request(url)
-        response = urlopen(request)
-        _content_type = response.getheader('Content-Type').lower()
-        self.assertEqual(
-            _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
-        )
+        with self.assertRaises(HTTPError):
+            request = Request(url)
+            urlopen(request)
 
         # test WMS with authenticated user that has not view_resourcebase:
         # the layer must be not accessible (response is xml)
