@@ -46,7 +46,6 @@ from guardian.shortcuts import (
 )
 
 from geonode import geoserver
-from geonode import GeoNodeException
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
@@ -675,7 +674,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                 self.assertTrue('limits' in rule)
                 rule_limits = rule['limits']
-                self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                self.assertEqual(rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                 self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -715,7 +714,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                     self.assertTrue('limits' in rule)
                     rule_limits = rule['limits']
-                    self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                    self.assertEqual(rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                     self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -751,7 +750,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     self.assertTrue('limits' in rule)
                     rule_limits = rule['limits']
                     self.assertEqual(
-                        rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
+                        rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
 -42.53655428642583, 146.7110139453067 -43.07256577359489, 145.9804231249952 \
 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                     self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -1168,11 +1167,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         mocked_uow_execute_requests.side_effect = RuntimeError()
 
         # Get a Dataset object to work with
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
 
         # Set the default permissions
-        with self.assertRaises(GeoNodeException):
-            layer.set_default_permissions()
+        layer.set_default_permissions()
 
         # Assertions
         self.assertEqual(mocked_uow_add_request.call_count, 20)
@@ -1205,9 +1203,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         geofence_rules_count_end = get_geofence_rules_count()
         self.assertEqual(geofence_rules_count_start, geofence_rules_count_end)
 
-    @mock.patch('geonode.security.utils.GeofenceLayerRulesUnitOfWork._add_request')
-    @mock.patch('geonode.security.utils.GeofenceLayerRulesUnitOfWork._execute_requests')
-    @mock.patch('geonode.security.utils.GeofenceLayerRulesUnitOfWork.rollback')
+    @mock.patch('geonode.geoserver.security.GeofenceLayerRulesUnitOfWork._add_request')
+    @mock.patch('geonode.geoserver.security.GeofenceLayerRulesUnitOfWork._execute_requests')
+    @mock.patch('geonode.geoserver.security.GeofenceLayerRulesUnitOfWork.rollback')
     def test_set_layer_permissions_unit_of_work(
         self,
         mocked_uow_rollback,
@@ -1226,11 +1224,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         mocked_uow_execute_requests.side_effect = RuntimeError()
 
         # Get a layer to work with
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
 
         # Set the Permissions
-        with self.assertRaises(GeoNodeException):
-            layer.set_permissions(self.perm_spec)
+        layer.set_permissions(self.perm_spec)
 
         # Assertions
         self.assertEqual(mocked_uow_add_request.call_count, 12)
@@ -1313,12 +1310,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             rules_perm_spec_b += etree.tostring(rule)
 
         # Force rollback when trying to set permissions to A again.
-        with mock.patch('geonode.geoserver.security.GeofenceLayerAdapter.toggle_layer_cache') as mocked_adapter_toggle_layer_cache:
+        with mock.patch('geonode.geoserver.security.GeofenceLayerAdapter.toggle_dataset_cache') as mocked_adapter_toggle_layer_cache:
             mocked_adapter_toggle_layer_cache.side_effect = Exception()
 
             # Try to set the permissions A again
-            with self.assertRaises(GeoNodeException):
-                layer.set_permissions(perm_spec_a)
+            layer.set_permissions(perm_spec_a)
 
             # Verify the rollback to permission B
             geofence_rules_count_end = get_geofence_rules_count()
