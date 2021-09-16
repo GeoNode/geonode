@@ -54,6 +54,8 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.groups.models import Group, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 
+from geonode.base import enumerations
+
 from geonode.base.models import (
     Configuration,
     UserGeoLimit,
@@ -1030,9 +1032,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertTrue(geofence_rules_count >= 2)
 
         # Set the layer private for not authenticated users
-        layer.set_permissions({'users': {'AnonymousUser': []}, 'groups': []})
+        perm_spec = {'users': {'AnonymousUser': []}, 'groups': []}
+        _set_perms = layer.set_permissions(perm_spec)
+        logger.error(f" ------------ layer.set_permissions({perm_spec}) : {_set_perms}")
 
-        url = f'{settings.SITEURL}gs/geonode/ows?' \
+        url = f'{settings.GEOSERVER_LOCATION}geonode/ows?' \
             'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
             '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
             '&SRS=EPSG%3A4326' \
@@ -1041,18 +1045,33 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             '&WIDTH=217&HEIGHT=512'
 
         # test view_resourcebase permission on anonymous user
-        with self.assertRaises(HTTPError):
-            request = Request(url)
-            urlopen(request)
+        request = Request(url)
+        if _set_perms and layer.state == enumerations.STATE_PROCESSED:
+            response = urlopen(request)
+            _content_type = response.getheader('Content-Type').lower()
+            self.assertEqual(
+                _content_type,
+                'application/vnd.ogc.se_xml;charset=utf-8'
+            )
+        else:
+            with self.assertRaises(HTTPError):
+                urlopen(request)
 
         # test WMS with authenticated user that has no view_resourcebase:
         # the layer should be not accessible
         request = Request(url)
         basic_auth = base64.b64encode(b'bobby:bob')
         request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
-        with self.assertRaises(HTTPError):
-            request = Request(url)
-            urlopen(request)
+        if _set_perms and layer.state == enumerations.STATE_PROCESSED:
+            response = urlopen(request)
+            _content_type = response.getheader('Content-Type').lower()
+            self.assertEqual(
+                _content_type,
+                'application/vnd.ogc.se_xml;charset=utf-8'
+            )
+        else:
+            with self.assertRaises(HTTPError):
+                urlopen(request)
 
         # test WMS with authenticated user that has view_resourcebase: the layer
         # should be accessible and the response is an image
@@ -1063,16 +1082,21 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             },
             'groups': []
         }
-        layer.set_permissions(perm_spec)
+        _set_perms = layer.set_permissions(perm_spec)
+        logger.error(f" ------------ layer.set_permissions({perm_spec}) : {_set_perms}")
         request = Request(url)
         basic_auth = base64.b64encode(b'bobby:bob')
         request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
-        response = urlopen(request)
-        _content_type = response.getheader('Content-Type').lower()
-        self.assertEqual(
-            _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
-        )
+        if _set_perms and layer.state == enumerations.STATE_PROCESSED:
+            response = urlopen(request)
+            _content_type = response.getheader('Content-Type').lower()
+            self.assertNotEqual(
+                _content_type,
+                'application/vnd.ogc.se_xml;charset=utf-8'
+            )
+        else:
+            with self.assertRaises(HTTPError):
+                urlopen(request)
 
         # test change_dataset_style
         url = f'{settings.GEOSERVER_LOCATION}rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
