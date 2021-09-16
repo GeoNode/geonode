@@ -22,6 +22,7 @@ import logging
 import requests
 import importlib
 
+from urllib.error import HTTPError
 from requests.auth import HTTPBasicAuth
 from urllib.request import urlopen, Request
 from tastypie.test import ResourceTestCaseMixin
@@ -667,7 +668,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                 self.assertTrue('limits' in rule)
                 rule_limits = rule['limits']
-                self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                self.assertEqual(rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                 self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -707,7 +708,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                     self.assertTrue('limits' in rule)
                     rule_limits = rule['limits']
-                    self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                    self.assertEqual(rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                     self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -743,7 +744,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     self.assertTrue('limits' in rule)
                     rule_limits = rule['limits']
                     self.assertEqual(
-                        rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
+                        rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
 -42.53655428642583, 146.7110139453067 -43.07256577359489, 145.9804231249952 \
 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                     self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -1031,7 +1032,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Set the layer private for not authenticated users
         layer.set_permissions({'users': {'AnonymousUser': []}, 'groups': []})
 
-        url = f'{settings.GEOSERVER_LOCATION}geonode/ows?' \
+        url = f'{settings.SITEURL}gs/geonode/ows?' \
             'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
             '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
             '&SRS=EPSG%3A4326' \
@@ -1040,28 +1041,21 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             '&WIDTH=217&HEIGHT=512'
 
         # test view_resourcebase permission on anonymous user
-        request = Request(url)
-        response = urlopen(request)
-        _content_type = response.getheader('Content-Type').lower()
-        self.assertEqual(
-            _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
-        )
+        with self.assertRaises(HTTPError):
+            request = Request(url)
+            urlopen(request)
 
-        # test WMS with authenticated user that has not view_resourcebase:
-        # the layer must be not accessible (response is xml)
+        # test WMS with authenticated user that has no view_resourcebase:
+        # the layer should be not accessible
         request = Request(url)
         basic_auth = base64.b64encode(b'bobby:bob')
         request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
-        response = urlopen(request)
-        _content_type = response.getheader('Content-Type').lower()
-        self.assertEqual(
-            _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
-        )
+        with self.assertRaises(HTTPError):
+            request = Request(url)
+            urlopen(request)
 
         # test WMS with authenticated user that has view_resourcebase: the layer
-        # must be accessible (response is image)
+        # should be accessible and the response is an image
         perm_spec = {
             'users': {
                 'bobby': ['view_resourcebase',
