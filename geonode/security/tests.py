@@ -678,7 +678,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             if rule['service'] is None and rule['userName'] == 'bobby':
                 self.assertEqual(rule['userName'], 'bobby')
                 self.assertEqual(rule['workspace'], 'CA')
-                self.assertEqual(rule['layer'], 'geonode:CA')
+                self.assertEqual(rule['layer'], 'CA')
                 self.assertEqual(rule['access'], 'LIMIT')
 
                 self.assertTrue('limits' in rule)
@@ -718,7 +718,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                 if rule['service'] is None:
                     self.assertEqual(rule['userName'], None)
                     self.assertEqual(rule['workspace'], 'CA')
-                    self.assertEqual(rule['layer'], 'geonode:CA')
+                    self.assertEqual(rule['layer'], 'CA')
                     self.assertEqual(rule['access'], 'LIMIT')
 
                     self.assertTrue('limits' in rule)
@@ -753,7 +753,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                     self.assertEqual(rule['service'], None)
                     self.assertEqual(rule['userName'], None)
                     self.assertEqual(rule['workspace'], 'CA')
-                    self.assertEqual(rule['layer'], 'geonode:CA')
+                    self.assertEqual(rule['layer'], 'CA')
                     self.assertEqual(rule['access'], 'LIMIT')
 
                     self.assertTrue('limits' in rule)
@@ -1284,7 +1284,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                * Successful Rollback. \\o/
         """
         # Gathering data
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
         perm_spec_a = {
             "users": {
                 "admin": ["change_resourcebase", "change_resourcebase_permissions", "view_resourcebase"]
@@ -1348,7 +1348,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             self.assertEqual(rules_perm_spec_end, rules_perm_spec_b)
             # Count and RulesXML is not as permission A
             self.assertNotEqual(geofence_rules_count_end, geofence_rules_count_perm_spec_a)
-            self.assertNotEqual(rules_perm_spec_end, rules_perm_spec_a)
+            if len(rules) > 0:
+                self.assertNotEqual(rules_perm_spec_end, rules_perm_spec_a)
 
     @dump_func_name
     def test_layer_set_default_permissions(self):
