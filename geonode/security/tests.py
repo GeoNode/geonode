@@ -1156,7 +1156,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
 
-
     @dump_func_name
     @mock.patch('geonode.security.utils.GeofenceLayerRulesUnitOfWork._add_request')
     @mock.patch('geonode.security.utils.GeofenceLayerRulesUnitOfWork._execute_requests')
@@ -1215,7 +1214,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         mocked_uow_rollback.assert_called_once()
         geofence_rules_count_end = get_geofence_rules_count()
         self.assertEqual(geofence_rules_count_start, geofence_rules_count_end)
-
 
     @dump_func_name
     @mock.patch('geonode.security.utils.GeofenceLayerRulesUnitOfWork._add_request')
@@ -1276,13 +1274,13 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             Verify that the Geofence UoW Rollback is working properly:
             * Reset the Geofence Rules
             * Set PermSpec A.
-                * Get Geofence state to compare with rollback. 
+                * Get Geofence state to compare with rollback.
             * Set PermSpec B.
-                * Get Geofence state to compare with rollback. 
+                * Get Geofence state to compare with rollback.
             * Try to set PermSpec A again:
                * Simulates something going wrong.
                * Assure thar the Geofence State corresponds to B and not to A.
-               * Successful Rollback. \o/ 
+               * Successful Rollback. \\o/
         """
         # Gathering data
         layer = Layer.objects.all()[0]
@@ -1299,7 +1297,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             },
             "groups": []
         }
-        
+
         # Start with a clean set of geofence rules
         purge_geofence_all()
         geofence_rules_count_zero = get_geofence_rules_count()
@@ -1310,7 +1308,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
         # Set the permissions A - Save Geofence XML
         layer.set_permissions(perm_spec_a)
-        geofence_rules_count_perm_spec_a= get_geofence_rules_count()
+        geofence_rules_count_perm_spec_a = get_geofence_rules_count()
         rules = list_geofence_layer_rules_xml(get_layer_workspace(layer), layer.alternate)
         rules_perm_spec_a = b""
         for rule in rules:
@@ -1333,7 +1331,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Try to set the permissions A again
             with self.assertRaises(GeoNodeException):
                 layer.set_permissions(perm_spec_a)
-            
+
             # Verify the rollback to permission B
             geofence_rules_count_end = get_geofence_rules_count()
             rules = list_geofence_layer_rules_xml(get_layer_workspace(layer), layer.alternate)
@@ -1344,13 +1342,12 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
             # Assertions - Successful Rollback
             mocked_adapter_toggle_layer_cache.assert_called_once()
-            # Count and RulesXML is same as permission B 
+            # Count and RulesXML is same as permission B
             self.assertEqual(geofence_rules_count_end, geofence_rules_count_perm_spec_b)
             self.assertEqual(rules_perm_spec_end, rules_perm_spec_b)
             # Count and RulesXML is not as permission A
             self.assertNotEqual(geofence_rules_count_end, geofence_rules_count_perm_spec_a)
             self.assertNotEqual(rules_perm_spec_end, rules_perm_spec_a)
-
 
     @dump_func_name
     def test_layer_set_default_permissions(self):
