@@ -2145,3 +2145,14 @@ UI_DEFAULT_MANDATORY_FIELDS = [
 UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv('UI_REQUIRED_FIELDS ', '[]'))
 
 UPLOAD_SESSION_EXPIRY_HOURS = os.getenv('UPLOAD_SESSION_EXPIRY_HOURS ', 24)
+
+# If a command name is listed here, the command will be available to admins over http
+# This list is used by the management_commands_http app
+MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = [
+    "ping_mngmt_commands_http",
+    "updatelayers",
+    "sync_geonode_layers",
+    "sync_geonode_maps",
+    "importlayers",
+    "set_all_layers_metadata",
+]

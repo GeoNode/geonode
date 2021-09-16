@@ -19,6 +19,7 @@
 import io
 import logging
 
+from django.conf import settings
 from django.core.management import (
     get_commands,
     load_command_class
@@ -41,12 +42,12 @@ def get_management_commands():
             command_class = load_command_class(app_name, name)
         except (ImportError, AttributeError) as exception:
             logging.info(
-                f'Command "{name}" from app "{app_name}" cannot be listed or ' f'used by http, exception: "{exception}"'
+                f'Command "{name}" from app "{app_name}" cannot be listed or used by http, exception: "{exception}"'
             )
             continue
 
         # Verify if its exposed
-        is_exposed = hasattr(command_class, "expose_command_over_http") and command_class.expose_command_over_http
+        is_exposed = name in settings.MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP
         if is_exposed:
             available_commands[name] = {
                 "app": app_name,
