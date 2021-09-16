@@ -1147,9 +1147,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
 
-    @mock.patch('geonode.security.utils.GeofenceLayerRulesUnitOfWork._add_request')
-    @mock.patch('geonode.security.utils.GeofenceLayerRulesUnitOfWork._execute_requests')
-    @mock.patch('geonode.security.utils.GeofenceLayerRulesUnitOfWork.rollback')
+    @mock.patch('geonode.geoserver.security.GeofenceLayerRulesUnitOfWork._add_request')
+    @mock.patch('geonode.geoserver.security.GeofenceLayerRulesUnitOfWork._execute_requests')
+    @mock.patch('geonode.geoserver.security.GeofenceLayerRulesUnitOfWork.rollback')
     def test_layer_set_default_permissions_unit_of_work(
         self,
         mocked_uow_rollback,
@@ -1313,7 +1313,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             rules_perm_spec_b += etree.tostring(rule)
 
         # Force rollback when trying to set permissions to A again.
-        with mock.patch('geonode.security.utils.GeofenceLayerAdapter.toggle_layer_cache') as mocked_adapter_toggle_layer_cache:
+        with mock.patch('geonode.geoserver.security.GeofenceLayerAdapter.toggle_layer_cache') as mocked_adapter_toggle_layer_cache:
             mocked_adapter_toggle_layer_cache.side_effect = Exception()
 
             # Try to set the permissions A again
