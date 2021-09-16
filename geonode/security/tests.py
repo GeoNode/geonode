@@ -1176,12 +1176,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertGreaterEqual(mocked_uow_add_request.call_count, 16)
         expected_requests = [
             'purge_rules',
-            'update_rule',
-            'update_rule',
-            'update_rule',
-            'update_rule',
-            'update_rule',
             'set_invalidate_cache',
+            'purge_rules',
             'update_rule',
             'update_rule',
             'update_rule',
@@ -1194,7 +1190,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'update_rule',
             'update_rule',
             'set_invalidate_cache',
-            'set_invalidate_cache',
+            'toggle_dataset_cache',
         ]
         stacked_requests = [call.args[0]['name'] for call in mocked_uow_add_request.call_args_list]
         self.assertEqual(expected_requests, stacked_requests)
@@ -1233,17 +1229,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertGreaterEqual(mocked_uow_add_request.call_count, 10)
         expected_requests = [
             'purge_rules',
+            'set_invalidate_cache',
+            'purge_rules',
             'update_rule',
             'update_rule',
             'update_rule',
             'update_rule',
             'update_rule',
             'set_invalidate_cache',
-            'update_rule',
-            'update_rule',
-            'set_invalidate_cache',
-            'set_invalidate_cache',
-            'toggle_layer_cache',
+            'toggle_dataset_cache',
         ]
         stacked_requests = [call.args[0]['name'] for call in mocked_uow_add_request.call_args_list]
         self.assertEqual(expected_requests, stacked_requests)
@@ -1984,6 +1978,7 @@ class SecurityRulesTests(TestCase):
     """
 
     def setUp(self):
+        self.maxDiff = None
         self._l = create_single_dataset("test_dataset")
 
     def test_sync_resources_with_guardian_delay_false(self):
@@ -2020,6 +2015,7 @@ class SecurityRulesTests(TestCase):
 class TestGetUserGeolimits(TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.layer = create_single_dataset("main-layer")
         self.owner = get_user_model().objects.get(username='admin')
         self.perms = {'*': ''}
