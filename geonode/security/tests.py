@@ -1045,20 +1045,17 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             request = Request(url)
             urlopen(request)
 
-        # test WMS with authenticated user that has not view_resourcebase:
-        # the layer must be not accessible (response is xml)
+        # test WMS with authenticated user that has no view_resourcebase:
+        # the layer should be not accessible
         request = Request(url)
         basic_auth = base64.b64encode(b'bobby:bob')
         request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
-        response = urlopen(request)
-        _content_type = response.getheader('Content-Type').lower()
-        self.assertEqual(
-            _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
-        )
+        with self.assertRaises(HTTPError):
+            request = Request(url)
+            urlopen(request)
 
         # test WMS with authenticated user that has view_resourcebase: the layer
-        # must be accessible (response is image)
+        # should be accessible and the response is an image
         perm_spec = {
             'users': {
                 'bobby': ['view_resourcebase',

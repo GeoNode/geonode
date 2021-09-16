@@ -3,6 +3,8 @@ version: 2.1
 jobs:
   build:
 
+    parallelism: 4
+
     docker:
       - image: circleci/buildpack-deps:focal
 
