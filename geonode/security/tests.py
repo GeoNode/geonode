@@ -22,9 +22,7 @@ import logging
 import requests
 import importlib
 
-from urllib.error import HTTPError
 from requests.auth import HTTPBasicAuth
-from urllib.request import urlopen, Request
 from tastypie.test import ResourceTestCaseMixin
 
 from django.db.models import Q
@@ -48,13 +46,10 @@ from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import gs_slurp
-from geonode.people.utils import get_valid_user
 from geonode.resource.manager import resource_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.groups.models import Group, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
-
-from geonode.base import enumerations
 
 from geonode.base.models import (
     Configuration,
@@ -982,61 +977,39 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def test_dataset_permissions(self):
         # Test permissions on a layer
         bobby = get_user_model().objects.get(username="bobby")
-        layer = create_single_dataset('san_andres_y_providencia_poi.shp')
+        layer = create_single_dataset('san_andres_y_providencia_poi')
         layer = resource_manager.update(
             layer.uuid,
             instance=layer,
             notify=False,
             vals=dict(
-                owner=bobby
+                owner=bobby,
+                workspace=settings.DEFAULT_WORKSPACE
             ))
 
         self.assertIsNotNone(layer)
         self.assertIsNotNone(layer.ows_url)
         self.assertIsNotNone(layer.ptype)
         self.assertIsNotNone(layer.sourcetype)
+        self.assertEqual(layer.alternate, 'geonode:san_andres_y_providencia_poi')
 
         # Reset GeoFence Rules
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
-        self.assertTrue(geofence_rules_count == 0)
+        self.assertEqual(geofence_rules_count, 0)
 
-        ignore_errors = True
-        skip_unadvertised = False
-        skip_geonode_registered = False
-        remove_deleted = True
-        verbosity = 2
-        owner = get_valid_user('admin')
-        workspace = 'geonode'
-        filter = None
-        store = None
-        permissions = {'users': {"admin": ['change_dataset_data']}, 'groups': []}
-        gs_slurp(
-            ignore_errors=ignore_errors,
-            verbosity=verbosity,
-            owner=owner,
-            console=StreamToLogger(logger, logging.INFO),
-            workspace=workspace,
-            store=store,
-            filter=filter,
-            skip_unadvertised=skip_unadvertised,
-            skip_geonode_registered=skip_geonode_registered,
-            remove_deleted=remove_deleted,
-            permissions=permissions,
-            execute_signals=True)
-
-        layer = Dataset.objects.get(name='san_andres_y_providencia_poi.shp')
+        layer = Dataset.objects.get(name='san_andres_y_providencia_poi')
+        layer.set_default_permissions(owner=bobby)
         check_dataset(layer)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"0. geofence_rules_count: {geofence_rules_count} ")
-        self.assertTrue(geofence_rules_count >= 2)
+        self.assertGreaterEqual(geofence_rules_count, 4)
 
         # Set the layer private for not authenticated users
         perm_spec = {'users': {'AnonymousUser': []}, 'groups': []}
-        _set_perms = layer.set_permissions(perm_spec)
-        logger.error(f" ------------ layer.set_permissions({perm_spec}) : {_set_perms}")
+        layer.set_permissions(perm_spec)
 
-        url = f'{settings.GEOSERVER_LOCATION}geonode/ows?' \
+        url = f'{settings.SITEURL}gs/ows?' \
             'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
             '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
             '&SRS=EPSG%3A4326' \
@@ -1045,58 +1018,29 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             '&WIDTH=217&HEIGHT=512'
 
         # test view_resourcebase permission on anonymous user
-        request = Request(url)
-        if _set_perms and layer.state == enumerations.STATE_PROCESSED:
-            response = urlopen(request)
-            _content_type = response.getheader('Content-Type').lower()
-            self.assertEqual(
-                _content_type,
-                'application/vnd.ogc.se_xml;charset=utf-8'
-            )
-        else:
-            with self.assertRaises(HTTPError):
-                urlopen(request)
+        response = requests.get(url)
+        self.assertTrue(response.status_code, 404)
+        self.assertEqual(
+            response.headers.get('Content-Type'),
+            'application/vnd.ogc.se_xml;charset=UTF-8'
+        )
+
+        # test WMS with authenticated user that has access to the Layer
+        response = requests.get(url, auth=HTTPBasicAuth(username=settings.OGC_SERVER['default']['USER'], password=settings.OGC_SERVER['default']['PASSWORD']))
+        self.assertTrue(response.status_code, 200)
+        self.assertEqual(
+            response.headers.get('Content-Type'),
+            'image/png'
+        )
 
         # test WMS with authenticated user that has no view_resourcebase:
         # the layer should be not accessible
-        request = Request(url)
-        basic_auth = base64.b64encode(b'bobby:bob')
-        request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
-        if _set_perms and layer.state == enumerations.STATE_PROCESSED:
-            response = urlopen(request)
-            _content_type = response.getheader('Content-Type').lower()
-            self.assertEqual(
-                _content_type,
-                'application/vnd.ogc.se_xml;charset=utf-8'
-            )
-        else:
-            with self.assertRaises(HTTPError):
-                urlopen(request)
-
-        # test WMS with authenticated user that has view_resourcebase: the layer
-        # should be accessible and the response is an image
-        perm_spec = {
-            'users': {
-                'bobby': ['view_resourcebase',
-                          'download_resourcebase']
-            },
-            'groups': []
-        }
-        _set_perms = layer.set_permissions(perm_spec)
-        logger.error(f" ------------ layer.set_permissions({perm_spec}) : {_set_perms}")
-        request = Request(url)
-        basic_auth = base64.b64encode(b'bobby:bob')
-        request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
-        if _set_perms and layer.state == enumerations.STATE_PROCESSED:
-            response = urlopen(request)
-            _content_type = response.getheader('Content-Type').lower()
-            self.assertNotEqual(
-                _content_type,
-                'application/vnd.ogc.se_xml;charset=utf-8'
-            )
-        else:
-            with self.assertRaises(HTTPError):
-                urlopen(request)
+        response = requests.get(url, auth=HTTPBasicAuth(username='norman', password='norman'))
+        self.assertTrue(response.status_code, 404)
+        self.assertEqual(
+            response.headers.get('Content-Type'),
+            'application/vnd.ogc.se_xml;charset=utf-8'
+        )
 
         # test change_dataset_style
         url = f'{settings.GEOSERVER_LOCATION}rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
