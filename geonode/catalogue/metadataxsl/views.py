@@ -23,13 +23,16 @@ import logging
 from lxml import etree
 from owslib.etree import etree as dlxml
 
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
 from django.conf import settings
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
+from django.core.exceptions import PermissionDenied
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from geonode.base.models import ResourceBase
+from geonode.utils import resolve_object
 from geonode.catalogue import get_catalogue
+from geonode.base.models import ResourceBase
 
 logger = logging.getLogger(__name__)
 
@@ -41,16 +44,25 @@ def prefix_xsl_line(req, id):
     resource = None
     try:
         resource = get_object_or_404(ResourceBase, pk=id)
+        query = {
+            'id': resource.get_real_instance().id
+        }
+        resource = resolve_object(
+            req,
+            resource.get_real_instance_class(),
+            query,
+            permission='base.view_resourcebase',
+            permission_msg=_("You are not permitted to view this resource"))
         catalogue = get_catalogue()
         record = catalogue.get_record(resource.uuid)
         if record:
             logger.debug(record.xml)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
     except Exception:
         logger.debug(traceback.format_exc())
-        msg = f'Could not connect to catalogue to save information for layer "{str(resource)}"'
-        return HttpResponse(
-            msg
-        )
+        msg = f'Could not connect to catalogue to save information for dataset "{str(resource)}"'
+        return HttpResponse(msg, status=404)
 
     try:
         # generate an XML document (GeoNode's default is ISO)
