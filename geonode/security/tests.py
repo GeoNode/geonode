@@ -1075,7 +1075,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _content_type = response.getheader('Content-Type').lower()
         self.assertEqual(
             _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
+            'image/png'
         )
 
         # test WMS with authenticated user that has view_resourcebase: the layer
@@ -1089,7 +1089,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         request = Request(url)
-        basic_auth = base64.b64encode(b'bobby:bob')
+        basic_auth = base64.b64encode(b'norman:norman')
         request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
