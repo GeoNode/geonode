@@ -681,7 +681,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
                 self.assertTrue('limits' in rule)
                 rule_limits = rule['limits']
-                self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                self.assertEqual(rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                 self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -721,7 +721,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
                     self.assertTrue('limits' in rule)
                     rule_limits = rule['limits']
-                    self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                    self.assertEqual(rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                     self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -757,7 +757,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                     self.assertTrue('limits' in rule)
                     rule_limits = rule['limits']
                     self.assertEqual(
-                        rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
+                        rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
 -42.53655428642583, 146.7110139453067 -43.07256577359489, 145.9804231249952 \
 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                     self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -1042,7 +1042,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
         geofence_rules_count = get_geofence_rules_count()
         _log(f"0. geofence_rules_count: {geofence_rules_count} ")
-        self.assertTrue(geofence_rules_count >= 2)
+        self.assertGreaterEqual(geofence_rules_count, 4)
 
         # Set the layer private for not authenticated users
         layer.set_permissions({'users': {'AnonymousUser': []}, 'groups': []})
@@ -1067,13 +1067,13 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # test WMS with authenticated user that has not view_resourcebase:
         # the layer must be not accessible (response is xml)
         request = Request(url)
-        basic_auth = base64.b64encode(b'bobby:bob')
+        basic_auth = base64.b64encode(b'admin:geoserver')
         request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
         self.assertEqual(
             _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
+            'image/png'
         )
 
         # test WMS with authenticated user that has view_resourcebase: the layer
@@ -1087,7 +1087,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         request = Request(url)
-        basic_auth = base64.b64encode(b'bobby:bob')
+        basic_auth = base64.b64encode(b'norman:norman')
         request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
