@@ -174,6 +174,14 @@ class HarvesterAdmin(admin.ModelAdmin):
                 )
             )
 
+    @admin.display(description="Number of selected resources to harvest")
+    def get_num_harvestable_resources_selected(self, harvester: models.Harvester):
+        return harvester.harvestable_resources.filter(should_be_harvested=True).count()
+
+    @admin.display(description="Number of existing harvestable resources")
+    def get_num_harvestable_resources(self, harvester: models.Harvester):
+        return harvester.num_harvestable_resources
+
     @admin.action(description="Perform harvesting on selected harvesters")
     def perform_harvesting(self, request, queryset):
         being_harvested = []
@@ -248,6 +256,7 @@ class HarvestingSessionAdmin(admin.ModelAdmin):
         "records_harvested",
         "calculate_harvesting_progress",
         "harvester",
+        "session_details",
     )
     readonly_fields = (
         "id",
