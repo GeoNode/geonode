@@ -1607,6 +1607,68 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
         standard_user = get_user_model().objects.get(username="bobby")
         dataset = Dataset.objects.filter(owner=standard_user).first()
+
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                    'change_dataset_style'
+                ]
+            },
+            'groups': {}
+        }
+
+        _p = PermSpec(perm_spec, dataset)
+        self.assertDictEqual(
+            json.loads(str(_p)),
+            {
+                "users":
+                    {
+                        "bobby":
+                            [
+                                "view_resourcebase",
+                                "download_resourcebase",
+                                "change_dataset_style"
+                        ]
+                    },
+                "groups": {}
+            }
+        )
+
+        self.assertDictEqual(
+            _p.compact,
+            {
+                'users':
+                [
+                    {
+                        'id': standard_user.id,
+                        'username': standard_user.username,
+                        'first_name': standard_user.first_name,
+                        'last_name': standard_user.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'owner'
+                    }
+                ],
+                'organizations': [],
+                'groups':
+                [
+                    {
+                        'id': 3,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'none'
+                    },
+                    {
+                        'id': 2,
+                        'name': 'registered-members',
+                        'permissions': 'none',
+                        'title': 'Registered Members'
+                    }
+                ]
+            }
+        )
+
         perm_spec = {
             'users': {
                 'AnonymousUser': [
@@ -1751,6 +1813,7 @@ class SecurityRulesTests(TestCase):
     """
 
     def setUp(self):
+        self.maxDiff = None
         self._l = create_single_dataset("test_dataset")
 
     def test_sync_resources_with_guardian_delay_false(self):
@@ -1787,6 +1850,7 @@ class SecurityRulesTests(TestCase):
 class TestGetUserGeolimits(TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.layer = create_single_dataset("main-layer")
         self.owner = get_user_model().objects.get(username='admin')
         self.perms = {'*': ''}
