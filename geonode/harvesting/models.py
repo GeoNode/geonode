@@ -161,6 +161,12 @@ class Harvester(models.Model):
         default=0
     )
 
+    class Meta:
+        # Note: name must be unique because we use it to create a periodic task for the harvester
+        constraints = [
+            models.UniqueConstraint(fields=("name",), name="unique name")
+        ]
+
     def __str__(self):
         return f"{self.name}({self.id})"
 
@@ -224,15 +230,37 @@ class Harvester(models.Model):
 
 
 class HarvestingSession(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ON_GOING = "on-going"
+    STATUS_FINISHED_ALL_OK = "finished-all-ok"
+    STATUS_FINISHED_ALL_FAILED = "finished-all-failed"
+    STATUS_FINISHED_SOME_FAILED = "finished-some-failed"
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("pending")),
+        (STATUS_ON_GOING, _("on-going")),
+        (STATUS_FINISHED_ALL_OK, _("finished-all-ok")),
+        (STATUS_FINISHED_ALL_FAILED, _("finished-all-failed")),
+        (STATUS_FINISHED_SOME_FAILED, _("finished-some-failed")),
+    ]
     started = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     ended = models.DateTimeField(null=True, blank=True)
-    total_records_found = models.IntegerField(default=0)
+    records_to_harvest = models.IntegerField(default=0, editable=False)
     records_harvested = models.IntegerField(default=0)
     harvester = models.ForeignKey(
         Harvester,
         on_delete=models.CASCADE,
         related_name="harvesting_sessions"
+    )
+    status = models.CharField(
+        max_length=50,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING,
+        editable=False,
+    )
+    session_details = models.TextField(
+        blank=True,
+        help_text=_("Details about the harvesting session")
     )
 
 

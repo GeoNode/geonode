@@ -28,8 +28,8 @@ from pathlib import Path
 import geonode.upload.files
 import requests
 from django.core.files import uploadedfile
-from django.db.models import F
-from django.utils import timezone
+
+from geonode.base import enumerations
 from geonode.base.models import ResourceBase
 from geonode.resource.manager import resource_manager
 from geonode.storage.manager import storage_manager
@@ -142,36 +142,13 @@ class BaseHarvesterWorker(abc.ABC):
         """Return a jsonschema schema to be used to validate models.Harvester objects"""
         return None
 
-    @classmethod
-    def finish_harvesting_session(
-            cls,
-            session_id: int,
-            additional_harvested_records: typing.Optional[int] = None
-    ) -> None:
-        """Finish the input harvesting session"""
-        update_kwargs = {
-            "ended": timezone.now()
-        }
-        if additional_harvested_records is not None:
-            update_kwargs["records_harvested"] = (
-                F("records_harvested") + additional_harvested_records)
-        models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
-
-    @classmethod
-    def update_harvesting_session(
-            cls,
-            session_id: int,
-            total_records_found: typing.Optional[int] = None,
-            additional_harvested_records: typing.Optional[int] = None
-    ) -> None:
-        """Update the input harvesting session"""
-        update_kwargs = {}
-        if total_records_found is not None:
-            update_kwargs["total_records_found"] = total_records_found
-        if additional_harvested_records is not None:
-            update_kwargs["records_harvested"] = (
-                F("records_harvested") + additional_harvested_records)
-        models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
+    def get_current_config(self) -> typing.Dict:
+        """Return a dict with the current configuration."""
+        schema = self.get_extra_config_schema()
+        result = {}
+        for property_name in schema["properties"]:
+            result[property_name] = getattr(self, property_name, None)
+        return result
 
     def finalize_resource_update(
             self,
@@ -274,6 +251,10 @@ class BaseHarvesterWorker(abc.ABC):
             "title": harvested_info.resource_descriptor.identification.title,
             "files": [str(path) for path in harvested_info.copied_resources],
         }
+        if self.should_copy_resource(harvestable_resource):
+            defaults["sourcetype"] = enumerations.SOURCE_TYPE_COPYREMOTE
+        else:
+            defaults["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
         # geonode_resource_type = self.get_resource_type_class(
         #     harvestable_resource.remote_resource_type)
         # if geonode_resource_type == Map:
@@ -283,10 +264,6 @@ class BaseHarvesterWorker(abc.ABC):
         #         "center_y": resource_descriptor.center_y,
         #         "projection": resource_descriptor.projection,
         #         "last_modified": resource_descriptor.last_modified
-        #     })
-        # elif geonode_resource_type == Dataset:
-        #     defaults.update({
-        #         "charset": resource_descriptor.character_set
         #     })
         return {key: value for key, value in defaults.items() if value is not None}
 
@@ -334,7 +311,7 @@ class BaseHarvesterWorker(abc.ABC):
         resource_defaults = defaults.copy()
         resource_files = resource_defaults.pop("files", [])
         if len(resource_files) > 0:
-            logger.debug(f"calling resource_manager.ingest...")
+            logger.debug("calling resource_manager.ingest...")
             geonode_resource = resource_manager.ingest(
                 resource_files,
                 uuid=resource_defaults["uuid"],
@@ -343,7 +320,7 @@ class BaseHarvesterWorker(abc.ABC):
                 importer_session_opts={"name": resource_defaults["uuid"]},
             )
         else:
-            logger.debug(f"calling resource_manager.create...")
+            logger.debug("calling resource_manager.create...")
             geonode_resource = resource_manager.create(
                 resource_defaults["uuid"],
                 geonode_resource_type,
@@ -363,7 +340,7 @@ class BaseHarvesterWorker(abc.ABC):
         if len(resource_defaults.get("files", [])) > 0:
             result = resource_manager.replace(geonode_resource, vals=resource_defaults)
         else:
-            result = resource_manager.update(instance=geonode_resource, vals=resource_defaults)
+            result = resource_manager.update(geonode_resource.uuid, vals=resource_defaults)
         return result
 
 

@@ -33,7 +33,6 @@ import requests
 from django.contrib.gis import geos
 from lxml import etree
 
-from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
@@ -294,8 +293,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             api_record = response.json()
             resource_descriptor = self._get_resource_details(
                 api_record, harvestable_resource)
-            self.update_harvesting_session(
-                harvesting_session_id, additional_harvested_records=1)
             result = base.HarvestedResourceInfo(
                 resource_descriptor=resource_descriptor,
                 additional_information=None
@@ -327,6 +324,21 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "doc_url": harvested_info.resource_descriptor.distribution.original_format_url,
                 "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
             })
+        elif local_resource_type == Dataset:
+            defaults.update({
+                "name": harvested_info.resource_descriptor.identification.name,
+                "charset": harvested_info.resource_descriptor.character_set,
+            })
+            if not self.should_copy_resource(harvestable_resource):
+                try:
+                    srid = harvested_info.resource_descriptor.reference_systems[0]
+                except AttributeError:
+                    srid = None
+                defaults.update({
+                    "name": defaults["name"].rpartition(":")[-1],
+                    "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
+                    "srid": srid,
+                })
         return defaults
 
     def _get_num_available_resources_by_type(
@@ -580,7 +592,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             # for layers, we generate a download URL for a zipped shapefile, in a similar way
             # as is done on the main GeoNode UI, by leveraging WFS
             if wfs is not None:
-                saner_name = identification_descriptor.name.partition(":")[-1] or identification_descriptor.name
                 query_params = {
                     "service": "WFS",
                     "version": "1.0.0",
@@ -588,8 +599,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                     "typename": identification_descriptor.name,
                     "outputformat": "SHAPE-ZIP",
                     "srs": crs,
-                    #"format_options": f"charset:UTF-8;filename={saner_name}.zip",
-                    "format_options": f"charset:UTF-8",
+                    "format_options": "charset:UTF-8",
                 }
                 original = f"{wfs}?{urllib.parse.urlencode(query_params)}"
             elif wcs is not None:
