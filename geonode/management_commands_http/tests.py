@@ -46,7 +46,14 @@ class ManagementCommandsTestCase(APITestCase):
         expected_payload = {
             "success": True,
             "error": None,
-            "data": ['ping_mngmt_commands_http'],
+            "data": [
+                'sync_geonode_layers',
+               'sync_geonode_maps',
+               'updatelayers',
+               'ping_mngmt_commands_http',
+               'importlayers',
+               'set_all_layers_metadata'
+            ],
         }
         response = self.client.get(self.resource_list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
