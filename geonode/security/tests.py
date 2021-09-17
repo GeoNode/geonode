@@ -680,7 +680,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
                 self.assertTrue('limits' in rule)
                 rule_limits = rule['limits']
-                self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                self.assertEqual(rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                 self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -720,7 +720,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
                     self.assertTrue('limits' in rule)
                     rule_limits = rule['limits']
-                    self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                    self.assertEqual(rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                     self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -756,7 +756,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                     self.assertTrue('limits' in rule)
                     rule_limits = rule['limits']
                     self.assertEqual(
-                        rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
+                        rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
 -42.53655428642583, 146.7110139453067 -43.07256577359489, 145.9804231249952 \
 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                     self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -988,8 +988,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
     @dump_func_name
     def test_layer_permissions(self):
         # Test permissions on a layer
-
-        # grab bobby
         bobby = get_user_model().objects.get(username="bobby")
 
         layers = Layer.objects.all()[:2].values_list('id', flat=True)
@@ -1066,7 +1064,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # test WMS with authenticated user that has not view_resourcebase:
         # the layer must be not accessible (response is xml)
         request = Request(url)
-        basic_auth = base64.b64encode(b'bobby:bob')
+        basic_auth = base64.b64encode(b'admin:geoserver')
         request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
@@ -1086,7 +1084,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         request = Request(url)
-        basic_auth = base64.b64encode(b'bobby:bob')
+        basic_auth = base64.b64encode(b'admin:geoserver')
         request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
