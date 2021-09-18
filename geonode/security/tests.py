@@ -16,24 +16,23 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.test.testcases import TestCase
-from geonode.tests.base import GeoNodeBaseTestSupport
-
 import os
 import json
 import base64
 import logging
 import gisdata
+import requests
 import importlib
 import contextlib
 
-from urllib.request import urlopen, Request
+from requests.auth import HTTPBasicAuth
 from tastypie.test import ResourceTestCaseMixin
 
 from django.conf import settings
-from django.http import HttpRequest
-from django.urls import reverse
 from django.db.models import Q
+from django.urls import reverse
+from django.http import HttpRequest
+from django.test.testcases import TestCase
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 
@@ -48,6 +47,7 @@ from geonode.base.models import (
     UserGeoLimit,
     GroupGeoLimit
 )
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public, create_single_layer
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
@@ -989,7 +989,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
     def test_layer_permissions(self):
         # Test permissions on a layer
         bobby = get_user_model().objects.get(username="bobby")
-
         layers = Layer.objects.all()[:2].values_list('id', flat=True)
         test_perm_layer = Layer.objects.get(id=layers[0])
         thefile = os.path.join(
@@ -1003,11 +1002,12 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             overwrite=True
         )
         self.assertIsNotNone(layer)
+        self.assertEqual(layer.alternate, 'geonode:san_andres_y_providencia_poi')
 
         # Reset GeoFence Rules
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
-        self.assertTrue(geofence_rules_count == 0)
+        self.assertEqual(geofence_rules_count, 0)
 
         ignore_errors = True
         skip_unadvertised = False
@@ -1034,17 +1034,17 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             execute_signals=True)
 
         layer = Layer.objects.get(name=layer[0])
-
+        layer.set_default_permissions(owner=bobby)
         check_layer(layer)
-
         geofence_rules_count = get_geofence_rules_count()
         _log(f"0. geofence_rules_count: {geofence_rules_count} ")
-        self.assertTrue(geofence_rules_count >= 2)
+        self.assertGreaterEqual(geofence_rules_count, 4)
 
         # Set the layer private for not authenticated users
-        layer.set_permissions({'users': {'AnonymousUser': []}, 'groups': []})
+        perm_spec = {'users': {'AnonymousUser': []}, 'groups': []}
+        layer.set_permissions(perm_spec)
 
-        url = f'{settings.GEOSERVER_LOCATION}geonode/ows?' \
+        url = f'{settings.SITEURL}gs/ows?' \
             'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
             '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
             '&SRS=EPSG%3A4326' \
@@ -1053,44 +1053,28 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             '&WIDTH=217&HEIGHT=512'
 
         # test view_resourcebase permission on anonymous user
-        request = Request(url)
-        response = urlopen(request)
-        _content_type = response.getheader('Content-Type').lower()
+        response = requests.get(url)
+        self.assertTrue(response.status_code, 404)
         self.assertEqual(
-            _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
+            response.headers.get('Content-Type'),
+            'application/vnd.ogc.se_xml;charset=UTF-8'
         )
 
-        # test WMS with authenticated user that has not view_resourcebase:
-        # the layer must be not accessible (response is xml)
-        request = Request(url)
-        basic_auth = base64.b64encode(b'admin:geoserver')
-        request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
-        response = urlopen(request)
-        _content_type = response.getheader('Content-Type').lower()
+        # test WMS with authenticated user that has access to the Layer
+        response = requests.get(url, auth=HTTPBasicAuth(username=settings.OGC_SERVER['default']['USER'], password=settings.OGC_SERVER['default']['PASSWORD']))
+        self.assertTrue(response.status_code, 200)
         self.assertEqual(
-            _content_type,
+            response.headers.get('Content-Type'),
             'image/png'
         )
 
-        # test WMS with authenticated user that has view_resourcebase: the layer
-        # must be accessible (response is image)
-        perm_spec = {
-            'users': {
-                'bobby': ['view_resourcebase',
-                          'download_resourcebase']
-            },
-            'groups': []
-        }
-        layer.set_permissions(perm_spec)
-        request = Request(url)
-        basic_auth = base64.b64encode(b'norman:norman')
-        request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
-        response = urlopen(request)
-        _content_type = response.getheader('Content-Type').lower()
+        # test WMS with authenticated user that has no view_resourcebase:
+        # the layer should be not accessible
+        response = requests.get(url, auth=HTTPBasicAuth(username='norman', password='norman'))
+        self.assertTrue(response.status_code, 404)
         self.assertEqual(
-            _content_type,
-            'application/vnd.ogc.se_xml;charset=utf-8'
+            response.headers.get('Content-Type'),
+            'text/html;charset=utf-8'
         )
 
         # test change_layer_style
