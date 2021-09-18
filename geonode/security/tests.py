@@ -1002,7 +1002,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             overwrite=True
         )
         self.assertIsNotNone(layer)
-        self.assertEqual(layer.alternate, 'geonode:san_andres_y_providencia_poi')
 
         # Reset GeoFence Rules
         purge_geofence_all()
