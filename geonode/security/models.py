@@ -220,8 +220,7 @@ class PermissionLevelMixin(object):
                     if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                         if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
 
-                            if not created:
-                                geofence_uow.purge_rules()
+                            geofence_uow.purge_rules()
 
                             # Owner & Managers
                             perms = [
@@ -336,8 +335,7 @@ class PermissionLevelMixin(object):
                     if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                         if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
 
-                            if not created:
-                                geofence_uow.purge_rules()
+                            geofence_uow.purge_rules()
 
                             _disable_cache = []
 
@@ -461,8 +459,7 @@ class PermissionLevelMixin(object):
                             if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
                                 if approved and members_group:
                                     sync_geofence_with_guardian(self.layer, VIEW_PERMISSIONS, group=members_group)
-                                else:
-                                    sync_geofence_with_guardian(self.layer, VIEW_PERMISSIONS)
+                                sync_geofence_with_guardian(self.layer, VIEW_PERMISSIONS)
                             else:
                                 self.set_dirty_state()
         except Exception as e:
