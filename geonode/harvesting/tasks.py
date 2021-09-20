@@ -22,6 +22,7 @@ import logging
 import typing
 
 from celery import chord
+from django.core.exceptions import ValidationError
 from django.db.models import (
     F,
     Value,
@@ -177,19 +178,26 @@ def _harvest_resource(
             copied_path = worker.copy_resource(harvestable_resource, harvested_resource_info)
             if copied_path is not None:
                 harvested_resource_info.copied_resources.append(copied_path)
-        worker.update_geonode_resource(
-            harvested_resource_info,
-            harvestable_resource,
-            harvesting_session_id,
-        )
+        try:
+            worker.update_geonode_resource(
+                harvested_resource_info,
+                harvestable_resource,
+                harvesting_session_id,
+            )
+            result = True
+            details = ""
+        except (RuntimeError, ValidationError) as exc:
+            logger.error(msg="Unable to update geonode resource")
+            result = False
+            details = str(exc)
+        harvesting_message = f"{harvestable_resource.title}({harvestable_resource_id}) - {'Success' if result else details}"
         update_harvesting_session(
             harvesting_session_id,
-            additional_harvested_records=1,
-            additional_details=f"{harvestable_resource.title}({harvestable_resource_id}) - Success"
+            additional_harvested_records=1 if result else 0,
+            additional_details=harvesting_message
         )
-        harvestable_resource.last_harvesting_message = (
-            f"{now_} - Harvested successfully")
-        harvestable_resource.last_harvesting_succeeded = True
+        harvestable_resource.last_harvesting_message = f"{now_} - {harvesting_message}"
+        harvestable_resource.last_harvesting_succeeded = result
     else:
         harvestable_resource.last_harvesting_message = f"{now_}Harvesting failed"
         harvestable_resource.last_harvesting_succeeded = False

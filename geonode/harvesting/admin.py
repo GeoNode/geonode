@@ -59,6 +59,9 @@ class HarvesterAdmin(admin.ModelAdmin):
         "show_link_to_selected_harvestable_resources",
         "show_link_to_latest_harvesting_session",
     )
+    list_filter = (
+        "status",
+    )
 
     readonly_fields = (
         "status",
