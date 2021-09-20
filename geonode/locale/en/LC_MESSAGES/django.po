@@ -6286,6 +6286,12 @@ msgstr "Invalid permission level."
 msgid "Permission Denied"
 msgstr "Permission Denied"
 
+#, python-brace-format
+msgid ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+msgstr ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+
 #~ msgid "batch edit"
 #~ msgstr "batch edit"
 

@@ -6420,3 +6420,9 @@ msgstr "Niveau d'autorisation non valide."
 
 msgid "Permission Denied"
 msgstr "Autorisation refusée"
+
+#, python-brace-format
+msgid ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+msgstr ""
+"Vous ne pouvez pas démarrer le travail {job.id} car son statut est \"{job.status}\"."

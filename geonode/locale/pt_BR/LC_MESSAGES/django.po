@@ -6311,6 +6311,12 @@ msgstr "Nível de permissão inválido."
 msgid "Permission Denied"
 msgstr "Permissão Negada"
 
+#, python-brace-format
+msgid ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+msgstr ""
+"Você não pode iniciar a tarefa {job.id} pois ela possui status \"{job.status}\"."
+
 #~ msgid "Layer not ready yet. Still finalizing layer ingestion..."
 #~ msgstr ""
 #~ "Camada ainda não está pronta. Ainda finalizando a ingestão de camada…"
