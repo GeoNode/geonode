@@ -48,12 +48,10 @@ class HarvesterViewSetTestCase(GeoNodeBaseTestSupport):
 
         session1 = models.HarvestingSession.objects.create(
             harvester=harvester1,
-            total_records_found=10,
             records_harvested=10
         )
         session2 = models.HarvestingSession.objects.create(
             harvester=harvester2,
-            total_records_found=5,
             records_harvested=5
         )
         cls.sessions = [session1, session2]

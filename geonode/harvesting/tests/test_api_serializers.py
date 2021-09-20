@@ -193,7 +193,8 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        mock_tasks.harvesting_dispatcher.signature.assert_called_with(args=(self.harvester.pk,))
+        called_harvester_pk, _ = mock_tasks.harvesting_dispatcher.signature.call_args_list[0].kwargs["args"]
+        self.assertEqual(called_harvester_pk, self.harvester.pk)
         mock_tasks.harvesting_dispatcher.signature.return_value.apply_async.assert_called()
 
     @mock.patch("geonode.harvesting.api.serializers.tasks")
