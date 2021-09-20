@@ -62,9 +62,9 @@ class ManagementCommandJobCreateSerializer(serializers.ModelSerializer):
             "autostart",
         ]
 
-    def __init__(self, instance=None, data=..., **kwargs):
+    def __init__(self, *args, **kwargs):
         self.available_commands = get_management_commands_apps()
-        super().__init__(instance=instance, data=data, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def validate_args(self, value):
         if type(value) != list:
