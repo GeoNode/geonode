@@ -77,7 +77,6 @@ class HarvesterSessionTestCase(GeoNodeBaseTestSupport):
         """
         self.assertIsNotNone(self.harvesting_session.pk)
         self.assertEqual(self.harvesting_session.harvester, self.harvester)
-        self.assertEqual(self.harvesting_session.total_records_found, 0)
         self.assertEqual(self.harvesting_session.records_harvested, 0)
 
 
