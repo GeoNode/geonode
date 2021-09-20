@@ -47,7 +47,7 @@ class ManagementCommandJobAdmin(admin.ModelAdmin):
     list_filter = ("command", "app_name", "user")
     list_per_page = 20
 
-    search_fields = ("command", "app_name", "user", "celery_result_id")
+    search_fields = ("command", "app_name", "user", "celery_result_id", "output_message")
     readonly_fields = (
         "celery_result_id",
         "command",

@@ -62,19 +62,34 @@ class ManagementCommandJobCreateSerializer(serializers.ModelSerializer):
             "autostart",
         ]
 
-    def validate(self, attrs):
-        available_commands = get_management_commands_apps()
-        if attrs["command"] not in available_commands:
-            raise serializers.ValidationError("Command not found")
+    def __init__(self, instance=None, data=..., **kwargs):
+        self.available_commands = get_management_commands_apps()
+        super().__init__(instance=instance, data=data, **kwargs)
 
-        if "--help" in attrs["args"]:
+    def validate_args(self, value):
+        if type(value) != list:
+            raise serializers.ValidationError('args must be a list')
+
+        if "--help" in value:
             raise serializers.ValidationError('Forbidden argument: "--help"')
 
-        attrs["args"] = json.dumps(attrs["args"])
-        attrs["kwargs"] = json.dumps(attrs["kwargs"])
-        attrs["app_name"] = available_commands[attrs["command"]]
-        return super().validate(attrs)
+        value = json.dumps(value)
+        return value
+
+    def validate_kwargs(self, value):
+        if type(value) != dict:
+            raise serializers.ValidationError('kwargs must be a dict')
+
+        value = json.dumps(value)
+        return value
+
+    def validate_command(self, value):
+        if value not in self.available_commands:
+            raise serializers.ValidationError("Command not found")
+
+        return value
 
     def create(self, validated_data):
         validated_data.pop("autostart")
+        validated_data["app_name"] = self.available_commands[validated_data["command"]]
         return super().create(validated_data)
