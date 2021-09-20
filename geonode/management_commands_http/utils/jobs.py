@@ -19,15 +19,20 @@
 from geonode.celery_app import app as celery_app
 from geonode.management_commands_http.tasks import run_management_command_async
 from geonode.management_commands_http.models import ManagementCommandJob
+from django.utils.translation import ugettext_lazy as _
 
 
 def start_task(job: ManagementCommandJob):
-    job.status = job.QUEUED
+    if job.status != ManagementCommandJob.CREATED:
+        raise ValueError(_(f'You can not start the job {job.id} because its status is "{job.status}".'))
+    job.status = ManagementCommandJob.QUEUED
     job.save()
     run_management_command_async.delay(job_id=job.id)
 
 
 def stop_task(job: ManagementCommandJob):
+    if not job.celery_result_id:
+        return False
     celery_app.control.terminate(job.celery_result_id)
 
 
