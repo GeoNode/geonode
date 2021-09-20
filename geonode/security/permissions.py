@@ -33,3 +33,5 @@ SERVICE_PERMISSIONS = [
     "change_resourcebase_metadata",
     "add_resourcebase_from_service"
 ]
+
+

@@ -668,7 +668,10 @@ def set_owner_permissions(resource, members=None):
                 assign_perm(perm, resource.owner, resource.get_self_resource())
             if members:
                 for user in members:
-                    assign_perm(perm, user, resource.get_self_resource())
+                    if settings.ADMIN_MODERATE_UPLOADS and perm == 'publish_resourcebase':
+                        pass
+                    else:
+                        assign_perm(perm, user, resource.get_self_resource())
 
         # Set the GeoFence Owner Rule
         if resource.polymorphic_ctype.name == 'layer':
