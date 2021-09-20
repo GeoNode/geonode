@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.geoserver.createlayer.utils import create_layer
 from django.test.testcases import TestCase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
@@ -52,7 +53,7 @@ from geonode.base.models import (
 from geonode.base.populate_test_data import all_public, create_single_layer
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
-from geonode.groups.models import Group, GroupProfile
+from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend, get_layer_workspace
 from geonode.tests.utils import check_layer
@@ -61,6 +62,7 @@ from geonode.geoserver.helpers import gs_slurp
 from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
+from geonode.tasks.tasks import set_permissions
 from .utils import (
     _get_gf_services,
     get_user_geolimits,
@@ -2066,3 +2068,67 @@ class TestGetUserGeolimits(TestCase):
         self.layer.refresh_from_db()
         _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, None, None, self.gf_services)
         self.assertTrue(_disable_layer_cache)
+
+
+class SetPermissionsTestCase(TestCase):
+    def setUp(self):
+        # Creating anonymous group<
+        # Creating groups and asign also to the anonymous_group
+        self.author, created = get_user_model().objects.get_or_create(username="author")
+        self.group_manager, created = get_user_model().objects.get_or_create(username="group_manager")
+        self.group_member, created = get_user_model().objects.get_or_create(username="group_member")
+        self.not_group_member, created = get_user_model().objects.get_or_create(username="not_group_member")
+
+        #Defining group profiles and members
+        self.group_profile, created = GroupProfile.objects.get_or_create(slug="custom_group")
+        self.second_custom_group, created = GroupProfile.objects.get_or_create(slug="second_custom_group")
+
+        # defining group members
+        GroupMember.objects.get_or_create(group=self.group_profile, user=self.author, role="member")
+        GroupMember.objects.get_or_create(group=self.group_profile, user=self.group_manager, role="manager")
+        GroupMember.objects.get_or_create(group=self.group_profile, user=self.group_member, role="member")
+        GroupMember.objects.get_or_create(group=self.second_custom_group, user=self.not_group_member, role="member")
+
+        # Creating he default resource
+        self.resource = create_single_layer(name="test_layer", owner=self.author)
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    def test_permissions_are_set_as_expected_resource_publishing_True(self):
+        use_cases = [
+            (
+                {"users": {}, "groups": {}},
+                {
+                    self.author: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "view_resourcebase",
+                    ],
+                    self.group_manager: ["change_resourcebase"],
+                    self.group_member: ["view_resourcebase"],
+                    self.not_group_member: ["view_resourcebase"],
+                },
+            ),
+            (
+                {"users": [], "groups": {"custom_group": "change_resourcebase_permissions"}},
+                {
+                    self.author: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "view_resourcebase",
+                        "change_resourcebase_permissions",
+                    ],
+                    self.group_manager: ["change_resourcebase", "change_resourcebase_permissions"],
+                    self.group_member: ["view_resourcebase", "change_resourcebase_permissions"],
+                    self.not_group_member: ["view_resourcebase"],
+                },
+            ),
+        ]
+        for permissions, expected in use_cases:
+            self.resource.set_permissions(permissions)
+            for authorized_subject, expected_perms in expected.items():
+                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                self.assertSetEqual(set(expected_perms), set(perms_got))
