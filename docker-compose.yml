@@ -72,7 +72,7 @@ services:
   # Gets and installs letsencrypt certificates
   letsencrypt:
     image: geonode/spcgeonode:letsencrypt-3.1
-    build: ./scripts/spcgeonode/letsencrypt/
+    build: ./scripts/docker/letsencrypt/
     container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
     environment:
       - HTTPS_HOST=${HTTPS_HOST}

@@ -43,183 +43,8 @@ from geonode import geoserver
 from geonode.utils import get_layer_workspace
 from geonode.decorators import on_ogc_backend
 from geonode.groups.models import GroupProfile
-from rest_framework import exceptions
 
 logger = logging.getLogger("geonode.security.utils")
-
-
-class GeofenceRequestError(exceptions.APIException):
-    pass
-
-
-class GeofenceLayerAdapter(object):
-    def __init__(self, resource):
-        self.resource = resource
-        self.__has_committed_changes = False
-        self.safe_point_rules = []
-
-    @property
-    def has_committed_changes(self):
-        return self.__has_committed_changes
-
-    def set_has_committed_changes(self):
-        """
-        Create save point before first commit
-        """
-        if not self.__has_committed_changes:
-            self.__has_committed_changes = True
-            self.safe_point_rules = self.list_rules(xml=True)
-
-    def purge_rules(self):
-        self.set_has_committed_changes()
-        purge_geofence_layer_rules(self.resource)
-
-    def list_rules(self, xml=False):
-        layer = self.resource.layer
-        workspace = get_layer_workspace(layer)
-        layer_name = (
-            layer.name
-            if layer and hasattr(layer, 'name') else
-            layer.alternate
-        )
-        if xml:
-            rules = list_geofence_layer_rules_xml(workspace, layer_name)
-            if not rules or len(rules) == 0:
-                rules = list_geofence_layer_rules_xml(workspace, layer.alternate)
-            return rules
-        rules = list_geofence_layer_rules(workspace, layer_name)
-        if not rules or len(rules) == 0:
-            rules = list_geofence_layer_rules(workspace, layer.alternate)
-        return rules
-
-    def delete_rules(self, ids):
-        self.set_has_committed_changes()
-        batch_delete_geofence_layer_rules(ids)
-
-    def update_rule(self, *args, **kwargs):
-        self.set_has_committed_changes()
-        _update_geofence_rule(*args, **kwargs)
-
-    def restore_saved_rules(self, fail_silently):
-        for rule in self.safe_point_rules:
-            try:
-                rule.attrib.pop("id")
-                _create_geofence_rule(etree.tostring(rule))
-            except GeofenceRequestError as exc:
-                user = rule.find("userName").text
-                layer_name = rule.find("layer").text
-                msg = (
-                    f"Could not ADD GeoServer User {user} Rule for "
-                    f"Layer {layer_name}: '{exc.detail}'"
-                )
-                if 'Duplicate Rule' in exc.detail:
-                    logger.debug(msg)
-                elif not fail_silently:
-                    raise
-
-    def set_invalidate_cache(self):
-        set_geofence_invalidate_cache()
-
-    def toggle_layer_cache(self, *args, **kwags):
-        toggle_layer_cache(*args, **kwags)
-
-    def rollback(self):
-        if self.has_committed_changes:
-            try:
-                self.set_invalidate_cache()
-                self.purge_rules()
-                self.restore_saved_rules(fail_silently=True)
-                self.__has_committed_changes = False
-                return True
-            except Exception as e:
-                logger.debug(e)
-                return False
-        else:
-            return True
-
-
-class GeofenceLayerRulesUnitOfWork(object):
-    def __init__(self, geofence_adapter):
-        self.adapter = geofence_adapter
-        self.requests_list = []
-        self.nested_contexts = 0
-        self.adapter_requests_map = {
-            "purge_rules": self.adapter.purge_rules,
-            "delete_rules": self.adapter.delete_rules,
-            "update_rule": self.adapter.update_rule,
-            "set_invalidate_cache": self.adapter.set_invalidate_cache,
-            "toggle_layer_cache": self.adapter.toggle_layer_cache,
-        }
-
-    def __enter__(self):
-        self.nested_contexts += 1
-        return self
-
-    def __exit__(self, exc_type, exc_value, exc_tb):
-        self.nested_contexts -= 1
-        if self.nested_contexts == 0:
-            if not exc_type:
-                self._execute_requests()
-            else:
-                self.rollback()
-
-    def _execute_requests(self):
-        for request in self.requests_list:
-            self.adapter_requests_map[request["name"]](
-                *request["args"], **request["kwargs"]
-            )
-
-    def rollback(self):
-        self.adapter.rollback()
-        self.requests_list = []
-
-    def _add_request(self, request_details):
-        self.requests_list.append(request_details)
-
-    def purge_rules(self, *args, **kwargs):
-        self._add_request(
-            {
-                "name": "purge_rules",
-                "args": args,
-                "kwargs": kwargs,
-            }
-        )
-
-    def delete_rules(self, *args, **kwargs):
-        self._add_request(
-            {
-                "name": "delete_rules",
-                "args": args,
-                "kwargs": kwargs,
-            }
-        )
-
-    def update_rule(self, *args, **kwargs):
-        self._add_request(
-            {
-                "name": "update_rule",
-                "args": args,
-                "kwargs": kwargs,
-            }
-        )
-
-    def set_invalidate_cache(self, *args, **kwargs):
-        self._add_request(
-            {
-                "name": "set_invalidate_cache",
-                "args": args,
-                "kwargs": kwargs,
-            }
-        )
-
-    def toggle_layer_cache(self, *args, **kwargs):
-        self._add_request(
-            {
-                "name": "toggle_layer_cache",
-                "args": args,
-                "kwargs": kwargs,
-            }
-        )
 
 
 def get_visible_resources(queryset,
@@ -422,76 +247,6 @@ def purge_geofence_all():
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def batch_delete_geofence_layer_rules(ids):
-    """
-    curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
-    """
-    url = settings.OGC_SERVER["default"]["LOCATION"]
-    user = settings.OGC_SERVER["default"]["USER"]
-    passwd = settings.OGC_SERVER["default"]["PASSWORD"]
-    headers = {"Content-type": "application/json"}
-    auth = HTTPBasicAuth(user, passwd)
-
-    for rule_id in ids:
-        resource_url = f"{url}rest/geofence/rules/id/{str(rule_id)}"
-        response = requests.delete(resource_url, headers=headers, auth=auth)
-        if response.status_code < 200 or response.status_code > 201:
-            msg = f"Could not DELETE GeoServer Rule {str(rule_id)}"
-            e = Exception(msg)
-            logger.debug(f"Response [{response.status_code}] : {response.text}")
-            raise e
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def list_geofence_layer_rules(workspace, layer_name):
-    """
-    curl -u admin:geoserver
-    http://<host>:<port>/geoserver/rest/geofence/rules.json?workspace=geonode&layer={layer}
-    """
-    url = settings.OGC_SERVER["default"]["LOCATION"]
-    user = settings.OGC_SERVER["default"]["USER"]
-    passwd = settings.OGC_SERVER["default"]["PASSWORD"]
-    headers = {"Content-type": "application/json"}
-    auth = HTTPBasicAuth(user, passwd)
-
-    rules = []
-    resource_url = f"{url}rest/geofence/rules.json?workspace={workspace}&layer={layer_name}"
-    response = requests.get(resource_url, headers=headers, auth=auth, timeout=10, verify=False)
-    if response.status_code >= 200 and response.status_code < 300:
-        gs_rules = response.json()
-        if gs_rules and gs_rules["rules"]:
-            for rule in gs_rules["rules"]:
-                if rule["layer"] and rule["layer"] == layer_name:
-                    rules.append(rule)
-
-    return rules
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def list_geofence_layer_rules_xml(workspace, layer_name):
-    """
-    curl -u admin:geoserver
-    http://<host>:<port>/geoserver/rest/geofence/rules?workspace=geonode&layer={layer}
-    """
-    url = settings.OGC_SERVER["default"]["LOCATION"]
-    user = settings.OGC_SERVER["default"]["USER"]
-    passwd = settings.OGC_SERVER["default"]["PASSWORD"]
-    headers = {"Content-type": "application/xml"}
-    auth = HTTPBasicAuth(user, passwd)
-
-    rules = []
-    resource_url = f"{url}rest/geofence/rules?workspace={workspace}&layer={layer_name}"
-    response = requests.get(resource_url, headers=headers, auth=auth, timeout=10, verify=False)
-    if response.status_code >= 200 and response.status_code < 300:
-        gs_rules = etree.fromstring(response.content)
-        for rule in gs_rules:
-            if rule.find("layer").text == layer_name:
-                rules.append(rule)
-
-    return rules
-
-
-@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def purge_geofence_layer_rules(resource):
     """purge layer existing GeoFence Cache Rules"""
     # Scan GeoFence Rules associated to the Layer
@@ -499,14 +254,42 @@ def purge_geofence_layer_rules(resource):
     curl -u admin:geoserver
     http://<host>:<port>/geoserver/rest/geofence/rules.json?workspace=geonode&layer={layer}
     """
-    layer = resource.layer
-    workspace = get_layer_workspace(layer)
-    layer_name = layer.name if layer and hasattr(layer, "name") else layer.alternate
+    url = settings.OGC_SERVER['default']['LOCATION']
+    user = settings.OGC_SERVER['default']['USER']
+    passwd = settings.OGC_SERVER['default']['PASSWORD']
+    headers = {'Content-type': 'application/json'}
+    workspace = get_layer_workspace(resource.layer)
+    layer_name = resource.layer.name if resource.layer and hasattr(resource.layer, 'name') \
+        else resource.layer.alternate
     try:
-        rules = list_geofence_layer_rules(workspace, layer_name)
-        if not rules or len(rules) == 0:
-            rules = list_geofence_layer_rules(workspace, layer.alternate)
-        batch_delete_geofence_layer_rules([rule["id"] for rule in rules])
+        r = requests.get(
+            f"{url}rest/geofence/rules.json?workspace={workspace}&layer={layer_name}",
+            headers=headers,
+            auth=HTTPBasicAuth(user, passwd),
+            timeout=10,
+            verify=False
+        )
+        if (r.status_code >= 200 and r.status_code < 300):
+            gs_rules = r.json()
+            r_ids = []
+            if gs_rules and gs_rules['rules']:
+                for r in gs_rules['rules']:
+                    if r['layer'] and r['layer'] == layer_name:
+                        r_ids.append(r['id'])
+
+            # Delete GeoFence Rules associated to the Layer
+            # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
+            for r_id in r_ids:
+                r = requests.delete(
+                    f"{url}rest/geofence/rules/id/{str(r_id)}",
+                    headers=headers,
+                    auth=HTTPBasicAuth(user, passwd))
+                if (r.status_code < 200 or r.status_code > 201):
+                    msg = "Could not DELETE GeoServer Rule for Layer "
+                    msg = msg + str(layer_name)
+                    e = Exception(msg)
+                    logger.debug(f"Response [{r.status_code}] : {r.text}")
+                    raise e
     except Exception as e:
         logger.exception(e)
 
@@ -537,13 +320,8 @@ def set_geofence_invalidate_cache():
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None, geofence_uow=None):
+def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
     """Disable/enable a GeoServer Tiled Layer Configuration"""
-    if geofence_uow:
-        geofence_uow.toggle_layer_cache(
-            layer_name, enable=enable, filters=filters, formats=formats
-        )
-        return True
     if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
         try:
             url = settings.OGC_SERVER['default']['LOCATION']
@@ -701,6 +479,7 @@ def set_geofence_all(instance):
       geoserver
 
     """
+
     resource = instance.get_self_resource()
     logger.debug(f"Inside set_geofence_all for instance {instance}")
     workspace = get_layer_workspace(resource.layer)
@@ -720,6 +499,7 @@ def set_geofence_all(instance):
         """
         headers = {'Content-type': 'application/xml'}
         payload = _get_geofence_payload(
+            layer=resource.layer,
             layer_name=layer_name,
             workspace=workspace,
             access="ALLOW"
@@ -746,7 +526,7 @@ def set_geofence_all(instance):
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms=None, geofence_uow=None):
+def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms=None):
     """
     Sync Guardian permissions to GeoFence.
     """
@@ -796,9 +576,9 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
                     _wkt = users_geolimits.last().wkt
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(_layer_name, _layer_workspace,
-                                              service, request=request, user=_user, allow=enabled, geofence_uow=geofence_uow)
-                _update_geofence_rule(_layer_name, _layer_workspace, service, user=_user, geo_limit=_wkt, geofence_uow=geofence_uow)
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, user=_user, allow=enabled)
+                _update_geofence_rule(layer, _layer_name, _layer_workspace, service, user=_user, geo_limit=_wkt)
             elif not _group:
                 logger.debug(f"Adding to geofence the rule: {layer} {service} *")
                 _wkt = None
@@ -806,13 +586,13 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
                     _wkt = anonymous_geolimits.last().wkt
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(_layer_name, _layer_workspace,
-                                              service, request=request, user=_user, allow=enabled, geofence_uow=geofence_uow)
-                _update_geofence_rule(_layer_name, _layer_workspace, service, geo_limit=_wkt, geofence_uow=geofence_uow)
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, user=_user, allow=enabled)
+                _update_geofence_rule(layer, _layer_name, _layer_workspace, service, geo_limit=_wkt)
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(_layer_name, _layer_workspace,
-                                              service, request=request, user=_user, allow=enabled, geofence_uow=geofence_uow)
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, user=_user, allow=enabled)
             if _group:
                 logger.debug(f"Adding 'group' to geofence the rule: {layer} {service} {_group}")
                 _wkt = None
@@ -820,19 +600,15 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
                     _wkt = groups_geolimits.last().wkt
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(_layer_name, _layer_workspace,
-                                              service, request=request, group=_group, allow=enabled, geofence_uow=geofence_uow)
-                _update_geofence_rule(_layer_name, _layer_workspace, service, group=_group, geo_limit=_wkt, geofence_uow=geofence_uow)
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, group=_group, allow=enabled)
+                _update_geofence_rule(layer, _layer_name, _layer_workspace, service, group=_group, geo_limit=_wkt)
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        _update_geofence_rule(_layer_name, _layer_workspace,
-                                              service, request=request, group=_group, allow=enabled, geofence_uow=geofence_uow)
-
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, group=_group, allow=enabled)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-        if geofence_uow:
-            geofence_uow.set_invalidate_cache()
-        else:
-            set_geofence_invalidate_cache()
+        set_geofence_invalidate_cache()
     else:
         layer.set_dirty_state()
 
@@ -910,7 +686,7 @@ def set_owner_permissions(resource, members=None):
                         assign_perm(perm, user, resource.service)
 
 
-def remove_object_permissions(instance, purge=True, geofence_uow=None):
+def remove_object_permissions(instance, purge=True):
     """Remove object permissions on given resource.
 
     If is a layer removes the layer specific permissions then the
@@ -939,12 +715,8 @@ def remove_object_permissions(instance, purge=True, geofence_uow=None):
             if instance.polymorphic_ctype.name == 'layer':
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-                        if geofence_uow:
-                            geofence_uow.purge_rules()
-                            geofence_uow.set_invalidate_cache()
-                        else:
-                            purge_geofence_layer_rules(resource)
-                            set_geofence_invalidate_cache()
+                        purge_geofence_layer_rules(resource)
+                        set_geofence_invalidate_cache()
                     else:
                         resource.set_dirty_state()
     UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
@@ -953,7 +725,7 @@ def remove_object_permissions(instance, purge=True, geofence_uow=None):
                                          object_pk=instance.id).delete()
 
 
-def _get_geofence_payload(layer_name, workspace, access, user=None, group=None,
+def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group=None,
                           service=None, request=None, geo_limit=None):
     highest_priority = get_highest_priority()
     root_el = etree.Element("Rule")
@@ -991,39 +763,12 @@ def _get_geofence_payload(layer_name, workspace, access, user=None, group=None,
     return etree.tostring(root_el)
 
 
-def _create_geofence_rule(payload):
-    username = settings.OGC_SERVER['default']['USER']
-    password = settings.OGC_SERVER['default']['PASSWORD']
-    url = settings.OGC_SERVER['default']['LOCATION']
-    headers = {'Content-type': 'application/xml'}
-    auth = HTTPBasicAuth(username=username, password=password)
-
-    logger.debug(f"request data: {payload}")
-    resource_url = f"{url}rest/geofence/rules"
-    response = requests.post(
-        resource_url,
-        data=payload,
-        headers=headers,
-        auth=auth
-    )
-    logger.debug(f"response status_code: {response.status_code}")
-    if response.status_code not in (200, 201):
-        raise GeofenceRequestError(detail=response.text)
-
-
-def _update_geofence_rule(layer_name, workspace,
+def _update_geofence_rule(layer, layer_name, workspace,
                           service, request=None,
                           user=None, group=None,
-                          geo_limit=None, allow=True,
-                          geofence_uow=None):
-    if geofence_uow:
-        geofence_uow.update_rule(
-            layer_name, workspace, service,
-            request=request, user=user, group=group,
-            geo_limit=geo_limit, allow=allow
-        )
-        return None
+                          geo_limit=None, allow=True):
     payload = _get_geofence_payload(
+        layer=layer,
         layer_name=layer_name,
         workspace=workspace,
         access="ALLOW" if allow else "DENY",
@@ -1033,14 +778,23 @@ def _update_geofence_rule(layer_name, workspace,
         request=request,
         geo_limit=geo_limit
     )
-    try:
-        _create_geofence_rule(payload)
-    except GeofenceRequestError as exc:
-        msg = (
-            f"Could not ADD GeoServer User {user} Rule for "
-            f"Layer {layer_name}: '{exc.detail}'"
+    logger.debug(f"request data: {payload}")
+    response = requests.post(
+        f"{settings.OGC_SERVER['default']['LOCATION']}rest/geofence/rules",
+        data=payload,
+        headers={
+            'Content-type': 'application/xml'
+        },
+        auth=HTTPBasicAuth(
+            username=settings.OGC_SERVER['default']['USER'],
+            password=settings.OGC_SERVER['default']['PASSWORD']
         )
-        if 'Duplicate Rule' in exc.detail:
+    )
+    logger.debug(f"response status_code: {response.status_code}")
+    if response.status_code not in (200, 201):
+        msg = (f"Could not ADD GeoServer User {user} Rule for "
+               f"Layer {layer}: '{response.text}'")
+        if 'Duplicate Rule' in response.text:
             logger.debug(msg)
         else:
             raise RuntimeError(msg)

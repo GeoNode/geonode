@@ -93,7 +93,8 @@ class ManagementCommandView(views.APIView):
         create_serializer.is_valid(raise_exception=True)
 
         job = self.perform_create(create_serializer)
-
+        # Get latest job state from database. Some jobs can be already finished.
+        job.refresh_from_db()
         return Response(
             {
                 "success": True,

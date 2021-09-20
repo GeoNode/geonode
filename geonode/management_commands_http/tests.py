@@ -47,7 +47,7 @@ class ManagementCommandsTestCase(APITestCase):
         expected_payload = {
             "success": True,
             "error": None,
-            "data": settings.MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP,
+            "data": list(settings.MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP),
         }
         response = self.client.get(self.resource_list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
