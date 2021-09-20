@@ -226,7 +226,7 @@ def document_embed(request, docid):
         else:
             imageurl = reverse('document_link', args=(document.id,))
         context_dict = {
-            "image_url":  imageurl,
+            "image_url": imageurl,
         }
         return render(
             request,

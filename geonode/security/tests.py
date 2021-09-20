@@ -1630,7 +1630,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                                 "view_resourcebase",
                                 "download_resourcebase",
                                 "change_dataset_style"
-                        ]
+                            ]
                     },
                 "groups": {}
             }
