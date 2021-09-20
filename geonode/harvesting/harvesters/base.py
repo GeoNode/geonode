@@ -278,6 +278,9 @@ class BaseHarvesterWorker(abc.ABC):
         If the underlying harvestable resource already exists as a local GeoNode resource, then
         it is updated. Otherwise it is created locally.
 
+        If something goes wrong with the update of the geonode resource this method should raise
+        a `RuntimeError`. This will be caught by the harvesting task and handled appropriately.
+
         """
 
         defaults = self.get_geonode_resource_defaults(harvested_info, harvestable_resource)
@@ -386,8 +389,11 @@ def download_resource_file(url: str, target_name: str) -> Path:
 def _get_file_name(resource_info: HarvestedResourceInfo,) -> typing.Optional[str]:
     file_extension = {
         "geotiff": ".tiff",
-        "shapefile": ".zip"
-    }.get(resource_info.resource_descriptor.identification.native_format, "")
+        "shapefile": ".zip",
+    }.get(
+        resource_info.resource_descriptor.identification.native_format,
+        f".{resource_info.resource_descriptor.identification.native_format}"
+    )
     base_fragment = resource_info.resource_descriptor.identification.name
     base_name = html.unescape(base_fragment).rsplit("/")[-1].rsplit("\\")[-1]
     if base_name in {"", ".", ".."}:

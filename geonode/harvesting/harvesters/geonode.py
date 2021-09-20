@@ -50,9 +50,14 @@ from . import base
 logger = logging.getLogger(__name__)
 
 
-class GeoNodeLayerType(enum.Enum):
+class GeoNodeDatasetType(enum.Enum):
     VECTOR = "vector"
     RASTER = "raster"
+
+
+class RemoteDatasetType(enum.Enum):
+    VECTOR = "shapefile"
+    RASTER = "geotiff"
 
 
 class GeoNodeResourceType(enum.Enum):
@@ -320,26 +325,25 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         defaults = super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
         defaults.update(harvested_info.resource_descriptor.additional_parameters)
         local_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)
-        if local_resource_type == Document:
+        to_copy = self.should_copy_resource(harvestable_resource)
+        if local_resource_type == Document and not to_copy:
+            # since we are not copying the document, we need to provide suitable remote URLs
             defaults.update({
                 "doc_url": harvested_info.resource_descriptor.distribution.original_format_url,
                 "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
             })
-        elif local_resource_type == Dataset:
+        elif local_resource_type == Dataset and not to_copy:
+            # since we are not copying the dataset, we need to provide suitable SRID and remote URL
+            try:
+                srid = harvested_info.resource_descriptor.reference_systems[0]
+            except AttributeError:
+                srid = None
             defaults.update({
-                "name": harvested_info.resource_descriptor.identification.name,
-                "charset": harvested_info.resource_descriptor.character_set,
+                "name": defaults["name"].rpartition(":")[-1],
+                "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
+                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+                "srid": srid,
             })
-            if not self.should_copy_resource(harvestable_resource):
-                try:
-                    srid = harvested_info.resource_descriptor.reference_systems[0]
-                except AttributeError:
-                    srid = None
-                defaults.update({
-                    "name": defaults["name"].rpartition(":")[-1],
-                    "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
-                    "srid": srid,
-                })
         return defaults
 
     def _get_num_available_resources_by_type(
@@ -540,14 +544,39 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             ),
             data_quality=get_xpath_value(csw_record, ".//gmd:dataQualityInfo//gmd:lineage"),
         )
-        if harvestable_resource.remote_resource_type == GeoNodeResourceType.DATASET.value:
-            layer_type = (
-                GeoNodeLayerType.RASTER if api_record.get("storeType") == "coverageStore" else GeoNodeLayerType.VECTOR
-            )
-            descriptor.additional_parameters["layer_type"] = layer_type.value
-        elif harvestable_resource.remote_resource_type == GeoNodeResourceType.DOCUMENT.value:
-            descriptor.additional_parameters["extension"] = api_record.get("extension")
+        additional_params_handler = {
+            GeoNodeResourceType.DATASET.value: self._get_dataset_additional_parameters,
+            GeoNodeResourceType.DOCUMENT.value: self._get_document_additional_parameters
+        }[harvestable_resource.remote_resource_type]
+        additional_params = additional_params_handler(descriptor, api_record)
+        descriptor.additional_parameters.update(additional_params)
         return descriptor
+
+    def _get_dataset_additional_parameters(
+            self,
+            descriptor: resourcedescriptor.RecordDescription,
+            api_record: typing.Dict
+    ) -> typing.Dict:
+        result = {
+            "name": descriptor.identification.name,
+            "charset": descriptor.character_set,
+            "resource_type": "dataset"
+        }
+        if descriptor.identification.native_format.lower() == RemoteDatasetType.VECTOR.value:
+            result["subtype"] = GeoNodeDatasetType.VECTOR.value
+        elif descriptor.identification.native_format.lower() == RemoteDatasetType.RASTER.value:
+            result["subtype"] = GeoNodeDatasetType.RASTER.value
+        return result
+
+    def _get_document_additional_parameters(
+            self,
+            descriptor: resourcedescriptor.RecordDescription,
+            api_record: typing.Dict
+    ) -> typing.Dict:
+        return {
+            "resource_type": "document",
+            "extension": api_record.get("extension")
+        }
 
     def get_distribution_info(
             self,
