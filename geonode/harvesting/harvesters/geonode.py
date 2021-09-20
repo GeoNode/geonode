@@ -318,6 +318,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             harvestable_resource: models.HarvestableResource,
     ) -> typing.Dict:
         defaults = super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
+        defaults.update(harvested_info.resource_descriptor.additional_parameters)
         local_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)
         if local_resource_type == Document:
             defaults.update({
@@ -544,6 +545,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 GeoNodeLayerType.RASTER if api_record.get("storeType") == "coverageStore" else GeoNodeLayerType.VECTOR
             )
             descriptor.additional_parameters["layer_type"] = layer_type.value
+        elif harvestable_resource.remote_resource_type == GeoNodeResourceType.DOCUMENT.value:
+            descriptor.additional_parameters["extension"] = api_record.get("extension")
         return descriptor
 
     def get_distribution_info(
