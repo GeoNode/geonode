@@ -18,6 +18,9 @@
 #########################################################################
 from django.contrib.auth import get_user_model
 from django.db import models
+from geonode.management_commands_http.utils.commands import (
+    get_management_commands_apps,
+)
 
 
 class ManagementCommandJob(models.Model):
@@ -57,6 +60,14 @@ class ManagementCommandJob(models.Model):
         default=CREATED,
         max_length=max([len(e[0]) for e in STATUS_CHOICES]),
     )
+
+    def clean(self):
+        available_commands = get_management_commands_apps()
+        if self.command not in available_commands:
+            raise ValueError("Command not found")
+        if not self.app_name:
+            self.app_name = available_commands[self.command]
+        return super().clean()
 
     def __str__(self):
         return (

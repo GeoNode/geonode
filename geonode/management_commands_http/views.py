@@ -16,12 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
-
 from rest_framework import permissions, status, views
 from rest_framework.response import Response
 
-from geonode.management_commands_http.models import ManagementCommandJob
 from geonode.management_commands_http.serializers import (
     ManagementCommandJobSerializer,
     ManagementCommandJobCreateSerializer,
@@ -53,17 +50,14 @@ class ManagementCommandView(views.APIView):
             )
 
         # Object Details: fetch help text of the Command
-        cmd_details = get_management_command_details(
-            self.available_commands[cmd_name]["command_class"],
-            cmd_name
-        )
+        cmd_details = get_management_command_details(cmd_name)
         return Response({"success": True, "error": None, "data": cmd_details})
 
     def list(self):
         return Response({
             "success": True,
             "error": None,
-            "data": self.available_commands.keys()
+            "data": self.available_commands
         })
 
     def get(self, request, cmd_name=None):
@@ -73,6 +67,13 @@ class ManagementCommandView(views.APIView):
             return self.list()
         # Retrieve
         return self.retrieve_details(cmd_name)
+
+    def perform_create(self, serializer):
+        autostart = serializer.validated_data.get("autostart", True)
+        job = serializer.save()
+        if autostart:
+            start_task(job)
+        return job
 
     def post(self, request, cmd_name=None):
         """
@@ -86,60 +87,18 @@ class ManagementCommandView(views.APIView):
         By default, autostart is set to true.
         """
         create_serializer = ManagementCommandJobCreateSerializer(
-            data=request.data
+            data={"command": cmd_name, **request.data},
+            context={"request": request, "view": self},
         )
         create_serializer.is_valid(raise_exception=True)
-        args = create_serializer.validated_data.get('args', [])
-        kwargs = create_serializer.validated_data.get('kwargs', {})
-        autostart = create_serializer.validated_data.get('autostart', True)
-        self.available_commands = get_management_commands()
 
-        # Missing details
-        if cmd_name is None:
-            return Response(
-                {"success": False, "error": "Method not allowed"},
-                status=status.HTTP_405_METHOD_NOT_ALLOWED
-            )
+        job = self.perform_create(create_serializer)
 
-        # Object not found
-        if cmd_name not in self.available_commands:
-            return Response(
-                {"success": False, "error": "Command not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        # Forbidden argument
-        if "--help" in args:
-            return Response(
-                {
-                    "success": False,
-                    "error": 'Forbidden argument: "--help"',
-                    "data": None
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # Perform Create
-        obj_data = {
-            "command": cmd_name,
-            "app_name": self.available_commands[cmd_name]["app"],
-            "user": request.user,
-            "args": json.dumps(args),
-            "kwargs": json.dumps(kwargs),
-            "status": ManagementCommandJob.CREATED,
-        }
-        job = ManagementCommandJob.objects.create(**obj_data)
-
-        # Start Job
-        if autostart:
-            start_task(job)
-
-        serializer = ManagementCommandJobSerializer(instance=job)
         return Response(
             {
                 "success": True,
                 "error": None,
-                "data": serializer.data,
+                "data": ManagementCommandJobSerializer(instance=job).data,
             },
             status=status.HTTP_201_CREATED
         )

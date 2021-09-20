@@ -18,6 +18,7 @@
 #########################################################################
 from rest_framework import status
 from rest_framework.test import APITestCase
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
 from geonode.management_commands_http.models import ManagementCommandJob
@@ -28,8 +29,8 @@ from geonode.management_commands_http.utils.job_runner import (
 
 class ManagementCommandsTestCase(APITestCase):
     def setUp(self):
-        self.resource_list_url = "/api/v2/management/"
-        self.resource_details_url = "/api/v2/management/{}/"
+        self.resource_list_url = "/api/v2/management/commands/"
+        self.resource_details_url = "/api/v2/management/commands/{}/"
         self.admin = get_user_model().objects.create_superuser(
             username="admin",
             password="admin",
@@ -46,14 +47,7 @@ class ManagementCommandsTestCase(APITestCase):
         expected_payload = {
             "success": True,
             "error": None,
-            "data": [
-                'sync_geonode_layers',
-               'sync_geonode_maps',
-               'updatelayers',
-               'ping_mngmt_commands_http',
-               'importlayers',
-               'set_all_layers_metadata'
-            ],
+            "data": settings.MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP,
         }
         response = self.client.get(self.resource_list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -69,64 +63,60 @@ class ManagementCommandsTestCase(APITestCase):
         response = self.client.get(self.resource_details_url.format(cmd_name))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_json = response.json()
-        self.assertTrue(response_json['success'])
-        self.assertIn(cmd_name, response_json['data'])
+        self.assertTrue(response_json["success"])
+        self.assertIn(cmd_name, response_json["data"])
 
     def test_management_commands_detail_not_found(self):
         cmd_name = "some_unavaliable_command"
         response = self.client.get(self.resource_details_url.format(cmd_name))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    @patch(
-        "geonode.management_commands_http.utils"
-        ".jobs.run_management_command_async"
-    )
+    @patch("geonode.management_commands_http.utils.jobs.run_management_command_async")
     def test_management_commands_create(self, mocked_async_task):
         cmd_name = "ping_mngmt_commands_http"
         response = self.client.post(self.resource_details_url.format(cmd_name))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         response_json = response.json()
-        self.assertTrue(response_json['success'])
-        self.assertEqual(response_json['data']['command'], cmd_name)
+        self.assertTrue(response_json["success"])
+        self.assertEqual(response_json["data"]["command"], cmd_name)
         self.assertEqual(
-            response_json['data']['status'], ManagementCommandJob.QUEUED
+            response_json["data"]["status"], ManagementCommandJob.QUEUED
         )
-        job_id = response_json['data']['id']
+        job_id = response_json["data"]["id"]
         mocked_async_task.delay.assert_called_once()
         mocked_async_task.delay.assert_called_with(job_id=job_id)
 
-    @patch(
-        "geonode.management_commands_http.utils"
-        ".jobs.run_management_command_async"
-    )
+    @patch("geonode.management_commands_http.utils.jobs.run_management_command_async")
     def test_management_commands_create_autostart_off(self, mocked_async_task):
         cmd_name = "ping_mngmt_commands_http"
         response = self.client.post(
             self.resource_details_url.format(cmd_name),
-            data={"autostart": False}
+            data={"autostart": False},
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
-            response.json()['data']["status"], ManagementCommandJob.CREATED
+            response.json()["data"]["status"], ManagementCommandJob.CREATED
         )
         mocked_async_task.delay.assert_not_called()
 
-    def test_management_commands_create_not_allowed(self):
+    def test_management_commands_create_without_command(self):
         response = self.client.post(self.resource_list_url)
-        self.assertEqual(
-            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
-        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("This field may not be null.", response.json()["command"])
 
     def test_management_commands_create_not_found(self):
         cmd_name = "some_unavaliable_command"
         response = self.client.post(self.resource_details_url.format(cmd_name))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Command not found", response.content.decode())
 
     def test_management_commands_create_bad_request(self):
         cmd_name = "ping_mngmt_commands_http"
         response = self.client.post(
             self.resource_details_url.format(cmd_name),
-            data={"args": ["--help"]}
+            data={"args": ["--help"]},
+            format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 

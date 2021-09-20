@@ -20,8 +20,8 @@ from django.apps import AppConfig
 
 
 class ManagementCommandsHttpAppConfig(AppConfig):
-    name = 'geonode.management_commands_http'
+    name = "geonode.management_commands_http"
     verbose_name = "Management Commands Over HTTP"
 
 
-default_app_config = 'geonode.management_commands_http.ManagementCommandsHttpAppConfig'
+default_app_config = "geonode.management_commands_http.ManagementCommandsHttpAppConfig"

@@ -30,38 +30,32 @@ logger = logging.getLogger(__name__)
 
 def get_management_commands():
     """
-    Get the list of all management commands, filter by the attr injected by the
-    decorator and returns a dict with the app and command class.
+    Get the list of all exposed management commands.
     """
-    available_commands = {}
+    return settings.MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP
+
+
+def get_management_commands_apps():
+    """
+    Get a dict of all management commands, filter by the
+    MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP setting.
+    """
     mngmt_commands = get_commands()
-
-    for name, app_name in mngmt_commands.items():
-        # Load command
-        try:
-            command_class = load_command_class(app_name, name)
-        except (ImportError, AttributeError) as exception:
-            logging.info(
-                f'Command "{name}" from app "{app_name}" cannot be listed or used by http, exception: "{exception}"'
-            )
-            continue
-
-        # Verify if its exposed
-        is_exposed = name in settings.MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP
-        if is_exposed:
-            available_commands[name] = {
-                "app": app_name,
-                "command_class": command_class,
-            }
-
+    command_names = get_management_commands()
+    available_commands = {
+        name: mngmt_commands[name]
+        for name in command_names
+    }
     return available_commands
 
 
-def get_management_command_details(command_class, command_name):
+def get_management_command_details(command_name):
     """
     Get the help output of the management command.
     """
-    parser = command_class.create_parser('', command_name)
+    app_name = get_management_commands_apps()[command_name]
+    command_class = load_command_class(app_name, command_name)
+    parser = command_class.create_parser("", command_name)
     with io.StringIO() as output:
         parser.print_help(output)
         cmd_help_output = output.getvalue()

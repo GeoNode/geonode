@@ -24,8 +24,8 @@ from geonode.management_commands_http.utils.job_runner import (
 
 @shared_task(
     bind=True,
-    name='geonode.management_commands_http.tasks.run_management_command_async',
-    queue='management_commands_http',
+    name="geonode.management_commands_http.tasks.run_management_command_async",
+    queue="management_commands_http",
     ignore_result=False,
 )
 def run_management_command_async(self, job_id):
