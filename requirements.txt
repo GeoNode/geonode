@@ -47,7 +47,7 @@ oauthlib==3.1.1
 pyopenssl==20.0.1
 
 # geopython dependencies
-pyproj==3.2.0
+pyproj==3.2.1
 OWSLib==0.25.0
 pycsw==2.6.0
 SQLAlchemy==1.4.23 # required by PyCSW
@@ -104,9 +104,9 @@ django-bootstrap3-datetimepicker-2==2.8.2
 # storage manager dependencies
 django-storages==1.11.1
 dropbox==11.19.0
-google-cloud-storage==1.42.1
+google-cloud-storage==1.42.2
 google-cloud-core==2.0.0
-boto3==1.18.40
+boto3==1.18.44
 
 # Django Caches
 python-memcached<=1.59

@@ -355,6 +355,19 @@ class PermSpec(PermSpecConverterBase):
 
         if anonymous_perms:
             group_perms.append(anonymous_perms)
+        else:
+            anonymous_group = Group.objects.get(name='anonymous')
+            group_perms.append(
+                {
+                    'id': anonymous_group.id,
+                    'title': 'anonymous',
+                    'name': 'anonymous',
+                    'permissions': _to_compact_perms(
+                        get_group_perms(anonymous_group, self._resource),
+                        self._resource.resource_type,
+                        self._resource.subtype)
+                }
+            )
         if contributors_perms:
             group_perms.append(contributors_perms)
         elif Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).exists():

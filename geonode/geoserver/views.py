@@ -543,7 +543,10 @@ def _response_callback(**kwargs):
         # Replace Proxy URL
         try:
             if isinstance(content, bytes):
-                _content = content.decode('UTF-8')
+                try:
+                    _content = content.decode('UTF-8')
+                except UnicodeDecodeError:
+                    _content = content
             else:
                 _content = content
             if re.findall(f"(?=(\\b{'|'.join(content_type_list)}\\b))", content_type):
