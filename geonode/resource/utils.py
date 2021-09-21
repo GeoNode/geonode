@@ -55,6 +55,9 @@ from ..people.utils import get_valid_user
 from ..layers.utils import resolve_regions
 from ..layers.metadata import convert_keyword
 
+from ..services.models import Service
+from ..harvesting.models import HarvestableResource
+
 logger = logging.getLogger(__name__)
 
 ogc_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
@@ -239,6 +242,15 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
         instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
     except Exception as e:
         logger.error(f"{e} - {to_update}")
+
+    # Check for "remote services" availability
+    if HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).exists():
+        _h = HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).get().harvester
+        if instance.remote_service is None and Service.objects.filter(harvester=_h).exists():
+            _s = Service.objects.filter(harvester=_h).get()
+            instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(
+                remote_service=_s,
+                ows_url=_s.service_url)
 
     # Refresh from DB
     instance.refresh_from_db()

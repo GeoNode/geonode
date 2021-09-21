@@ -22,37 +22,16 @@
                 <th>{% trans "Title" %}</th>
                 <th>{% trans "Description" %}</th>
                 </thead>
-                {% for job in resource_jobs %}
+                {% for dataset in datasets %}
                     <tr>
-                        {% if job.status != 'PROCESSED' %}
-                            <td>{{job.resource_id}}</td>
-                            <td>
-                                <div class="row">
-                                    <div class="col-md-9">
-                                        {{job.status}} - {{ job.details }}
-                                    </div>
-                                    <div class="btn-group pull-right">
-                                       {% if job.status == 'FAILED' %}
-                                        <button title="{% trans "Retry job" %}" class="btn" name="retry-{{ job.resource_id }}"><i
-                                                class="fa fa-refresh fa-fw" aria-hidden="true"></i></button>
-                                       {% endif %}
-                                    </div>
+                        <td><a href='{{ dataset.get_absolute_url }}'>{{dataset.title|striptags}}</a></td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-9">
+                                    {{dataset.abstract|striptags}}
                                 </div>
-                            </td>
-                        {% else %}
-                            {% for layer in layers %}
-                                {% if layer.name == job.resource_id or layer.alternate == job.resource_id %}
-                                    <td><a href='{{ layer.get_absolute_url }}'>{{layer.title|striptags}}</a></td>
-                                    <td>
-                                        <div class="row">
-                                            <div class="col-md-9">
-                                                {{layer.abstract|striptags}}
-                                            </div>
-                                        </div>
-                                    </td>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
+                            </div>
+                        </td>
                     </tr>
                 {% endfor %}
             </table>

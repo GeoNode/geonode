@@ -45,7 +45,7 @@ from geonode.base import enumerations as base_enumerations
 from geonode.services.utils import test_resource_table_status
 
 from . import enumerations, forms
-from .models import HarvestJob, Service
+from .models import Service
 from .serviceprocessors import (
     base,
     handler,
@@ -499,7 +499,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
                 owner=test_user)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
                 resource_manager.delete(_d.uuid, instance=_d)
-            HarvestJob.objects.filter(service=geonode_service).delete()
+
             handler._harvest_resource(dataset_meta, geonode_service)
             geonode_dataset = Dataset.objects.filter(remote_service=geonode_service).get()
             self.assertIsNotNone(geonode_dataset)
@@ -508,15 +508,8 @@ class ModuleFunctionsTestCase(StandardTestCase):
             self.client.login(username='admin', password='admin')
             response = self.client.get(reverse('dataset_detail', args=(geonode_dataset.name,)))
             self.assertEqual(response.status_code, 200)
-            harvest_job, created = HarvestJob.objects.get_or_create(
-                service=geonode_service,
-                resource_id=geonode_dataset.alternate
-            )
-            self.assertIsNotNone(harvest_job)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
                 resource_manager.delete(_d.uuid, instance=_d)
-            self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
-                                                       resource_id=geonode_dataset.alternate).count(), 0)
         except (Service.DoesNotExist, HTTPError) as e:
             # In the case the Service URL becomes inaccessible for some reason
             logger.error(e)
@@ -712,7 +705,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
                 owner=test_user)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
                 resource_manager.delete(_d.uuid, instance=_d)
-            HarvestJob.objects.filter(service=geonode_service).delete()
+
             result = list(handler.get_resources())
             dataset_meta = handler.get_resource(result[0].name)
             resource_fields = handler._get_indexed_dataset_fields(dataset_meta)
@@ -727,15 +720,9 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             self.client.login(username='admin', password='admin')
             response = self.client.get(reverse('dataset_detail', args=(geonode_dataset.name,)))
             self.assertEqual(response.status_code, 200)
-            harvest_job, created = HarvestJob.objects.get_or_create(
-                service=geonode_service,
-                resource_id=geonode_dataset.alternate
-            )
-            self.assertIsNotNone(harvest_job)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
                 resource_manager.delete(_d.uuid, instance=_d)
-            self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
-                                                       resource_id=geonode_dataset.alternate).count(), 0)
+
             legend_url = handler._create_dataset_legend_link(geonode_service, geonode_dataset)
             self.assertTrue('sld_version=1.1.0' in str(legend_url))
         except Service.DoesNotExist as e:

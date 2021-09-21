@@ -29,6 +29,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.base.models import ResourceBase
+from geonode.harvesting.models import Harvester
 from geonode.people.enumerations import ROLE_VALUES
 
 from . import enumerations
@@ -151,6 +152,9 @@ class Service(ResourceBase):
         null=True,
         blank=True
     )
+
+    # Foreign Keys
+
     parent = models.ForeignKey(
         'services.Service',
         null=True,
@@ -158,14 +162,24 @@ class Service(ResourceBase):
         on_delete=models.CASCADE,
         related_name='service_set'
     )
-    probe = models.IntegerField(
-        default=200
-    )
+
+    harvester = models.ForeignKey(
+        Harvester,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='service_harvester')
 
     # Supported Capabilities
 
     def __str__(self):
         return str(self.name)
+
+    @property
+    def probe(self):
+        if self.harvester:
+            return self.harvester.remote_available
+        return False
 
     @property
     def service_url(self):
@@ -192,14 +206,6 @@ class Service(ResourceBase):
     def get_absolute_url(self):
         return '/services/%i' % self.id
 
-    def probe_service(self):
-        from geonode.utils import http_client
-        try:
-            resp, content = http_client.request(self.service_url)
-            return resp.status_code
-        except Exception:
-            return 404
-
     class Meta:
         # custom permissions,
         # change and delete are standard in django-guardian
@@ -218,25 +224,3 @@ class ServiceProfileRole(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     role = models.CharField(choices=ROLE_VALUES, max_length=255, help_text=_(
         'function performed by the responsible party'))
-
-
-class HarvestJob(models.Model):
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    resource_id = models.CharField(max_length=255)
-    status = models.CharField(
-        choices=(
-            (enumerations.QUEUED, enumerations.QUEUED),
-            (enumerations.CANCELLED, enumerations.QUEUED),
-            (enumerations.IN_PROCESS, enumerations.IN_PROCESS),
-            (enumerations.PROCESSED, enumerations.PROCESSED),
-            (enumerations.FAILED, enumerations.FAILED),
-        ),
-        default=enumerations.QUEUED,
-        max_length=15,
-    )
-    details = models.TextField(null=True, blank=True, default=_("Resource is queued"))
-
-    def update_status(self, status, details=""):
-        self.status = status
-        self.details = details
-        self.save()

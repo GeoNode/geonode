@@ -248,19 +248,6 @@ class ResourceManager(ResourceManagerInterface):
                     - Remove the layer default style.
                     """
                     try:
-                        if _resource.get_real_instance().remote_service is not None:
-                            from geonode.services.models import HarvestJob
-                            _resource_id = _resource.get_real_instance().alternate
-                            HarvestJob.objects.filter(
-                                service=_resource.get_real_instance().remote_service, resource_id=_resource_id).delete()
-                            _resource_id = _resource.get_real_instance().alternate.split(":")[-1] if len(_resource.get_real_instance().alternate.split(":")) else None
-                            if _resource_id:
-                                HarvestJob.objects.filter(
-                                    service=_resource.get_real_instance().remote_service, resource_id=_resource_id).delete()
-                    except Exception as e:
-                        logger.exception(e)
-
-                    try:
                         from geonode.maps.models import MapLayer
                         logger.debug(
                             "Going to delete associated maplayers for [%s]", _resource.get_real_instance().name)

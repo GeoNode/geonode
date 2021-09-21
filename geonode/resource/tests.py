@@ -35,7 +35,7 @@ from geonode.layers.models import Dataset
 from geonode.base.populate_test_data import create_single_doc, create_single_dataset, create_single_map
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.maps.models import MapLayer
-from geonode.services.models import Service, HarvestJob
+from geonode.services.models import Service
 from geonode.resource import settings as rm_settings
 
 from pinax.ratings.models import OverallRating
@@ -88,13 +88,10 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         doc = create_single_doc("test_delete_doc")
         dt = create_single_dataset("test_delete_dataset")
         map = create_single_map("test_delete_dataset")
-        geonode_service = Service.objects.create(
+        Service.objects.create(
             base_url="http://fake_test",
             owner=self.user)
-        HarvestJob.objects.create(
-            service=geonode_service,
-            resource_id=dt.id
-        )
+
         # Add dataset to a map
         MapLayer.objects.create(map=map, name=dt.alternate, stack_order=1).save()
         # Create the rating for dataset

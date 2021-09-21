@@ -29,12 +29,13 @@ from django.contrib.contenttypes.models import ContentType
 from pinax.ratings.models import Rating
 from guardian.shortcuts import get_objects_for_user
 
-from geonode.base.models import ResourceBase
-from geonode.base.bbox_utils import filter_bbox
-from geonode.layers.models import Dataset
 from geonode.maps.models import Map
+from geonode.layers.models import Dataset
+from geonode.services.models import Service
+from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
+from geonode.base.bbox_utils import filter_bbox
 from geonode.base.models import (
     HierarchicalKeyword, Menu, MenuItem
 )
@@ -427,7 +428,16 @@ def display_change_perms_button(resource, user, perms):
 
 @register.simple_tag
 def get_dataset_count_by_services(service_id, user):
-    return get_visible_resources(
-        queryset=Dataset.objects.filter(remote_service=service_id),
-        user=user
-    ).count()
+    try:
+        service = Service.objects.get(id=service_id)
+        harvested_resources_ids = []
+        if service.harvester:
+            _h = service.harvester
+            harvested_resources_ids = list(_h.harvestable_resources.filter(
+                should_be_harvested=True, geonode_resource__isnull=False).values_list("geonode_resource__id", flat=True))
+        return get_visible_resources(
+            queryset=Dataset.objects.filter(id__in=harvested_resources_ids),
+            user=user
+        ).count()
+    except Exception:
+        return 0

@@ -24,14 +24,16 @@ import traceback
 from uuid import uuid4
 
 from django.conf import settings
+from django.db import transaction
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify, safe
 
-from geonode.base.models import Link
 from geonode.layers.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
-from geonode.resource.manager import resource_manager
-from geonode.base import enumerations as base_enumerations
+
+# from geonode.harvesting.models import Harvester
+# from geonode.harvesting.tasks import update_harvestable_resources
+# from geonode.harvesting.utils import update_harvester_availability
 
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
 
@@ -64,10 +66,8 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     service_type = enumerations.REST_MAP
 
-    def __init__(self, url):
-        base.ServiceHandlerBase.__init__(self, url)
-        self.proxy_base = None
-        self.url = url
+    def __init__(self, url, geonode_service_id=None):
+        base.ServiceHandlerBase.__init__(self, url, geonode_service_id)
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:
             _sname = utils.get_esri_service_name(self.url)
@@ -103,55 +103,39 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         :type owner: geonode.people.models.Profile
 
         """
-        instance = models.Service(
-            uuid=str(uuid4()),
-            base_url=self.url,
-            proxy_base=self.proxy_base,
-            type=self.service_type,
-            method=self.indexing_method,
-            owner=owner,
-            parent=parent,
-            metadata_only=True,
-            version=str(self.parsed_service._json_struct.get("currentVersion", 0.0)).encode("utf-8", "ignore").decode('utf-8'),
-            name=self.name,
-            title=self.title,
-            abstract=str(self.parsed_service._json_struct.get("serviceDescription")).encode("utf-8", "ignore").decode('utf-8') or _(
-                "Not provided"),
-            online_resource=self.parsed_service.url,
-        )
+        with transaction.atomic():
+            instance = models.Service.objects.create(
+                uuid=str(uuid4()),
+                base_url=self.url,
+                proxy_base=self.proxy_base,
+                type=self.service_type,
+                method=self.indexing_method,
+                owner=owner,
+                parent=parent,
+                metadata_only=True,
+                version=str(self.parsed_service._json_struct.get("currentVersion", 0.0)).encode("utf-8", "ignore").decode('utf-8'),
+                name=self.name,
+                title=self.title,
+                abstract=str(self.parsed_service._json_struct.get("serviceDescription")).encode("utf-8", "ignore").decode('utf-8') or _(
+                    "Not provided"),
+                online_resource=self.parsed_service.url
+            )
+            # TODO: once the ArcGIS Harvester will be available
+            # service_harvester = Harvester.objects.create(
+            #     name=self.name,
+            #     default_owner=owner,
+            #     remote_url=instance.service_url,
+            #     harvester_type=enumerations.HARVESTER_TYPES[self.type]
+            # )
+            # update_harvester_availability(service_harvester)
+            # update_harvestable_resources.apply(args=(service_harvester.pk,))
+            # instance.harvester = service_harvester
+
+        self.geonode_service_id = instance.id
         return instance
 
     def get_keywords(self):
         return self.parsed_service._json_struct.get("capabilities", "").split(",")
-
-    def get_resource(self, resource_id):
-        ll = None
-        try:
-            ll = self.parsed_service.layers[int(resource_id)]
-        except Exception as e:
-            logger.exception(e)
-            for layer in self.parsed_service.layers:
-                try:
-                    if int(layer.id) == int(resource_id):
-                        ll = layer
-                        break
-                except Exception as e:
-                    logger.exception(e)
-
-        return self._dataset_meta(ll) if ll else None
-
-    def get_resources(self):
-        """Return an iterable with the service's resources.
-
-        For WMS we take into account that some layers are just logical groups
-        of metadata and do not return those.
-
-        """
-        try:
-            return self._parse_datasets(self.parsed_service.layers)
-        except Exception:
-            traceback.print_exc()
-            return None
 
     def _parse_datasets(self, layers):
         map_datasets = []
@@ -205,32 +189,6 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             geonode_service, **resource_fields)
         self._create_dataset_service_link(geonode_service, geonode_dataset)
 
-    def harvest_resource(self, resource_id, geonode_service):
-        """Harvest a single resource from the service
-
-        This method will try to create new ``geonode.layers.models.Dataset``
-        instance (and its related objects too).
-
-        :arg resource_id: The resource's identifier
-        :type resource_id: str
-        :arg geonode_service: The already saved service instance
-        :type geonode_service: geonode.services.models.Service
-
-        """
-        dataset_meta = self.get_resource(resource_id)
-        if dataset_meta:
-            self._harvest_resource(dataset_meta, geonode_service)
-        else:
-            raise RuntimeError(
-                f"Resource {resource_id} cannot be harvested")
-
-    def has_resources(self):
-        try:
-            return True if len(self.parsed_service.layers) > 0 else False
-        except Exception:
-            traceback.print_exc()
-            return False
-
     def _offers_geonode_projection(self, srs):
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
         return geonode_projection in f"EPSG:{srs}"
@@ -255,55 +213,6 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             "srid": srs,
             "keywords": ['ESRI', 'ArcGIS REST MapServer', dataset_meta.title],
         }
-
-    def _create_dataset(self, geonode_service, **resource_fields):
-        # bear in mind that in ``geonode.layers.models`` there is a
-        # ``pre_save_dataset`` function handler that is connected to the
-        # ``pre_save`` signal for the Dataset model. This handler does a check
-        # for common fields (such as abstract and title) and adds
-        # sensible default values
-        keywords = resource_fields.pop("keywords", [])
-        defaults = dict(
-            owner=geonode_service.owner,
-            remote_service=geonode_service,
-            remote_typename=geonode_service.name,
-            sourcetype=base_enumerations.SOURCE_TYPE_REMOTE,
-            ptype=getattr(geonode_service, "ptype", "gxp_wmscsource"),
-            **resource_fields
-        )
-        if geonode_service.method == INDEXED:
-            defaults['ows_url'] = geonode_service.service_url
-
-        geonode_dataset = resource_manager.create(
-            None,
-            resource_type=Dataset,
-            defaults=defaults
-        )
-        resource_manager.update(geonode_dataset.uuid, instance=geonode_dataset, keywords=keywords, notify=True)
-        resource_manager.set_permissions(geonode_dataset.uuid, instance=geonode_dataset)
-
-        return geonode_dataset
-
-    def _create_dataset_thumbnail(self, geonode_dataset):
-        """Create a thumbnail with a WMS request."""
-        # The thumbnail generation implementation relies on WMS image retrieval, which fails for layers from ESRI
-        # services (not all of them support GetCapabilities or GetCapabilities path is different from the service's
-        # URL); in order to create a thumbnail for ESRI layer, a user must upload one.
-        logger.debug("Skipping thumbnail execution for layer from ESRI service.")
-
-    def _create_dataset_service_link(self, geonode_service, geonode_dataset):
-        Link.objects.get_or_create(
-            resource=geonode_dataset.resourcebase_ptr,
-            url=geonode_dataset.ows_url,
-            name=f"ESRI {geonode_dataset.remote_service.type}: {geonode_dataset.store} Service",
-            defaults={
-                "extension": "html",
-                "name": f"ESRI {geonode_dataset.remote_service.type}: {geonode_dataset.store} Service",
-                "url": geonode_dataset.ows_url,
-                "mime": "text/html",
-                "link_type": f"ESRI:{geonode_dataset.remote_service.type}",
-            }
-        )
 
 
 class ArcImageServiceHandler(ArcMapServiceHandler):

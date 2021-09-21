@@ -27,11 +27,12 @@ from django.conf import settings
 from django.urls import reverse
 from urllib.parse import urlencode, urlparse, urljoin, parse_qs, urlunparse
 
-from geonode import geoserver
 from geonode.utils import check_ogc_backend
+from geonode import GeoNodeException, geoserver
+from geonode.harvesting.tasks import harvesting_dispatcher
 
-from .. import enumerations
 from .. import models
+from .. import enumerations
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog as catalog
@@ -104,16 +105,26 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
     """
 
     url = None
+    name = None
     service_type = None
-    name = ""
     indexing_method = None
+    geonode_service_id = None
 
-    def __init__(self, url):
+    def __init__(self, url, geonode_service_id=None):
         self.url = url
+        self.geonode_service_id = geonode_service_id
 
     @property
     def is_cascaded(self):
         return True if self.indexing_method == enumerations.CASCADED else False
+
+    def probe(self):
+        from geonode.utils import http_client
+        try:
+            resp, _ = http_client.request(self.url)
+            return resp.status_code in (200, 201)
+        except Exception:
+            return False
 
     def create_geonode_service(self, owner, parent=None):
         """Create a new geonode.service.models.Service instance
@@ -126,16 +137,69 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
 
         raise NotImplementedError
 
+    def has_resources(self):
+        # TODO: WMS
+        # @deprecated: return True if len(self.parsed_service.contents) > 0 else False
+
+        # TODO: ArcGIS
+        # @deprecated: return True if len(self.parsed_service.layers) > 0 else False
+
+        if self.geonode_service_id:
+            _service = models.Service.objects.get(id=self.geonode_service_id)
+            if _service.harvester:
+                _h = _service.harvester
+                num_harvestable_resources = _h.num_harvestable_resources
+                return num_harvestable_resources > 0
+        return False
+
+    def has_unharvested_resources(self, geonode_service):
+        # TODO
+        # @deprecated
+        # already_done = list(models.HarvestJob.objects.values_list(
+        #     "resource_id", flat=True).filter(service=geonode_service))
+        # for resource in self.get_resources():
+        #     if resource.id not in already_done:
+        #         result = True
+        #         break
+        # else:
+        #     result = False
+        # return result
+        if geonode_service or self.geonode_service_id:
+            try:
+                _service = geonode_service or models.Service.objects.get(id=self.geonode_service_id)
+                if _service.harvester:
+                    _h = _service.harvester
+                    num_harvestable_resources = _h.num_harvestable_resources
+                    num_harvestable_resources_selected = _h.harvestable_resources.filter(should_be_harvested=False).count()
+                    if num_harvestable_resources > 0 and num_harvestable_resources_selected <= num_harvestable_resources:
+                        return True
+            except Exception as e:
+                logger.exception(e)
+        return False
+
     def get_keywords(self):
         raise NotImplementedError
 
     def get_resource(self, resource_id):
         """Return a single resource's representation."""
-        raise NotImplementedError
+        try:
+            if self.geonode_service_id:
+                _service = models.Service.objects.get(id=self.geonode_service_id)
+                if _service.harvester:
+                    _h = _service.harvester
+                    return _h.harvestable_resources.get(id=resource_id)
+        except Exception as e:
+            logger.exception(e)
+        return None
 
     def get_resources(self):
         """Return an iterable with the service's resources."""
-        raise NotImplementedError
+        if self.geonode_service_id:
+            _service = models.Service.objects.get(id=self.geonode_service_id)
+            if _service.harvester:
+                _h = _service.harvester
+                return _h.harvestable_resources.filter(should_be_harvested=False).order_by('id').iterator()
+        return []
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
@@ -148,22 +212,20 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
         :arg geonode_service: The already saved service instance
         :type geonode_service: geonode.services.models.Service
         """
-
-        raise NotImplementedError
-
-    def has_resources(self):
-        raise NotImplementedError
-
-    def has_unharvested_resources(self, geonode_service):
-        already_done = list(models.HarvestJob.objects.values_list(
-            "resource_id", flat=True).filter(service=geonode_service))
-        for resource in self.get_resources():
-            if resource.id not in already_done:
-                result = True
-                break
+        if geonode_service or self.geonode_service_id:
+            try:
+                _service = geonode_service or models.Service.objects.get(id=self.geonode_service_id)
+                if _service.harvester:
+                    _h = _service.harvester
+                    _h.harvestable_resources.filter(id=resource_id).update(should_be_harvested=True)
+                    _h.status = _h.STATUS_PERFORMING_HARVESTING
+                    _h.save()
+                    harvesting_dispatcher.apply_async(args=(_h.pk,))
+            except Exception as e:
+                logger.exception(e)
+                raise GeoNodeException(e)
         else:
-            result = False
-        return result
+            raise GeoNodeException(f"Could not harvest resource id {resource_id} for service {self.name}")
 
 
 class CascadableServiceHandlerMixin:

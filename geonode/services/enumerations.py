@@ -65,6 +65,11 @@ GXP_PTYPES = {
     'GN_WMS': 'gxp_geonodecataloguesource',
 }
 
+HARVESTER_TYPES = {
+    'WMS': 'geonode.harvesting.harvesters.wms.OgcWmsHarvester',
+    'GN_WMS': 'geonode.harvesting.harvesters.wms.OgcWmsHarvester',
+}
+
 QUEUED = "QUEUED"
 IN_PROCESS = "IN_PROCESS"
 PROCESSED = "PROCESSED"
