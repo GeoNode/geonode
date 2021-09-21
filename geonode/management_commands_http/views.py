@@ -16,9 +16,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from rest_framework import permissions, status, views
+from rest_framework import permissions, status, views, viewsets, mixins
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from django_filters.rest_framework import DjangoFilterBackend
+
+from geonode.base.api.pagination import GeoNodeApiPagination
+
+from geonode.management_commands_http.mixins import CreateJobMixin
+from geonode.management_commands_http.models import ManagementCommandJob
+from geonode.management_commands_http.filters import ManagementCommandJobFilterSet
 from geonode.management_commands_http.serializers import (
     ManagementCommandJobSerializer,
     ManagementCommandJobCreateSerializer,
@@ -27,17 +35,20 @@ from geonode.management_commands_http.utils.commands import (
     get_management_command_details,
     get_management_commands,
 )
-from geonode.management_commands_http.utils.jobs import start_task
+from geonode.management_commands_http.utils.jobs import (
+    start_task,
+    stop_task,
+    get_celery_task_meta,
+)
 
 
-class ManagementCommandView(views.APIView):
+class ManagementCommandView(views.APIView, CreateJobMixin):
     """
     Handle the exposed management commands usage:
       - GET: List of exposed commands
       - GET detail: Help for a specific command
       - POST: Create a job (and automatic runs) for a specific command.
     """
-
     permission_classes = [permissions.IsAdminUser]
     allowed_methods = ["GET", "POST"]
 
@@ -68,13 +79,6 @@ class ManagementCommandView(views.APIView):
         # Retrieve
         return self.retrieve_details(cmd_name)
 
-    def perform_create(self, serializer):
-        autostart = serializer.validated_data.get("autostart", True)
-        job = serializer.save()
-        if autostart:
-            start_task(job)
-        return job
-
     def post(self, request, cmd_name=None):
         """
         Creates and runs a management command job.
@@ -86,20 +90,92 @@ class ManagementCommandView(views.APIView):
         }
         By default, autostart is set to true.
         """
-        create_serializer = ManagementCommandJobCreateSerializer(
-            data={"command": cmd_name, **request.data},
-            context={"request": request, "view": self},
-        )
-        create_serializer.is_valid(raise_exception=True)
+        return self.create(request)
 
-        job = self.perform_create(create_serializer)
-        # Get latest job state from database. Some jobs can be already finished.
+    def get_serializer(self, *args, **kwargs):
+        kwargs["context"] = {"request": self.request, "view": self}
+        return ManagementCommandJobCreateSerializer(*args, **kwargs)
+
+
+class ManagementCommandJobViewSet(
+    CreateJobMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
+):
+    """
+        Create, List, Retrieve, Start, Stop and Get Status of a Management Command Job.
+    """
+    permission_classes = [permissions.IsAdminUser]
+    queryset = ManagementCommandJob.objects.all().order_by("-created_at")
+    serializer_class = ManagementCommandJobSerializer
+    filter_class = ManagementCommandJobFilterSet
+    filter_backends = (DjangoFilterBackend,)
+    pagination_class = GeoNodeApiPagination
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        cmd_name = self.kwargs.pop("cmd_name", None)
+        if cmd_name:
+            queryset = queryset.filter(command=cmd_name)
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action in ("create", "metadata"):
+            serializer = ManagementCommandJobCreateSerializer
+        else:
+            serializer = super().get_serializer_class()
+        return serializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response({"data": serializer.data})
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["PATCH"])
+    def start(self, request, pk=None, **kwargs):
+        job = self.get_object()
+        try:
+            start_task(job)
+        except ValueError as exc:
+            error_message = str(exc)
+            response = {
+                "success": False,
+                "error": error_message,
+                "data": self.get_serializer().data
+            }
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         job.refresh_from_db()
-        return Response(
-            {
-                "success": True,
-                "error": None,
-                "data": ManagementCommandJobSerializer(instance=job).data,
-            },
-            status=status.HTTP_201_CREATED
-        )
+        response = {
+            "success": True,
+            "error": None,
+            "data": self.get_serializer().data
+        }
+        return Response(response)
+
+    @action(detail=True, methods=["PATCH"])
+    def stop(self, request, pk=None, **kwargs):
+        job = self.get_object()
+        stop_task(job)
+        response = {
+            "success": True,
+            "error": None,
+            "data": self.get_serializer().data
+        }
+        return Response(response)
+
+    @action(detail=True, methods=["GET"])
+    def status(self, request, pk=None, **kwargs):
+        job = self.get_object()
+        celery_task_meta = get_celery_task_meta(job)
+        response = {
+            "success": True,
+            "error": None,
+            "data": celery_task_meta
+        }
+        return Response(response)

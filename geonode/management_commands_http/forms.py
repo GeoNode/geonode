@@ -40,4 +40,3 @@ class ManagementCommandJobAdminForm(forms.ModelForm):
             self.add_error("kwargs", 'kwargs must be a dict')
 
         return value
-
