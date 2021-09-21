@@ -138,12 +138,6 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
         raise NotImplementedError
 
     def has_resources(self):
-        # TODO: WMS
-        # @deprecated: return True if len(self.parsed_service.contents) > 0 else False
-
-        # TODO: ArcGIS
-        # @deprecated: return True if len(self.parsed_service.layers) > 0 else False
-
         if self.geonode_service_id:
             _service = models.Service.objects.get(id=self.geonode_service_id)
             if _service.harvester:
@@ -153,17 +147,6 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
         return False
 
     def has_unharvested_resources(self, geonode_service):
-        # TODO
-        # @deprecated
-        # already_done = list(models.HarvestJob.objects.values_list(
-        #     "resource_id", flat=True).filter(service=geonode_service))
-        # for resource in self.get_resources():
-        #     if resource.id not in already_done:
-        #         result = True
-        #         break
-        # else:
-        #     result = False
-        # return result
         if geonode_service or self.geonode_service_id:
             try:
                 _service = geonode_service or models.Service.objects.get(id=self.geonode_service_id)
