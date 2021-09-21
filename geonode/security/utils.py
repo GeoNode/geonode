@@ -916,4 +916,7 @@ def skip_registered_members_common_group(user_group):
         if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
                 _members_group_name == user_group.name:
             return True
+        elif not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+            # in the case that the advanced workflow is off, the managers should not inherit permissions
+            return True
     return False

@@ -47,7 +47,7 @@ from geonode.base.models import (
     UserGeoLimit,
     GroupGeoLimit
 )
-from geonode.tests.base import GeoNodeBaseSimpleTestSupport, GeoNodeBaseTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public, create_single_layer
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
@@ -60,7 +60,6 @@ from geonode.geoserver.helpers import gs_slurp
 from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
-from geonode.tasks.tasks import set_permissions
 from .utils import (
     _get_gf_services,
     get_user_geolimits,
@@ -1351,7 +1350,9 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 17)
+            # reduced to 12 because now the group manager by default doesn't have permissions
+            # if the advanced workflow is disabled
+            self.assertEqual(geofence_rules_count, 12)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 
@@ -1426,7 +1427,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"3. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 14)
+            self.assertGreaterEqual(geofence_rules_count, 12)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
@@ -1855,7 +1856,7 @@ class TestGetUserGeolimits(TestCase):
         self.assertTrue(_disable_layer_cache)
 
 
-class SetPermissionsTestCase(TestCase):
+class SetPermissionsTestCase(GeoNodeBaseTestSupport):
     def setUp(self):
         # Creating anonymous group<
         # Creating groups and asign also to the anonymous_group
@@ -1864,7 +1865,7 @@ class SetPermissionsTestCase(TestCase):
         self.group_member, created = get_user_model().objects.get_or_create(username="group_member")
         self.not_group_member, created = get_user_model().objects.get_or_create(username="not_group_member")
 
-        #Defining group profiles and members
+        # Defining group profiles and members
         self.group_profile, created = GroupProfile.objects.get_or_create(slug="custom_group")
         self.second_custom_group, created = GroupProfile.objects.get_or_create(slug="second_custom_group")
 
@@ -1876,8 +1877,8 @@ class SetPermissionsTestCase(TestCase):
 
         # Creating he default resource
         self.resource = create_single_layer(name="test_layer", owner=self.author)
+        self.anonymous_user = get_anonymous_user()
 
-    
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_permissions_are_set_as_expected_resource_publishing_True(self):
         use_cases = [
@@ -1902,10 +1903,11 @@ class SetPermissionsTestCase(TestCase):
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
+                    self.anonymous_user: [],
                 },
             ),
             (
-                {"users": [], "groups": {"second_custom_group": ['view_resourcebase']}},
+                {"users": [], "groups": {"second_custom_group": ["view_resourcebase"]}},
                 {
                     self.author: [
                         "change_resourcebase",
@@ -1925,6 +1927,7 @@ class SetPermissionsTestCase(TestCase):
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
+                    self.anonymous_user: [],
                 },
             ),
         ]
@@ -1957,10 +1960,11 @@ class SetPermissionsTestCase(TestCase):
                     ],
                     self.group_member: [],
                     self.not_group_member: [],
+                    self.anonymous_user: [],
                 },
             ),
             (
-                {"users": [], "groups": {"second_custom_group": ['view_resourcebase']}},
+                {"users": {"AnonymousUser": []}, "groups": {"second_custom_group": ["view_resourcebase"]}},
                 {
                     self.author: [
                         "change_resourcebase",
@@ -1979,6 +1983,7 @@ class SetPermissionsTestCase(TestCase):
                     ],
                     self.group_member: [],
                     self.not_group_member: ["view_resourcebase"],
+                    self.anonymous_user: [],
                 },
             ),
         ]
@@ -2012,10 +2017,11 @@ class SetPermissionsTestCase(TestCase):
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
+                    self.anonymous_user: [],
                 },
             ),
             (
-                {"users": [], "groups": {"second_custom_group": ['view_resourcebase']}},
+                {"users": {}, "groups": {"second_custom_group": ["view_resourcebase"]}},
                 {
                     self.author: [
                         "change_resourcebase",
@@ -2034,6 +2040,7 @@ class SetPermissionsTestCase(TestCase):
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
+                    self.anonymous_user: [],
                 },
             ),
         ]
@@ -2042,7 +2049,6 @@ class SetPermissionsTestCase(TestCase):
             for authorized_subject, expected_perms in expected.items():
                 perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
                 self.assertSetEqual(set(expected_perms), set(perms_got))
-
 
     @override_settings(RESOURCE_PUBLISHING=False)
     @override_settings(ADMIN_MODERATE_UPLOADS=False)
@@ -2063,10 +2069,11 @@ class SetPermissionsTestCase(TestCase):
                     self.group_manager: [],
                     self.group_member: [],
                     self.not_group_member: [],
+                    self.anonymous_user: [],
                 },
             ),
             (
-                {"users": [], "groups": {"second_custom_group": ['view_resourcebase']}},
+                {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {"second_custom_group": ["change_resourcebase"]}},
                 {
                     self.author: [
                         "change_resourcebase",
@@ -2077,9 +2084,10 @@ class SetPermissionsTestCase(TestCase):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: [],
-                    self.group_member: [],
-                    self.not_group_member: ["view_resourcebase"],
+                    self.group_manager: ["view_resourcebase"],
+                    self.group_member: ["view_resourcebase"],
+                    self.not_group_member: ["view_resourcebase", "change_resourcebase"],
+                    self.anonymous_user: ["view_resourcebase"],
                 },
             ),
         ]

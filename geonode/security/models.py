@@ -261,11 +261,11 @@ class PermissionLevelMixin:
 
         # assign view permissions to group resources
         if self.group and settings.RESOURCE_PUBLISHING:
-            perm_spec['groups'][self.group] =  ["view_resourcebase", "download_resourcebase"]
-        
+            perm_spec['groups'][self.group] = ["view_resourcebase", "download_resourcebase"]
+
         for x in self.owner.groupmember_set.all():
             if settings.RESOURCE_PUBLISHING and x.group.slug != groups_settings.REGISTERED_MEMBERS_GROUP_NAME:
-                perm_spec['groups'][x.group.group] =  ["view_resourcebase", "download_resourcebase"]
+                perm_spec['groups'][x.group.group] = ["view_resourcebase", "download_resourcebase"]
 
         return perm_spec, obj_group_managers
 
@@ -291,13 +291,13 @@ class PermissionLevelMixin:
         try:
             with transaction.atomic():
                 remove_object_permissions(self, purge=False)
-                
-                #permissions = self._resolve_resource_permissions(resource=self, permissions=perm_spec)
+
+                # permissions = self._resolve_resource_permissions(resource=self, permissions=perm_spec)
                 # default permissions for resource owner
                 user_groups = Group.objects.filter(
                     name__in=self.owner.groupmember_set.all().values_list("group__slug", flat=True))
                 member_group_perm, group_managers = self._get_group_managers(user_groups)
-                
+
                 if member_group_perm:
                     for gr, perm in member_group_perm['groups'].items():
                         prev_perms = perm_spec['groups'].get(gr, [])
