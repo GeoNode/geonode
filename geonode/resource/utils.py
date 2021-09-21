@@ -35,6 +35,7 @@ from django.contrib.gis.geos import (
 
 from geonode.utils import OGC_Servers_Handler
 
+from ..base import enumerations
 from ..base.models import (
     Link,
     Region,
@@ -250,7 +251,10 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
             _s = Service.objects.filter(harvester=_h).get()
             instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(
                 remote_service=_s,
-                ows_url=_s.service_url)
+                remote_typename=_s.name,
+                ows_url=_s.service_url,
+                subtype='remote',
+                sourcetype=enumerations.SOURCE_TYPE_REMOTE)
 
     # Refresh from DB
     instance.refresh_from_db()
