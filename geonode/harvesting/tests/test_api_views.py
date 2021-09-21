@@ -71,20 +71,20 @@ class HarvesterViewSetTestCase(GeoNodeBaseTestSupport):
     def test_get_harvester_detail_for_non_admin(self):
         self.client.logout()
         for index, harvester in enumerate(self.harvesters):
-            response = self.client.get("/api/v2/harvesters/{}/".format(harvester.id))
+            response = self.client.get(f"/api/v2/harvesters/{harvester.id}/")
             self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_get_harvester_detail_for_admin(self):
         self.client.login(username="admin", password="admin")
         for index, harvester in enumerate(self.harvesters):
-            response = self.client.get("/api/v2/harvesters/{}/".format(harvester.id))
+            response = self.client.get(f"/api/v2/harvesters/{harvester.id}/")
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(response.data["harvester"]["id"], harvester.pk)
             self.assertEqual(response.data["harvester"]["name"], harvester.name)
 
     def test_get_harvester_resources(self):
         for index, harvester in enumerate(self.harvesters):
-            response = self.client.get("/api/v2/harvesters/{}/harvestable-resources/".format(harvester.id))
+            response = self.client.get(f"/api/v2/harvesters/{harvester.id}/harvestable-resources/")
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(response.data["harvestable_resources"][0]["unique_identifier"], self.resources[harvester.id].unique_identifier)
             self.assertEqual(response.data["harvestable_resources"][0]["title"], self.resources[harvester.id].title)

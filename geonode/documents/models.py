@@ -126,7 +126,7 @@ class Document(ResourceBase):
 
     @property
     def embed_url(self):
-        return self.href
+        return reverse('document_embed', args=(self.id,))
 
     class Meta(ResourceBase.Meta):
         pass

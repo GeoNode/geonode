@@ -229,6 +229,7 @@ def create_models(type=None, integration=False):
                         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                         srid='EPSG:4326',
                         files=dfile,
+                        extension="gif",
                         metadata_only=title == 'doc metadata true'
                     )
                     m.save()
