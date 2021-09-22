@@ -24,7 +24,7 @@ import logging
 from collections import OrderedDict
 
 from .. import enumerations
-from .arcgis import ArcMapServiceHandler, ArcImageServiceHandler  # noqa
+# from .arcgis import ArcMapServiceHandler, ArcImageServiceHandler
 from .wms import WmsServiceHandler, GeoNodeServiceHandler  # noqa
 
 logger = logging.getLogger(__name__)
