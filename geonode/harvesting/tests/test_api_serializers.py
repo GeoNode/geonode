@@ -21,7 +21,7 @@ class BriefHarvesterSerializerTestCase(GeoNodeBaseTestSupport):
     remote_url = 'test.com'
     name = 'This is geonode harvester'
     user = get_user_model().objects.get(username='AnonymousUser')
-    harvester_type = "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester"
+    harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
 
     @classmethod
     def setUpTestData(cls):
@@ -48,7 +48,7 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
     remote_url = 'test.com'
     name = 'This is geonode harvester'
     user = get_user_model().objects.get(username='AnonymousUser')
-    harvester_type = "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester"
+    harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
 
     @classmethod
     def setUpTestData(cls):
@@ -76,7 +76,7 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
             "name": "phony",
             "remote_url": "http://fake.com",
             "user": 1,
-            "harvester_type": "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester",
+            "harvester_type": "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester",
             "harvester_type_specific_configuration": {"something": "fake config"},
         }
 
@@ -238,7 +238,7 @@ class BriefHarvestingSessionSerializerTestCase(GeoNodeBaseTestSupport):
         remote_url = 'test.com'
         name = 'This is geonode harvester'
         user = get_user_model().objects.get(username='AnonymousUser')
-        harvester_type = "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester"
+        harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
         cls.harvester = models.Harvester.objects.create(
             remote_url=remote_url,
             name=name,
@@ -270,7 +270,7 @@ class HarvestableResourceSerializerTestCase(GeoNodeBaseTestSupport):
             remote_url='test.com',
             name='This is geonode harvester',
             default_owner=get_user_model().objects.get(username='AnonymousUser'),
-            harvester_type="geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester"
+            harvester_type="geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
         )
         cls.harvestable_resource = models.HarvestableResource.objects.create(
             unique_identifier=cls.unique_identifier,

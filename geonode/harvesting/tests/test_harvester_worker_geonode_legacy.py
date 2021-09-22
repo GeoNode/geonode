@@ -18,7 +18,7 @@
 #########################################################################
 import mock.mock
 
-from geonode.harvesting.harvesters import geonode
+from geonode.harvesting.harvesters import geonodeharvester
 from geonode.tests.base import GeoNodeBaseSimpleTestSupport
 
 
@@ -32,27 +32,27 @@ class GeoNodeHarvesterWorkerTestCase(GeoNodeBaseSimpleTestSupport):
         ]
         harvester_id = "fake-id"
         for base_url, expected in base_remote_urls:
-            worker = geonode.GeonodeLegacyHarvester(base_url, harvester_id)
+            worker = geonodeharvester.GeonodeLegacyHarvester(base_url, harvester_id)
             self.assertEqual(worker.base_api_url, expected)
 
-    @mock.patch("geonode.harvesting.harvesters.geonode.requests.Session")
+    @mock.patch("geonode.harvesting.harvesters.geonodeharvester.requests.Session")
     def test_check_availability_works_when_response_includes_layers_object(self, mock_requests_session):
         mock_response = mock.MagicMock()
         mock_response.json.return_value = {"layers": []}
         mock_requests_session.return_value.get.return_value = mock_response
 
         base_url = "http://fake-url1"
-        worker = geonode.GeonodeLegacyHarvester(base_url, harvester_id=None)
+        worker = geonodeharvester.GeonodeLegacyHarvester(base_url, harvester_id=None)
         result = worker.check_availability()
         self.assertEqual(result, True)
 
-    @mock.patch("geonode.harvesting.harvesters.geonode.requests.Session")
+    @mock.patch("geonode.harvesting.harvesters.geonodeharvester.requests.Session")
     def test_check_availability_fails_when_response_does_not_include_layers_object(self, mock_requests_session):
         mock_response = mock.MagicMock()
         mock_response.json.return_value = {}
         mock_requests_session.return_value.get.return_value = mock_response
 
         base_url = "http://fake-url2"
-        worker = geonode.GeonodeLegacyHarvester(base_url, harvester_id=None)
+        worker = geonodeharvester.GeonodeLegacyHarvester(base_url, harvester_id=None)
         result = worker.check_availability()
         self.assertEqual(result, False)

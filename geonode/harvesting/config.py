@@ -29,7 +29,7 @@ from django.conf import settings
 
 
 _DEFAULT_HARVESTERS: typing.Final = [
-    "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester",
+    "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester",
     "geonode.harvesting.harvesters.wms.OgcWmsHarvester",
     # "geonode.harvesting.harvesters.geonode.GeonodeCswHarvester",
 ]

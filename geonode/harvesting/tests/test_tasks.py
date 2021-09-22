@@ -34,7 +34,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
     harvester_remote_url = "fake url"
     harvester_name = "harvester1"
     harvester_owner = get_user_model().objects.get(username="AnonymousUser")
-    harvester_type = "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester"
+    harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
 
     @classmethod
     def setUpTestData(cls):
