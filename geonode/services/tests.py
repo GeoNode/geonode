@@ -113,7 +113,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
     def test_get_service_handler_wms(self, mock_wms_handler):
         phony_url = "http://fake"
         handler.get_service_handler(phony_url, service_type=enumerations.WMS)
-        mock_wms_handler.assert_called_with(phony_url)
+        mock_wms_handler.assert_called_with(phony_url, None)
 
     @mock.patch("arcrest.MapService",
                 autospec=True)
