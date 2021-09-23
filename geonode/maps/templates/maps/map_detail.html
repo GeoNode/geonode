@@ -214,7 +214,8 @@
           <h4 class="list-group-item-heading">{% trans "Map Layers" %}</h4>
           <p>{% trans "This map uses the following layers:" %}</p>
           <ul class="list-unstyled">
-            {% for layer in resource.dataset_set.all %}
+            {% filter_annotatios resource.dataset_set.all as map_datasets %}
+            {% for layer in map_datasets %}
             {% ifnotequal layer.group 'background' %}
             <li class="chevron-caret" id="legend-{{layer.id}}">
               <div class="map-layers">
