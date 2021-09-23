@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 
 from django import template
 from django.db.models import Q
@@ -64,6 +65,15 @@ def template_trans(text):
 def num_ratings(obj):
     ct = ContentType.objects.get_for_model(obj)
     return len(Rating.objects.filter(object_id=obj.pk, content_type=ct))
+
+
+@register.simple_tag
+def filter_annotatios(map_layers):
+    for layer in map_layers:
+        layer_params = json.loads(layer.layer_params)
+        if layer_params['type'] == 'vector':
+            map_layers = map_layers.exclude(id=layer.id)
+    return map_layers
 
 
 @register.simple_tag(takes_context=True)
