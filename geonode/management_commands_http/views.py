@@ -151,10 +151,11 @@ class ManagementCommandJobViewSet(
             }
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         job.refresh_from_db()
+        serializer = self.get_serializer(instance=job)
         response = {
             "success": True,
             "error": None,
-            "data": self.get_serializer().data
+            "data": serializer.data
         }
         return Response(response)
 
@@ -162,10 +163,11 @@ class ManagementCommandJobViewSet(
     def stop(self, request, pk=None, **kwargs):
         job = self.get_object()
         stop_task(job)
+        serializer = self.get_serializer(instance=job)
         response = {
             "success": True,
             "error": None,
-            "data": self.get_serializer().data
+            "data": serializer.data
         }
         return Response(response)
 
