@@ -1,5 +1,6 @@
 {% load i18n %}
 <ul class="nav nav-tabs">
+{% if not request.user_agent.is_mobile %}
   <li class="active"><a href="#info" data-toggle="tab"><i class="fa fa-info-circle"></i>{% trans "Info" %}</a></li>
   {% if resource.polymorphic_ctype.name == 'layer' %}
   <li><a href="#attributes" data-toggle="tab"><i class="fa fa-bars"></i>{% trans "Attributes" %}</a></li>
@@ -22,4 +23,17 @@
   {% if FAVORITE_ENABLED and favorite_info %}
   <li><a href="#favorite" data-toggle="tab"><i class="fa fa-star"></i>{% trans "Favorite" %}</a></li>
   {% endif %}
+{% else %}
+  <li class="active">
+    <button class="btn btn-primary btn-md btn-block" id="resource_info_tab" data-toggle="tab"><i class="fa fa-info-circle"></i>{% trans "Info" %}</button>
+  </li>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function(){
+    $("#resource_info_tab").click(function(event){
+      $("#info").toggle()
+    });
+  });
+  </script>
+{% endif %}
 </ul>

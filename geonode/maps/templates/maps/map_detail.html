@@ -96,6 +96,8 @@
 
     <div class="col-md-4">
       <ul class="list-group">
+      {% if not request.user_agent.is_mobile %}  
+
         {% if "download_resourcebase" in perms_list %}
         <li class="list-group-item">
           <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-map">{% trans "Download Map" %}</button>
@@ -187,6 +189,49 @@
                 </a>
             </li>
         {% endif %}
+      {% endif %}
+    
+    {% if request.user_agent.is_mobile %}
+    <li class="list-group-item">
+          <h4 class="list-group-item-heading">{% trans "Map Layers" %}</h4>
+          <p>{% trans "This map uses the following layers:" %}</p>
+          <ul class="list-unstyled">
+            {% for layer in resource.layer_set.all %}
+            {% ifnotequal layer.group 'background' %}
+            <li class="chevron-caret" id="legend-{{layer.id}}">
+              <div class="map-layers">
+              <i class="fa fa-chevron-right"></i>
+              {% if layer.local %}
+                <a href="{% url "layer_detail" layer.name %}">
+                  {% if layer.layer_title %}
+                  {{ layer.layer_title }}
+                  {% else %}
+                  {{ layer.name }}
+                  {% endif %}
+                </a>
+              {% else %}
+                {{ layer.layer_title }}
+              {% endif %}
+              </div>
+              <ul class="list-unstyled">
+                <li class="map-legend">
+                  {% if layer.get_legend %}
+                    <span>Legend</span>
+                    {% for key, value in layer.get_legend.items %}
+                      <p>{{ key }}</p>
+                      <p class="legend-container" data-legend-src="{{ value }}"></p>
+                      {% endfor %}
+                    {% else %}
+                      <p>No legend</p>
+                    {% endif %}
+                </li>
+              </ul>
+            </li>
+            {% endifnotequal %}
+            {% endfor %}
+          </ul>
+        </li>
+
         <li class="list-group-item">
         {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
           <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
@@ -200,6 +245,14 @@
         </li>
         {% endcomment %}
 
+    {% else %} 
+        <li class="list-group-item">
+        {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
+          <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
+        {% else %}
+          <a href="{% url "map_edit" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
+        {% endif %}
+        </li>
         <li class="list-group-item">
           <h4 class="list-group-item-heading">{% trans "Map Layers" %}</h4>
           <p>{% trans "This map uses the following layers:" %}</p>
@@ -250,7 +303,7 @@
             {% endfor %}
           </ul>
         </li>
-        {% endif %}
+        {% endif %} 
 
         {% if GEONODE_SECURITY_ENABLED %}
           {% if "change_resourcebase_permissions" in perms_list %}
@@ -272,7 +325,7 @@
             <a href="{% url "new_map" %}?copy={{ resource.id }}" class="btn btn-default btn-md btn-block">{% trans "Create a New Map" %}</a>
           </li>
         {% endif %}
-
+      {% endif %}
         {% include "base/_resourcebase_contact_snippet.html" %}
 
       </ul>

@@ -87,36 +87,39 @@
 
   {% block mainbody %}
 
-      {% block bigsearch %}
-      {% if block.super %}
-      {{ block.super }}
-      {% else %}
-      <div class="big-search">
-      	<div class="container">
-      		<h1>{% trans "Search for Data." %}</h1>
-      		<div class="search">
-      			<form id="main_search" action="{% url "search" %}" >
-      				<span class="fa fa-search fa-3x"></span>
-      				{% if HAYSTACK_SEARCH %}
-      				<input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="q" autocomplete="off">
-                    <input type="hidden" name="abstract__icontains" id="main_search_abstract_input" placeholder="{% trans 'Search' %}" >
-                    <input type="hidden" name="purpose__icontains" id="main_search_purpose_input" placeholder="{% trans 'Search' %}" >
-                    <input type="hidden" name="f_method" id="main_filtering_type" value="or" >
-      				{% else %}
-      				<input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" autocomplete="off" name="title__icontains">
-                    <input type="hidden" name="abstract__icontains" id="main_search_abstract_input">
-                    <input type="hidden" name="purpose__icontains" id="main_search_purpose_input">
-                    <input type="hidden" name="f_method" id="main_filtering_type" value="or" >
-      				{% endif %}
-      			</form>
-      		</div>
-      		<p><a class="btn btn-default btn-lg" href="{% url "search" %}">{% trans "Advanced Search" %}</a></p>
-      	</div>
-      </div>
-      {% endif %}
-      {% endblock bigsearch %}
 
-	  {% block showcase %}
+    {% block bigsearch %}
+      {% if not request.user_agent.is_mobile %}
+        {% if block.super %}
+        {{ block.super }}
+        {% else %}
+        <div class="big-search">
+          <div class="container">
+            <h1>{% trans "Search for Data." %}</h1>
+            <div class="search">
+              <form id="main_search" action="{% url "search" %}" >
+                <span class="fa fa-search fa-3x"></span>
+                {% if HAYSTACK_SEARCH %}
+                <input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="q" autocomplete="off">
+                      <input type="hidden" name="abstract__icontains" id="main_search_abstract_input" placeholder="{% trans 'Search' %}" >
+                      <input type="hidden" name="purpose__icontains" id="main_search_purpose_input" placeholder="{% trans 'Search' %}" >
+                      <input type="hidden" name="f_method" id="main_filtering_type" value="or" >
+                {% else %}
+                <input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" autocomplete="off" name="title__icontains">
+                      <input type="hidden" name="abstract__icontains" id="main_search_abstract_input">
+                      <input type="hidden" name="purpose__icontains" id="main_search_purpose_input">
+                      <input type="hidden" name="f_method" id="main_filtering_type" value="or" >
+                {% endif %}
+              </form>
+            </div>
+            <p><a class="btn btn-default btn-lg" href="{% url "search" %}">{% trans "Advanced Search" %}</a></p>
+          </div>
+        </div>
+        {% endif %}
+      {% endif %}
+    {% endblock bigsearch %}
+
+    {% block showcase %}
       <section id="showcase">
         <div class="row">
           <div class="container text-center">
@@ -127,37 +130,45 @@
                 <p><a href="{% url "layer_browse" %}"><i class="fa fa-square-o fa-4x rotate-45"></i></a></p>
                 <h2><a href="{% url "layer_browse" %}">{{ facets.layer|default:_("No") }} {% blocktrans count counter=facets.layer %}Layer{% plural %}Layers{% endblocktrans %}</a></h2>
                 <p>{% trans "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats." %}</p>
-                {% if user.is_authenticated %}
-                <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Add layers" %} &raquo;</a></p>
-                {% else %}
-                <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore layers" %} &raquo;</a></p>
+                {% if not request.user_agent.is_mobile %}
+                  {% if user.is_authenticated %}
+                  <p class="text-center"><a class="btn btn-default" href="{% url "layer_upload" %}" role="button">{% trans "Add layers" %} &raquo;</a></p>
+                  {% else %}
+                  <p class="text-center"><a class="btn btn-default" href="{% url "layer_browse" %}" role="button">{% trans "Explore layers" %} &raquo;</a></p>
+                  {% endif %}
                 {% endif %}
               </div>
               <div class="col-md-6">
                 <p><a href="{% url "maps_browse" %}"><i class="fa fa-map-marker fa-4x"></i></a></p>
                 <h2><a href="{% url "maps_browse" %}">{{ facets.map|default:_("No") }} {% blocktrans count counter=facets.map %}Map{% plural %}Maps{% endblocktrans %}</a></h2>
                 <p>{% trans "Data is available for browsing, aggregating and styling to generate maps which can be saved, downloaded, shared publicly or restricted to specify users only." %}</p>
-                {% if user.is_authenticated %}
-                <p><a class="btn btn-default" href="{% url "new_map" %}" role="button">{% trans "Create maps" %} &raquo;</a></p>
-                {% else %}
-                <p><a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Explore maps" %} &raquo;</a></p>
+                {% if not request.user_agent.is_mobile %}
+                  {% if user.is_authenticated %}
+                  <p><a class="btn btn-default" href="{% url "new_map" %}" role="button">{% trans "Create maps" %} &raquo;</a></p>
+                  {% else %}
+                  <p><a class="btn btn-default" href="{% url "maps_browse" %}" role="button">{% trans "Explore maps" %} &raquo;</a></p>
+                  {% endif %}
                 {% endif %}
               </div>
               <div class="col-md-6">
                 <p><a href="{% url "document_browse" %}"><i class="fa fa-newspaper-o fa-4x"></i></a></p>
                 <h2><a href="{% url "document_browse" %}">{{ facets.document|default:_("No") }} {% blocktrans count counter=facets.document %}Document{% plural %}Documents{% endblocktrans %}</a></h2>
                 <p>{% trans "As for the layers and maps GeoNode allows to publish tabular and text data, manage theirs metadata and associated documents." %}</p>
-                {% if user.is_authenticated %}
-                <p class="text-center"><a class="btn btn-default" href="{% url "document_browse" %}" role="button">{% trans "Add documents" %} &raquo;</a></p>
-                {% else %}
-                <p class="text-center"><a class="btn btn-default" href="{% url "document_browse" %}" role="button">{% trans "Explore documents" %} &raquo;</a></p>
+                {% if not request.user_agent.is_mobile %}                
+                  {% if user.is_authenticated %}
+                  <p class="text-center"><a class="btn btn-default" href="{% url "document_browse" %}" role="button">{% trans "Add documents" %} &raquo;</a></p>
+                  {% else %}
+                  <p class="text-center"><a class="btn btn-default" href="{% url "document_browse" %}" role="button">{% trans "Explore documents" %} &raquo;</a></p>
+                  {% endif %}
                 {% endif %}
               </div>
               <div class="col-md-6">
                 <p><a href="{% url "profile_browse" %}"><i class="fa fa-user fa-4x"></i></a></p>
                 <h2><a href="{% url "profile_browse" %}">{{ facets.user|default:_("No") }} {% blocktrans count counter=facets.user %}User{% plural %}Users{% endblocktrans %}</a></h2>
                 <p>{% trans "Geonode allows registered users to easily upload geospatial data and various documents in several formats." %}</p>
-                <p><a class="btn btn-default" href="{% url "profile_browse" %}" role="button">{% trans "See users" %} &raquo;</a></p>
+                {% if not request.user_agent.is_mobile %}
+                  <p><a class="btn btn-default" href="{% url "profile_browse" %}" role="button">{% trans "See users" %} &raquo;</a></p>
+                {% endif %}
               </div>
             {% endwith %}
             </div>
