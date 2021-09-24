@@ -10,7 +10,7 @@ from .. import models
 
 
 class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
-    harvester_type = 'geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester'
+    harvester_type = 'geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester'
 
     def setUp(self):
         self.user = get_user_model().objects.get(username='admin')
@@ -24,7 +24,7 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
         )
 
     @mock.patch(
-        "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester.check_availability")
+        "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester.check_availability")
     def test_add_harvester(self, mock_check_availability):
         mock_check_availability.return_value = True
         data = {
@@ -48,7 +48,7 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(harvester.remote_available, True)
 
     @mock.patch(
-        "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester.check_availability")
+        "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester.check_availability")
     def test_update_harvester_availability(self, mock_check_availability):
         mock_check_availability.return_value = True
         data = {'action': 'update_harvester_availability',
@@ -59,7 +59,7 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(self.harvester.remote_available, True)
 
     @mock.patch(
-        "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester.check_availability")
+        "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester.check_availability")
     def test_perform_harvesting(self, mock_check_availability):
         mock_check_availability.return_value = True
         data = {'action': 'perform_harvesting',

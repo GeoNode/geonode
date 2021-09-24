@@ -211,8 +211,9 @@ class HarvesterSerializer(BriefHarvesterSerializer):
             post_update_task = tasks.update_harvestable_resources.signature(
                 args=(instance.id,))
         elif desired_status == models.Harvester.STATUS_PERFORMING_HARVESTING:
+            harvesting_session = models.HarvestingSession.objects.create(harvester=instance)
             post_update_task = tasks.harvesting_dispatcher.signature(
-                args=(instance.id,))
+                args=(instance.pk, harvesting_session.pk))
         elif desired_status == models.Harvester.STATUS_CHECKING_AVAILABILITY:
             post_update_task = tasks.check_harvester_available.signature(
                 args=(instance.id,))

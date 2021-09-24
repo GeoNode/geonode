@@ -21,7 +21,7 @@ from mock import patch
 from django.contrib.auth import get_user_model
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.harvesting.models import Harvester
-from geonode.harvesting.harvesters.geonode import (
+from geonode.harvesting.harvesters.geonodeharvester import (
     GeonodeLegacyHarvester, GeoNodeResourceType)
 from geonode.harvesting.harvesters.base import BriefRemoteResource
 

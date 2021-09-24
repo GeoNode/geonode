@@ -33,7 +33,6 @@ import requests
 from django.contrib.gis import geos
 from lxml import etree
 
-from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
@@ -51,9 +50,14 @@ from . import base
 logger = logging.getLogger(__name__)
 
 
-class GeoNodeLayerType(enum.Enum):
+class GeoNodeDatasetType(enum.Enum):
     VECTOR = "vector"
     RASTER = "raster"
+
+
+class RemoteDatasetType(enum.Enum):
+    VECTOR = "shapefile"
+    RASTER = "geotiff"
 
 
 class GeoNodeResourceType(enum.Enum):
@@ -76,6 +80,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             *args,
             harvest_documents: typing.Optional[bool] = True,
             harvest_datasets: typing.Optional[bool] = True,
+            copy_datasets: typing.Optional[bool] = False,
             harvest_maps: typing.Optional[bool] = True,
             copy_documents: typing.Optional[bool] = False,
             resource_title_filter: typing.Optional[str] = None,
@@ -87,10 +92,12 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     ):
         """A harvester for remote GeoNode instances."""
         super().__init__(*args, **kwargs)
+        self.remote_url = self.remote_url.rstrip("/")
         self.http_session = requests.Session()
         self.harvest_documents = (
             harvest_documents if harvest_documents is not None else True)
         self.harvest_datasets = harvest_datasets if harvest_datasets is not None else True
+        self.copy_datasets = copy_datasets
         self.harvest_maps = harvest_maps if harvest_maps is not None else True
         self.copy_documents = copy_documents
         self.resource_title_filter = resource_title_filter
@@ -116,6 +123,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "harvest_documents", True),
             harvest_datasets=record.harvester_type_specific_configuration.get(
                 "harvest_datasets", True),
+            copy_datasets=record.harvester_type_specific_configuration.get(
+                "copy_datasets", False),
             harvest_maps=record.harvester_type_specific_configuration.get(
                 "harvest_maps", True),
             copy_documents=record.harvester_type_specific_configuration.get(
@@ -156,6 +165,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "harvest_datasets": {
                     "type": "boolean",
                     "default": True
+                },
+                "copy_datasets": {
+                    "type": "boolean",
+                    "default": False
                 },
                 "harvest_maps": {
                     "type": "boolean",
@@ -257,7 +270,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 result = layers_endpoint_present
         return result
 
-    def get_geonode_resource_type(self, remote_resource_type: str) -> ResourceBase:
+    def get_geonode_resource_type(self, remote_resource_type: str) -> typing.Type[typing.Union[Dataset, Document, Map]]:
         """Return resource type class from resource type string."""
         return {
             GeoNodeResourceType.MAP.value: Map,
@@ -271,20 +284,20 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             harvesting_session_id: int
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         resource_unique_identifier = harvestable_resource.unique_identifier
+        local_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)
         endpoint_suffix = {
-            GeoNodeResourceType.DOCUMENT.value: (
+            Document: (
                 f"/documents/{resource_unique_identifier}/"),
-            GeoNodeResourceType.DATASET.value: f"/layers/{resource_unique_identifier}/",
-            GeoNodeResourceType.MAP.value: f"/maps/{resource_unique_identifier}/",
-        }[harvestable_resource.remote_resource_type.lower()]
-        response = self.http_session.get(f"{self.base_api_url}/{endpoint_suffix}")
+            Dataset: f"/layers/{resource_unique_identifier}/",
+            Map: f"/maps/{resource_unique_identifier}/",
+        }[local_resource_type]
+        url = f"{self.base_api_url}{endpoint_suffix}"
+        response = self.http_session.get(url)
         result = None
         if response.status_code == requests.codes.ok:
             api_record = response.json()
             resource_descriptor = self._get_resource_details(
                 api_record, harvestable_resource)
-            self.update_harvesting_session(
-                harvesting_session_id, additional_harvested_records=1)
             result = base.HarvestedResourceInfo(
                 resource_descriptor=resource_descriptor,
                 additional_information=None
@@ -300,29 +313,38 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     ) -> bool:
         return {
             GeoNodeResourceType.DOCUMENT.value: self.copy_documents,
-            GeoNodeResourceType.DATASET.value: False,
+            GeoNodeResourceType.DATASET.value: self.copy_datasets,
             GeoNodeResourceType.MAP.value: False,
         }[harvestable_resource.remote_resource_type]
 
-    def finalize_resource_update(
+    def get_geonode_resource_defaults(
             self,
-            geonode_resource: ResourceBase,
             harvested_info: base.HarvestedResourceInfo,
             harvestable_resource: models.HarvestableResource,
-            harvesting_session_id: int
-    ) -> ResourceBase:
-        is_document = (
-            harvestable_resource.remote_resource_type ==
-            GeoNodeResourceType.DOCUMENT.value
-        )
-        if is_document:
-            if len(harvested_info.copied_resources) == 0:
-                geonode_resource.thumbnail_url = (
-                    harvested_info.resource_descriptor.distribution.thumbnail_url)
-                geonode_resource.doc_url = (
-                    harvested_info.resource_descriptor.distribution.original_format_url)
-        geonode_resource.save()
-        return geonode_resource
+    ) -> typing.Dict:
+        defaults = super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
+        defaults.update(harvested_info.resource_descriptor.additional_parameters)
+        local_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)
+        to_copy = self.should_copy_resource(harvestable_resource)
+        if local_resource_type == Document and not to_copy:
+            # since we are not copying the document, we need to provide suitable remote URLs
+            defaults.update({
+                "doc_url": harvested_info.resource_descriptor.distribution.original_format_url,
+                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+            })
+        elif local_resource_type == Dataset and not to_copy:
+            # since we are not copying the dataset, we need to provide suitable SRID and remote URL
+            try:
+                srid = harvested_info.resource_descriptor.reference_systems[0]
+            except AttributeError:
+                srid = None
+            defaults.update({
+                "name": defaults["name"].rpartition(":")[-1],
+                "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
+                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+                "srid": srid,
+            })
+        return defaults
 
     def _get_num_available_resources_by_type(
             self) -> typing.Dict[GeoNodeResourceType, int]:
@@ -522,12 +544,39 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             ),
             data_quality=get_xpath_value(csw_record, ".//gmd:dataQualityInfo//gmd:lineage"),
         )
-        if harvestable_resource.remote_resource_type == GeoNodeResourceType.DATASET.value:
-            layer_type = (
-                GeoNodeLayerType.RASTER if api_record.get("storeType") == "coverageStore" else GeoNodeLayerType.VECTOR
-            )
-            descriptor.additional_parameters["layer_type"] = layer_type.value
+        additional_params_handler = {
+            GeoNodeResourceType.DATASET.value: self._get_dataset_additional_parameters,
+            GeoNodeResourceType.DOCUMENT.value: self._get_document_additional_parameters
+        }[harvestable_resource.remote_resource_type]
+        additional_params = additional_params_handler(descriptor, api_record)
+        descriptor.additional_parameters.update(additional_params)
         return descriptor
+
+    def _get_dataset_additional_parameters(
+            self,
+            descriptor: resourcedescriptor.RecordDescription,
+            api_record: typing.Dict
+    ) -> typing.Dict:
+        result = {
+            "name": descriptor.identification.name,
+            "charset": descriptor.character_set,
+            "resource_type": "dataset"
+        }
+        if descriptor.identification.native_format.lower() == RemoteDatasetType.VECTOR.value:
+            result["subtype"] = GeoNodeDatasetType.VECTOR.value
+        elif descriptor.identification.native_format.lower() == RemoteDatasetType.RASTER.value:
+            result["subtype"] = GeoNodeDatasetType.RASTER.value
+        return result
+
+    def _get_document_additional_parameters(
+            self,
+            descriptor: resourcedescriptor.RecordDescription,
+            api_record: typing.Dict
+    ) -> typing.Dict:
+        return {
+            "resource_type": "document",
+            "extension": api_record.get("extension")
+        }
 
     def get_distribution_info(
             self,
@@ -566,31 +615,12 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 legend = linkage
             elif "geojson" in description.lower():
                 geojson = linkage
-            # elif api_record.get("doc_file") is not None:
-            #     # NOTE: for resources of type document, the GeoNode API returns a
-            #     # relative URL which can be used directly, as opposed to its CSW API,
-            #     # which returns a generic download URL
-            #     document_url: str = api_record.get("doc_file")
-            #     if document_url.startswith("/"):
-            #         original = f"{self.remote_url}{document_url}"
-            #     else:
-            #         original = document_url
             else:
                 for original_value in original_format_values:
                     if original_value in description.lower():
                         original = linkage
                         break
-        if harvestable_resource.remote_resource_type == GeoNodeResourceType.DOCUMENT.value:
-            document_url: typing.Optional[str] = api_record.get("doc_file")
-            if document_url is not None:
-                # NOTE: for resources of type document, the GeoNode API returns a
-                # relative URL which can be used directly, as opposed to its CSW API,
-                # which returns a generic download URL
-                if document_url.startswith("/"):
-                    original = f"{self.remote_url}{document_url}"
-                else:
-                    original = document_url
-        elif harvestable_resource.remote_resource_type == GeoNodeResourceType.DATASET.value:
+        if harvestable_resource.remote_resource_type == GeoNodeResourceType.DATASET.value:
             # for layers, we generate a download URL for a zipped shapefile, in a similar way
             # as is done on the main GeoNode UI, by leveraging WFS
             if wfs is not None:
@@ -620,6 +650,11 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                     "bbox": f"{min_x},{min_y},{max_x},{max_y}"
                 }
                 original = f"{wcs}?{urllib.parse.urlencode(query_params)}"
+            else:
+                try:
+                    original = [record_link.get('url') for record_link in api_record.get("links", []) if record_link.get('name') == 'Zipped Shapefile'][0]
+                except IndexError:
+                    pass
         return resourcedescriptor.RecordDistribution(
             link_url=link,
             wms_url=wms,
@@ -746,9 +781,11 @@ def get_identification_descriptor(csw_identification: etree.Element, api_record:
             namespaces=csw_identification.nsmap
         )
     ).strip() or None
+    name = get_xpath_value(csw_identification, ".//gmd:citation//gmd:name")
+    title = get_xpath_value(csw_identification, ".//gmd:citation//gmd:title")
     return resourcedescriptor.RecordIdentification(
-        name=get_xpath_value(csw_identification, ".//gmd:citation//gmd:name"),
-        title=get_xpath_value(csw_identification, ".//gmd:citation//gmd:title"),
+        name=name or title,
+        title=title,
         date=dateutil.parser.parse(
             get_xpath_value(csw_identification, ".//gmd:citation//gmd:date//gmd:date")
         ).replace(tzinfo=dt.timezone.utc),
@@ -780,13 +817,16 @@ def _get_native_format(
         csw_identification: etree.Element,
         api_record: typing.Dict
 ) -> typing.Optional[str]:
-    store_type = api_record.get("storeType", "").lower()
-    if store_type == "coveragestore":
-        result = "geotiff"
-    elif store_type == "datastore":
-        result = "shapefile"
+    if api_record.get("csw_type") == "document":
+        result = api_record.get("extension")
     else:
-        result = get_xpath_value(csw_identification, ".//gmd:resourceFormat//gmd:name")
+        store_type = api_record.get("storeType", "").lower()
+        if store_type == "coveragestore":
+            result = "geotiff"
+        elif store_type == "datastore":
+            result = "shapefile"
+        else:
+            result = get_xpath_value(csw_identification, ".//gmd:resourceFormat//gmd:name")
     return result
 
 
