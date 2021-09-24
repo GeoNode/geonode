@@ -18,6 +18,7 @@
 #########################################################################
 
 import datetime
+from unittest import mock
 
 from django.contrib.auth import get_user_model
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -51,6 +52,24 @@ class HarvesterTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(self.harvester.periodic_task.interval.every, self.harvester.update_frequency)
         self.assertEqual(self.harvester.availability_check_task.name, f"Check availability of {self.name}")
         self.assertEqual(self.harvester.availability_check_task.interval.every, self.harvester.check_availability_frequency)
+
+    @mock.patch("geonode.harvesting.models.jsonschema")
+    @mock.patch("geonode.harvesting.models.import_string")
+    def test_validate_worker_configuration(self, mock_import_string, mock_jsonschema):
+        extra_config_schema = "fake_config_schema"
+        mock_worker_class = mock.MagicMock()
+        mock_worker_class.get_extra_config_schema.return_value = extra_config_schema
+        mock_import_string.return_value = mock_worker_class
+
+        harvester_type = "fake_harvester_type"
+        configuration = "fake_configuration"
+        harvester = models.Harvester(
+            harvester_type=harvester_type, harvester_type_specific_configuration=configuration)
+        harvester.validate_worker_configuration()
+
+        mock_import_string.assert_called_with(harvester_type)
+        mock_worker_class.get_extra_config_schema.assert_called()
+        mock_jsonschema.validate.assert_called_with(configuration, extra_config_schema)
 
 
 class HarvesterSessionTestCase(GeoNodeBaseTestSupport):

@@ -141,7 +141,7 @@ class HarvesterSerializer(BriefHarvesterSerializer):
             worker_config_field, getattr(self.instance, worker_config_field, None))
         if worker_type is not None and worker_config is not None:
             try:
-                utils.validate_worker_configuration(worker_type, worker_config)
+                self.instance.validate_worker_configuration(worker_type, worker_config)
             except jsonschema.exceptions.ValidationError:
                 raise serializers.ValidationError(
                     f"Invalid {worker_config_field!r} configuration")
@@ -162,7 +162,7 @@ class HarvesterSerializer(BriefHarvesterSerializer):
                 f"value of {models.Harvester.STATUS_READY!r}"
             )
         harvester = super().create(validated_data)
-        available = utils.update_harvester_availability(harvester)
+        available = harvester.update_availability()
         if available:
             harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
             harvester.save()
@@ -213,7 +213,7 @@ class HarvesterSerializer(BriefHarvesterSerializer):
         elif desired_status == models.Harvester.STATUS_PERFORMING_HARVESTING:
             harvesting_session = models.HarvestingSession.objects.create(harvester=instance)
             post_update_task = tasks.harvesting_dispatcher.signature(
-                args=(instance.pk, harvesting_session.pk))
+                args=(harvesting_session.pk,))
         elif desired_status == models.Harvester.STATUS_CHECKING_AVAILABILITY:
             post_update_task = tasks.check_harvester_available.signature(
                 args=(instance.id,))
