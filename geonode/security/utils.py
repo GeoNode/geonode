@@ -486,7 +486,8 @@ def list_geofence_layer_rules_xml(workspace, layer_name):
     if response.status_code >= 200 and response.status_code < 300:
         gs_rules = etree.fromstring(response.content)
         for rule in gs_rules:
-            if rule.find("layer").text == layer_name:
+            layer_field = rule.find("layer")
+            if layer_field is not None and hasattr(layer_field, "text") and layer_field.text == layer_name:
                 rules.append(rule)
 
     return rules
