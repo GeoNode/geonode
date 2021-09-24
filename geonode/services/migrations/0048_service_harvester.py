@@ -34,7 +34,7 @@ def set_harvester(apps, _):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('harvesting', '0030_alter_harvester_num_harvestable_resources'),
+        ('harvesting', '0036_alter_harvester_harvester_type'),
         ('services', '0047_service_operations'),
     ]
 
