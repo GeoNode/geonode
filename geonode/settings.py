@@ -490,6 +490,7 @@ INSTALLED_APPS = (
     'django_celery_beat',
     'django_celery_results',
     'markdownify',
+    'django_user_agents',
 
     # REST APIs
     'rest_framework',
@@ -766,6 +767,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
     'geonode.base.middleware.MaintenanceMiddleware',
     'geonode.base.middleware.ReadOnlyMiddleware',   # a Middleware enabling Read Only mode of Geonode
 )
