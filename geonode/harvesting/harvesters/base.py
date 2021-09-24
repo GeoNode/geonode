@@ -298,13 +298,11 @@ class BaseHarvesterWorker(abc.ABC):
         keywords = _consolidate_resource_keywords(
             harvested_info.resource_descriptor, geonode_resource, self.harvester_id)
         regions = harvested_info.resource_descriptor.identification.place_keywords
-        resource_manager.update(
-            str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=keywords)
         harvestable_resource.geonode_resource = geonode_resource
         harvestable_resource.save()
         # Make sure you set the "harvestable_resource.geonode_resource" before calling the "resource_manager"
         resource_manager.update(
-            str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=list(set(keywords)))
+            str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=keywords)
         self.finalize_resource_update(
             geonode_resource,
             harvested_info,
