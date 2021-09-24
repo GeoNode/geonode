@@ -149,10 +149,6 @@ class BaseHarvesterWorker(abc.ABC):
         for property_name in schema["properties"]:
             result[property_name] = getattr(self, property_name, None)
         return result
-        # Make sure you set the "harvestable_resource.geonode_resource" before calling the "resource_manager"
-        resource_manager.update(
-            str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=list(set(keywords)))
-
 
     def finalize_resource_update(
             self,
@@ -306,6 +302,9 @@ class BaseHarvesterWorker(abc.ABC):
             str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=keywords)
         harvestable_resource.geonode_resource = geonode_resource
         harvestable_resource.save()
+        # Make sure you set the "harvestable_resource.geonode_resource" before calling the "resource_manager"
+        resource_manager.update(
+            str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=list(set(keywords)))
         self.finalize_resource_update(
             geonode_resource,
             harvested_info,
