@@ -33,7 +33,7 @@ def start_task(job: ManagementCommandJob):
 def stop_task(job: ManagementCommandJob):
     if not job.celery_result_id:
         return False
-    celery_app.control.terminate(job.celery_result_id)
+    celery_app.control.terminate(str(job.celery_result_id))
 
 
 def get_celery_task_meta(job: ManagementCommandJob):

@@ -210,6 +210,18 @@ class ManagementCommandJobsTestCase(APITestCase):
         self.assertEqual(response_json["id"], self.job1.id)
         self.assertEqual(response_json["command"], self.job1.command)
 
+    @patch("geonode.management_commands_http.views.get_celery_task_meta")
+    def test_management_command_job_status(self, mocked_celery_task_meta):
+        mocked_celery_task_meta.return_value = {"some_key": "some_value"}
+        cmd_name = "ping_mngmt_commands_http"
+        resource_url = f"/api/v2/management/commands/{cmd_name}/jobs/{self.job1.id}/status/"
+        response = self.client.get(resource_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_json = response.json()
+        self.assertEqual(response_json["data"]["some_key"], "some_value")
+        mocked_celery_task_meta.assert_called_once()
+        mocked_celery_task_meta.assert_called_with(self.job1)
+
     @patch("geonode.management_commands_http.utils.jobs.run_management_command_async")
     def test_management_command_job_start(self, mocked_async_task):
         cmd_name = "ping_mngmt_commands_http"
@@ -228,21 +240,24 @@ class ManagementCommandJobsTestCase(APITestCase):
         self.job2.celery_result_id = "73a412f6-70f7-4b6f-a8ae-152651e6a2f7"
         self.job2.save()
         cmd_name = "ping_mngmt_commands_http"
-        resource_url = f"/api/v2/management/commands/{cmd_name}/jobs/{self.job1.id}/stop/"
+        resource_url = f"/api/v2/management/commands/{cmd_name}/jobs/{self.job2.id}/stop/"
         response = self.client.patch(resource_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        from nose.tools import set_trace; set_trace()
         mocked_celery_app.control.terminate.assert_called_once()
         mocked_celery_app.control.terminate.assert_called_with(self.job2.celery_result_id)
 
     @patch("geonode.management_commands_http.utils.jobs.run_management_command_async")
     def test_management_command_job_create(self, mocked_async_task):
         cmd_name = "ping_mngmt_commands_http"
-        response = self.client.post(self.resource_details_url.format(cmd_name))
+        response = self.client.post(
+            self.resource_list_url,
+            data={"command": cmd_name},
+            format="json",
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         response_json = response.json()
         self.assertTrue(response_json["success"])
-        self.assertEqual(response_json["data"]["command"], cmd_name)
+        self.assertEqual(response_json["data"]["command"], "ping_mngmt_commands_http")
         self.assertEqual(
             response_json["data"]["status"], ManagementCommandJob.QUEUED
         )
