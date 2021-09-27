@@ -39,18 +39,20 @@
             </div>
             {% endverbatim %}
 
-            {% if facet_type == 'layers' %}
-            <div class="col-xs-2">
-              <h4>
-                <button
-                  class="btn btn-default btn-xs pull-right"
-                  ng-if="cart"
-                  ng-click="cart.toggleItem(item)"
-                  data-toggle="tooltip"
-                  data-placement="bottom"
-                  title="{% trans "Select" %}"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
-              </h4>
-            </div>
+            {% if not request.user_agent.is_mobile %}
+              {% if facet_type == 'layers' %}
+              <div class="col-xs-2">
+                <h4>
+                  <button
+                    class="btn btn-default btn-xs pull-right"
+                    ng-if="cart"
+                    ng-click="cart.toggleItem(item)"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="{% trans "Select" %}"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
+                </h4>
+              </div>
+              {% endif %}
             {% endif %}
           </div>
           <em ng-if="item.store_type == 'remoteStore'">
@@ -71,6 +73,9 @@
               <ul class="list-inline">
                 <li><a href="{{ item.site_url }}people/profile/{{ item.owner__username }}"><i class="fa fa-user"></i>{{ item.owner_name }}</a></li>
                 <li><a href="{{ item.detail_url }}#info"><i class="fa fa-calendar-o"></i>{{ item.date|date:'d MMM y' }}</a></li>
+          {% endverbatim %}
+            {% if not request.user_agent.is_mobile %}
+                {% verbatim %}      
                 <li><a href="{{ item.detail_url }}"><i class="fa fa-eye"></i>{{ item.popular_count }}</a></li>
                 <li><a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a></li>
                 <li><a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a></li>
@@ -86,6 +91,7 @@
                 <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="{{ item.site_url }}maps/{{item.id}}/view">
                   {% endverbatim %}
                   <i class="fa fa-map-marker"></i>{% trans "View Map" %}</a>
+              {% endif %}                  
                   {% verbatim %}
                 </li>
               </ul>

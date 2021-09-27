@@ -85,6 +85,7 @@
 
     <div class="col-md-4">
       <ul class="list-group">
+    {% if not request.user_agent.is_mobile %}
 
         <li class="list-group-item">
            <a href="{% url "geoapp_metadata_detail" resource.id %}">
@@ -94,6 +95,7 @@
 
         {% if not READ_ONLY_MODE %}
           {% if "change_resourcebase" in perms_list  or "change_resourcebase_metadata" in perms_list %}
+
           <li class="list-group-item">
             <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-map">{% trans "Editing Tools" %}</button>
           </li>
@@ -137,6 +139,7 @@
               </div>
             </div>
           </div>
+      {% endif %}        
           {% endif %}
         {% endif %}
         {% display_edit_request_button resource request.user perms_list as display_request_button %}
@@ -147,14 +150,16 @@
                 </a>
             </li>
         {% endif %}
-        <li class="list-group-item">
-        {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
-          <a href="{% url "geoapp_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View" %} {{ resource.type }}</a>
-        {% else %}
-          <a href="{% url "geoapp_edit" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View" %} {{ resource.type }}</a>
+        {% if not request.user_agent.is_mobile %}
+          <li class="list-group-item">
+          {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
+            <a href="{% url "geoapp_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View" %} {{ resource.type }}</a>
+          {% else %}
+            <a href="{% url "geoapp_edit" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View" %} {{ resource.type }}</a>
+          {% endif %}
+          </li>
         {% endif %}
-        </li>
-
+      {% if not request.user_agent.is_mobile %}
         {% if GEONODE_SECURITY_ENABLED %}
           {% if "change_resourcebase_permissions" in perms_list %}
             {% if not READ_ONLY_MODE %}
@@ -167,7 +172,7 @@
           {% include "_permissions_form.html" %}
           {% endif %}
         {% endif %}
-
+      {% endif %}
         {% include "base/_resourcebase_contact_snippet.html" %}
 
       </ul>

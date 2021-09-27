@@ -2,7 +2,9 @@
 {% load base_tags %}
 <nav class="filter">
 
+    {% if not request.user_agent.is_mobile %}
     <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-down"></i>{% trans "Text" %}</a></h4>
+    {% endif %}
     <ul class="nav open" id="text">
         <li>
           <form class="autocomplete-input input-group" id="text-search-autocomplete">
