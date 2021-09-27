@@ -247,7 +247,7 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
     # Check for "remote services" availability
     if HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).exists():
         _h = HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).get().harvester
-        if instance.remote_service is None and Service.objects.filter(harvester=_h).exists():
+        if hasattr(instance, 'remote_service') and instance.remote_service is None and Service.objects.filter(harvester=_h).exists():
             _s = Service.objects.filter(harvester=_h).get()
             instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(
                 remote_service=_s,
@@ -289,9 +289,9 @@ def get_alternate_name(instance):
             _DEFAULT_CASCADE_WORKSPACE = "cascaded-services"
             _DEFAULT_WORKSPACE = "cascaded-services"
 
-            if instance.remote_service is not None and instance.remote_service.method == INDEXED:
+            if hasattr(instance, 'remote_service') and instance.remote_service is not None and instance.remote_service.method == INDEXED:
                 result = instance.name
-            elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
+            elif hasattr(instance, 'remote_service') and instance.remote_service is not None and instance.remote_service.method == CASCADED:
                 _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
                 result = f"{_ws}:{instance.name}"
             else:  # we are not dealing with a service-related instance

@@ -115,7 +115,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         if instance and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             _real_instance = instance.get_real_instance()
             if isinstance(_real_instance, Dataset) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
-                if _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
+                if not hasattr(_real_instance, 'remote_service') or _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
                     geoserver_cascading_delete.apply_async((_real_instance.alternate,))
                     if "geonode.upload" in settings.INSTALLED_APPS:
                         from geonode.upload.models import Upload

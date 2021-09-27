@@ -269,10 +269,10 @@ def _datasets_locations(
     if isinstance(instance, Dataset):
 
         # for local datasets
-        if instance.remote_service is None:
+        if not hasattr(instance, 'remote_service') or instance.remote_service is None:
             locations.append([ogc_server_settings.LOCATION, [instance.alternate], []])
         # for remote datasets
-        else:
+        elif hasattr(instance, 'remote_service') and instance.remote_service is not None:
             locations.append([instance.remote_service.service_url, [instance.alternate], []])
 
         if compute_bbox:
