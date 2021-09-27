@@ -19,60 +19,11 @@
 
 import typing
 
-# from django.utils.timezone import now
-# from django.utils.module_loading import import_string
-# import jsonschema
 from lxml import etree
-
-from . import models
 
 
 # explicitly disable resolving XML entities in order to prevent malicious attacks
 XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
-
-
-# def update_harvester_availability(
-#         harvester: models.Harvester,
-#         timeout_seconds: typing.Optional[int] = 5
-# ) -> bool:
-#     harvester.status = harvester.STATUS_CHECKING_AVAILABILITY
-#     harvester.save()
-#     worker = harvester.get_harvester_worker()
-#     harvester.last_checked_availability = now()
-#     available = worker.check_availability(timeout_seconds=timeout_seconds)
-#     harvester.remote_available = available
-#     harvester.status = harvester.STATUS_READY
-#     harvester.save()
-#     return available
-
-
-def initiate_harvesting_refresh_session(harvester: models.Harvester):
-    # - check if the harvester is not busy with some other command
-    # - set the new harvester status
-    # - create a refresh session
-    # - call the relevant celery task
-    should_continue, error_msg = _should_act(harvester)
-    if should_continue:
-        harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
-        harvester.save()
-        refresh_session = models.HarvestableResourceRefreshSession.objects.create(harvester=harvester)
-        tasks.update_harvestable_resources.apply_async(args=(refresh_session.pk,))
-        # tasks.update_harvestable_resources.apply_async(args=(harvester.pk,))
-        being_updated.append(harvester)
-    else:
-        self.message_user(request, error_msg, level=messages.ERROR)
-        continue
-    pass
-
-
-# def validate_worker_configuration(harvester_type, configuration: typing.Dict):
-#     worker_class = import_string(harvester_type)
-#     schema = worker_class.get_extra_config_schema()
-#     if schema is not None:
-#         try:
-#             jsonschema.validate(configuration, schema)
-#         except jsonschema.exceptions.SchemaError as exc:
-#             raise RuntimeError(f"Invalid schema: {exc}")
 
 
 def get_xpath_value(
@@ -84,26 +35,3 @@ def get_xpath_value(
         nsmap = element.nsmap
     values = element.xpath(f"{xpath_expression}//text()", namespaces=nsmap)
     return "".join(values).strip() or None
-#
-#
-# def _should_act(
-#         harvester: models.Harvester,
-#         target_status: typing.Optional[str] = None,
-# ) -> typing.Tuple[bool, str]:
-#     target_ = target_status or harvester.STATUS_READY
-#     if harvester.status != target_:
-#         error_message = (
-#             f"Harvester {harvester!r} is currently busy. Please wait until its status "
-#             f"is {target_!r} before retrying"
-#         )
-#         result = False
-#     else:
-#         available = harvester.update_availability()
-#         if not available:
-#             error_message = (
-#                 f"harvester {harvester!r} is not available, skipping...")
-#             result = False
-#         else:
-#             result = True
-#             error_message = ""
-#     return result, error_message

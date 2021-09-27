@@ -40,7 +40,6 @@ from rest_framework.settings import api_settings
 from .. import (
     models,
     tasks,
-    utils,
 )
 
 logger = logging.getLogger(__name__)
@@ -235,15 +234,16 @@ class HarvesterSerializer(BriefHarvesterSerializer):
         return updated_instance
 
 
-class BriefHarvestingSessionSerializer(DynamicModelSerializer):
+class BriefAsynchronousHarvestingSessionSerializer(DynamicModelSerializer):
     class Meta:
-        model = models.HarvestingSession
+        model = models.AsynchronousHarvestingSession
         fields = (
             "id",
             "started",
             "updated",
             "ended",
-            "records_harvested",
+            "total_records_to_process",
+            "records_done",
         )
 
 
