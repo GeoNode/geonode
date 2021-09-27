@@ -150,13 +150,15 @@
                 </a>
             </li>
         {% endif %}
-        <li class="list-group-item">
-        {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
-          <a href="{% url "geoapp_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View" %} {{ resource.type }}</a>
-        {% else %}
-          <a href="{% url "geoapp_edit" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View" %} {{ resource.type }}</a>
+        {% if not request.user_agent.is_mobile %}
+          <li class="list-group-item">
+          {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
+            <a href="{% url "geoapp_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View" %} {{ resource.type }}</a>
+          {% else %}
+            <a href="{% url "geoapp_edit" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View" %} {{ resource.type }}</a>
+          {% endif %}
+          </li>
         {% endif %}
-        </li>
       {% if not request.user_agent.is_mobile %}
         {% if GEONODE_SECURITY_ENABLED %}
           {% if "change_resourcebase_permissions" in perms_list %}

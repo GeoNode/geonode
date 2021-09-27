@@ -251,6 +251,40 @@
       </article>
       {% endif %}
 
+
+      {% if request.user_agent.is_mobile %}
+      <article id="mobile-resource" class="tab-pane">
+        <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
+        {% if resource.default_style %}
+        {% get_all_resource_styles resource as resource_styles_all%}
+        {% for style in resource_styles_all %}
+          {% if style.name or style.sld_title %}
+            {% if resource.default_style == style or resource.default_style.name == style.name or style.sld_title and resource.default_style.sld_title == style.sld_title %}
+                {% for legend in resource.get_legend %}
+                    {% get_sld_name_from_url style.sld_url as sld_name %}
+                    {% get_style_name_from_legend_url legend.url as legend_style_name %}
+                    {% if legend.link_type == 'image' and sld_name == legend_style_name %}
+                      <p id="legend_sld_title" style="font-size:10px">{{ style.sld_title|default:style.name }}</p>
+                      {% if request.user.is_authenticated and access_token %}
+                          <p><img id="legend_icon" src="{{ legend.url }}&access_token={{access_token}}"></p>
+                      {% else %}
+                          <p><img id="legend_icon" src="{{ legend.url }}"></p>
+                      {% endif %}
+                    {% else %}
+                    <div id='legend_placeholder'></div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {% else %}
+          {% for legend in resource.get_legend %}
+              <p><img id="legend_icon" src="{{ legend.url }}"></p>
+          {% endfor %}
+        {% endif %}
+      </article>
+      {% endif %}
+
       {% if FAVORITE_ENABLED %}
       <article class="tab-pane" id="favorite">
         {% include "favorite/_favorite.html" %}
@@ -439,10 +473,11 @@
       {% endif %}
     {% endif %}
 
+    {% if not request.user_agent.is_mobile %}  
     <li class="list-group-item">
       <a href="{% url "new_map" %}?layer={{resource.service_typename}}&view=True" class="btn btn-default btn-md btn-block">{% trans "View Layer" %}</a>
     </li>
-
+    {% endif %}
 
     {% if not request.user_agent.is_mobile %}  
     <li class="list-group-item">
@@ -490,7 +525,7 @@
       </div>
     </div>
 
-    {% if resource.get_legend %}
+    {% if resource.get_legend and not request.user_agent.is_mobile %}
     <li class="list-group-item">
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
       {% if resource.default_style %}

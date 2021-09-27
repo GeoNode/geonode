@@ -24,16 +24,24 @@
   <li><a href="#favorite" data-toggle="tab"><i class="fa fa-star"></i>{% trans "Favorite" %}</a></li>
   {% endif %}
 {% else %}
-  <li class="active">
-    <button class="btn btn-primary btn-md btn-block" id="resource_info_tab" data-toggle="tab"><i class="fa fa-info-circle"></i>{% trans "Info" %}</button>
-  </li>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script type="text/javascript">
-  $(document).ready(function(){
-    $("#resource_info_tab").click(function(event){
-      $("#info").toggle()
-    });
-  });
-  </script>
+    <li class="active"><a href="#info" data-toggle="tab"><i class="fa fa-info-circle"></i>{% trans "Info" %}</a></li>
+    {% if resource.polymorphic_ctype.name == 'layer' or resource.polymorphic_ctype.name == 'map' %}
+    <li>
+      <a href="#mobile-resource" data-toggle="tab"><i class="fa fa-bars"></i>
+        {% if resource.polymorphic_ctype.name == 'layer' %}
+          {% trans "Legend" %}
+        {% elif resource.polymorphic_ctype.name == 'map' %}
+          {% trans "Layers" %}
+        {% endif %}
+      </a>
+    </li>
+    {% endif %}
+    <li>
+    {% if resource.polymorphic_ctype.name == 'layer' %}
+      <a href="{% url "new_map" %}?layer={{resource.service_typename}}&view=True" class="btn btn-default btn-primary btn-md btn-block">{% trans "View Layer" %}</a>
+    {% elif resource.polymorphic_ctype.name == 'map' %}
+      <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-primary btn-md btn-block">{% trans "View Map" %}</a>
+      {% elif resource.polymorphic_ctype.name == 'geo story' or resource.polymorphic_ctype.name == 'dashboard' %}<a class="btn btn-primary btn-default btn-md btn-block" href="{% url "geoapp_view" resource.id %}">{% trans "View" %} {{ resource.type }}</a>    {% endif %}
+    </li>
 {% endif %}
 </ul>

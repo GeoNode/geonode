@@ -284,14 +284,35 @@
   <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="nav-container">
         <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <i class="fa fa-navicon fa-lg"></i>
-        </button>
-        <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
-      </div>
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <i class="fa fa-navicon fa-lg"></i>
+          </button>
+          <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+        </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav toolbar">
-
+          {% if request.user_agent.is_mobile %}
+            <li>
+              <div class="search">
+                <form id="search" action="{% url "search" %}" >
+                  <span class="fa fa-search"></span>
+                  <div id="search-container" class="autocomplete-input">
+                    {% if HAYSTACK_SEARCH %}
+                    <input autocomplete="off" id="search_input" type="text" placeholder="{% trans 'Search' %}" name="q">
+                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="{% trans 'Search' %}" >
+                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="{% trans 'Search' %}" >
+                    <input type="hidden" name="f_method" id="filtering_type" value="or" >
+                    {% else %}
+                    <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="{% trans 'Search' %}" >
+                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="{% trans 'Search' %}" >
+                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="{% trans 'Search' %}" >
+                    <input type="hidden" name="f_method" id="filtering_type" value="or" >
+                    {% endif %}
+                  </div>
+                </form>
+              </div>
+            </li>
+            {% endif %}
           {% block tabs %}
           <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
@@ -375,7 +396,8 @@
             {% block my_extra_right_tab %}
                {% render_nav_menu 'TOPBAR_MENU' %}
             {% endblock my_extra_right_tab %}
-
+          
+            {% if not request.user_agent.is_mobile %}
             <li>
               <div class="search">
                 <form id="search" action="{% url "search" %}" >
@@ -396,6 +418,7 @@
                 </form>
               </div>
             </li>
+            {% endif %}
             {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP and not READ_ONLY_MODE %}
               <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
@@ -555,10 +578,12 @@
           </ul>
           {% endif %}
           {% endblock contactus %}
+          {% if not request.user_agent.is_mobile %}
           <ul class="list-unstyled">
             <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a>{% if user.is_staff %} <em>{% trans "version" %} {{ VERSION }}</em>{% endif %}</li>
             <li><a href="{% url "developer" %}">{% trans "Developers" %}</a> | <a href="{% url "about" %}">{% trans "About" %}</a><li>
           </ul>
+          {% endif %}
           <label class="hidden">{% trans "Language" %}</label>
           {% if csrf_token != "NOTPROVIDED" %}
           {% get_current_language as LANGUAGE %}
