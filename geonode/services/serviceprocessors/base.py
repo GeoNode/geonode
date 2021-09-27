@@ -127,6 +127,9 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
         except Exception:
             return False
 
+    def get_harvester_configuration_options(self):
+        return {}
+
     def create_geonode_service(self, owner, parent=None):
         """Create a new geonode.service.models.Service instance
         Saving the service instance in the database is not a concern of this

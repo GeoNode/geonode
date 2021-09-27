@@ -166,6 +166,31 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         except Exception:
             return False
 
+    def operations(self):
+        operations = {}
+        try:
+            for _op in self.parsed_service.operations:
+                _methods = []
+                for _op_method in (getattr(_op, 'methods', []) if hasattr(_op, 'methods') else _op.get('methods', [])):
+                    _methods.append(
+                        {
+                            'type': _op_method.get('type', None),
+                            'url': _op_method.get('url', None)
+                        }
+                    )
+
+                _name = getattr(_op, 'name', None) if hasattr(_op, 'name') else _op.get('name', None)
+                _formatOptions = getattr(_op, 'formatOptions', []) if hasattr(_op, 'formatOptions') else _op.get('formatOptions', [])
+                if _name:
+                    operations[_name] = {
+                        'name': _name,
+                        'methods': _methods,
+                        'formatOptions': _formatOptions
+                    }
+        except Exception as e:
+            logger.exception(e)
+        return operations
+
     def create_cascaded_store(self, service):
         ogc_wms_url = service.service_url
         ogc_wms_get_capabilities = service.operations.get('GetCapabilities', None)
@@ -184,31 +209,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         """Create a new geonode.service.models.Service instance
         :arg owner: The user who will own the service instance
         :type owner: geonode.people.models.Profile
-
         """
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
-        operations = {}
-        for _op in self.parsed_service.operations:
-            try:
-                _methods = []
-                for _op_method in (getattr(_op, 'methods', []) if hasattr(_op, 'methods') else _op.get('methods', [])):
-                    _methods.append(
-                        {
-                            'type': _op_method.get('type', None),
-                            'url': _op_method.get('url', None)
-                        }
-                    )
-
-                _name = getattr(_op, 'name', None) if hasattr(_op, 'name') else _op.get('name', None)
-                _formatOptions = getattr(_op, 'formatOptions', []) if hasattr(_op, 'formatOptions') else _op.get('formatOptions', [])
-                if _name:
-                    operations[_name] = {
-                        'name': _name,
-                        'methods': _methods,
-                        'formatOptions': _formatOptions
-                    }
-            except Exception as e:
-                logger.exception(e)
         with transaction.atomic():
             instance = models.Service.objects.create(
                 uuid=str(uuid4()),
@@ -225,14 +227,15 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode('utf-8') or self.name,
                 abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode('utf-8') or _(
                     "Not provided"),
-                operations=operations,
+                operations=self.operations(),
                 online_resource=self.parsed_service.provider.url
             )
             service_harvester = Harvester.objects.create(
                 name=self.name,
                 default_owner=owner,
                 remote_url=instance.service_url,
-                harvester_type=enumerations.HARVESTER_TYPES[self.service_type]
+                harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
+                harvester_type_specific_configuration=self.get_harvester_configuration_options()
             )
             update_harvester_availability(service_harvester)
             update_harvestable_resources.apply(args=(service_harvester.pk,))
@@ -356,15 +359,34 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         base.ServiceHandlerBase.__init__(self, url, geonode_service_id)
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
-        _probe = self.probe()
-        if _probe:
-            self.url, _ = WebMapService(
-                _probe,
-                proxy_base=None)
-        self.indexing_method = INDEXED if self._offers_geonode_projection() else CASCADED
+        self.indexing_method = INDEXED
         self.name = slugify(self.url)[:255]
 
+    @property
+    def parsed_service(self):
+        cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.ows_endpoint())
+        _url, _parsed_service = WebMapService(
+            cleaned_url.geturl(),
+            version=version,
+            proxy_base=None)
+        return _parsed_service
+
     def probe(self):
+        return base.ServiceHandlerBase.probe(self)
+
+    def operations(self):
+        return {}
+
+    def get_harvester_configuration_options(self):
+        return {
+            "harvest_maps": True,
+            "harvest_datasets": True,
+            "harvest_documents": True,
+            "copy_datasets": True,
+            "copy_documents": True
+        }
+
+    def ows_endpoint(self):
         url = urlsplit(self.url)
         base_url = f'{url.scheme}://{url.netloc}/'
         response = requests.get(
