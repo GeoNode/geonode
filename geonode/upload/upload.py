@@ -700,9 +700,15 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         has_time = True
 
     if upload_session.append_to_mosaic_opts:
-        saved_dataset, created = Dataset.objects.get_or_create(
+        saved_dataset_filter = Dataset.objects.filter(
             name=upload_session.append_to_mosaic_name)
-        assert saved_dataset
+        if not saved_dataset_filter.exists():
+            saved_dataset = resource_manager.create(
+                name=upload_session.append_to_mosaic_name)
+            created = True
+        else:
+            saved_dataset = saved_dataset_filter.get()
+            created = False
         try:
             if saved_dataset.temporal_extent_start and end:
                 if pytz.utc.localize(
@@ -722,30 +728,44 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 f"There was an error updating the mosaic temporal extent: {str(e)}")
     else:
         try:
-            saved_dataset = resource_manager.create(
-                dataset_uuid,
-                resource_type=Dataset,
-                defaults=dict(
-                    store=target.name,
-                    subtype=get_dataset_storetype(target.store_type),
-                    alternate=alternate,
-                    workspace=target.workspace_name,
-                    title=title,
-                    name=task.layer.name,
-                    abstract=abstract or _('No abstract provided'),
-                    owner=user,
-                    temporal_extent_start=start,
-                    temporal_extent_end=end,
-                    is_mosaic=has_elevation,
-                    has_time=has_time,
-                    has_elevation=has_elevation,
-                    time_regex=upload_session.mosaic_time_regex))
-            created = True
+            saved_dataset_filter = Dataset.objects.filter(
+                store=target.name,
+                alternate=alternate,
+                workspace=target.workspace_name,
+                name=task.layer.name)
+            if not saved_dataset_filter.exists():
+                saved_dataset = resource_manager.create(
+                    dataset_uuid,
+                    resource_type=Dataset,
+                    defaults=dict(
+                        store=target.name,
+                        subtype=get_dataset_storetype(target.store_type),
+                        alternate=alternate,
+                        workspace=target.workspace_name,
+                        title=title,
+                        name=task.layer.name,
+                        abstract=abstract or _('No abstract provided'),
+                        owner=user,
+                        temporal_extent_start=start,
+                        temporal_extent_end=end,
+                        is_mosaic=has_elevation,
+                        has_time=has_time,
+                        has_elevation=has_elevation,
+                        time_regex=upload_session.mosaic_time_regex))
+                created = True
+            else:
+                saved_dataset = saved_dataset_filter.get()
+                created = False
         except Exception as e:
             Upload.objects.invalidate_from_session(upload_session)
             raise UploadException.from_exc(_('Error configuring Dataset'), e)
 
-        Upload.objects.update_from_session(upload_session, resource=saved_dataset)
+    assert saved_dataset
+
+    if not created:
+        return saved_dataset
+
+    Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions

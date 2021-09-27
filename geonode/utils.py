@@ -337,7 +337,7 @@ def get_dataset_workspace(dataset):
                     settings, "CASCADE_WORKSPACE", default_workspace)
             else:
                 raise RuntimeError("Dataset is not cascaded")
-        except AttributeError:  # layer does not have a service
+        except Exception:  # layer does not have a service
             workspace = default_workspace
     return workspace
 
