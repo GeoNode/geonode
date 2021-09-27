@@ -608,13 +608,3 @@ def update_asynchronous_session(
     if additional_details is not None:
         update_kwargs["details"] = Concat("details", Value(f"\n{additional_details}"))
     models.AsynchronousHarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
-
-
-def _is_due(frequency: int, last_check: typing.Optional[dt.datetime] = None):
-    try:
-        due_date = last_check + dt.timedelta(minutes=frequency)
-    except TypeError:
-        result = True
-    else:
-        result = due_date < timezone.now()
-    return result
