@@ -29,7 +29,8 @@ from urllib.parse import urlencode, urlparse, urljoin, parse_qs, urlunparse
 
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
-from geonode.harvesting.tasks import harvesting_dispatcher
+from geonode.harvesting.tasks import harvest_resources
+from geonode.harvesting.models import HarvestingSession
 
 from .. import models
 from .. import enumerations
@@ -203,7 +204,8 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
                     _h.harvestable_resources.filter(id=resource_id).update(should_be_harvested=True)
                     _h.status = _h.STATUS_PERFORMING_HARVESTING
                     _h.save()
-                    harvesting_dispatcher.apply_async(args=(_h.pk,))
+                    _h_session = HarvestingSession.objects.create(harvester=_h)
+                    harvest_resources.apply_async(args=([resource_id, ], _h_session.pk))
             except Exception as e:
                 logger.exception(e)
                 raise GeoNodeException(e)
