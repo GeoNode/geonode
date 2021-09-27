@@ -611,6 +611,13 @@
                 query_entry = $scope.query[data_filter];
             }
 
+            if (data_filter === 'app_type__in'){
+                delete ($scope.query['type__in']);
+            }
+            else {
+                delete ($scope.query['app_type__in']);
+            }
+
             if (!element.hasClass('selected')) {
                 // Add the entry in the correct query
                 query_entry = value;
@@ -619,7 +626,7 @@
                 element.parents('ul').find('a').removeClass('selected');
 
                 element.addClass('selected');
-
+    
                 //save back the new query entry to the scope query
                 $scope.query[data_filter] = query_entry;
 
