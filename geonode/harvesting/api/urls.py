@@ -31,6 +31,6 @@ harvesters_node.register(
     basename='harvestable-resources',
     parents_query_lookups=['harvester_id']
 )
-router.register('harvesting-sessions', views.HarvestingSessionViewSet)
+router.register('harvesting-sessions', views.AsynchronousHarvestingSessionViewSet)
 
 urlpatterns = router.urls
