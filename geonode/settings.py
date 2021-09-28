@@ -436,6 +436,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.social',
     'geonode.groups',
     'geonode.services',
+    'geonode.management_commands_http',
 
     # GeoServer Apps
     # Geoserver needs to come last because
@@ -490,6 +491,7 @@ INSTALLED_APPS = (
     'django_celery_beat',
     'django_celery_results',
     'markdownify',
+    'django_user_agents',
 
     # REST APIs
     'rest_framework',
@@ -766,6 +768,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
     'geonode.base.middleware.MaintenanceMiddleware',
     'geonode.base.middleware.ReadOnlyMiddleware',   # a Middleware enabling Read Only mode of Geonode
 )
@@ -1770,6 +1773,7 @@ CELERY_TASK_QUEUES = (
     Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup', priority=0),
     Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
     Queue('security', GEONODE_EXCHANGE, routing_key='security', priority=0),
+    Queue('management_commands_http', GEONODE_EXCHANGE, routing_key='management_commands_http', priority=0),
 )
 
 if USE_GEOSERVER:
@@ -2144,3 +2148,14 @@ UI_DEFAULT_MANDATORY_FIELDS = [
 UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv('UI_REQUIRED_FIELDS ', '[]'))
 
 UPLOAD_SESSION_EXPIRY_HOURS = os.getenv('UPLOAD_SESSION_EXPIRY_HOURS ', 24)
+
+# If a command name is listed here, the command will be available to admins over http
+# This list is used by the management_commands_http app
+MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set([
+    "ping_mngmt_commands_http",
+    "updatelayers",
+    "sync_geonode_layers",
+    "sync_geonode_maps",
+    "importlayers",
+    "set_all_layers_metadata",
+] + ast.literal_eval(os.getenv('MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ', '[]')))

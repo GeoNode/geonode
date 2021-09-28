@@ -21,6 +21,8 @@ from geonode.base.models import ResourceBase
 from geonode.base.populate_test_data import create_single_layer
 from geonode.tests.base import GeoNodeBaseTestSupport
 
+from mapstore2_adapter.geoapps.geostories.models import GeoStory
+
 import json
 
 from django.contrib.auth import get_user_model
@@ -44,6 +46,12 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         super().setUp()
         self.adm_un = "admin"
         self.adm_pw = "admin"
+        self.admin = get_user_model().objects.get(username="admin")
+        self.geostory = GeoStory.objects.create(
+            resource_type='geostory',
+            name="test geostory",
+            owner=self.admin
+            )
 
     # tests of Favorite and FavoriteManager methods.
     def test_favorite(self):
@@ -153,6 +161,16 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(json_content2["has_favorite"], "true")
         self.assertEqual(json_content2["delete_url"], expected_delete_url)
 
+        # test favourite geostory from view
+        response = self._get_response("add_favorite_geoapp", (self.geostory.pk,))
+        self.assertEqual(response.status_code, 200)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        json_content = json.loads(content)
+        self.assertEqual(json_content["has_favorite"], "true")
+        expected_delete_url = reverse("delete_favorite", args=[self.geostory.pk])
+
     def test_create_favorite_view_login_required(self):
         """
         call create view, not logged in.
@@ -215,6 +233,15 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(response2.status_code, 200)
         json_content2 = json.loads(response2.content)
         self.assertEqual(json_content2["has_favorite"], "false")
+
+        # test delete geostory from favorite
+        response = self._get_response("delete_favorite", (self.geostory.pk,))
+        self.assertEqual(response.status_code, 200)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        json_content = json.loads(content)
+        self.assertEqual(json_content["has_favorite"], "false")
 
     def test_delete_favorite_view_login_required(self):
         """
