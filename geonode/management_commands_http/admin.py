@@ -66,7 +66,7 @@ class ManagementCommandJobAdmin(admin.ModelAdmin):
         return get_celery_task_meta(instance).get("traceback")
 
     def has_module_permission(self, request):
-        return request.user.is_superuser 
+        return request.user.is_superuser
 
     def has_delete_permission(self, request, obj=None):
         return obj is not None and obj.status == ManagementCommandJob.CREATED
