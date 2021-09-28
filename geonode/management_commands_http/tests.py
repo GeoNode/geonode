@@ -18,6 +18,7 @@
 #########################################################################
 from rest_framework import status
 from rest_framework.test import APITestCase
+from datetime import datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
@@ -212,13 +213,21 @@ class ManagementCommandJobsTestCase(APITestCase):
 
     @patch("geonode.management_commands_http.views.get_celery_task_meta")
     def test_management_command_job_status(self, mocked_celery_task_meta):
-        mocked_celery_task_meta.return_value = {"some_key": "some_value"}
+        mocked_celery_task_meta.return_value = {
+            "status": "some_value",
+            "worker": "some_worker",
+            "traceback": None,
+            "result": ...,
+            "date_done": datetime.now(),
+        }
         cmd_name = "ping_mngmt_commands_http"
         resource_url = f"/api/v2/management/commands/{cmd_name}/jobs/{self.job1.id}/status/"
         response = self.client.get(resource_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_json = response.json()
-        self.assertEqual(response_json["data"]["some_key"], "some_value")
+        self.assertEqual(response_json["celery_task_meta"]["status"], "some_value")
+        self.assertEqual(response_json["celery_task_meta"]["worker"], "some_worker")
+        self.assertNotIn("result", response_json["celery_task_meta"])
         mocked_celery_task_meta.assert_called_once()
         mocked_celery_task_meta.assert_called_with(self.job1)
 
