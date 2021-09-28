@@ -69,7 +69,13 @@ class GeoNodeResourceType(enum.Enum):
 class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     harvest_documents: bool
     harvest_datasets: bool
-    harvest_maps: bool
+
+    # harvesting of maps is explicitly disabled - the GeoNode API does not
+    # really allow reconstructing a Map via API, as there is no information
+    # about the actual contents of the map, i.e. which layers are contained
+    # in it
+    harvest_maps: bool = False
+
     copy_documents: bool
     resource_title_filter: typing.Optional[str]
     http_session: requests.Session
@@ -81,7 +87,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             harvest_documents: typing.Optional[bool] = True,
             harvest_datasets: typing.Optional[bool] = True,
             copy_datasets: typing.Optional[bool] = False,
-            harvest_maps: typing.Optional[bool] = True,
             copy_documents: typing.Optional[bool] = False,
             resource_title_filter: typing.Optional[str] = None,
             start_date_filter: typing.Optional[str] = None,
@@ -98,7 +103,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             harvest_documents if harvest_documents is not None else True)
         self.harvest_datasets = harvest_datasets if harvest_datasets is not None else True
         self.copy_datasets = copy_datasets
-        self.harvest_maps = harvest_maps if harvest_maps is not None else True
         self.copy_documents = copy_documents
         self.resource_title_filter = resource_title_filter
         self.start_date_filter = start_date_filter
@@ -125,8 +129,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "harvest_datasets", True),
             copy_datasets=record.harvester_type_specific_configuration.get(
                 "copy_datasets", False),
-            harvest_maps=record.harvester_type_specific_configuration.get(
-                "harvest_maps", True),
             copy_documents=record.harvester_type_specific_configuration.get(
                 "copy_documents", False),
             resource_title_filter=record.harvester_type_specific_configuration.get(
@@ -169,10 +171,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "copy_datasets": {
                     "type": "boolean",
                     "default": False
-                },
-                "harvest_maps": {
-                    "type": "boolean",
-                    "default": True
                 },
                 "resource_title_filter": {
                     "type": "string",
@@ -546,7 +544,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         )
         additional_params_handler = {
             GeoNodeResourceType.DATASET.value: self._get_dataset_additional_parameters,
-            GeoNodeResourceType.DOCUMENT.value: self._get_document_additional_parameters
+            GeoNodeResourceType.DOCUMENT.value: self._get_document_additional_parameters,
+            GeoNodeResourceType.MAP.value: self._get_map_additional_parameters,
         }[harvestable_resource.remote_resource_type]
         additional_params = additional_params_handler(descriptor, api_record)
         descriptor.additional_parameters.update(additional_params)
@@ -576,6 +575,19 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         return {
             "resource_type": "document",
             "extension": api_record.get("extension")
+        }
+
+    def _get_map_additional_parameters(
+            self,
+            descriptor: resourcedescriptor.RecordDescription,
+            api_record: typing.Dict
+    ) -> typing.Dict:
+        return {
+            "zoom": api_record.get("zoom", 5),
+            "center_x": api_record.get("center_x", 0),
+            "center_y": api_record.get("center_y", 0),
+            "projection": api_record.get("projection", "EPSG:3857"),
+            "last_modified": api_record.get("last_modified")
         }
 
     def get_distribution_info(
@@ -855,12 +867,19 @@ def get_spatial_extent_4326(
 
 
 def get_spatial_extent_native(api_record: typing.Dict):
-    left_x = float(api_record.get("bbox_x0", 0))
-    right_x = float(api_record.get("bbox_x1", 0))
-    lower_y = float(api_record.get("bbox_y0", 0))
-    upper_y = float(api_record.get("bbox_y1", 0))
-    return geos.Polygon.from_bbox((
-        left_x, lower_y, right_x, upper_y))
+    declared_ewkt = api_record.get("bbox_polygon")
+    if declared_ewkt is not None:
+        # this is a more recent GeoNode deployment
+        result = geos.Polygon.from_ewkt(declared_ewkt)
+    else:
+        # this is an older GeoNode deployment
+        left_x = float(api_record.get("bbox_x0", 0))
+        right_x = float(api_record.get("bbox_x1", 0))
+        lower_y = float(api_record.get("bbox_y0", 0))
+        upper_y = float(api_record.get("bbox_y1", 0))
+        result = geos.Polygon.from_bbox((
+            left_x, lower_y, right_x, upper_y))
+    return result
 
 
 def get_temporal_extent(

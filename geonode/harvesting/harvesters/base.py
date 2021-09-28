@@ -239,6 +239,7 @@ class BaseHarvesterWorker(abc.ABC):
             "uuid": str(harvested_info.resource_descriptor.uuid),
             "abstract": harvested_info.resource_descriptor.identification.abstract,
             "bbox_polygon": harvested_info.resource_descriptor.identification.spatial_extent,
+            "srid": harvested_info.resource_descriptor.reference_systems[0],
             "constraints_other": harvested_info.resource_descriptor.identification.other_constraints,
             "created": harvested_info.resource_descriptor.date_stamp,
             "data_quality_statement": harvested_info.resource_descriptor.data_quality,
@@ -255,16 +256,6 @@ class BaseHarvesterWorker(abc.ABC):
             defaults["sourcetype"] = enumerations.SOURCE_TYPE_COPYREMOTE
         else:
             defaults["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
-        # geonode_resource_type = self.get_resource_type_class(
-        #     harvestable_resource.remote_resource_type)
-        # if geonode_resource_type == Map:
-        #     defaults.update({
-        #         "zoom": resource_descriptor.zoom,
-        #         "center_x": resource_descriptor.center_x,
-        #         "center_y": resource_descriptor.center_y,
-        #         "projection": resource_descriptor.projection,
-        #         "last_modified": resource_descriptor.last_modified
-        #     })
         return {key: value for key, value in defaults.items() if value is not None}
 
     def update_geonode_resource(
@@ -331,9 +322,6 @@ class BaseHarvesterWorker(abc.ABC):
             )
         return geonode_resource
 
-    # TODO: [ ] try this with a vector Dataset
-    # TODO: [x] try this with a raster Dataset
-    # TODO: [x] try this with a Document
     def _update_existing_geonode_resource(
             self,
             geonode_resource: ResourceBase,
