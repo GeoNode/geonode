@@ -6426,3 +6426,15 @@ msgid ""
 "You can not start the job {job.id} because its status is \"{job.status}\"."
 msgstr ""
 "Vous ne pouvez pas démarrer le travail {job.id} car son statut est \"{job.status}\"."
+
+msgid "Positional Arguments"
+msgstr "Arguments Positionnels"
+
+msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+msgstr "Arguments positionnels encodés en JSON (Exemple: [\"arg1\", \"arg2\"])"
+
+msgid "Keyword Arguments"
+msgstr "Arguments Nommés"
+
+msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+msgstr "Arguments nommés encodés en JSON (Exemple: {\"argument\": \"valeur\"})"

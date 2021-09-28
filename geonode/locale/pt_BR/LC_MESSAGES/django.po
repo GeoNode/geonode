@@ -6317,6 +6317,18 @@ msgid ""
 msgstr ""
 "Você não pode iniciar a tarefa {job.id} pois ela possui status \"{job.status}\"."
 
+msgid "Positional Arguments"
+msgstr "Argumentos Posicionais"
+
+msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+msgstr "Argumentos posicionais codificados em JSON (Exemplo: [\"arg1\", \"arg2\"])"
+
+msgid "Keyword Arguments"
+msgstr "Argumentos de Palavras-Chave"
+
+msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+msgstr "Argumentos de palavra-chave codificados em JSON (Exemplo: {\"argumento\": \"valor\"})"
+
 #~ msgid "Layer not ready yet. Still finalizing layer ingestion..."
 #~ msgstr ""
 #~ "Camada ainda não está pronta. Ainda finalizando a ingestão de camada…"
