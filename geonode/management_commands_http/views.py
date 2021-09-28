@@ -176,11 +176,15 @@ class ManagementCommandJobViewSet(
 
     @action(detail=True, methods=["GET"])
     def status(self, request, pk=None, **kwargs):
-        job = self.get_object()
-        celery_task_meta = get_celery_task_meta(job)
-        response = {
-            "success": True,
-            "error": None,
-            "data": celery_task_meta
+        instance = self.get_object()
+        serializer = self.get_serializer(instance=instance)
+        celery_task_meta = get_celery_task_meta(instance)
+        celery_data = {
+            "celery_task_meta": {
+                "date_done": celery_task_meta.get("date_done"),
+                "status": celery_task_meta.get("status"),
+                "traceback": celery_task_meta.get("traceback"),
+                "worker": celery_task_meta.get("worker"),
+            }
         }
-        return Response(response)
+        return Response({**serializer.data, **celery_data})
