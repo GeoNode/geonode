@@ -77,6 +77,8 @@ class RecentActivity(ListView):
             id__in=_filter_actions('document', self.request))[:15]
         context['action_list_comments'] = Action.objects.filter(
             id__in=_filter_actions('comment', self.request))[:15]
+        context['action_list_geostory'] = Action.objects.filter(
+            id__in=_filter_actions('geostory', self.request))[:15]
         return context
 
 
