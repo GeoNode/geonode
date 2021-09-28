@@ -29,6 +29,7 @@ from geonode.management_commands_http.models import ManagementCommandJob
 from geonode.management_commands_http.filters import ManagementCommandJobFilterSet
 from geonode.management_commands_http.serializers import (
     ManagementCommandJobSerializer,
+    ManagementCommandJobListSerializer,
     ManagementCommandJobCreateSerializer,
 )
 from geonode.management_commands_http.utils.commands import (
@@ -120,7 +121,9 @@ class ManagementCommandJobViewSet(
         return queryset
 
     def get_serializer_class(self):
-        if self.action in ("create", "metadata"):
+        if self.action == "list":
+            serializer = ManagementCommandJobListSerializer
+        elif self.action in ("create", "metadata"):
             serializer = ManagementCommandJobCreateSerializer
         else:
             serializer = super().get_serializer_class()
