@@ -30,7 +30,6 @@ from geonode.management_commands_http.utils.jobs import (
 
 @admin.register(ManagementCommandJob)
 class ManagementCommandJobAdmin(admin.ModelAdmin):
-    form = ManagementCommandJobAdminForm
     actions = ["start", "stop"]
     list_per_page = 20
     list_display = (
@@ -48,8 +47,6 @@ class ManagementCommandJobAdmin(admin.ModelAdmin):
     )
     list_filter = ("command", "app_name", "user")
     search_fields = ("command", "app_name", "user", "celery_result_id", "output_message")
-    fields = ("command", "args", "kwargs", "autostart",)
-    readonly_fields = ("created_at", "modified_at",)
 
     def start(self, request, queryset):
         for job in queryset:
@@ -68,11 +65,11 @@ class ManagementCommandJobAdmin(admin.ModelAdmin):
     def celery_traceback(self, instance):
         return get_celery_task_meta(instance).get("traceback")
 
-    def has_change_permission(self, request, obj=None):
-        return False
+    def has_module_permission(self, request):
+        return request.user.is_superuser 
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return obj is not None and obj.status == ManagementCommandJob.CREATED
 
     def save_model(self, request, obj, form, change):
         obj.user = request.user
@@ -80,6 +77,12 @@ class ManagementCommandJobAdmin(admin.ModelAdmin):
         autostart = form.cleaned_data.get("autostart", False)
         if autostart and not change:
             start_task(obj)
+
+    def add_view(self, request, form_url='', extra_context=None):
+        self.form = ManagementCommandJobAdminForm
+        self.fields = ("command", "args", "kwargs", "autostart",)
+        self.readonly_fields = []
+        return super().add_view(request, form_url, extra_context)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         self.form = ModelForm
@@ -99,4 +102,5 @@ class ManagementCommandJobAdmin(admin.ModelAdmin):
             "celery_state",
             "celery_traceback",
         )
+        self.readonly_fields = self.fields
         return super().change_view(request, object_id, form_url, extra_context)
