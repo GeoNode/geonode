@@ -171,7 +171,7 @@
             {% if not READ_ONLY_MODE %}
               <li class="list-group-item">
                 <h4>{% trans "Permissions" %}</h4>
-                <p>{% trans "Specify which users can view or modify this map" %}</p>
+                <p>{% trans "Specify which users can view or modify this" %} {{ resource.resource_type }}</p>
                 <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#_permissions">{% trans "Change Permissions of this" %} {{ resource.type }}</button>
               </li>
             {% endif %}
