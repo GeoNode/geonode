@@ -229,7 +229,7 @@ def purge_geofence_dataset_rules(resource):
     headers = {'Content-type': 'application/json'}
     workspace = get_dataset_workspace(resource.dataset)
     dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
-        else resource.dataset.alternate.split(":")[0]
+        else resource.dataset.alternate
     try:
         r = requests.get(
             f"{url}rest/geofence/rules.json?workspace={workspace}&layer={dataset_name}",
@@ -448,7 +448,7 @@ def set_geofence_all(instance):
     logger.debug(f"Inside set_geofence_all for instance {instance}")
     workspace = get_dataset_workspace(resource.dataset)
     dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
-        else resource.dataset.alternate.split(":")[0]
+        else resource.dataset.alternate
     logger.debug(f"going to work in workspace {workspace}")
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
@@ -493,7 +493,7 @@ def sync_geofence_with_guardian(dataset, perms, user=None, group=None, group_per
     """
     Sync Guardian permissions to GeoFence.
     """
-    _dataset_name = dataset.name if dataset and hasattr(dataset, 'name') else dataset.alternate.split(":")[0]
+    _dataset_name = dataset.name if dataset and hasattr(dataset, 'name') else dataset.alternate
     _dataset_workspace = get_dataset_workspace(dataset)
     # Create new rule-set
     gf_services = _get_gf_services(dataset, perms)

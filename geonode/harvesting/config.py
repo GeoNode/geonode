@@ -23,22 +23,32 @@ This module provides sensible default values for the harvesting app.
 
 """
 
+import typing
+
 from django.conf import settings
 
-_default_harvesters = [
+
+_DEFAULT_HARVESTERS: typing.Final = [
     "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester",
-    # "geonode.harvesting.harvesters.geonode.GeonodeCswHarvester",
     "geonode.harvesting.harvesters.wms.OgcWmsHarvester",
+    # "geonode.harvesting.harvesters.geonode.GeonodeCswHarvester",
 ]
 
-try:
-    _configured_harvester_classes = getattr(settings, "HARVESTER_CLASSES")
-    HARVESTER_CLASSES = (
-        _default_harvesters +
-        [i for i in _configured_harvester_classes if i not in _default_harvesters]
-    )
-except AttributeError:
-    HARVESTER_CLASSES = _default_harvesters
 
-HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE = getattr(
-    settings, "HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE", settings.FILE_UPLOAD_MAX_MEMORY_SIZE)
+def _get_harvester_class_paths(custom_class_paths: typing.List[str]) -> typing.List[str]:
+    result = _DEFAULT_HARVESTERS[:]
+    for i in custom_class_paths:
+        if i not in result:
+            result.append(i)
+    return result
+
+
+def get_setting(setting_key: str) -> typing.Any:
+    result = {
+        "HARVESTER_CLASSES": _get_harvester_class_paths(
+            getattr(settings, "HARVESTER_CLASSES", [])
+        ),
+        "HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE": getattr(
+            settings, "HARVESTED_RESOURCE_MAX_MEMORY_SIZE", settings.FILE_UPLOAD_MAX_MEMORY_SIZE)
+    }.get(setting_key, getattr(settings, setting_key, None))
+    return result

@@ -83,7 +83,7 @@ class BriefHarvesterSerializer(DynamicModelSerializer):
                 },
                 request=self.context["request"],
             ),
-            "harvestable-resources": reverse(
+            "harvestable_resources": reverse(
                 "harvestable-resources-list",
                 kwargs={
                     "harvester_id": obj.id,
@@ -118,10 +118,6 @@ class HarvesterSerializer(BriefHarvesterSerializer):
             "links",
         )
 
-    def validate_harvester_type_specific_configuration(self, value):
-        logger.debug(f"inside validate_harvester_type_specific_configuration instance: {self.instance}")
-        return value
-
     def validate(self, data):
         """Perform object-level validation
 
@@ -138,7 +134,7 @@ class HarvesterSerializer(BriefHarvesterSerializer):
         """
 
         worker_config_field = "harvester_type_specific_configuration"
-        worker_type_field = "worker_type"
+        worker_type_field = "harvester_type"
         worker_type = data.get(
             worker_type_field, getattr(self.instance, worker_type_field, None))
         worker_config = data.get(
@@ -157,7 +153,6 @@ class HarvesterSerializer(BriefHarvesterSerializer):
             )
         return data
 
-    # FIXME: ensure supplied worker-specific config validates our json-schema
     def create(self, validated_data):
         desired_status = validated_data.get("status", models.Harvester.STATUS_READY)
         if desired_status != models.Harvester.STATUS_READY:
@@ -263,13 +258,24 @@ class HarvestableResourceSerializer(DynamicModelSerializer):
             "unique_identifier",
             "title",
             "should_be_harvested",
-            "available",
             "last_updated",
             "status",
+            "remote_resource_type",
+        ]
+        read_only_fields = [
+            "title",
+            "last_updated",
+            "status",
+            "remote_resource_type",
         ]
 
     def create(self, validated_data):
-        # TODO: check if there is no other property being set other than `should_be_harvested`
+        # NOTE: We are implementing `create()` rather than `update` intentionally, even if the
+        # user is not allowed to create new records (check the `views.py` module) - the rationale
+        # being that since we keep a harvestable_resource's `id` private it would be more involved
+        # to deal with its update than with its creation. We are providing a custom `UpdateListModelMixin` class
+        # that allows for bulk update of multiple instances simultaneously. This mixin class is instantiating
+        # this serializer class without providing an instance and then calling its `save()` method
         harvestable_resource = models.HarvestableResource.objects.get(
             harvester=self.context["harvester"],
             unique_identifier=validated_data["unique_identifier"]
