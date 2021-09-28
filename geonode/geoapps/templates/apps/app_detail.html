@@ -79,6 +79,12 @@
         </article>
         {% endif %}
 
+        {% if FAVORITE_ENABLED %}
+        <article class="tab-pane" id="favorite">
+          {% include "favorite/_favorite.html" %}
+        </article>
+        {% endif %}
+
       </div>
 
     </div>
@@ -270,6 +276,10 @@
 
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
+    {% endif %}
+
+    {% if FAVORITE_ENABLED %}
+    {% include "favorite/_favorite_js.html" %}
     {% endif %}
 
 {% endblock extra_script %}
