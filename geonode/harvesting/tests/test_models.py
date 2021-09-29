@@ -29,7 +29,7 @@ class HarvesterTestCase(GeoNodeBaseTestSupport):
     remote_url = 'test.com'
     name = 'This is geonode harvester'
     user = get_user_model().objects.get(username='AnonymousUser')
-    harvester_type = "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester"
+    harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
 
     def setUp(self):
         super().setUp()
@@ -57,7 +57,7 @@ class HarvesterSessionTestCase(GeoNodeBaseTestSupport):
     remote_url = 'test.com'
     name = 'This is geonode harvester'
     user = get_user_model().objects.get(username='AnonymousUser')
-    harvester_type = "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester"
+    harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
 
     def setUp(self):
         super().setUp()
@@ -77,7 +77,6 @@ class HarvesterSessionTestCase(GeoNodeBaseTestSupport):
         """
         self.assertIsNotNone(self.harvesting_session.pk)
         self.assertEqual(self.harvesting_session.harvester, self.harvester)
-        self.assertEqual(self.harvesting_session.total_records_found, 0)
         self.assertEqual(self.harvesting_session.records_harvested, 0)
 
 
@@ -87,7 +86,7 @@ class HarvestableResourceTestCase(GeoNodeBaseTestSupport):
     remote_url = 'test.com'
     name = 'This is geonode harvester'
     user = get_user_model().objects.get(username='AnonymousUser')
-    harvester_type = "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester"
+    harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
 
     def setUp(self):
         super().setUp()
