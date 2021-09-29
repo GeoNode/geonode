@@ -20,14 +20,16 @@
 import abc
 import dataclasses
 import html
+import io
 import logging
 import typing
-import urllib.parse
+from pathlib import Path
 
+import geonode.upload.files
 import requests
 from django.core.files import uploadedfile
-from django.db.models import F
-from django.utils import timezone
+
+from geonode.base import enumerations
 from geonode.base.models import ResourceBase
 from geonode.resource.manager import resource_manager
 from geonode.storage.manager import storage_manager
@@ -65,8 +67,8 @@ class BaseHarvesterWorker(abc.ABC):
 
     This provides two relevant things:
 
-    - an interface that all custom GeoNode harvesting classes must implement
-    - default implementation of some lower-level methods
+    - An interface that all custom GeoNode harvesting classes must implement;
+    - Default implementation for common functionality.
 
     """
 
@@ -140,84 +142,13 @@ class BaseHarvesterWorker(abc.ABC):
         """Return a jsonschema schema to be used to validate models.Harvester objects"""
         return None
 
-    @classmethod
-    def finish_harvesting_session(
-            cls,
-            session_id: int,
-            additional_harvested_records: typing.Optional[int] = None
-    ) -> None:
-        """Finish the input harvesting session"""
-        update_kwargs = {
-            "ended": timezone.now()
-        }
-        if additional_harvested_records is not None:
-            update_kwargs["records_harvested"] = (
-                F("records_harvested") + additional_harvested_records)
-        models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
-
-    @classmethod
-    def update_harvesting_session(
-            cls,
-            session_id: int,
-            total_records_found: typing.Optional[int] = None,
-            additional_harvested_records: typing.Optional[int] = None
-    ) -> None:
-        """Update the input harvesting session"""
-        update_kwargs = {}
-        if total_records_found is not None:
-            update_kwargs["total_records_found"] = total_records_found
-        if additional_harvested_records is not None:
-            update_kwargs["records_harvested"] = (
-                F("records_harvested") + additional_harvested_records)
-        models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
-
-    def update_geonode_resource(
-            self,
-            harvested_info: HarvestedResourceInfo,
-            harvestable_resource: "HarvestableResource",  # noqa
-            harvesting_session_id: int,
-    ):
-        """Create or update a local GeoNode resource with the input harvested information."""
-        defaults = self.get_geonode_resource_defaults(
-            harvested_info, harvestable_resource)
-        geonode_resource = harvestable_resource.geonode_resource
-        if geonode_resource is None:
-            geonode_resource = resource_manager.create(
-                str(harvested_info.resource_descriptor.uuid),
-                self.get_geonode_resource_type(
-                    harvestable_resource.remote_resource_type),
-                defaults
-            )
-        else:
-            if not geonode_resource.uuid == str(harvested_info.resource_descriptor.uuid):
-                raise RuntimeError(
-                    f"Resource {geonode_resource!r} already exists locally but its "
-                    f"UUID ({geonode_resource.uuid}) does not match the one found on "
-                    f"the remote resource {harvested_info.resource_descriptor.uuid!r}")
-            geonode_resource = resource_manager.update(
-                str(harvested_info.resource_descriptor.uuid), vals=defaults)
-
-        keywords = list(
-            harvested_info.resource_descriptor.identification.other_keywords
-        ) + geonode_resource.keyword_list()
-        harvester = models.Harvester.objects.get(pk=self.harvester_id)
-        keywords.append(
-            harvester.name.lower().replace(
-                'harvester ', '').replace(
-                'harvester_', '').replace(
-                'harvester', '').strip()
-        )
-        regions = harvested_info.resource_descriptor.identification.place_keywords
-        resource_manager.update(
-            str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=list(set(keywords)))
-        harvestable_resource.geonode_resource = geonode_resource
-        harvestable_resource.save()
-        self.finalize_resource_update(
-            geonode_resource,
-            harvested_info,
-            harvestable_resource,
-            harvesting_session_id
-        )
+    def get_current_config(self) -> typing.Dict:
+        """Return a dict with the current configuration."""
+        schema = self.get_extra_config_schema()
+        result = {}
+        for property_name in schema["properties"]:
+            result[property_name] = getattr(self, property_name, None)
+        return result
 
     def finalize_resource_update(
             self,
@@ -270,7 +201,7 @@ class BaseHarvesterWorker(abc.ABC):
             self,
             harvestable_resource: "HarvestableResource",  # noqa
             harvested_resource_info: HarvestedResourceInfo,
-    ) -> typing.Optional[str]:
+    ) -> typing.Optional[Path]:
         """Copy a remote resource's data to the local GeoNode.
 
         The base implementation provides a generic copy using GeoNode's `storage_manager`.
@@ -281,17 +212,10 @@ class BaseHarvesterWorker(abc.ABC):
         url = harvested_resource_info.resource_descriptor.distribution.original_format_url
         result = None
         if url is not None:
-            parsed_url = urllib.parse.urlparse(url)
-            sanitized_base_name = _sanitize_file_name(parsed_url.path)
-            harvester = models.Harvester.objects.get(pk=self.harvester_id)
-            name_fragments = (
-                f"{harvester.name}-{harvester.id}",
-                str(harvested_resource_info.resource_descriptor.uuid),
-                sanitized_base_name
-            )
-            target_name = "_".join(name_fragments)
+            target_name = _get_file_name(harvested_resource_info)
+            final_name = "/".join((str(harvested_resource_info.resource_descriptor.uuid), target_name))
             try:
-                result = download_resource_file(url, target_name)
+                result = download_resource_file(url, final_name)
             except requests.exceptions.HTTPError:
                 logger.exception(f"Could not download resource file from {url!r}")
         else:
@@ -315,6 +239,7 @@ class BaseHarvesterWorker(abc.ABC):
             "uuid": str(harvested_info.resource_descriptor.uuid),
             "abstract": harvested_info.resource_descriptor.identification.abstract,
             "bbox_polygon": harvested_info.resource_descriptor.identification.spatial_extent,
+            "srid": harvested_info.resource_descriptor.reference_systems[0],
             "constraints_other": harvested_info.resource_descriptor.identification.other_constraints,
             "created": harvested_info.resource_descriptor.date_stamp,
             "data_quality_statement": harvested_info.resource_descriptor.data_quality,
@@ -325,26 +250,92 @@ class BaseHarvesterWorker(abc.ABC):
             "supplemental_information": (
                 harvested_info.resource_descriptor.identification.supplemental_information),
             "title": harvested_info.resource_descriptor.identification.title,
-            "files": harvested_info.copied_resources,
+            "files": [str(path) for path in harvested_info.copied_resources],
         }
-        # geonode_resource_type = self.get_resource_type_class(
-        #     harvestable_resource.remote_resource_type)
-        # if geonode_resource_type == Map:
-        #     defaults.update({
-        #         "zoom": resource_descriptor.zoom,
-        #         "center_x": resource_descriptor.center_x,
-        #         "center_y": resource_descriptor.center_y,
-        #         "projection": resource_descriptor.projection,
-        #         "last_modified": resource_descriptor.last_modified
-        #     })
-        # elif geonode_resource_type == Dataset:
-        #     defaults.update({
-        #         "charset": resource_descriptor.character_set
-        #     })
+        if self.should_copy_resource(harvestable_resource):
+            defaults["sourcetype"] = enumerations.SOURCE_TYPE_COPYREMOTE
+        else:
+            defaults["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
         return {key: value for key, value in defaults.items() if value is not None}
 
+    def update_geonode_resource(
+            self,
+            harvested_info: HarvestedResourceInfo,
+            harvestable_resource: "HarvestableResource",  # noqa
+            harvesting_session_id: int,
+    ):
+        """Create or update a local GeoNode resource with the input harvested information.
 
-def download_resource_file(url: str, target_name: str) -> str:
+        If the underlying harvestable resource already exists as a local GeoNode resource, then
+        it is updated. Otherwise it is created locally.
+
+        If something goes wrong with the update of the geonode resource this method should raise
+        a `RuntimeError`. This will be caught by the harvesting task and handled appropriately.
+
+        """
+
+        defaults = self.get_geonode_resource_defaults(harvested_info, harvestable_resource)
+        geonode_resource = harvestable_resource.geonode_resource
+        if geonode_resource is None:
+            geonode_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)
+            geonode_resource = self._create_new_geonode_resource(geonode_resource_type, defaults)
+        elif not geonode_resource.uuid == str(harvested_info.resource_descriptor.uuid):
+            raise RuntimeError(
+                f"Resource {geonode_resource!r} already exists locally but its "
+                f"UUID ({geonode_resource.uuid}) does not match the one found on "
+                f"the remote resource {harvested_info.resource_descriptor.uuid!r}")
+        else:
+            geonode_resource = self._update_existing_geonode_resource(geonode_resource, defaults)
+        keywords = _consolidate_resource_keywords(
+            harvested_info.resource_descriptor, geonode_resource, self.harvester_id)
+        regions = harvested_info.resource_descriptor.identification.place_keywords
+        resource_manager.update(
+            str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=keywords)
+        harvestable_resource.geonode_resource = geonode_resource
+        harvestable_resource.save()
+        self.finalize_resource_update(
+            geonode_resource,
+            harvested_info,
+            harvestable_resource,
+            harvesting_session_id
+        )
+
+    def _create_new_geonode_resource(self, geonode_resource_type, defaults: typing.Dict):
+        logger.debug(f"Creating a new GeoNode resource for resource with uuid: {defaults['uuid']!r}...")
+        resource_defaults = defaults.copy()
+        resource_files = resource_defaults.pop("files", [])
+        if len(resource_files) > 0:
+            logger.debug("calling resource_manager.ingest...")
+            geonode_resource = resource_manager.ingest(
+                resource_files,
+                uuid=resource_defaults["uuid"],
+                resource_type=geonode_resource_type,
+                defaults=resource_defaults,
+                importer_session_opts={"name": resource_defaults["uuid"]},
+            )
+        else:
+            logger.debug("calling resource_manager.create...")
+            geonode_resource = resource_manager.create(
+                resource_defaults["uuid"],
+                geonode_resource_type,
+                defaults
+            )
+        return geonode_resource
+
+    def _update_existing_geonode_resource(
+            self,
+            geonode_resource: ResourceBase,
+            defaults: typing.Dict
+    ):
+        resource_defaults = defaults.copy()
+        if len(resource_defaults.get("files", [])) > 0:
+            result = resource_manager.replace(geonode_resource, vals=resource_defaults)
+        else:
+            result = resource_manager.update(geonode_resource.uuid, vals=resource_defaults)
+        return result
+
+
+def download_resource_file(url: str, target_name: str) -> Path:
     """Download a resource file and store it using GeoNode's `storage_manager`.
 
     Downloads use the django `UploadedFile` helper classes. Depending on the size of the
@@ -362,29 +353,61 @@ def download_resource_file(url: str, target_name: str) -> str:
     size_threshold = config.get_setting("HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE")
     if file_size is not None and int(file_size) < size_threshold:
         logger.debug("Downloading to an in-memory buffer...")
+        buf = io.BytesIO()
         file_ = uploadedfile.InMemoryUploadedFile(
-            None, None, target_name, content_type, file_size, charset)
+            buf, None, target_name, content_type, file_size, charset)
     else:
         logger.debug("Downloading to a temporary file...")
         file_ = uploadedfile.TemporaryUploadedFile(
             target_name, content_type, file_size, charset)
+        # NOTE: there is no need to explicitly delete the file represented by
+        # `file_`, it is being deleted implicitly
     with file_.open("wb+") as fd:
         for chunk in response.iter_content(chunk_size=None, decode_unicode=False):
             fd.write(chunk)
         fd.seek(0)
-        result = storage_manager.save(target_name, fd)
+        if storage_manager.exists(target_name):
+            logger.debug(f"file {target_name!r} already exists, replacing...")
+            storage_manager.delete(target_name)
+        file_name = storage_manager.save(target_name, fd)
+        result = Path(storage_manager.path(file_name))
     return result
 
 
-def _sanitize_file_name(file_name: str) -> typing.Optional[str]:
-    """Inspired by django's `django.http.multipartparser.MultiPartParser.sanitize_file_name()` method."""
-
-    file_name = html.unescape(file_name)
-    file_name = file_name.rsplit("/")[-1]
-    file_name = file_name.rsplit("\\")[-1]
-
-    if file_name in {"", ".", ".."}:
+def _get_file_name(resource_info: HarvestedResourceInfo,) -> typing.Optional[str]:
+    file_extension = {
+        "geotiff": ".tiff",
+        "shapefile": ".zip",
+    }.get(
+        resource_info.resource_descriptor.identification.native_format,
+        f".{resource_info.resource_descriptor.identification.native_format}"
+    )
+    base_fragment = resource_info.resource_descriptor.identification.name
+    base_name = html.unescape(base_fragment).rsplit("/")[-1].rsplit("\\")[-1]
+    if base_name in {"", ".", ".."}:
         result = None
     else:
-        result = file_name
-    return result
+        result = f"harvested_{resource_info.resource_descriptor.uuid}_{base_name}{file_extension}"
+    # FIXME: geonode.upload.files._clean_string ought to be renamed in order to not indicate it is private
+    sanitized = geonode.upload.files._clean_string(result)  # noqa
+    return sanitized
+
+
+def _generate_harvester_keyword(harvester_id):
+    harvester = models.Harvester.objects.get(pk=harvester_id)
+    return harvester.name.lower().replace(
+        'harvester ', '').replace('harvester_', '').replace(
+        'harvester', '').strip()
+
+
+def _consolidate_resource_keywords(
+        resource_descriptor: resourcedescriptor.RecordDescription,
+        geonode_resource,
+        harvester_id: int
+) -> typing.List[str]:
+    keywords = list(
+        resource_descriptor.identification.other_keywords
+    ) + geonode_resource.keyword_list()
+    harvester_keyword = _generate_harvester_keyword(harvester_id)
+    keywords.append(harvester_keyword)
+    return list(set(keywords))

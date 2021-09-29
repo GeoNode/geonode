@@ -18,6 +18,7 @@
 #########################################################################
 import mock
 from django.contrib.auth import get_user_model
+from django.utils.timezone import now
 from geonode.tests.base import (
     GeoNodeBaseTestSupport
 )
@@ -29,13 +30,14 @@ from .. import (
 
 
 class TasksTestCase(GeoNodeBaseTestSupport):
+    harvester: models.Harvester
+    harvester_remote_url = "fake url"
+    harvester_name = "harvester1"
+    harvester_owner = get_user_model().objects.get(username="AnonymousUser")
+    harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
 
     @classmethod
     def setUpTestData(cls):
-        cls.harvester_remote_url = "fake url"
-        cls.harvester_name = "harvester1"
-        cls.harvester_owner = get_user_model().objects.get(username="AnonymousUser")
-        cls.harvester_type = "geonode.harvesting.harvesters.geonode.GeonodeLegacyHarvester"
         cls.harvester = models.Harvester.objects.create(
             remote_url=cls.harvester_remote_url,
             name=cls.harvester_name,
@@ -44,54 +46,17 @@ class TasksTestCase(GeoNodeBaseTestSupport):
             harvester_type=cls.harvester_type,
         )
         cls.harvesting_session = models.HarvestingSession.objects.create(harvester=cls.harvester)
+        for index in range(3):
+            models.HarvestableResource.objects.create(
+                unique_identifier=f"fake-identifier-{index}",
+                title=f"fake-title-{index}",
+                harvester=cls.harvester,
+                remote_resource_type="fake-remote-resource-type",
+                last_refreshed=now()
+            )
 
-    @mock.patch("geonode.harvesting.tasks.models")
-    @mock.patch("geonode.harvesting.tasks.utils")
-    @mock.patch("geonode.harvesting.tasks.chord")
-    def test_harvesting_dispatcher_creates_harvesting_session_when_harvester_available(
-            self,
-            mock_harvesting_chord,
-            mock_harvesting_utils,
-            mock_harvesting_models
-    ):
-        """Test that, when the remote server is available, the dispatcher proceeds to create a harvesting session
-        and to call the celery chord that set harvesting in motion
-
-        """
-
-        mock_harvesting_models.HarvestingSession.objects.create.return_value.id.return_value = "fake_session_id"
-        mock_harvesting_chord.return_value.apply_async.return_value = None
-        mock_harvesting_utils.update_harvester_availability.return_value = True
-
-        tasks.harvesting_dispatcher(self.harvester.id)
-
-        mock_harvesting_models.HarvestingSession.objects.create.assert_called()
-        mock_harvesting_chord.assert_called()
-
-    @mock.patch("geonode.harvesting.tasks.models")
-    @mock.patch("geonode.harvesting.tasks.utils")
-    @mock.patch("geonode.harvesting.tasks.chord")
-    def test_harvesting_dispatcher_does_not_create_harvesting_session_when_harvester_not_available(
-            self,
-            mock_harvesting_chord,
-            mock_harvesting_utils,
-            mock_harvesting_models
-    ):
-        """Test that, when the remote server is not available, no harvesting session is created
-        and no celery chord is called .
-
-        """
-
-        mock_harvesting_models.HarvestingSession.objects.create.return_value.id.return_value = "fake_session_id"
-        mock_harvesting_chord.return_value.apply_async.return_value = None
-        mock_harvesting_utils.update_harvester_availability.return_value = False
-
-        tasks.harvesting_dispatcher(self.harvester.id)
-
-        mock_harvesting_models.HarvestingSession.objects.create.assert_not_called()
-        mock_harvesting_chord.assert_not_called()
-
-    def test_harvest_resource_updates_geonode_when_remote_resource_exists(self):
+    @mock.patch("geonode.harvesting.tasks.update_harvesting_session")
+    def test_harvest_resource_updates_geonode_when_remote_resource_exists(self, mock_update_harvesting_session):
         """Test that `worker.get_resource()` is called by the `_harvest_resource()` task and that the related workflow is called too.
 
         Verify that `worker.get_resource()` is always called. Then verify that if the result of `worker.get_resource()` is
@@ -113,7 +78,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
             mock_models.HarvestableResource.objects.get.assert_called_with(pk=harvestable_resource_id)
             mock_worker.get_resource.assert_called()
             mock_worker.update_geonode_resource.assert_called()
-            mock_worker.update_harvesting_session.assert_called()
+            mock_update_harvesting_session.assert_called()
 
     def test_harvest_resource_does_not_update_geonode_when_remote_resource_does_not_exist(self):
         """Test that the worker does not try to update existing GeoNode resources when the remote resource cannot be harvested."""
