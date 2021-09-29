@@ -662,15 +662,11 @@ def set_owner_permissions(resource, members=None):
         # Owner & Manager Admin Perms
         admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
         for perm in admin_perms:
-            if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
-                assign_perm(perm, resource.owner, resource.get_self_resource())
-            elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
+            if perm not in {'change_resourcebase_permissions', 'publish_resourcebase'} or not settings.RESOURCE_PUBLISHING or not settings.ADMIN_MODERATE_UPLOADS:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
             if members:
-                for user in members:
-                    if settings.ADMIN_MODERATE_UPLOADS and perm == 'publish_resourcebase':
-                        pass
-                    else:
+                if perm not in {'change_resourcebase_permissions', 'publish_resourcebase'} or settings.ADMIN_MODERATE_UPLOADS:
+                    for user in members:
                         assign_perm(perm, user, resource.get_self_resource())
 
         # Set the GeoFence Owner Rule

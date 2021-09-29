@@ -1890,15 +1890,15 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
+                        "publish_resourcebase",
+                        "change_resourcebase_permissions",
                         "view_resourcebase",
                     ],
                     self.group_manager: [
                         "change_resourcebase",
                         "change_resourcebase_metadata",
-                        "change_resourcebase_permissions",
                         "delete_resourcebase",
                         "download_resourcebase",
-                        "publish_resourcebase",
                         "view_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
@@ -1914,74 +1914,18 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
+                        "publish_resourcebase",
+                        "change_resourcebase_permissions",
                         "view_resourcebase",
                     ],
                     self.group_manager: [
                         "change_resourcebase",
                         "change_resourcebase_metadata",
-                        "change_resourcebase_permissions",
                         "delete_resourcebase",
                         "download_resourcebase",
-                        "publish_resourcebase",
                         "view_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
-                    self.not_group_member: ["view_resourcebase"],
-                    self.anonymous_user: [],
-                },
-            ),
-        ]
-        for permissions, expected in use_cases:
-            self.resource.set_permissions(permissions)
-            for authorized_subject, expected_perms in expected.items():
-                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-                self.assertSetEqual(set(expected_perms), set(perms_got))
-
-    @override_settings(ADMIN_MODERATE_UPLOADS=True)
-    def test_permissions_are_set_as_expected_admin_upload_True(self):
-        use_cases = [
-            (
-                {"users": {}, "groups": {}},
-                {
-                    self.author: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "delete_resourcebase",
-                        "download_resourcebase",
-                        "view_resourcebase",
-                    ],
-                    self.group_manager: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "change_resourcebase_permissions",
-                        "delete_resourcebase",
-                        "download_resourcebase",
-                        "view_resourcebase",
-                    ],
-                    self.group_member: [],
-                    self.not_group_member: [],
-                    self.anonymous_user: [],
-                },
-            ),
-            (
-                {"users": {"AnonymousUser": []}, "groups": {"second_custom_group": ["view_resourcebase"]}},
-                {
-                    self.author: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "delete_resourcebase",
-                        "download_resourcebase",
-                        "view_resourcebase",
-                    ],
-                    self.group_manager: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "change_resourcebase_permissions",
-                        "delete_resourcebase",
-                        "download_resourcebase",
-                        "view_resourcebase",
-                    ],
-                    self.group_member: [],
                     self.not_group_member: ["view_resourcebase"],
                     self.anonymous_user: [],
                 },
@@ -2011,6 +1955,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase",
                         "change_resourcebase_metadata",
                         "change_resourcebase_permissions",
+                        "publish_resourcebase",
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
@@ -2034,6 +1979,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase",
                         "change_resourcebase_metadata",
                         "change_resourcebase_permissions",
+                        "publish_resourcebase",
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
