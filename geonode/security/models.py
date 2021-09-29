@@ -174,7 +174,7 @@ class PermissionLevelMixin:
                 set_owner_permissions(self, members=obj_group_managers)
 
                 if member_groups:
-                    for gr, perms in member_groups.items():
+                    for gr, perms in member_groups.get('groups', {}).items():
                         for perm in perms:
                             assign_perm(perm, gr, self.get_self_resource())
 
