@@ -46,13 +46,15 @@ class HarvesterViewSetTestCase(GeoNodeBaseTestSupport):
             harvester2.id: harvester_resource2,
         }
 
-        session1 = models.HarvestingSession.objects.create(
+        session1 = models.AsynchronousHarvestingSession.objects.create(
             harvester=harvester1,
-            records_harvested=10
+            session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING,
+            records_done=10
         )
-        session2 = models.HarvestingSession.objects.create(
+        session2 = models.AsynchronousHarvestingSession.objects.create(
             harvester=harvester2,
-            records_harvested=5
+            session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING,
+            records_done=5
         )
         cls.sessions = [session1, session2]
 
@@ -99,5 +101,5 @@ class HarvesterViewSetTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["total"], len(self.sessions))
         for index, harvester in enumerate(self.sessions):
-            self.assertEqual(response.data["harvesting_sessions"][index]["id"], self.sessions[index].pk)
-            self.assertEqual(response.data["harvesting_sessions"][index]["records_harvested"], self.sessions[index].records_harvested)
+            self.assertEqual(response.data["asynchronous_harvesting_sessions"][index]["id"], self.sessions[index].pk)
+            self.assertEqual(response.data["asynchronous_harvesting_sessions"][index]["records_done"], self.sessions[index].records_done)
