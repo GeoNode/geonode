@@ -252,7 +252,7 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
             instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(
                 remote_service=_s,
                 remote_typename=_s.name,
-                ows_url=_s.service_url,
+                # ows_url=_s.service_url,
                 subtype='remote',
                 sourcetype=enumerations.SOURCE_TYPE_REMOTE)
 

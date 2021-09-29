@@ -218,12 +218,15 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         layers = []
         leaf_layers = root.xpath("//wms:Layer[not(.//wms:Layer)]", namespaces=nsmap)
         for layer_element in leaf_layers:
-            data = self._layer_element_to_json(layer_element)
-            title = data['title']
-            if self.dataset_title_filter is not None:
-                if self.dataset_title_filter.lower() not in title.lower():
-                    continue
-            layers.append(data)
+            try:
+                data = self._layer_element_to_json(layer_element)
+                title = data['title']
+                if self.dataset_title_filter is not None:
+                    if self.dataset_title_filter.lower() not in title.lower():
+                        continue
+                layers.append(data)
+            except Exception as e:
+                logger.exception(e)
         return {
             'contact': self._get_contact(root),
             'layers': layers
@@ -285,7 +288,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         wms_url = f"{self.remote_url}?{urlencode(params)}"
 
         try:
-            csr = layer_element.xpath("wms:CRS//text()", namespaces=nsmap)[0]
+            crs = layer_element.xpath("wms:CRS//text()", namespaces=nsmap)[0]
             left_x = get_xpath_value(
                 layer_element, "wms:EX_GeographicBoundingBox/wms:westBoundLongitude", nsmap)
             right_x = get_xpath_value(
@@ -303,12 +306,13 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                 float(upper_y.replace(",", ".")),
             ))
         except IndexError:
+            crs = None
             spatial_extent = None
         return {
             'name': name,
             'title': title,
             'abstract': abstract,
-            'crs': csr,
+            'crs': crs,
             'keywords': keywords,
             'spatial_extent': spatial_extent,
             'wms_url': wms_url,

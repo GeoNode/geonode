@@ -1683,20 +1683,6 @@ def sync_instance_with_geoserver(
             except Exception as e:
                 logger.warning(e)
 
-        # Refreshing CSW records
-        logger.debug(f"... Updating the Catalogue entries for Dataset {instance.title}")
-        try:
-            catalogue_post_save(instance=instance, sender=instance.__class__)
-        except Exception as e:
-            logger.exception(e)
-
-        # Refreshing dataset links
-        logger.debug(f"... Creating Default Resource Links for Dataset {instance.title}")
-        try:
-            set_resource_default_links(instance, instance, prune=True)
-        except Exception as e:
-            logger.exception(e)
-
         # Save dataset styles
         logger.debug(f"... Refresh Legend links for Dataset {instance.title}")
         try:
@@ -1710,6 +1696,21 @@ def sync_instance_with_geoserver(
             _invalidate_geowebcache_dataset(instance.alternate)
         except Exception:
             pass
+
+    # Refreshing dataset links
+    logger.debug(f"... Creating Default Resource Links for Dataset {instance.title}")
+    try:
+        _prune = (gs_resource is not None)
+        set_resource_default_links(instance, instance, prune=_prune)
+    except Exception as e:
+        logger.exception(e)
+
+    # Refreshing CSW records
+    logger.debug(f"... Updating the Catalogue entries for Dataset {instance.title}")
+    try:
+        catalogue_post_save(instance=instance, sender=instance.__class__)
+    except Exception as e:
+        logger.exception(e)
 
     return instance
 
