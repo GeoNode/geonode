@@ -447,7 +447,7 @@ def update_harvesting_session(
         update_kwargs["total_records_found"] = total_records_found
     if additional_harvested_records is not None:
         update_kwargs["records_harvested"] = (
-            F("records_harvested") + additional_harvested_records)
+                F("records_harvested") + additional_harvested_records)
     if additional_details is not None:
         update_kwargs["session_details"] = Concat("session_details", Value(f"\n{additional_details}"))
     models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
@@ -466,7 +466,7 @@ def finish_harvesting_session(
     }
     if additional_harvested_records is not None:
         update_kwargs["records_harvested"] = (
-            F("records_harvested") + additional_harvested_records)
+                F("records_harvested") + additional_harvested_records)
     if final_details is not None:
         update_kwargs["session_details"] = Concat("session_details", Value(f"\n{final_details}"))
     models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
