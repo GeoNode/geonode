@@ -199,8 +199,8 @@ class Harvester(models.Model):
         """
 
         try:
-            self.validate_worker_configuration(
-                self.harvester_type, self.harvester_type_specific_configuration)
+            validate_worker_configuration(self.harvester_type, self.harvester_type_specific_configuration)
+            # self.validate_worker_configuration()
         except jsonschema.exceptions.ValidationError as exc:
             raise ValidationError(str(exc))
 
@@ -306,15 +306,6 @@ class Harvester(models.Model):
     def get_harvester_worker(self) -> "BaseHarvesterWorker":  # noqa
         worker_class = import_string(self.harvester_type)
         return worker_class.from_django_record(self)
-
-    def validate_worker_configuration(self):
-        worker_class = import_string(self.harvester_type)
-        schema = worker_class.get_extra_config_schema()
-        if schema is not None:
-            try:
-                jsonschema.validate(self.harvester_type_specific_configuration, schema)
-            except jsonschema.exceptions.SchemaError as exc:
-                raise RuntimeError(f"Invalid schema: {exc}")
 
     def worker_can_perform_action(
             self,
@@ -508,3 +499,16 @@ class HarvestableResource(models.Model):
         if delete_orphan_resource:
             worker.finalize_harvestable_resource_deletion(self)
         return super().delete(using, keep_parents)
+
+
+def validate_worker_configuration(
+        worker_type: "BaseHarvesterWorker",  # noqa
+        worker_config: typing.Dict
+):
+    worker_class = import_string(worker_type)
+    schema = worker_class.get_extra_config_schema()
+    if schema is not None:
+        try:
+            jsonschema.validate(worker_config, schema)
+        except jsonschema.exceptions.SchemaError as exc:
+            raise RuntimeError(f"Invalid schema: {exc}")

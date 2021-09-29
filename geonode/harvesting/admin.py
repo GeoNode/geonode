@@ -413,6 +413,11 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
 
 def _worker_config_changed(form) -> bool:
     field_name = "harvester_type_specific_configuration"
-    original = json.loads(form.data[f"initial-{field_name}"])
-    cleaned = form.cleaned_data.get(field_name)
-    return original != cleaned
+    try:
+        original = json.loads(form.data[f"initial-{field_name}"])
+    except KeyError:
+        result = True
+    else:
+        cleaned = form.cleaned_data.get(field_name)
+        result = original != cleaned
+    return result
