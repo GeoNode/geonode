@@ -21,6 +21,7 @@ import datetime
 from unittest import mock
 
 from django.contrib.auth import get_user_model
+from django.test import SimpleTestCase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from .. import models
@@ -62,17 +63,15 @@ class HarvesterTestCase(GeoNodeBaseTestSupport):
         mock_import_string.return_value = mock_worker_class
 
         harvester_type = "fake_harvester_type"
-        configuration = "fake_configuration"
-        harvester = models.Harvester(
-            harvester_type=harvester_type, harvester_type_specific_configuration=configuration)
-        harvester.validate_worker_configuration()
+        configuration = {"fake_key": "fake_configuration"}
+        models.validate_worker_configuration(harvester_type, configuration)
 
         mock_import_string.assert_called_with(harvester_type)
         mock_worker_class.get_extra_config_schema.assert_called()
         mock_jsonschema.validate.assert_called_with(configuration, extra_config_schema)
 
 
-class HarvesterSessionTestCase(GeoNodeBaseTestSupport):
+class AsynchronousHarvestingSessionTestCase(GeoNodeBaseTestSupport):
     remote_url = 'test.com'
     name = 'This is geonode harvester'
     user = get_user_model().objects.get(username='AnonymousUser')
@@ -86,8 +85,9 @@ class HarvesterSessionTestCase(GeoNodeBaseTestSupport):
             default_owner=self.user,
             harvester_type=self.harvester_type
         )
-        self.harvesting_session = models.HarvestingSession.objects.create(
-            harvester=self.harvester
+        self.harvesting_session = models.AsynchronousHarvestingSession.objects.create(
+            harvester=self.harvester,
+            session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING
         )
 
     def test_check_attributes(self):
@@ -96,7 +96,7 @@ class HarvesterSessionTestCase(GeoNodeBaseTestSupport):
         """
         self.assertIsNotNone(self.harvesting_session.pk)
         self.assertEqual(self.harvesting_session.harvester, self.harvester)
-        self.assertEqual(self.harvesting_session.records_harvested, 0)
+        self.assertEqual(self.harvesting_session.records_done, 0)
 
 
 class HarvestableResourceTestCase(GeoNodeBaseTestSupport):
@@ -129,3 +129,22 @@ class HarvestableResourceTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(self.harvestable_resource.unique_identifier, self.unique_identifier)
         self.assertFalse(self.harvestable_resource.should_be_harvested)
         self.assertEqual(self.harvestable_resource.status, models.HarvestableResource.STATUS_READY)
+
+
+class WorkerConfigValidationTestCase(SimpleTestCase):
+
+    @mock.patch("geonode.harvesting.models.jsonschema")
+    @mock.patch("geonode.harvesting.models.import_string")
+    def test_validate_worker_configuration(self, mock_import_string, mock_jsonschema):
+        extra_config_schema = "fake_config_schema"
+        mock_worker_class = mock.MagicMock()
+        mock_worker_class.get_extra_config_schema.return_value = extra_config_schema
+        mock_import_string.return_value = mock_worker_class
+
+        harvester_type = "fake_harvester_type"
+        configuration = {"somekey": "fake_configuration"}
+        models.validate_worker_configuration(harvester_type, configuration)
+
+        mock_import_string.assert_called_with(harvester_type)
+        mock_worker_class.get_extra_config_schema.assert_called()
+        mock_jsonschema.validate.assert_called_with(configuration, extra_config_schema)

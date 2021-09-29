@@ -3,7 +3,6 @@ from unittest import mock
 from django.contrib.admin.sites import AdminSite
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.test import RequestFactory
 from rest_framework import status
 
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -18,7 +17,6 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
     harvester_type = 'geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester'
 
     def setUp(self):
-        self.factory = RequestFactory()
         self.user = get_user_model().objects.get(username='admin')
         self.client.login(username="admin", password="admin")
 
@@ -28,13 +26,6 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
             default_owner=self.user,
             harvester_type=self.harvester_type
         )
-
-    def test_get_form_returns_current_user(self):
-        request = self.factory.post(reverse("admin:harvesting_harvester_add"))
-        request.user = self.user
-        model_admin = admin.HarvesterAdmin(model=models.Harvester, admin_site=AdminSite())
-        form = model_admin.get_form(request)
-        self.assertEqual(form.base_fields["default_owner"].initial.username, self.user.username)
 
     def test_add_harvester(self):
         data = {
