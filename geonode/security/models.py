@@ -165,26 +165,18 @@ class PermissionLevelMixin:
                 _owner = owner or self.owner
                 user_groups = Group.objects.filter(
                     name__in=_owner.groupmember_set.all().values_list("group__slug", flat=True))
-                obj_group_managers = []
-                if user_groups:
-                    for _user_group in user_groups:
-                        if not skip_registered_members_common_group(Group.objects.get(name=_user_group)):
-                            try:
-                                _group_profile = GroupProfile.objects.get(slug=_user_group)
-                                managers = _group_profile.get_managers()
-                                if managers:
-                                    for manager in managers:
-                                        if manager not in obj_group_managers and not manager.is_superuser:
-                                            obj_group_managers.append(manager)
-                            except GroupProfile.DoesNotExist:
-                                tb = traceback.format_exc()
-                                logger.debug(tb)
+                member_groups, obj_group_managers = self._get_group_managers(user_groups)
 
                 if not anonymous_group:
                     raise Exception("Could not acquire 'anonymous' Group.")
 
                 # default permissions for resource owner
                 set_owner_permissions(self, members=obj_group_managers)
+
+                if member_groups:
+                    for gr, perms in member_groups.get('groups', {}).items():
+                        for perm in perms:
+                            assign_perm(perm, gr, self.get_self_resource())
 
                 # Anonymous
                 anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
@@ -250,6 +242,33 @@ class PermissionLevelMixin:
         except Exception as e:
             raise GeoNodeException(e)
 
+    def _get_group_managers(self, user_groups):
+        obj_group_managers = []
+        perm_spec = {"groups": {}}
+        if user_groups:
+            for _user_group in user_groups:
+                if not skip_registered_members_common_group(Group.objects.get(name=_user_group)):
+                    try:
+                        _group_profile = GroupProfile.objects.get(slug=_user_group)
+                        managers = _group_profile.get_managers()
+                        if managers:
+                            for manager in managers:
+                                if manager not in obj_group_managers and not manager.is_superuser:
+                                    obj_group_managers.append(manager)
+                    except GroupProfile.DoesNotExist:
+                        tb = traceback.format_exc()
+                        logger.debug(tb)
+
+        # assign view permissions to group resources
+        if self.group and settings.RESOURCE_PUBLISHING:
+            perm_spec['groups'][self.group] = ["view_resourcebase", "download_resourcebase"]
+
+        for x in self.owner.groupmember_set.all():
+            if settings.RESOURCE_PUBLISHING and x.group.slug != groups_settings.REGISTERED_MEMBERS_GROUP_NAME:
+                perm_spec['groups'][x.group.group] = ["view_resourcebase", "download_resourcebase"]
+
+        return perm_spec, obj_group_managers
+
     def set_permissions(self, perm_spec, created=False):
         """
         Sets an object's the permission levels based on the perm_spec JSON.
@@ -273,8 +292,18 @@ class PermissionLevelMixin:
             with transaction.atomic():
                 remove_object_permissions(self, purge=False)
 
+                # permissions = self._resolve_resource_permissions(resource=self, permissions=perm_spec)
                 # default permissions for resource owner
-                set_owner_permissions(self)
+                user_groups = Group.objects.filter(
+                    name__in=self.owner.groupmember_set.all().values_list("group__slug", flat=True))
+                member_group_perm, group_managers = self._get_group_managers(user_groups)
+
+                if member_group_perm:
+                    for gr, perm in member_group_perm['groups'].items():
+                        prev_perms = perm_spec['groups'].get(gr, [])
+                        perm_spec['groups'][gr] = list(set(prev_perms + perm))
+
+                set_owner_permissions(self, members=group_managers)
 
                 # Anonymous User group
                 if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:

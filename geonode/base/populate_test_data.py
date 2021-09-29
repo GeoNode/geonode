@@ -314,7 +314,7 @@ def dump_models(path=None):
         f.write(result)
 
 
-def create_single_layer(name, keywords=None):
+def create_single_layer(name, keywords=None, owner=None):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -335,7 +335,7 @@ def create_single_layer(name, keywords=None):
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
         uuid=str(uuid4()),
-        owner=user,
+        owner=owner or user,
         temporal_extent_start=test_datetime,
         temporal_extent_end=test_datetime,
         date=start,

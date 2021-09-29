@@ -662,13 +662,12 @@ def set_owner_permissions(resource, members=None):
         # Owner & Manager Admin Perms
         admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
         for perm in admin_perms:
-            if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
-                assign_perm(perm, resource.owner, resource.get_self_resource())
-            elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
+            if perm not in {'change_resourcebase_permissions', 'publish_resourcebase'} or not settings.RESOURCE_PUBLISHING or not settings.ADMIN_MODERATE_UPLOADS:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
             if members:
-                for user in members:
-                    assign_perm(perm, user, resource.get_self_resource())
+                if perm not in {'change_resourcebase_permissions', 'publish_resourcebase'} or settings.ADMIN_MODERATE_UPLOADS:
+                    for user in members:
+                        assign_perm(perm, user, resource.get_self_resource())
 
         # Set the GeoFence Owner Rule
         if resource.polymorphic_ctype.name == 'layer':
@@ -912,5 +911,8 @@ def skip_registered_members_common_group(user_group):
         _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
         if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
                 _members_group_name == user_group.name:
+            return True
+        elif not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+            # in the case that the advanced workflow is off, the managers should not inherit permissions
             return True
     return False
