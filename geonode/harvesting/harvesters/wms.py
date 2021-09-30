@@ -161,7 +161,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
     def get_resource(
             self,
             harvestable_resource: "HarvestableResource",  # noqa
-            harvesting_session_id: int
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         resource_unique_identifier = harvestable_resource.unique_identifier
         data = self._get_data()
