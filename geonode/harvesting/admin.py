@@ -168,14 +168,6 @@ class HarvesterAdmin(admin.ModelAdmin):
             message = _("No active refresh sessions have been found for the selected harvesters. Skipping...")
         self.message_user(request, message)
 
-    @admin.display(description="Number of selected resources to harvest")
-    def get_num_harvestable_resources_selected(self, harvester: models.Harvester):
-        return harvester.harvestable_resources.filter(should_be_harvested=True).count()
-
-    @admin.display(description="Number of existing harvestable resources")
-    def get_num_harvestable_resources(self, harvester: models.Harvester):
-        return harvester.num_harvestable_resources
-
     @admin.action(description="Perform harvesting on selected harvesters")
     def initiate_perform_harvesting(self, request, queryset):
         being_harvested = []
