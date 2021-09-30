@@ -18,7 +18,10 @@
 #########################################################################
 
 from django.apps import AppConfig
+from django.conf import settings
 from django.conf.urls import url, include
+
+from . import config
 
 
 class HarvestingAppConfig(AppConfig):
@@ -32,3 +35,7 @@ class HarvestingAppConfig(AppConfig):
         urlpatterns += [
             url(r'^api/v2/', include('geonode.harvesting.api.urls'))
         ]
+        settings.CELERY_BEAT_SCHEDULE['harvesting-scheduler'] = {
+            "task": "geonode.harvesting.tasks.harvesting_scheduler",
+            "schedule": config.get_setting("HARVESTER_SCHEDULER_FREQUENCY_MINUTES") * 60,
+        }
