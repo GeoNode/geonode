@@ -21,8 +21,6 @@ from unittest import mock
 
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
-from django.test import SimpleTestCase
-
 from geonode.tests.base import (
     GeoNodeBaseTestSupport
 )
