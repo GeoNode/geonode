@@ -149,23 +149,23 @@ class Harvester(models.Model):
             "the very least an empty object (i.e. {}) must be supplied."
         )
     )
-    periodic_task = models.OneToOneField(
-        PeriodicTask,
-        on_delete=models.CASCADE,
-        help_text=_("Periodic task used to configure harvest scheduling"),
-        null=True,
-        blank=True,
-        editable=False,
-    )
-    availability_check_task = models.OneToOneField(
-        PeriodicTask,
-        on_delete=models.CASCADE,
-        related_name="checked_harvester",
-        help_text=_("Periodic task used to check availability of the remote"),
-        null=True,
-        blank=True,
-        editable=False,
-    )
+    # periodic_task = models.OneToOneField(
+    #     PeriodicTask,
+    #     on_delete=models.CASCADE,
+    #     help_text=_("Periodic task used to configure harvest scheduling"),
+    #     null=True,
+    #     blank=True,
+    #     editable=False,
+    # )
+    # availability_check_task = models.OneToOneField(
+    #     PeriodicTask,
+    #     on_delete=models.CASCADE,
+    #     related_name="checked_harvester",
+    #     help_text=_("Periodic task used to check availability of the remote"),
+    #     null=True,
+    #     blank=True,
+    #     editable=False,
+    # )
     num_harvestable_resources = models.IntegerField(
         blank=True,
         default=0
@@ -205,46 +205,6 @@ class Harvester(models.Model):
             # self.validate_worker_configuration()
         except jsonschema.exceptions.ValidationError as exc:
             raise ValidationError(str(exc))
-
-    def setup_periodic_tasks(self) -> None:
-        """Setup the related periodic tasks for the instance.
-
-        Periodic tasks are:
-
-        - perform harvesting
-        - check availability of the remote server
-
-        This function is automatically called by the
-        `signals.create_or_update_periodic_tasks` signal handler whenever a new
-        instance is saved (handler is listening to the `post_save` signal). It creates
-        the related `PeriodicTask` objects in order to allow the harvester to be
-        scheduled by celery beat.
-
-        """
-
-        update_interval, update_created = IntervalSchedule.objects.get_or_create(
-            every=self.update_frequency,
-            period="minutes"
-        )
-        self.periodic_task = PeriodicTask.objects.create(
-            name=_(self.name),
-            task="geonode.harvesting.tasks.harvesting_dispatcher",
-            interval=update_interval,
-            args=json.dumps([self.id]),
-            start_time=timezone.now()
-        )
-        check_interval, check_created = IntervalSchedule.objects.get_or_create(
-            every=self.check_availability_frequency,
-            period="minutes"
-        )
-        self.availability_check_task = PeriodicTask.objects.create(
-            name=_(f"Check availability of {self.name}"),
-            task="geonode.harvesting.tasks.check_harvester_available",
-            interval=check_interval,
-            args=json.dumps([self.id]),
-            start_time=timezone.now()
-        )
-        self.save()
 
     def update_availability(
             self,
