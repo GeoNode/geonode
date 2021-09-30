@@ -16,9 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import mock
+import datetime as dt
+from unittest import mock
+
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
+from django.test import SimpleTestCase
+
 from geonode.tests.base import (
     GeoNodeBaseTestSupport
 )
@@ -147,117 +151,20 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         pass
 
 
-# class TestTaskHarvester(GeoNodeBaseTestSupport):
-#     """
-#     Tests for the harvester model.
-#     """
-#     remote_url = 'test.com'
-#     name = 'This is geonode harvester'
-#     user = get_user_model().objects.get(username='AnonymousUser')
-#     harvester_type = 'geonode.harvesting.tests.harvesters.test_harvester.TestHarvester'
-#
-#     def setUp(self):
-#         super().setUp()
-#         self.harvester = models.Harvester.objects.create(
-#             remote_url=self.remote_url,
-#             name=self.name,
-#             default_owner=self.user,
-#             harvester_type=self.harvester_type
-#         )
-#
-#     def test_harvesting_dispatcher(self):
-#         """
-#         Call harvesting_dispatcher create sessions
-#         """
-#         tasks.harvesting_dispatcher(self.harvester.id)
-#         self.assertIsNotNone(self.harvester.harvesting_sessions.first())
-#
-#     def test_harvest_resource_failed(self):
-#         """
-#         Call _harvest_resource when the resource is not found
-#         """
-#         harvestable_resource = models.HarvestableResource.objects.create(
-#             unique_identifier='id',
-#             title='Test',
-#             harvester=self.harvester,
-#             last_refreshed=datetime.datetime.now()
-#         )
-#         harvesting_session = models.HarvestingSession.objects.create(
-#             harvester=self.harvester
-#         )
-#         tasks._harvest_resource(harvestable_resource.id, harvesting_session.id)
-#         harvestable_resource.refresh_from_db()
-#         self.assertFalse(harvestable_resource.last_harvesting_succeeded)
-#         self.assertTrue('Harvesting failed' in harvestable_resource.last_harvesting_message)
-#
-#     def test_harvest_resource_success(self):
-#         """
-#         Call _harvest_resource when the resource is found
-#         """
-#         with mock.patch.object(TestHarvester, 'get_resource', return_value=resource_info_example):
-#             harvestable_resource = models.HarvestableResource.objects.create(
-#                 unique_identifier='id',
-#                 title='Test',
-#                 harvester=self.harvester,
-#                 last_refreshed=datetime.datetime.now()
-#             )
-#             harvesting_session = models.HarvestingSession.objects.create(
-#                 harvester=self.harvester
-#             )
-#             tasks._harvest_resource(harvestable_resource.id, harvesting_session.id)
-#             harvestable_resource.refresh_from_db()
-#             self.assertTrue(harvestable_resource.last_harvesting_succeeded)
-#             self.assertIsNotNone(harvestable_resource.geonode_resource)
-#
-#     def test_finish_harvesting(self):
-#         """
-#         Call _finish_harvesting make status ready
-#         """
-#         self.harvester.status = models.Harvester.STATUS_CHECKING_AVAILABILITY
-#         self.harvester.save()
-#         self.assertEqual(self.harvester.status, models.Harvester.STATUS_CHECKING_AVAILABILITY)
-#
-#         harvesting_session = models.HarvestingSession.objects.create(
-#             harvester=self.harvester
-#         )
-#         tasks._finish_harvesting(self.harvester.id, harvesting_session.id)
-#         self.harvester.refresh_from_db()
-#         self.assertEqual(self.harvester.status, models.Harvester.STATUS_READY)
-#
-#     def test_check_harvester_available(self):
-#         """
-#         Call check_harvester_available
-#         """
-#         tasks.check_harvester_available(self.harvester.id)
-#         self.harvester.refresh_from_db()
-#         self.assertEqual(self.harvester.status, models.Harvester.STATUS_READY)
-#         self.assertIsNotNone(self.harvester.last_checked_availability)
-#         self.assertTrue(self.harvester.remote_available)
-#
-#     def test_update_harvestable_resources(self):
-#         """
-#         Call update_harvestable_resources
-#         """
-#         tasks.update_harvestable_resources(self.harvester.id)
-#         self.harvester.refresh_from_db()
-#         self.assertEqual(self.harvester.status, models.Harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES)
-#
-#     def test_update_harvestable_resources_batch(self):
-#         """
-#         Call _update_harvestable_resources_batch
-#         """
-#         tasks._update_harvestable_resources_batch(self.harvester.id, 0, 1)
-#         self.harvester.refresh_from_db()
-#         self.assertEqual(
-#             self.harvester.harvestable_resources.count(), 1)
-#
-#     def test_finish_harvestable_resources_update(self):
-#         """
-#         Call _finish_harvestable_resources_update
-#         """
-#         tasks._finish_harvestable_resources_update(self.harvester.id)
-#         self.harvester.refresh_from_db()
-#         self.assertIsNotNone(self.harvester.last_checked_harvestable_resources)
-#         self.assertTrue(
-#             'Harvestable resources successfully checked' in self.harvester.last_check_harvestable_resources_message
-#         )
+class OtherTaskRelatedUtilitiesTestCase(SimpleTestCase):
+
+    def test_is_due(self):
+        now = dt.datetime(2000, 1, 1, 1, 0, 0, 0, dt.timezone.utc)
+        test_fixtures = [
+            (5, None, True),
+            (5, now - dt.timedelta(minutes=10), True),
+            (60, now - dt.timedelta(minutes=10), False),
+            (60, now - dt.timedelta(minutes=60), False),
+            (60, now - dt.timedelta(minutes=61), True),
+        ]
+        with mock.patch("geonode.harvesting.tasks.timezone") as mock_timezone:
+            mock_timezone.now.return_value = now
+            for frequency, last_check, expected_result in test_fixtures:
+                result = tasks._is_due(frequency, last_check)
+                self.assertEqual(result, expected_result)
+

@@ -70,13 +70,15 @@ class Harvester(models.Model):
         ),
         default=True
     )
-    update_frequency = models.PositiveIntegerField(
+    harvesting_session_update_frequency = models.PositiveIntegerField(
         help_text=_(
-            "How often (in minutes) should new harvesting sessions be automatically "
-            "scheduled? Setting this value to zero has the same effect as setting "
-            "`scheduling_enabled` to False "
-        ),
+            "How often (in minutes) should new harvesting sessions be automatically scheduled?"),
         default=60
+    )
+    refresh_harvestable_resources_update_frequency = models.PositiveIntegerField(
+        help_text=_(
+            "How often (in minutes) should new refresh sessions be automatically scheduled?"),
+        default=30
     )
     remote_available = models.BooleanField(
         help_text=_("Whether the remote service is known to be available or not"),
@@ -88,7 +90,7 @@ class Harvester(models.Model):
             "How often (in minutes) should the remote service be checked for "
             "availability?"
         ),
-        default=30
+        default=10
     )
     last_checked_availability = models.DateTimeField(
         help_text=_("Last time the remote server was checked for availability"),
