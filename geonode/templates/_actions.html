@@ -36,12 +36,15 @@
       </a>
     </li>
     {% endif %}
-    <li>
-    {% if resource.polymorphic_ctype.name == 'layer' %}
-      <a href="{% url "new_map" %}?layer={{resource.service_typename}}&view=True" class="btn btn-default btn-primary btn-md btn-block">{% trans "View Layer" %}</a>
-    {% elif resource.polymorphic_ctype.name == 'map' %}
-      <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-primary btn-md btn-block">{% trans "View Map" %}</a>
-      {% elif resource.polymorphic_ctype.name == 'geo story' or resource.polymorphic_ctype.name == 'dashboard' %}<a class="btn btn-primary btn-default btn-md btn-block" href="{% url "geoapp_view" resource.id %}">{% trans "View" %} {{ resource.type }}</a>    {% endif %}
-    </li>
+    
 {% endif %}
 </ul>
+{% if request.user_agent.is_mobile %}
+<div class="view-action-container">
+  {% if resource.polymorphic_ctype.name == 'layer' %}
+    <a href="{% url "new_map" %}?layer={{resource.service_typename}}&view=True" class="btn btn-primary btn-xs">{% trans "View Layer" %}</a>
+  {% elif resource.polymorphic_ctype.name == 'map' %}
+    <a href="{% url "map_view" resource.id %}" class="btn btn-primary btn-xs">{% trans "View Map" %}</a>
+    {% elif resource.polymorphic_ctype.name == 'geo story' or resource.polymorphic_ctype.name == 'dashboard' %}<a class="btn btn-primary btn-xs" href="{% url "geoapp_view" resource.id %}">{% trans "View" %} {{ resource.type }}</a>    {% endif %}
+</div>
+{% endif %}

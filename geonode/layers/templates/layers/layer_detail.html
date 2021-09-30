@@ -302,15 +302,17 @@
           <a href="{{link_geotiff_io}}" class="btn btn-primary btn-block" target="_blank">{% trans "Analyze with" %} GeoTIFF.io</a>
         </li>
         {% endif %}
-        <li class="list-group-item">
-        {% if links_download and not request.user_agent.is_mobile %}
-           <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
-        {% else %}
-          {% if request.user.is_authenticated and not request.user_agent.is_mobile %}
-          <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
+        {% if not request.user_agent.is_mobile %}
+          <li class="list-group-item">
+          {% if links_download %}
+            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
+          {% else %}
+            {% if request.user.is_authenticated %}
+            <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
+            {% endif %}
           {% endif %}
+          </li>
         {% endif %}
-        </li>
       {% endif %}
     <div class="modal fade" id="download-layer" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">

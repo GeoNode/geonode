@@ -82,6 +82,7 @@
     "yarn": ">= 1.0.0"
   },
   "scripts": {
-    "postinstall": ""
+    "postinstall": "",
+    "watch-less": "grunt watch"
   }
 }
