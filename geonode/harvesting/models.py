@@ -30,6 +30,10 @@ from django.db import models
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
+from django_celery_beat.models import (
+    IntervalSchedule,
+    PeriodicTask,
+)
 
 from geonode import celery_app
 
