@@ -6930,6 +6930,24 @@ msgstr "Nivel de permiso inválido."
 msgid "Permission Denied"
 msgstr "Permiso Denegado"
 
+msgid "Positional Arguments"
+msgstr "Argumentos posicionales"
+
+msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+msgstr ""
+"Argumentos posicionales codificados en formato JSON. (Ejemplo: [\"arg1\", "
+"\"arg2\"])"
+
+msgid "Keyword Arguments"
+msgstr "Argumentos opcionales"
+
+msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+msgstr ""
+"Argumentos opcionales codificados en formato JSON. (Ejemplo: {\"argument\": "
+"\"value\"})"
+
+#~ msgid "Home"
+#~ msgstr "Inicio"
 #~ msgid "Layer name"
 #~ msgstr "Nombre de la Capa"
 
