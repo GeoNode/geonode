@@ -29,6 +29,7 @@ class HarvestingAppConfig(AppConfig):
     name = "geonode.harvesting"
 
     def ready(self):
+        from . import signals  # noqa
         from geonode.urls import urlpatterns
 
         urlpatterns += [
