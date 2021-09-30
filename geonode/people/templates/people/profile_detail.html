@@ -133,10 +133,12 @@
   {% endif %}
 </div>
 
-<div class="col-xs-12 col-md-3">
+<div class="col-xs-12 col-md-3 profile-actions">
+  {% if not request.user_agent.is_mobile %}
   <ul class="list-group">
       <li class="list-group-item"><a href="{% url "message_create" profile.pk %}"><i class="fa fa-paper-plane-o"></i> {% trans "Message User" %}</a></li>
     </ul>
+  {% endif %}
   {% if user == profile %}
     <ul class="list-group">
       {% if not READ_ONLY_MODE %}
@@ -148,6 +150,7 @@
         <li class="list-group-item"><a href="{% url "account_change_password" %}"><i class="fa fa-lock"></i> {% trans "Set/Change password" %}</a></li>
       {% endif %}
     </ul>
+    {% if not request.user_agent.is_mobile %}
     <ul class="list-group">
       {% if user.is_authenticated and not READ_ONLY_MODE %}
         <li class="list-group-item"><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
@@ -180,19 +183,22 @@
           <li class="list-group-item"><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
       {% endif %}
     </ul>
+    {% endif %}
   {% else %}
     {% if user.is_superuser and not READ_ONLY_MODE %}
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "profile_edit" profile.username %}"><i class="fa fa-edit"></i> {% trans "Edit profile" %}</a></li>
     </ul>
     {% endif %}
+    {% if not request.user_agent.is_mobile %}
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "User Activities" %}</a></li>
     </ul>
+    {% endif %}
   {% endif %}
 </div>
 
-<div class="col-xs-12 col-md-9">
+<div class="col-xs-12 col-md-9 profile-resources">
   <h4>{% trans "Resources" %}</h4>
   <div class="col-md-12">
     {% include "people/_profile_filters.html" %}
@@ -203,7 +209,7 @@
   <div class=" col-xs-12 col-md-12">
     {% include 'base/_resourcebase_snippet.html' %}
   </div>
-  <div class="col-md-12">
+  <div class="col-md-12 profile-pagination">
     {% include 'search/_pagination.html' %}
   </div>
 </div>

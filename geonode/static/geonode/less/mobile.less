@@ -1,0 +1,207 @@
+
+.gn-mobile {
+
+    .reset-mobile-fonts(@size) {
+        @mobile-font-size-base: @size;
+        @mobile-font-size-h1: floor((@mobile-font-size-base * 1.75));
+        @mobile-font-size-h2: floor((@mobile-font-size-base * 1.75));
+        @mobile-font-size-h3: ceil((@mobile-font-size-base * 1.5));
+        @mobile-font-size-h4: ceil((@mobile-font-size-base * 1.25));
+        @mobile-font-size-h5: @mobile-font-size-base;
+        @mobile-font-size-h6: ceil((@mobile-font-size-base * 0.85));
+        font-size: @mobile-font-size-base;
+        h1 { font-size: @mobile-font-size-h1; }
+        h2 { font-size: @mobile-font-size-h2; }
+        h3 { font-size: @mobile-font-size-h3; }
+        h4 { font-size: @mobile-font-size-h4; }
+        h5 { font-size: @mobile-font-size-h5; }
+        h6 { font-size: @mobile-font-size-h6; }
+        p { font-size: @mobile-font-size-base; }
+    }
+
+    .reset-mobile-fonts(14px);
+
+    h1, .h1, h2, .h2, h3, .h3 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+    .page-header {
+        margin: 8px 0;
+        word-break: break-word;
+    }
+
+    #wrap {
+        padding-bottom: 16px;
+    }
+    .grid-spacer {
+        margin-top: 16px;
+    }
+
+    .autocomplete-input .ac-results {
+        width: 100%;
+    }
+    &.home {
+        background: @gray-lighter;
+        .jumbotron {
+            text-align: center;
+            padding: 8px;
+            padding-bottom: 32px;
+            .reset-mobile-fonts(20px);
+        }
+
+        section {
+            background: @gray-lighter;
+        }
+        #datasets,
+        #showcase {
+            padding: 0;
+            .reset-mobile-fonts(14px);
+        }
+
+        #datasets {
+            > div {
+                background: @body-bg;
+            }
+        }
+    }
+
+    footer {
+        padding: 8px;
+        // center language selector
+        .row > div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    .item-container {
+        margin: 15px;
+        border: 1px solid @gray-lighter;
+        padding: 0;
+        > div {
+            padding: 0;
+        }
+        .item-thumb {
+            position: relative;
+            height: 140px;
+            width: 100%;
+            img {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+        .item-items {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+    .resourcebase-no-content {
+        text-align: center;
+        padding: 4px;
+    }
+    .layer-actions,
+    .map-actions {
+        position: relative;
+        .view-action-container {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+    article.tab-pane {
+        padding-bottom: 0;
+    }
+
+    .resources-list-header {
+        background: @body-bg;
+        position: sticky;
+        top: 65px;
+        z-index: 10;
+        .mobile-list-row {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 8px 15px;
+            .mobile-list-float-right {
+                position: absolute;
+                right: 0;
+            }
+            .filter {
+                width: 100%;
+            }
+            .pagination a {
+                height: 32px;
+            }
+        }
+        #text_search_btn {
+            height: 32px;
+        }
+        #text-search-autocomplete {
+            margin: 0;
+        }
+    }
+    
+    div#user_messages {
+        width: 100%;
+        left: 0;
+    }
+
+    #signup_form {
+        padding: 0 15px;
+    }
+
+    .profile-details {
+        width: 100%;
+        padding: 0;
+    }
+    #sort .selected {
+        color: contrast(@brand-primary);
+        background-color: @brand-primary;
+    }
+    .group-logo {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 60px;
+        height: 60px;
+        margin: 0 !important;
+        transform: translateY(-50%);
+        img {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+    }
+    .profile-actions {
+        padding: 0;
+        width: 100%;
+    }
+    .profile-resources {
+        padding: 0;
+        width: 100%;
+        .col-md-12,
+        .col-xs-12 {
+            padding: 0;
+        }
+        > * {
+            display: block;
+            float: none !important;
+            clear: both;
+        }
+    }
+    .profile-pagination .pagination  {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        float: none !important;
+        margin: auto !important;
+        clear: both;
+    }
+}

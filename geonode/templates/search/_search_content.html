@@ -22,11 +22,7 @@
           {% endblock %}
         {% endif %}
 
-      {% if request.user_agent.is_mobile %}
-          {% if SEARCH_FILTERS.TEXT_ENABLED %}
-            {% include "search/_text_filter.html" %}
-          {% endif  %}
-        {% else %}
+        {% if not request.user_agent.is_mobile  %}
         <div class="selections">
             {% trans "Filters" %}
             <a href="." id="clear-search" class="pull-right">{% trans "Clear" %}</a>
@@ -59,7 +55,7 @@
     </div>
   </div>
   <div class="col-md-9">
-    <div class="row">
+    <div class="row resources-list-header">
       {% if not request.user_agent.is_mobile %}
       <div class="col-md-8">
           {% if facet_type == 'layers' %}
@@ -76,9 +72,16 @@
       </div>
       {% endif %}
       {% if request.user_agent.is_mobile %}
-      <br>
-      <div class="col-md-2">{% include "search/_sort_filters.html" %}</div>
-      <div class="col-md-2">{% include "search/_pagination.html" %}</div>
+        <div class="mobile-list-row">
+          {% if SEARCH_FILTERS.TEXT_ENABLED %}
+                {% include "search/_text_filter.html" %}
+          {% endif  %}
+        </div>
+        <div class="mobile-list-row">
+          {% include "search/_pagination.html" %}
+          <div class="mobile-list-float-right">{% include "search/_sort_filters.html" %}</div>
+        </div>
+      
       {% else %}
         <div class="col-md-2">{% include "search/_sort_filters.html" %}</div>
       {% endif %}
