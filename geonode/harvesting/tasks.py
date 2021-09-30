@@ -37,16 +37,6 @@ from .harvesters import base
 
 logger = logging.getLogger(__name__)
 
-def _is_due(frequency: int, last_check: typing.Optional[dt.datetime] = None):
-    try:
-        due_date = last_check + dt.timedelta(minutes=frequency)
-    except TypeError:
-        due_date = timezone.now()
-    due_delta = due_date - timezone.now()
-    due_minutes = (due_delta.days * 24 * 60) + (due_delta.seconds / 60)
-    threshold = 0.5
-    return due_minutes > threshold
-
 
 @app.task(
     bind=True,
@@ -55,24 +45,38 @@ def _is_due(frequency: int, last_check: typing.Optional[dt.datetime] = None):
     ignore_result=False
 )
 def harvesting_scheduler(self):
-    """Check whether any of the configured harvesters needs to be run or not."""
+    """Check whether any of the configured harvesters needs to be run or not.
+
+    This function is called periodically by celery beat. It is configured to run every
+    `HARVESTER_SCHEDULER_FREQUENCY_MINUTES` minutes. This can be configured in the GeoNode
+    settings. The default value is 5, which means that this function is called every five
+    minutes.
+
+    """
+
     for harvester in models.Harvester.objects.all():
         logger.debug(f"Checking harvester {harvester!r}...")
         should_check_availability = _is_due(
-            harvester.check_availability_frequency, harvester.last_checked_availability)
-        logger.debug(f"should_check_availability: {should_check_availability!r}")
+            harvester.check_availability_frequency,
+            harvester.last_checked_availability
+        )
+        logger.debug(f"- should_check_availability: {should_check_availability!r}")
         if should_check_availability:
             harvester.update_availability()
         if harvester.scheduling_enabled:
             logger.debug(f"scheduling_enabled: {harvester.scheduling_enabled!r}")
             should_refresh_harvestable_resources = _is_due(
-                harvester.update_frequency, harvester.latest_refresh_session.started)
-            logger.debug(f"should_refresh_harvestable_resources: {should_refresh_harvestable_resources!r}")
+                harvester.refresh_harvestable_resources_update_frequency,
+                harvester.latest_refresh_session.started
+            )
+            logger.debug(f"- should_refresh_harvestable_resources: {should_refresh_harvestable_resources!r}")
             if should_refresh_harvestable_resources:
                 harvester.initiate_update_harvestable_resources()
             should_perform_harvesting = _is_due(
-                harvester.update_frequency, harvester.latest_harvesting_session.started)
-            logger.debug(f"should_perform_harvesting: {should_perform_harvesting!r}")
+                harvester.harvesting_session_update_frequency,
+                harvester.latest_harvesting_session.started
+            )
+            logger.debug(f"- should_perform_harvesting: {should_perform_harvesting!r}")
             if should_perform_harvesting:
                 harvester.initiate_perform_harvesting()
 
@@ -605,3 +609,13 @@ def update_asynchronous_session(
     if additional_details is not None:
         update_kwargs["details"] = Concat("details", Value(f"\n{additional_details}"))
     models.AsynchronousHarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
+
+
+def _is_due(frequency: int, last_check: typing.Optional[dt.datetime] = None):
+    try:
+        due_date = last_check + dt.timedelta(minutes=frequency)
+    except TypeError:
+        result = True
+    else:
+        result = due_date < timezone.now()
+    return result
