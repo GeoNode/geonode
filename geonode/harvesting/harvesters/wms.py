@@ -17,15 +17,26 @@
 #
 #########################################################################
 
+import functools
 import logging
 import typing
 import uuid
 from datetime import datetime
-from urllib.parse import urlencode
+from urllib.parse import (
+    unquote,
+    urlparse,
+    urlencode,
+    parse_qsl,
+    ParseResult
+)
 
 import requests
-from django.contrib.gis import geos
 from lxml import etree
+
+from owslib.map import wms111, wms130
+from owslib.util import clean_ows_url
+
+from django.contrib.gis import geos
 
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Dataset
@@ -39,6 +50,63 @@ from ..utils import (
 from .. import resourcedescriptor
 
 logger = logging.getLogger(__name__)
+
+
+def WebMapService(url,
+                  version='1.3.0',
+                  xml=None,
+                  username=None,
+                  password=None,
+                  parse_remote_metadata=False,
+                  timeout=30,
+                  headers=None,
+                  proxy_base=None):
+    """
+    API for Web Map Service (WMS) methods and metadata.
+    """
+    '''wms factory function, returns a version specific WebMapService object
+
+    @type url: string
+    @param url: url of WFS capabilities document
+    @type xml: string
+    @param xml: elementtree object
+    @type parse_remote_metadata: boolean
+    @param parse_remote_metadata: whether to fully process MetadataURL elements
+    @param timeout: time (in seconds) after which requests should timeout
+    @return: initialized WebFeatureService_2_0_0 object
+    '''
+
+    if not proxy_base:
+        clean_url = clean_ows_url(url)
+        base_ows_url = clean_url
+    else:
+        (clean_version, proxified_url, base_ows_url) = base.get_proxified_ows_url(
+            url, version=version, proxy_base=proxy_base)
+        version = clean_version
+        clean_url = proxified_url
+
+    if version in ['1.1.1']:
+        return (
+            base_ows_url,
+            wms111.WebMapService_1_1_1(
+                clean_url, version=version, xml=xml,
+                parse_remote_metadata=parse_remote_metadata,
+                username=username, password=password,
+                timeout=timeout, headers=headers
+            )
+        )
+    elif version in ['1.3.0']:
+        return (
+            base_ows_url,
+            wms130.WebMapService_1_3_0(
+                clean_url, version=version, xml=xml,
+                parse_remote_metadata=parse_remote_metadata,
+                username=username, password=password,
+                timeout=timeout, headers=headers
+            )
+        )
+    raise NotImplementedError(
+        f'The WMS version ({version}) you requested is not implemented. Please use 1.1.1 or 1.3.0.')
 
 
 class OgcWmsHarvester(base.BaseHarvesterWorker):
@@ -95,13 +163,67 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             "additionalProperties": False,
         }
 
+    @classmethod
+    def get_wms_operations(cls, url, version=None, proxy_base=None) -> typing.Optional[typing.Dict]:
+        operations = {}
+        try:
+            _url, _parsed_service = WebMapService(
+                url,
+                version=version,
+                proxy_base=proxy_base)
+            for _op in _parsed_service.operations:
+                _methods = []
+                for _op_method in (getattr(_op, 'methods', []) if hasattr(_op, 'methods') else _op.get('methods', [])):
+                    _methods.append(
+                        {
+                            'type': _op_method.get('type', None),
+                            'url': _op_method.get('url', None)
+                        }
+                    )
+
+                _name = getattr(_op, 'name', None) if hasattr(_op, 'name') else _op.get('name', None)
+                _formatOptions = getattr(_op, 'formatOptions', []) if hasattr(_op, 'formatOptions') else _op.get('formatOptions', [])
+                if _name:
+                    operations[_name] = {
+                        'name': _name,
+                        'methods': _methods,
+                        'formatOptions': _formatOptions
+                    }
+        except Exception as e:
+            logger.debug(e)
+        return operations
+
+    @functools.lru_cache()
+    def get_ogc_wms_url(self, wms_url, version=None):
+        ogc_wms_url = f"{wms_url.scheme}://{wms_url.netloc}{wms_url.path}"
+        try:
+            operations = OgcWmsHarvester.get_wms_operations(wms_url.geturl(), version=version)
+            ogc_wms_get_capabilities = operations.get('GetCapabilities', None)
+            if ogc_wms_get_capabilities and ogc_wms_get_capabilities.get('methods', None):
+                for _op_method in ogc_wms_get_capabilities.get('methods'):
+                    if _op_method.get('type', None).upper() == 'GET' and _op_method.get('url', None):
+                        ogc_wms_url = _op_method.get('url')
+                        break
+        except Exception as e:
+            logger.exception(e)
+        return ogc_wms_url
+
     def get_capabilities(self) -> requests.Response:
         params = self._base_wms_parameters.copy()
         params.update({
             "request": "GetCapabilities",
         })
+        (wms_url, _service, _version, _request) = self._get_cleaned_url_params(self.remote_url)
+        if _service:
+            params['service'] = _service
+        if _version:
+            params['version'] = _version
+        if wms_url.query:
+            for _param in parse_qsl(wms_url.query):
+                params[_param[0]] = _param[1]
+
         get_capabilities_response = self.http_session.get(
-            self.remote_url, params=params)
+            self.get_ogc_wms_url(wms_url, version=_version), params=params)
         get_capabilities_response.raise_for_status()
         return get_capabilities_response
 
@@ -261,6 +383,29 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                 element, "wms:Service/wms:ContactInformation/wms:ContactElectronicMailAddress", nsmap),
         }
 
+    def _get_cleaned_url_params(self, url):
+        # Unquoting URL first so we don't loose existing args
+        url = unquote(url)
+        # Extracting url info
+        parsed_url = urlparse(url)
+        # Extracting URL arguments from parsed URL
+        get_args = parsed_url.query
+        # Converting URL arguments to dict
+        parsed_get_args = dict(parse_qsl(get_args))
+        # Strip out redoundant args
+        _version = parsed_get_args.pop('version', '1.3.0') if 'version' in parsed_get_args else '1.3.0'
+        _service = parsed_get_args.pop('service') if 'service' in parsed_get_args else None
+        _request = parsed_get_args.pop('request') if 'request' in parsed_get_args else None
+        # Converting URL argument to proper query string
+        encoded_get_args = urlencode(parsed_get_args, doseq=True)
+        # Creating new parsed result object based on provided with new
+        # URL arguments. Same thing happens inside of urlparse.
+        new_url = ParseResult(
+            parsed_url.scheme, parsed_url.netloc, parsed_url.path,
+            parsed_url.params, encoded_get_args, parsed_url.fragment
+        )
+        return (new_url, _service, _version, _request)
+
     def _layer_element_to_json(self, layer_element: etree.Element) -> dict:
         """Return json of layer from xml element"""
         nsmap = _get_nsmap(
@@ -284,8 +429,19 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             )[0].attrib[f"{{{layer_element.nsmap['xlink']}}}href"]
         except (IndexError, KeyError):
             legend_url = ''
-        params = self._base_wms_parameters
-        wms_url = f"{self.remote_url}?{urlencode(params)}"
+        params = {}
+        (wms_url, _service, _version, _request) = self._get_cleaned_url_params(self.remote_url)
+        if _service:
+            params['service'] = _service
+        if _version:
+            params['version'] = _version
+        if wms_url.query:
+            for _param in parse_qsl(wms_url.query):
+                params[_param[0]] = _param[1]
+
+        wms_url = self.get_ogc_wms_url(
+            wms_url._replace(query=urlencode(params)),
+            version=_version)
 
         try:
             crs = layer_element.xpath("wms:CRS//text()", namespaces=nsmap)[0]
@@ -306,8 +462,13 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                 float(upper_y.replace(",", ".")),
             ))
         except IndexError:
-            crs = None
-            spatial_extent = None
+            crs = "EPSG:4326"
+            spatial_extent = geos.Polygon.from_bbox((
+                -180.0,
+                -90.0,
+                180.0,
+                90.0
+            ))
         return {
             'name': name,
             'title': title,

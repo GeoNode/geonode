@@ -337,7 +337,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             except AttributeError:
                 srid = None
             defaults.update({
+                "alternate": defaults["name"],
                 "name": defaults["name"].rpartition(":")[-1],
+                "workspace": defaults["name"].rpartition(":")[0],
                 "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
                 "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
                 "srid": srid,

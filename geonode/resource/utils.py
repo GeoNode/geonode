@@ -287,16 +287,20 @@ def get_alternate_name(instance):
 
             # these are only used if there is no user-configured value in the settings
             _DEFAULT_CASCADE_WORKSPACE = "cascaded-services"
-            _DEFAULT_WORKSPACE = "cascaded-services"
+            _DEFAULT_WORKSPACE = "geonode"
 
             if hasattr(instance, 'remote_service') and instance.remote_service is not None and instance.remote_service.method == INDEXED:
                 result = instance.name
             elif hasattr(instance, 'remote_service') and instance.remote_service is not None and instance.remote_service.method == CASCADED:
                 _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
                 result = f"{_ws}:{instance.name}"
-            else:  # we are not dealing with a service-related instance
-                _ws = getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
-                result = f"{_ws}:{instance.name}"
+            else:
+                if hasattr(instance, 'sourcetype') and instance.sourcetype != enumerations.SOURCE_TYPE_LOCAL:
+                    _ws = instance.workspace
+                else:
+                    # we are not dealing with a service-related instance
+                    _ws = instance.workspace or getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
+                result = f"{_ws}:{instance.name}" if _ws else f"{instance.name}"
             return result
     except Exception as e:
         logger.debug(e)

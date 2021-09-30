@@ -34,7 +34,7 @@ from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
 
 from geonode.proxy.views import proxy
-from geonode.layers.models import Dataset
+from geonode.base.models import ResourceBase
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import get_visible_resources
 
@@ -301,7 +301,7 @@ def service_detail(request, service_id):
         harvested_resources_ids = list(_h.harvestable_resources.filter(
             should_be_harvested=True, geonode_resource__isnull=False).values_list("geonode_resource__id", flat=True))
     already_imported_datasets = get_visible_resources(
-        queryset=Dataset.objects.filter(id__in=harvested_resources_ids),
+        queryset=ResourceBase.objects.filter(id__in=harvested_resources_ids),
         user=request.user
     )
     resources_being_harvested = []

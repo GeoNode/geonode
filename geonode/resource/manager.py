@@ -295,7 +295,7 @@ class ResourceManager(ResourceManagerInterface):
 
     def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
         if resource_type.objects.filter(uuid=uuid).exists():
-            raise ValidationError(f'Object of type {resource_type} with uuid [{uuid}] already exists.')
+            return resource_type.objects.filter(uuid=uuid).get()
         uuid = uuid or str(uuid1())
         _resource, _created = resource_type.objects.get_or_create(
             uuid=uuid,
@@ -306,11 +306,11 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
-                    if not _resource.ll_bbox_polygon:
+                    if _resource.bbox_polygon and not _resource.ll_bbox_polygon:
                         _resource.set_bounds_from_bbox(_resource.bbox_polygon, _resource.srid)
             except Exception as e:
                 logger.exception(e)
-                self.delete(instance=_resource)
+                self.delete(_resource.uuid, instance=_resource)
                 raise e
             finally:
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
@@ -347,7 +347,7 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.save()
                     _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
-                    if not _resource.ll_bbox_polygon:
+                    if _resource.bbox_polygon and not _resource.ll_bbox_polygon:
                         _resource.set_bounds_from_bbox(_resource.bbox_polygon, _resource.srid)
                     _resource = metadata_storers(_resource.get_real_instance(), custom)
 
@@ -396,17 +396,20 @@ class ResourceManager(ResourceManagerInterface):
                     **kwargs)
         except Exception as e:
             logger.exception(e)
-            instance.set_processing_state(enumerations.STATE_INVALID)
-            instance.set_dirty_state()
+            if instance:
+                instance.set_processing_state(enumerations.STATE_INVALID)
+                instance.set_dirty_state()
         finally:
-            instance.set_processing_state(enumerations.STATE_PROCESSED)
-            instance.save(notify=False)
-        resourcebase_post_save(instance.get_real_instance())
-        # Finalize Upload
-        if 'user' in to_update:
-            to_update.pop('user')
-        instance = self.update(instance.uuid, instance=instance, vals=to_update)
-        self.set_thumbnail(instance.uuid, instance=instance)
+            if instance:
+                instance.set_processing_state(enumerations.STATE_PROCESSED)
+                instance.save(notify=False)
+        if instance:
+            resourcebase_post_save(instance.get_real_instance())
+            # Finalize Upload
+            if 'user' in to_update:
+                to_update.pop('user')
+            instance = self.update(instance.uuid, instance=instance, vals=to_update)
+            self.set_thumbnail(instance.uuid, instance=instance)
         return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:

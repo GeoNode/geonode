@@ -1483,12 +1483,11 @@ def fetch_gs_resource(instance, values, tries):
                            owner=instance.owner))
     else:
         msg = f"There isn't a geoserver resource for this layer: {instance.name}"
-        logger.exception(msg)
+        logger.debug(msg)
         if tries >= _max_tries:
             # raise GeoNodeException(msg)
             return (values, None)
         gs_resource = None
-        time.sleep(5)
     return (values, gs_resource)
 
 

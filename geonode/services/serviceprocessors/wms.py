@@ -20,6 +20,7 @@
 import json
 import logging
 import requests
+import functools
 
 from uuid import uuid4
 from urllib.parse import (
@@ -43,9 +44,7 @@ from geonode.base.bbox_utils import BBOXHelper
 from geonode.harvesting.models import Harvester
 from geonode.harvesting.tasks import update_harvestable_resources
 from geonode.harvesting.utils import update_harvester_availability
-
-from owslib.map import wms111, wms130
-from owslib.util import clean_ows_url
+from geonode.harvesting.harvesters.wms import OgcWmsHarvester, WebMapService
 
 from .. import enumerations
 from ..enumerations import CASCADED
@@ -55,63 +54,6 @@ from .. import utils
 from . import base
 
 logger = logging.getLogger(__name__)
-
-
-def WebMapService(url,
-                  version='1.3.0',
-                  xml=None,
-                  username=None,
-                  password=None,
-                  parse_remote_metadata=False,
-                  timeout=30,
-                  headers=None,
-                  proxy_base=None):
-    """
-    API for Web Map Service (WMS) methods and metadata.
-    """
-    '''wms factory function, returns a version specific WebMapService object
-
-    @type url: string
-    @param url: url of WFS capabilities document
-    @type xml: string
-    @param xml: elementtree object
-    @type parse_remote_metadata: boolean
-    @param parse_remote_metadata: whether to fully process MetadataURL elements
-    @param timeout: time (in seconds) after which requests should timeout
-    @return: initialized WebFeatureService_2_0_0 object
-    '''
-
-    if not proxy_base:
-        clean_url = clean_ows_url(url)
-        base_ows_url = clean_url
-    else:
-        (clean_version, proxified_url, base_ows_url) = base.get_proxified_ows_url(
-            url, version=version, proxy_base=proxy_base)
-        version = clean_version
-        clean_url = proxified_url
-
-    if version in ['1.1.1']:
-        return (
-            base_ows_url,
-            wms111.WebMapService_1_1_1(
-                clean_url, version=version, xml=xml,
-                parse_remote_metadata=parse_remote_metadata,
-                username=username, password=password,
-                timeout=timeout, headers=headers
-            )
-        )
-    elif version in ['1.3.0']:
-        return (
-            base_ows_url,
-            wms130.WebMapService_1_3_0(
-                clean_url, version=version, xml=xml,
-                parse_remote_metadata=parse_remote_metadata,
-                username=username, password=password,
-                timeout=timeout, headers=headers
-            )
-        )
-    raise NotImplementedError(
-        f'The WMS version ({version}) you requested is not implemented. Please use 1.1.1 or 1.3.0.')
 
 
 class WmsServiceHandler(base.ServiceHandlerBase,
@@ -152,6 +94,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         return (new_url, _service, _version, _request)
 
     @property
+    @functools.lru_cache()
     def parsed_service(self):
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
         _url, _parsed_service = WebMapService(
@@ -165,31 +108,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             return True if len(self.parsed_service.contents) > 0 else False
         except Exception:
             return False
-
-    def operations(self):
-        operations = {}
-        try:
-            for _op in self.parsed_service.operations:
-                _methods = []
-                for _op_method in (getattr(_op, 'methods', []) if hasattr(_op, 'methods') else _op.get('methods', [])):
-                    _methods.append(
-                        {
-                            'type': _op_method.get('type', None),
-                            'url': _op_method.get('url', None)
-                        }
-                    )
-
-                _name = getattr(_op, 'name', None) if hasattr(_op, 'name') else _op.get('name', None)
-                _formatOptions = getattr(_op, 'formatOptions', []) if hasattr(_op, 'formatOptions') else _op.get('formatOptions', [])
-                if _name:
-                    operations[_name] = {
-                        'name': _name,
-                        'methods': _methods,
-                        'formatOptions': _formatOptions
-                    }
-        except Exception as e:
-            logger.exception(e)
-        return operations
 
     def create_cascaded_store(self, service):
         ogc_wms_url = service.service_url
@@ -227,7 +145,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode('utf-8') or self.name,
                 abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode('utf-8') or _(
                     "Not provided"),
-                operations=self.operations(),
+                operations=OgcWmsHarvester.get_wms_operations(cleaned_url.geturl(), version=version),
                 online_resource=self.parsed_service.provider.url
             )
             service_harvester = Harvester.objects.create(
@@ -374,15 +292,12 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     def probe(self):
         return base.ServiceHandlerBase.probe(self)
 
-    def operations(self):
-        return {}
-
     def get_harvester_configuration_options(self):
         return {
             "harvest_maps": True,
             "harvest_datasets": True,
             "harvest_documents": True,
-            "copy_datasets": True,
+            "copy_datasets": False,
             "copy_documents": True
         }
 
