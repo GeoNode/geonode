@@ -305,7 +305,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                         date=time,
                         date_type='',
                         originator=contact,
-                        graphic_overview_uri='',
                         place_keywords=[],
                         other_keywords=relevant_layer['keywords'],
                         license=[],
@@ -313,7 +312,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                         spatial_extent=relevant_layer['spatial_extent']
                     ),
                     distribution=resourcedescriptor.RecordDistribution(
-                        legend_url=relevant_layer['legend_url'],
                         wms_url=relevant_layer['wms_url']
                     ),
                     reference_systems=[relevant_layer['crs']],
