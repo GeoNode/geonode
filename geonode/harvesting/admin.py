@@ -287,7 +287,6 @@ class AsynchronousHarvestingSessionAdmin(admin.ModelAdmin):
         "total_records_to_process",
         "records_done",
         "get_progress_percentage",
-        "session_details",
     )
     readonly_fields = (
         "id",
