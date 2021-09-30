@@ -41,7 +41,7 @@ class Service(ResourceBase):
     """Service Class to represent remote Geo Web Services"""
 
     type = models.CharField(
-        max_length=10,
+        max_length=100,
         choices=enumerations.SERVICE_TYPES
     )
     method = models.CharField(
@@ -65,7 +65,7 @@ class Service(ResourceBase):
         blank=True
     )
     version = models.CharField(
-        max_length=10,
+        max_length=100,
         null=True,
         blank=True
     )

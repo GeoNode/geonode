@@ -50,7 +50,7 @@ class Harvester(models.Model):
         (STATUS_CHECKING_AVAILABILITY, _("checking-availability")),
     ]
 
-    name = models.CharField(max_length=100, help_text=_("Harvester name"))
+    name = models.CharField(max_length=255, help_text=_("Harvester name"))
     status = models.CharField(
         max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
     remote_url = models.URLField(

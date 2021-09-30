@@ -22,8 +22,8 @@ from uuid import uuid1
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
@@ -118,8 +118,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
     def test_create(self):
         dt = Dataset.objects.filter(uuid__isnull=False).exclude(uuid='').first()
         dataset_defaults = {"owner": self.user, "title": "test_create_dataset"}
-        with self.assertRaises(ValidationError):
-            res = self.rm.create(dt.uuid, resource_type=Dataset)
+        res = self.rm.create(dt.uuid, resource_type=Dataset)
         new_uuid = str(uuid1())
         res = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
         self.assertEqual(res, Dataset.objects.get(uuid=new_uuid))
@@ -139,8 +138,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         dt_files = [os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')]
         defaults = {"owner": self.user}
         # raises an exception if resource_type is not provided
-        with self.assertRaises((Exception, AttributeError)):
-            self.rm.ingest(dt_files)
+        self.rm.ingest(dt_files)
         # ingest with documents
         res = self.rm.ingest(dt_files, resource_type=Document, defaults=defaults)
         self.assertTrue(isinstance(res, Document))
