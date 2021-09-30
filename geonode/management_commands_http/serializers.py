@@ -44,6 +44,19 @@ class ManagementCommandJobSerializer(serializers.ModelSerializer):
         ]
 
 
+class ManagementCommandJobListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManagementCommandJob
+        fields = [
+            "id",
+            "command",
+            "app_name",
+            "user",
+            "status",
+            "created_at",
+        ]
+
+
 class ManagementCommandJobCreateSerializer(serializers.ModelSerializer):
     args = serializers.JSONField(required=False, default=[])
     kwargs = serializers.JSONField(required=False, default={})

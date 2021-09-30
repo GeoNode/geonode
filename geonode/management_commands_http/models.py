@@ -18,6 +18,8 @@
 #########################################################################
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+
 from geonode.management_commands_http.utils.commands import (
     get_management_commands_apps,
 )
@@ -49,8 +51,22 @@ class ManagementCommandJob(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     # NOTE: Change to JsonField when updating to django 3.1
-    args = models.TextField(default="[]", blank=True)
-    kwargs = models.TextField(default="{}", blank=True)
+    args = models.TextField(
+        blank=True, default='[]',
+        verbose_name=_('Positional Arguments'),
+        help_text=_(
+            'JSON encoded positional arguments '
+            '(Example: ["arg1", "arg2"])'
+        ),
+    )
+    kwargs = models.TextField(
+        blank=True, default='{}',
+        verbose_name=_('Keyword Arguments'),
+        help_text=_(
+            'JSON encoded keyword arguments '
+            '(Example: {"argument": "value"})'
+        ),
+    )
 
     celery_result_id = models.UUIDField(null=True, blank=True)
     output_message = models.TextField(null=True)

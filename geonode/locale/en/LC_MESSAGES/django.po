@@ -6286,6 +6286,24 @@ msgstr "Invalid permission level."
 msgid "Permission Denied"
 msgstr "Permission Denied"
 
+#, python-brace-format
+msgid ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+msgstr ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+
+msgid "Positional Arguments"
+msgstr "Positional Arguments"
+
+msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+msgstr "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+
+msgid "Keyword Arguments"
+msgstr "Keyword Arguments"
+
+msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+msgstr "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+
 #~ msgid "batch edit"
 #~ msgstr "batch edit"
 
