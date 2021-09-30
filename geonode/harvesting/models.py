@@ -299,6 +299,8 @@ class Harvester(models.Model):
         should_continue, error_msg = self.worker_can_perform_action(
             self.STATUS_PERFORMING_HARVESTING)
         if should_continue:
+            self.status = self.STATUS_ABORTING_PERFORMING_HARVESTING
+            self.save()
             self.latest_harvesting_session.abort()
         else:
             raise RuntimeError(error_msg)
