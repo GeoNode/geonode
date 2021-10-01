@@ -18,8 +18,12 @@
 #########################################################################
 import mock.mock
 
+from django.utils import timezone
+
 from geonode.harvesting.harvesters import geonodeharvester
 from geonode.tests.base import GeoNodeBaseSimpleTestSupport
+
+from .. import models
 
 
 class GeoNodeHarvesterWorkerTestCase(GeoNodeBaseSimpleTestSupport):
@@ -34,6 +38,29 @@ class GeoNodeHarvesterWorkerTestCase(GeoNodeBaseSimpleTestSupport):
         for base_url, expected in base_remote_urls:
             worker = geonodeharvester.GeonodeLegacyHarvester(base_url, harvester_id)
             self.assertEqual(worker.base_api_url, expected)
+
+    def test_that_copying_remote_resources_is_allowed(self):
+        worker = geonodeharvester.GeonodeLegacyHarvester("http://fake-url2/", "fake-id")
+        self.assertTrue(worker.allows_copying_resources)
+
+    def test_creation_from_harvester(self):
+        now = timezone.now()
+        keywords = ["keyword1", "keyword2"]
+        categories = ["category1", "category2"]
+        combinations = [
+            {
+                "harvest_documents": True, "harvest_datasets": True, "copy_datasets": True, "copy_documents": True,
+                "resource_title_filter": "something", "start_date_filter": now, "end_date_filter": now,
+                "keywords_filter": keywords, "categories_filter": categories
+            },
+        ]
+        for param_combination in combinations:
+            harvester = models.Harvester(
+                name="fake1",
+                harvester_type="geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester",
+                harvester_type_specific_configuration=param_combination
+            )
+            harvester.get_harvester_worker()
 
     @mock.patch("geonode.harvesting.harvesters.geonodeharvester.requests.Session")
     def test_check_availability_works_when_response_includes_layers_object(self, mock_requests_session):
