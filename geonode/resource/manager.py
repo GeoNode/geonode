@@ -55,6 +55,7 @@ from .utils import (
     resourcebase_post_save)
 
 from ..base import enumerations
+from ..services.models import Service
 from ..base.models import ResourceBase
 from ..layers.metadata import parse_metadata
 from ..documents.models import Document, DocumentResourceLink
@@ -284,6 +285,14 @@ class ResourceManager(ResourceManagerInterface):
                         logger.debug(f"Error occurred while trying to delete the Dataset Styles: {e}")
 
                 self.remove_permissions(_resource.get_real_instance().uuid, instance=_resource.get_real_instance())
+                try:
+                    if _resource.remote_typename and Service.objects.filter(name=_resource.remote_typename).exists():
+                        _service = Service.objects.filter(name=_resource.remote_typename).get()
+                        if _service.harvester:
+                            _service.harvester.harvestable_resources.filter(
+                                geonode_resource__uuid=_resource.get_real_instance().uuid).update(should_be_harvested=False)
+                except Exception as e:
+                    logger.exception(e)
                 try:
                     _resource.get_real_instance().delete()
                 except ResourceBase.DoesNotExist:

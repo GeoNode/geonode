@@ -247,14 +247,16 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
     # Check for "remote services" availability
     if HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).exists():
         _h = HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).get().harvester
-        if hasattr(instance, 'remote_service') and instance.remote_service is None and Service.objects.filter(harvester=_h).exists():
+        if Service.objects.filter(harvester=_h).exists():
             _s = Service.objects.filter(harvester=_h).get()
-            instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(
-                remote_service=_s,
-                remote_typename=_s.name,
-                # ows_url=_s.service_url,
-                subtype='remote',
-                sourcetype=enumerations.SOURCE_TYPE_REMOTE)
+            _to_update = {
+                "remote_typename": _s.name,
+                # "ows_url": _s.service_url,
+                "subtype": 'remote'
+            }
+            if hasattr(instance, 'remote_service'):
+                _to_update["remote_service"] = _s
+            instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**_to_update)
 
     # Refresh from DB
     instance.refresh_from_db()

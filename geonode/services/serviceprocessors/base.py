@@ -162,7 +162,8 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
                 if _service.harvester:
                     _h = _service.harvester
                     num_harvestable_resources = _h.num_harvestable_resources
-                    num_harvestable_resources_selected = _h.harvestable_resources.filter(should_be_harvested=False).count()
+                    num_harvestable_resources_selected = _h.harvestable_resources.filter(
+                        should_be_harvested=False).count()
                     if num_harvestable_resources > 0 and num_harvestable_resources_selected <= num_harvestable_resources:
                         return True
             except Exception as e:
@@ -190,7 +191,8 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
             _service = models.Service.objects.get(id=self.geonode_service_id)
             if _service.harvester:
                 _h = _service.harvester
-                return _h.harvestable_resources.filter(should_be_harvested=False).order_by('id').iterator()
+                return _h.harvestable_resources.filter(
+                    should_be_harvested=False).order_by('id').iterator()
         return []
 
     def harvest_resource(self, resource_id, geonode_service):

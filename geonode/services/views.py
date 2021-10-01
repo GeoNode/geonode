@@ -144,7 +144,13 @@ def harvest_resources_handle_get(request, service, handler):
     if available_resources:
         not_yet_harvested = list(available_resources)
     else:
-        not_yet_harvested = ['Cannot parse any resource at this time!']
+        not_yet_harvested = ['No resource available from the remote service currently!']
+        try:
+            if service.harvester and service.harvester.latest_refresh_session:
+                _progress = service.harvester.latest_refresh_session.get_progress_percentage()
+                not_yet_harvested = [f'Harvester is still updating the available resources, please come back later. ({_progress}%)']
+        except Exception:
+            pass
         errored_state = True
     paginator = Paginator(
         not_yet_harvested, getattr(settings, "CLIENT_RESULTS_LIMIT", 100))
