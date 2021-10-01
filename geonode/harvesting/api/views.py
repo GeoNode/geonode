@@ -94,7 +94,7 @@ class HarvestableResourceViewSet(
         return context
 
 
-class HarvestingSessionViewSet(WithDynamicViewSetMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = models.HarvestingSession.objects.all()
-    serializer_class = serializers.BriefHarvestingSessionSerializer
+class AsynchronousHarvestingSessionViewSet(WithDynamicViewSetMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = models.AsynchronousHarvestingSession.objects.all()
+    serializer_class = serializers.BriefAsynchronousHarvestingSessionSerializer
     pagination_class = GeoNodeApiPagination

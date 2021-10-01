@@ -16,21 +16,19 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django_filters import rest_framework as filters
 
-from . import (
-    routers,
-    views,
-)
+from geonode.management_commands_http.models import ManagementCommandJob
 
-router = routers.ListPatchRouter()
 
-harvesters_node = router.register('harvesters', views.HarvesterViewSet)
-harvesters_node.register(
-    'harvestable-resources',
-    views.HarvestableResourceViewSet,
-    basename='harvestable-resources',
-    parents_query_lookups=['harvester_id']
-)
-router.register('harvesting-sessions', views.AsynchronousHarvestingSessionViewSet)
-
-urlpatterns = router.urls
+class ManagementCommandJobFilterSet(filters.FilterSet):
+    class Meta:
+        model = ManagementCommandJob
+        fields = [
+            "celery_result_id",
+            "command",
+            "app_name",
+            "status",
+            "user",
+            "user__username",
+        ]

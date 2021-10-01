@@ -16,21 +16,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from . import (
-    routers,
-    views,
-)
-
-router = routers.ListPatchRouter()
-
-harvesters_node = router.register('harvesters', views.HarvesterViewSet)
-harvesters_node.register(
-    'harvestable-resources',
-    views.HarvestableResourceViewSet,
-    basename='harvestable-resources',
-    parents_query_lookups=['harvester_id']
-)
-router.register('harvesting-sessions', views.AsynchronousHarvestingSessionViewSet)
-
-urlpatterns = router.urls

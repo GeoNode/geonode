@@ -279,7 +279,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     def get_resource(
             self,
             harvestable_resource: models.HarvestableResource,
-            harvesting_session_id: int
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         resource_unique_identifier = harvestable_resource.unique_identifier
         local_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)

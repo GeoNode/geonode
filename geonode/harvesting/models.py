@@ -19,9 +19,12 @@
 
 import json
 import logging
-import jsonschema.exceptions
+import typing
 
+import jsonschema
+import jsonschema.exceptions
 from django.conf import settings
+from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -32,7 +35,8 @@ from django_celery_beat.models import (
     PeriodicTask,
 )
 
-from . import utils
+from geonode import celery_app
+
 from .config import get_setting
 
 logger = logging.getLogger(__name__)
@@ -41,12 +45,16 @@ logger = logging.getLogger(__name__)
 class Harvester(models.Model):
     STATUS_READY = "ready"
     STATUS_UPDATING_HARVESTABLE_RESOURCES = "updating-harvestable-resources"
+    STATUS_ABORTING_UPDATE_HARVESTABLE_RESOURCES = "aborting-update-harvestable-resources"
     STATUS_PERFORMING_HARVESTING = "harvesting-resources"
+    STATUS_ABORTING_PERFORMING_HARVESTING = "aborting-harvesting-resources"
     STATUS_CHECKING_AVAILABILITY = "checking-availability"
     STATUS_CHOICES = [
         (STATUS_READY, _("ready")),
         (STATUS_UPDATING_HARVESTABLE_RESOURCES, _("updating-harvestable-resources")),
+        (STATUS_ABORTING_UPDATE_HARVESTABLE_RESOURCES, _("aborting-update-harvestable-resources")),
         (STATUS_PERFORMING_HARVESTING, _("harvesting-resources")),
+        (STATUS_ABORTING_PERFORMING_HARVESTING, _("aborting-harvesting-resources")),
         (STATUS_CHECKING_AVAILABILITY, _("checking-availability")),
     ]
 
@@ -170,6 +178,18 @@ class Harvester(models.Model):
     def __str__(self):
         return f"{self.name}({self.id})"
 
+    @property
+    def latest_refresh_session(self):
+        return self.sessions.filter(
+            session_type=AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
+        ).latest("started")
+
+    @property
+    def latest_harvesting_session(self):
+        return self.sessions.filter(
+            session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
+        ).latest("started")
+
     def clean(self):
         """Perform model validation by inspecting fields that depend on each other.
 
@@ -179,8 +199,8 @@ class Harvester(models.Model):
         """
 
         try:
-            utils.validate_worker_configuration(
-                self.harvester_type, self.harvester_type_specific_configuration)
+            validate_worker_configuration(self.harvester_type, self.harvester_type_specific_configuration)
+            # self.validate_worker_configuration()
         except jsonschema.exceptions.ValidationError as exc:
             raise ValidationError(str(exc))
 
@@ -224,33 +244,122 @@ class Harvester(models.Model):
         )
         self.save()
 
+    def update_availability(
+            self,
+            timeout_seconds: typing.Optional[int] = 5
+    ):
+        """Use the harvesting worker to check if the remote service is available"""
+        worker = self.get_harvester_worker()
+        self.last_checked_availability = timezone.now()
+        available = worker.check_availability(timeout_seconds=timeout_seconds)
+        self.remote_available = available
+        self.save()
+        return available
+
+    def initiate_update_harvestable_resources(self):
+        should_continue, error_msg = self.worker_can_perform_action()
+        if should_continue:
+            self.status = self.STATUS_UPDATING_HARVESTABLE_RESOURCES
+            self.save()
+            refresh_session = AsynchronousHarvestingSession.objects.create(
+                harvester=self,
+                session_type=AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
+            )
+            refresh_session.initiate()
+        else:
+            raise RuntimeError(error_msg)
+
+    def initiate_perform_harvesting(
+            self,
+            harvestable_resource_ids: typing.Optional[typing.List[int]] = None
+    ):
+        should_continue, error_msg = self.worker_can_perform_action()
+        if should_continue:
+            self.status = self.STATUS_PERFORMING_HARVESTING
+            self.save()
+            harvesting_session = AsynchronousHarvestingSession.objects.create(
+                harvester=self,
+                session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
+            )
+            harvesting_session.initiate(harvestable_resource_ids)
+        else:
+            raise RuntimeError(error_msg)
+
+    def initiate_abort_update_harvestable_resources(self):
+        should_continue, error_msg = self.worker_can_perform_action(
+            self.STATUS_UPDATING_HARVESTABLE_RESOURCES)
+        if should_continue:
+            self.status = self.STATUS_ABORTING_UPDATE_HARVESTABLE_RESOURCES
+            self.save()
+            self.latest_refresh_session.abort()
+        else:
+            raise RuntimeError(error_msg)
+
+    def initiate_abort_perform_harvesting(self):
+        should_continue, error_msg = self.worker_can_perform_action(
+            self.STATUS_PERFORMING_HARVESTING)
+        if should_continue:
+            self.status = self.STATUS_ABORTING_PERFORMING_HARVESTING
+            self.save()
+            self.latest_harvesting_session.abort()
+        else:
+            raise RuntimeError(error_msg)
+
     def get_harvester_worker(self) -> "BaseHarvesterWorker":  # noqa
         worker_class = import_string(self.harvester_type)
         return worker_class.from_django_record(self)
 
+    def worker_can_perform_action(
+            self,
+            target_status: typing.Optional[str] = STATUS_READY,
+    ) -> typing.Tuple[bool, str]:
+        if self.status != target_status:
+            error_message = (
+                f"Harvester {self!r} cannot currently perform the desired action. Please wait until its status "
+                f"is reported as {target_status!r} before retrying."
+            )
+            result = False
+        else:
+            result = True
+            error_message = ""
+        return result, error_message
 
-class HarvestingSession(models.Model):
+
+class AsynchronousHarvestingSession(models.Model):
     STATUS_PENDING = "pending"
     STATUS_ON_GOING = "on-going"
     STATUS_FINISHED_ALL_OK = "finished-all-ok"
     STATUS_FINISHED_ALL_FAILED = "finished-all-failed"
     STATUS_FINISHED_SOME_FAILED = "finished-some-failed"
+    STATUS_ABORTING = "aborting"
+    STATUS_ABORTED = "aborted"
     STATUS_CHOICES = [
         (STATUS_PENDING, _("pending")),
         (STATUS_ON_GOING, _("on-going")),
         (STATUS_FINISHED_ALL_OK, _("finished-all-ok")),
         (STATUS_FINISHED_ALL_FAILED, _("finished-all-failed")),
         (STATUS_FINISHED_SOME_FAILED, _("finished-some-failed")),
+        (STATUS_ABORTING, _("aborting")),
+        (STATUS_ABORTED, _("aborted")),
     ]
+    TYPE_HARVESTING = "harvesting"
+    TYPE_DISCOVER_HARVESTABLE_RESOURCES = "discover-harvestable-resources"
+    TYPE_CHOICES = [
+        (TYPE_HARVESTING, _("harvesting")),
+        (TYPE_DISCOVER_HARVESTABLE_RESOURCES, _("discover-harvestable-resources")),
+    ]
+    session_type = models.CharField(
+        max_length=50,
+        choices=TYPE_CHOICES,
+        editable=False
+    )
     started = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     ended = models.DateTimeField(null=True, blank=True)
-    records_to_harvest = models.IntegerField(default=0, editable=False)
-    records_harvested = models.IntegerField(default=0)
     harvester = models.ForeignKey(
         Harvester,
         on_delete=models.CASCADE,
-        related_name="harvesting_sessions"
+        related_name="sessions"
     )
     status = models.CharField(
         max_length=50,
@@ -258,10 +367,76 @@ class HarvestingSession(models.Model):
         default=STATUS_PENDING,
         editable=False,
     )
-    session_details = models.TextField(
-        blank=True,
-        help_text=_("Details about the harvesting session")
+    details = models.TextField(blank=True,)
+    total_records_to_process = models.IntegerField(
+        default=0,
+        editable=False,
+        help_text=_("Number of records being processed in this session")
     )
+    records_done = models.IntegerField(
+        default=0,
+        help_text=_("Number of records that have already been processed")
+    )
+
+    @admin.display(description="Progress (%)")
+    def get_progress_percentage(self) -> int:
+        try:
+            result = (self.records_done / self.total_records_to_process) * 100
+        except ZeroDivisionError:
+            result = 0
+        return result
+
+    def initiate(self, harvestable_resource_ids: typing.Optional[typing.List[int]] = None):
+        """Initiate the asynchronous process that performs the work related to this session."""
+        # NOTE: below we are calling celery tasks using the method of creating a
+        # signature from the main celery app object in order to avoid having
+        # to import the `tasks` module, which would create circular
+        # dependency issues - this is a common celery pattern, described here:
+        #
+        # https://docs.celeryproject.org/en/stable/faq.html#can-i-call-a-task-by-name
+        #
+        # Also note that using `app.send_task()` does not seem to work in this case (which
+        # is mysterious, since the celery docs say it should work)
+        if self.session_type == self.TYPE_DISCOVER_HARVESTABLE_RESOURCES:
+            task_signature = celery_app.app.signature(
+                "geonode.harvesting.tasks.update_harvestable_resources",
+                args=(self.pk,)
+            )
+        elif self.session_type == self.TYPE_HARVESTING:
+            if harvestable_resource_ids is None:
+                task_signature = celery_app.app.signature(
+                    "geonode.harvesting.tasks.harvesting_dispatcher",
+                    args=(self.pk,)
+                )
+            else:
+                task_signature = celery_app.app.signature(
+                    "geonode.harvesting.tasks.harvest_resources",
+                    args=(self.pk, harvestable_resource_ids or [])
+                )
+        else:
+            raise RuntimeError("Invalid selection")
+        task_signature.apply_async()
+        self.status = self.STATUS_PENDING
+        self.save()
+
+    def abort(self):
+        """Abort a pending or on-going session."""
+
+        # NOTE: We do not use celery's task revoke feature when aborting a session. This
+        # is an explicit design choice. The main reason being that we keep track of a session's
+        # state and want to know when it has finished. This is done by leveraging celery's `chord`
+        # feature, whereby the async tasks are executed in parallel and there is a final
+        # synchronization step when they are done that updates the session's state in the DB.
+        # Maintaining this synchronization step working OK together with revoking tasks would be
+        # harder to address.
+        if self.status == self.STATUS_PENDING:
+            self.status = self.STATUS_ABORTED
+            self.session_details = "Aborted"
+        elif self.status == self.STATUS_ON_GOING:
+            self.status = self.STATUS_ABORTING
+        else:
+            logger.debug("Session is not currently in an state that can be aborted, skipping...")
+        self.save()
 
 
 class HarvestableResource(models.Model):
@@ -326,3 +501,16 @@ class HarvestableResource(models.Model):
         if delete_orphan_resource:
             worker.finalize_harvestable_resource_deletion(self)
         return super().delete(using, keep_parents)
+
+
+def validate_worker_configuration(
+        worker_type: "BaseHarvesterWorker",  # noqa
+        worker_config: typing.Dict
+):
+    worker_class = import_string(worker_type)
+    schema = worker_class.get_extra_config_schema()
+    if schema is not None:
+        try:
+            jsonschema.validate(worker_config, schema)
+        except jsonschema.exceptions.SchemaError as exc:
+            raise RuntimeError(f"Invalid schema: {exc}")

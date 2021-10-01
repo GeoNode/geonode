@@ -16,21 +16,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.urls import include, re_path, path
 
-from . import (
-    routers,
-    views,
-)
+from geonode.management_commands_http.views import ManagementCommandView
+from geonode.management_commands_http.routers import router
 
-router = routers.ListPatchRouter()
 
-harvesters_node = router.register('harvesters', views.HarvesterViewSet)
-harvesters_node.register(
-    'harvestable-resources',
-    views.HarvestableResourceViewSet,
-    basename='harvestable-resources',
-    parents_query_lookups=['harvester_id']
-)
-router.register('harvesting-sessions', views.AsynchronousHarvestingSessionViewSet)
-
-urlpatterns = router.urls
+urlpatterns = [
+    re_path(r"management/commands/$", ManagementCommandView.as_view()),
+    re_path(r"management/commands/(?P<cmd_name>\w+)/$", ManagementCommandView.as_view()),
+    re_path(r"management/commands/(?P<cmd_name>\w+)/", include(router.urls)),
+    path("management/", include(router.urls)),
+]

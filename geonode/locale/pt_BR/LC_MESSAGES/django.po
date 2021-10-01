@@ -6669,6 +6669,24 @@ msgstr "Nível de permissão inválido."
 msgid "Permission Denied"
 msgstr "Permissão Negada"
 
+#, python-brace-format
+msgid ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+msgstr ""
+"Você não pode iniciar a tarefa {job.id} pois ela possui status \"{job.status}\"."
+
+msgid "Positional Arguments"
+msgstr "Argumentos Posicionais"
+
+msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+msgstr "Argumentos posicionais codificados em JSON (Exemplo: [\"arg1\", \"arg2\"])"
+
+msgid "Keyword Arguments"
+msgstr "Argumentos de Palavras-Chave"
+
+msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+msgstr "Argumentos de palavra-chave codificados em JSON (Exemplo: {\"argumento\": \"valor\"})"
+
 #~ msgid "Layer name"
 #~ msgstr "Nome da Camada"
 
