@@ -38,18 +38,20 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
 
     def test_add_harvester(self):
         data = {
-            'remote_url': "http://fake.com",
             'name': 'harvester',
+            'remote_url': "http://fake.com",
+            'harvesting_session_update_frequency': 60,
+            'refresh_harvestable_resources_update_frequency': 30,
+            'check_availability_frequency': 10,
             'harvester_type_specific_configuration': '{}',
             'harvester_type': self.harvester_type,
             'status': models.Harvester.STATUS_READY,
-            'update_frequency': 60,
-            'check_availability_frequency': 30,
             'default_owner': self.user.pk
 
         }
         self.assertFalse(models.Harvester.objects.filter(name=data["name"]).exists())
         response = self.client.post(reverse('admin:harvesting_harvester_add'), data)
+        print(f"response: {response.content}")
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)  # response from admin
         harvester = models.Harvester.objects.get(name=data["name"])
         self.assertEqual(harvester.name, data['name'])
