@@ -643,6 +643,8 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         mock_wms_parsed_service.return_value = self.parsed_wms
         mock_wms_parsed_service.provider.url = self.phony_url
+        mock_wms_parsed_service.identification.title = self.phony_title
+        mock_wms_parsed_service.identification.version = self.phony_version
         handler = wms.WmsServiceHandler(self.phony_url)
         result = handler.create_geonode_service(self.test_user)
         self.assertEqual(result.base_url, self.phony_url)
@@ -668,6 +670,8 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_wms.return_value = (phony_url, self.parsed_wms)
         mock_wms_parsed_service.return_value = self.parsed_wms
         mock_wms_parsed_service.provider.url = self.phony_url
+        mock_wms_parsed_service.identification.title = self.phony_title
+        mock_wms_parsed_service.identification.version = self.phony_version
         handler = wms.WmsServiceHandler(phony_url)
         result = handler.create_geonode_service(self.test_user)
         self.assertEqual(result.base_url, 'https://www.geoportal.hessen.de/mapbender/php/wms.php')
@@ -692,6 +696,8 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         mock_wms_parsed_service.return_value = self.parsed_wms
         mock_wms_parsed_service.identification.keywords = self.phony_keywords
+        mock_wms_parsed_service.identification.title = self.phony_title
+        mock_wms_parsed_service.identification.version = self.phony_version
         handler = wms.WmsServiceHandler(self.phony_url)
         result = handler.get_keywords()
         self.assertEqual(result, self.phony_keywords)
@@ -709,13 +715,21 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     @mock.patch("geonode.harvesting.harvesters.wms.WebMapService")
     @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service",
                 autospec=True)
-    def test_get_resources(self, mock_wms_parsed_service, mock_wms):
+    @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_resources",
+                autospec=True)
+    @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.get_resource",
+                autospec=True)
+    def test_get_resources(self, mock_wms_get_resource, mock_wms_get_resources, mock_wms_parsed_service, mock_wms):
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
         mock_wms_parsed_service.return_value = self.parsed_wms
         mock_wms_parsed_service.provider.url = self.phony_url
+        mock_wms_parsed_service.identification.title = self.phony_title
+        mock_wms_parsed_service.identification.version = self.phony_version
+        mock_wms_get_resource.return_value = list(self.parsed_wms.contents.values())[0]
+        mock_wms_get_resources.return_value = self.parsed_wms.contents.values()
         handler = wms.WmsServiceHandler(self.phony_url)
         result = list(handler.get_resources())
-
+        self.assertEqual(len(result), 1)
         test_user, created = get_user_model().objects.get_or_create(username="serviceowner")
         if created:
             test_user.set_password("somepassword")
@@ -735,18 +749,6 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             resource_fields["keywords"] = keywords
             resource_fields["is_approved"] = True
             resource_fields["is_published"] = True
-            geonode_dataset = handler._create_dataset(geonode_service, **resource_fields)
-            self.assertIsNotNone(geonode_dataset)
-            self.assertNotEqual(geonode_dataset.srid, "EPSG:4326")
-            self.assertEqual(geonode_dataset.sourcetype, base_enumerations.SOURCE_TYPE_REMOTE)
-            self.client.login(username='admin', password='admin')
-            response = self.client.get(reverse('dataset_detail', args=(geonode_dataset.name,)))
-            self.assertEqual(response.status_code, 200)
-            for _d in Dataset.objects.filter(remote_service=geonode_service):
-                resource_manager.delete(_d.uuid, instance=_d)
-
-            legend_url = handler._create_dataset_legend_link(geonode_service, geonode_dataset)
-            self.assertTrue('sld_version=1.1.0' in str(legend_url))
         except Service.DoesNotExist as e:
             # In the case the Service URL becomes inaccessible for some reason
             logger.error(e)
