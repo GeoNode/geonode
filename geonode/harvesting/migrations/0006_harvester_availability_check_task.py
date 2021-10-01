@@ -7,14 +7,8 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('django_celery_beat', '0015_edit_solarschedule_events_choices'),
         ('harvesting', '0005_auto_20210428_1100'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='harvester',
-            name='availability_check_task',
-            field=models.OneToOneField(blank=True, editable=False, help_text='Periodic task used to check availability of the remote', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='checked_harvester', to='django_celery_beat.PeriodicTask'),
-        ),
     ]
