@@ -16,6 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from unittest.mock import patch
+
 from django.test.utils import override_settings
 from geonode.tests.base import GeoNodeBaseTestSupport
 
@@ -233,6 +235,30 @@ class PeopleTest(GeoNodeBaseTestSupport):
             content = content.decode('UTF-8')
         self.assertIn('Profile of bobby', content)
         self.assertIn(bobby.voice, content)
+
+    @patch('geonode.utils.get_subclasses_by_model')
+    def test_dashboards_excluded(self, _mock):
+        bobby = get_user_model().objects.get(username='bobby')
+        bobby.voice = '+245-897-7889'
+        bobby.save()
+        url = reverse('profile_detail', args=['bobby'])
+        _mock.return_value = ['GeoStory']
+        response = self.client.get(url)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('GeoStory', content)
+        self.assertNotIn('Dashboard', content)
+
+        _mock.return_value = ['Dashboard']
+        response = self.client.get(url)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Dashboard', content)
+        self.assertNotIn('GeoStory', content)
 
 
 class FacebookExtractorTestCase(GeoNodeBaseTestSupport):

@@ -159,8 +159,11 @@
         {% endif %}
         <li class="list-group-item"><a href="{% url "document_upload" %}"><i class="fa fa-file"></i> {% trans "Upload new document" %}</a></li>
         <li class="list-group-item"><a href="{% url "new_map" %}"><i class="fa fa-map-marker"></i> {% trans "Create a new map" %}</a></li>
-        <li class="list-group-item"><a href="{% url "new_geoapp" %}?appType=GeoStory"><i class="fa fa-gears"></i> {% trans "Create a new GeoStory" %}</a></li>
-        <li class="list-group-item"><a href="{% url "new_geoapp" %}?appType=Dashboard"><i class="fa fa-gears"></i> {% trans "Create a new Dashboard" %}</a></li>
+        {% for app in GEONODE_APPS_INSTALLED %}
+          <li class="list-group-item"><a href="{% url "new_geoapp" %}?appType={{app}}"><i class="fa fa-gears"></i>
+            {% blocktrans %} Create a new {{ app }}{% endblocktrans %}
+          </a></li>
+        {% endfor %}
       {% endif %}
       <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "My Activities" %}</a></li>
       {% if FAVORITE_ENABLED %}
