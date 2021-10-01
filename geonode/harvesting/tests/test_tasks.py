@@ -145,24 +145,16 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         mock_chord.assert_called()
         mock_chord.return_value.apply_async.assert_called()
 
-    def test_update_harvestable_resources_batch(self):
-        pass
-
-
-class OtherTaskRelatedUtilitiesTestCase(SimpleTestCase):
-
-    def test_is_due(self):
-        now = dt.datetime(2000, 1, 1, 1, 0, 0, 0, dt.timezone.utc)
-        test_fixtures = [
-            (5, None, True),
-            (5, now - dt.timedelta(minutes=10), True),
-            (60, now - dt.timedelta(minutes=10), False),
-            (60, now - dt.timedelta(minutes=60), False),
-            (60, now - dt.timedelta(minutes=61), True),
-        ]
-        with mock.patch("geonode.harvesting.tasks.timezone") as mock_timezone:
-            mock_timezone.now.return_value = now
-            for frequency, last_check, expected_result in test_fixtures:
-                result = tasks._is_due(frequency, last_check)
-                self.assertEqual(result, expected_result)
-
+    def test_harvesting_scheduler(self):
+        mock_harvester = mock.MagicMock(spec=models.Harvester).return_value
+        mock_harvester.scheduling_enabled = True
+        mock_harvester.is_harvestable_resources_refresh_due.return_value = True
+        mock_harvester.is_harvesting_due.return_value = True
+        with mock.patch("geonode.harvesting.tasks.models.Harvester.objects") as mock_qs:
+            mock_qs.all.return_value = [mock_harvester]
+            tasks.harvesting_scheduler()
+            mock_harvester.is_availability_check_due.assert_called()
+            mock_harvester.is_harvestable_resources_refresh_due.assert_called()
+            mock_harvester.initiate_update_harvestable_resources.assert_called()
+            mock_harvester.is_harvesting_due.assert_called()
+            mock_harvester.initiate_perform_harvesting.assert_called()
