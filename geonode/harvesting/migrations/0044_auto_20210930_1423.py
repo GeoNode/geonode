@@ -10,12 +10,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='harvester',
-            name='availability_check_task',
-        ),
-        migrations.RemoveField(
-            model_name='harvester',
-            name='periodic_task',
-        ),
     ]

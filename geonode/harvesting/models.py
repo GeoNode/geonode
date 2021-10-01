@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-import json
+import datetime as dt
 import logging
 import typing
 
@@ -30,10 +30,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-from django_celery_beat.models import (
-    IntervalSchedule,
-    PeriodicTask,
-)
 
 from geonode import celery_app
 
@@ -149,23 +145,6 @@ class Harvester(models.Model):
             "the very least an empty object (i.e. {}) must be supplied."
         )
     )
-    # periodic_task = models.OneToOneField(
-    #     PeriodicTask,
-    #     on_delete=models.CASCADE,
-    #     help_text=_("Periodic task used to configure harvest scheduling"),
-    #     null=True,
-    #     blank=True,
-    #     editable=False,
-    # )
-    # availability_check_task = models.OneToOneField(
-    #     PeriodicTask,
-    #     on_delete=models.CASCADE,
-    #     related_name="checked_harvester",
-    #     help_text=_("Periodic task used to check availability of the remote"),
-    #     null=True,
-    #     blank=True,
-    #     editable=False,
-    # )
     num_harvestable_resources = models.IntegerField(
         blank=True,
         default=0
@@ -182,15 +161,79 @@ class Harvester(models.Model):
 
     @property
     def latest_refresh_session(self):
-        return self.sessions.filter(
-            session_type=AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
-        ).latest("started")
+        try:
+            result = self.sessions.filter(
+                session_type=AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
+            ).latest("started")
+        except AsynchronousHarvestingSession.DoesNotExist:
+            result = None
+        return result
 
     @property
     def latest_harvesting_session(self):
-        return self.sessions.filter(
-            session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
-        ).latest("started")
+        try:
+            result = self.sessions.filter(
+                session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
+            ).latest("started")
+        except AsynchronousHarvestingSession.DoesNotExist:
+            result = None
+        return result
+
+    def get_next_check_availability_dispatch_time(self) -> dt.datetime:
+        now = timezone.now()
+        latest_check = self.last_checked_availability
+        next_schedule = latest_check + dt.timedelta(minutes=self.check_availability_frequency)
+        return now if next_schedule < now else next_schedule
+
+    def get_next_refresh_session_dispatch_time(self) -> typing.Optional[dt.datetime]:
+        return self._get_next_dispatch_time(
+            AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES)
+
+    def get_next_harvesting_session_dispatch_time(self) -> typing.Optional[dt.datetime]:
+        return self._get_next_dispatch_time(
+            AsynchronousHarvestingSession.TYPE_HARVESTING)
+
+    def _get_next_dispatch_time(self, session_type: str) -> typing.Optional[dt.datetime]:
+        related_session_object_name, frequency_attribute = {
+            AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES: (
+                "latest_refresh_session",
+                "refresh_harvestable_resources_update_frequency"
+            ),
+            AsynchronousHarvestingSession.TYPE_HARVESTING: (
+                "latest_harvesting_session",
+                "harvesting_session_update_frequency"
+            ),
+        }[session_type]
+        latest_session: typing.Optional[AsynchronousHarvestingSession] = getattr(
+            self, related_session_object_name)
+        frequency = getattr(self, frequency_attribute)
+        now = timezone.now()
+        if not self.scheduling_enabled:
+            result = None
+        elif latest_session is None:
+            result = now
+        else:
+            next_schedule = latest_session.started + dt.timedelta(minutes=frequency)
+            if next_schedule < now:
+                result = now
+            else:
+                result = next_schedule
+        return result
+
+    def is_availability_check_due(self):
+        next_check_time = self.get_next_check_availability_dispatch_time()
+        now = timezone.now()
+        return next_check_time < now
+
+    def is_harvestable_resources_refresh_due(self):
+        next_session_time = self.get_next_refresh_session_dispatch_time()
+        now = timezone.now()
+        return next_session_time < now
+
+    def is_harvesting_due(self):
+        next_session_time = self.get_next_harvesting_session_dispatch_time()
+        now = timezone.now()
+        return next_session_time < now
 
     def clean(self):
         """Perform model validation by inspecting fields that depend on each other.
