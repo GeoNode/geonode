@@ -20,6 +20,12 @@ services:
     #   context: .
     #   dockerfile: .devcontainer/Dockerfile
 
+    restart: "no"
+
+    healthcheck:
+      test: "echo \"I'm alive.\""
+
+
     env_file:
       - .devcontainer/.env
 
@@ -41,6 +47,7 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   celery:
+    restart: "no"
     env_file:
       - .devcontainer/.env
 
@@ -56,6 +63,16 @@ services:
     deploy:
       replicas: 0
 
+  geoserver:
+    restart: "no"
+
+  data-dir-conf:
+    restart: "no"
+
   db:
+    restart: "no"
     ports:
      - "5432:5432"
+
+  rabbitmq:
+    restart: "no"
