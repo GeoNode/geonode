@@ -30,10 +30,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-from django_celery_beat.models import (
-    IntervalSchedule,
-    PeriodicTask,
-)
 
 from geonode import celery_app
 
@@ -58,7 +54,7 @@ class Harvester(models.Model):
         (STATUS_CHECKING_AVAILABILITY, _("checking-availability")),
     ]
 
-    name = models.CharField(max_length=255, help_text=_("Harvester name"))
+    name = models.CharField(max_length=100, help_text=_("Harvester name"))
     status = models.CharField(
         max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
     remote_url = models.URLField(
@@ -186,13 +182,8 @@ class Harvester(models.Model):
     def get_next_check_availability_dispatch_time(self) -> dt.datetime:
         now = timezone.now()
         latest_check = self.last_checked_availability
-        try:
-            next_schedule = latest_check + dt.timedelta(minutes=self.check_availability_frequency)
-        except TypeError:
-            result = now
-        else:
-            result = now if next_schedule < now else next_schedule
-        return result
+        next_schedule = latest_check + dt.timedelta(minutes=self.check_availability_frequency)
+        return now if next_schedule < now else next_schedule
 
     def get_next_refresh_session_dispatch_time(self) -> typing.Optional[dt.datetime]:
         return self._get_next_dispatch_time(
@@ -476,7 +467,6 @@ class HarvestableResource(models.Model):
     status = models.CharField(
         max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
     title = models.CharField(max_length=255)
-    abstract = models.TextField(max_length=2000, blank=True)
     harvester = models.ForeignKey(
         Harvester,
         on_delete=models.CASCADE,
