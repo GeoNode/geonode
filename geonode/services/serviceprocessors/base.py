@@ -25,12 +25,17 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.urls import reverse
-from urllib.parse import urlencode, urlparse, urljoin, parse_qs, urlunparse
+from urllib.parse import (
+    urlencode,
+    urlparse,
+    urljoin,
+    parse_qs,
+    urlunparse)
 
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
 from geonode.harvesting.tasks import harvest_resources
-from geonode.harvesting.models import HarvestingSession
+from geonode.harvesting.models import AsynchronousHarvestingSession
 
 from .. import models
 from .. import enumerations
@@ -207,7 +212,10 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
                     _h.harvestable_resources.filter(id=resource_id).update(should_be_harvested=True)
                     _h.status = _h.STATUS_PERFORMING_HARVESTING
                     _h.save()
-                    _h_session = HarvestingSession.objects.create(harvester=_h)
+                    _h_session = AsynchronousHarvestingSession.objects.create(
+                        harvester=_h,
+                        session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
+                    )
                     harvest_resources.apply_async(args=([resource_id, ], _h_session.pk))
             except Exception as e:
                 logger.exception(e)

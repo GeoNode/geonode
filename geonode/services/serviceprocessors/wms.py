@@ -42,8 +42,6 @@ from django.utils.translation import ugettext as _
 from geonode.base.bbox_utils import BBOXHelper
 
 from geonode.harvesting.models import Harvester
-from geonode.harvesting.tasks import update_harvestable_resources
-from geonode.harvesting.utils import update_harvester_availability
 from geonode.harvesting.harvesters.wms import OgcWmsHarvester, WebMapService
 
 from .. import enumerations
@@ -155,8 +153,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
                 harvester_type_specific_configuration=self.get_harvester_configuration_options()
             )
-            update_harvester_availability(service_harvester)
-            update_harvestable_resources.apply(args=(service_harvester.pk,))
+            service_harvester.update_availability()
+            service_harvester.initiate_update_harvestable_resources()
             instance.harvester = service_harvester
 
         self.geonode_service_id = instance.id

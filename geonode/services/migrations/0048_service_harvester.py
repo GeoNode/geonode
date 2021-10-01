@@ -11,7 +11,6 @@ def set_harvester(apps, _):
     from geonode.services import enumerations
     from geonode.harvesting.models import Harvester
     from geonode.harvesting.tasks import update_harvestable_resources
-    from geonode.harvesting.utils import update_harvester_availability
 
     try:
         MyModel = apps.get_model('services', 'Service')
@@ -25,7 +24,7 @@ def set_harvester(apps, _):
                 remote_url=_service.service_url,
                 harvester_type=enumerations.HARVESTER_TYPES[_service.type]
             )
-            update_harvester_availability(service_harvester)
+            service_harvester.update_availability()
             update_harvestable_resources.apply(args=(service_harvester.pk,))
             MyModel.objects.filter(id=_service.id).update(harvester=service_harvester)
     except Exception as e:
