@@ -70,8 +70,8 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(urlparse(serialized["links"]["self"]).path, f"{api_endpoint}{self.harvester.pk}/")
         self.assertIsNotNone(serialized["links"]["harvestable_resources"])
 
-    @mock.patch("geonode.harvesting.api.serializers.utils")
-    def test_validate_also_validates_worker_specific_config(self, mock_utils):
+    @mock.patch("geonode.harvesting.models.validate_worker_configuration")
+    def test_validate_also_validates_worker_specific_config(self, mock_validate_config):
         input_data = {
             "name": "phony",
             "remote_url": "http://fake.com",
@@ -85,10 +85,9 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
 
         serializer = serializers.HarvesterSerializer(data=input_data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        mock_utils.validate_worker_configuration.assert_called()
+        mock_validate_config.assert_called()
 
-    @mock.patch("geonode.harvesting.api.serializers.utils")
-    def test_validate_does_not_allow_changing_status_and_worker_specific_config(self, mock_utils):
+    def test_validate_does_not_allow_changing_status_and_worker_specific_config(self):
         input_data = {
             "name": "phony",
             "remote_url": "http://fake.com",
@@ -120,9 +119,7 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
         with self.assertRaises(ValidationError):
             serializer.save()
 
-    @mock.patch("geonode.harvesting.api.serializers.tasks")
-    @mock.patch("geonode.harvesting.api.serializers.utils")
-    def test_create_checks_availability_of_remote_and_updates_harvestable_resources(self, mock_utils, mock_tasks):
+    def test_create(self):
         input_data = {
             "name": "phony",
             "remote_url": "http://fake.com",
@@ -134,9 +131,8 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
 
         serializer = serializers.HarvesterSerializer(data=input_data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        mock_utils.update_harvester_availability.assert_called()
-        mock_tasks.update_harvestable_resources.apply_async.assert_called()
+        harvester = serializer.save()
+        self.assertEqual(harvester.name, input_data["name"])
 
     def test_update_errors_out_if_current_status_is_not_ready(self):
         request = _REQUEST_FACTORY.patch(f"/api/v2/harvesters/{self.harvester.pk}")
@@ -178,7 +174,7 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        mock_tasks.update_harvestable_resources.signature.assert_called_with(args=(self.harvester.pk,))
+        mock_tasks.update_harvestable_resources.signature.assert_called()
         mock_tasks.update_harvestable_resources.signature.return_value.apply_async.assert_called()
 
     @mock.patch("geonode.harvesting.api.serializers.tasks")
@@ -193,8 +189,10 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        called_harvester_pk, _ = mock_tasks.harvesting_dispatcher.signature.call_args_list[0].kwargs["args"]
-        self.assertEqual(called_harvester_pk, self.harvester.pk)
+        called_args = mock_tasks.harvesting_dispatcher.signature.call_args_list[0].kwargs["args"]
+        called_session_pk = called_args[0]
+        session = models.AsynchronousHarvestingSession.objects.get(pk=called_session_pk)
+        self.assertEqual(session.harvester.pk, self.harvester.pk)
         mock_tasks.harvesting_dispatcher.signature.return_value.apply_async.assert_called()
 
     @mock.patch("geonode.harvesting.api.serializers.tasks")
@@ -231,7 +229,8 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
         mock_tasks.update_harvestable_resources.signature.return_value.apply_async.assert_called()
 
 
-class BriefHarvestingSessionSerializerTestCase(GeoNodeBaseTestSupport):
+class BriefAsynchronousHarvestingSessionSerializerTestCase(GeoNodeBaseTestSupport):
+    harvester: models.Harvester
 
     @classmethod
     def setUpTestData(cls):
@@ -245,14 +244,15 @@ class BriefHarvestingSessionSerializerTestCase(GeoNodeBaseTestSupport):
             default_owner=user,
             harvester_type=harvester_type
         )
-        cls.harvesting_session = models.HarvestingSession.objects.create(
-            harvester=cls.harvester
+        cls.harvesting_session = models.AsynchronousHarvestingSession.objects.create(
+            harvester=cls.harvester,
+            session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING
         )
 
     def test_serializer_is_able_to_serialize_model_instance(self):
         api_endpoint = "/api/v2/harvesting-sessions/"
         request = _REQUEST_FACTORY.get(api_endpoint)
-        serializer = serializers.BriefHarvestingSessionSerializer(
+        serializer = serializers.BriefAsynchronousHarvestingSessionSerializer(
             self.harvesting_session, context={"request": request})
         serialized = serializer.data
         self.assertIsNotNone(serialized["started"])
