@@ -1278,39 +1278,6 @@ def dataset_append_replace_view(request, layername, template, action_type):
 
 
 @login_required
-def dataset_remove(request, layername, template='datasets/dataset_remove.html'):
-    try:
-        layer = _resolve_dataset(
-            request,
-            layername,
-            'base.delete_resourcebase',
-            _PERMISSION_MSG_DELETE)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not layer:
-        raise Http404(_("Not found"))
-
-    if (request.method == 'GET'):
-        return render(request, template, context={
-            "dataset": layer
-        })
-    if (request.method == 'POST'):
-        logger.debug(f'Deleting Dataset {layer}')
-        if not resource_manager.delete(layer.uuid, instance=layer):
-            message = f'{_("Unable to delete layer")}: {layer.alternate}.'
-            messages.error(request, message)
-            return render(
-                request, template, context={"layer": layer})
-
-        register_event(request, 'remove', layer)
-        return HttpResponseRedirect(reverse("dataset_browse"))
-    else:
-        return HttpResponse("Not allowed", status=403)
-
-
-@login_required
 def dataset_granule_remove(
         request,
         granule_id,

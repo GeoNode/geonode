@@ -46,8 +46,6 @@ urlpatterns = [
         views.dataset_metadata, name="dataset_metadata"),
     url(r'^(?P<layername>[^/]*)/metadata_advanced$',
         views.dataset_metadata_advanced, name="dataset_metadata_advanced"),
-    url(r'^(?P<layername>[^/]*)/remove$',
-        views.dataset_remove, name="dataset_remove"),
     url(r'^(?P<granule_id>[^/]*)/(?P<layername>[^/]*)/granule_remove$', views.dataset_granule_remove,
         name="dataset_granule_remove"),
     url(r'^(?P<layername>[^/]*)/replace$',

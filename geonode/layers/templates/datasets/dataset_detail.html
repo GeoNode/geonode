@@ -515,9 +515,6 @@
                     <a class="btn btn-default btn-block btn-xs" href="{% url "new_map" %}?layer={{resource.service_typename}}&subtype={{resource.subtype}}">{% trans "Edit data" %}</a>
                     {% endif %}
                   {% endif %}
-                  {% if "delete_resourcebase" in perms_list %}
-                  <a class="btn btn-danger btn-block btn-xs" href="{% url "dataset_remove" resource.service_typename %}">{% trans "Remove" %}</a>
-                  {% endif %}
                 </div>
                 {% endif %}
               </div>
