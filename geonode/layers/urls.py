@@ -71,8 +71,6 @@ urlpatterns = [
         views.dataset_batch_metadata, name='dataset_batch_metadata'),
     url(r'^permissions/batch/$',
         views.dataset_batch_permissions, name='dataset_batch_permissions'),
-    url(r'^autocomplete/$',
-        views.LayerAutocomplete.as_view(), name='autocomplete_dataset'),
     url(r'^', include('geonode.layers.api.urls')),
 ]
 

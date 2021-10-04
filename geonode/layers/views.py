@@ -1600,31 +1600,3 @@ def dataset_view_counter(dataset_id, viewer):
     _u = get_user_model().objects.get(username=viewer)
     _l.view_count_up(_u, do_local=True)
 
-
-class LayerAutocomplete(autocomplete.Select2QuerySetView):
-
-    # Overriding both result label methods to ensure autocomplete labels display without 'geonode:' prefix
-    def get_selected_result_label(self, result):
-        """Return the label of a selected result."""
-        return self.get_result_label(result)
-
-    def get_result_label(self, result):
-        """Return the label of a selected result."""
-        return str(result.title)
-
-    def get_queryset(self):
-        request = self.request
-        permitted = get_objects_for_user(
-            request.user,
-            'base.view_resourcebase')
-        qs = Dataset.objects.all().filter(id__in=permitted)
-
-        if self.q:
-            qs = qs.filter(title__icontains=self.q)
-
-        return get_visible_resources(
-            qs,
-            request.user if request else None,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
