@@ -54,7 +54,7 @@
           <ul class="nav navbar-nav">
             {% block tabs %}
             <li id="nav_layers">
-              <a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a>
+              <a href="{% dataset_list_url %}">{% trans "Datasets" %}</a>
             </li>
             <li id="nav_maps">
               <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
@@ -157,7 +157,7 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Data" %}</li>
-            <li><a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
+            <li><a href="{% dataset_list_url %}">{% trans "Datasets" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
             {% if "add_resource" in user.perms %}

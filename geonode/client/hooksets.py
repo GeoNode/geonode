@@ -53,7 +53,7 @@ class BaseHookSet:
         return NotImplemented
 
     def dataset_list_url(self):
-        return self.add_limit_settings(reverse('dataset_browse'))
+        return NotImplemented
 
     def dataset_detail_url(self, layer):
         return NotImplemented

@@ -36,7 +36,6 @@ from django.conf import settings
 from django.db.models import Q
 from django.db.models import F
 from django.http import Http404
-from django.urls import reverse
 from django.contrib import messages
 from django.shortcuts import render
 from django.utils.html import escape

@@ -20,8 +20,6 @@
 from geonode import geoserver  # noqa
 from geonode.utils import check_ogc_backend
 from django.conf.urls import url, include
-from django.views.generic import TemplateView
-from geonode.base import register_url_event
 
 from . import views
 
@@ -29,14 +27,8 @@ js_info_dict = {
     'packages': ('geonode.layers',),
 }
 
-dataset_list = register_url_event()(TemplateView.as_view(template_name='datasets/dataset_list.html'))
-
 urlpatterns = [
     # 'geonode.layers.views',
-    url(r'^$',
-        dataset_list,
-        {'facet_type': 'dataset', 'is_dataset': True},
-        name='dataset_browse'),
     url(r'^upload$', views.dataset_upload, name='dataset_upload'),
     url(r'^upload_metadata$', views.dataset_metadata_upload,
         name='dataset_metadata_upload'),

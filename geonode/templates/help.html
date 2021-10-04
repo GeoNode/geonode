@@ -1,6 +1,7 @@
 {% extends "geonode_base.html" %}
 
 {% load i18n %}
+{% load client_lib_tags %}
 {% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
 
 {% block body_outer %}
@@ -11,7 +12,7 @@
   <div class="col-md-8">
     <p class="lead">{% trans "This page provides helpful information about how to use the GeoNode. You can use the sidebar links to navigate to what you want to know." %}</p>
 
-    {% url 'dataset_browse' as url_dataset_browse %}
+    {% dataset_list_url as url_dataset_browse %}
     {% url 'maps_browse' as url_maps_browse %}
     {% url 'new_map' as url_new_map %}
     {% url 'developer' as url_developer %}

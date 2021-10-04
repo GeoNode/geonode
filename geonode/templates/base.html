@@ -193,7 +193,7 @@
           <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
-                <li><a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
+                <li><a href="{% dataset_list_url %}">{% trans "Datasets" %}</a></li>
                 <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
                 <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
                 {% if "add_resource" in user.perms %}
@@ -379,7 +379,7 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Data" %}</li>
-            <li><a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
+            <li><a href="{% dataset_list_url %}">{% trans "Datasets" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
             {% if "add_resource" in user.perms %}
