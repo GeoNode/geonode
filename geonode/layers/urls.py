@@ -63,8 +63,6 @@ urlpatterns = [
         views.dataset_embed, name='dataset_embed'),
     url(r'^(?P<layername>[^/]*)/style_upload$',
         views.dataset_sld_upload, name='dataset_sld_upload'),
-    url(r'^(?P<layername>[^/]*)/style_edit$',
-        views.dataset_sld_edit, name='dataset_sld_edit'),
     url(r'^(?P<layername>[^/]*)/feature_catalogue$',
         views.dataset_feature_catalogue, name='dataset_feature_catalogue'),
     url(r'^metadata/batch/$',

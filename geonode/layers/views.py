@@ -27,7 +27,6 @@ import warnings
 import traceback
 
 from itertools import chain
-from dal import autocomplete
 from requests import Request
 from urllib.parse import quote
 from owslib.wfs import WebFeatureService
@@ -50,8 +49,6 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.clickjacking import xframe_options_exempt
-
-from guardian.shortcuts import get_objects_for_user
 
 from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
@@ -86,7 +83,6 @@ from geonode.base import register_event
 from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
-from geonode.security.utils import get_visible_resources
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import (
@@ -1495,13 +1491,6 @@ def dataset_sld_upload(
     })
 
 
-def dataset_sld_edit(
-        request,
-        layername,
-        template='datasets/dataset_style_edit.html'):
-    return dataset_detail(request, layername, template)
-
-
 @xframe_options_exempt
 def dataset_embed(
         request,
@@ -1599,4 +1588,3 @@ def dataset_view_counter(dataset_id, viewer):
     _l = Dataset.objects.get(id=dataset_id)
     _u = get_user_model().objects.get(username=viewer)
     _l.view_count_up(_u, do_local=True)
-
