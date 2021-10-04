@@ -56,7 +56,7 @@ class BaseHookSet:
         return self.add_limit_settings(reverse('dataset_browse'))
 
     def dataset_detail_url(self, layer):
-        return reverse('dataset_detail', args=(layer.alternate,))
+        return NotImplemented
 
     # Maps
     def map_list_template(self, context=None):

@@ -85,7 +85,7 @@
 
         {% if not dataset.metadata_uploaded_preserve %}
         <div class="form-actions">
-          <a href="{% dataset_detail_url resource %}" class="btn btn-primary">{% trans "Return to Dataset" %}</a>
+          <a href="{{ resource.get_absolute_url }}" class="btn btn-primary">{% trans "Return to Dataset" %}</a>
           <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update" %}"/>
         </div>
         {% endif %}
@@ -215,7 +215,7 @@
             {% if not dataset.metadata_uploaded_preserve %}
             {% block form_actions %}
             <div class="form-actions">
-              <a href="{% dataset_detail_url resource %}" class="btn btn-primary">{% trans "Return to Dataset" %}</a>
+              <a href="{{ resource.get_absolute_url }}" class="btn btn-primary">{% trans "Return to Dataset" %}</a>
               <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
             </div>
             {% endblock form_actions %}
