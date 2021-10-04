@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-"""Harvester for legacy GeoNode remote servers"""
+"""Harvesters GeoNode remote servers."""
 
 import datetime as dt
 import enum
@@ -66,6 +66,245 @@ class GeoNodeResourceType(enum.Enum):
     MAP = "maps"
 
 
+class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
+    harvest_documents: bool
+    harvest_datasets: bool
+
+    # harvesting of maps is explicitly disabled - the GeoNode API does not
+    # really allow reconstructing a Map via API, as there is no information
+    # about the actual contents of the map, i.e. which layers are contained
+    # in it
+    harvest_maps: bool = False
+
+    copy_documents: bool
+    copy_datasets: bool
+    resource_title_filter: typing.Optional[str]
+    start_date_filter: typing.Optional[str]
+    end_date_filter: typing.Optional[str]
+    keywords_filter: typing.Optional[typing.List[str]]
+    categories_filter: typing.Optional[typing.List[str]]
+    http_session: requests.Session
+    page_size: int = 10
+
+    def __init__(
+            self,
+            *args,
+            harvest_documents: typing.Optional[bool] = True,
+            harvest_datasets: typing.Optional[bool] = True,
+            copy_datasets: typing.Optional[bool] = False,
+            copy_documents: typing.Optional[bool] = False,
+            resource_title_filter: typing.Optional[str] = None,
+            start_date_filter: typing.Optional[str] = None,
+            end_date_filter: typing.Optional[str] = None,
+            keywords_filter: typing.Optional[typing.List[str]] = None,
+            categories_filter: typing.Optional[typing.List[str]] = None,
+            **kwargs
+    ):
+        """A harvester for remote GeoNode instances."""
+        super().__init__(*args, **kwargs)
+        self.remote_url = self.remote_url.rstrip("/")
+        self.http_session = requests.Session()
+        self.harvest_documents = bool(harvest_documents)
+        self.harvest_datasets = bool(harvest_datasets)
+        self.copy_datasets = bool(copy_datasets)
+        self.copy_documents = bool(copy_documents)
+        self.resource_title_filter = resource_title_filter
+        self.start_date_filter = start_date_filter
+        self.end_date_filter = end_date_filter
+        self.keywords_filter = keywords_filter
+        self.categories_filter = categories_filter
+
+    @property
+    def base_api_url(self):
+        return f"{self.remote_url}/api/v2"
+
+    @property
+    def allows_copying_resources(self) -> bool:
+        return True
+
+    @classmethod
+    def from_django_record(cls, record: models.Harvester):
+        return _from_django_record(cls, record)
+
+    @classmethod
+    def get_extra_config_schema(cls) -> typing.Dict:
+        return _get_extra_config_schema()
+
+    def get_num_available_resources(self) -> int:
+        url = f"{self.base_api_url}/resources/"
+        response = self.http_session.get(url, params=self._get_resource_list_params())
+        result = 0
+        if response.status_code == requests.codes.ok:
+            try:
+                result = response.json().get("total", 0)
+            except json.JSONDecodeError as exc:
+                logger.exception("Could not decode response as a JSON object")
+                raise base.HarvestingException(str(exc))
+        else:
+            logger.error(f"Got back invalid response from {url!r}: {response.status_code}")
+        return result
+
+    def list_resources(
+            self,
+            offset: typing.Optional[int] = 0
+    ) -> typing.List[base.BriefRemoteResource]:
+        url = f"{self.base_api_url}/resources/"
+        response = self.http_session.get(url, params=self._get_resource_list_params(offset))
+        result = []
+        if response.status_code == requests.codes.ok:
+            try:
+                payload = response.json()
+            except json.JSONDecodeError as exc:
+                logger.exception("Could not decode response as a JSON object")
+                raise base.HarvestingException(str(exc))
+            else:
+                for raw_resource in payload.get("resources", []):
+                    try:
+                        brief_resource = base.BriefRemoteResource(
+                            unique_identifier=raw_resource["pk"],
+                            title=raw_resource["title"],
+                            resource_type=raw_resource["resource_type"],
+                        )
+                        result.append(brief_resource)
+                    except KeyError as exc:
+                        logger.exception(f"Could not decode resource: {raw_resource!r}")
+                        raise base.HarvestingException(str(exc))
+        else:
+            logger.error(f"Got back invalid response from {url!r}: {response.status_code}")
+        return result
+
+    def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
+        return _check_availability(self.http_session, f"{self.base_api_url}/", timeout_seconds)
+
+    def get_geonode_resource_type(self, remote_resource_type: str) -> typing.Type[typing.Union[Dataset, Document]]:
+        return {
+            "layer": Dataset,
+            "document": Document
+        }[remote_resource_type]
+
+    def get_resource(
+            self,
+            harvestable_resource: models.HarvestableResource,
+    ) -> typing.Optional[base.HarvestedResourceInfo]:
+        url_fragment = {
+            "layer": "/layers/",
+            "document": "/documents/"
+        }[harvestable_resource.remote_resource_type]
+        url = f"{self.base_api_url}{url_fragment}{harvestable_resource.unique_identifier}/"
+        response = self.http_session.get(url)
+        result = None
+        if response.status_code == requests.codes.ok:
+            try:
+                response_payload = response.json()
+            except json.JSONDecodeError:
+                logger.exception("Could not decode response payload as valid JSON")
+            else:
+                resource_descriptor = self._get_resource_descriptor(response_payload)
+        else:
+            logger.error(
+                f"Could not retrieve remote resource with unique "
+                f"identifier {harvestable_resource.unique_identifier!r}"
+            )
+        return result
+
+    def should_copy_resource(
+            self,
+            harvestable_resource: models.HarvestableResource,
+    ) -> bool:
+        return {
+            "document": self.copy_documents,
+            "layer": self.copy_datasets,
+        }.get(harvestable_resource.remote_resource_type, False)
+
+    def get_geonode_resource_defaults(
+            self,
+            harvested_info: base.HarvestedResourceInfo,
+            harvestable_resource: models.HarvestableResource,
+    ) -> typing.Dict:
+        return _get_geonode_resource_defaults(
+            should_copy_resource=self.should_copy_resource(harvestable_resource),
+            local_resource_type=self.get_geonode_resource_type(harvestable_resource.remote_resource_type),
+            harvested_info=harvested_info,
+            harvestable_resource=harvestable_resource,
+            base_defaults=super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
+        )
+
+    def _get_resource_descriptor(
+            self,
+            raw_resource: typing.Dict
+    ) -> resourcedescriptor.RecordDescription:
+        result = resourcedescriptor.RecordDescription(
+            uuid=raw_resource["uuid"],
+            language=raw_resource["language"],
+            character_set=raw_resource["charset"],
+            hierarchy_level="dataset",
+            point_of_contact=None,
+            author=None,
+            date_stamp=None,
+            reference_systems=[],
+            identification=resourcedescriptor.RecordIdentification(
+                name=raw_resource["name"],
+                title=raw_resource["title"],
+                date=raw_resource["date"],  # TODO: convert this to a dt instance
+                date_type=raw_resource["date_type"],
+                originator=None,
+                graphic_overview_uri=None,
+                place_keywords=[i.get("code") for i in raw_resource.get("regions", [])],
+                other_keywords=[i.get("slug") for i in raw_resource.get("keywords", [])],
+                license=raw_resource.get("license", {}).get("identifier"),
+                abstract=raw_resource["abstract"],
+                purpose=raw_resource["purpose"],
+                status=None,
+                native_format=None,
+                other_constraints=raw_resource.get("restriction_code_type", {}).get("identifier"),
+                topic_category=raw_resource.get("category", {}).get("identifier"),
+                supplemental_information=raw_resource.get("raw_supplemental_information"),
+                spatial_extent=None,
+                temporal_extent=None
+            ),
+            distribution=resourcedescriptor.RecordDistribution(
+                link_url=None,
+                wms_url=None,
+                wfs_url=None,
+                wcs_url=None,
+                thumbnail_url=None,
+                legend_url=None,
+                geojson_url=None,
+                original_format_url=None
+            ),
+            data_quality=None
+        )
+        return result
+
+    def _get_resource_list_params(
+            self, offset: typing.Optional[int] = 0) -> typing.Dict:
+        result = {
+            "limit": self.page_size,
+            "offset": offset,
+        }
+        resource_filter = []
+        if self.harvest_datasets:
+            resource_filter.append("layer")
+        if self.harvest_documents:
+            resource_filter.append("document")
+        if len(resource_filter) > 0:
+            result["filter{resource_type.in}"] = resource_filter
+
+        if self.resource_title_filter is not None:
+            result["filter{title.icontains}"] = self.resource_title_filter
+        if self.start_date_filter is not None:
+            start_date = dateutil.parser.parse(self.start_date_filter)
+            result["filter{date.gte}"] = f"{start_date.astimezone(datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
+        if self.end_date_filter is not None:
+            end_date = dateutil.parser.parse(self.end_date_filter)
+            result["filter{date.lte}"] = f"{end_date.astimezone(datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
+        if self.keywords_filter is not None:
+            result["filter{keywords.slug.in}"] = self.keywords_filter
+        if self.categories_filter is not None:
+            result["filter{category.identifier.in}"] = self.categories_filter
+        return result
+
+
 class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     harvest_documents: bool
     harvest_datasets: bool
@@ -77,6 +316,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     harvest_maps: bool = False
 
     copy_documents: bool
+    copy_datasets: bool
     resource_title_filter: typing.Optional[str]
     http_session: requests.Session
     page_size: int = 10
@@ -120,84 +360,11 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
 
     @classmethod
     def from_django_record(cls, record: models.Harvester):
-        return cls(
-            record.remote_url,
-            record.id,
-            harvest_documents=record.harvester_type_specific_configuration.get(
-                "harvest_documents", True),
-            harvest_datasets=record.harvester_type_specific_configuration.get(
-                "harvest_datasets", True),
-            copy_datasets=record.harvester_type_specific_configuration.get(
-                "copy_datasets", False),
-            copy_documents=record.harvester_type_specific_configuration.get(
-                "copy_documents", False),
-            resource_title_filter=record.harvester_type_specific_configuration.get(
-                "resource_title_filter"),
-            start_date_filter=record.harvester_type_specific_configuration.get(
-                "start_date_filter"),
-            end_date_filter=record.harvester_type_specific_configuration.get(
-                "end_date_filter"),
-            keywords_filter=record.harvester_type_specific_configuration.get(
-                "keywords_filter"),
-            categories_filter=record.harvester_type_specific_configuration.get(
-                "categories_filter")
-        )
+        return _from_django_record(cls, record)
 
     @classmethod
     def get_extra_config_schema(cls) -> typing.Dict:
-        return {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "$id": (
-                "https://geonode.org/harvesting/geonode-legacy-harvester.schema.json"),
-            "title": "GeoNode harvester config",
-            "description": (
-                "A jsonschema for validating configuration option for GeoNode's "
-                "remote GeoNode harvester"
-            ),
-            "type": "object",
-            "properties": {
-                "harvest_documents": {
-                    "type": "boolean",
-                    "default": True
-                },
-                "copy_documents": {
-                    "type": "boolean",
-                    "default": False
-                },
-                "harvest_datasets": {
-                    "type": "boolean",
-                    "default": True
-                },
-                "copy_datasets": {
-                    "type": "boolean",
-                    "default": False
-                },
-                "resource_title_filter": {
-                    "type": "string",
-                },
-                "start_date_filter": {
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "end_date_filter": {
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "keywords_filter": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "categories_filter": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-            },
-            "additionalProperties": False,
-        }
+        return _get_extra_config_schema()
 
     def get_num_available_resources(self) -> int:
         result = 0
@@ -251,22 +418,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
         """Check whether the remote GeoNode is online."""
-        try:
-            response = self.http_session.get(
-                f"{self.base_api_url}/", timeout=timeout_seconds)
-            response.raise_for_status()
-        except (requests.HTTPError, requests.ConnectionError):
-            result = False
-        else:
-            try:
-                response_payload = response.json()
-            except json.JSONDecodeError:
-                logger.exception("Could not decode server response as valid JSON")
-                result = False
-            else:
-                layers_endpoint_present = response_payload.get("layers") is not None
-                result = layers_endpoint_present
-        return result
+        return _check_availability(self.http_session, f"{self.base_api_url}/", timeout_seconds)
 
     def get_geonode_resource_type(self, remote_resource_type: str) -> typing.Type[typing.Union[Dataset, Document, Map]]:
         """Return resource type class from resource type string."""
@@ -306,7 +458,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
 
     def should_copy_resource(
             self,
-            harvestable_resource: "HarvestableResource",  # noqa
+            harvestable_resource: models.HarvestableResource,
     ) -> bool:
         return {
             GeoNodeResourceType.DOCUMENT.value: self.copy_documents,
@@ -319,31 +471,13 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             harvested_info: base.HarvestedResourceInfo,
             harvestable_resource: models.HarvestableResource,
     ) -> typing.Dict:
-        defaults = super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
-        defaults.update(harvested_info.resource_descriptor.additional_parameters)
-        local_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)
-        to_copy = self.should_copy_resource(harvestable_resource)
-        if local_resource_type == Document and not to_copy:
-            # since we are not copying the document, we need to provide suitable remote URLs
-            defaults.update({
-                "doc_url": harvested_info.resource_descriptor.distribution.original_format_url,
-                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
-            })
-        elif local_resource_type == Dataset and not to_copy:
-            # since we are not copying the dataset, we need to provide suitable SRID and remote URL
-            try:
-                srid = harvested_info.resource_descriptor.reference_systems[0]
-            except AttributeError:
-                srid = None
-            defaults.update({
-                "alternate": defaults["name"],
-                "name": defaults["name"].rpartition(":")[-1],
-                "workspace": defaults["name"].rpartition(":")[0],
-                "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
-                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
-                "srid": srid,
-            })
-        return defaults
+        return _get_geonode_resource_defaults(
+            should_copy_resource=self.should_copy_resource(harvestable_resource),
+            local_resource_type=self.get_geonode_resource_type(harvestable_resource.remote_resource_type),
+            harvested_info=harvested_info,
+            harvestable_resource=harvestable_resource,
+            base_defaults=super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
+        )
 
     def _get_num_available_resources_by_type(
             self) -> typing.Dict[GeoNodeResourceType, int]:
@@ -395,11 +529,11 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         )
         response.raise_for_status()
         result = []
-        for resource in response.json().get('objects', []):
+        for resource in response.json().get("objects", []):
             brief_resource = base.BriefRemoteResource(
                 unique_identifier=self._extract_unique_identifier(resource),
-                title=resource['title'],
-                abstract=resource['abstract'],
+                title=resource["title"],
+                abstract=resource["abstract"],
                 resource_type=resource_type.value,
             )
             result.append(brief_resource)
@@ -470,8 +604,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             result["date__lte"] = f"{end_date.astimezone(datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.keywords_filter is not None:
             result["keywords__slug__in"] = ','.join(self.keywords_filter)
-        if self.categories_filter is not None:
-            result["category__identifier__in"] = ','.join(self.categories_filter)
         if self.categories_filter is not None:
             result["category__identifier__in"] = ','.join(self.categories_filter)
         return result
@@ -728,6 +860,118 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         return thumbnail
 
 
+class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
+    """A harvester worker that is able to retrieve details from most GeoNode deployments.
+
+    This harvester type relies on the `GeonodeCurrentHarvester` and `GeonodeLegacyHarvester` for most
+    operations. It simply determines which concrete harvester to use based on the remote's response
+    for the availability check and then uses it.
+
+    """
+
+    _concrete_harvester_worker: typing.Optional[
+        typing.Union[GeonodeCurrentHarvester, GeonodeLegacyHarvester]]
+
+    def __init__(
+            self,
+            *args,
+            harvest_documents: typing.Optional[bool] = True,
+            harvest_datasets: typing.Optional[bool] = True,
+            copy_datasets: typing.Optional[bool] = False,
+            copy_documents: typing.Optional[bool] = False,
+            resource_title_filter: typing.Optional[str] = None,
+            start_date_filter: typing.Optional[str] = None,
+            end_date_filter: typing.Optional[str] = None,
+            keywords_filter: typing.Optional[typing.List[str]] = None,
+            categories_filter: typing.Optional[typing.List[str]] = None,
+            **kwargs
+    ):
+        """A harvester for remote GeoNode instances."""
+        self._concrete_harvester_worker = None
+        super().__init__(*args, **kwargs)
+        self.remote_url = self.remote_url.rstrip("/")
+        self.http_session = requests.Session()
+        self.harvest_documents = bool(harvest_documents)
+        self.harvest_datasets = bool(harvest_datasets)
+        self.copy_datasets = bool(copy_datasets)
+        self.copy_documents = bool(copy_documents)
+        self.resource_title_filter = resource_title_filter
+        self.start_date_filter = start_date_filter
+        self.end_date_filter = end_date_filter
+        self.keywords_filter = keywords_filter
+        self.categories_filter = categories_filter
+
+    @property
+    def concrete_worker(self) -> typing.Union[GeonodeCurrentHarvester, GeonodeLegacyHarvester]:
+        if self._concrete_harvester_worker is None:
+            self._concrete_harvester_worker = self._initialize_concrete_worker()
+        return self._concrete_harvester_worker
+
+    @property
+    def allows_copying_resources(self) -> bool:
+        return self.concrete_worker.allows_copying_resources
+
+    @classmethod
+    def from_django_record(cls, record: models.Harvester):
+        return _from_django_record(cls, record)
+
+    @classmethod
+    def get_extra_config_schema(cls) -> typing.Dict:
+        return _get_extra_config_schema()
+
+    def get_num_available_resources(self) -> int:
+        return self.concrete_worker.get_num_available_resources()
+
+    def list_resources(
+            self,
+            offset: typing.Optional[int] = 0
+    ) -> typing.List[base.BriefRemoteResource]:
+        return self.concrete_worker.list_resources(offset)
+
+    def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
+        return self.concrete_worker.check_availability(timeout_seconds)
+
+    def get_geonode_resource_type(self, remote_resource_type: str) -> typing.Type[typing.Union[Dataset, Document]]:
+        return self.concrete_worker.get_geonode_resource_type(remote_resource_type)
+
+    def get_resource(
+            self,
+            harvestable_resource: models.HarvestableResource,
+    ) -> typing.Optional[base.HarvestedResourceInfo]:
+        return self.concrete_worker.get_resource(harvestable_resource)
+
+    def should_copy_resource(
+            self,
+            harvestable_resource: models.HarvestableResource,
+    ) -> bool:
+        return self.concrete_worker.should_copy_resource(harvestable_resource)
+
+    def get_geonode_resource_defaults(
+            self,
+            harvested_info: base.HarvestedResourceInfo,
+            harvestable_resource: models.HarvestableResource,
+    ) -> typing.Dict:
+        return self.concrete_worker.get_geonode_resource_defaults(harvested_info, harvestable_resource)
+
+    def _get_concrete_worker(self) -> typing.Union[GeonodeCurrentHarvester, GeonodeLegacyHarvester]:
+        # first try to initialize the GeonodeCurrentHarvester. If not available, fall back to the legacy one
+        kwargs = {
+            "remote_url": self.remote_url,
+            "harvester_id": self.harvester_id,
+            "harvest_documents": self.harvest_documents,
+            "harvest_datasets": self.harvest_datasets,
+            "copy_documents": self.copy_documents,
+            "copy_datasets": self.copy_datasets,
+            "resource_title_filter": self.resource_title_filter,
+            "start_date_filter": self.start_date_filter,
+            "end_date_filter": self.end_date_filter,
+            "keywords_filter": self.keywords_filter,
+            "categories_filter": self.categories_filter
+        }
+        current = GeonodeCurrentHarvester(**kwargs)
+        return current if current.check_availability() else GeonodeLegacyHarvester(**kwargs)
+
+
 def get_contact_descriptor(contact: etree.Element):
     return resourcedescriptor.RecordDescriptionContact(
         role=contact.xpath(
@@ -907,3 +1151,135 @@ def get_temporal_extent(
 def _get_optional_attribute_value(
         element: etree.Element, xpath: str) -> typing.Optional[str]:
     return element.xpath(f"{xpath}/text()", namespaces=element.nsmap)[0].strip() or None
+
+
+def _get_extra_config_schema() -> typing.Dict:
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": (
+            "https://geonode.org/harvesting/geonode-legacy-harvester.schema.json"),
+        "title": "GeoNode harvester config",
+        "description": (
+            "A jsonschema for validating configuration option for GeoNode's "
+            "remote GeoNode harvester"
+        ),
+        "type": "object",
+        "properties": {
+            "harvest_documents": {
+                "type": "boolean",
+                "default": True
+            },
+            "copy_documents": {
+                "type": "boolean",
+                "default": False
+            },
+            "harvest_datasets": {
+                "type": "boolean",
+                "default": True
+            },
+            "copy_datasets": {
+                "type": "boolean",
+                "default": False
+            },
+            "resource_title_filter": {
+                "type": "string",
+            },
+            "start_date_filter": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "end_date_filter": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "keywords_filter": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "categories_filter": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+        },
+        "additionalProperties": False,
+    }
+
+
+def _from_django_record(target_class: typing.Type, record: models.Harvester):
+    return target_class(
+        record.remote_url,
+        record.id,
+        harvest_documents=record.harvester_type_specific_configuration.get(
+            "harvest_documents", True),
+        harvest_datasets=record.harvester_type_specific_configuration.get(
+            "harvest_datasets", True),
+        copy_datasets=record.harvester_type_specific_configuration.get(
+            "copy_datasets", False),
+        copy_documents=record.harvester_type_specific_configuration.get(
+            "copy_documents", False),
+        resource_title_filter=record.harvester_type_specific_configuration.get(
+            "resource_title_filter"),
+        start_date_filter=record.harvester_type_specific_configuration.get(
+            "start_date_filter"),
+        end_date_filter=record.harvester_type_specific_configuration.get(
+            "end_date_filter"),
+        keywords_filter=record.harvester_type_specific_configuration.get(
+            "keywords_filter"),
+        categories_filter=record.harvester_type_specific_configuration.get(
+            "categories_filter")
+    )
+
+
+def _check_availability(http_session, url: str, timeout_seconds: typing.Optional[int] = 5) -> bool:
+    try:
+        response = http_session.get(url, timeout=timeout_seconds)
+        response.raise_for_status()
+    except (requests.HTTPError, requests.ConnectionError):
+        result = False
+    else:
+        try:
+            response_payload = response.json()
+        except json.JSONDecodeError:
+            logger.exception("Could not decode server response as valid JSON")
+            result = False
+        else:
+            layers_endpoint_present = response_payload.get("layers") is not None
+            result = layers_endpoint_present
+    return result
+
+
+def _get_geonode_resource_defaults(
+        should_copy_resource: bool,
+        local_resource_type: typing.Type[typing.Union[Dataset, Document]],
+        harvested_info: base.HarvestedResourceInfo,
+        harvestable_resource: models.HarvestableResource,
+        base_defaults: typing.Optional[typing.Dict] = None
+) -> typing.Dict:
+    defaults = dict(base_defaults) if base_defaults is not None else {}
+    defaults.update(harvested_info.resource_descriptor.additional_parameters)
+    if local_resource_type == Document and not should_copy_resource:
+        # since we are not copying the document, we need to provide suitable remote URLs
+        defaults.update({
+            "doc_url": harvested_info.resource_descriptor.distribution.download_url,
+            "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+        })
+    elif local_resource_type == Dataset and not should_copy_resource:
+        # since we are not copying the dataset, we need to provide suitable SRID and remote URL
+        try:
+            srid = harvested_info.resource_descriptor.reference_systems[0]
+        except AttributeError:
+            srid = None
+        name, workspace = defaults["name"].rpartition(":")[::2]
+        defaults.update({
+            "alternate": defaults["name"],
+            "name": name,
+            "workspace": workspace,
+            "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
+            "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+            "srid": srid,
+        })
+    return defaults
