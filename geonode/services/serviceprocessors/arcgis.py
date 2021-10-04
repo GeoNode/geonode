@@ -94,7 +94,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     def create_cascaded_store(self, service):
         return None
 
-    def create_geonode_service(self, owner, parent=None):
+    def create_geonode_service(self, owner):
         """Create a new geonode.service.models.Service instance
 
         :arg owner: The user who will own the service instance
@@ -105,18 +105,15 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             instance = models.Service.objects.create(
                 uuid=str(uuid4()),
                 base_url=self.url,
-                proxy_base=self.proxy_base,
                 type=self.service_type,
                 method=self.indexing_method,
                 owner=owner,
-                parent=parent,
                 metadata_only=True,
                 version=str(self.parsed_service._json_struct.get("currentVersion", 0.0)).encode("utf-8", "ignore").decode('utf-8'),
                 name=self.name,
                 title=self.title,
                 abstract=str(self.parsed_service._json_struct.get("serviceDescription")).encode("utf-8", "ignore").decode('utf-8') or _(
-                    "Not provided"),
-                online_resource=self.parsed_service.url
+                    "Not provided")
             )
             # TODO: once the ArcGIS Harvester will be available
             # service_harvester = Harvester.objects.create(
@@ -220,7 +217,6 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
 
     def __init__(self, url):
         ArcMapServiceHandler.__init__(self, url)
-        self.proxy_base = None
         self.url = url
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:

@@ -21,16 +21,7 @@
 
 import logging
 
-from urllib.parse import quote
-
 from django.conf import settings
-from django.urls import reverse
-from urllib.parse import (
-    urlencode,
-    urlparse,
-    urljoin,
-    parse_qs,
-    urlunparse)
 
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
@@ -46,47 +37,6 @@ else:
     catalog = None
 
 logger = logging.getLogger(__name__)
-
-
-def get_proxified_ows_url(url, version='1.3.0', proxy_base=None):
-    """
-    clean an OWS URL of basic service elements
-    source: https://stackoverflow.com/a/11640565
-    """
-
-    if url is None or not url.startswith('http'):
-        return url
-
-    filtered_kvp = {}
-    basic_service_elements = ('service', 'version', 'request')
-
-    parsed = urlparse(url)
-    qd = parse_qs(parsed.query, keep_blank_values=True)
-    version = qd['version'][0] if 'version' in qd else version
-
-    for key, value in qd.items():
-        if key.lower() not in basic_service_elements:
-            filtered_kvp[key] = value
-
-    base_ows_url = urlunparse([
-        parsed.scheme,
-        parsed.netloc,
-        parsed.path,
-        parsed.params,
-        quote(urlencode(filtered_kvp, doseq=True), safe=''),
-        parsed.fragment
-    ])
-
-    ows_request = quote(
-        urlencode(
-            qd,
-            doseq=True),
-        safe='') if qd else f"version%3D{version}%26request%3DGetCapabilities%26service%3Dwms"
-    proxy_base = proxy_base if proxy_base else urljoin(
-        settings.SITEURL, reverse('proxy'))
-    ows_url = quote(base_ows_url, safe='')
-    proxified_url = f"{proxy_base}?url={ows_url}%3F{ows_request}"
-    return (version, proxified_url, base_ows_url)
 
 
 def get_geoserver_cascading_workspace(create=True):
@@ -135,7 +85,7 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
     def get_harvester_configuration_options(self):
         return {}
 
-    def create_geonode_service(self, owner, parent=None):
+    def create_geonode_service(self, owner):
         """Create a new geonode.service.models.Service instance
         Saving the service instance in the database is not a concern of this
         method, it only deals with creating the instance.

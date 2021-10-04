@@ -59,8 +59,7 @@ def WebMapService(url,
                   password=None,
                   parse_remote_metadata=False,
                   timeout=30,
-                  headers=None,
-                  proxy_base=None):
+                  headers=None):
     """
     API for Web Map Service (WMS) methods and metadata.
     """
@@ -76,14 +75,8 @@ def WebMapService(url,
     @return: initialized WebFeatureService_2_0_0 object
     '''
 
-    if not proxy_base:
-        clean_url = clean_ows_url(url)
-        base_ows_url = clean_url
-    else:
-        (clean_version, proxified_url, base_ows_url) = base.get_proxified_ows_url(
-            url, version=version, proxy_base=proxy_base)
-        version = clean_version
-        clean_url = proxified_url
+    clean_url = clean_ows_url(url)
+    base_ows_url = clean_url
 
     if version in ['1.1.1']:
         return (
@@ -164,13 +157,12 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         }
 
     @classmethod
-    def get_wms_operations(cls, url, version=None, proxy_base=None) -> typing.Optional[typing.Dict]:
+    def get_wms_operations(cls, url, version=None) -> typing.Optional[typing.Dict]:
         operations = {}
         try:
             _url, _parsed_service = WebMapService(
                 url,
-                version=version,
-                proxy_base=proxy_base)
+                version=version)
             for _op in _parsed_service.operations:
                 _methods = []
                 for _op_method in (getattr(_op, 'methods', []) if hasattr(_op, 'methods') else _op.get('methods', [])):

@@ -24,7 +24,6 @@ import functools
 
 from uuid import uuid4
 from urllib.parse import (
-    urljoin,
     unquote,
     urlparse,
     urlsplit,
@@ -33,7 +32,6 @@ from urllib.parse import (
     ParseResult,
 )
 
-from django.urls import reverse
 from django.conf import settings
 from django.db import transaction
 from django.template.defaultfilters import slugify
@@ -62,7 +60,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def __init__(self, url, geonode_service_id=None):
         base.ServiceHandlerBase.__init__(self, url, geonode_service_id)
-        self.proxy_base = urljoin(settings.SITEURL, reverse('proxy'))
         self._parsed_service = None
         self.indexing_method = INDEXED if self._offers_geonode_projection() else CASCADED
         self.name = slugify(self.url)[:255]
@@ -97,8 +94,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
         _url, _parsed_service = WebMapService(
             cleaned_url.geturl(),
-            version=version,
-            proxy_base=None)
+            version=version)
         return _parsed_service
 
     def probe(self):
@@ -121,7 +117,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         cat.save(store)
         return store
 
-    def create_geonode_service(self, owner, parent=None):
+    def create_geonode_service(self, owner):
         """Create a new geonode.service.models.Service instance
         :arg owner: The user who will own the service instance
         :type owner: geonode.people.models.Profile
@@ -132,19 +128,16 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 uuid=str(uuid4()),
                 base_url=f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}".encode("utf-8", "ignore").decode('utf-8'),
                 extra_queryparams=cleaned_url.query,
-                proxy_base=None,  # self.proxy_base,
                 type=self.service_type,
                 method=self.indexing_method,
                 owner=owner,
-                parent=parent,
                 metadata_only=True,
                 version=str(self.parsed_service.identification.version).encode("utf-8", "ignore").decode('utf-8'),
                 name=self.name,
                 title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode('utf-8') or self.name,
                 abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode('utf-8') or _(
                     "Not provided"),
-                operations=OgcWmsHarvester.get_wms_operations(cleaned_url.geturl(), version=version),
-                online_resource=self.parsed_service.provider.url
+                operations=OgcWmsHarvester.get_wms_operations(cleaned_url.geturl(), version=version)
             )
             service_harvester = Harvester.objects.create(
                 name=self.name,
@@ -273,8 +266,6 @@ class GeoNodeServiceHandler(WmsServiceHandler):
 
     def __init__(self, url, geonode_service_id=None):
         base.ServiceHandlerBase.__init__(self, url, geonode_service_id)
-        self.proxy_base = urljoin(
-            settings.SITEURL, reverse('proxy'))
         self.indexing_method = INDEXED
         self.name = slugify(self.url)[:255]
 
@@ -283,8 +274,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.ows_endpoint())
         _url, _parsed_service = WebMapService(
             cleaned_url.geturl(),
-            version=version,
-            proxy_base=None)
+            version=version)
         return _parsed_service
 
     def probe(self):

@@ -41,16 +41,16 @@ LIVE = "X"
 OPENGEOPORTAL = "O"
 
 SERVICE_TYPES = (
-    (AUTO, _('Auto-detect')),
+    # (AUTO, _('Auto-detect')),
     (OWS, _('Paired WMS/WFS/WCS')),
     (WMS, _('Web Map Service')),
-    (CSW, _('Catalogue Service')),
-    (REST_MAP, _('ArcGIS REST MapServer')),
-    (REST_IMG, _('ArcGIS REST ImageServer')),
-    (OGP, _('OpenGeoPortal')),
-    (HGL, _('Harvard Geospatial Library')),
+    # (CSW, _('Catalogue Service')),
+    # (REST_MAP, _('ArcGIS REST MapServer')),
+    # (REST_IMG, _('ArcGIS REST ImageServer')),
+    # (OGP, _('OpenGeoPortal')),
+    # (HGL, _('Harvard Geospatial Library')),
     (GN_WMS, _('GeoNode (Web Map Service)')),
-    (GN_CSW, _('GeoNode (Catalogue Service)')),
+    # (GN_CSW, _('GeoNode (Catalogue Service)')),
 )
 
 GXP_PTYPES = {

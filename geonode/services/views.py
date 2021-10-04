@@ -29,36 +29,17 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 from django.template import loader
 from django.utils.translation import ugettext as _
-from django.views.decorators.csrf import requires_csrf_token
-from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
 
-from geonode.proxy.views import proxy
 from geonode.base.models import ResourceBase
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import get_visible_resources
-
-from urllib.parse import urljoin, quote
 
 from .models import Service
 from . import forms, enumerations
 from .serviceprocessors import get_service_handler
 
-logger = logging.getLogger("geonode.core.datasetsviews")
-
-
-@requires_csrf_token
-@cache_control(public=True, must_revalidate=True, max_age=604800)
-def service_proxy(request, service_id):
-    service = get_object_or_404(Service, pk=service_id)
-    if not service.proxy_base:
-        service_url = service.service_url
-    else:
-        _query_separator = '?' if '?' not in service.service_url else '&'
-        service_url = f"{service.service_url}{_query_separator}{request.META['QUERY_STRING']}"
-        if urljoin(settings.SITEURL, reverse('proxy')) != service.proxy_base:
-            service_url = f"{service.proxy_base}?url={quote(service_url, safe='')}"
-    return proxy(request, url=service_url, sec_chk_hosts=False)
+logger = logging.getLogger(__name__)
 
 
 def services(request):
@@ -122,7 +103,7 @@ def _get_service_handler(request, service):
     feature many layers.
     """
     service_handler = get_service_handler(
-        service.service_url, service.proxy_base, service.type, service.id)
+        service.service_url, service.type, service.id)
     if not service_handler.geonode_service_id:
         service_handler.geonode_service_id = service.id
     request.session[service.service_url] = service_handler
@@ -312,8 +293,7 @@ def service_detail(request, service_id):
     )
     resources_being_harvested = []
 
-    service_list = service.service_set.all()
-    all_resources = (list(resources_being_harvested) + list(already_imported_datasets) + list(service_list))
+    all_resources = (list(resources_being_harvested) + list(already_imported_datasets))
 
     paginator = Paginator(
         all_resources,
