@@ -16,9 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from unittest.mock import patch
-
 from django.test.utils import override_settings
+from django.conf import settings
+
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from django.core import mail
@@ -31,6 +31,8 @@ from django.contrib.sites.models import Site
 from geonode.layers import utils
 from geonode.layers.models import Layer
 from geonode.people import profileextractors
+
+APPS_TO_BE_REMOVED = ('mapstore2_adapter.geoapps.dashboards',)
 
 
 class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
@@ -236,13 +238,12 @@ class PeopleTest(GeoNodeBaseTestSupport):
         self.assertIn('Profile of bobby', content)
         self.assertIn(bobby.voice, content)
 
-    @patch('geonode.utils.get_subclasses_by_model')
-    def test_dashboards_excluded(self, _mock):
-        bobby = get_user_model().objects.get(username='bobby')
-        bobby.voice = '+245-897-7889'
-        bobby.save()
+    @override_settings(INSTALLED_APPS=tuple(
+        x for x in settings.INSTALLED_APPS
+        if x not in APPS_TO_BE_REMOVED and hasattr(x, 'startswith'))
+    )
+    def test_dashboards_excluded(self):
         url = reverse('profile_detail', args=['bobby'])
-        _mock.return_value = ['GeoStory']
         response = self.client.get(url)
         content = response.content
         if isinstance(content, bytes):
@@ -251,14 +252,19 @@ class PeopleTest(GeoNodeBaseTestSupport):
         self.assertIn('GeoStory', content)
         self.assertNotIn('Dashboard', content)
 
-        _mock.return_value = ['Dashboard']
+    @override_settings(INSTALLED_APPS=tuple(
+        x for x in settings.INSTALLED_APPS
+        if hasattr(x, 'startswith') or x in APPS_TO_BE_REMOVED)
+    )
+    def test_include_dashboards(self):
+        url = reverse('profile_detail', args=['bobby'])
         response = self.client.get(url)
         content = response.content
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         self.assertEqual(response.status_code, 200)
+        self.assertIn('GeoStory', content)
         self.assertIn('Dashboard', content)
-        self.assertNotIn('GeoStory', content)
 
 
 class FacebookExtractorTestCase(GeoNodeBaseTestSupport):
