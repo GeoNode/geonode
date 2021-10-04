@@ -82,7 +82,7 @@
       <article id="granules" class="description tab-pane {% if tab and tab == 'granules' %}active{% endif %}">
         <div class="paginate-contents">
 
-            <form method="GET" action="{% url "dataset_detail" resource.dataset.service_typename %}">
+            <form method="GET" action="{{ resource.get_absolute_url }}">
                 {% csrf_token %}
                 <input type="text" id="filter" name="filter" style="witdh:400px"/>&nbsp;<input type="submit" value='{% trans "Filter Granules" %}'/>
                 <br/>

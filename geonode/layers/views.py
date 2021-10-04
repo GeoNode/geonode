@@ -1075,12 +1075,7 @@ def dataset_metadata(
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, layer)
         if not ajax:
-            return HttpResponseRedirect(
-                reverse(
-                    'dataset_detail',
-                    args=(
-                        layer.service_typename,
-                    )))
+            return HttpResponseRedirect(layer.get_absolute_url())
 
         message = layer.alternate
 
@@ -1244,9 +1239,7 @@ def dataset_append_replace_view(request, layername, template, action_type):
                             'files': list(files.values()),
                             'user': request.user})
                     out['success'] = True
-                    out['url'] = reverse(
-                        'dataset_detail', args=[
-                            layer.service_typename])
+                    out['url'] = layer.get_absolute_url()
                     #  invalidating resource chache
                     set_geowebcache_invalidate_cache(layer.typename)
             except Exception as e:
@@ -1320,10 +1313,7 @@ def dataset_granule_remove(
             messages.error(request, message)
             return render(
                 request, template, context={"layer": layer})
-        return HttpResponseRedirect(
-            reverse(
-                'dataset_detail', args=(
-                    layer.service_typename,)))
+        return HttpResponseRedirect(layer.get_absolute_url())
     else:
         return HttpResponse("Not allowed", status=403)
 

@@ -220,7 +220,7 @@
               <div class="map-layers">
               <i class="fa fa-chevron-right"></i>
               {% if layer.local %}
-                <a href="{% url "dataset_detail" layer.name %}">
+                <a href="{% dataset_detail_url layer %}">
                   {% if layer.dataset_title %}
                   {{ layer.dataset_title }}
                   {% else %}

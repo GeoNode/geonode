@@ -41,7 +41,6 @@ urlpatterns = [
     url(r'^upload_metadata$', views.dataset_metadata_upload,
         name='dataset_metadata_upload'),
     url(r'^load_dataset_data$', views.load_dataset_data, name='load_dataset_data'),
-    url(r'^(?P<layername>[^/]*)$', views.dataset_detail, name="dataset_detail"),
     url(r'^(?P<layername>[^/]*)/metadata$',
         views.dataset_metadata, name="dataset_metadata"),
     url(r'^(?P<layername>[^/]*)/metadata_advanced$',

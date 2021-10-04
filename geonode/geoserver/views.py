@@ -321,12 +321,7 @@ def dataset_style_manage(request, layername):
             except Exception:
                 pass
 
-            return HttpResponseRedirect(
-                reverse(
-                    'dataset_detail',
-                    args=(
-                        layer.service_typename,
-                    )))
+            return HttpResponseRedirect(layer.get_absolute_url())
         except (FailedRequestError, OSError, MultiValueDictKeyError):
             tb = traceback.format_exc()
             logger.debug(tb)
