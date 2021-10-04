@@ -1733,7 +1733,10 @@ if USE_GEOSERVER:
 #          'task': 'my_app.tasks.send_notification',
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+_CELERY_BEAT_SCHEDULER_DEFAULT = 'celery.beat:PersistentScheduler'
+if 'django_celery_beat' in INSTALLED_APPS:
+    _CELERY_BEAT_SCHEDULER_DEFAULT = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULER = os.environ.get('CELERY_BEAT_SCHEDULER', _CELERY_BEAT_SCHEDULER_DEFAULT)
 CELERY_BEAT_SCHEDULE = {}
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))

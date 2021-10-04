@@ -17,6 +17,7 @@
 #
 #########################################################################
 import logging
+import functools
 
 from urllib.parse import (
     urljoin,
@@ -181,17 +182,21 @@ class Service(ResourceBase):
             return self.harvester.remote_available
         return False
 
-    @property
-    def service_url(self):
+    @functools.lru_cache()
+    def _get_service_url(self):
         parsed_url = urlparse(self.base_url)
         encoded_get_args = self.extra_queryparams
-        service_url = ParseResult(
+        _service_url = ParseResult(
             parsed_url.scheme, parsed_url.netloc, parsed_url.path,
             parsed_url.params, encoded_get_args, parsed_url.fragment
         )
-        service_url = service_url.geturl() if not self.proxy_base else urljoin(
+        _service_url = _service_url.geturl() if not self.proxy_base else urljoin(
             settings.SITEURL, reverse('service_proxy', args=[self.id]))
-        return service_url
+        return _service_url
+
+    @property
+    def service_url(self):
+        return self._get_service_url()
 
     @property
     def ptype(self):

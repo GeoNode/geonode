@@ -16,7 +16,12 @@
         {% if service.harvester %}
         {% with service.harvester.latest_harvesting_session.get_progress_percentage as harvesting_progress %}
             {% if harvesting_progress >= 0 and harvesting_progress < 100.0 %}
-            <h4><i class="fa fa-gear"></i> <strong><i>{% trans "Resource harvesting is still in progress:" %}</i></strong> {{ harvesting_progress }}%</h4>
+            <p>
+            <i class="fa fa-gear"></i> <i>{% trans "Resource harvesting in progress..." %}</i>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: {{ harvesting_progress }}%;" aria-valuenow="{{ harvesting_progress }}" aria-valuemin="0" aria-valuemax="100">{{ harvesting_progress }}%</div>
+            </div>
+            </p>
             {% endif %}
         {% endwith %}
         {% endif %}

@@ -152,6 +152,9 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
             if _service.harvester:
                 _h = _service.harvester
                 num_harvestable_resources = _h.num_harvestable_resources
+                if num_harvestable_resources == 0:
+                    _h.update_availability()
+                    _h.initiate_update_harvestable_resources()
                 return num_harvestable_resources > 0
         return False
 
@@ -164,6 +167,9 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
                     num_harvestable_resources = _h.num_harvestable_resources
                     num_harvestable_resources_selected = _h.harvestable_resources.filter(
                         should_be_harvested=False).count()
+                    if num_harvestable_resources == 0:
+                        _h.update_availability()
+                        _h.initiate_update_harvestable_resources()
                     if num_harvestable_resources > 0 and num_harvestable_resources_selected <= num_harvestable_resources:
                         return True
             except Exception as e:
