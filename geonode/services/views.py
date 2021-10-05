@@ -210,9 +210,9 @@ def harvest_resources(request, service_id):
         if not handler.geonode_service_id:
             handler.geonode_service_id = service_id
     except KeyError:  # handler is not saved on the session, recreate it
-        return redirect(
-            reverse("rescan_service", kwargs={"service_id": service.id})
-        )
+        handler = _get_service_handler(request, service)
+        if not handler.geonode_service_id:
+            handler.geonode_service_id = service_id
     if request.method == "GET":
         return harvest_resources_handle_get(request, service, handler)
     elif request.method == "POST":

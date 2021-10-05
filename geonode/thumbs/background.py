@@ -197,11 +197,11 @@ class GenericXYZBackground(BaseThumbBackground):
         self._mercantile_bbox = None  # BBOX compliant with mercantile lib: [west, south, east, north] bounds list
 
     def point3857to4326(self, x, y):
-        transformer = Transformer.from_crs("epsg:3857", "epsg:4326", always_xy=True)
+        transformer = Transformer.from_crs("EPSG:3857", "EPSG:4326", always_xy=True)
         return transformer.transform(x, y)
 
     def point4326to3857(self, x, y):
-        transformer = Transformer.from_crs("epsg:4326", "epsg:3857", always_xy=True)
+        transformer = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
         return transformer.transform(x, y)
 
     def bbox3857to4326(self, x_min, x_max, y_min, y_max):

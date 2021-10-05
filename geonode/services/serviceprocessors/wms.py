@@ -20,7 +20,6 @@
 import json
 import logging
 import requests
-import functools
 
 from uuid import uuid4
 from urllib.parse import (
@@ -89,7 +88,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         return (new_url, _service, _version, _request)
 
     @property
-    @functools.lru_cache()
     def parsed_service(self):
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
         _url, _parsed_service = WebMapService(
