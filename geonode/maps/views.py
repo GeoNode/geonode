@@ -28,7 +28,6 @@ from urllib.parse import quote, urlsplit, urljoin
 
 from django.urls import reverse
 from django.conf import settings
-from django.db.models import F
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
 from django.core.exceptions import PermissionDenied
@@ -44,6 +43,7 @@ from django.http import (
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
+from geonode.client.hooks import hookset
 from geonode.maps.forms import MapForm
 from geonode.layers.models import Dataset
 from geonode.base.views import batch_modify
@@ -53,17 +53,12 @@ from geonode.base import register_event
 from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
 from geonode.layers.views import _resolve_dataset
-from geonode.base.auth import get_or_create_token
-from geonode.security.views import _perms_info_json
 from geonode.resource.manager import resource_manager
 from geonode.decorators import check_keyword_write_perms
-from geonode.documents.models import get_related_documents
-from geonode.base.utils import ManageResourceOwnerPermissions
 
 from geonode.utils import (
     DEFAULT_TITLE,
     DEFAULT_ABSTRACT,
-    build_social_links,
     http_client,
     forward_mercator,
     bbox_to_projection,
@@ -110,101 +105,6 @@ def _resolve_map(request, id, permission='base.change_resourcebase',
 
     return resolve_object(request, Map, {key: id}, permission=permission,
                           permission_msg=msg, **kwargs)
-
-
-# BASIC MAP VIEWS #
-def map_detail(request, mapid, template='maps/map_detail.html'):
-    '''
-    The view that show details of each map
-    '''
-    try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    permission_manager = ManageResourceOwnerPermissions(map_obj)
-    permission_manager.set_owner_permissions_according_to_workflow()
-
-    # Add metadata_author or poc if missing
-    map_obj.add_missing_metadata_author_or_poc()
-
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    if request.user != map_obj.owner and not request.user.is_superuser:
-        Map.objects.filter(
-            id=map_obj.id).update(
-            popular_count=F('popular_count') + 1)
-
-    config = map_obj.viewer_json(request)
-
-    register_event(request, EventType.EVENT_VIEW, map_obj.title)
-
-    config = json.dumps(config)
-    datasets = MapLayer.objects.filter(map=map_obj.id)
-    links = map_obj.link_set.download()
-
-    # Call this first in order to be sure "perms_list" is correct
-    permissions_json = _perms_info_json(map_obj)
-
-    perms_list = list(
-        map_obj.get_self_resource().get_user_perms(request.user)
-        .union(map_obj.get_user_perms(request.user))
-    )
-
-    group = None
-    if map_obj.group:
-        try:
-            group = GroupProfile.objects.get(slug=map_obj.group.name)
-        except GroupProfile.DoesNotExist:
-            group = None
-
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
-
-    context_dict = {
-        'access_token': access_token,
-        'config': config,
-        'resource': map_obj,
-        'group': group,
-        'datasets': datasets,
-        'perms_list': perms_list,
-        'permissions_json': permissions_json,
-        "documents": get_related_documents(map_obj),
-        'links': links,
-        'preview': getattr(
-            settings,
-            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'mapstore'),
-        'crs': getattr(
-            settings,
-            'DEFAULT_MAP_CRS',
-            'EPSG:3857')
-    }
-
-    if settings.SOCIAL_ORIGINS:
-        context_dict["social_links"] = build_social_links(request, map_obj)
-
-    if request.user.is_authenticated:
-        if getattr(settings, 'FAVORITE_ENABLED', False):
-            from geonode.favorite.utils import get_favorite_info
-            context_dict["favorite_info"] = get_favorite_info(request.user, map_obj)
-
-    register_event(request, EventType.EVENT_VIEW, request.path)
-
-    return render(request, template, context=context_dict)
 
 
 @login_required
@@ -338,12 +238,7 @@ def map_metadata(
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, map_obj)
         if not ajax:
-            return HttpResponseRedirect(
-                reverse(
-                    'map_detail',
-                    args=(
-                        map_obj.id,
-                    )))
+            return HttpResponseRedirect(hookset.map_detail_url(map_obj))
 
         message = map_obj.id
 

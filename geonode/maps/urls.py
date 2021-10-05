@@ -42,7 +42,6 @@ urlpatterns = [
     url(r'^new$', new_map_view, name="new_map"),
     url(r'^new/data$', views.new_map_json, name='new_map_json'),
     url(r'^checkurl/?$', views.ajax_url_lookup),
-    url(r'^(?P<mapid>[^/]+)$', views.map_detail, name='map_detail'),
     url(r'^(?P<mapid>[^/]+)/data$', map_json, name='map_json'),
     url(r'^(?P<mapid>[^/]+)/wmc$', views.map_wmc, name='map_wmc'),
     url(r'^(?P<mapid>[^/]+)/metadata$', views.map_metadata, name='map_metadata'),

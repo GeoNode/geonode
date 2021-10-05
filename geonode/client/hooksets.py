@@ -87,7 +87,7 @@ class BaseHookSet:
         return self.add_limit_settings(reverse('maps_browse'))
 
     def map_detail_url(self, map):
-        return reverse('map_detail', args=(map.id,))
+        return NotImplemented
 
     # GeoApps
     def geoapp_list_template(self, context=None):
