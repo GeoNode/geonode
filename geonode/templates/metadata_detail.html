@@ -27,7 +27,7 @@
     {% if resource.class_name == "Document" %}
     <a href="{% document_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
     {% elif resource.class_name == "Layer" %}
-    <a href="{{ resource.get_absolute_url }}" class="btn btn-primary pull-right">{% trans "Return to Layer" %}</a>
+    <a href="{% dataset_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Layer" %}</a>
     {% elif resource.class_name == "Map" %}
     <a href="{% map_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Map" %}</a>
     {% elif resource.class_name == "GeoApp" %}
