@@ -244,6 +244,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                 base.BriefRemoteResource(
                     unique_identifier=layer['name'],
                     title=layer['title'],
+                    abstract=layer['abstract'],
                     resource_type='layers',
                 )
             )
@@ -316,7 +317,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                         legend_url=relevant_layer['legend_url'],
                         wms_url=relevant_layer['wms_url']
                     ),
-                    reference_systems=relevant_layer['crs'],
+                    reference_systems=[relevant_layer['crs']],
                 ),
                 additional_information=None
             )
@@ -401,6 +402,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         """Return json of layer from xml element"""
         nsmap = _get_nsmap(
             layer_element.nsmap)
+        nsmap['xlink'] = "http://www.w3.org/1999/xlink"
         name = get_xpath_value(
             layer_element, "wms:Name", nsmap)
         title = get_xpath_value(
@@ -417,7 +419,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             legend_url = layer_element.xpath(
                 "wms:Style/wms:LegendURL/wms:OnlineResource",
                 namespaces=nsmap
-            )[0].attrib[f"{{{layer_element.nsmap['xlink']}}}href"]
+            )[0].attrib[f"{{{nsmap['xlink']}}}href"]
         except (IndexError, KeyError):
             legend_url = ''
         params = {}
@@ -435,15 +437,12 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             version=_version)
 
         try:
-            crs = layer_element.xpath("wms:CRS//text()", namespaces=nsmap)[0]
-            left_x = get_xpath_value(
-                layer_element, "wms:EX_GeographicBoundingBox/wms:westBoundLongitude", nsmap)
-            right_x = get_xpath_value(
-                layer_element, "wms:EX_GeographicBoundingBox/wms:eastBoundLongitude", nsmap)
-            lower_y = get_xpath_value(
-                layer_element, "wms:EX_GeographicBoundingBox/wms:southBoundLatitude", nsmap)
-            upper_y = get_xpath_value(
-                layer_element, "wms:EX_GeographicBoundingBox/wms:northBoundLatitude", nsmap)
+            bbox = layer_element.xpath("wms:BoundingBox", namespaces=nsmap)[0]
+            crs = bbox.attrib.get('CRS')
+            left_x = bbox.attrib.get('minx')
+            right_x = bbox.attrib.get('maxx')
+            lower_y = bbox.attrib.get('miny')
+            upper_y = bbox.attrib.get('maxy')
 
             # Preventing if it returns comma as the decimal separator
             spatial_extent = geos.Polygon.from_bbox((
@@ -452,14 +451,33 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                 float(right_x.replace(",", ".")),
                 float(upper_y.replace(",", ".")),
             ))
-        except IndexError:
-            crs = "EPSG:4326"
-            spatial_extent = geos.Polygon.from_bbox((
-                -180.0,
-                -90.0,
-                180.0,
-                90.0
-            ))
+        except Exception:
+            try:
+                crs = layer_element.xpath("wms:CRS//text()", namespaces=nsmap)[0]
+                left_x = get_xpath_value(
+                    layer_element, "wms:EX_GeographicBoundingBox/wms:westBoundLongitude", nsmap)
+                right_x = get_xpath_value(
+                    layer_element, "wms:EX_GeographicBoundingBox/wms:eastBoundLongitude", nsmap)
+                lower_y = get_xpath_value(
+                    layer_element, "wms:EX_GeographicBoundingBox/wms:southBoundLatitude", nsmap)
+                upper_y = get_xpath_value(
+                    layer_element, "wms:EX_GeographicBoundingBox/wms:northBoundLatitude", nsmap)
+
+                # Preventing if it returns comma as the decimal separator
+                spatial_extent = geos.Polygon.from_bbox((
+                    float(left_x.replace(",", ".")),
+                    float(lower_y.replace(",", ".")),
+                    float(right_x.replace(",", ".")),
+                    float(upper_y.replace(",", ".")),
+                ))
+            except IndexError:
+                crs = "EPSG:4326"
+                spatial_extent = geos.Polygon.from_bbox((
+                    -180.0,
+                    -90.0,
+                    180.0,
+                    90.0
+                ))
         return {
             'name': name,
             'title': title,

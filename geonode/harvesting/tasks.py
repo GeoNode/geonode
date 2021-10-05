@@ -379,6 +379,7 @@ def _update_harvestable_resources_batch(
                     harvester=harvester,
                     unique_identifier=remote_resource.unique_identifier,
                     title=remote_resource.title,
+                    abstract=remote_resource.abstract,
                     defaults={
                         "should_be_harvested": harvester.harvest_new_resources_by_default,
                         "remote_resource_type": remote_resource.resource_type,

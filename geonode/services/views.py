@@ -143,9 +143,13 @@ def harvest_resources_handle_get(request, service, handler):
     except EmptyPage:
         harvestable_resources = paginator.page(paginator.num_pages)
 
-    filter_row = [{}, {"id": 'id-filter', "data_key": "id"},
-                  {"id": 'name-filter', "data_key": "title"},
-                  {"id": 'desc-filter', "data_key": "abstract"}]
+    filter_row = [
+        {},
+        {"id": 'id-filter', "data_key": "name"},
+        {"id": 'name-filter', "data_key": "title"},
+        {"id": 'desc-filter', "data_key": "abstract"},
+        {"id": 'desc-type', "data_key": "type"}
+    ]
 
     perms_list = list(
         service.get_self_resource().get_user_perms(request.user)
