@@ -154,16 +154,18 @@ def create_thumbnail(
         if isinstance(instance, Map) and len(datasets) == len(_styles):
             styles = _styles
         try:
-            partial_thumbs.append(utils.get_map(
-                ogc_server,
-                datasets,
-                wms_version=wms_version,
-                bbox=bbox,
-                mime_type=mime_type,
-                styles=styles,
-                width=width,
-                height=height,
-            ))
+            partial_thumbs.append(
+                utils.get_map(
+                    ogc_server,
+                    datasets,
+                    wms_version=wms_version,
+                    bbox=bbox,
+                    mime_type=mime_type,
+                    styles=styles,
+                    width=width,
+                    height=height,
+                )
+            )
         except Exception as e:
             logger.error(f"Exception occurred while fetching partial thumbnail for {instance.name}.")
             logger.exception(e)
@@ -261,20 +263,10 @@ def _datasets_locations(
              and a list optionally consisting of 5 elements containing west, east, south, north
              instance's boundaries and CRS
     """
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
-
     locations = []
     bbox = []
-
     if isinstance(instance, Dataset):
-
-        # for local datasets
-        if not hasattr(instance, 'remote_service') or instance.remote_service is None:
-            locations.append([ogc_server_settings.LOCATION, [instance.alternate], []])
-        # for remote datasets
-        elif hasattr(instance, 'remote_service') and instance.remote_service is not None:
-            locations.append([instance.remote_service.service_url, [instance.alternate], []])
-
+        locations.append([instance.ows_url, [instance.alternate], []])
         if compute_bbox:
             # handle exceeding the area of use of the default thumb's CRS
             if (
@@ -282,12 +274,10 @@ def _datasets_locations(
                     and target_crs.upper() == 'EPSG:3857'
                     and utils.exceeds_epsg3857_area_of_use(instance.bbox)
             ):
-                bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(instance.bbox), target_crs.lower())
+                bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(instance.bbox), target_crs)
             else:
-                bbox = utils.transform_bbox(instance.bbox, target_crs.lower())
-
+                bbox = utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
-
         map_datasets = instance.datasets.copy()
         # ensure correct order of datasets in the map (higher stack_order are printed on top of lower)
         map_datasets.sort(key=lambda l: l.stack_order)
@@ -315,13 +305,10 @@ def _datasets_locations(
 
             if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
                 dataset = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()
-
             elif workspace and Dataset.objects.filter(workspace=workspace, name=name).count() > 0:
                 dataset = Dataset.objects.filter(workspace=workspace, name=name).first()
-
             elif Dataset.objects.filter(alternate=map_dataset.name).count() > 0:
                 dataset = Dataset.objects.filter(alternate=map_dataset.name).first()
-
             else:
                 logger.warning(f"Dataset for MapLayer {name} was not found. Skipping it in the thumbnail.")
                 continue

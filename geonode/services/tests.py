@@ -628,7 +628,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         mock_dataset_meta = mock.MagicMock(ContentMetadata)
         mock_dataset_meta.name = "phony_name"
         mock_dataset_meta.children = []
-        mock_dataset_meta.crsOptions = ["epsg:4326"]
+        mock_dataset_meta.crsOptions = ["EPSG:4326"]
         self.parsed_wms.contents = {
             mock_dataset_meta.name: mock_dataset_meta,
         }

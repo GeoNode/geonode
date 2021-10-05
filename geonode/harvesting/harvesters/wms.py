@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import functools
 import logging
 import typing
 import uuid
@@ -36,6 +34,7 @@ from lxml import etree
 from owslib.map import wms111, wms130
 from owslib.util import clean_ows_url
 
+from django.conf import settings
 from django.contrib.gis import geos
 
 from geonode.layers.models import Dataset
@@ -186,7 +185,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             logger.debug(e)
         return operations
 
-    @functools.lru_cache()
     def get_ogc_wms_url(self, wms_url, version=None):
         ogc_wms_url = f"{wms_url.scheme}://{wms_url.netloc}{wms_url.path}"
         try:
@@ -501,7 +499,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             instance=geonode_resource,
             # wms_version=harvested_info.resource_descriptor,
             bbox=geonode_resource.bbox,
-            forced_crs=geonode_resource.srid if 'EPSG:' in str(geonode_resource.srid) else f'EPSG:{geonode_resource.srid}',
+            forced_crs=settings.DEFAULT_MAP_CRS,
             overwrite=True,
         )
 
