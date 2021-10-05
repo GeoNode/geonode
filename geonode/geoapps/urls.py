@@ -48,7 +48,5 @@ urlpatterns = [
         {'template': 'apps/app_update.html'}, name='geoapp_update'),
     url(r'^(?P<geoappid>[^/]+)/embed$', views.geoapp_edit,
         {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
-    url(r'^(?P<geoappid>[^/]+)/download$', views.geoapp_edit,
-        {'template': 'apps/app_download.html'}, name='geoapp_download'),
     url(r'^', include('geonode.geoapps.api.urls')),
 ]
