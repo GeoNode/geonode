@@ -175,7 +175,6 @@
                     <div class="col-sm-3">
                       <i class="fa fa-map-marker fa-3x"></i>
                       <h4>{% trans "Map" %}</h4>
-                      <a class="btn btn-default btn-block btn-xs" href="{% url "map_edit" resource.id %}">{% trans "Edit" %}</a>
                     </div>
                     {% endif %}
                   </div>
@@ -199,8 +198,6 @@
         <li class="list-group-item">
         {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
           <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
-        {% else %}
-          <a href="{% url "map_edit" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>
         {% endif %}
         </li>
         {% comment %}

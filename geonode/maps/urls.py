@@ -30,7 +30,6 @@ js_info_dict = {
 new_map_view = views.new_map
 existing_map_view = views.map_view
 map_embed = views.map_embed
-map_edit = views.map_edit
 map_json = views.map_json
 
 maps_list = register_url_event()(TemplateView.as_view(template_name='maps/map_list.html'))
@@ -47,7 +46,6 @@ urlpatterns = [
     url(r'^checkurl/?$', views.ajax_url_lookup),
     url(r'^(?P<mapid>[^/]+)$', views.map_detail, name='map_detail'),
     url(r'^(?P<mapid>[^/]+)/view$', existing_map_view, name='map_view'),
-    url(r'^(?P<mapid>[^/]+)/edit$', map_edit, name='map_edit'),
     url(r'^(?P<mapid>[^/]+)/data$', map_json, name='map_json'),
     url(r'^(?P<mapid>[^/]+)/wmc$', views.map_wmc, name='map_wmc'),
     url(r'^(?P<mapid>[^/]+)/metadata$', views.map_metadata, name='map_metadata'),

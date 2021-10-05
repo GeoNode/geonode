@@ -623,43 +623,6 @@ def map_json(request, mapid):
     elif request.method == 'PUT':
         return map_json_handle_put(request, mapid)
 
-
-@xframe_options_sameorigin
-def map_edit(request, mapid, template='maps/map_edit.html'):
-    """
-    The view that returns the map composer opened to
-    the map with the given map ID.
-    """
-    try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    config = map_obj.viewer_json(request)
-    perms_list = list(
-        map_obj.get_self_resource().get_user_perms(request.user)
-        .union(map_obj.get_user_perms(request.user))
-    )
-    return render(request, template, context={
-        'mapId': mapid,
-        'config': json.dumps(config),
-        'map': map_obj,
-        'perms_list': perms_list,
-        'preview': getattr(
-            settings,
-            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'mapstore')
-    })
-
-
 # NEW MAPS #
 
 

@@ -134,9 +134,7 @@ class BaseHookSet:
         return conf
 
     def update_from_viewer(self, conf, context=None):
-        conf = self.viewer_json(conf, context=context)
-        context['config'] = conf
-        return 'maps/map_edit.html'
+        return NotImplemented
 
     def add_limit_settings(self, url):
         CLIENT_RESULTS_LIMIT = settings.CLIENT_RESULTS_LIMIT
