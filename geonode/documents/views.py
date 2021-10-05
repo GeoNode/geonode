@@ -560,7 +560,7 @@ def document_remove(request, docid, template='documents/document_remove.html'):
         resource_manager.delete(document.uuid, instance=document)
 
         register_event(request, EventType.EVENT_REMOVE, document)
-        return HttpResponseRedirect(reverse("document_browse"))
+        return HttpResponseRedirect(hookset.document_list_url())
     else:
         return HttpResponse(_("Not allowed"), status=403)
 

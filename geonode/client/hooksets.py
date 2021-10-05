@@ -122,7 +122,7 @@ class BaseHookSet:
 
     # Documents
     def document_list_url(self):
-        return self.add_limit_settings(reverse('document_browse'))
+        return NotImplemented
 
     def document_detail_url(self, document):
         return NotImplemented

@@ -145,13 +145,13 @@
                 {% endif %}
               </div>
               <div class="col-md-6">
-                <p><a href="{% url "document_browse" %}"><i class="fa fa-newspaper-o fa-4x"></i></a></p>
-                <h2><a href="{% url "document_browse" %}">{{ facets.document|default:_("No") }} {% blocktrans count counter=facets.document %}Document{% plural %}Documents{% endblocktrans %}</a></h2>
+                <p><a href="{% document_list_url %}"><i class="fa fa-newspaper-o fa-4x"></i></a></p>
+                <h2><a href="{% document_list_url %}">{{ facets.document|default:_("No") }} {% blocktrans count counter=facets.document %}Document{% plural %}Documents{% endblocktrans %}</a></h2>
                 <p>{% trans "As for the layers and maps GeoNode allows to publish tabular and text data, manage theirs metadata and associated documents." %}</p>
                 {% if user.is_authenticated %}
-                <p class="text-center"><a class="btn btn-default" href="{% url "document_browse" %}" role="button">{% trans "Add documents" %} &raquo;</a></p>
+                <p class="text-center"><a class="btn btn-default" href="{% document_list_url %}" role="button">{% trans "Add documents" %} &raquo;</a></p>
                 {% else %}
-                <p class="text-center"><a class="btn btn-default" href="{% url "document_browse" %}" role="button">{% trans "Explore documents" %} &raquo;</a></p>
+                <p class="text-center"><a class="btn btn-default" href="{% document_list_url %}" role="button">{% trans "Explore documents" %} &raquo;</a></p>
                 {% endif %}
               </div>
               <div class="col-md-6">
