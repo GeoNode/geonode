@@ -38,11 +38,12 @@ from owslib.util import clean_ows_url
 
 from django.contrib.gis import geos
 
-from geonode.base.models import ResourceBase
 from geonode.layers.models import Dataset
+from geonode.base.models import ResourceBase
+from geonode.thumbs.thumbnails import create_thumbnail
 
 from . import base
-from ..models import Harvester
+from ..models import Harvester, HarvestableResource
 from ..utils import (
     XML_PARSER,
     get_xpath_value,
@@ -275,7 +276,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
 
     def get_resource(
             self,
-            harvestable_resource: "HarvestableResource",  # noqa
+            harvestable_resource: HarvestableResource,
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         resource_unique_identifier = harvestable_resource.unique_identifier
         data = self._get_data()
@@ -488,6 +489,21 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             'wms_url': wms_url,
             'legend_url': legend_url,
         }
+
+    def finalize_resource_update(
+            self,
+            geonode_resource: ResourceBase,
+            harvested_info: base.HarvestedResourceInfo,
+            harvestable_resource: HarvestableResource
+    ) -> ResourceBase:
+        """Create a thumbnail with a WMS request."""
+        create_thumbnail(
+            instance=geonode_resource,
+            # wms_version=harvested_info.resource_descriptor,
+            bbox=geonode_resource.bbox,
+            forced_crs=geonode_resource.srid if 'EPSG:' in str(geonode_resource.srid) else f'EPSG:{geonode_resource.srid}',
+            overwrite=True,
+        )
 
 
 def _get_nsmap(original: typing.Dict):
