@@ -458,34 +458,6 @@ def map_metadata_advanced(request, mapid):
         template='maps/map_metadata_advanced.html')
 
 
-@login_required
-def map_remove(request, mapid, template='maps/map_remove.html'):
-    ''' Delete a map, and its constituent layers. '''
-    try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.delete_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    if request.method == 'GET':
-        return render(request, template, context={
-            "map": map_obj
-        })
-    elif request.method == 'POST':
-        resource_manager.delete(map_obj.uuid, instance=map_obj)
-
-        register_event(request, EventType.EVENT_REMOVE, map_obj)
-
-        return HttpResponseRedirect(reverse("maps_browse"))
-
-
 @xframe_options_exempt
 def map_embed(
         request,
