@@ -254,14 +254,6 @@ handler403 = 'geonode.views.err403'
 handler404 = 'geonode.views.handler404'
 handler500 = 'geonode.views.handler500'
 
-# Featured Maps Pattens
-urlpatterns += [  # '',
-    url(r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$',
-        geonode.maps.views.featured_map),
-    url(r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$',
-        geonode.maps.views.featured_map_info),
-]
-
 
 if settings.MONITORING_ENABLED:
     urlpatterns += [url(r'^monitoring/',

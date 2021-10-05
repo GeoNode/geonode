@@ -42,9 +42,7 @@ from django.http import (
     HttpResponseRedirect,
     HttpResponseNotAllowed,
     HttpResponseServerError)
-from django.views.decorators.clickjacking import (
-    xframe_options_exempt,
-    xframe_options_sameorigin)
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
 from geonode.maps.forms import MapForm
@@ -479,47 +477,6 @@ def map_embed(
 
 
 # MAPS VIEWER #
-
-
-@xframe_options_sameorigin
-def map_view(request, mapid, dataset_name=None,
-             template='maps/map_view.html'):
-    """
-    The view that returns the map composer opened to
-    the map with the given map ID.
-    """
-    try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    config = map_obj.viewer_json(request)
-    perms_list = list(
-        map_obj.get_self_resource().get_user_perms(request.user)
-        .union(map_obj.get_user_perms(request.user))
-    )
-    if dataset_name:
-        config = add_datasets_to_map_config(
-            request, map_obj, (dataset_name, ), False)
-
-    register_event(request, EventType.EVENT_VIEW, request.path)
-    return render(request, template, context={
-        'config': json.dumps(config),
-        'map': map_obj,
-        'perms_list': perms_list,
-        'preview': getattr(
-            settings,
-            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'mapstore')
-    })
 
 
 def map_view_js(request, mapid):
@@ -1202,32 +1159,6 @@ def get_suffix_if_custom(map):
             return None
     else:
         return None
-
-
-def featured_map(request, site):
-    """
-    The view that returns the map composer opened to
-    the map with the given official site url.
-    """
-    map_obj = resolve_object(request,
-                             Map,
-                             {'featuredurl': site},
-                             permission='base.view_resourcebase',
-                             permission_msg=_PERMISSION_MSG_VIEW)
-    return map_view(request, str(map_obj.id))
-
-
-def featured_map_info(request, site):
-    '''
-    main view for map resources, dispatches to correct
-    view based on method and query args.
-    '''
-    map_obj = resolve_object(request,
-                             Map,
-                             {'featuredurl': site},
-                             permission='base.view_resourcebase',
-                             permission_msg=_PERMISSION_MSG_VIEW)
-    return map_detail(request, str(map_obj.id))
 
 
 def ajax_url_lookup(request):
