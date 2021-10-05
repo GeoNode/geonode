@@ -17,7 +17,6 @@
 #
 #########################################################################
 import logging
-import functools
 
 from urllib.parse import (
     urlparse,
@@ -105,7 +104,6 @@ class Service(ResourceBase):
             return self.harvester.remote_available
         return False
 
-    @functools.lru_cache()
     def _get_service_url(self):
         parsed_url = urlparse(self.base_url)
         encoded_get_args = self.extra_queryparams
