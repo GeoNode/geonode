@@ -56,7 +56,5 @@ urlpatterns = [
     url(r'^(?P<layername>[^/]*)/attributes',
         views.mapdataset_attributes,
         name='mapdataset_attributes'),
-    url(r'^autocomplete/$',
-        views.MapAutocomplete.as_view(), name='autocomplete_map'),
     url(r'^', include('geonode.maps.api.urls')),
 ]

@@ -23,7 +23,6 @@ import warnings
 import traceback
 
 from itertools import chain
-from dal import autocomplete
 from deprecated import deprecated
 from urllib.parse import quote, urlsplit, urljoin
 
@@ -1225,23 +1224,3 @@ def map_metadata_detail(
 @login_required
 def map_batch_metadata(request):
     return batch_modify(request, 'Map')
-
-
-class MapAutocomplete(autocomplete.Select2QuerySetView):
-
-    # Overriding both result label methods to ensure autocomplete labels display without ' by user' suffix
-    def get_selected_result_label(self, result):
-        """Return the label of a selected result."""
-        return self.get_result_label(result)
-
-    def get_result_label(self, result):
-        """Return the label of a selected result."""
-        return str(result.title)
-
-    def get_queryset(self):
-        qs = Map.objects.all()
-
-        if self.q:
-            qs = qs.filter(title__icontains=self.q).order_by('title')[:100]
-
-        return qs
