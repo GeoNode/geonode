@@ -713,23 +713,3 @@ def document_metadata_detail(
 @login_required
 def document_batch_metadata(request):
     return batch_modify(request, 'Document')
-
-
-class DocumentAutocomplete(autocomplete.Select2QuerySetView):
-
-    def get_queryset(self):
-        request = self.request
-        permitted = get_objects_for_user(
-            request.user,
-            'base.view_resourcebase')
-        qs = Document.objects.all().filter(id__in=permitted)
-
-        if self.q:
-            qs = qs.filter(title__icontains=self.q)
-
-        return get_visible_resources(
-            qs,
-            request.user if request else None,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)

@@ -21,7 +21,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 
 from .views import DocumentUploadView, DocumentUpdateView
-from .views import DocumentAutocomplete
 from . import views
 from geonode.base import register_url_event
 
@@ -64,7 +63,5 @@ urlpatterns = [  # 'geonode.documents.views',
         name='document_batch_metadata'),
     url(r'^(?P<docid>\d+)/metadata_advanced$', views.document_metadata_advanced,
         name='document_metadata_advanced'),
-    url(r'^autocomplete/$',
-        DocumentAutocomplete.as_view(), name='autocomplete_document'),
     url(r'^', include('geonode.documents.api.urls')),
 ]
