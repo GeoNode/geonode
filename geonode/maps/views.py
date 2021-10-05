@@ -36,7 +36,6 @@ from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
-from django.views.decorators.http import require_http_methods
 from django.http import (
     Http404,
     HttpResponse,
@@ -480,30 +479,6 @@ def map_embed(
 
 
 # MAPS VIEWER #
-
-
-@require_http_methods(["GET", ])
-def add_dataset(request):
-    """
-    The view that returns the map composer opened to
-    a given map and adds a layer on top of it.
-    """
-    map_id = request.GET.get('map_id')
-    dataset_name = request.GET.get('dataset_name')
-    try:
-        map_obj = _resolve_map(
-            request,
-            map_id,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    return map_view(request, str(map_obj.id), dataset_name=dataset_name)
 
 
 @xframe_options_sameorigin
