@@ -34,6 +34,7 @@
                             </tr>
 
                             <tr style="background-color: lightgray">
+                                <th/>
                                 {% for filter_info in filter_row %}
                                     {% if filter_info.id %}
                                         <th>
@@ -176,7 +177,6 @@
         var resources = [];
         {% for resource_meta in resources.paginator.object_list %}
             resources.push({
-                id: '{{ resource_meta.id }}',
                 name: '{{ resource_meta.unique_identifier }}',
                 title: '{{ resource_meta.title }}',
                 abstract: '{{ resource_meta.abstract|safe|truncatechars:20|striptags }}',

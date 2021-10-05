@@ -144,11 +144,10 @@ def harvest_resources_handle_get(request, service, handler):
         harvestable_resources = paginator.page(paginator.num_pages)
 
     filter_row = [
-        {},
-        {"id": 'id-filter', "data_key": "name"},
-        {"id": 'name-filter', "data_key": "title"},
+        {"id": 'unique-identifier-filter', "data_key": "name"},
+        {"id": 'title-filter', "data_key": "title"},
         {"id": 'desc-filter', "data_key": "abstract"},
-        {"id": 'desc-type', "data_key": "type"}
+        {"id": 'type-filter', "data_key": "type"}
     ]
 
     perms_list = list(
