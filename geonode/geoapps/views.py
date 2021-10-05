@@ -23,7 +23,6 @@ import warnings
 import traceback
 from itertools import chain
 
-from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render
 from django.forms.utils import ErrorList
@@ -96,7 +95,7 @@ def new_geoapp(request, template='apps/app_new.html'):
         }
         return render(request, template, context=_ctx)
 
-    return HttpResponseRedirect(reverse("apps_browse"))
+    return HttpResponseRedirect(hookset.geoapp_list_url())
 
 
 @xframe_options_sameorigin

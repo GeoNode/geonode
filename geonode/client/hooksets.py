@@ -19,7 +19,6 @@
 import json
 
 from django.conf import settings
-from django.urls.base import reverse
 
 
 class BaseHookSet:
@@ -115,7 +114,7 @@ class BaseHookSet:
         return NotImplemented
 
     def geoapp_list_url(self):
-        return self.add_limit_settings(reverse('apps_browse'))
+        return NotImplemented
 
     def geoapp_detail_url(self, geoapp):
         return NotImplemented
