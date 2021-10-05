@@ -249,6 +249,8 @@ def rescan_service(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     try:
         _get_service_handler(request, service)
+        if service.harvester:
+            service.harvester.initiate_update_harvestable_resources()
     except Exception:
         return render(
             request,
