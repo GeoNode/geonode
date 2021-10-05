@@ -57,7 +57,6 @@ from guardian.shortcuts import get_anonymous_user
 from geonode.base.forms import BatchPermissionsForm
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
-from guardian.shortcuts import assign_perm, remove_perm
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
 from geonode.layers.forms import JSONField, LayerUploadForm
@@ -140,11 +139,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertEqual(obj.sourcetype, enumerations.SOURCE_TYPE_LOCAL)
 
     # Data Tests
-
-    def test_data(self):
-        '''/data/ -> Test accessing the data page'''
-        response = self.client.get(reverse('dataset_browse'))
-        self.assertEqual(response.status_code, 200)
 
     def test_describe_data_2(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
@@ -340,48 +334,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         except UnicodeEncodeError:
             self.fail(
                 "str of the Style model throws a UnicodeEncodeError with special characters.")
-
-    def test_dataset_save(self):
-        lyr = Dataset.objects.all().first()
-        lyr.keywords.add(*["saving", "keywords"])
-        lyr.save()
-        self.assertEqual(
-            set(lyr.keyword_list()), {
-                'here', 'keywords', 'populartag', 'saving'})
-
-        # Test exotic encoding Keywords
-        lyr.keywords.add(*['論語', 'ä', 'ö', 'ü', 'ß'])
-        lyr.save()
-        self.assertEqual(
-            set(lyr.keyword_list()), {
-                'here', 'keywords', 'populartag', 'saving',
-                'ß', 'ä', 'ö', 'ü', '論語'})
-
-        # Test input escape
-        lyr.keywords.add(*["Europe<script>true;</script>",
-                           "land_<script>true;</script>covering",
-                           "<IMG SRC='javascript:true;'>Science"])
-
-        self.assertEqual(
-            set(lyr.keyword_list()), {
-                '&lt;IMG SRC=&#x27;javascript:true;&#x27;&gt;Science', 'Europe&lt;script&gt;true;&lt;/script&gt;',
-                'here', 'keywords', 'land_&lt;script&gt;true;&lt;/script&gt;covering', 'populartag', 'saving',
-                'ß', 'ä', 'ö', 'ü', '論語'})
-
-        self.client.login(username='admin', password='admin')
-        response = self.client.get(reverse('dataset_detail', args=(lyr.alternate,)))
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get(reverse('dataset_detail', args=(f":{lyr.alternate}",)))
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get(reverse('dataset_metadata', args=(lyr.alternate,)))
-        self.assertEqual(response.status_code, 200)
-
-        from geonode.base.models import HierarchicalKeyword as hk
-        keywords = hk.resource_keywords_tree(get_user_model().objects.get(username='admin'), resource_type='dataset')
-
-        self.assertEqual(len(keywords), 13)
 
     def test_dataset_links(self):
         lyr = Dataset.objects.filter(subtype="vector").first()
@@ -823,74 +775,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
         self.assertFalse("#modal_perms" in content)
 
-    def test_dataset_remove(self):
-        """Test layer remove functionality
-        """
-        layer = Dataset.objects.all().first()
-        url = reverse('dataset_remove', args=(layer.alternate,))
-
-        # test unauthenticated
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
-
-        # test a user without layer removal permission
-        self.client.login(username='norman', password='norman')
-        response = self.client.post(url)
-        self.assertTrue(response.status_code in (401, 403))
-        self.client.logout()
-
-        # Now test with a valid user
-        self.client.login(username='admin', password='admin')
-
-        # test a method other than POST and GET
-        response = self.client.put(url)
-        self.assertTrue(response.status_code in (401, 403))
-
-        # test the page with a valid user with layer removal permission
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-        # test the post method that actually removes the layer and redirects
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue('/datasets/' in response['Location'])
-
-        # test that the layer is actually removed
-        self.assertEqual(Dataset.objects.filter(pk=layer.pk).count(), 0)
-
-        # test that all styles associated to the layer are removed
-        self.assertGreaterEqual(Style.objects.count(), 1)
-
-    def test_non_cascading(self):
-        """
-        Tests that deleting a layer with a shared default style will not cascade and
-        delete multiple layers.
-        """
-        layer1 = Dataset.objects.all().first()
-        layer2 = Dataset.objects.all()[2]
-        url = reverse('dataset_remove', args=(layer1.alternate,))
-
-        layer2.default_style = layer1.default_style
-        layer2.save()
-
-        self.assertEqual(layer1.default_style, layer2.default_style)
-
-        # Now test with a valid user
-        self.client.login(username='admin', password='admin')
-
-        # test the post method that actually removes the layer and redirects
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue('/datasets/' in response['Location'])
-
-        # test that the layer is actually removed
-
-        self.assertEqual(Dataset.objects.filter(pk=layer1.pk).count(), 0)
-        self.assertEqual(Dataset.objects.filter(pk=layer2.pk).count(), 1)
-
-        # test that all styles associated to the layer are removed
-        self.assertGreaterEqual(Style.objects.count(), 1)
-
     def test_category_counts(self):
         topics = TopicCategory.objects.all()
         topics = topics.annotate(
@@ -1097,59 +981,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             surrogate_escape_expected,
             "layers.utils.surrogate_escape_string did not produce expected result. "
             f"Expected {surrogate_escape_expected}, received {surrogate_escape_result}")
-
-    def test_published_dataset(self):
-        """Test unpublished layer behaviour"""
-
-        get_user_model().objects.get(username='bobby')
-        self.client.login(username='bobby', password='bob')
-
-        # default (RESOURCE_PUBLISHING=False)
-        # access to layer detail page gives 200 if layer is published or
-        # unpublished
-        response = self.client.get(reverse('dataset_detail', args=('geonode:CA',)))
-        self.assertEqual(response.status_code, 200)
-        layer = Dataset.objects.filter(title='CA')[0]
-        layer.is_published = False
-        layer.save()
-        response = self.client.get(reverse('dataset_detail', args=('geonode:CA',)))
-        self.assertEqual(response.status_code, 200)
-
-    @override_settings(ADMIN_MODERATE_UPLOADS=True)
-    @override_settings(RESOURCE_PUBLISHING=True)
-    def test_unpublished_dataset(self):
-        """With resource publishing"""
-        layer = Dataset.objects.filter(alternate='geonode:CA')[0]
-        layer.is_published = False
-        layer.save()
-
-        user = get_user_model().objects.get(username='foo')
-        self.client.login(username='foo', password='pass')
-        # 404 if layer is unpublished
-        response = self.client.get(reverse('dataset_detail', args=('geonode:CA',)))
-        self.assertEqual(response.status_code, 200)
-
-        # 404 if layer is unpublished but user has permission but does not belong to the group
-        assign_perm('publish_resourcebase', user, layer.get_self_resource())
-        response = self.client.get(reverse('dataset_detail', args=('geonode:CA',)))
-        self.assertEqual(response.status_code, 200)
-
-        # 200 if layer is unpublished and user is owner
-        remove_perm('publish_resourcebase', user, layer.get_self_resource())
-        layer.owner = user
-        layer.save()
-        response = self.client.get(reverse('dataset_detail', args=('geonode:CA',)))
-        self.assertEqual(response.status_code, 200)
-
-        # 200 if layer is published
-        layer.is_published = True
-        layer.save()
-
-        response = self.client.get(reverse('dataset_detail', args=('geonode:CA',)))
-        self.assertEqual(response.status_code, 200)
-
-        layer.is_published = True
-        layer.save()
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_assign_remove_permissions(self):
@@ -1434,17 +1265,6 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
                 visibility=True
             )
 
-    def test_that_authenticated_user_without_permissions_cannot_view_map_in_dataset_detail(self):
-        """
-        Test that an authenticated user without permissions to view a map does not see the map under
-        'Maps using this layer' in dataset_detail when map is not viewable by 'anyone'
-        """
-        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
-
-        self.client.login(username='dybala', password='very-secret')
-        response = self.client.get(reverse('dataset_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_datasets'], [])
-
     def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
         """
         Test that keyword multiselect widget is disabled when the user is not an admin
@@ -1524,24 +1344,6 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         with self.settings(FREETEXT_KEYWORDS_READONLY=False):
             response = self.client.get(url)
             self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_dataset.alternate)
-
-    def test_that_anonymous_user_cannot_view_map_with_restricted_view(self):
-        """
-        Test that anonymous user cannot view map that are not viewable by 'anyone'
-        """
-        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
-
-        response = self.client.get(reverse('dataset_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_datasets'], [])
-
-    def test_that_only_users_with_permissions_can_view_maps_in_dataset_view(self):
-        """
-        Test only users with view permissions to a map can view them in layer detail view
-        """
-        resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
-        self.client.login(username='admin', password='admin')
-        response = self.client.get(reverse('dataset_detail', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_datasets'], [self.map_dataset])
 
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):
