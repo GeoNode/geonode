@@ -128,11 +128,6 @@ urlpatterns += [
         views.h_keywords,
         name='h_keywords_api'),
 
-    # Search views
-    url(r'^search/$',
-        TemplateView.as_view(template_name='search/search.html'),
-        name='search'),
-
     # Social views
     url(r'^account/signup/', CustomSignupView.as_view(), name='account_signup'),
     url(r"^account/", include("allauth.urls")),
