@@ -44,8 +44,6 @@ urlpatterns = [
         views.geoapp_metadata_advanced, name='geoapp_metadata_advanced'),
     url(r'^(?P<geoappid>[^/]+)/view$', views.geoapp_edit, name='geoapp_view'),
     url(r'^(?P<geoappid>[^/]+)/edit$', views.geoapp_edit, name='geoapp_edit'),
-    url(r'^(?P<geoappid>[^/]+)/update$', views.geoapp_edit,
-        {'template': 'apps/app_update.html'}, name='geoapp_update'),
     url(r'^(?P<geoappid>[^/]+)/embed$', views.geoapp_edit,
         {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
     url(r'^', include('geonode.geoapps.api.urls')),
