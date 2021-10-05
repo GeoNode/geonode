@@ -25,7 +25,7 @@ class BaseHookSet:
 
     # Layers
     def dataset_list_template(self, context=None):
-        return 'datasets/dataset_list_default.html'
+        return NotImplemented
 
     def dataset_detail_template(self, context=None):
         return NotImplemented
@@ -59,7 +59,7 @@ class BaseHookSet:
 
     # Maps
     def map_list_template(self, context=None):
-        return 'maps/map_list_default.html'
+        return NotImplemented
 
     def map_detail_template(self, context=None):
         return NotImplemented
@@ -90,7 +90,7 @@ class BaseHookSet:
 
     # GeoApps
     def geoapp_list_template(self, context=None):
-        return 'apps/app_list_default.html'
+        return NotImplemented
 
     def geoapp_detail_template(self, context=None):
         return NotImplemented
