@@ -16,15 +16,19 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.urls import include, re_path, path
+from django_filters import rest_framework as filters
 
-from geonode.management_commands_http.views import ManagementCommandView
-from geonode.management_commands_http.routers import router
+from geonode.management_commands_http.models import ManagementCommandJob
 
 
-urlpatterns = [
-    re_path(r"management/commands/$", ManagementCommandView.as_view()),
-    re_path(r"management/commands/(?P<cmd_name>\w+)/$", ManagementCommandView.as_view()),
-    re_path(r"management/commands/(?P<cmd_name>\w+)/", include(router.urls)),
-    path("management/", include(router.urls)),
-]
+class ManagementCommandJobFilterSet(filters.FilterSet):
+    class Meta:
+        model = ManagementCommandJob
+        fields = [
+            "celery_result_id",
+            "command",
+            "app_name",
+            "status",
+            "user",
+            "user__username",
+        ]

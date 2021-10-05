@@ -67,14 +67,16 @@
       <article id="info" class="tab-pane{% if tab == 'info' or not tab %} active{% endif %}">
         {% include "base/resourcebase_info_panel.html" %}
 
-        {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
-        <p>
-          {% if request.user.is_authenticated and access_token %}
-            <a href="{% url 'capabilities_layer' resource.id %}?access_token={{access_token}}">
-          {% else %}
-            <a href="{% url 'capabilities_layer' resource.id %}">
+        {% if not request.user_agent.is_mobile %}
+          {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
+          <p>
+            {% if request.user.is_authenticated and access_token %}
+              <a href="{% url 'capabilities_layer' resource.id %}?access_token={{access_token}}">
+            {% else %}
+              <a href="{% url 'capabilities_layer' resource.id %}">
+            {% endif %}
+            <i class="fa fa-map"></i> {% trans 'Layer WMS GetCapabilities document' %}</a></p>
           {% endif %}
-          <i class="fa fa-map"></i> {% trans 'Layer WMS GetCapabilities document' %}</a></p>
         {% endif %}
       </article>
 
@@ -302,15 +304,17 @@
           <a href="{{link_geotiff_io}}" class="btn btn-primary btn-block" target="_blank">{% trans "Analyze with" %} GeoTIFF.io</a>
         </li>
         {% endif %}
-        <li class="list-group-item">
-        {% if links_download and not request.user_agent.is_mobile %}
-           <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
-        {% else %}
-          {% if request.user.is_authenticated and not request.user_agent.is_mobile %}
-          <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
+        {% if not request.user_agent.is_mobile %}
+          <li class="list-group-item">
+          {% if links_download %}
+            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
+          {% else %}
+            {% if request.user.is_authenticated %}
+            <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
+            {% endif %}
           {% endif %}
+          </li>
         {% endif %}
-        </li>
       {% endif %}
     <div class="modal fade" id="download-layer" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">

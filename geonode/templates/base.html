@@ -273,9 +273,29 @@
           <link rel="stylesheet" type="text/css" href="{% static "geonode/css/geonode-rtl.min.css" %}">
         {% endif %}
     {% endif %}
+
+    {% if request.user_agent.is_mobile %}
+    <script type="text/javascript">
+      (function() {
+        window.addEventListener('DOMContentLoaded', function() {
+          // fill all the available screen space with the menu
+          const navbar = document.querySelector('.navbar-fixed-top');
+          const navHeader = navbar && navbar.querySelector('.navbar-header');
+          const navContent = navbar && navbar.querySelector('#navbar');
+          if (navHeader && navContent) {
+            navContent.style.maxHeight = 'calc(100vh - ' + navHeader.clientHeight + 'px)';
+          }
+          const resourcesListHeader = document.querySelector('.resources-list-header');
+          if (navHeader && resourcesListHeader) {
+            resourcesListHeader.style.top = navHeader.clientHeight + 'px';
+          }
+        });
+      })();
+    </script>
+    {% endif %}
   </head>
 
-  <body class="{% block body_class %}{% endblock %}">
+  <body class="{% block body_class %}{% endblock %}{% if request.user_agent.is_mobile %} gn-mobile{% endif %}">
     <!-- Loading Mask -->
     <div class='lmask'></div>
     <!-- Navbar -->
@@ -319,8 +339,8 @@
               <ul class="dropdown-menu">
                 <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
                 <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
-                <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
                 {% if not request.user_agent.is_mobile %}
+                <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
                   {% if user.is_authenticated and not READ_ONLY_MODE %}
                       <li role="separator" class="divider"></li>
                       <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
@@ -437,11 +457,11 @@
               </a>
               <ul class="dropdown-menu">
                 <li><a href="{{ user.get_absolute_url }}">{% trans "Profile" %}</a></li>
-                <li><a href="{% url "recent-activity" %}">{% trans "Recent Activity" %}</a></li>
-                {% if FAVORITE_ENABLED and user.is_authenticated %}
-                <li><a href="{% url "favorite_list" %}">{% trans "Favorites" %}</a></li>
-                {% endif %}
                 {% if not request.user_agent.is_mobile %}
+                  <li><a href="{% url "recent-activity" %}">{% trans "Recent Activity" %}</a></li>
+                  {% if FAVORITE_ENABLED %}
+                  <li><a href="{% url "favorite_list" %}">{% trans "Favorites" %}</a></li>
+                  {% endif %}   
                   <li><a href="{% url "messages_inbox" %}">{% trans "Inbox" %}</a></li>
                 {% endif %}                
                 {% if user.is_superuser or user.is_staff %}
@@ -457,8 +477,10 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
+                {% if not request.user_agent.is_mobile %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
+                {% endif %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}account/logout/">{% trans "Log out" %}</a></li>
                 </ul>

@@ -178,6 +178,7 @@
 	  {% endblock showcase %}
 
 	  {% block datasets %}
+    {% if not request.user_agent.is_mobile %}
     <section id="datasets">
       {% get_visibile_resources request.user %}
       <div ng-app="featured" ng-if="featured.length > 0" ng-cloak class="row">
@@ -195,10 +196,11 @@
       </div>
       </div>
     </section>
+    {% endif %}
     {% endblock datasets %}
 
       {% block partners %}
-        {% if custom_theme.partners.all %}
+        {% if custom_theme.partners.all and not request.user_agent.is_mobile %}
         <section id="partners">
         <div class="container text-center">
           {% with partners_title=custom_theme.partners_title|default:"Our partners"|template_trans %}

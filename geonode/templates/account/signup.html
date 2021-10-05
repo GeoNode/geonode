@@ -22,7 +22,7 @@
     </div>
     {% if account_geonode_local_signup %}
         <div class="row">
-          <p>{% trans "Create a new local account" %}</p>
+          <p class="text-center">{% trans "Create a new local account" %}</p>
           <form id="signup_form" method="post" action="{% url "account_signup" %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
               <fieldset>
                   {% csrf_token %}
