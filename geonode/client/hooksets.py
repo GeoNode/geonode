@@ -84,7 +84,7 @@ class BaseHookSet:
         return NotImplemented
 
     def map_list_url(self):
-        return self.add_limit_settings(reverse('maps_browse'))
+        return NotImplemented
 
     def map_detail_url(self, map):
         return NotImplemented

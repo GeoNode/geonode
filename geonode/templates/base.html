@@ -221,7 +221,7 @@
                   {% endif %}
                 </ul>
               {% else %}
-                <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
+                <a href="{% map_list_url %}">{% trans "Maps" %}</a>
               {% endif %}
           </li>
           {% if GEONODE_APPS_ENABLE and GEONODE_APPS_NAV_MENU_ENABLE %}

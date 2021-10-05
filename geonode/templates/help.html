@@ -13,7 +13,7 @@
     <p class="lead">{% trans "This page provides helpful information about how to use the GeoNode. You can use the sidebar links to navigate to what you want to know." %}</p>
 
     {% dataset_list_url as url_dataset_browse %}
-    {% url 'maps_browse' as url_maps_browse %}
+    {% map_list_url as url_maps_browse %}
     {% url 'new_map' as url_new_map %}
     {% url 'developer' as url_developer %}
 

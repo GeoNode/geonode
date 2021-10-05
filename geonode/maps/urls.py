@@ -18,8 +18,6 @@
 #########################################################################
 
 from django.conf.urls import url, include
-from django.views.generic import TemplateView
-from geonode.base import register_url_event
 
 from . import views
 
@@ -31,14 +29,8 @@ new_map_view = views.new_map
 map_embed = views.map_embed
 map_json = views.map_json
 
-maps_list = register_url_event()(TemplateView.as_view(template_name='maps/map_list.html'))
-
 urlpatterns = [
     # 'geonode.maps.views',
-    url(r'^$',
-        maps_list,
-        {'facet_type': 'maps'},
-        name='maps_browse'),
     url(r'^new$', new_map_view, name="new_map"),
     url(r'^new/data$', views.new_map_json, name='new_map_json'),
     url(r'^checkurl/?$', views.ajax_url_lookup),
