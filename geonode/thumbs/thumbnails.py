@@ -263,10 +263,17 @@ def _datasets_locations(
              and a list optionally consisting of 5 elements containing west, east, south, north
              instance's boundaries and CRS
     """
+    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
     locations = []
     bbox = []
     if isinstance(instance, Dataset):
-        locations.append([instance.ows_url, [instance.alternate], []])
+        locations.append(
+            [
+                instance.ows_url or ogc_server_settings.LOCATION,
+                [instance.alternate],
+                []
+            ]
+        )
         if compute_bbox:
             # handle exceeding the area of use of the default thumb's CRS
             if (
@@ -349,9 +356,9 @@ def _datasets_locations(
                         and target_crs.upper() == 'EPSG:3857'
                         and utils.exceeds_epsg3857_area_of_use(dataset.bbox)
                 ):
-                    dataset_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(dataset.bbox), target_crs.lower())
+                    dataset_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(dataset.bbox), target_crs)
                 else:
-                    dataset_bbox = utils.transform_bbox(dataset.bbox, target_crs.lower())
+                    dataset_bbox = utils.transform_bbox(dataset.bbox, target_crs)
 
                 if not bbox:
                     bbox = dataset_bbox

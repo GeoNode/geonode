@@ -177,7 +177,6 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
                     harvest_resources.apply_async(args=([resource_id, ], _h_session.pk))
             except Exception as e:
                 logger.exception(e)
-                raise GeoNodeException(e)
         else:
             raise GeoNodeException(f"Could not harvest resource id {resource_id} for service {self.name}")
 
