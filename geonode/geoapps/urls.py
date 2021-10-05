@@ -42,7 +42,6 @@ urlpatterns = [
         views.geoapp_metadata_detail, name='geoapp_metadata_detail'),
     url(r'^(?P<geoappid>\d+)/metadata_advanced$',
         views.geoapp_metadata_advanced, name='geoapp_metadata_advanced'),
-    url(r'^(?P<geoappid>[^/]+)/view$', views.geoapp_edit, name='geoapp_view'),
     url(r'^(?P<geoappid>[^/]+)/edit$', views.geoapp_edit, name='geoapp_edit'),
     url(r'^(?P<geoappid>[^/]+)/embed$', views.geoapp_edit,
         {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
