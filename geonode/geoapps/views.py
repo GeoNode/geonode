@@ -259,34 +259,6 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
     return render(request, template, context=_ctx)
 
 
-@login_required
-def geoapp_remove(request, geoappid, template='apps/app_remove.html'):
-    try:
-        geoapp_obj = _resolve_geoapp(
-            request,
-            geoappid,
-            'base.delete_resourcebase',
-            _PERMISSION_MSG_DELETE)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not geoapp_obj:
-        raise Http404(_("Not found"))
-
-    if request.method == 'GET':
-        return render(request, template, context={
-            "resource": geoapp_obj
-        })
-    elif request.method == 'POST':
-        resource_manager.delete(geoapp_obj.uuid, instance=geoapp_obj)
-
-        register_event(request, EventType.EVENT_REMOVE, geoapp_obj)
-        return HttpResponseRedirect(reverse("apps_browse"))
-    else:
-        return HttpResponse("Not allowed", status=403)
-
-
 def geoapp_metadata_detail(request, geoappid, template='apps/app_metadata_detail.html'):
     try:
         geoapp_obj = _resolve_geoapp(
