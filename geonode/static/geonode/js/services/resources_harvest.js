@@ -119,9 +119,11 @@ var TableFilter = function () {
             td.appendChild(chkbox)
             var j = 1;
             for (key in rows[i]) {
-                td = tr.insertCell(j);
-                td.innerHTML = rows[i][key]
-                j++;
+                if (key != 'id'){
+                    td = tr.insertCell(j);
+                    td.innerHTML = rows[i][key]
+                    j++;
+                }
             }
         }
     }
