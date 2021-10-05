@@ -474,45 +474,6 @@ def clean_config(conf):
         return conf
 
 
-def new_map(request, template='maps/map_new.html'):
-    map_obj, config = new_map_config(request)
-    perms_list = []
-    dataset_name = request.GET.get('layer')
-    if dataset_name and request.GET.get('view'):
-        # Get permissions a user has on a layer when they click view layer.
-        try:
-            if ':' in dataset_name:
-                dataset_name = dataset_name.split(':')[1]
-            dataset_obj = Dataset.objects.get(name=dataset_name)
-            perms_list = list(
-                dataset_obj.get_self_resource().get_user_perms(request.user)
-                .union(dataset_obj.get_user_perms(request.user))
-            )
-        except Exception:
-            pass
-    elif map_obj:
-        perms_list = list(
-            map_obj.get_self_resource().get_user_perms(request.user)
-            .union(map_obj.get_user_perms(request.user))
-        )
-    context_dict = {
-        'config': config,
-        'map': map_obj,
-        'perms_list': perms_list
-    }
-    context_dict["preview"] = getattr(
-        settings,
-        'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-        'mapstore')
-    if isinstance(config, HttpResponse):
-        return config
-    else:
-        return render(
-            request,
-            template,
-            context=context_dict)
-
-
 def new_map_json(request):
     if request.method == 'GET':
         map_obj, config = new_map_config(request)

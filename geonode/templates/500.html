@@ -179,9 +179,6 @@
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
             <li><a href="{% map_list_url %}">{% trans "Explore Maps" %}</a></li>
-            {% if "add_resource" in user.perms %}
-            <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
-            {% endif %}
           </ul>
         </div>
       <div class="col-md-2">

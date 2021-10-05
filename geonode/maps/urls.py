@@ -25,13 +25,11 @@ js_info_dict = {
     'packages': ('geonode.maps', ),
 }
 
-new_map_view = views.new_map
 map_embed = views.map_embed
 map_json = views.map_json
 
 urlpatterns = [
     # 'geonode.maps.views',
-    url(r'^new$', new_map_view, name="new_map"),
     url(r'^new/data$', views.new_map_json, name='new_map_json'),
     url(r'^checkurl/?$', views.ajax_url_lookup),
     url(r'^(?P<mapid>[^/]+)/data$', map_json, name='map_json'),

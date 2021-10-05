@@ -138,11 +138,7 @@
                 <p><a href="{% map_list_url %}"><i class="fa fa-map-marker fa-4x"></i></a></p>
                 <h2><a href="{% map_list_url %}">{{ facets.map|default:_("No") }} {% blocktrans count counter=facets.map %}Map{% plural %}Maps{% endblocktrans %}</a></h2>
                 <p>{% trans "Data is available for browsing, aggregating and styling to generate maps which can be saved, downloaded, shared publicly or restricted to specify users only." %}</p>
-                {% if user.is_authenticated %}
-                <p><a class="btn btn-default" href="{% url "new_map" %}" role="button">{% trans "Create maps" %} &raquo;</a></p>
-                {% else %}
                 <p><a class="btn btn-default" href="{% map_list_url %}" role="button">{% trans "Explore maps" %} &raquo;</a></p>
-                {% endif %}
               </div>
               <div class="col-md-6">
                 <p><a href="{% document_list_url %}"><i class="fa fa-newspaper-o fa-4x"></i></a></p>
