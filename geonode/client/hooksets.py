@@ -18,8 +18,6 @@
 #########################################################################
 import json
 
-from django.conf import settings
-
 
 class BaseHookSet:
 
@@ -134,10 +132,6 @@ class BaseHookSet:
 
     def update_from_viewer(self, conf, context=None):
         return NotImplemented
-
-    def add_limit_settings(self, url):
-        CLIENT_RESULTS_LIMIT = settings.CLIENT_RESULTS_LIMIT
-        return f"{url}?limit={CLIENT_RESULTS_LIMIT}"
 
     def metadata_update_redirect(self, url):
         if "metadata_uri" in url:
