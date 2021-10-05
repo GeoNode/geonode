@@ -25,10 +25,7 @@ import warnings
 import traceback
 
 from itertools import chain
-from dal import autocomplete
-from guardian.shortcuts import get_objects_for_user
 
-from django.db.models import F
 from django.urls import reverse
 from django.conf import settings
 from django.contrib import messages
@@ -44,20 +41,14 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from geonode.client.hooks import hookset
 from geonode.utils import resolve_object
 from geonode.base.views import batch_modify
-from geonode.utils import build_social_links
 from geonode.people.forms import ProfileForm
 from geonode.base import register_event
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
-from geonode.base.auth import get_or_create_token
-from geonode.security.views import _perms_info_json
 from geonode.storage.manager import storage_manager
 from geonode.resource.manager import resource_manager
-from geonode.resource.utils import get_related_resources
 from geonode.decorators import check_keyword_write_perms
-from geonode.security.utils import get_visible_resources
-from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.base.forms import (
     CategoryForm,
     TKeywordForm,
@@ -68,9 +59,6 @@ from geonode.base.models import (
 
 from .utils import get_download_response
 
-from .enumerations import (
-    DOCUMENT_TYPE_MAP,
-    DOCUMENT_MIMETYPE_MAP)
 from .models import Document
 from .forms import (
     DocumentForm,
@@ -96,107 +84,6 @@ def _resolve_document(request, docid, permission='base.change_resourcebase',
     '''
     return resolve_object(request, Document, {'pk': docid},
                           permission=permission, permission_msg=msg, **kwargs)
-
-
-def document_detail(request, docid):
-    """
-    The view that show details of each document
-    """
-    try:
-        document = _resolve_document(
-            request,
-            docid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not document:
-        raise Http404(_("Not found"))
-
-    permission_manager = ManageResourceOwnerPermissions(document)
-    permission_manager.set_owner_permissions_according_to_workflow()
-
-    # Add metadata_author or poc if missing
-    document.add_missing_metadata_author_or_poc()
-
-    related = get_related_resources(document)
-
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    if request.user != document.owner and not request.user.is_superuser:
-        Document.objects.filter(
-            id=document.id).update(
-            popular_count=F('popular_count') + 1)
-
-    metadata = document.link_set.metadata().filter(
-        name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-    # Call this first in order to be sure "perms_list" is correct
-    permissions_json = _perms_info_json(document)
-
-    perms_list = list(
-        document.get_self_resource().get_user_perms(request.user)
-        .union(document.get_user_perms(request.user))
-    )
-
-    group = None
-    if document.group:
-        try:
-            group = GroupProfile.objects.get(slug=document.group.name)
-        except ObjectDoesNotExist:
-            group = None
-
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
-
-    AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'audio']
-    IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'image']
-    VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'video']
-
-    context_dict = {
-        'access_token': access_token,
-        'resource': document,
-        'perms_list': perms_list,
-        'permissions_json': permissions_json,
-        'group': group,
-        'metadata': metadata,
-        'audiotypes': AUDIOTYPES,
-        'imgtypes': IMGTYPES,
-        'videotypes': VIDEOTYPES,
-        'mimetypemap': DOCUMENT_MIMETYPE_MAP,
-        'related': related}
-
-    if settings.SOCIAL_ORIGINS:
-        context_dict["social_links"] = build_social_links(
-            request, document)
-
-    if getattr(settings, 'EXIF_ENABLED', False):
-        try:
-            from geonode.documents.exif.utils import exif_extract_dict
-            exif = exif_extract_dict(document)
-            if exif:
-                context_dict['exif_data'] = exif
-        except Exception:
-            logger.debug("Exif extraction failed.")
-
-    if request.user.is_authenticated:
-        if getattr(settings, 'FAVORITE_ENABLED', False):
-            from geonode.favorite.utils import get_favorite_info
-            context_dict["favorite_info"] = get_favorite_info(request.user, document)
-
-    register_event(request, EventType.EVENT_VIEW, document)
-
-    return render(
-        request,
-        "documents/document_detail.html",
-        context=context_dict)
 
 
 def document_download(request, docid):

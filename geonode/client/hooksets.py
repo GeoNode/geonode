@@ -125,7 +125,7 @@ class BaseHookSet:
         return self.add_limit_settings(reverse('document_browse'))
 
     def document_detail_url(self, document):
-        return reverse('document_detail', args=(document.id,))
+        return NotImplemented
 
     # Map Persisting
     def viewer_json(self, conf, context=None):

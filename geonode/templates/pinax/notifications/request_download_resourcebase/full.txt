@@ -4,6 +4,6 @@
 {% if resource.polymorphic_ctype.name == 'dataset' %}
 {% trans "Dataset" %}: {{ current_site }}{{ resource.get_absolute_url }}<br/>
 {% else %}
-{% trans "Document" %}: {{ current_site }}{% url "document_detail" resource.document.id %}<br/>
+{% trans "Document" %}: {{ current_site }}{{ resource.get_absolute_url }}<br/>
 {% endif %}
 {% trans "Please go to resource page and assign the download permissions if you wish" %}.
