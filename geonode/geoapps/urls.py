@@ -36,7 +36,6 @@ urlpatterns = [
         {'facet_type': 'geoapps'},
         name='apps_browse'),
     url(r'^new$', views.new_geoapp, name="new_geoapp"),
-    url(r'^(?P<geoappid>[^/]*)$', views.geoapp_detail, name="geoapp_detail"),
     url(r'^(?P<geoappid>\d+)/metadata$', views.geoapp_metadata, name='geoapp_metadata'),
     url(r'^(?P<geoappid>[^/]*)/metadata_detail$',
         views.geoapp_metadata_detail, name='geoapp_metadata_detail'),

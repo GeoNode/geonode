@@ -118,7 +118,7 @@ class BaseHookSet:
         return self.add_limit_settings(reverse('apps_browse'))
 
     def geoapp_detail_url(self, geoapp):
-        return reverse('geoapp_detail', args=(geoapp.id,))
+        return NotImplemented
 
     # Documents
     def document_list_url(self):

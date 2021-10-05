@@ -23,7 +23,6 @@ import warnings
 import traceback
 from itertools import chain
 
-from django.db.models import F
 from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render
@@ -34,6 +33,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
+from geonode.client.hooks import hookset
 from geonode.people.forms import ProfileForm
 from geonode.base import register_event
 from geonode.groups.models import GroupProfile
@@ -52,10 +52,7 @@ from geonode.base.models import (
     Thesaurus,
     TopicCategory
 )
-from geonode.utils import (
-    resolve_object,
-    build_social_links
-)
+from geonode.utils import resolve_object
 
 from .forms import GeoAppForm
 
@@ -100,86 +97,6 @@ def new_geoapp(request, template='apps/app_new.html'):
         return render(request, template, context=_ctx)
 
     return HttpResponseRedirect(reverse("apps_browse"))
-
-
-def geoapp_detail(request, geoappid, template='apps/app_detail.html'):
-    """
-    The view that returns the app composer opened to
-    the app with the given app ID.
-    """
-    try:
-        geoapp_obj = _resolve_geoapp(
-            request,
-            geoappid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not geoapp_obj:
-        raise Http404(_("Not found"))
-
-    # Add metadata_author or poc if missing
-    geoapp_obj.add_missing_metadata_author_or_poc()
-
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    if request.user != geoapp_obj.owner and not request.user.is_superuser:
-        GeoApp.objects.filter(
-            id=geoapp_obj.id).update(
-            popular_count=F('popular_count') + 1)
-
-    _config = geoapp_obj.blob
-
-    # Call this first in order to be sure "perms_list" is correct
-    permissions_json = _perms_info_json(geoapp_obj)
-
-    perms_list = list(
-        geoapp_obj.get_self_resource().get_user_perms(request.user)
-        .union(geoapp_obj.get_user_perms(request.user))
-    )
-    group = None
-    if geoapp_obj.group:
-        try:
-            group = GroupProfile.objects.get(slug=geoapp_obj.group.name)
-        except GroupProfile.DoesNotExist:
-            group = None
-
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
-
-    context_dict = {
-        'appId': geoappid,
-        'appType': geoapp_obj.resource_type,
-        'config': _config,
-        'user': request.user,
-        'access_token': access_token,
-        'resource': geoapp_obj,
-        'group': group,
-        'perms_list': perms_list,
-        'permissions_json': permissions_json,
-        'preview': getattr(
-            settings,
-            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'mapstore'),
-        'crs': getattr(
-            settings,
-            'DEFAULT_MAP_CRS',
-            'EPSG:3857')
-    }
-
-    if settings.SOCIAL_ORIGINS:
-        context_dict["social_links"] = build_social_links(request, geoapp_obj)
-
-    register_event(request, EventType.EVENT_VIEW, request.path)
-
-    return render(request, template, context=context_dict)
 
 
 @xframe_options_sameorigin
@@ -439,12 +356,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
         if not ajax:
-            return HttpResponseRedirect(
-                reverse(
-                    'geoapp_detail',
-                    args=(
-                        geoapp_obj.id,
-                    )))
+            return HttpResponseRedirect(hookset.geoapp_detail_url(geoapp_obj))
 
         message = geoapp_obj.id
 
