@@ -34,7 +34,6 @@ from lxml import etree
 from owslib.map import wms111, wms130
 from owslib.util import clean_ows_url
 
-from django.conf import settings
 from django.contrib.gis import geos
 
 from geonode.layers.models import Dataset
