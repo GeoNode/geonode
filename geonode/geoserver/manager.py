@@ -555,7 +555,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         if instance and not isinstance(instance.get_real_instance(), Document):
             if overwrite or instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
-                geoserver_create_thumbnail.apply_async((instance.id, overwrite, check_bbox, ))
+                geoserver_create_thumbnail.apply((instance.id, overwrite, check_bbox, ))
             return True
         return False
 
