@@ -1349,7 +1349,10 @@ msgid "Set"
 msgstr "Imposta"
 
 msgid "View"
-msgstr "View"
+msgstr "Visualizza"
+
+msgid "Specify which users can view or modify this"
+msgstr "Specifica quali utenti possono visualizzare o modificare questa"
 
 msgid "Specify which users can view or modify this map"
 msgstr "Specifica quali utenti possono visualizzare o modificare questa mappa"
@@ -4783,7 +4786,7 @@ msgid ""
 "      <a href=\"%(signup_url)s\">sign up</a> first."
 msgstr ""
 "Se non hai ancora creato un account, allora si prega di\n"
-"      <a href=\"%(signup_url)s\">prima iscriviti</a."
+" <a href=\"%(signup_url)s\">prima iscriviti</a>."
 
 msgid "Forgot Password?"
 msgstr "Password dimenticata?"
