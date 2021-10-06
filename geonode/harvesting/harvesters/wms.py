@@ -499,7 +499,8 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             instance=geonode_resource,
             # wms_version=harvested_info.resource_descriptor,
             bbox=geonode_resource.bbox,
-            forced_crs=settings.DEFAULT_MAP_CRS,
+            # forced_crs=settings.DEFAULT_MAP_CRS,
+            forced_crs=geonode_resource.srid if 'EPSG:' in str(geonode_resource.srid) else f'EPSG:{geonode_resource.srid}',
             overwrite=True,
         )
 
