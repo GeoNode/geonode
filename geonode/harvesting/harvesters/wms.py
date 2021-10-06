@@ -34,6 +34,7 @@ from lxml import etree
 from owslib.map import wms111, wms130
 from owslib.util import clean_ows_url
 
+from django.conf import settings
 from django.contrib.gis import geos
 
 from geonode.layers.models import Dataset
@@ -434,41 +435,59 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             wms_url._replace(query=urlencode(params)),
             version=_version)
 
+        crs = None
+        spatial_extent = None
         try:
-            bbox = layer_element.xpath("wms:BoundingBox", namespaces=nsmap)[0]
-            crs = bbox.attrib.get('CRS')
-            left_x = bbox.attrib.get('minx')
-            right_x = bbox.attrib.get('maxx')
-            lower_y = bbox.attrib.get('miny')
-            upper_y = bbox.attrib.get('maxy')
+            for bbox in layer_element.xpath("wms:BoundingBox", namespaces=nsmap):
+                crs = bbox.attrib.get('CRS')
+                if 'EPSG:' in crs.upper() or crs.upper() == 'CRS:84':
+                    crs = 'EPSG:4326' if crs.upper() == 'CRS:84' else crs
+                    left_x = bbox.attrib.get('minx')
+                    right_x = bbox.attrib.get('maxx')
+                    lower_y = bbox.attrib.get('miny')
+                    upper_y = bbox.attrib.get('maxy')
 
-            # Preventing if it returns comma as the decimal separator
-            spatial_extent = geos.Polygon.from_bbox((
-                float(left_x.replace(",", ".")),
-                float(lower_y.replace(",", ".")),
-                float(right_x.replace(",", ".")),
-                float(upper_y.replace(",", ".")),
-            ))
-        except Exception:
+                    # Preventing if it returns comma as the decimal separator
+                    spatial_extent = geos.Polygon.from_bbox((
+                        float(left_x.replace(",", ".")),
+                        float(lower_y.replace(",", ".")),
+                        float(right_x.replace(",", ".")),
+                        float(upper_y.replace(",", ".")),
+                    ))
+                    break
+            if not spatial_extent:
+                crs = None
+                raise Exception("No suitable wms:BoundingBox element found!")
+        except Exception as e:
+            logger.exception(e)
             try:
-                crs = layer_element.xpath("wms:CRS//text()", namespaces=nsmap)[0]
-                left_x = get_xpath_value(
-                    layer_element, "wms:EX_GeographicBoundingBox/wms:westBoundLongitude", nsmap)
-                right_x = get_xpath_value(
-                    layer_element, "wms:EX_GeographicBoundingBox/wms:eastBoundLongitude", nsmap)
-                lower_y = get_xpath_value(
-                    layer_element, "wms:EX_GeographicBoundingBox/wms:southBoundLatitude", nsmap)
-                upper_y = get_xpath_value(
-                    layer_element, "wms:EX_GeographicBoundingBox/wms:northBoundLatitude", nsmap)
+                for crs in layer_element.xpath("wms:CRS//text()", namespaces=nsmap):
+                    if 'EPSG:' in crs.upper() or crs.upper() == 'CRS:84':
+                        crs = 'EPSG:4326' if crs.upper() == 'CRS:84' else crs
+                        left_x = get_xpath_value(
+                            layer_element, "wms:EX_GeographicBoundingBox/wms:westBoundLongitude", nsmap)
+                        right_x = get_xpath_value(
+                            layer_element, "wms:EX_GeographicBoundingBox/wms:eastBoundLongitude", nsmap)
+                        lower_y = get_xpath_value(
+                            layer_element, "wms:EX_GeographicBoundingBox/wms:southBoundLatitude", nsmap)
+                        upper_y = get_xpath_value(
+                            layer_element, "wms:EX_GeographicBoundingBox/wms:northBoundLatitude", nsmap)
 
-                # Preventing if it returns comma as the decimal separator
-                spatial_extent = geos.Polygon.from_bbox((
-                    float(left_x.replace(",", ".")),
-                    float(lower_y.replace(",", ".")),
-                    float(right_x.replace(",", ".")),
-                    float(upper_y.replace(",", ".")),
-                ))
-            except IndexError:
+                        # Preventing if it returns comma as the decimal separator
+                        spatial_extent = geos.Polygon.from_bbox((
+                            float(left_x.replace(",", ".")),
+                            float(lower_y.replace(",", ".")),
+                            float(right_x.replace(",", ".")),
+                            float(upper_y.replace(",", ".")),
+                        ))
+                        break
+                if not spatial_extent:
+                    crs = None
+                    raise Exception("No suitable wms:CRS element found!")
+            except Exception as e:
+                logger.exception(e)
+                spatial_extent = None
+            if not spatial_extent:
                 crs = "EPSG:4326"
                 spatial_extent = geos.Polygon.from_bbox((
                     -180.0,
@@ -494,12 +513,17 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             harvestable_resource: HarvestableResource
     ) -> ResourceBase:
         """Create a thumbnail with a WMS request."""
+        if not geonode_resource.srid:
+            target_crs = settings.DEFAULT_MAP_CRS
+        elif 'EPSG:' in str(geonode_resource.srid).upper() or 'CRS:' in str(geonode_resource.srid).upper():
+            target_crs = geonode_resource.srid
+        else:
+            target_crs = f'EPSG:{geonode_resource.srid}'
         create_thumbnail(
             instance=geonode_resource,
             # wms_version=harvested_info.resource_descriptor,
             bbox=geonode_resource.bbox,
-            # forced_crs=settings.DEFAULT_MAP_CRS,
-            forced_crs=geonode_resource.srid if 'EPSG:' in str(geonode_resource.srid) else f'EPSG:{geonode_resource.srid}',
+            forced_crs=target_crs,
             overwrite=True,
         )
 
