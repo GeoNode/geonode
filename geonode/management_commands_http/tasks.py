@@ -16,21 +16,22 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from . import (
-    routers,
-    views,
+from celery import shared_task
+from geonode.management_commands_http.utils.job_runner import (
+    run_management_command
 )
 
-router = routers.ListPatchRouter()
 
-harvesters_node = router.register('harvesters', views.HarvesterViewSet)
-harvesters_node.register(
-    'harvestable-resources',
-    views.HarvestableResourceViewSet,
-    basename='harvestable-resources',
-    parents_query_lookups=['harvester_id']
+@shared_task(
+    bind=True,
+    name="geonode.management_commands_http.tasks.run_management_command_async",
+    queue="management_commands_http",
+    ignore_result=False,
 )
-router.register('harvesting-sessions', views.AsynchronousHarvestingSessionViewSet)
-
-urlpatterns = router.urls
+def run_management_command_async(self, job_id):
+    """
+    Celery Task responsible to run the management command.
+    It justs sends the `job_id` arg to a function that gonna call
+    `django.core.management.call_command` with all the required setup.
+    """
+    run_management_command(job_id, async_result_id=self.request.id)

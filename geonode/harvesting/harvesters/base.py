@@ -124,7 +124,6 @@ class BaseHarvesterWorker(abc.ABC):
     def get_resource(
             self,
             harvestable_resource: "HarvestableResource",  # noqa
-            harvesting_session_id: int
     ) -> typing.Optional[HarvestedResourceInfo]:
         """Harvest a single resource from the remote service.
 
@@ -155,7 +154,6 @@ class BaseHarvesterWorker(abc.ABC):
             geonode_resource: ResourceBase,
             harvested_info: HarvestedResourceInfo,
             harvestable_resource: "HarvestableResource",  # noqa
-            harvesting_session_id: int
     ) -> ResourceBase:
         """Perform additional actions just after having created/updated a local GeoNode resource.
 
@@ -262,7 +260,6 @@ class BaseHarvesterWorker(abc.ABC):
             self,
             harvested_info: HarvestedResourceInfo,
             harvestable_resource: "HarvestableResource",  # noqa
-            harvesting_session_id: int,
     ):
         """Create or update a local GeoNode resource with the input harvested information.
 
@@ -297,7 +294,6 @@ class BaseHarvesterWorker(abc.ABC):
             geonode_resource,
             harvested_info,
             harvestable_resource,
-            harvesting_session_id
         )
 
     def _create_new_geonode_resource(self, geonode_resource_type, defaults: typing.Dict):

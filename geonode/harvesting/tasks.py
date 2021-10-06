@@ -28,13 +28,10 @@ from django.db.models import (
     Value,
 )
 from django.db.models.functions import Concat
-from django.utils.timezone import now
+from django.utils import timezone
 from geonode.celery_app import app
 
-from . import (
-    models,
-    utils,
-)
+from . import models
 from .harvesters import base
 
 logger = logging.getLogger(__name__)
@@ -48,7 +45,6 @@ logger = logging.getLogger(__name__)
 )
 def harvesting_dispatcher(
         self,
-        harvester_id: int,
         harvesting_session_id: int
 ):
     """Perform harvesting asynchronously.
@@ -71,17 +67,19 @@ def harvesting_dispatcher(
 
     """
 
-    harvester = models.Harvester.objects.get(pk=harvester_id)
+    session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
+    harvester = session.harvester
     harvestable_resources = list(harvester.harvestable_resources.filter(
         should_be_harvested=True).values_list("id", flat=True))
     if len(harvestable_resources) > 0:
         harvest_resources.apply_async(args=(harvestable_resources, harvesting_session_id))
     else:
-        logger.debug("harvesting_dispatcher - nothing to do...")
-        finish_harvesting_session(
+        message = "harvesting_dispatcher - Nothing to do"
+        logger.debug(message)
+        finish_asynchronous_session(
             harvesting_session_id,
-            models.HarvestingSession.STATUS_FINISHED_ALL_OK,
-            "nothing to do"
+            models.AsynchronousHarvestingSession.STATUS_FINISHED_ALL_OK,
+            final_details=message
         )
 
 
@@ -97,34 +95,16 @@ def harvest_resources(
         harvesting_session_id: int
 ):
     """Harvest a list of remote resources that all belong to the same harvester."""
-    if len(harvestable_resource_ids) == 0:
-        logger.debug("harvest_resources - nothing to do...")
-        finish_harvesting_session(
-            harvesting_session_id,
-            models.HarvestingSession.STATUS_FINISHED_ALL_OK,
-            "nothing to do"
-        )
-    else:
-        sample_id = harvestable_resource_ids[0]
-        try:
-            sample_harvestable_resource = models.HarvestableResource.objects.get(pk=sample_id)
-        except models.HarvestableResource.DoesNotExist:
-            logger.warning(f"harvestable resource {sample_id!r} does not exist.")
-            finish_harvesting_session(
-                harvesting_session_id,
-                models.HarvestingSession.STATUS_FINISHED_ALL_FAILED,
-                "Could not retrieve first harvestable resource from the GeoNode db"
-            )
-        else:
-            harvester = sample_harvestable_resource.harvester
-            available = utils.update_harvester_availability(harvester)
-            if available:
+    session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
+    if session.status != session.STATUS_ABORTED:
+        if len(harvestable_resource_ids) > 0:
+            harvester = session.harvester
+            if harvester.update_availability():
                 harvester.status = harvester.STATUS_PERFORMING_HARVESTING
                 harvester.save()
-                models.HarvestingSession.objects.filter(pk=harvesting_session_id).update(
-                    status=models.HarvestingSession.STATUS_ON_GOING,
-                    records_to_harvest=len(harvestable_resource_ids)
-                )
+                session.status = session.STATUS_ON_GOING
+                session.total_records_to_process = len(harvestable_resource_ids)
+                session.save()
                 resource_tasks = []
                 for harvestable_resource_id in harvestable_resource_ids:
                     resource_tasks.append(
@@ -133,12 +113,11 @@ def harvest_resources(
                         )
                     )
                 harvesting_finalizer = _finish_harvesting.signature(
-                    args=(harvester.id, harvesting_session_id),
+                    args=(harvesting_session_id,),
                     immutable=True
                 ).on_error(
                     _handle_harvesting_error.signature(
                         kwargs={
-                            "harvester_id": harvester.id,
                             "harvesting_session_id": harvesting_session_id,
                         }
                     )
@@ -146,15 +125,26 @@ def harvest_resources(
                 harvesting_workflow = chord(resource_tasks, body=harvesting_finalizer)
                 harvesting_workflow.apply_async()
             else:
-                logger.warning(
+                message = (
                     f"Skipping harvesting for harvester {harvester.name!r} because the "
                     f"remote {harvester.remote_url!r} seems to be unavailable"
                 )
-                finish_harvesting_session(
+                logger.warning(message)
+                finish_asynchronous_session(
                     harvesting_session_id,
-                    models.HarvestingSession.STATUS_FINISHED_ALL_FAILED,
-                    f"Remote url {harvester.remote_url} seems to be unavailable"
+                    session.STATUS_FINISHED_ALL_FAILED,
+                    final_details=message
                 )
+        else:
+            message = "harvest_resources - Nothing to do..."
+            logger.debug(message)
+            finish_asynchronous_session(
+                harvesting_session_id,
+                models.AsynchronousHarvestingSession.STATUS_FINISHED_ALL_OK,
+                final_details=message
+            )
+    else:
+        logger.debug("Session has been aborted, skipping...")
 
 
 @app.task(
@@ -169,40 +159,48 @@ def _harvest_resource(
         harvesting_session_id: int
 ):
     """Harvest a single resource from the input harvestable resource id"""
-    harvestable_resource = models.HarvestableResource.objects.get(pk=harvestable_resource_id)
-    worker: base.BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
-    harvested_resource_info = worker.get_resource(harvestable_resource, harvesting_session_id)
-    now_ = now()
-    if harvested_resource_info is not None:
-        if worker.should_copy_resource(harvestable_resource):
-            copied_path = worker.copy_resource(harvestable_resource, harvested_resource_info)
-            if copied_path is not None:
-                harvested_resource_info.copied_resources.append(copied_path)
-        try:
-            worker.update_geonode_resource(
-                harvested_resource_info,
-                harvestable_resource,
+    session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
+    if session.status != session.STATUS_ABORTING:
+        harvestable_resource = models.HarvestableResource.objects.get(pk=harvestable_resource_id)
+        worker: base.BaseHarvesterWorker = harvestable_resource.harvester.get_harvester_worker()
+        harvested_resource_info = worker.get_resource(harvestable_resource)
+        now_ = timezone.now()
+        if harvested_resource_info is not None:
+            if worker.should_copy_resource(harvestable_resource):
+                copied_path = worker.copy_resource(harvestable_resource, harvested_resource_info)
+                if copied_path is not None:
+                    harvested_resource_info.copied_resources.append(copied_path)
+            try:
+                worker.update_geonode_resource(
+                    harvested_resource_info,
+                    harvestable_resource,
+                )
+                result = True
+                details = ""
+            except (RuntimeError, ValidationError) as exc:
+                logger.error(msg="Unable to update geonode resource")
+                result = False
+                details = str(exc)
+            harvesting_message = f"{harvestable_resource.title}({harvestable_resource_id}) - {'Success' if result else details}"
+            update_asynchronous_session(
                 harvesting_session_id,
+                additional_processed_records=1 if result else 0,
+                additional_details=harvesting_message
             )
-            result = True
-            details = ""
-        except (RuntimeError, ValidationError) as exc:
-            logger.error(msg="Unable to update geonode resource")
-            result = False
-            details = str(exc)
-        harvesting_message = f"{harvestable_resource.title}({harvestable_resource_id}) - {'Success' if result else details}"
-        update_harvesting_session(
-            harvesting_session_id,
-            additional_harvested_records=1 if result else 0,
-            additional_details=harvesting_message
-        )
-        harvestable_resource.last_harvesting_message = f"{now_} - {harvesting_message}"
-        harvestable_resource.last_harvesting_succeeded = result
+            harvestable_resource.last_harvesting_message = f"{now_} - {harvesting_message}"
+            harvestable_resource.last_harvesting_succeeded = result
+        else:
+            harvestable_resource.last_harvesting_message = f"{now_}Harvesting failed"
+            harvestable_resource.last_harvesting_succeeded = False
+        harvestable_resource.last_harvested = now_
+        harvestable_resource.save()
     else:
-        harvestable_resource.last_harvesting_message = f"{now_}Harvesting failed"
-        harvestable_resource.last_harvesting_succeeded = False
-    harvestable_resource.last_harvested = now_
-    harvestable_resource.save()
+        message = (
+            f"Skipping harvesting of resource {harvestable_resource_id} since the "
+            f"session has been aborted"
+        )
+        update_asynchronous_session(harvesting_session_id, additional_details=message)
+        logger.debug(message)
 
 
 @app.task(
@@ -211,16 +209,26 @@ def _harvest_resource(
     acks_late=False,
     ignore_result=False,
 )
-def _finish_harvesting(self, harvester_id: int, harvesting_session_id: int):
-    harvester = models.Harvester.objects.get(pk=harvester_id)
+def _finish_harvesting(self, harvesting_session_id: int):
+    session = models.AsynchronousHarvestingSession.objects.get(pk=harvesting_session_id)
+    harvester = session.harvester
+    if session.status == session.STATUS_ABORTING:
+        message = "Harvesting session aborted by user"
+        final_status = session.STATUS_ABORTED
+    else:
+        message = "Harvesting completed successfully!"
+        final_status = session.STATUS_FINISHED_ALL_OK
+    finish_asynchronous_session(
+        harvesting_session_id,
+        final_status=final_status,
+        final_details=message
+    )
+    logger.debug(
+        f"(harvester: {harvester.pk!r} - session: {harvesting_session_id!r}) "
+        f"{message}"
+    )
     harvester.status = harvester.STATUS_READY
     harvester.save()
-    finish_harvesting_session(
-        harvesting_session_id, final_status=models.HarvestingSession.STATUS_FINISHED_ALL_OK)
-    logger.debug(
-        f"(harvester: {harvester_id!r} - session: {harvesting_session_id!r}) "
-        f"Harvesting completed successfully! "
-    )
 
 
 @app.task(
@@ -257,13 +265,14 @@ def _handle_harvesting_error(self, task_id, *args, **kwargs):
     logger.debug(f"result: {result.result}")
     logger.debug(f"traceback: {result.traceback}")
     logger.debug(f"harvesting task with kwargs: {kwargs} has failed")
-    harvester = models.Harvester.objects.get(pk=kwargs["harvester_id"])
+    session = models.AsynchronousHarvestingSession.objects.get(pk=kwargs["harvesting_session_id"])
+    harvester = session.harvester
     harvester.status = harvester.STATUS_READY
     harvester.save()
     details = f"state: {result.state}\nresult: {result.result}\ntraceback: {result.traceback}"
-    finish_harvesting_session(
+    finish_asynchronous_session(
         kwargs["harvesting_session_id"],
-        final_status=models.HarvestingSession.STATUS_FINISHED_SOME_FAILED,
+        session.STATUS_FINISHED_SOME_FAILED,
         final_details=details
     )
 
@@ -276,7 +285,7 @@ def _handle_harvesting_error(self, task_id, *args, **kwargs):
 )
 def check_harvester_available(self, harvester_id: int):
     harvester = models.Harvester.objects.get(pk=harvester_id)
-    available = utils.update_harvester_availability(harvester)
+    available = harvester.update_availability()
     logger.info(
         f"Harvester {harvester!r}: remote server is "
         f"{'' if available else 'not '}available"
@@ -289,42 +298,57 @@ def check_harvester_available(self, harvester_id: int):
     acks_late=False,
     ignore_result=False,
 )
-def update_harvestable_resources(self, harvester_id: int):
+def update_harvestable_resources(self, refresh_session_id: int):
     # NOTE: we are able to implement batch discovery of existing harvestable resources
     # because we want to know about all of them. We are not able to batch harvesting
     # of resources because these have potentially been individually selected by the
     # user, which means we are not interested in all of them
-    harvester = models.Harvester.objects.get(pk=harvester_id)
-    harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
-    harvester.save()
-    worker = harvester.get_harvester_worker()
-    try:
-        num_resources = worker.get_num_available_resources()
-    except (NotImplementedError, base.HarvestingException) as exc:
-        _handle_harvestable_resources_update_error(
-            self.request.id, harvester_id=harvester_id, raised_exception=exc)
-    else:
-        harvester.num_harvestable_resources = num_resources
-        harvester.save()
-        page_size = 10
-        total_pages = math.ceil(num_resources / page_size)
-        batches = []
-        for page in range(total_pages):
-            batches.append(
-                _update_harvestable_resources_batch.signature(
-                    args=(harvester_id, page, page_size),
+    session = models.AsynchronousHarvestingSession.objects.get(pk=refresh_session_id)
+    if session.status != session.STATUS_ABORTED:
+        session.status = session.STATUS_ON_GOING
+        session.save()
+        harvester = session.harvester
+        if harvester.update_availability():
+            harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
+            harvester.save()
+            worker = harvester.get_harvester_worker()
+            try:
+                num_resources = worker.get_num_available_resources()
+            except (NotImplementedError, base.HarvestingException) as exc:
+                _handle_harvestable_resources_update_error(
+                    self.request.id, refresh_session_id=refresh_session_id, raised_exception=exc)
+            else:
+                harvester.num_harvestable_resources = num_resources
+                harvester.save()
+                session.total_records_to_process = num_resources
+                session.save()
+                page_size = 10
+                total_pages = math.ceil(num_resources / page_size)
+                batches = []
+                for page in range(total_pages):
+                    batches.append(
+                        _update_harvestable_resources_batch.signature(
+                            args=(refresh_session_id, page, page_size),
+                        )
+                    )
+                update_finalizer = _finish_harvestable_resources_update.signature(
+                    args=(refresh_session_id,),
+                    immutable=True
+                ).on_error(
+                    _handle_harvestable_resources_update_error.signature(
+                        kwargs={"refresh_session_id": refresh_session_id}
+                    )
                 )
+                update_workflow = chord(batches, body=update_finalizer)
+                update_workflow.apply_async()
+        else:
+            finish_asynchronous_session(
+                refresh_session_id,
+                session.STATUS_FINISHED_ALL_FAILED,
+                final_details="Harvester is not available"
             )
-        update_finalizer = _finish_harvestable_resources_update.signature(
-            args=(harvester_id,),
-            immutable=True
-        ).on_error(
-            _handle_harvestable_resources_update_error.signature(
-                kwargs={"harvester_id": harvester_id}
-            )
-        )
-        update_workflow = chord(batches, body=update_finalizer)
-        update_workflow.apply_async()
+    else:
+        logger.debug("Session has been aborted, skipping...")
 
 
 @app.task(
@@ -334,31 +358,42 @@ def update_harvestable_resources(self, harvester_id: int):
     ignore_result=False,
 )
 def _update_harvestable_resources_batch(
-        self, harvester_id: int, page: int, page_size: int):
-    harvester = models.Harvester.objects.get(pk=harvester_id)
-    worker = harvester.get_harvester_worker()
-    offset = page * page_size
-    try:
-        found_resources = worker.list_resources(offset)
-    except base.HarvestingException:
-        logger.exception("Could not retrieve list of remote resources.")
+        self,
+        refresh_session_id: int,
+        page: int,
+        page_size: int
+):
+    session = models.AsynchronousHarvestingSession.objects.get(pk=refresh_session_id)
+    if session.status == session.STATUS_ON_GOING:
+        harvester = session.harvester
+        worker = harvester.get_harvester_worker()
+        offset = page * page_size
+        try:
+            found_resources = worker.list_resources(offset)
+        except base.HarvestingException:
+            logger.exception("Could not retrieve list of remote resources.")
+        else:
+            processed = 0
+            for remote_resource in found_resources:
+                resource, created = models.HarvestableResource.objects.get_or_create(
+                    harvester=harvester,
+                    unique_identifier=remote_resource.unique_identifier,
+                    title=remote_resource.title,
+                    defaults={
+                        "should_be_harvested": harvester.harvest_new_resources_by_default,
+                        "remote_resource_type": remote_resource.resource_type,
+                        "last_refreshed": timezone.now()
+                    }
+                )
+                processed += 1
+                # NOTE: make sure to save the resource because we need to have its
+                # `last_updated` property be refreshed - this is done in order to be able
+                # to compare when a resource has been found
+                resource.last_refreshed = timezone.now()
+                resource.save()
+            update_asynchronous_session(refresh_session_id, additional_processed_records=processed)
     else:
-        for remote_resource in found_resources:
-            resource, created = models.HarvestableResource.objects.get_or_create(
-                harvester=harvester,
-                unique_identifier=remote_resource.unique_identifier,
-                title=remote_resource.title,
-                defaults={
-                    "should_be_harvested": harvester.harvest_new_resources_by_default,
-                    "remote_resource_type": remote_resource.resource_type,
-                    "last_refreshed": now()
-                }
-            )
-            # NOTE: make sure to save the resource because we need to have its
-            # `last_updated` property be refreshed - this is done in order to be able
-            # to compare when a resource has been found
-            resource.last_refreshed = now()
-            resource.save()
+        logger.info("The refresh session has been asked to abort, so skipping...")
 
 
 @app.task(
@@ -367,15 +402,23 @@ def _update_harvestable_resources_batch(
     acks_late=False,
     ignore_result=False,
 )
-def _finish_harvestable_resources_update(self, harvester_id: int):
-    harvester = models.Harvester.objects.get(pk=harvester_id)
-    if harvester.last_checked_harvestable_resources is not None:
-        _delete_stale_harvestable_resources(harvester)
+def _finish_harvestable_resources_update(self, refresh_session_id: int):
+    session = models.AsynchronousHarvestingSession.objects.get(pk=refresh_session_id)
+    harvester = session.harvester
+    if session.status == session.STATUS_ABORTING:
+        message = "Refresh session aborted by user"
+        finish_asynchronous_session(
+            refresh_session_id, session.STATUS_ABORTED, final_details=message)
+    else:
+        message = "Harvestable resources successfully refreshed"
+        finish_asynchronous_session(
+            refresh_session_id, session.STATUS_FINISHED_ALL_OK, final_details=message)
+        if harvester.last_checked_harvestable_resources is not None:
+            _delete_stale_harvestable_resources(harvester)
     harvester.status = harvester.STATUS_READY
-    now_ = now()
+    now_ = timezone.now()
     harvester.last_checked_harvestable_resources = now_
-    harvester.last_check_harvestable_resources_message = (
-        f"{now_} - Harvestable resources successfully checked")
+    harvester.last_check_harvestable_resources_message = f"{now_} - {message}"
     harvester.save()
 
 
@@ -386,14 +429,17 @@ def _finish_harvestable_resources_update(self, harvester_id: int):
     ignore_result=False,
 )
 def _handle_harvestable_resources_update_error(self, task_id, *args, **kwargs):
+    logger.debug("Inside _handle_harvestable_resources_update_error -----------------------------------------")
     result = self.app.AsyncResult(str(task_id))
-    print(f"locals: {locals()}")
-    print(f"state: {result.state}")
-    print(f"result: {result.result}")
-    print(f"traceback: {result.traceback}")
-    harvester = models.Harvester.objects.get(pk=kwargs["harvester_id"])
+    logger.debug(f"locals: {locals()}")
+    logger.debug(f"state: {result.state}")
+    logger.debug(f"result: {result.result}")
+    logger.debug(f"traceback: {result.traceback}")
+    result = self.app.AsyncResult(str(task_id))
+    session = models.AsynchronousHarvestingSession.objects.get(pk=kwargs["refresh_session_id"])
+    harvester = session.harvester
     harvester.status = harvester.STATUS_READY
-    now_ = now()
+    now_ = timezone.now()
     harvester.last_checked_harvestable_resources = now_
     harvester.last_check_harvestable_resources_message = (
         f"{now_} - There was an error retrieving information on available "
@@ -401,6 +447,12 @@ def _handle_harvestable_resources_update_error(self, task_id, *args, **kwargs):
         f"Please check the logs"
     )
     harvester.save()
+    details = f"state: {result.state}\nresult: {result.result}\ntraceback: {result.traceback}"
+    finish_asynchronous_session(
+        kwargs["refresh_session_id"],
+        final_status=models.AsynchronousHarvestingSession.STATUS_FINISHED_SOME_FAILED,
+        final_details=details
+    )
 
 
 def _delete_stale_harvestable_resources(harvester: models.Harvester):
@@ -422,7 +474,7 @@ def _delete_stale_harvestable_resources(harvester: models.Harvester):
 
     previously_checked_at = harvester.last_checked_harvestable_resources
     logger.debug(f"last checked at: {previously_checked_at}")
-    logger.debug(f"now: {now()}")
+    logger.debug(f"now: {timezone.now()}")
     to_remove = models.HarvestableResource.objects.filter(
         harvester=harvester, last_refreshed__lte=previously_checked_at)
     for harvestable_resource in to_remove:
@@ -435,38 +487,34 @@ def _delete_stale_harvestable_resources(harvester: models.Harvester):
         harvestable_resource.delete()
 
 
-def update_harvesting_session(
-        session_id: int,
-        total_records_found: typing.Optional[int] = None,
-        additional_harvested_records: typing.Optional[int] = None,
-        additional_details: typing.Optional[str] = None,
-) -> None:
-    """Update the input harvesting session."""
-    update_kwargs = {}
-    if total_records_found is not None:
-        update_kwargs["total_records_found"] = total_records_found
-    if additional_harvested_records is not None:
-        update_kwargs["records_harvested"] = (
-                F("records_harvested") + additional_harvested_records)
-    if additional_details is not None:
-        update_kwargs["session_details"] = Concat("session_details", Value(f"\n{additional_details}"))
-    models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
-
-
-def finish_harvesting_session(
+def finish_asynchronous_session(
         session_id: int,
         final_status: str,
         final_details: typing.Optional[str] = None,
-        additional_harvested_records: typing.Optional[int] = None,
+        additional_processed_records: typing.Optional[int] = None
 ) -> None:
-    """Finish the input harvesting session"""
     update_kwargs = {
-        "ended": now(),
+        "ended": timezone.now(),
         "status": final_status,
     }
-    if additional_harvested_records is not None:
-        update_kwargs["records_harvested"] = (
-                F("records_harvested") + additional_harvested_records)
+    if additional_processed_records is not None:
+        update_kwargs["records_done"] = F("records_done") + additional_processed_records
     if final_details is not None:
-        update_kwargs["session_details"] = Concat("session_details", Value(f"\n{final_details}"))
-    models.HarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
+        update_kwargs["details"] = Concat("details", Value(f"\n{final_details}"))
+    models.AsynchronousHarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
+
+
+def update_asynchronous_session(
+        session_id: int,
+        total_records_to_process: typing.Optional[int] = None,
+        additional_processed_records: typing.Optional[int] = None,
+        additional_details: typing.Optional[str] = None,
+) -> None:
+    update_kwargs = {}
+    if total_records_to_process is not None:
+        update_kwargs["total_records_to_process"] = total_records_to_process
+    if additional_processed_records is not None:
+        update_kwargs["records_done"] = F("records_done") + additional_processed_records
+    if additional_details is not None:
+        update_kwargs["details"] = Concat("details", Value(f"\n{additional_details}"))
+    models.AsynchronousHarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
