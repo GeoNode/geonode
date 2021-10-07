@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-08 09:03+0300\n"
-"PO-Revision-Date: 2016-08-23 11:58+0000\n"
+"PO-Revision-Date: 2021-10-07 11:26+0900\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Japanese (http://www.transifex.com/geonode/geonode/language/"
 "ja/)\n"
@@ -37,16 +37,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.0\n"
 
 msgid "STORE_UPDATED"
 msgstr ""
 
 #, javascript-format
 msgid "Missing a %s file, which is required"
-msgstr "必要とされている %s のファイルが、欠落している"
+msgstr "%s ファイルがありません、必須です"
 
 msgid "ESRI Shapefile"
-msgstr "ESRIのシェープファイル"
+msgstr ""
 
 msgid "ASCII Text File"
 msgstr ""
@@ -55,26 +56,22 @@ msgid "GeoTIFF"
 msgstr ""
 
 msgid "Comma Separated Value"
-msgstr ""
+msgstr "CSV"
 
 msgid "Google Earth KML"
-msgstr "Google EarthのKML"
+msgstr "Google Earth KML"
 
-#, fuzzy
-#| msgid "Google Earth KML"
 msgid "Google Earth KML with a GroundOverlay"
-msgstr "Google EarthのKML"
+msgstr "Google Earth KML"
 
-#, fuzzy
-#| msgid "Google Earth KML"
 msgid "Google Earth KMZ"
-msgstr "Google EarthのKML"
+msgstr "Google Earth KMZ"
 
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
 msgid "Zip Archive"
-msgstr ""
+msgstr "ZIP"
 
 msgid "ERDAS Imagine"
 msgstr ""
@@ -118,13 +115,11 @@ msgstr ""
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr ""
 
-#, fuzzy
-#| msgid "Metadata Links:"
 msgid "XML Metadata File"
-msgstr "メタデータへのリンク:"
+msgstr "メタデータXMLファイル"
 
 msgid "Style Layer Descriptor"
-msgstr ""
+msgstr "SLDスタイルファイル"
 
 msgid "JPEG"
 msgstr ""
@@ -135,10 +130,8 @@ msgstr ""
 msgid "GIF"
 msgstr ""
 
-#, fuzzy
-#| msgid "Unexpected Error"
 msgid "Unexpected error!"
-msgstr "予期しないエラー"
+msgstr "エラーが発生しました"
 
 msgid ""
 " - 400 Bad Request. Server cannot or will not process the request due to "
@@ -308,24 +301,22 @@ msgid ""
 "may need to update the server."
 msgstr ""
 
-#, fuzzy
-#| msgid "Unknown Map"
 msgid "Unknwon"
-msgstr "不明な地図"
+msgstr "不明なエラー"
 
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
-msgstr ""
+msgstr ": 詳細はシステム管理者に問い合わせてください"
 
 msgid "Additional info: "
-msgstr ""
+msgstr "備考: "
 
 msgid "Finalizing"
-msgstr ""
+msgstr "終了中"
 
 msgid "Unexpected Error"
-msgstr "予期しないエラー"
+msgstr "エラー"
 
 msgid "Your "
 msgstr ""
@@ -336,55 +327,53 @@ msgid " Info"
 msgstr "レイヤー情報"
 
 msgid "Edit Metadata"
-msgstr "メタデータの編集"
+msgstr "メタデータを編集"
 
-#, fuzzy
-#| msgid "Edit Metadata"
 msgid "Upload Metadata"
-msgstr "メタデータの編集"
+msgstr "メタデータXMLを登録"
 
 msgid "Upload SLD"
-msgstr ""
+msgstr "SLDファイルを登録"
 
 msgid "Manage Styles"
 msgstr "スタイル管理"
 
 msgid "Please wait until GeoNode finished configuring it!"
-msgstr ""
+msgstr "設定完了までお待ちください"
 
 msgid "The column %1 was renamed to %2 <br/>"
-msgstr ""
+msgstr "カラム名 %1 は %2 に変更されました <br/>"
 
 msgid "Performing Final GeoServer Config Step"
-msgstr "ファイナルGeoServer configステップの実行"
+msgstr "GeoServer設定処理を完了中"
 
 msgid "You need to specify more information in order to complete your upload"
-msgstr "あなたのアップロードを完了するために多くの情報を指定する必要があります"
+msgstr "アップロードを完了するためにいくつかの情報を入力してください"
 
 msgid "Files are ready to be ingested!"
-msgstr ""
+msgstr "ファイルを取り込む準備ができました"
 
 msgid "A temporal dimension may be added to this Layer."
-msgstr ""
+msgstr "このレイヤーには時間軸設定を追加できます"
 
 msgid "Performing GeoServer Config Step"
-msgstr "GeoServer configステップの実行"
+msgstr "GeoServer設定処理中"
 
 msgid ""
 "<br>Please check your network connection. In case of Layer Upload make sure "
 "GeoServer is running and accepting connections."
 msgstr ""
+"<br>PCのネットワーク接続を確認してください。もし正常な場合、GeoServerが正常に"
+"稼働しているか確認してください。"
 
 msgid "<br>"
 msgstr ""
 
 msgid "<br>Bad request or URL not found."
-msgstr ""
+msgstr "<br>リクエストが不正、もしくはURLが存在しない"
 
-#, fuzzy
-#| msgid "Unknown Map"
 msgid "<br>Unknown."
-msgstr "不明な地図"
+msgstr "<br>不明なエラー"
 
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "レイヤファイルは、アップロードされたGeoServerに設定"
@@ -395,8 +384,7 @@ msgstr "削除する"
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
-"ファイル %s はサポートされていないファイル·タイプが使用され、別のファイルを選"
-"択してください。"
+"%s はサポートされていないファイル形式です、別のファイルを選択してください。"
 
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
@@ -404,54 +392,58 @@ msgid ""
 "\n"
 "Please check for errors in the form!"
 msgstr ""
+"アップロードしようとしているデータ形式の必須ファイルが揃っていません。\n"
+"\n"
+"フォーム内のエラーを確認してください。"
 
 #, javascript-format
 msgid "Available %s"
-msgstr "Available %s"
+msgstr "%s は利用可能です"
 
 #, javascript-format
 msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
-"This is the list of available %s. You may choose some by selecting them in "
-"the box below and then clicking the \"Choose\" arrow between the two boxes."
+"利用可能な %s のリストです。\n"
+"以下のボックスで「選択」矢印をクリックすることで複数選択することができます。"
 
 #, javascript-format
 msgid "Type into this box to filter down the list of available %s."
-msgstr "Type into this box to filter down the list of available %s."
+msgstr ""
+"このボックスに入力すると、利用可能な %s のリストにフィルターがかかります"
 
 msgid "Filter"
-msgstr "Filter"
+msgstr "フィルター"
 
 msgid "Choose all"
-msgstr "Choose all"
+msgstr "全選択"
 
 #, javascript-format
 msgid "Click to choose all %s at once."
-msgstr "Click to choose all %s at once."
+msgstr "クリックすると全ての %s を一度に選択できます"
 
 msgid "Choose"
-msgstr "Choose"
+msgstr "選択"
 
 #, javascript-format
 msgid "Chosen %s"
-msgstr "Chosen %s"
+msgstr "選択中 %s"
 
 #, javascript-format
 msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
-"This is the list of chosen %s. You may remove some by selecting them in the "
-"box below and then clicking the \"Remove\" arrow between the two boxes."
+"選択中の %s のリストです。以下のボックスで「削除」矢印をクリックすることで複"
+"数を削除することができます。"
 
 msgid "Remove all"
-msgstr "Remove all"
+msgstr "全削除"
 
 #, javascript-format
 msgid "Click to remove all chosen %s at once."
-msgstr "Click to remove all chosen %s at once."
+msgstr "クリックすると全ての %s を一度に削除できます"
 
 msgid "%(sel)s of %(cnt)s selected"
 msgid_plural "%(sel)s of %(cnt)s selected"
@@ -461,26 +453,22 @@ msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
 msgstr ""
-"You have unsaved changes on individual editable fields. If you run an "
-"action, your unsaved changes will be lost."
+"保存されていない変更があります。このまま続けると保存されていない変更は失われ"
+"ます。"
 
 msgid ""
 "You have selected an action, but you haven't saved your changes to "
 "individual fields yet. Please click OK to save. You'll need to re-run the "
 "action."
 msgstr ""
-"You have selected an action, but you haven't saved your changes to "
-"individual fields yet. Please click OK to save. You'll need to re-run the "
-"action."
+"処理が選択されましたが、保存されていない変更があります。保存するならOKをク"
+"リックしてください（処理は再実行する必要があります）。"
 
 msgid ""
 "You have selected an action, and you haven't made any changes on individual "
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
-"You have selected an action, and you haven't made any changes on individual "
-"fields. You're probably looking for the Go button rather than the Save "
-"button."
 
 msgid "'"
 msgstr ""
@@ -489,10 +477,10 @@ msgid "-1"
 msgstr ""
 
 msgid "trailingComments"
-msgstr ""
+msgstr "先頭コメント"
 
 msgid "leadingComments"
-msgstr ""
+msgstr "末尾コメント"
 
 #, fuzzy
 #| msgid "Enter comments here."
@@ -601,7 +589,7 @@ msgid "goForward"
 msgstr ""
 
 msgid "Abort"
-msgstr ""
+msgstr "中断"
 
 msgid "As Sibling"
 msgstr ""
