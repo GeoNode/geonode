@@ -178,6 +178,7 @@ def _harvest_resource(
                 result = True
                 details = ""
             except (RuntimeError, ValidationError) as exc:
+                logger.exception(exc)
                 logger.error(msg="Unable to update geonode resource")
                 result = False
                 details = str(exc)

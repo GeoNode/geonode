@@ -1019,7 +1019,9 @@ class BaseApiTests(APITestCase):
         response = self.client.post(url, data=payload, format='json')
 
         expected = {
-            "thumbnail_url": "http://localhost:8000/mocked_url.jpg"
+            'message': 'Thumbnail correctly created.',
+            'success': True,
+            'thumbnail_url': 'http://localhost:8000/mocked_url.jpg'
         }
         self.assertEqual(response.status_code, 200)
         self.assertEqual(expected, response.json())
@@ -1044,7 +1046,8 @@ class BaseApiTests(APITestCase):
         response = self.client.post(url, data=payload, format='json')
 
         expected = {
-            "message": f"Resource selected with id {dataset_id} does not exists"
+            'message': f'Resource selected with id {dataset_id} does not exists',
+            'success': False
         }
         self.assertEqual(response.status_code, 404)
         self.assertEqual(expected, response.json())
@@ -1064,7 +1067,8 @@ class BaseApiTests(APITestCase):
         response = self.client.post(url, data=payload, format='json')
 
         expected = {
-            "message": "Not implemented: Endpoint available only for Dataset and Maps"
+            'message': 'Not implemented: Endpoint available only for Dataset and Maps',
+            'success': False
         }
         self.assertEqual(response.status_code, 405)
         self.assertEqual(expected, response.json())
@@ -1085,7 +1089,8 @@ class BaseApiTests(APITestCase):
         response = self.client.post(url, data=payload, format='json')
 
         expected = {
-            "message": "Some exception during thumb creation"
+            'message': 'Some exception during thumb creation',
+            'success': False
         }
         self.assertEqual(response.status_code, 500)
         self.assertEqual(expected, response.json())
