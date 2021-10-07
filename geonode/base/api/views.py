@@ -451,7 +451,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         except ResourceBase.DoesNotExist:
             traceback.print_exc()
             logger.error(f"Resource selected with id {resource_id} does not exists")
-            return Response(data={"message": f"Resource selected with id {resource_id} does not exists"}, status=404, exception=True)
+            return Response(
+                data={"message": f"Resource selected with id {resource_id} does not exists", "success": False}, status=404, exception=True)
         except NotImplementedError as e:
             traceback.print_exc()
             logger.error(e)
