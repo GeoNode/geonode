@@ -426,6 +426,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         ],
     )
     def set_thumbnail_from_bbox(self, request, resource_id):
+        import traceback
+        from django.utils.datastructures import MultiValueDictKeyError
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
 
@@ -433,20 +435,31 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 raise NotImplementedError("Not implemented: Endpoint available only for Dataset and Maps")
 
             request_body = request.data if request.data else json.loads(request.body)
-            bbox = request_body["bbox"] + [request_body["srid"]]
-            zoom = request_body.get("zoom", None)
+            try:
+                bbox = request_body["bbox"] + [request_body["srid"]]
+                zoom = request_body.get("zoom", None)
+            except MultiValueDictKeyError:
+                for _k, _v in request_body.items():
+                    request_body = json.loads(_k)
+                    break
+                bbox = request_body["bbox"] + [request_body["srid"]]
+                zoom = request_body.get("zoom", None)
 
             thumbnail_url = create_thumbnail(resource.get_real_instance(), bbox=bbox, background_zoom=zoom, overwrite=True)
-            return Response({"thumbnail_url": thumbnail_url}, status=200)
+            return Response({"message": "Thumbnail correctly created.", "success": True, "thumbnail_url": thumbnail_url}, status=200)
         except ResourceBase.DoesNotExist:
+            traceback.print_exc()
             logger.error(f"Resource selected with id {resource_id} does not exists")
             return Response(data={"message": f"Resource selected with id {resource_id} does not exists"}, status=404, exception=True)
         except NotImplementedError as e:
+            traceback.print_exc()
             logger.error(e)
-            return Response(data={"message": e.args[0]}, status=405, exception=True)
+            return Response(data={"message": e.args[0], "success": False}, status=405, exception=True)
         except ThumbnailError as e:
+            traceback.print_exc()
             logger.error(e)
-            return Response(data={"message": e.args[0]}, status=500, exception=True)
+            return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
         except Exception as e:
+            traceback.print_exc()
             logger.error(e)
-            return Response(data={"message": e.args[0]}, status=500, exception=True)
+            return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
