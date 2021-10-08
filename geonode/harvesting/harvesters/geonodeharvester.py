@@ -188,7 +188,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
         return _check_availability(
-            self.http_session, f"{self.base_api_url}/datasets", timeout_seconds)
+            self.http_session, f"{self.base_api_url}/datasets", "datasets", timeout_seconds)
 
     def get_geonode_resource_type(self, remote_resource_type: str) -> typing.Type[typing.Union[Dataset, Document]]:
         return {
@@ -434,9 +434,9 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         }
         resource_filter = []
         if self.harvest_datasets:
-            resource_filter.append("layer")
+            resource_filter.append(GeoNodeResourceTypeCurrent.DATASET.value)
         if self.harvest_documents:
-            resource_filter.append("document")
+            resource_filter.append(GeoNodeResourceTypeCurrent.DOCUMENT.value)
         if len(resource_filter) > 0:
             result["filter{resource_type.in}"] = resource_filter
 
@@ -569,7 +569,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
         """Check whether the remote GeoNode is online."""
-        return _check_availability(self.http_session, f"{self.base_api_url}/", timeout_seconds)
+        return _check_availability(self.http_session, f"{self.base_api_url}/", "layers", timeout_seconds)
 
     def get_geonode_resource_type(self, remote_resource_type: str) -> typing.Type[typing.Union[Dataset, Document, Map]]:
         """Return resource type class from resource type string."""
@@ -1392,7 +1392,12 @@ def _from_django_record(target_class: typing.Type, record: models.Harvester):
     )
 
 
-def _check_availability(http_session, url: str, timeout_seconds: typing.Optional[int] = 5) -> bool:
+def _check_availability(
+        http_session,
+        url: str,
+        payload_key_to_check: str,
+        timeout_seconds: typing.Optional[int] = 5,
+) -> bool:
     try:
         response = http_session.get(url, timeout=timeout_seconds)
         response.raise_for_status()
@@ -1405,8 +1410,8 @@ def _check_availability(http_session, url: str, timeout_seconds: typing.Optional
             logger.exception("Could not decode server response as valid JSON")
             result = False
         else:
-            layers_endpoint_present = response_payload.get("layers") is not None
-            result = layers_endpoint_present
+            key_present = response_payload.get(payload_key_to_check) is not None
+            result = key_present
     return result
 
 

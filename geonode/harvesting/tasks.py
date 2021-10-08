@@ -510,7 +510,7 @@ def update_harvestable_resources(self, refresh_session_id: int):
                 page_size = 10
                 total_pages = math.ceil(num_resources / page_size)
                 batches = []
-                for page in range(total_pages):
+                for page in range(1, total_pages+1):
                     batches.append(
                         _update_harvestable_resources_batch.signature(
                             args=(refresh_session_id, page, page_size),
@@ -552,7 +552,7 @@ def _update_harvestable_resources_batch(
     if session.status == session.STATUS_ON_GOING:
         harvester = session.harvester
         worker = harvester.get_harvester_worker()
-        offset = page * page_size
+        offset = (page * page_size) - page_size
         try:
             found_resources = worker.list_resources(offset)
         except base.HarvestingException:
