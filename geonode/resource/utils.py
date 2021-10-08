@@ -35,6 +35,7 @@ from django.contrib.gis.geos import (
 
 from geonode.utils import OGC_Servers_Handler
 
+from ..base import enumerations
 from ..base.models import (
     Link,
     Region,
@@ -54,6 +55,9 @@ from ..documents.enumerations import (
 from ..people.utils import get_valid_user
 from ..layers.utils import resolve_regions
 from ..layers.metadata import convert_keyword
+
+from ..services.models import Service
+from ..harvesting.models import HarvestableResource
 
 logger = logging.getLogger(__name__)
 
@@ -240,6 +244,20 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
     except Exception as e:
         logger.error(f"{e} - {to_update}")
 
+    # Check for "remote services" availability
+    if HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).exists():
+        _h = HarvestableResource.objects.filter(geonode_resource__uuid=instance.uuid).get().harvester
+        if Service.objects.filter(harvester=_h).exists():
+            _s = Service.objects.filter(harvester=_h).get()
+            _to_update = {
+                "remote_typename": _s.name,
+                # "ows_url": _s.service_url,
+                "subtype": 'remote'
+            }
+            if hasattr(instance, 'remote_service'):
+                _to_update["remote_service"] = _s
+            instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**_to_update)
+
     # Refresh from DB
     instance.refresh_from_db()
     if poc:
@@ -271,16 +289,20 @@ def get_alternate_name(instance):
 
             # these are only used if there is no user-configured value in the settings
             _DEFAULT_CASCADE_WORKSPACE = "cascaded-services"
-            _DEFAULT_WORKSPACE = "cascaded-services"
+            _DEFAULT_WORKSPACE = "geonode"
 
-            if instance.remote_service is not None and instance.remote_service.method == INDEXED:
+            if hasattr(instance, 'remote_service') and instance.remote_service is not None and instance.remote_service.method == INDEXED:
                 result = instance.name
-            elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
+            elif hasattr(instance, 'remote_service') and instance.remote_service is not None and instance.remote_service.method == CASCADED:
                 _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
                 result = f"{_ws}:{instance.name}"
-            else:  # we are not dealing with a service-related instance
-                _ws = getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
-                result = f"{_ws}:{instance.name}"
+            else:
+                if hasattr(instance, 'sourcetype') and instance.sourcetype != enumerations.SOURCE_TYPE_LOCAL:
+                    _ws = instance.workspace
+                else:
+                    # we are not dealing with a service-related instance
+                    _ws = instance.workspace or getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
+                result = f"{_ws}:{instance.name}" if _ws else f"{instance.name}"
             return result
     except Exception as e:
         logger.debug(e)

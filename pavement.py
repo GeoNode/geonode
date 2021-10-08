@@ -75,6 +75,7 @@ from geonode.settings import (
     OGC_SERVER,
     ASYNC_SIGNALS,
     MONITORING_ENABLED,
+    CELERY_BEAT_SCHEDULER
 )
 
 try:
@@ -566,11 +567,8 @@ def start_django(options):
     sh(f'{settings} python -W ignore manage.py runserver {bind} {foreground}')
 
     if ASYNC_SIGNALS:
-        scheduler = '--statedb=worker.state -s celerybeat-schedule'
-        if 'django_celery_beat' in INSTALLED_APPS:
-            scheduler = '-s django_celery_beat.schedulers:DatabaseScheduler'
         sh(f"{settings} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
-            {scheduler} --loglevel=DEBUG \
+            --statedb=worker.state --scheduler={CELERY_BEAT_SCHEDULER} --loglevel=DEBUG \
             --concurrency=2 -n worker1@%h -f celery.log {foreground}")
         sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
 

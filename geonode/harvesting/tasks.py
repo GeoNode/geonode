@@ -178,6 +178,7 @@ def _harvest_resource(
                 result = True
                 details = ""
             except (RuntimeError, ValidationError) as exc:
+                logger.exception(exc)
                 logger.error(msg="Unable to update geonode resource")
                 result = False
                 details = str(exc)
@@ -379,6 +380,7 @@ def _update_harvestable_resources_batch(
                     harvester=harvester,
                     unique_identifier=remote_resource.unique_identifier,
                     title=remote_resource.title,
+                    abstract=remote_resource.abstract or "",
                     defaults={
                         "should_be_harvested": harvester.harvest_new_resources_by_default,
                         "remote_resource_type": remote_resource.resource_type,
