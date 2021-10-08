@@ -70,9 +70,8 @@ class RecordDistribution:
     wfs_url: typing.Optional[str] = None
     wcs_url: typing.Optional[str] = None
     thumbnail_url: typing.Optional[str] = None
-    legend_url: typing.Optional[str] = None
-    geojson_url: typing.Optional[str] = None
-    original_format_url: typing.Optional[str] = None
+    download_url: typing.Optional[str] = None
+    embed_url: typing.Optional[str] = None
 
 
 @dataclasses.dataclass()
@@ -92,7 +91,6 @@ class RecordDescription:
     date_stamp: dt.datetime
     identification: RecordIdentification
     distribution: RecordDistribution
-    hierarchy_level: typing.Optional[str] = "dataset"
     reference_systems: typing.Optional[typing.List[str]] = None
     data_quality: typing.Optional[str] = None
     additional_parameters: typing.Optional[typing.Dict] = dataclasses.field(

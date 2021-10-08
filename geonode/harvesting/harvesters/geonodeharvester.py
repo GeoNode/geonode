@@ -23,11 +23,11 @@ import datetime as dt
 import enum
 import json
 import logging
+import math
 import typing
 import urllib.parse
 import uuid
 
-import datetime
 import dateutil.parser
 import requests
 from django.contrib.gis import geos
@@ -66,7 +66,19 @@ class GeoNodeResourceType(enum.Enum):
     MAP = "maps"
 
 
+class GeoNodeResourceTypeCurrent(enum.Enum):
+    DOCUMENT = "document"
+    DATASET = "dataset"
+
+
 class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
+    """A harvester for modern (v3.2+) GeoNode versions.
+
+    GeoNode versions above 3.2 introduced the concept of `datasets` to replace the older
+    `layers` concept. The API also has some significative differences.
+
+    """
+
     harvest_documents: bool
     harvest_datasets: bool
 
@@ -163,6 +175,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                         brief_resource = base.BriefRemoteResource(
                             unique_identifier=raw_resource["pk"],
                             title=raw_resource["title"],
+                            abstract=raw_resource["abstract"],
                             resource_type=raw_resource["resource_type"],
                         )
                         result.append(brief_resource)
@@ -174,12 +187,13 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         return result
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
-        return _check_availability(self.http_session, f"{self.base_api_url}/", timeout_seconds)
+        return _check_availability(
+            self.http_session, f"{self.base_api_url}/datasets", timeout_seconds)
 
     def get_geonode_resource_type(self, remote_resource_type: str) -> typing.Type[typing.Union[Dataset, Document]]:
         return {
-            "layer": Dataset,
-            "document": Document
+            GeoNodeResourceTypeCurrent.DATASET.value: Dataset,
+            GeoNodeResourceTypeCurrent.DOCUMENT.value: Document
         }[remote_resource_type]
 
     def get_resource(
@@ -187,8 +201,8 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             harvestable_resource: models.HarvestableResource,
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         url_fragment = {
-            "layer": "/layers/",
-            "document": "/documents/"
+            GeoNodeResourceTypeCurrent.DATASET.value: "/datasets/",
+            GeoNodeResourceTypeCurrent.DOCUMENT.value: "/documents/"
         }[harvestable_resource.remote_resource_type]
         url = f"{self.base_api_url}{url_fragment}{harvestable_resource.unique_identifier}/"
         response = self.http_session.get(url)
@@ -199,7 +213,12 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             except json.JSONDecodeError:
                 logger.exception("Could not decode response payload as valid JSON")
             else:
-                resource_descriptor = self._get_resource_descriptor(response_payload)
+                resource_descriptor = self._get_resource_descriptor(
+                    response_payload, harvestable_resource.remote_resource_type)
+                result = base.HarvestedResourceInfo(
+                    resource_descriptor=resource_descriptor,
+                    additional_information=None
+                )
         else:
             logger.error(
                 f"Could not retrieve remote resource with unique "
@@ -212,8 +231,8 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             harvestable_resource: models.HarvestableResource,
     ) -> bool:
         return {
-            "document": self.copy_documents,
-            "layer": self.copy_datasets,
+            GeoNodeResourceTypeCurrent.DATASET.value: self.copy_datasets,
+            GeoNodeResourceTypeCurrent.DOCUMENT.value: self.copy_documents,
         }.get(harvestable_resource.remote_resource_type, False)
 
     def get_geonode_resource_defaults(
@@ -221,66 +240,197 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             harvested_info: base.HarvestedResourceInfo,
             harvestable_resource: models.HarvestableResource,
     ) -> typing.Dict:
-        return _get_geonode_resource_defaults(
-            should_copy_resource=self.should_copy_resource(harvestable_resource),
-            local_resource_type=self.get_geonode_resource_type(harvestable_resource.remote_resource_type),
-            harvested_info=harvested_info,
-            harvestable_resource=harvestable_resource,
-            base_defaults=super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
-        )
+        defaults = super().get_geonode_resource_defaults(
+            harvested_info, harvestable_resource)
+        defaults.update(harvested_info.resource_descriptor.additional_parameters)
+        local_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)
+        to_copy = self.should_copy_resource(harvestable_resource)
+        if local_resource_type == Document and not to_copy:
+            # since we are not copying the document, we need to provide suitable remote URLs
+            defaults.update({
+                "embed_url": harvested_info.resource_descriptor.distribution.embed_url,
+                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+            })
+        elif local_resource_type == Dataset and not to_copy:
+            # since we are not copying the dataset, we need to provide suitable SRID and remote URL
+            try:
+                srid = harvested_info.resource_descriptor.reference_systems[0]
+            except AttributeError:
+                srid = None
+            defaults.update({
+                "name": defaults["name"].rpartition(":")[-1],
+                "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
+                "embed_url": harvested_info.resource_descriptor.distribution.embed_url,
+                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+                "srid": srid,
+            })
+        return defaults
+
+    def _get_contact_descriptor(self, role, contact_details: typing.Dict):
+        return resourcedescriptor.RecordDescriptionContact(
+            role=role,
+            name=self._get_related_name(contact_details) or contact_details["username"]
+        ),
+
+    def _get_related_name(self, contact_details: typing.Dict):
+        return " ".join((
+            contact_details.get("first_name", ""),
+            contact_details.get("last_name", "")
+        )).strip()
+
+    def _get_document_link_info(self, resource: typing.Dict):
+        native_format = resource["extension"]
+        download_url = resource["href"]
+        return native_format, download_url
+
+    def _get_dataset_link_info(self, resource: typing.Dict, spatial_extent: geos.Polygon):
+        wms_url = None
+        wfs_url = None
+        wcs_url = None
+        download_url = None
+        native_format = None
+        for link_info in resource.get("links", []):
+            type_ = link_info["type"]
+            if type_ == "OGC:WMS":
+                wms_url = link_info["url"]
+            elif type_ == "OGC:WFS":
+                wfs_url = link_info["url"]
+                native_format = "shapefile"
+                query_params = {
+                    "service": "WFS",
+                    "version": "1.0.0",
+                    "request": "GetFeature",
+                    "typename": resource["name"],
+                    "outputformat": "SHAPE-ZIP",
+                    "srs": resource["srid"],
+                    "format_options": "charset:UTF-8",
+                }
+                download_url = f"{wfs_url}?{urllib.parse.urlencode(query_params)}"
+            elif type_ == "OGC:WCS":
+                wcs_url = link_info["url"]
+                native_format = "geotiff"
+                coords = spatial_extent.coords[0]
+                min_x = min([i[0] for i in coords])
+                max_x = max([i[0] for i in coords])
+                min_y = min([i[1] for i in coords])
+                max_y = max([i[1] for i in coords])
+                coverage_id = resource["name"].replace(":", "__")
+                query_params = {
+                    "service": "WCS",
+                    "version": "2.0.1",
+                    "request": "GetCoverage",
+                    "srs": resource["srid"],
+                    "format": "image/tiff",
+                    "coverageid": coverage_id,
+                    "bbox": f"{min_x},{min_y},{max_x},{max_y}"
+                }
+                download_url = f"{wcs_url}?{urllib.parse.urlencode(query_params)}"
+        return native_format, download_url, wms_url, wfs_url, wcs_url
+
+    def _get_resource_link_info(
+            self,
+            resource: typing.Dict, remote_resource_type: str,
+            spatial_extent: geos.Polygon,
+    ) -> typing.Tuple[
+        str,
+        str,
+        str,
+        str,
+        typing.Optional[str],
+        typing.Optional[str],
+        typing.Optional[str],
+    ]:
+        embed_url = resource["embed_url"]
+        thumbnail_url = resource["thumbnail_url"]
+        if remote_resource_type == GeoNodeResourceTypeCurrent.DATASET.value:
+            native_format, download_url, wms_url, wfs_url, wcs_url = self._get_dataset_link_info(
+                resource, spatial_extent)
+        else:
+            wms_url = None
+            wfs_url = None
+            wcs_url = None
+            native_format, download_url = self._get_document_link_info(resource)
+        return native_format, download_url, embed_url, thumbnail_url, wms_url, wfs_url, wcs_url
 
     def _get_resource_descriptor(
             self,
-            raw_resource: typing.Dict
+            raw_resource: typing.Dict,
+            remote_resource_type: str,
     ) -> resourcedescriptor.RecordDescription:
-        result = resourcedescriptor.RecordDescription(
-            uuid=raw_resource["uuid"],
-            language=raw_resource["language"],
-            character_set=raw_resource["charset"],
-            hierarchy_level="dataset",
-            point_of_contact=None,
-            author=None,
-            date_stamp=None,
-            reference_systems=[],
+        resource = raw_resource[remote_resource_type]
+        resource_date = dateutil.parser.isoparse(resource["date"])
+        resource_datestamp = dateutil.parser.isoparse(resource["last_updated"])
+        try:  # these are sometimes returned as None
+            temporal_extent_start = dateutil.parser.isoparse(resource["temporal_extent_start"])
+            temporal_extent_end = dateutil.parser.isoparse(resource["temporal_extent_end"])
+        except TypeError:
+            temporal_extent_start = None
+            temporal_extent_end = None
+        spatial_extent = geos.GEOSGeometry(json.dumps(resource.get("bbox_polygon")))
+        link_info = self._get_resource_link_info(resource, remote_resource_type, spatial_extent)
+        native_format, download_url, embed_url, thumbnail_url, wms_url, wfs_url, wcs_url = link_info
+        descriptor = resourcedescriptor.RecordDescription(
+            # these work for both datasets and documents
+            uuid=resource["uuid"],
+            language=resource["language"],
+            point_of_contact=resourcedescriptor.RecordDescriptionContact(
+                role="pointOfContact",
+                name=self._get_related_name(resource["poc"]),
+            ),
+            author=resourcedescriptor.RecordDescriptionContact(
+                role="author",
+                name=self._get_related_name(resource["metadata_author"])
+            ),
+            date_stamp=resource_datestamp,
+            reference_systems=[resource["srid"]],
+            data_quality=resource.get("raw_data_quality_statement"),
+            character_set=resource.get("charset", "UTF-8"),
             identification=resourcedescriptor.RecordIdentification(
-                name=raw_resource["name"],
-                title=raw_resource["title"],
-                date=raw_resource["date"],  # TODO: convert this to a dt instance
-                date_type=raw_resource["date_type"],
-                originator=None,
-                graphic_overview_uri=None,
-                place_keywords=[i.get("code") for i in raw_resource.get("regions", [])],
-                other_keywords=[i.get("slug") for i in raw_resource.get("keywords", [])],
-                license=raw_resource.get("license", {}).get("identifier"),
-                abstract=raw_resource["abstract"],
-                purpose=raw_resource["purpose"],
-                status=None,
-                native_format=None,
-                other_constraints=raw_resource.get("restriction_code_type", {}).get("identifier"),
-                topic_category=raw_resource.get("category", {}).get("identifier"),
-                supplemental_information=raw_resource.get("raw_supplemental_information"),
-                spatial_extent=None,
-                temporal_extent=None
+                name=resource["name"],
+                title=resource["title"],
+                date=resource_date,
+                date_type=resource["date_type"],
+                originator=resourcedescriptor.RecordDescriptionContact(
+                    role="originator",
+                    name=self._get_related_name(resource["owner"])
+                ),
+                graphic_overview_uri=resource["thumbnail_url"],
+                place_keywords=[i.get("code") for i in resource.get("regions", [])],
+                other_keywords=[i.get("slug") for i in resource.get("keywords", [])],
+                license=(resource.get("license") or {}).get("identifier"),
+                abstract=resource.get("abstract", ""),
+                purpose=resource.get("purpose", ""),
+                native_format=native_format,
+                other_constraints=resource.get("raw_constraints_other"),
+                topic_category=(resource.get("category") or {}).get("identifier"),
+                supplemental_information=resource.get("raw_supplemental_information"),
+                spatial_extent=spatial_extent,
+                temporal_extent=(temporal_extent_start, temporal_extent_end) if temporal_extent_start else None
             ),
             distribution=resourcedescriptor.RecordDistribution(
-                link_url=None,
-                wms_url=None,
-                wfs_url=None,
-                wcs_url=None,
-                thumbnail_url=None,
-                legend_url=None,
-                geojson_url=None,
-                original_format_url=None
+                link_url=resource["link"],
+                wms_url=wms_url,
+                wfs_url=wfs_url,
+                wcs_url=wcs_url,
+                thumbnail_url=thumbnail_url,
+                download_url=download_url,
+                embed_url=embed_url,
             ),
-            data_quality=None
+            additional_parameters={
+                "subtype": resource["subtype"],
+                "resource_type": remote_resource_type,
+            }
         )
-        return result
+        if remote_resource_type == GeoNodeResourceTypeCurrent.DOCUMENT.value:
+            descriptor.additional_parameters["extension"] = resource["extension"]
+        return descriptor
 
     def _get_resource_list_params(
             self, offset: typing.Optional[int] = 0) -> typing.Dict:
+        current_page = math.ceil(offset / self.page_size)
         result = {
-            "limit": self.page_size,
-            "offset": offset,
+            "page_size": self.page_size,
+            "page": current_page if current_page != 0 else 1,
         }
         resource_filter = []
         if self.harvest_datasets:
@@ -294,10 +444,10 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             result["filter{title.icontains}"] = self.resource_title_filter
         if self.start_date_filter is not None:
             start_date = dateutil.parser.parse(self.start_date_filter)
-            result["filter{date.gte}"] = f"{start_date.astimezone(datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
+            result["filter{date.gte}"] = f"{start_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.end_date_filter is not None:
             end_date = dateutil.parser.parse(self.end_date_filter)
-            result["filter{date.lte}"] = f"{end_date.astimezone(datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
+            result["filter{date.lte}"] = f"{end_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.keywords_filter is not None:
             result["filter{keywords.slug.in}"] = self.keywords_filter
         if self.categories_filter is not None:
@@ -306,6 +456,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
 
 
 class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
+    """A harvester for older (v <= 3.2) GeoNode versions"""
     harvest_documents: bool
     harvest_datasets: bool
 
@@ -452,8 +603,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 additional_information=None
             )
         else:
-            logger.warning(
-                f"Could not retrieve remote resource {resource_unique_identifier!r}")
+            logger.error(
+                f"Could not retrieve remote resource with unique "
+                f"identifier {resource_unique_identifier!r}"
+            )
         return result
 
     def should_copy_resource(
@@ -471,13 +624,29 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             harvested_info: base.HarvestedResourceInfo,
             harvestable_resource: models.HarvestableResource,
     ) -> typing.Dict:
-        return _get_geonode_resource_defaults(
-            should_copy_resource=self.should_copy_resource(harvestable_resource),
-            local_resource_type=self.get_geonode_resource_type(harvestable_resource.remote_resource_type),
-            harvested_info=harvested_info,
-            harvestable_resource=harvestable_resource,
-            base_defaults=super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
-        )
+        defaults = super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
+        defaults.update(harvested_info.resource_descriptor.additional_parameters)
+        local_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)
+        to_copy = self.should_copy_resource(harvestable_resource)
+        if local_resource_type == Document and not to_copy:
+            # since we are not copying the document, we need to provide suitable remote URLs
+            defaults.update({
+                "doc_url": harvested_info.resource_descriptor.distribution.download_url,
+                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+            })
+        elif local_resource_type == Dataset and not to_copy:
+            # since we are not copying the dataset, we need to provide suitable SRID and remote URL
+            try:
+                srid = harvested_info.resource_descriptor.reference_systems[0]
+            except AttributeError:
+                srid = None
+            defaults.update({
+                "name": defaults["name"].rpartition(":")[-1],
+                "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
+                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+                "srid": srid,
+            })
+        return defaults
 
     def _get_num_available_resources_by_type(
             self) -> typing.Dict[GeoNodeResourceType, int]:
@@ -598,10 +767,10 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             result["title__icontains"] = self.resource_title_filter
         if self.start_date_filter is not None:
             start_date = dateutil.parser.parse(self.start_date_filter)
-            result["date__gte"] = f"{start_date.astimezone(datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
+            result["date__gte"] = f"{start_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.end_date_filter is not None:
             end_date = dateutil.parser.parse(self.end_date_filter)
-            result["date__lte"] = f"{end_date.astimezone(datetime.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
+            result["date__lte"] = f"{end_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.keywords_filter is not None:
             result["keywords__slug__in"] = ','.join(self.keywords_filter)
         if self.categories_filter is not None:
@@ -644,9 +813,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             language=get_xpath_value(csw_record, "gmd:language"),
             character_set=csw_record.xpath(
                 "gmd:characterSet/gmd:MD_CharacterSetCode/text()",
-                namespaces=csw_record.nsmap)[0],
-            hierarchy_level=csw_record.xpath(
-                "gmd:hierarchyLevel/gmd:MD_ScopeCode/text()",
                 namespaces=csw_record.nsmap)[0],
             point_of_contact=get_contact_descriptor(
                 csw_record.xpath(
@@ -738,8 +904,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         wms = None
         wfs = None
         wcs = None
-        legend = None
-        geojson = None
         original = None
         original_format_values = (
             "original dataset format",
@@ -757,10 +921,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 wfs = linkage
             elif "ogc:wcs" in protocol:
                 wcs = linkage
-            elif "legend" in description.lower():
-                legend = linkage
-            elif "geojson" in description.lower():
-                geojson = linkage
             else:
                 for original_value in original_format_values:
                     if original_value in description.lower():
@@ -808,8 +968,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             wcs_url=wcs,
             thumbnail_url=self._retrieve_thumbnail_url(
                 api_record, harvestable_resource),
-            legend_url=legend,
-            geojson_url=geojson,
             original_format_url=original,
         )
 
@@ -904,7 +1062,7 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
     @property
     def concrete_worker(self) -> typing.Union[GeonodeCurrentHarvester, GeonodeLegacyHarvester]:
         if self._concrete_harvester_worker is None:
-            self._concrete_harvester_worker = self._initialize_concrete_worker()
+            self._concrete_harvester_worker = self._get_concrete_worker()
         return self._concrete_harvester_worker
 
     @property

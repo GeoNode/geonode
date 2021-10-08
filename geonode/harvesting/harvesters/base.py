@@ -208,7 +208,7 @@ class BaseHarvesterWorker(abc.ABC):
 
         """
 
-        url = harvested_resource_info.resource_descriptor.distribution.original_format_url
+        url = harvested_resource_info.resource_descriptor.distribution.download_url
         result = None
         if url is not None:
             target_name = _get_file_name(harvested_resource_info)
