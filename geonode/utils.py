@@ -859,7 +859,7 @@ _viewer_projection_lookup = {
         "maxExtent": max_extent,
     },
     "EPSG:4326": {
-        "max_resolution": FULL_ROTATION_DEG / 256,
+        "maxResolution": FULL_ROTATION_DEG / 256,
         "units": "degrees",
         "maxExtent": [-180, -90, 180, 90]
     }
