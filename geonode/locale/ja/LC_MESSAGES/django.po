@@ -31,7 +31,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-08 09:02+0300\n"
-"PO-Revision-Date: 2021-10-08 14:19+0900\n"
+"PO-Revision-Date: 2021-10-08 15:15+0900\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Japanese (http://www.transifex.com/geonode/geonode/language/ja/)\n"
 "Language: ja\n"
@@ -60,7 +60,7 @@ msgid "computer program or routine"
 msgstr "コンピュータ プログラムまたはルーチーン"
 
 msgid "feature type"
-msgstr "機能タイプ"
+msgstr "フィーチャータイプ"
 
 msgid "copy or imitation of an existing or hypothetical object"
 msgstr "複製または既存あるいは仮想的なオブジェクトの模倣"
@@ -245,7 +245,7 @@ msgstr "引用されたリソースのバージョン"
 
 msgid ""
 "authority or function assigned, as to a ruler, legislative assembly, delegate, or the like."
-msgstr "統治者、立法議会、代議員などに与えられた権限や機能"
+msgstr "データの出典など"
 
 msgid "a DOI will be added by Admin before publication."
 msgstr "公開前に管理者がDOIを追加します"
@@ -446,7 +446,7 @@ msgid "Responsible, Point of Contact, Metadata Author"
 msgstr "責任者、連絡先、メタデータ作成者"
 
 msgid "Responsible"
-msgstr "レスポンシブル"
+msgstr "責任者"
 
 msgid "Title"
 msgstr "タイトル"
@@ -524,7 +524,7 @@ msgid "PENDING APPROVAL"
 msgstr "承認待ち"
 
 msgid "UNPUBLISHED"
-msgstr "未公開"
+msgstr "非公開"
 
 msgid "Create a Map"
 msgstr "地図を作成"
@@ -622,7 +622,7 @@ msgid "Extent"
 msgstr "エクステント"
 
 msgid "Spatial Reference System Identifier"
-msgstr "空間参照システム識別子"
+msgstr "空間参照システム識別子(SRID)"
 
 msgid "Attributes"
 msgstr "属性"
@@ -936,7 +936,7 @@ msgid "Your browser does not support the video tag."
 msgstr "お使いのブラウザはvideoタグに対応していません"
 
 msgid "Download the"
-msgstr "をダウンロード"
+msgstr "ダウンロード: "
 
 msgid "document"
 msgstr "ドキュメント"
@@ -966,7 +966,7 @@ msgid "Request change"
 msgstr "変更のリクエスト"
 
 msgid "Wizard"
-msgstr "ウィザード"
+msgstr "簡易設定"
 
 msgid "Advanced Edit"
 msgstr "高度な編集"
@@ -1043,19 +1043,19 @@ msgid "Error updating metadata.  Please check the following fields: "
 msgstr "メタデータのアップデートにエラー発生。以下のフィールドを確認してください: "
 
 msgid "Done"
-msgstr "Done"
+msgstr "完了"
 
 msgid "Metadata Provider"
 msgstr "メタデータの提供者"
 
 msgid "<< Back"
-msgstr "<< Back"
+msgstr "<< 前へ"
 
 msgid "Update"
 msgstr "更新"
 
 msgid "Next >>"
-msgstr "Next >>"
+msgstr "次へ >>"
 
 msgid "Select an option"
 msgstr "オプション選択"
@@ -1130,7 +1130,7 @@ msgid "Allowed document types"
 msgstr "許可されているドキュメントタイプ"
 
 msgid "Done!"
-msgstr "Done!"
+msgstr "完了"
 
 msgid "Edit"
 msgstr "編集"
@@ -1205,7 +1205,7 @@ msgid "Favorite"
 msgstr "お気に入り"
 
 msgid "Add to Favorites"
-msgstr "Add to Favorites"
+msgstr "お気に入りへ追加"
 
 msgid "Go to Favorites"
 msgstr "お気に入りへ登録"
@@ -1220,7 +1220,7 @@ msgid "Favorites"
 msgstr "お気に入り"
 
 msgid "Favorites for"
-msgstr "のお気に入り"
+msgstr "お気に入り"
 
 msgid "Item"
 msgstr "アイテム"
@@ -1296,10 +1296,10 @@ msgid "Editing Tools"
 msgstr "編集ツール"
 
 msgid "Set"
-msgstr "Set"
+msgstr "設定"
 
 msgid "View"
-msgstr "View"
+msgstr "表示"
 
 msgid "Specify which users can view or modify this map"
 msgstr "この地図を表示編集可能なユーザーを指定"
@@ -1328,7 +1328,7 @@ msgid "Create New"
 msgstr "新規作成"
 
 msgid "Explore"
-msgstr "エクスプローラー"
+msgstr "Explore"
 
 #, python-format
 msgid "for %(map_title)s"
@@ -1538,7 +1538,7 @@ msgid "Group Categories"
 msgstr "グループカテゴリー"
 
 msgid "Public"
-msgstr ""
+msgstr "パブリック"
 
 msgid "Public (invite-only)"
 msgstr "パブリック（招待制）"
@@ -1552,10 +1552,10 @@ msgid ""
 "users cannot see any details about the group, including membership.  Only invited users can "
 "join."
 msgstr ""
-"公共：任意登録されたユーザーが表示およびパブリックグループに参加することができます。 <br>パブ"
-"リック（招待制）：任意登録されたユーザーがグループを表示することができます。唯一招待された"
-"ユーザが参加することができます。 <br>プライベート：登録ユーザーは、会員を含め、グループについ"
-"ての詳細を確認することはできません。唯一招待されたユーザが参加することができます。"
+"パブリック：任意登録されたユーザーが表示およびパブリックグループに参加することができます。 "
+"<br>パブリック（招待制）：任意登録されたユーザーがグループを表示することができます。唯一招待"
+"されたユーザが参加することができます。 <br>プライベート：登録ユーザーは、会員を含め、グループ"
+"についての詳細を確認することはできません。唯一招待されたユーザが参加することができます。"
 
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, shared email, or "
@@ -2208,7 +2208,7 @@ msgid "all"
 msgstr "全て"
 
 msgid "any"
-msgstr "いづれか"
+msgstr "いずれか"
 
 msgid "of the following:"
 msgstr "次のユーザー："
@@ -2236,7 +2236,7 @@ msgid "Edit Layer"
 msgstr "レイヤー編集"
 
 msgid "Upload Metadata"
-msgstr "メタデータのアップロード"
+msgstr "アップロード"
 
 msgid "Styles"
 msgstr "スタイル"
@@ -2314,7 +2314,7 @@ msgid "Source"
 msgstr "ソース"
 
 msgid "Refresh Attributes and Statistics of this layer"
-msgstr "このレイヤーの属性と統計情報の更新する"
+msgstr "このレイヤーの属性と統計情報を更新する"
 
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available Dataset Attributes. "
@@ -2608,7 +2608,7 @@ msgid "Target SRS"
 msgstr "ターゲットのSRS"
 
 msgid "EPSG Code (Target SRS)"
-msgstr "EPSG Code (Target SRS)"
+msgstr "EPSGコード(ターゲットのSRS)"
 
 msgid "Select a Target SRS"
 msgstr "ターゲットのSRSを選択"
@@ -2855,7 +2855,7 @@ msgid "Upload Dataset Step: Time"
 msgstr "データセットアップロードの手順: 時間"
 
 msgid "Inspect data for "
-msgstr "のデータを検査します。"
+msgstr "データを検査:  "
 
 msgid "Configure as Time-Series"
 msgstr "時系列での設定"
@@ -2884,7 +2884,7 @@ msgstr ""
 "                      "
 
 msgid "No"
-msgstr "ノー"
+msgstr "0"
 
 msgid "Use an existing timestamp attribute in the data"
 msgstr "データに含まれる既存のタイムスタンプ属性を使用する"
@@ -3839,7 +3839,7 @@ msgid "Notifications"
 msgstr "通知"
 
 msgid "Announcements"
-msgstr "アナウンスメント"
+msgstr "お知らせ"
 
 msgid "Invite Users"
 msgstr "ユーザーを招待"
@@ -5392,9 +5392,7 @@ msgstr "地図を探す"
 msgid ""
 "As for the layers and maps GeoNode allows to publish tabular and text data, manage theirs "
 "metadata and associated documents."
-msgstr ""
-"GeoNodeではレイヤーや地図に関する表・テキストやメタデータなどの関連ドキュメントの管理が可能で"
-"す。"
+msgstr "レイヤーや地図に関する表・テキストやメタデータなどの関連ドキュメントの管理が可能です。"
 
 msgid "Add documents"
 msgstr "ドキュメントを追加"
@@ -5406,8 +5404,8 @@ msgid ""
 "Geonode allows registered users to easily upload geospatial data and various documents in "
 "several formats."
 msgstr ""
-"GeoNodeは、登録されたユーザーが、多様なフォーマットの地理空間データやドキュメントを簡単にアッ"
-"プロードすることを可能にします。"
+"登録されたユーザーは、多様なフォーマットの地理空間データやドキュメントを簡単にアップロードす"
+"ることが可能です。"
 
 msgid "See users"
 msgstr "ユーザーを見る"
@@ -5821,7 +5819,7 @@ msgid "%(to_user_username)s's profile"
 msgstr "%(to_user_username)s のプロフィール"
 
 msgid "Responsibles"
-msgstr ""
+msgstr "責任者"
 
 msgid "Date begins after:"
 msgstr "この日付から:"
