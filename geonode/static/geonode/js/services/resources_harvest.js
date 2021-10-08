@@ -60,9 +60,11 @@ var TableFilter = function () {
         $("input[name='typeahead_search']").each(function (index, value) {
             var id = $(this).attr('id');
             var searchVal = me.filterElems[id].val().trim();
-            var res = me.groupedData[id][searchVal];
-            if (res && res.length > 0) {
-                rows = rows.concat(res);
+            if (searchVal != "") {
+                var res = me.groupedData[id][searchVal];
+                if (res && res.length > 0) {
+                    rows = rows.concat(res);
+                }
             }
         })
         if (rows.length > 0) {
@@ -117,9 +119,11 @@ var TableFilter = function () {
             td.appendChild(chkbox)
             var j = 1;
             for (key in rows[i]) {
-                td = tr.insertCell(j);
-                td.innerHTML = rows[i][key]
-                j++;
+                if (key != 'id'){
+                    td = tr.insertCell(j);
+                    td.innerHTML = rows[i][key]
+                    j++;
+                }
             }
         }
     }

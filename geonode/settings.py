@@ -1732,6 +1732,7 @@ if USE_GEOSERVER:
 #          'task': 'my_app.tasks.send_notification',
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
+
 CELERY_BEAT_SCHEDULE = {}
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))

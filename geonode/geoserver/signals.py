@@ -54,7 +54,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if instance.remote_service is None or instance.remote_service.method == CASCADED:
+        if not hasattr(instance, 'remote_service') or instance.remote_service is None or instance.remote_service.method == CASCADED:
             if instance.alternate:
                 geoserver_cascading_delete.apply_async((instance.alternate,))
 

@@ -67,7 +67,7 @@ def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[Li
     )
 
 
-def transform_bbox(bbox: List, target_crs: str = "epsg:3857"):
+def transform_bbox(bbox: List, target_crs: str = "EPSG:3857"):
     """
     Function transforming BBOX in dataset compliant format (xmin, xmax, ymin, ymax, 'EPSG:xxxx') to another CRS,
     preserving overflow values.
