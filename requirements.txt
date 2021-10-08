@@ -31,7 +31,7 @@ django-filter==21.1
 django-imagekit==4.0.2
 django-taggit==1.5.1
 django-markdownify==0.9.0
-django-mptt==0.13.3
+django-mptt==0.13.4
 django-modeltranslation>=0.11,<0.18.0
 django-treebeard==4.5.1
 django-guardian<2.4.1
