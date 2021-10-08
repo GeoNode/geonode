@@ -1733,6 +1733,8 @@ if USE_GEOSERVER:
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
 
+CELERY_BEAT_SCHEDULER = os.environ.get(
+    'CELERY_BEAT_SCHEDULER', "celery.beat:PersistentScheduler")
 CELERY_BEAT_SCHEDULE = {}
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
