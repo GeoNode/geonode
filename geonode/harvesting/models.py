@@ -182,8 +182,13 @@ class Harvester(models.Model):
     def get_next_check_availability_dispatch_time(self) -> dt.datetime:
         now = timezone.now()
         latest_check = self.last_checked_availability
-        next_schedule = latest_check + dt.timedelta(minutes=self.check_availability_frequency)
-        return now if next_schedule < now else next_schedule
+        try:
+            next_schedule = latest_check + dt.timedelta(minutes=self.check_availability_frequency)
+        except TypeError:
+            result = now
+        else:
+            result = now if next_schedule < now else next_schedule
+        return result
 
     def get_next_refresh_session_dispatch_time(self) -> typing.Optional[dt.datetime]:
         return self._get_next_dispatch_time(
