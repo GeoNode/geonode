@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('harvesting', '0037_alter_harvester_status'),
+        ('harvesting', '0039_harvestableresource_abstract'),
     ]
 
     operations = [

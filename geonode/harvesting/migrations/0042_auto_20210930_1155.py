@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('harvesting', '0039_delete_harvestingsession'),
+        ('harvesting', '0041_delete_harvestingsession'),
     ]
 
     operations = [

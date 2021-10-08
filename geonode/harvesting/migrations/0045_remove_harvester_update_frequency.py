@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('harvesting', '0042_migrate_harvester_harvesting_session_update_frequency'),
+        ('harvesting', '0044_migrate_harvester_harvesting_session_update_frequency'),
     ]
 
     operations = [

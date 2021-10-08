@@ -13,9 +13,9 @@ def migrate_harvesting_session_update_frequency(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('harvesting', '0041_harvester_harvesting_session_update_frequency'),
+        ('harvesting', '0043_harvester_harvesting_session_update_frequency'),
     ]
 
     operations = [
-        migrations.RunPython(migrate_harvesting_session_update_frequency),
+        migrations.RunPython(migrate_harvesting_session_update_frequency, reverse_code=migrations.RunPython.noop),
     ]
