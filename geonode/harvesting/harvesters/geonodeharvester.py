@@ -319,7 +319,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                 max_x = max([i[0] for i in coords])
                 min_y = min([i[1] for i in coords])
                 max_y = max([i[1] for i in coords])
-                coverage_id = resource["name"].replace(":", "__")
+                coverage_id = resource["alternate"].replace(":", "__")
                 query_params = {
                     "service": "WCS",
                     "version": "2.0.1",
@@ -864,7 +864,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         result = {
             "name": descriptor.identification.name,
             "charset": descriptor.character_set,
-            "resource_type": "dataset"
+            "resource_type": "dataset",
+            "alternate": api_record.get("alternate", descriptor.identification.name),
+            "workspace": api_record.get("workspace")
         }
         if descriptor.identification.native_format.lower() == RemoteDatasetType.VECTOR.value:
             result["subtype"] = GeoNodeDatasetType.VECTOR.value
@@ -957,7 +959,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                     "request": "GetCoverage",
                     "srs": crs,
                     "format": "image/tiff",
-                    "coverageid": identification_descriptor.name.replace(":", "__"),
+                    "coverageid": api_record["alternate"].replace(":", "__"),
                     "bbox": f"{min_x},{min_y},{max_x},{max_y}"
                 }
                 original = f"{wcs}?{urllib.parse.urlencode(query_params)}"
@@ -973,7 +975,8 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             wcs_url=wcs,
             thumbnail_url=self._retrieve_thumbnail_url(
                 api_record, harvestable_resource),
-            original_format_url=original,
+            download_url=original,
+            embed_url=original,
         )
 
     def _retrieve_thumbnail_url(
