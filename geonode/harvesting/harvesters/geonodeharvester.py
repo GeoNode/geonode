@@ -265,7 +265,6 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                     "alternate": defaults["alternate"],
                     "workspace": defaults["workspace"],
                     "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
-                    #"subtype": "remote",
                     "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
                     "srid": srid,
                 })
