@@ -252,11 +252,6 @@ class BaseHarvesterWorker(abc.ABC):
             "files": [str(path) for path in harvested_info.copied_resources],
             "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url
         }
-
-        if harvestable_resource.remote_resource_type in ('layers', 'datasets'):
-            defaults["name"] = harvested_info.resource_descriptor.identification.name
-            defaults["ows_url"] = harvested_info.resource_descriptor.distribution.wms_url
-
         if self.should_copy_resource(harvestable_resource):
             defaults["sourcetype"] = enumerations.SOURCE_TYPE_COPYREMOTE
         else:

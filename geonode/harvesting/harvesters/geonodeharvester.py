@@ -248,29 +248,34 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         if local_resource_type == Document and not to_copy:
             # since we are not copying the document, we need to provide suitable remote URLs
             defaults.update({
-                "embed_url": harvested_info.resource_descriptor.distribution.embed_url,
+                "doc_url": harvested_info.resource_descriptor.distribution.embed_url,
                 "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
             })
-        elif local_resource_type == Dataset and not to_copy:
-            # since we are not copying the dataset, we need to provide suitable SRID and remote URL
-            try:
-                srid = harvested_info.resource_descriptor.reference_systems[0]
-            except AttributeError:
-                srid = None
+        elif local_resource_type == Dataset:
             defaults.update({
-                "name": defaults["name"].rpartition(":")[-1],
-                "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
-                "embed_url": harvested_info.resource_descriptor.distribution.embed_url,
-                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
-                "srid": srid,
+                "name": harvested_info.resource_descriptor.identification.name
             })
+            if not to_copy:
+                # since we are not copying the dataset, we need to provide suitable SRID and remote URL
+                try:
+                    srid = harvested_info.resource_descriptor.reference_systems[0]
+                except AttributeError:
+                    srid = None
+                defaults.update({
+                    "alternate": defaults["alternate"],
+                    "workspace": defaults["workspace"],
+                    "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
+                    #"subtype": "remote",
+                    "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+                    "srid": srid,
+                })
         return defaults
 
     def _get_contact_descriptor(self, role, contact_details: typing.Dict):
         return resourcedescriptor.RecordDescriptionContact(
             role=role,
             name=self._get_related_name(contact_details) or contact_details["username"]
-        ),
+        )
 
     def _get_related_name(self, contact_details: typing.Dict):
         return " ".join((
@@ -290,7 +295,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         download_url = None
         native_format = None
         for link_info in resource.get("links", []):
-            type_ = link_info["type"]
+            type_ = link_info["link_type"]
             if type_ == "OGC:WMS":
                 wms_url = link_info["url"]
             elif type_ == "OGC:WFS":
@@ -373,14 +378,8 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             # these work for both datasets and documents
             uuid=resource["uuid"],
             language=resource["language"],
-            point_of_contact=resourcedescriptor.RecordDescriptionContact(
-                role="pointOfContact",
-                name=self._get_related_name(resource["poc"]),
-            ),
-            author=resourcedescriptor.RecordDescriptionContact(
-                role="author",
-                name=self._get_related_name(resource["metadata_author"])
-            ),
+            point_of_contact=self._get_contact_descriptor("pointOfContact", resource["poc"]),
+            author=self._get_contact_descriptor("author", resource["metadata_author"]),
             date_stamp=resource_datestamp,
             reference_systems=[resource["srid"]],
             data_quality=resource.get("raw_data_quality_statement"),
@@ -390,16 +389,13 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                 title=resource["title"],
                 date=resource_date,
                 date_type=resource["date_type"],
-                originator=resourcedescriptor.RecordDescriptionContact(
-                    role="originator",
-                    name=self._get_related_name(resource["owner"])
-                ),
+                originator=self._get_contact_descriptor("originator", resource["owner"]),
                 graphic_overview_uri=resource["thumbnail_url"],
                 place_keywords=[i.get("code") for i in resource.get("regions", [])],
                 other_keywords=[i.get("slug") for i in resource.get("keywords", [])],
                 license=(resource.get("license") or {}).get("identifier"),
-                abstract=resource.get("abstract", ""),
-                purpose=resource.get("purpose", ""),
+                abstract=resource.get("raw_abstract", ""),
+                purpose=resource.get("raw_purpose", ""),
                 native_format=native_format,
                 other_constraints=resource.get("raw_constraints_other"),
                 topic_category=(resource.get("category") or {}).get("identifier"),
@@ -423,14 +419,19 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         )
         if remote_resource_type == GeoNodeResourceTypeCurrent.DOCUMENT.value:
             descriptor.additional_parameters["extension"] = resource["extension"]
+        elif remote_resource_type == GeoNodeResourceTypeCurrent.DATASET.value:
+            descriptor.additional_parameters.update({
+                "alternate": resource["alternate"],
+                "workspace": resource["workspace"],
+            })
         return descriptor
 
     def _get_resource_list_params(
             self, offset: typing.Optional[int] = 0) -> typing.Dict:
-        current_page = math.ceil(offset / self.page_size)
+        current_page = math.floor((offset + self.page_size) / self.page_size)
         result = {
             "page_size": self.page_size,
-            "page": current_page if current_page != 0 else 1,
+            "page": current_page,
         }
         resource_filter = []
         if self.harvest_datasets:
@@ -634,18 +635,22 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "doc_url": harvested_info.resource_descriptor.distribution.download_url,
                 "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
             })
-        elif local_resource_type == Dataset and not to_copy:
-            # since we are not copying the dataset, we need to provide suitable SRID and remote URL
-            try:
-                srid = harvested_info.resource_descriptor.reference_systems[0]
-            except AttributeError:
-                srid = None
+        elif local_resource_type == Dataset:
             defaults.update({
-                "name": defaults["name"].rpartition(":")[-1],
-                "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
-                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
-                "srid": srid,
+                "name": harvested_info.resource_descriptor.identification.name,
             })
+            if not to_copy:
+                # since we are not copying the dataset, we need to provide suitable SRID and remote URL
+                try:
+                    srid = harvested_info.resource_descriptor.reference_systems[0]
+                except AttributeError:
+                    srid = None
+                defaults.update({
+                    "name": defaults["name"].rpartition(":")[-1],
+                    "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
+                    "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+                    "srid": srid,
+                })
         return defaults
 
     def _get_num_available_resources_by_type(
