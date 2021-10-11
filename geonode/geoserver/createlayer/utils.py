@@ -38,7 +38,7 @@ from geonode.geoserver.helpers import (
 
 logger = logging.getLogger(__name__)
 
-BBOX = [-180, 180, -90, 90]
+BBOX = [-180, -90, 180, 90]
 DATA_QUALITY_MESSAGE = "Created with GeoNode"
 
 
@@ -76,7 +76,9 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
             alternate=f'{workspace.name}:{name}',
             title=title,
             owner=owner,
+            srid='EPSG:4326',
             bbox_polygon=Polygon.from_bbox(BBOX),
+            ll_bbox_polygon=Polygon.from_bbox(BBOX),
             data_quality_statement=DATA_QUALITY_MESSAGE
         ))
 
@@ -204,7 +206,7 @@ def create_gs_dataset(name, title, geometry_type, attributes=None):
         f"<nativeName>{native_name}</nativeName>"
         f"<title>{title}</title>"
         "<srs>EPSG:4326</srs>"
-        f"<latLonBoundingBox><minx>{BBOX[0]}</minx><maxx>{BBOX[1]}</maxx><miny>{BBOX[2]}</miny><maxy>{BBOX[3]}</maxy>"
+        f"<latLonBoundingBox><minx>{BBOX[0]}</minx><maxx>{BBOX[2]}</maxx><miny>{BBOX[1]}</miny><maxy>{BBOX[3]}</maxy>"
         f"<crs>EPSG:4326</crs></latLonBoundingBox>"
         f"{attributes_block}"
         "</featureType>")
