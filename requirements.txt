@@ -19,7 +19,7 @@ kombu==5.1.0
 vine==5.0.0
 tqdm==4.62.3
 Deprecated==1.2.13
-wrapt==1.12.1
+wrapt==1.13.1
 jsonschema==4.0.1
 
 # Django Apps
