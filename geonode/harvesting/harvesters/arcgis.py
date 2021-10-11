@@ -19,11 +19,13 @@
 
 """Harvesters for ArcGIS based remote servers."""
 
+import json
 import logging
 import typing
 from urllib.error import HTTPError
 
 import arcrest
+import requests
 from geonode.layers.models import Dataset
 
 from . import base
@@ -41,9 +43,11 @@ logger = logging.getLogger(__name__)
 class ArcgisHarvesterWorker(base.BaseHarvesterWorker):
     _arc_mapservice: typing.Optional[arcrest.MapService]
     _cached_resources: typing.List[base.BriefRemoteResource]
+    http_session: requests.Session
 
     def __init__(self, remote_url: str, harvester_id: int) -> None:
         super().__init__(remote_url, harvester_id)
+        self.remote_url = self.remote_url.rstrip("/")
         self._arc_mapservice = None
         self._cached_resources = []
 
@@ -98,9 +102,28 @@ class ArcgisHarvesterWorker(base.BaseHarvesterWorker):
 
     def get_resource(
             self,
-            harvestable_resource: "HarvestableResource",  # noqa
+            harvestable_resource: base.HarvestableResource,
     ) -> typing.Optional[base.HarvestedResourceInfo]:
-        raise NotImplementedError
+        url = f"{self.remote_url}/{harvestable_resource.unique_identifier}/"
+        response = self.http_session.get(url, params={"f": "json"})
+        result = None
+        if response.status_code == requests.codes.ok:
+            try:
+                response_payload = response.json()
+            except json.JSONDecodeError:
+                logger.exception("Could not decode response payload as valid JSON")
+            else:
+                resource_descriptor = _get_resource_descriptor(response_payload)
+                result = base.HarvestedResourceInfo(
+                    resource_descriptor=resource_descriptor,
+                    additional_information=None
+                )
+        else:
+            logger.error(
+                f"Could not retrieve remote resource with unique "
+                f"identifier {harvestable_resource.unique_identifier!r}"
+            )
+        return result
 
 
 def list_layers(arc_mapservice: arcrest.MapService) -> typing.List[base.BriefRemoteResource]:
@@ -120,9 +143,13 @@ def _list_sub_layers(arc_layer: arcrest.MapLayer) -> typing.List[base.BriefRemot
     return result
 
 
-def _parse__brief_layer(arc_layer: arcrest.MapLayer) -> base.BriefRemoteResource
+def _parse__brief_layer(arc_layer: arcrest.MapLayer) -> base.BriefRemoteResource:
     return base.BriefRemoteResource(
         unique_identifier=arc_layer.id,
         title=arc_layer.name,
         resource_type=arc_layer.type,
     )
+
+
+def _get_resource_descriptor(layer: typing.Dict) -> base.HarvestedResourceInfo:
+    raise NotImplementedError
