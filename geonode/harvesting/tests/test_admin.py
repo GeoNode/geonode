@@ -106,6 +106,16 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
             mock_harvester.update_availability.assert_called()
             mock_harvester.initiate_perform_harvesting.assert_not_called()
 
+    def test_reset_harvester_status(self):
+        mock_harvester_model = mock.MagicMock(spec=models.Harvester)
+        mock_harvester = mock_harvester_model.return_value
+        mock_harvester.status = models.Harvester.STATUS_PERFORMING_HARVESTING
+        model_admin = admin.HarvesterAdmin(model=mock_harvester, admin_site=AdminSite())
+        with mock.patch.object(model_admin, "message_user"):
+            model_admin.reset_harvester_status(None, [mock_harvester])
+            self.assertEqual(mock_harvester.status, models.Harvester.STATUS_READY)
+            mock_harvester.save.assert_called()
+
 
 class AsynchronousHarvestingSessionAdminTestCase(GeoNodeBaseTestSupport):
 
