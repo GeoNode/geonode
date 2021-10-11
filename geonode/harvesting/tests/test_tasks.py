@@ -134,11 +134,15 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         mock_worker = mock.MagicMock()
         mock_worker.get_num_available_resources.return_value = 1
         mock_harvester = mock.MagicMock(models.Harvester)
-        mock_models.Harvester.objects.get.return_value = mock_harvester
         mock_harvester.get_harvester_worker.return_value = mock_worker
+        mock_session = mock.MagicMock(models.AsynchronousHarvestingSession)
+        mock_session.harvester = mock_harvester
+        mock_models.AsynchronousHarvestingSession.objects.get.return_value = mock_session
 
-        tasks.update_harvestable_resources("fake harvester id")
+        session_id = "fake_id"
+        tasks.update_harvestable_resources(session_id)
 
+        mock_models.AsynchronousHarvestingSession.objects.get.assert_called_with(pk=session_id)
         mock_batch.signature.assert_called()
         mock_finalizer.signature.assert_called()
         mock_error_handler.signature.assert_called()
