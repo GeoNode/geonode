@@ -51,8 +51,8 @@ class HarvestingException(Exception):
 class BriefRemoteResource:
     unique_identifier: str
     title: str
-    abstract: str
     resource_type: str
+    abstract: typing.Optional[str] = ""
     should_be_harvested: bool = False
 
 
