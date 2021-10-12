@@ -86,11 +86,11 @@ class MapDescriptorParameters:
 @dataclasses.dataclass()
 class RecordDescription:
     uuid: uuid.UUID
-    point_of_contact: RecordDescriptionContact
-    author: RecordDescriptionContact
-    date_stamp: dt.datetime
     identification: RecordIdentification
     distribution: RecordDistribution
+    point_of_contact: typing.Optional[RecordDescriptionContact] = None
+    author: typing.Optional[RecordDescriptionContact] = None
+    date_stamp: typing.Optional[dt.datetime] = None
     reference_systems: typing.Optional[typing.List[str]] = None
     data_quality: typing.Optional[str] = None
     additional_parameters: typing.Optional[typing.Dict] = dataclasses.field(
