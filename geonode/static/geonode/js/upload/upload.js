@@ -652,7 +652,13 @@ define(['underscore',
         $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
 
-        initUploadProgressTable();
+        try {
+            initUploadProgressTable();
+        } catch (error) {
+            console.log(error);
+            // expected output: ReferenceError: nonExistentFunction is not defined
+            // Note - error messages will vary depending on browser
+        }
     };
 
     // public api
