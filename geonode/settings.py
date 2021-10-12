@@ -343,16 +343,13 @@ if not DEBUG and S3_MEDIA_ENABLED:
 
 # Cache Bustin Settings
 CACHE_BUSTING_STATIC_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_STATIC_ENABLED', 'False'))
-CACHE_BUSTING_MEDIA_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_MEDIA_ENABLED', 'False'))
 
 if not DEBUG and not S3_STATIC_ENABLED and not S3_MEDIA_ENABLED:
-    if CACHE_BUSTING_STATIC_ENABLED or CACHE_BUSTING_MEDIA_ENABLED:
+    if CACHE_BUSTING_STATIC_ENABLED:
         from django.contrib.staticfiles import storage
         storage.ManifestStaticFilesStorage.manifest_strict = False
     if CACHE_BUSTING_STATIC_ENABLED:
         STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-    if CACHE_BUSTING_MEDIA_ENABLED:
-        DEFAULT_FILE_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
