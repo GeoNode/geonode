@@ -389,7 +389,6 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                 date=resource_date,
                 date_type=resource["date_type"],
                 originator=self._get_contact_descriptor("originator", resource["owner"]),
-                graphic_overview_uri=resource["thumbnail_url"],
                 place_keywords=[i.get("code") for i in resource.get("regions", [])],
                 other_keywords=[i.get("slug") for i in resource.get("keywords", [])],
                 license=(resource.get("license") or {}).get("identifier"),
@@ -1220,8 +1219,6 @@ def get_identification_descriptor(csw_identification: etree.Element, api_record:
             csw_identification.xpath(
                 ".//gmd:pointOfContact", namespaces=csw_identification.nsmap)[0]
         ),
-        graphic_overview_uri=get_xpath_value(
-            csw_identification, ".//gmd:graphicOverview//gmd:fileName"),
         native_format=_get_native_format(csw_identification, api_record),
         place_keywords=place_keywords,
         other_keywords=other_keywords,
@@ -1420,36 +1417,3 @@ def _check_availability(
             key_present = response_payload.get(payload_key_to_check) is not None
             result = key_present
     return result
-
-
-def _get_geonode_resource_defaults(
-        should_copy_resource: bool,
-        local_resource_type: typing.Type[typing.Union[Dataset, Document]],
-        harvested_info: base.HarvestedResourceInfo,
-        harvestable_resource: models.HarvestableResource,
-        base_defaults: typing.Optional[typing.Dict] = None
-) -> typing.Dict:
-    defaults = dict(base_defaults) if base_defaults is not None else {}
-    defaults.update(harvested_info.resource_descriptor.additional_parameters)
-    if local_resource_type == Document and not should_copy_resource:
-        # since we are not copying the document, we need to provide suitable remote URLs
-        defaults.update({
-            "doc_url": harvested_info.resource_descriptor.distribution.download_url,
-            "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
-        })
-    elif local_resource_type == Dataset and not should_copy_resource:
-        # since we are not copying the dataset, we need to provide suitable SRID and remote URL
-        try:
-            srid = harvested_info.resource_descriptor.reference_systems[0]
-        except AttributeError:
-            srid = None
-        name, workspace = defaults["name"].rpartition(":")[::2]
-        defaults.update({
-            "alternate": defaults["name"],
-            "name": name,
-            "workspace": workspace,
-            "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
-            "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
-            "srid": srid,
-        })
-    return defaults

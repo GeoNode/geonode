@@ -45,13 +45,12 @@ class RecordDescriptionContact:
 class RecordIdentification:
     name: str
     title: str
-    date: dt.datetime
-    date_type: str
-    originator: RecordDescriptionContact
-    graphic_overview_uri: str
-    place_keywords: typing.List[str]
-    other_keywords: typing.Tuple
-    license: typing.List[str]
+    date: typing.Optional[dt.datetime] = None
+    date_type: typing.Optional[str] = None
+    originator: typing.Optional[RecordDescriptionContact] = None
+    place_keywords: typing.Optional[typing.List[str]] = None
+    other_keywords: typing.Optional[typing.Tuple] = None
+    license: typing.Optional[typing.List[str]] = None
     abstract: typing.Optional[str] = ""
     purpose: typing.Optional[str] = ""
     status: typing.Optional[str] = ""
