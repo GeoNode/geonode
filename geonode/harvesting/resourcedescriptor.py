@@ -49,7 +49,7 @@ class RecordIdentification:
     date_type: typing.Optional[str] = None
     originator: typing.Optional[RecordDescriptionContact] = None
     place_keywords: typing.Optional[typing.List[str]] = None
-    other_keywords: typing.Optional[typing.Tuple] = None
+    other_keywords: typing.Optional[typing.Iterable] = None
     license: typing.Optional[typing.List[str]] = None
     abstract: typing.Optional[str] = ""
     purpose: typing.Optional[str] = ""

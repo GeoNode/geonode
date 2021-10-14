@@ -33,6 +33,7 @@ import urllib.parse
 import arcrest
 import requests
 from django.contrib.gis import geos
+from django.template.defaultfilters import slugify
 
 from geonode.layers.models import Dataset
 
@@ -194,6 +195,7 @@ class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
             resource_uuid = uuid.UUID(harvestable_resource.geonode_resource.uuid)
         name = layer_representation["name"]
         epsg_code, spatial_extent = _parse_spatial_extent(layer_representation["extent"])
+        store = self.service.url.partition("?")[0].strip("/")
         return resourcedescriptor.RecordDescription(
             uuid=resource_uuid,
             identification=resourcedescriptor.RecordIdentification(
@@ -202,18 +204,24 @@ class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
                 abstract=layer_representation.get("description", ""),
                 other_constraints=layer_representation.get("copyrightTest", ""),
                 spatial_extent=spatial_extent,
+                other_keywords=[
+                    "ESRI",
+                    f"ArcGIS REST {self.service.__service_type__}",
+                ]
             ),
             distribution=resourcedescriptor.RecordDistribution(
                 link_url=harvestable_resource.unique_identifier,
-                wms_url=None,
-                wfs_url=None,
-                wcs_url=None,
                 thumbnail_url=None,
-                download_url=None,
-                embed_url=None
             ),
             reference_systems=[epsg_code],
-            additional_parameters={"service": self.service.__service_type__},
+            additional_parameters={
+                "remote_typename": self.service.__service_type__,
+                "store": store,
+                "subtype": "remote",
+                "workspace": "remoteWorkspace",
+                "typename": slugify(f"{layer_representation['id']}-{''.join(c for c in name if ord(c) < 128)}"),
+                "alternate": harvestable_resource.unique_identifier
+            },
         )
 
     def _parse_brief_layer(self, arc_layer: arcrest.MapLayer) -> base.BriefRemoteResource:
@@ -265,6 +273,7 @@ class ArcgisImageServiceResourceExtractor(ArcgisServiceResourceExtractor):
 def get_resource_extractor(
         harvestable_resource: models.HarvestableResource
 ) -> typing.Optional[ArcgisServiceResourceExtractor]:
+    """A factory for instantiating the correct extractor for the resource"""
     service_type_name = parse_remote_url(harvestable_resource.unique_identifier)[-1]
     extractor_class = {
         ArcgisServiceType.MAP_SERVICE: ArcgisMapServiceResourceExtractor,
@@ -335,6 +344,15 @@ class ArcgisHarvesterWorker(base.BaseHarvesterWorker):
     def allows_copying_resources(self) -> bool:
         return False
 
+    @property
+    def arc_catalog(self):
+        if self._arc_catalog is None:
+            try:
+                self._arc_catalog = arcrest.Catalog(self.remote_url)
+            except (json.JSONDecodeError, URLError, HTTPError):
+                logger.exception(f"Could not connect to ArcGIS REST server at {self.remote_url!r}")
+        return self._arc_catalog
+
     @classmethod
     def from_django_record(cls, harvester: "Harvester"):
         return cls(
@@ -385,14 +403,48 @@ class ArcgisHarvesterWorker(base.BaseHarvesterWorker):
             "additionalProperties": False,
         }
 
-    @property
-    def arc_catalog(self):
-        if self._arc_catalog is None:
-            try:
-                self._arc_catalog = arcrest.Catalog(self.remote_url)
-            except (json.JSONDecodeError, URLError, HTTPError):
-                logger.exception(f"Could not connect to ArcGIS REST server at {self.remote_url!r}")
-        return self._arc_catalog
+    def get_num_available_resources(self) -> int:
+        result = 0
+        for service_extractor in self._get_relevant_services():
+            result += service_extractor.get_num_resources()
+        return result
+
+    def list_resources(
+            self,
+            offset: typing.Optional[int] = 0
+    ) -> typing.List[base.BriefRemoteResource]:
+        result = []
+        # NOTE: Since ArcGIS REST services work in a nested fashion we are
+        # not able to paginate the underlying results. As such, we resort to
+        # processing all resources sequentially. This means we only care about
+        # `offset=0` and explicitly return an empty list when the supplied
+        # offset is different.
+        if offset == 0:
+            for service_extractor in self._get_relevant_services():
+                result.extend(service_extractor.list_resources())
+        return result
+
+    def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
+        return self.arc_catalog is not None
+
+    def get_geonode_resource_type(self, remote_resource_type: str) -> typing.Type:
+        return Dataset
+
+    def get_geonode_resource_defaults(
+            self,
+            harvested_info: base.HarvestedResourceInfo,
+            harvestable_resource: models.HarvestableResource,
+    ) -> typing.Dict:
+        defaults = super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
+        defaults.update(harvested_info.resource_descriptor.additional_parameters)
+        return defaults
+
+    def get_resource(
+            self,
+            harvestable_resource: models.HarvestableResource,
+    ) -> typing.Optional[base.HarvestedResourceInfo]:
+        extractor = get_resource_extractor(harvestable_resource)
+        return extractor.get_resource(harvestable_resource)
 
     def _get_relevant_services(self) -> typing.List[
         typing.Union[
@@ -421,43 +473,10 @@ class ArcgisHarvesterWorker(base.BaseHarvesterWorker):
             self._relevant_service_extractors = result
         return self._relevant_service_extractors
 
-    def get_num_available_resources(self) -> int:
-        result = 0
-        for service_extractor in self._get_relevant_services():
-            result += service_extractor.get_num_resources()
-        return result
-
-    def list_resources(
-            self,
-            offset: typing.Optional[int] = 0
-    ) -> typing.List[base.BriefRemoteResource]:
-        result = []
-        # NOTE: Since ArcGIS REST services work in a nested fashion we are
-        # not able to paginate the underlying results. As such, we resort to
-        # processing all resources sequentially. This means we only care about
-        # `offset=0` and explicitly return an empty list when the supplied
-        # offset is different.
-        if offset == 0:
-            for service_extractor in self._get_relevant_services():
-                result.extend(service_extractor.list_resources())
-        return result
-
-    def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
-        return self.arc_catalog is not None
-
-    def get_geonode_resource_type(self, remote_resource_type: str) -> typing.Type:
-        return Dataset
-
-    def get_resource(
-            self,
-            harvestable_resource: models.HarvestableResource,
-    ) -> typing.Optional[base.HarvestedResourceInfo]:
-        extractor = get_resource_extractor(harvestable_resource)
-        return extractor.get_resource(harvestable_resource)
-
 
 def _parse_spatial_extent(raw_extent: typing.Dict) -> typing.Tuple[str, geos.Polygon]:
-    epsg_code = f"EPSG:{raw_extent.get('latestWkid', raw_extent.get('wkid'))}"
+    spatial_reference = raw_extent.get("spatialReference", {})
+    epsg_code = f"EPSG:{spatial_reference.get('latestWkid', spatial_reference.get('wkid'))}"
     extent = geos.Polygon.from_bbox(
         (
             raw_extent["xmin"],
