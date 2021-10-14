@@ -84,8 +84,8 @@ def resource_permissions_handle_post(request, resource):
                not view_any:
 
                 success = False
-                message = _("User {username} has download permissions but cannot "\
-                            "access the resource. Please update permission "\
+                message = _("User {username} has download permissions but cannot "
+                            "access the resource. Please update permission "
                             "consistently!").format(username=user.username)
 
         return HttpResponse(
