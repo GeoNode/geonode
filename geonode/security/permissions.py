@@ -321,6 +321,30 @@ class PermSpec(PermSpecConverterBase):
                     'name': 'anonymous',
                     'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype)
                 }
+        # Let's make sure we don't lose control over the resource
+        if not any([_u.get('id', None) == self._resource.owner.id for _u in user_perms]):
+            user_perms.append(
+                {
+                    'id': self._resource.owner.id,
+                    'username': self._resource.owner.username,
+                    'first_name': self._resource.owner.first_name,
+                    'last_name': self._resource.owner.last_name,
+                    'avatar': build_absolute_uri(avatar_url(self._resource.owner, 240)),
+                    'permissions': OWNER_RIGHTS
+                }
+            )
+        for user in get_user_model().objects.filter(is_superuser=True):
+            if not any([_u.get('id', None) == user.id for _u in user_perms]):
+                user_perms.append(
+                    {
+                        'id': user.id,
+                        'username': user.username,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'avatar': build_absolute_uri(avatar_url(user, 240)),
+                        'permissions': MANAGE_RIGHTS
+                    }
+                )
 
         for _k in self.groups:
             _perms = self.groups[_k]
@@ -457,7 +481,8 @@ class PermSpecCompact(PermSpecConverterBase):
         for _u in self.users:
             _user_profile = get_user_model().objects.get(id=_u.id)
             _is_owner = _user_profile == self._resource.owner
-            json['users'][_user_profile.username] = _to_extended_perms(_u.permissions, self._resource.resource_type, self._resource.subtype, _is_owner)
+            _perms = OWNER_RIGHTS if _is_owner else MANAGE_RIGHTS if _user_profile.is_superuser else _u.permissions
+            json['users'][_user_profile.username] = _to_extended_perms(_perms, self._resource.resource_type, self._resource.subtype, _is_owner)
         for _go in self.organizations:
             _group = Group.objects.get(id=_go.id)
             json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.subtype)
