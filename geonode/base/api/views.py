@@ -114,7 +114,7 @@ class UserViewSet(DynamicModelViewSet):
             queryset = get_user_model().objects.filter(id=self.request.user.id)
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
+        return queryset.order_by("username")
 
     @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
                    description="API endpoint allowing to retrieve the Resources visible to the user.")
@@ -248,7 +248,8 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
         """
         Filter users with atleast a resource
         """
-        queryset = get_user_model().objects.all().exclude(pk=-1)
+
+        queryset = get_user_model().objects.exclude(pk=-1)
         filter_options = {}
         if self.request.query_params:
             filter_options = {
@@ -258,7 +259,7 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
         queryset = queryset.filter(id__in=Subquery(
             get_resources_with_perms(self.request.user, filter_options).values('owner'))
         )
-        return queryset
+        return queryset.order_by("username")
 
 
 class ResourceBaseViewSet(DynamicModelViewSet):
@@ -480,8 +481,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         """
         config = Configuration.load()
         resource = self.get_object()
+        _user_can_manage = request.user.has_perm('change_resourcebase', resource.get_self_resource()) or request.user.has_perm('change_resourcebase_permissions', resource.get_self_resource())
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
-                resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
+                resource is None or not _user_can_manage:
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource)
