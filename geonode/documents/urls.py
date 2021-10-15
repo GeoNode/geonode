@@ -41,8 +41,6 @@ urlpatterns = [  # 'geonode.documents.views',
         DocumentUploadView.as_view()), name='document_upload'),
     url(r'^search/?$', views.document_search_page,
         name='document_search_page'),
-    url(r'^(?P<docid>[^/]*)/metadata_detail$', views.document_metadata_detail,
-        name='document_metadata_detail'),
     url(r'^(?P<docid>\d+)/metadata$',
         views.document_metadata, name='document_metadata'),
     url(

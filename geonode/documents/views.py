@@ -36,7 +36,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import loader
 from django.views.generic.edit import UpdateView, CreateView
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied
 
 from geonode.client.hooks import hookset
 from geonode.utils import resolve_object
@@ -563,38 +563,6 @@ def document_remove(request, docid, template='documents/document_remove.html'):
         return HttpResponseRedirect(hookset.document_list_url())
     else:
         return HttpResponse(_("Not allowed"), status=403)
-
-
-def document_metadata_detail(
-        request,
-        docid,
-        template='documents/document_metadata_detail.html'):
-    try:
-        document = _resolve_document(
-            request,
-            docid,
-            'view_resourcebase',
-            _PERMISSION_MSG_METADATA)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not document:
-        raise Http404(_("Not found"))
-
-    group = None
-    if document.group:
-        try:
-            group = GroupProfile.objects.get(slug=document.group.name)
-        except ObjectDoesNotExist:
-            group = None
-    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-    register_event(request, EventType.EVENT_VIEW_METADATA, document)
-    return render(request, template, context={
-        "resource": document,
-        "group": group,
-        'SITEURL': site_url
-    })
 
 
 @login_required
