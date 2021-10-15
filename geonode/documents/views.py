@@ -492,22 +492,6 @@ def document_metadata_advanced(request, docid):
         template='documents/document_metadata_advanced.html')
 
 
-def document_search_page(request):
-    # for non-ajax requests, render a generic search page
-
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    return render(
-        request,
-        'documents/document_search.html',
-        context={'init_search': json.dumps(params or {}), "site": settings.SITEURL})
-
-
 @login_required
 def document_batch_metadata(request):
     return batch_modify(request, 'Document')
