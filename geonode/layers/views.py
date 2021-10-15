@@ -56,8 +56,8 @@ from geonode.geoserver.helpers import set_dataset_style
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
-from geonode.base.views import batch_modify, get_url_for_model
+from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
+from geonode.base.views import batch_modify
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
@@ -99,7 +99,6 @@ from geonode.geoserver.helpers import (
     write_uploaded_files_to_disk)
 from geonode.geoserver.security import set_geowebcache_invalidate_cache
 from geonode.base.utils import ManageResourceOwnerPermissions
-from geonode.tasks.tasks import set_permissions
 
 from celery.utils.log import get_logger
 
@@ -1458,86 +1457,6 @@ def dataset_embed(
 @login_required
 def dataset_batch_metadata(request):
     return batch_modify(request, 'Dataset')
-
-
-def batch_permissions(request, model):
-    Resource = None
-    if model == 'Dataset':
-        Resource = Dataset
-    if not Resource or not request.user.is_superuser:
-        raise PermissionDenied
-
-    template = 'base/batch_permissions.html'
-    ids = request.POST.get("ids")
-
-    if "cancel" in request.POST or not ids:
-        return HttpResponseRedirect(
-            get_url_for_model(model)
-        )
-
-    if request.method == 'POST':
-        form = BatchPermissionsForm(request.POST)
-        if form.is_valid():
-            _data = form.cleaned_data
-            resources_names = []
-            for resource in Resource.objects.filter(id__in=ids.split(',')):
-                resources_names.append(resource.name)
-            users_usernames = [_data['user'].username, ] if _data['user'] else None
-            groups_names = [_data['group'].name, ] if _data['group'] else None
-            if users_usernames and 'AnonymousUser' in users_usernames and \
-                    (not groups_names or 'anonymous' not in groups_names):
-                if not groups_names:
-                    groups_names = []
-                groups_names.append('anonymous')
-            if groups_names and 'anonymous' in groups_names and \
-                    (not users_usernames or 'AnonymousUser' not in users_usernames):
-                if not users_usernames:
-                    users_usernames = []
-                users_usernames.append('AnonymousUser')
-            delete_flag = _data['mode'] == 'unset'
-            permissions_names = _data['permission_type']
-            if permissions_names:
-                try:
-                    set_permissions.apply_async((
-                        permissions_names,
-                        resources_names,
-                        users_usernames,
-                        groups_names,
-                        delete_flag))
-                except set_permissions.OperationalError as exc:
-                    celery_logger.exception('Sending task raised: %r', exc)
-            return HttpResponseRedirect(
-                get_url_for_model(model)
-            )
-        return render(
-            request,
-            template,
-            context={
-                'form': form,
-                'ids': ids,
-                'model': model,
-            }
-        )
-
-    form = BatchPermissionsForm(
-        {
-            'permission_type': ('r', ),
-            'mode': 'set'
-        })
-    return render(
-        request,
-        template,
-        context={
-            'form': form,
-            'ids': ids,
-            'model': model,
-        }
-    )
-
-
-@login_required
-def dataset_batch_permissions(request):
-    return batch_permissions(request, 'Dataset')
 
 
 def dataset_view_counter(dataset_id, viewer):

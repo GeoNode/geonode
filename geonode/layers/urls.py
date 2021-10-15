@@ -56,8 +56,6 @@ urlpatterns = [
         views.dataset_feature_catalogue, name='dataset_feature_catalogue'),
     url(r'^metadata/batch/$',
         views.dataset_batch_metadata, name='dataset_batch_metadata'),
-    url(r'^permissions/batch/$',
-        views.dataset_batch_permissions, name='dataset_batch_permissions'),
     url(r'^', include('geonode.layers.api.urls')),
 ]
 
