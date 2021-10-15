@@ -293,12 +293,15 @@ def get_users_with_perms(obj):
     permissions = {}
     PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
 
-    for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
-        permissions[perm.id] = perm.codename
+    if str(ctype) == 'layer':
+        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+            permissions[perm.id] = perm.codename
+    else:
+        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH):
+            permissions[perm.id] = perm.codename
 
     user_model = get_user_obj_perms_model(obj)
     users_with_perms = user_model.objects.filter(object_pk=obj.pk,
-                                                 content_type_id=ctype.id,
                                                  permission_id__in=permissions).values('user_id', 'permission_id')
 
     users = {}
