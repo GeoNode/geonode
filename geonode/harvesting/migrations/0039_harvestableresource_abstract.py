@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('harvesting', '0040_merge_20211001_0832'),
+        ('harvesting', '0038_alter_harvester_status'),
     ]
 
     operations = [

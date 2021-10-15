@@ -39,6 +39,53 @@ logger = logging.getLogger(__name__)
 
 @app.task(
     bind=True,
+    queue="geonode",
+    acks_late=False,
+    ignore_result=False
+)
+def harvesting_scheduler(self):
+    """Check whether any of the configured harvesters needs to be run or not.
+
+    This function is called periodically by celery beat. It is configured to run every
+    `HARVESTER_SCHEDULER_FREQUENCY_MINUTES` minutes. This can be configured in the GeoNode
+    settings. The default value is 0.5, which means that this function is called every
+    thirty seconds.
+
+    """
+
+    logger.debug("+++++ harvesting_dispatcher starting... +++++")
+    for harvester in models.Harvester.objects.all():
+        if harvester.is_availability_check_due():
+            logger.debug(f"{harvester.name} - Updating availability...")
+            available = harvester.update_availability()
+            logger.debug(f"{harvester.name} - is {'not ' if not available else ''}available")
+        else:
+            logger.debug(f"{harvester.name} - No need to update availability yet")
+        if harvester.scheduling_enabled:
+            logger.debug(f"{harvester.name} - scheduling_enabled: {harvester.scheduling_enabled!r}")
+            if harvester.is_harvestable_resources_refresh_due():
+                logger.debug(f"{harvester.name} - Initiating update of harvestable resources...")
+                try:
+                    harvester.initiate_update_harvestable_resources()
+                except RuntimeError:
+                    logger.exception(msg=f"{harvester.name} - Could not initiate the update of harvestable resources")
+            else:
+                logger.debug(f"{harvester.name} - No need to update harvestable resources yet")
+            if harvester.is_harvesting_due():
+                logger.debug(f"{harvester.name} - initiating harvesting...")
+                try:
+                    harvester.initiate_perform_harvesting()
+                except RuntimeError:
+                    logger.exception(msg=f"{harvester.name} - Could not initiate harvesting")
+            else:
+                logger.debug(f"{harvester.name} - No need to harvest yet")
+        else:
+            logger.debug(f"{harvester.name} - Scheduling is disabled for this harvester, skipping...")
+    logger.debug("+++++ harvesting_dispatcher ending... +++++")
+
+
+@app.task(
+    bind=True,
     queue='geonode',
     acks_late=False,
     ignore_result=False,

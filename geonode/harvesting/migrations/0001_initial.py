@@ -10,7 +10,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('django_celery_beat', '0015_edit_solarschedule_events_choices'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -27,7 +26,6 @@ class Migration(migrations.Migration):
                 ('harvester_type', models.CharField(choices=[('geonode.harvesting.harvesters.geonode.GeonodeHarvester', 'geonode.harvesting.harvesters.geonode.GeonodeHarvester')], default='geonode.harvesting.harvesters.geonode.GeonodeHarvester', help_text='Harvester class used to perform harvesting sessions', max_length=255)),
                 ('harvester_type_specific_configuration', models.JSONField(default=dict, help_text='Configuration specific to each harvester type. Please consult GeoNode documentation on harvesting for more info.')),
                 ('default_owner', models.ForeignKey(help_text='Default owner of harvested resources', on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('periodic_task', models.OneToOneField(blank=True, help_text='Periodic task used to configure harvest scheduling', null=True, on_delete=django.db.models.deletion.CASCADE, to='django_celery_beat.PeriodicTask')),
             ],
         ),
         migrations.CreateModel(

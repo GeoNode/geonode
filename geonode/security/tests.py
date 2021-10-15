@@ -40,6 +40,7 @@ from guardian.shortcuts import (
 )
 
 from geonode import geoserver
+from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
@@ -75,8 +76,8 @@ from geonode.geoserver.security import (
 )
 
 from .utils import (
+    get_users_with_perms,
     get_visible_resources,
-    get_users_with_perms
 )
 
 from .permissions import (
@@ -1101,7 +1102,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Get a Dataset object to work with
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         # Set the default permissions
         layer.set_default_permissions()
 
@@ -1165,7 +1166,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Get a layer to work with
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
 
         # FIXME Test a comprehensive set of permissions specifications
 
@@ -1254,7 +1255,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Test with a Dataset object
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         layer.set_default_permissions()
         # Test that the anonymous user can read
         self.assertTrue(
@@ -1269,7 +1270,206 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 layer.get_self_resource()))
 
         # Test with a Map object
-        # TODO
+        a_map = Map.objects.first()
+        a_map.set_default_permissions()
+        perms = get_users_with_perms(a_map)
+        self.assertIsNotNone(perms)
+        self.assertGreaterEqual(len(perms), 1)
+
+    # now we test permissions, first on an authenticated user and then on the
+    # anonymous user
+    # 1. view_resourcebase
+    # 2. change_resourcebase
+    # 3. delete_resourcebase
+    # 4. change_resourcebase_metadata
+    # 5. change_resourcebase_permissions
+    # 6. change_dataset_data
+    # 7. change_dataset_style
+
+    def test_not_superuser_permissions(self):
+
+        geofence_rules_count = 0
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            purge_geofence_all()
+            # Reset GeoFence Rules
+            geofence_rules_count = get_geofence_rules_count()
+            self.assertTrue(geofence_rules_count == 0)
+
+        # grab bobby
+        bob = get_user_model().objects.get(username='bobby')
+
+        # grab a layer
+        layer = Dataset.objects.filter(owner=bob).first()
+        layer.set_default_permissions()
+        # verify bobby has view/change permissions on it but not manage
+        self.assertTrue(
+            bob.has_perm(
+                'change_resourcebase_permissions',
+                layer.get_self_resource()))
+
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # Check GeoFence Rules have been correctly created
+            geofence_rules_count = get_geofence_rules_count()
+            _log(f"1. geofence_rules_count: {geofence_rules_count} ")
+            self.assertEqual(geofence_rules_count, 12)
+
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+
+        # 1. view_resourcebase
+        # 1.1 has view_resourcebase: verify that bobby can access the layer
+        # detail page
+        self.assertTrue(
+            bob.has_perm(
+                'view_resourcebase',
+                layer.get_self_resource()))
+
+        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        self.assertEqual(response.status_code, 200)
+        # 1.2 has not view_resourcebase: verify that bobby can not access the
+        # layer detail page
+        remove_perm('view_resourcebase', bob, layer.get_self_resource())
+        anonymous_group = Group.objects.get(name='anonymous')
+        remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
+        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        self.assertTrue(response.status_code in (401, 403))
+
+        # 2. change_resourcebase
+        # 2.1 has not change_resourcebase: verify that bobby cannot access the
+        # layer replace page
+        response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
+        self.assertEqual(response.status_code, 200)
+        # 2.2 has change_resourcebase: verify that bobby can access the layer
+        # replace page
+        assign_perm('change_resourcebase', bob, layer.get_self_resource())
+        self.assertTrue(
+            bob.has_perm(
+                'change_resourcebase',
+                layer.get_self_resource()))
+        response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
+        self.assertEqual(response.status_code, 200)
+
+        # 3. delete_resourcebase
+        # 3.1 has not delete_resourcebase: verify that bobby cannot access the
+        # layer delete page
+        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
+        self.assertEqual(response.status_code, 200)
+        # 3.2 has delete_resourcebase: verify that bobby can access the layer
+        # delete page
+        assign_perm('delete_resourcebase', bob, layer.get_self_resource())
+        self.assertTrue(
+            bob.has_perm(
+                'delete_resourcebase',
+                layer.get_self_resource()))
+        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
+        self.assertEqual(response.status_code, 200)
+
+        # 4. change_resourcebase_metadata
+        # 4.1 has not change_resourcebase_metadata: verify that bobby cannot
+        # access the layer metadata page
+        response = self.client.get(reverse('dataset_metadata', args=(layer.alternate,)))
+        self.assertEqual(response.status_code, 200)
+        # 4.2 has delete_resourcebase: verify that bobby can access the layer
+        # delete page
+        assign_perm('change_resourcebase_metadata', bob, layer.get_self_resource())
+        self.assertTrue(
+            bob.has_perm(
+                'change_resourcebase_metadata',
+                layer.get_self_resource()))
+        response = self.client.get(reverse('dataset_metadata', args=(layer.alternate,)))
+        self.assertEqual(response.status_code, 200)
+
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            perms = get_users_with_perms(layer)
+            _log(f"2. perms: {perms} ")
+            sync_geofence_with_guardian(layer, perms, user=bob, group=anonymous_group)
+
+            # Check GeoFence Rules have been correctly created
+            geofence_rules_count = get_geofence_rules_count()
+            _log(f"3. geofence_rules_count: {geofence_rules_count} ")
+            self.assertGreaterEqual(geofence_rules_count, 12)
+
+        # 5. change_resourcebase_permissions
+        # should be impossible for the user without change_resourcebase_permissions
+        # to change permissions as the permission form is not available in the
+        # layer detail page?
+
+        # 6. change_dataset_data
+        # must be done in integration test sending a WFS-T request with CURL
+
+        # 7. change_dataset_style
+        # 7.1 has not change_dataset_style: verify that bobby cannot access
+        # the layer style page
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # Only for geoserver backend
+            response = self.client.get(reverse('dataset_style_manage', args=(layer.alternate,)))
+            self.assertEqual(response.status_code, 200)
+        # 7.2 has change_dataset_style: verify that bobby can access the
+        # change layer style page
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # Only for geoserver backend
+            assign_perm('change_dataset_style', bob, layer)
+            self.assertTrue(
+                bob.has_perm(
+                    'change_dataset_style',
+                    layer))
+            response = self.client.get(reverse('dataset_style_manage', args=(layer.alternate,)))
+            self.assertEqual(response.status_code, 200)
+
+        geofence_rules_count = 0
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            purge_geofence_all()
+            # Reset GeoFence Rules
+            geofence_rules_count = get_geofence_rules_count()
+            self.assertEqual(geofence_rules_count, 0)
+
+    def test_anonymus_permissions(self):
+        # grab a layer
+        layer = Dataset.objects.first()
+        layer.set_default_permissions()
+        # 1. view_resourcebase
+        # 1.1 has view_resourcebase: verify that anonymous user can access
+        # the layer detail page
+        self.assertTrue(
+            self.anonymous_user.has_perm(
+                'view_resourcebase',
+                layer.get_self_resource()))
+        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        self.assertEqual(response.status_code, 200)
+        # 1.2 has not view_resourcebase: verify that anonymous user can not
+        # access the layer detail page
+        remove_perm('view_resourcebase', self.anonymous_user, layer.get_self_resource())
+        anonymous_group = Group.objects.get(name='anonymous')
+        remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
+        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        self.assertTrue(response.status_code in (302, 403))
+
+        # 2. change_resourcebase
+        # 2.1 has not change_resourcebase: verify that anonymous user cannot
+        # access the layer replace page but redirected to login
+        response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
+        self.assertTrue(response.status_code in (302, 403))
+
+        # 3. delete_resourcebase
+        # 3.1 has not delete_resourcebase: verify that anonymous user cannot
+        # access the layer delete page but redirected to login
+        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
+        self.assertTrue(response.status_code in (302, 403))
+
+        # 4. change_resourcebase_metadata
+        # 4.1 has not change_resourcebase_metadata: verify that anonymous user
+        # cannot access the layer metadata page but redirected to login
+        response = self.client.get(reverse('dataset_metadata', args=(layer.alternate,)))
+        self.assertTrue(response.status_code in (302, 403))
+
+        # 5 N\A? 6 is an integration test...
+
+        # 7. change_dataset_style
+        # 7.1 has not change_dataset_style: verify that anonymous user cannot access
+        # the layer style page but redirected to login
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # Only for geoserver backend
+            response = self.client.get(reverse('dataset_style_manage', args=(layer.alternate,)))
+            self.assertTrue(response.status_code in (302, 403))
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
         layers = Dataset.objects.all()
