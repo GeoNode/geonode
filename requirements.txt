@@ -7,7 +7,7 @@ Django==3.2.7
 # Other
 amqp==5.0.6
 beautifulsoup4==4.10.0
-httplib2<0.19.2
+httplib2<0.20.2
 hyperlink==21.0.0
 idna>=2.5,<2.11
 urllib3==1.26.7
@@ -39,7 +39,7 @@ django-downloadview==2.1.1
 django-polymorphic==3.0.0
 django-tastypie<0.15.0
 django-tinymce==3.3.0
-django-grappelli==2.15.1
+django-grappelli==2.15.3
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.8
 django-sequences==2.6
@@ -102,7 +102,7 @@ elasticsearch>=2.0.0,<8.0.0
 django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
-django-storages==1.11.1
+django-storages==1.12
 dropbox==11.21.0
 google-cloud-storage==1.42.3
 google-cloud-core==2.0.0
@@ -134,7 +134,7 @@ django-ipware<4.1
 pycountry
 
 # production
-uWSGI==2.0.19.1
+uWSGI==2.0.20
 gunicorn==20.1.0
 ipython==7.28.0
 docker==5.0.2
