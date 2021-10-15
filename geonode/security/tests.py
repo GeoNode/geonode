@@ -40,6 +40,7 @@ from guardian.shortcuts import (
 )
 
 from geonode import geoserver
+from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
@@ -75,8 +76,8 @@ from geonode.geoserver.security import (
 )
 
 from .utils import (
+    get_users_with_perms,
     get_visible_resources,
-    get_users_with_perms
 )
 
 from .permissions import (
@@ -1106,7 +1107,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Get a Dataset object to work with
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         # Set the default permissions
         layer.set_default_permissions()
 
@@ -1170,7 +1171,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Get a layer to work with
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
 
         # FIXME Test a comprehensive set of permissions specifications
 
@@ -1259,7 +1260,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Test with a Dataset object
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         layer.set_default_permissions()
         # Test that the anonymous user can read
         self.assertTrue(
@@ -1274,7 +1275,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 layer.get_self_resource()))
 
         # Test with a Map object
-        # TODO
+        a_map = Map.objects.first()
+        a_map.set_default_permissions()
+        perms = get_users_with_perms(a_map)
+        self.assertIsNotNone(perms)
+        self.assertGreaterEqual(len(perms), 1)
 
     # now we test permissions, first on an authenticated user and then on the
     # anonymous user
@@ -1424,7 +1429,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_anonymus_permissions(self):
         # grab a layer
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         layer.set_default_permissions()
         # 1. view_resourcebase
         # 1.1 has view_resourcebase: verify that anonymous user can access
