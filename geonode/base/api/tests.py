@@ -1182,7 +1182,7 @@ class BaseApiTests(APITestCase):
             {
                 'users': [
                     {
-                        'id': 4,
+                        'id': bobby.id,
                         'username': 'bobby',
                         'first_name': 'bobby',
                         'last_name': '',
@@ -1234,7 +1234,7 @@ class BaseApiTests(APITestCase):
                         'permissions': 'owner'
                     },
                     {
-                        'id': 4,
+                        'id': bobby.id,
                         'username': 'bobby',
                         'first_name': 'bobby',
                         'last_name': '',
