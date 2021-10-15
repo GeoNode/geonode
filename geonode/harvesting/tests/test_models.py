@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-import datetime
+import datetime as dt
 from unittest import mock
 
 from django.contrib.auth import get_user_model
@@ -46,14 +46,6 @@ class HarvesterTestCase(GeoNodeBaseTestSupport):
         worker = self.harvester.get_harvester_worker()
         self.assertEqual(worker.remote_url, self.remote_url)
 
-    def test_setup_periodic_tasks(self):
-        self.assertIsNotNone(self.harvester.periodic_task)
-        self.assertIsNotNone(self.harvester.availability_check_task)
-        self.assertEqual(self.harvester.periodic_task.name, self.harvester.name)
-        self.assertEqual(self.harvester.periodic_task.interval.every, self.harvester.update_frequency)
-        self.assertEqual(self.harvester.availability_check_task.name, f"Check availability of {self.name}")
-        self.assertEqual(self.harvester.availability_check_task.interval.every, self.harvester.check_availability_frequency)
-
     @mock.patch("geonode.harvesting.models.jsonschema")
     @mock.patch("geonode.harvesting.models.import_string")
     def test_validate_worker_configuration(self, mock_import_string, mock_jsonschema):
@@ -69,6 +61,47 @@ class HarvesterTestCase(GeoNodeBaseTestSupport):
         mock_import_string.assert_called_with(harvester_type)
         mock_worker_class.get_extra_config_schema.assert_called()
         mock_jsonschema.validate.assert_called_with(configuration, extra_config_schema)
+
+    @mock.patch("geonode.harvesting.models.timezone")
+    def test_get_next_check_availability_dispatch_time(self, mock_timezone):
+        fixtures = [
+            ("2020-01-01T00:00:00", "2020-01-01T00:05:00", 10, "2020-01-01T00:10:00"),
+            ("2020-01-01T00:00:00", "2020-01-01T00:11:00", 10, "2020-01-01T00:11:00"),
+        ]
+        for last_checked, now, frequency, expected in fixtures:
+            mock_timezone.now.return_value = dt.datetime.fromisoformat(
+                now).replace(tzinfo=dt.timezone.utc)
+            harvester = models.Harvester(check_availability_frequency=frequency)
+            harvester.last_checked_availability = dt.datetime.fromisoformat(
+                last_checked).replace(tzinfo=dt.timezone.utc)
+            result = harvester.get_next_check_availability_dispatch_time()
+            expected_result = dt.datetime.fromisoformat(expected).replace(tzinfo=dt.timezone.utc)
+            self.assertEqual(result, expected_result)
+
+    @mock.patch("geonode.harvesting.models.timezone")
+    def test_get_next_dispatch_time(self, mock_timezone):
+        fixtures = [
+            ("2020-01-01T00:00:00", "2020-01-01T00:05:00", 10, "2020-01-01T00:10:00"),
+            ("2020-01-01T00:00:00", "2020-01-01T00:11:00", 10, "2020-01-01T00:11:00"),
+        ]
+        for last_check, now, frequency, expected in fixtures:
+            mock_timezone.now.return_value = dt.datetime.fromisoformat(
+                now).replace(tzinfo=dt.timezone.utc)
+            with mock.patch.object(
+                    models.Harvester,
+                    "latest_refresh_session",
+                    new_callable=mock.PropertyMock
+            ) as mock_latest_refresh_session:
+                mock_latest_refresh_session.return_value = mock.MagicMock(
+                    started=dt.datetime.fromisoformat(last_check).replace(tzinfo=dt.timezone.utc)
+                )
+                harvester = models.Harvester(
+                    harvesting_session_update_frequency=10,
+                    refresh_harvestable_resources_update_frequency=10,
+                )
+                result = harvester._get_next_dispatch_time(models.AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES)
+                expected_result = dt.datetime.fromisoformat(expected).replace(tzinfo=dt.timezone.utc)
+                self.assertEqual(result, expected_result)
 
 
 class AsynchronousHarvestingSessionTestCase(GeoNodeBaseTestSupport):
@@ -119,7 +152,7 @@ class HarvestableResourceTestCase(GeoNodeBaseTestSupport):
             unique_identifier=self.unique_identifier,
             title=self.title,
             harvester=self.harvester,
-            last_refreshed=datetime.datetime.now()
+            last_refreshed=dt.datetime.now()
         )
 
     def test_check_attributes(self):
