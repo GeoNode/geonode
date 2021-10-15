@@ -469,6 +469,14 @@ class BaseApiTests(APITestCase):
                         'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'owner'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'manage',
+                        'username': 'admin'
                     }
                 ],
                 'organizations': [],
@@ -541,6 +549,14 @@ class BaseApiTests(APITestCase):
                         'last_name': norman.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'edit'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'manage',
+                        'username': 'admin'
                     }
                 ],
                 'organizations': [],
@@ -572,6 +588,14 @@ class BaseApiTests(APITestCase):
                     'last_name': bobby.last_name,
                     'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                     'permissions': 'owner'
+                },
+                {
+                    'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                    'first_name': 'admin',
+                    'id': 1,
+                    'last_name': '',
+                    'permissions': 'manage',
+                    'username': 'admin'
                 }
             ],
             'organizations': [],
@@ -620,6 +644,14 @@ class BaseApiTests(APITestCase):
                         'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'owner'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'manage',
+                        'username': 'admin'
                     }
                 ],
                 'organizations': [],

@@ -1648,6 +1648,14 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'last_name': standard_user.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'owner'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'manage',
+                        'username': 'admin'
                     }
                 ],
                 'organizations': [],
@@ -1713,6 +1721,14 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'last_name': standard_user.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'owner'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'manage',
+                        'username': 'admin'
                     }
                 ],
                 'organizations': [],
@@ -1751,6 +1767,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'change_resourcebase',
                             'view_resourcebase',
                             'download_resourcebase'
+                        ],
+                        'admin': [
+                            'change_resourcebase_metadata',
+                            'delete_resourcebase',
+                            'change_resourcebase_permissions',
+                            'publish_resourcebase'
                         ],
                         'AnonymousUser': ['view_resourcebase']
                     },
@@ -1795,6 +1817,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'change_resourcebase',
                             'view_resourcebase',
                             'download_resourcebase'
+                        ],
+                        'admin': [
+                            'change_resourcebase_metadata',
+                            'delete_resourcebase',
+                            'change_resourcebase_permissions',
+                            'publish_resourcebase'
                         ],
                         'AnonymousUser': ['view_resourcebase']
                     },
