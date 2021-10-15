@@ -34,7 +34,7 @@ from django.forms.utils import ErrorList
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.template import loader
-from django.views.generic.edit import UpdateView, CreateView
+from django.views.generic.edit import CreateView
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied
 
@@ -63,7 +63,7 @@ from .models import Document
 from .forms import (
     DocumentForm,
     DocumentCreateForm,
-    DocumentReplaceForm)
+)
 
 logger = logging.getLogger("geonode.documents.views")
 
@@ -245,35 +245,6 @@ class DocumentUploadView(CreateView):
                 status=status_code)
         else:
             return HttpResponseRedirect(url)
-
-
-class DocumentUpdateView(UpdateView):
-    template_name = 'documents/document_replace.html'
-    pk_url_kwarg = 'docid'
-    form_class = DocumentReplaceForm
-    queryset = Document.objects.all()
-    context_object_name = 'document'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
-        return context
-
-    def form_valid(self, form):
-        """
-        If the form is valid, save the associated model.
-        """
-        self.object = resource_manager.replace(
-            self.object,
-            vals={
-                'files': form.cleaned_data.get('doc_file'),
-                'doc_url': form.cleaned_data.get('doc_url'),
-                'user': self.request.user
-            })
-        url = hookset.document_detail_url(self.object)
-        register_event(self.request, EventType.EVENT_CHANGE, self.object)
-
-        return HttpResponseRedirect(url)
 
 
 @login_required

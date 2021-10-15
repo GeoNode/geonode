@@ -19,7 +19,7 @@
 from django.conf.urls import url, include
 from django.contrib.auth.decorators import login_required
 
-from .views import DocumentUploadView, DocumentUpdateView
+from .views import DocumentUploadView
 from . import views
 
 js_info_dict = {
@@ -33,8 +33,6 @@ urlpatterns = [  # 'geonode.documents.views',
         views.document_link, name='document_link'),
     url(r'^(?P<docid>\d+)/embed/?$',
         views.document_embed, name='document_embed'),
-    url(r'^(?P<docid>\d+)/replace$', login_required(DocumentUpdateView.as_view()),
-        name="document_replace"),
     url(r'^upload/?$', login_required(
         DocumentUploadView.as_view()), name='document_upload'),
     url(r'^search/?$', views.document_search_page,
