@@ -538,33 +538,5 @@ def document_search_page(request):
 
 
 @login_required
-def document_remove(request, docid, template='documents/document_remove.html'):
-    try:
-        document = _resolve_document(
-            request,
-            docid,
-            'base.delete_resourcebase',
-            _PERMISSION_MSG_DELETE)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not document:
-        raise Http404(_("Not found"))
-
-    if request.method == 'GET':
-        return render(request, template, context={
-            "document": document
-        })
-    if request.method == 'POST':
-        resource_manager.delete(document.uuid, instance=document)
-
-        register_event(request, EventType.EVENT_REMOVE, document)
-        return HttpResponseRedirect(hookset.document_list_url())
-    else:
-        return HttpResponse(_("Not allowed"), status=403)
-
-
-@login_required
 def document_batch_metadata(request):
     return batch_modify(request, 'Document')

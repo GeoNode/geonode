@@ -35,8 +35,6 @@ urlpatterns = [  # 'geonode.documents.views',
         views.document_embed, name='document_embed'),
     url(r'^(?P<docid>\d+)/replace$', login_required(DocumentUpdateView.as_view()),
         name="document_replace"),
-    url(r'^(?P<docid>\d+)/remove$',
-        views.document_remove, name="document_remove"),
     url(r'^upload/?$', login_required(
         DocumentUploadView.as_view()), name='document_upload'),
     url(r'^search/?$', views.document_search_page,
