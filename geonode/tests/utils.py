@@ -24,6 +24,7 @@ import time
 import base64
 import pickle
 import requests
+from copy import copy
 from urllib.parse import urlencode, urlsplit
 from urllib.request import (
     urljoin,
@@ -99,9 +100,22 @@ class Client(DjangoTestClient):
         u.set_password(self.passwd)
         u.save()
 
-    def make_request(self, path, data=None, ajax=False, debug=True, force_login=False):
+    def make_request(self, path, data=None, ajax=False, debug=True, force_login=False, **kwargs):
         url = path if path.startswith("http") else self.url + path
         logger.error(f" make_request ----------> url: {url}")
+        custom_adapter = None
+        if "max_retry" in kwargs:
+            max_retry = kwargs.get("max_retry", 3)
+            custom_retry = Retry(
+                total=max_retry,
+                read=max_retry,
+                connect=max_retry,
+                backoff_factor=0.3,
+                status_forcelist=(104, 500, 502, 503, 504),
+            )
+            custom_adapter = copy(self._adapter)
+            custom_adapter.max_retries = custom_retry
+        _adapter = custom_adapter or self._adapter
 
         if ajax:
             url += f"{('&' if '?' in url else '?')}force_ajax=true"
@@ -124,19 +138,21 @@ class Client(DjangoTestClient):
 
             encoder = MultipartEncoder(fields=data)
             self._session.headers['Content-Type'] = encoder.content_type
-            self._session.mount(f"{urlsplit(url).scheme}://", self._adapter)
+            self._session.mount(f"{urlsplit(url).scheme}://", _adapter)
             self._session.verify = False
             self._action = getattr(self._session, 'post', None)
 
             _retry = 0
+            max_retry = kwargs.get("max_retry", 3)
+            timeout = kwargs.get("timeout", 10)
             _not_done = True
-            while _not_done and _retry < 3:
+            while _not_done and _retry < max_retry:
                 try:
                     response = self._action(
                         url=url,
                         data=encoder,
                         headers=self._session.headers,
-                        timeout=10,
+                        timeout=timeout,
                         stream=False)
                     _not_done = False
                 except (ProtocolError, ConnectionError, ConnectionResetError):
@@ -145,19 +161,21 @@ class Client(DjangoTestClient):
                 finally:
                     _retry += 1
         else:
-            self._session.mount(f"{urlsplit(url).scheme}://", self._adapter)
+            self._session.mount(f"{urlsplit(url).scheme}://", _adapter)
             self._session.verify = False
             self._action = getattr(self._session, 'get', None)
 
             _retry = 0
+            max_retry = kwargs.get("max_retry", 3)
+            timeout = kwargs.get("timeout", 10)
             _not_done = True
-            while _not_done and _retry < 3:
+            while _not_done and _retry < max_retry:
                 try:
                     response = self._action(
                         url=url,
                         data=None,
                         headers=self._session.headers,
-                        timeout=10,
+                        timeout=timeout,
                         stream=False)
                     _not_done = False
                 except (ProtocolError, ConnectionError, ConnectionResetError):
