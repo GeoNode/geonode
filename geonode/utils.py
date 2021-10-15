@@ -426,11 +426,6 @@ def _get_basic_auth_info(request):
     return username, password
 
 
-def batch_permissions(request):
-    # TODO
-    pass
-
-
 def batch_delete(request):
     # TODO
     pass
