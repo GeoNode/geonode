@@ -580,6 +580,11 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         upload = Upload.objects.filter(import_id=import_id).get()
         if upload.state == Upload.STATE_RUNNING:
             return
+        # WAITING state is set when lat and lng are not selected for a csv upload
+        # The the final_step everything is ok, the state value can return to PENDING
+        # During the final_step the state will change again to complete the operation
+        if upload.state == Upload.STATE_WAITING:
+            upload.set_processing_state(Upload.STATE_PENDING)
 
     upload_session.import_session = import_session
     Upload.objects.update_from_session(upload_session)

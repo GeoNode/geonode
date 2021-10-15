@@ -633,6 +633,77 @@ class TestUpload(UploaderBase):
             self.assertTrue(data['success'])
             self.assertTrue(data['redirect_to'], "/upload/csv")
 
+    def test_final_step_for_csv_file(self):
+        '''make sure a csv upload fails gracefully/normally when not activated'''
+        csv_file = self.make_csv(['lat', 'lon', 'thing'], {'lat': -100, 'lon': -40, 'thing': 'foo'})
+        layer_name, ext = os.path.splitext(os.path.basename(csv_file))
+        # - First step - Upload file
+        resp, data = self.client.upload_file(csv_file)
+        #     - Assertions
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data.get('status', ''), 'incomplete')
+        self.assertTrue(data.get('required_input', ''))
+        self.assertTrue(data.get('success', ''))
+        upload_id = data['id']
+        expected_url = f"/upload/csv?id={upload_id}"
+        self.assertIn(expected_url, data.get('redirect_to', ''))
+
+        # - Next step - Setup lat and lng fields
+        self.client.make_request(expected_url, ajax=False, force_login=True)
+        resp = self.client.make_request(expected_url, data={"lat": "lat", "lng": "lon"}, ajax=True, force_login=True)
+        data = resp.json()
+        #    - Assertions
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data.get('status', ''), 'incomplete')
+        self.assertTrue(data.get('required_input', ''))
+        self.assertTrue(data.get('success', ''))
+        expected_url = f"/upload/srs?id={upload_id}"
+        self.assertIn(expected_url, data.get('redirect_to', ''))
+
+        # - Next step - srs
+        resp = self.client.make_request(expected_url, data={"source": "EPSG:4326", "target": ""}, ajax=True, force_login=True)
+        data = resp.json()
+        #    - Assertions
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data.get('status', ''), 'incomplete')
+        self.assertEqual(data.get('required_input', ''), '')
+        self.assertTrue(data.get('success', ''))
+        expected_url = f"/upload/check?id={upload_id}"
+        self.assertIn(expected_url, data.get('redirect_to', ''))
+
+        # - Next step - check
+        resp = self.client.make_request(expected_url, ajax=True, force_login=True)
+        data = resp.json()
+        #    - Assertions
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(data.get('success', False))
+        expected_url = f"/upload/final?id={upload_id}"
+        self.assertIn(expected_url, data.get('redirect_to', ''))
+
+        # - Before final step assert that status is WAITING
+        upload_file_url = "/api/v2/uploads/?filter{import_id}=" + str(upload_id)
+        resp = self.client.make_request(upload_file_url, force_login=True)
+        data = resp.json()
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['uploads'][0]['state'], 'WAITING')
+        self.assertFalse(data['uploads'][0]['complete'])
+
+        # - Next step - final
+        resp = self.client.make_request(expected_url, ajax=True, force_login=True, max_retry=1, timeout=60)
+        data = resp.json()
+        #    - Assertions
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data.get('status', ''), 'finished')
+        self.assertEqual(data.get('required_input', ''), '')
+        self.assertTrue(data.get('success', False))
+
+        # - After final step assert that status is PROCESSED
+        resp = self.client.make_request(upload_file_url, force_login=True)
+        data = resp.json()
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['uploads'][0]['state'], 'COMPLETE')
+        self.assertTrue(data['uploads'][0]['complete'])
+
 
 @unittest.skipUnless(ogc_server_settings.datastore_db,
                      'Vector datastore not enabled')
