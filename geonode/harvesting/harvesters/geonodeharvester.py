@@ -336,7 +336,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             except AttributeError:
                 srid = None
             defaults.update({
+                "alternate": defaults["name"],
                 "name": defaults["name"].rpartition(":")[-1],
+                "workspace": defaults["name"].rpartition(":")[0],
                 "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
                 "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
                 "srid": srid,
@@ -393,10 +395,11 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         )
         response.raise_for_status()
         result = []
-        for resource in response.json().get("objects", []):
+        for resource in response.json().get('objects', []):
             brief_resource = base.BriefRemoteResource(
                 unique_identifier=self._extract_unique_identifier(resource),
-                title=resource["title"],
+                title=resource['title'],
+                abstract=resource['abstract'],
                 resource_type=resource_type.value,
             )
             result.append(brief_resource)

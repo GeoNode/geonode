@@ -276,7 +276,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Ensures that when a user is in a group, the group permissions
         extend to the user.
         """
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         # Set the default permissions
         layer.set_default_permissions()
 

@@ -56,5 +56,6 @@ resource_info_example = HarvestedResourceInfo(
 brief_remote_resource_example = BriefRemoteResource(
     unique_identifier='id',
     title='Test',
+    abstract='',
     resource_type='Layer'
 )

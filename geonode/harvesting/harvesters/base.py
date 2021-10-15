@@ -51,6 +51,7 @@ class HarvestingException(Exception):
 class BriefRemoteResource:
     unique_identifier: str
     title: str
+    abstract: str
     resource_type: str
     should_be_harvested: bool = False
 
@@ -249,7 +250,13 @@ class BaseHarvesterWorker(abc.ABC):
                 harvested_info.resource_descriptor.identification.supplemental_information),
             "title": harvested_info.resource_descriptor.identification.title,
             "files": [str(path) for path in harvested_info.copied_resources],
+            "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url
         }
+
+        if harvestable_resource.remote_resource_type in ('layers', 'datasets'):
+            defaults["name"] = harvested_info.resource_descriptor.identification.name
+            defaults["ows_url"] = harvested_info.resource_descriptor.distribution.wms_url
+
         if self.should_copy_resource(harvestable_resource):
             defaults["sourcetype"] = enumerations.SOURCE_TYPE_COPYREMOTE
         else:
@@ -286,10 +293,11 @@ class BaseHarvesterWorker(abc.ABC):
         keywords = _consolidate_resource_keywords(
             harvested_info.resource_descriptor, geonode_resource, self.harvester_id)
         regions = harvested_info.resource_descriptor.identification.place_keywords
-        resource_manager.update(
-            str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=keywords)
+        # Make sure you set the "harvestable_resource.geonode_resource" before calling the "resource_manager"
         harvestable_resource.geonode_resource = geonode_resource
         harvestable_resource.save()
+        geonode_resource = resource_manager.update(
+            str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=keywords)
         self.finalize_resource_update(
             geonode_resource,
             harvested_info,

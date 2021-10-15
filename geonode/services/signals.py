@@ -19,35 +19,21 @@
 
 """signal handlers for geonode.services"""
 
-import re
 import logging
 
 from django.dispatch import receiver
 from django.db.models import signals
 
-from ..layers.models import Dataset
-
 from .models import Service
-from .models import HarvestJob
-from .serviceprocessors import base
 
 logger = logging.getLogger(__name__)
 
 
-@receiver(signals.post_delete, sender=Dataset)
-def remove_harvest_job(sender, **kwargs):
-    """Remove a Dataset's harvest job so that it may be re-imported later."""
-    layer = kwargs["instance"]
-    if layer.remote_service is not None:
-        workspace = base.get_geoserver_cascading_workspace(create=False)
-        resource_id = layer.alternate.split("-")[0] if re.match(r'^[0-9]+-', layer.alternate) else layer.alternate
-        resource_id = layer.alternate.split(":")[1] if re.match(f'^{workspace.name}:', resource_id) else layer.alternate
-        if HarvestJob.objects.filter(resource_id=resource_id):
-            for job in HarvestJob.objects.filter(resource_id=resource_id, service=layer.remote_service):
-                logger.debug(f"job: {job.id}")
-                job.delete()
-    else:
-        pass  # layer was not harvested from a service, we've nothing to do
+@receiver(signals.post_delete, sender=Service)
+def remove_harvesters(instance, **kwargs):
+    """Remove a Service's harvesters and related resources."""
+    if instance.harvester:
+        instance.harvester.delete()
 
 
 @receiver(signals.post_save, sender=Service)

@@ -54,7 +54,7 @@ class CreateServiceForm(forms.Form):
             (enumerations.GN_WMS, _('GeoNode (Web Map Service)')),
             # (enumerations.GN_CSW, _('GeoNode (Catalogue Service)')),
             # (enumerations.CSW, _('Catalogue Service')),
-            (enumerations.REST_MAP, _('ArcGIS REST MapServer')),
+            # (enumerations.REST_MAP, _('ArcGIS REST MapServer')),
             # (enumerations.REST_IMG, _('ArcGIS REST ImageServer')),
             # (enumerations.OGP, _('OpenGeoPortal')),
             # (enumerations.HGL, _('Harvard Geospatial Library')),
@@ -86,10 +86,9 @@ class CreateServiceForm(forms.Form):
                     _("Could not connect to the service at %(url)s"),
                     params={"url": url}
                 )
-            if not service_handler.has_resources():
+            if not service_handler.probe():
                 raise ValidationError(
-                    _("Could not find importable resources for the service "
-                      "at %(url)s"),
+                    _("Could not connect to the service at %(url)s"),
                     params={"url": url}
                 )
             elif service_type not in (enumerations.AUTO, enumerations.OWS):

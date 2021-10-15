@@ -27,13 +27,15 @@
                             <thead>
                             <tr>
                                 <th>{% if not errored_state %}<input type="checkbox" id="checkAll"/>{% endif %}</th>
-                                <th>{% trans "Id" %}</th>
                                 <th>{% trans "Name" %}</th>
-                                <th>{% trans "Description" %}</th>
+                                <th>{% trans "Title" %}</th>
+                                <th>{% trans "Abstract" %}</th>
+                                <th>{% trans "Type" %}</th>
                             </tr>
 
                             <tr style="background-color: lightgray">
-                                {% for filter_info in  filter_row %}
+                                <th/>
+                                {% for filter_info in filter_row %}
                                     {% if filter_info.id %}
                                         <th>
                                             <div style="display:flex;">
@@ -42,10 +44,9 @@
                                                        name="typeahead_search" autocomplete="off"
                                                        style="border-radius: 7px ; flex:1"/>
                                                 <button id="btn-{{ filter_info.id }}"
-                                                        class="btn fa fa-filter" style="float:right"/>
+                                                        class="btn" style="float:right"><i class="fa fa-filter"></i></button>
                                             </div>
                                         </th>
-
                                     {% else %}
                                         <th/>
                                     {% endif %}
@@ -62,9 +63,10 @@
                                                    id="option_{{ resource_meta.id }}" value="{{ resource_meta.id }}"/>
                                         {% endif %}
                                     </td>
-                                    <td>{{ resource_meta.id }}</td>
+                                    <td>{{ resource_meta.unique_identifier }}</td>
                                     <td>{{ resource_meta.title }}</td>
                                     <td>{{ resource_meta.abstract }}</td>
+                                    <td>{{ resource_meta.remote_resource_type }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -176,8 +178,10 @@
         {% for resource_meta in resources.paginator.object_list %}
             resources.push({
                 id: '{{ resource_meta.id }}',
+                name: '{{ resource_meta.unique_identifier }}',
                 title: '{{ resource_meta.title }}',
-                abstract: '{{ resource_meta.abstract|safe|truncatechars:20|striptags }}'
+                abstract: '{{ resource_meta.abstract|safe|truncatechars:20|striptags }}',
+                type: '{{ resource_meta.remote_resource_type }}'
             });
         {% endfor %}
         var filterInfo = {{ filter_row|safe }};

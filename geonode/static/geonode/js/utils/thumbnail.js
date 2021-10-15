@@ -51,8 +51,15 @@ var createMapThumbnail = function(obj_id) {
         },
         success: function (data, status, jqXHR) {
             try {
-                $("#_thumbnail_feedbacks").find('.modal-title').text(status);
-                $("#_thumbnail_feedbacks").find('.modal-body').text("Thumbnail saved");
+                var title = "";
+                var body = data.message;
+                if (data.success || status === 'success') {
+                    title = "OK";
+                } else {
+                    title = "Warning";
+                }
+                $("#_thumbnail_feedbacks").find('.modal-title').text(title);
+                $("#_thumbnail_feedbacks").find('.modal-body').text(body);
                 $("#_thumbnail_feedbacks").modal("show");
             } catch (err) {
                 console.log(err);
