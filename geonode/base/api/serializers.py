@@ -415,9 +415,13 @@ class TopicCategorySerializer(BaseResourceCountSerializer):
         fields = '__all__'
 
 
-class OwnerSerializer(BaseResourceCountSerializer, UserSerializer):
+class OwnerSerializer(BaseResourceCountSerializer):
 
-    class Meta(UserSerializer.Meta):
+    class Meta:
         name = 'owners'
         count_type = 'owner'
         view_name = 'owners-list'
+        model = get_user_model()
+        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar', 'perms')
+
+    avatar = AvatarUrlField(240, read_only=True)
