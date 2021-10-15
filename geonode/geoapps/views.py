@@ -175,35 +175,6 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
     return render(request, template, context=_ctx)
 
 
-def geoapp_metadata_detail(request, geoappid, template='apps/app_metadata_detail.html'):
-    try:
-        geoapp_obj = _resolve_geoapp(
-            request,
-            geoappid,
-            'view_resourcebase',
-            _PERMISSION_MSG_METADATA)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not geoapp_obj:
-        raise Http404(_("Not found"))
-
-    group = None
-    if geoapp_obj.group:
-        try:
-            group = GroupProfile.objects.get(slug=geoapp_obj.group.name)
-        except ObjectDoesNotExist:
-            group = None
-    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-    register_event(request, EventType.EVENT_VIEW_METADATA, geoapp_obj)
-    return render(request, template, context={
-        "resource": geoapp_obj,
-        "group": group,
-        'SITEURL': site_url
-    })
-
-
 @login_required
 @check_keyword_write_perms
 def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=True):
