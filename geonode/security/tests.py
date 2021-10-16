@@ -50,6 +50,7 @@ from geonode.base.models import (
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public, create_single_layer
 from geonode.people.utils import get_valid_user
+from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.compat import ensure_string
@@ -1312,7 +1313,11 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                 layer.get_self_resource()))
 
         # Test with a Map object
-        # TODO
+        a_map = Map.objects.first()
+        a_map.set_default_permissions()
+        perms = get_users_with_perms(a_map)
+        self.assertIsNotNone(perms)
+        self.assertGreaterEqual(len(perms), 1)
 
     # now we test permissions, first on an authenticated user and then on the
     # anonymous user
