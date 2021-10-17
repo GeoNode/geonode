@@ -548,9 +548,10 @@ class ResourceManager(ResourceManagerInterface):
                     GroupObjectPermission.objects.filter(
                         content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
                         object_pk=_resource.id).delete()
-                    _resource = self._concrete_resource_manager.remove_permissions(uuid, instance=_resource)
+                    if not self._concrete_resource_manager.remove_permissions(uuid, instance=_resource):
+                        raise Exception("Could not complete concrete manager operation successfully!")
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
-                return _resource
+                return True
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
@@ -687,10 +688,11 @@ class ResourceManager(ResourceManagerInterface):
                             assign_perm('change_dataset_style', _owner, _resource)
 
                     _resource.handle_moderated_uploads()
-                    _resource = self._concrete_resource_manager.set_permissions(
-                        uuid, instance=_resource, owner=owner, permissions=permissions, created=created)
+                    if not self._concrete_resource_manager.set_permissions(
+                            uuid, instance=_resource, owner=owner, permissions=permissions, created=created):
+                        raise Exception("Could not complete concrete manager operation successfully!")
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
-                return _resource
+                return True
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
@@ -722,10 +724,11 @@ class ResourceManager(ResourceManagerInterface):
                             assign_perm(perm,
                                         anonymous_group, _resource.get_self_resource())
 
-                    _resource = self._concrete_resource_manager.set_workflow_permissions(
-                        uuid, instance=_resource, approved=approved, published=published)
+                    if not self._concrete_resource_manager.set_workflow_permissions(
+                            uuid, instance=_resource, approved=approved, published=published):
+                        raise Exception("Could not complete concrete manager operation successfully!")
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
-                return _resource
+                return True
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
