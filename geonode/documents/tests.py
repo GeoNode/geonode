@@ -181,18 +181,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         d = Document.objects.get(title='GeoNode Map')
         self.assertEqual(d.doc_url, 'http://www.geonode.org/map.pdf')
 
-        form_data['doc_url'] = 'http://www.geonode.org/mapz.pdf'
-        response = self.client.post(
-            reverse(
-                'document_replace',
-                args=[
-                    d.id]),
-            data=form_data)
-        self.assertEqual(response.status_code, 302)
-
-        d = Document.objects.get(title='GeoNode Map')
-        self.assertEqual(d.doc_url, 'http://www.geonode.org/mapz.pdf')
-
     def test_upload_document_form(self):
         """
         Tests the Upload form.
@@ -255,29 +243,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         response = self.client.get(reverse('document_embed', args=(str(d.id),)))
         self.assertEqual(response.status_code, 200)
-
-    @patch("geonode.documents.tasks.create_document_thumbnail")
-    def test_document_metadata_details(self, thumb):
-        thumb.return_value = True
-        d = Document.objects.all().first()
-        d.set_default_permissions()
-
-        response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix='', html=False)
-        self.assertContains(response, "Published", count=1, status_code=200, msg_prefix='', html=False)
-        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix='', html=False)
-        self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix='', html=False)
-
-        # ... now assigning a Group to the document
-        group = Group.objects.first()
-        d.group = group
-        d.save()
-        response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix='', html=False)
-        d.group = None
-        d.save()
 
     def test_access_document_upload_form(self):
         """Test the form page is returned correctly via GET request /documents/upload"""

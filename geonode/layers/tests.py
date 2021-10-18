@@ -54,7 +54,6 @@ from geonode.layers.views import _resolve_dataset
 from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
 from guardian.shortcuts import get_anonymous_user
-from geonode.base.forms import BatchPermissionsForm
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
 from geonode.tests.utils import NotificationsTestsHelper
@@ -892,84 +891,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         for resource in resources:
             for word in resource.keywords.all():
                 self.assertTrue(word.name in keywords.split(','))
-
-    def test_batch_permissions(self):
-        """
-        Test batch editing of test_batch_permissions.
-        """
-        group = Group.objects.first()
-        Model = Dataset
-        view = 'dataset_batch_permissions'
-        resources = Model.objects.all()[:3]
-        ids = ','.join(str(element.pk) for element in resources)
-        # test non-admin access
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        response = self.client.get(reverse(view), data={"ids": ids})
-        self.assertTrue(response.status_code in (401, 403))
-        # test group permissions
-        self.assertTrue(self.client.login(username='admin', password='admin'))
-        data = {
-            'group': group.id,
-            'permission_type': ['r', ],
-            'mode': 'set',
-            'ids': ids
-        }
-        form = BatchPermissionsForm(data=data)
-        logger.debug(f" -- perm_spec[groups] --> BatchPermissionsForm errors: {form.errors}")
-        self.assertTrue(form.is_valid())
-        self.assertEqual(len(form.errors), 0)
-        response = self.client.post(
-            reverse(view),
-            data=data,
-        )
-        self.assertEqual(response.status_code, 302)
-        utils.set_datasets_permissions(
-            'r',
-            [resource.name for resource in Model.objects.filter(
-                id__in=[int(_id) for _id in ids.split(",")])],
-            [],
-            [group.name, ],
-            False,
-            verbose=True
-        )
-        resources = Model.objects.filter(id__in=[int(_id) for _id in ids.split(",")])
-        logger.debug(f" -- perm_spec[groups] --> Testing group {group}")
-        for resource in resources:
-            perm_spec = resource.get_all_level_info()
-            logger.debug(f" -- perm_spec[groups] --> {perm_spec['groups']}")
-            self.assertTrue(group in perm_spec["groups"])
-        # test user permissions
-        user = get_user_model().objects.first()
-        data = {
-            'user': user.id,
-            'permission_type': ['r', ],
-            'mode': 'set',
-            'ids': ids
-        }
-        form = BatchPermissionsForm(data=data)
-        logger.debug(f" -- perm_spec[users] --> BatchPermissionsForm errors: {form.errors}")
-        self.assertTrue(form.is_valid())
-        self.assertEqual(len(form.errors), 0)
-        response = self.client.post(
-            reverse(view),
-            data=data,
-        )
-        self.assertEqual(response.status_code, 302)
-        utils.set_datasets_permissions(
-            'r',
-            [resource.name for resource in Model.objects.filter(
-                id__in=[int(_id) for _id in ids.split(",")])],
-            [user.username, ],
-            [],
-            False,
-            verbose=True
-        )
-        resources = Model.objects.filter(id__in=[int(_id) for _id in ids.split(",")])
-        logger.debug(f" -- perm_spec[users] --> Testing user {user}")
-        for resource in resources:
-            perm_spec = resource.get_all_level_info()
-            logger.debug(f" -- perm_spec[users] --> {perm_spec['users']}")
-            self.assertTrue(user in perm_spec["users"])
 
     def test_surrogate_escape_string(self):
         surrogate_escape_raw = "Zo\udcc3\udcab"

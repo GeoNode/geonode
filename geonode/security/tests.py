@@ -1323,14 +1323,14 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'view_resourcebase',
                 layer.get_self_resource()))
 
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
         # 1.2 has not view_resourcebase: verify that bobby can not access the
         # layer detail page
         remove_perm('view_resourcebase', bob, layer.get_self_resource())
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (401, 403))
 
         # 2. change_resourcebase
@@ -1346,21 +1346,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'change_resourcebase',
                 layer.get_self_resource()))
         response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
-
-        # 3. delete_resourcebase
-        # 3.1 has not delete_resourcebase: verify that bobby cannot access the
-        # layer delete page
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
-        # 3.2 has delete_resourcebase: verify that bobby can access the layer
-        # delete page
-        assign_perm('delete_resourcebase', bob, layer.get_self_resource())
-        self.assertTrue(
-            bob.has_perm(
-                'delete_resourcebase',
-                layer.get_self_resource()))
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
 
         # 4. change_resourcebase_metadata
@@ -1433,26 +1418,20 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.anonymous_user.has_perm(
                 'view_resourcebase',
                 layer.get_self_resource()))
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
         # 1.2 has not view_resourcebase: verify that anonymous user can not
         # access the layer detail page
         remove_perm('view_resourcebase', self.anonymous_user, layer.get_self_resource())
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (302, 403))
 
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that anonymous user cannot
         # access the layer replace page but redirected to login
         response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
-        self.assertTrue(response.status_code in (302, 403))
-
-        # 3. delete_resourcebase
-        # 3.1 has not delete_resourcebase: verify that anonymous user cannot
-        # access the layer delete page but redirected to login
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (302, 403))
 
         # 4. change_resourcebase_metadata
