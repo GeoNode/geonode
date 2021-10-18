@@ -48,7 +48,7 @@ pyopenssl==21.0.0
 # geopython dependencies
 pyproj==3.2.1
 OWSLib==0.25.0
-pycsw==2.6.0
+pycsw==2.6.1
 SQLAlchemy==1.4.25 # required by PyCSW
 Shapely==1.7.1
 mercantile==1.2.1
