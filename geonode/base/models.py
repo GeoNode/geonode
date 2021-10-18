@@ -1382,17 +1382,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
 
     def set_processing_state(self, state):
-        if self.state != state:
-            self.state = state
-            ResourceBase.objects.filter(id=self.id).update(state=state)
-            if state == enumerations.STATE_PROCESSED:
-                self.clear_dirty_state()
+        self.state = state
+        ResourceBase.objects.filter(id=self.id).update(state=state)
+        if state == enumerations.STATE_PROCESSED:
+            self.clear_dirty_state()
 
     @property
     def processed(self):
         if self.state == enumerations.STATE_PROCESSED:
             self.clear_dirty_state()
-        else:
+        elif self.state != enumerations.STATE_RUNNING:
             self.set_dirty_state()
         return not self.dirty_state
 
