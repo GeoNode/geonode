@@ -380,8 +380,9 @@ class BaseResourceCountSerializer(BaseDynamicModelSerializer):
 
 class HierarchicalKeywordSerializer(BaseResourceCountSerializer):
 
-    class Meta(SimpleHierarchicalKeywordSerializer.Meta):
+    class Meta:
         name = 'keywords'
+        model = HierarchicalKeyword
         count_type = 'keywords'
         view_name = 'keywords-list'
         fields = '__all__'
@@ -399,8 +400,9 @@ class ThesaurusKeywordSerializer(BaseResourceCountSerializer):
 
 class RegionSerializer(BaseResourceCountSerializer):
 
-    class Meta(SimpleRegionSerializer.Meta):
+    class Meta:
         name = 'regions'
+        model = Region
         count_type = 'regions'
         view_name = 'regions-list'
         fields = '__all__'
@@ -408,8 +410,9 @@ class RegionSerializer(BaseResourceCountSerializer):
 
 class TopicCategorySerializer(BaseResourceCountSerializer):
 
-    class Meta(SimpleTopicCategorySerializer.Meta):
+    class Meta:
         name = 'categories'
+        model = TopicCategory
         count_type = 'category'
         view_name = 'categories-list'
         fields = '__all__'
