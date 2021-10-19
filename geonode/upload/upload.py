@@ -664,20 +664,32 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
             archive = upload_session.base_file.archive
+            logger.error(f'using uploaded sld file from {archive}')
             zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-            zf.extract(sld_file[0], os.path.dirname(archive))
+            zf.extract(sld_file[0], os.path.dirname(archive), path=upload_session.tempdir)
             # Assign the absolute path to this file
             sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
-        sld_file = sld_file[0]
+        else:
+            _sld_file = f"{os.path.dirname(upload_session.tempdir)}/{os.path.basename(sld_file[0])}"
+            logger.error(f"copying [{sld_file[0]}] to [{_sld_file}]")
+            try:
+                shutil.copyfile(sld_file[0], _sld_file)
+                sld_file = _sld_file
+            except (IsADirectoryError, shutil.SameFileError) as e:
+                logger.exception(e)
+                sld_file = sld_file[0]
+            except Exception as e:
+                raise UploadException.from_exc(_('Error uploading Dataset'), e)
         sld_uploaded = True
     else:
         # get_files will not find the sld if it doesn't match the base name
         # so we've worked around that in the view - if provided, it will be here
         if upload_session.import_sld_file:
-            logger.debug('using provided sld file')
+            logger.error('using provided sld file from importer')
             base_file = upload_session.base_file
             sld_file = base_file[0].sld_files[0]
         sld_uploaded = False
+    logger.error(f'[sld_uploaded: {sld_uploaded}] sld_file: {sld_file}')
 
     # Make sure the layer does not exists already
     if dataset_uuid and Dataset.objects.filter(uuid=dataset_uuid).count():
