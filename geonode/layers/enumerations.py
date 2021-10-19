@@ -34,3 +34,14 @@ LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES = [
     'xsd:unsignedShort',
     'xsd:unsignedByte',
 ]
+GXP_PTYPES = {
+    'AUTO': 'gxp_wmscsource',
+    'OWS': 'gxp_wmscsource',
+    'WMS': 'gxp_wmscsource',
+    'WFS': 'gxp_wmscsource',
+    'WCS': 'gxp_wmscsource',
+    'REST_MAP': 'gxp_arcrestsource',
+    'REST_IMG': 'gxp_arcrestsource',
+    'HGL': 'gxp_hglsource',
+    'GN_WMS': 'gxp_geonodecataloguesource',
+}

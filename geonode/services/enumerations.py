@@ -53,18 +53,6 @@ SERVICE_TYPES = (
     # (GN_CSW, _('GeoNode (Catalogue Service)')),
 )
 
-GXP_PTYPES = {
-    'AUTO': 'gxp_wmscsource',
-    'OWS': 'gxp_wmscsource',
-    'WMS': 'gxp_wmscsource',
-    'WFS': 'gxp_wmscsource',
-    'WCS': 'gxp_wmscsource',
-    'REST_MAP': 'gxp_arcrestsource',
-    'REST_IMG': 'gxp_arcrestsource',
-    'HGL': 'gxp_hglsource',
-    'GN_WMS': 'gxp_geonodecataloguesource',
-}
-
 HARVESTER_TYPES = {
     'WMS': 'geonode.harvesting.harvesters.wms.OgcWmsHarvester',
     'GN_WMS': 'geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester',
