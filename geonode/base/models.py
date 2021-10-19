@@ -1022,10 +1022,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def __init__(self, *args, **kwargs):
         # Provide legacy support for bbox fields
-        bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
-        if all(bbox):
-            kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
-            kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
+        try:
+            bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
+            if all(bbox):
+                kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
+                kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
+        except Exception as e:
+            logger.exception(e)
         super().__init__(*args, **kwargs)
 
     def __str__(self):
@@ -1379,17 +1382,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
 
     def set_processing_state(self, state):
-        if self.state != state:
-            self.state = state
-            ResourceBase.objects.filter(id=self.id).update(state=state)
-            if state == enumerations.STATE_PROCESSED:
-                self.clear_dirty_state()
+        self.state = state
+        ResourceBase.objects.filter(id=self.id).update(state=state)
+        if state == enumerations.STATE_PROCESSED:
+            self.clear_dirty_state()
 
     @property
     def processed(self):
         if self.state == enumerations.STATE_PROCESSED:
             self.clear_dirty_state()
-        else:
+        elif self.state != enumerations.STATE_RUNNING:
             self.set_dirty_state()
         return not self.dirty_state
 
@@ -1507,17 +1509,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Sets the center coordinates and zoom level in EPSG:4326
         """
-        bbox = self.ll_bbox_polygon
-        center_x, center_y = self.ll_bbox_polygon.centroid.coords
-        center = Point(center_x, center_y, srid=4326)
-        self.center_x, self.center_y = center.coords
-        try:
-            ext = bbox.extent
-            width_zoom = math.log(360 / (ext[2] - ext[0]), 2)
-            height_zoom = math.log(360 / (ext[3] - ext[1]), 2)
-            self.zoom = math.ceil(min(width_zoom, height_zoom))
-        except ZeroDivisionError:
-            pass
+        if self.ll_bbox_polygon and len(self.ll_bbox_polygon.centroid.coords) > 0:
+            bbox = self.ll_bbox_polygon.clone()
+            center_x, center_y = bbox.centroid.coords
+            center = Point(center_x, center_y, srid=4326)
+            self.center_x, self.center_y = center.coords
+            try:
+                ext = bbox.extent
+                width_zoom = math.log(360 / (ext[2] - ext[0]), 2)
+                height_zoom = math.log(360 / (ext[3] - ext[1]), 2)
+                self.zoom = math.ceil(min(width_zoom, height_zoom))
+            except ZeroDivisionError:
+                pass
 
     def download_links(self):
         """assemble download links for pycsw"""

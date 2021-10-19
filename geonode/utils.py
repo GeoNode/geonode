@@ -337,7 +337,7 @@ def get_dataset_workspace(dataset):
                     settings, "CASCADE_WORKSPACE", default_workspace)
             else:
                 raise RuntimeError("Dataset is not cascaded")
-        except AttributeError:  # layer does not have a service
+        except Exception:  # layer does not have a service
             workspace = default_workspace
     return workspace
 
@@ -1913,7 +1913,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         # Set download links for WMS, WCS or WFS and KML
         logger.debug(" -- Resource Links[Set download links for WMS, WCS or WFS and KML]...")
-        links = wms_links(f"{ogc_server_settings.public_url}ows?",
+        instance_ows_url = f"{instance.ows_url}?" if instance.ows_url else f"{ogc_server_settings.public_url}ows?"
+        links = wms_links(instance_ows_url,
                           instance.alternate,
                           bbox,
                           srid,
@@ -1942,7 +1943,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                                     link_type='image').update(**_d)
 
         if instance.subtype == "vector":
-            links = wfs_links(f"{ogc_server_settings.public_url}ows?",
+            links = wfs_links(instance_ows_url,
                               instance.alternate,
                               bbox=None,  # bbox filter should be set at runtime otherwise conflicting with CQL
                               srid=srid)
@@ -1965,7 +1966,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     )
 
         elif instance.subtype == 'raster':
-            links = wcs_links(f"{ogc_server_settings.public_url}wcs?",
+            links = wcs_links(instance_ows_url,
                               instance.alternate,
                               bbox,
                               srid)
@@ -1996,7 +1997,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=html_link_url,
-                name=instance.alternate,
+                name=instance.alternate or instance.name,
                 link_type='html',
                 defaults=dict(
                     extension='html',
@@ -2055,9 +2056,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         logger.debug(" -- Resource Links[Thumbnail link]...done!")
 
         logger.debug(" -- Resource Links[OWS Links]...")
-        # ogc_wms_path = '%s/ows' % instance.workspace
-        ogc_wms_path = 'ows'
-        ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
+        ogc_wms_url = instance.ows_url or urljoin(ogc_server_settings.public_url, 'ows')
         ogc_wms_name = f'OGC WMS: {instance.workspace} Service'
         if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count() < 2:
             Link.objects.get_or_create(
@@ -2073,9 +2072,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             )
 
         if instance.subtype == "vector":
-            # ogc_wfs_path = '%s/wfs' % instance.workspace
-            ogc_wfs_path = 'ows'
-            ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
+            ogc_wfs_url = instance.ows_url or urljoin(ogc_server_settings.public_url, 'ows')
             ogc_wfs_name = f'OGC WFS: {instance.workspace} Service'
             if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).count() < 2:
                 Link.objects.get_or_create(
@@ -2091,9 +2088,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 )
 
         if instance.subtype == "raster":
-            # ogc_wcs_path = '%s/wcs' % instance.workspace
-            ogc_wcs_path = 'ows'
-            ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
+            ogc_wcs_url = instance.ows_url or urljoin(ogc_server_settings.public_url, 'ows')
             ogc_wcs_name = f'OGC WCS: {instance.workspace} Service'
             if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).count() < 2:
                 Link.objects.get_or_create(

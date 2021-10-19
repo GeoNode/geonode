@@ -17,11 +17,6 @@ class Migration(migrations.Migration):
             field=models.CharField(choices=[('geonode.harvesting.harvesters.geonode.GeonodeHarvester', 'geonode.harvesting.harvesters.geonode.GeonodeHarvester')], default='geonode.harvesting.harvesters.geonode.GeonodeHarvester', help_text='Harvester class used to perform harvesting sessions. New harvester types can be added by an admin by changing the main GeoNode `settings.py` file', max_length=255),
         ),
         migrations.AlterField(
-            model_name='harvester',
-            name='periodic_task',
-            field=models.OneToOneField(blank=True, editable=False, help_text='Periodic task used to configure harvest scheduling', null=True, on_delete=django.db.models.deletion.CASCADE, to='django_celery_beat.PeriodicTask'),
-        ),
-        migrations.AlterField(
             model_name='harvestingsession',
             name='harvester',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='harvesting_sessions', to='harvesting.Harvester'),

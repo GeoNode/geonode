@@ -23,7 +23,7 @@ class ManagementCommandJobAdminForm(forms.ModelForm):
     def clean_args(self):
         value = self.cleaned_data.get('args')
 
-        if type(value) != list:
+        if not isinstance(value, list):
             self.add_error("args", 'args must be a list')
 
         if "--help" in value:
@@ -34,7 +34,7 @@ class ManagementCommandJobAdminForm(forms.ModelForm):
     def clean_kwargs(self):
         value = self.cleaned_data.get('kwargs')
 
-        if type(value) != dict:
+        if not isinstance(value, dict):
             self.add_error("kwargs", 'kwargs must be a dict')
 
         return value

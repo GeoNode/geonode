@@ -19,16 +19,15 @@
 import logging
 
 from urllib.parse import (
-    urljoin,
     urlparse,
     ParseResult)
 
 from django.db import models
-from django.urls import reverse
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.base.models import ResourceBase
+from geonode.harvesting.models import Harvester
 from geonode.people.enumerations import ROLE_VALUES
 
 from . import enumerations
@@ -40,7 +39,7 @@ class Service(ResourceBase):
     """Service Class to represent remote Geo Web Services"""
 
     type = models.CharField(
-        max_length=10,
+        max_length=100,
         choices=enumerations.SERVICE_TYPES
     )
     method = models.CharField(
@@ -59,12 +58,8 @@ class Service(ResourceBase):
         unique=True,
         db_index=True
     )
-    proxy_base = models.URLField(
-        null=True,
-        blank=True
-    )
     version = models.CharField(
-        max_length=10,
+        max_length=100,
         null=True,
         blank=True
     )
@@ -79,25 +74,6 @@ class Service(ResourceBase):
         null=True,
         blank=True
     )
-    online_resource = models.URLField(
-        False,
-        null=True,
-        blank=True
-    )
-    fees = models.CharField(
-        max_length=1000,
-        null=True,
-        blank=True
-    )
-    access_constraints = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True
-    )
-    connection_params = models.TextField(
-        null=True,
-        blank=True
-    )
     extra_queryparams = models.TextField(
         null=True,
         blank=True
@@ -107,60 +83,15 @@ class Service(ResourceBase):
         null=True,
         blank=True
     )
-    username = models.CharField(
-        max_length=50,
-        null=True,
-        blank=True
-    )
-    password = models.CharField(
-        max_length=50,
-        null=True,
-        blank=True
-    )
-    api_key = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True
-    )
-    workspace_ref = models.URLField(
-        False,
-        null=True,
-        blank=True
-    )
-    store_ref = models.URLField(
-        null=True,
-        blank=True
-    )
-    resources_ref = models.URLField(
-        null=True,
-        blank=True
-    )
-    profiles = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        through='ServiceProfileRole'
-    )
-    first_noanswer = models.DateTimeField(
-        null=True,
-        blank=True
-    )
-    noanswer_retries = models.PositiveIntegerField(
-        null=True,
-        blank=True
-    )
-    external_id = models.IntegerField(
-        null=True,
-        blank=True
-    )
-    parent = models.ForeignKey(
-        'services.Service',
+
+    # Foreign Keys
+
+    harvester = models.ForeignKey(
+        Harvester,
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        related_name='service_set'
-    )
-    probe = models.IntegerField(
-        default=200
-    )
+        related_name='service_harvester')
 
     # Supported Capabilities
 
@@ -168,16 +99,23 @@ class Service(ResourceBase):
         return str(self.name)
 
     @property
-    def service_url(self):
+    def probe(self):
+        if self.harvester:
+            return self.harvester.remote_available
+        return False
+
+    def _get_service_url(self):
         parsed_url = urlparse(self.base_url)
         encoded_get_args = self.extra_queryparams
-        service_url = ParseResult(
+        _service_url = ParseResult(
             parsed_url.scheme, parsed_url.netloc, parsed_url.path,
             parsed_url.params, encoded_get_args, parsed_url.fragment
         )
-        service_url = service_url.geturl() if not self.proxy_base else urljoin(
-            settings.SITEURL, reverse('service_proxy', args=[self.id]))
-        return service_url
+        return _service_url.geturl()
+
+    @property
+    def service_url(self):
+        return self._get_service_url()
 
     @property
     def ptype(self):
@@ -191,14 +129,6 @@ class Service(ResourceBase):
 
     def get_absolute_url(self):
         return '/services/%i' % self.id
-
-    def probe_service(self):
-        from geonode.utils import http_client
-        try:
-            resp, content = http_client.request(self.service_url)
-            return resp.status_code
-        except Exception:
-            return 404
 
     class Meta:
         # custom permissions,
@@ -218,25 +148,3 @@ class ServiceProfileRole(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     role = models.CharField(choices=ROLE_VALUES, max_length=255, help_text=_(
         'function performed by the responsible party'))
-
-
-class HarvestJob(models.Model):
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    resource_id = models.CharField(max_length=255)
-    status = models.CharField(
-        choices=(
-            (enumerations.QUEUED, enumerations.QUEUED),
-            (enumerations.CANCELLED, enumerations.QUEUED),
-            (enumerations.IN_PROCESS, enumerations.IN_PROCESS),
-            (enumerations.PROCESSED, enumerations.PROCESSED),
-            (enumerations.FAILED, enumerations.FAILED),
-        ),
-        default=enumerations.QUEUED,
-        max_length=15,
-    )
-    details = models.TextField(null=True, blank=True, default=_("Resource is queued"))
-
-    def update_status(self, status, details=""):
-        self.status = status
-        self.details = details
-        self.save()

@@ -469,6 +469,14 @@ class BaseApiTests(APITestCase):
                         'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'owner'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'manage',
+                        'username': 'admin'
                     }
                 ],
                 'organizations': [],
@@ -541,6 +549,14 @@ class BaseApiTests(APITestCase):
                         'last_name': norman.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'edit'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'manage',
+                        'username': 'admin'
                     }
                 ],
                 'organizations': [],
@@ -572,6 +588,14 @@ class BaseApiTests(APITestCase):
                     'last_name': bobby.last_name,
                     'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                     'permissions': 'owner'
+                },
+                {
+                    'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                    'first_name': 'admin',
+                    'id': 1,
+                    'last_name': '',
+                    'permissions': 'manage',
+                    'username': 'admin'
                 }
             ],
             'organizations': [],
@@ -620,6 +644,14 @@ class BaseApiTests(APITestCase):
                         'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
                         'permissions': 'owner'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'manage',
+                        'username': 'admin'
                     }
                 ],
                 'organizations': [],
@@ -1019,7 +1051,9 @@ class BaseApiTests(APITestCase):
         response = self.client.post(url, data=payload, format='json')
 
         expected = {
-            "thumbnail_url": "http://localhost:8000/mocked_url.jpg"
+            'message': 'Thumbnail correctly created.',
+            'success': True,
+            'thumbnail_url': 'http://localhost:8000/mocked_url.jpg'
         }
         self.assertEqual(response.status_code, 200)
         self.assertEqual(expected, response.json())
@@ -1044,7 +1078,8 @@ class BaseApiTests(APITestCase):
         response = self.client.post(url, data=payload, format='json')
 
         expected = {
-            "message": f"Resource selected with id {dataset_id} does not exists"
+            'message': f'Resource selected with id {dataset_id} does not exists',
+            'success': False
         }
         self.assertEqual(response.status_code, 404)
         self.assertEqual(expected, response.json())
@@ -1064,7 +1099,8 @@ class BaseApiTests(APITestCase):
         response = self.client.post(url, data=payload, format='json')
 
         expected = {
-            "message": "Not implemented: Endpoint available only for Dataset and Maps"
+            'message': 'Not implemented: Endpoint available only for Dataset and Maps',
+            'success': False
         }
         self.assertEqual(response.status_code, 405)
         self.assertEqual(expected, response.json())
@@ -1075,7 +1111,7 @@ class BaseApiTests(APITestCase):
         Given a logged User and an existing dataset, should raise a ThumbnailException.
         """
         # Admin
-        self.client.login(username="admin", password="admin")
+        self.assertTrue(self.client.login(username='admin', password='admin'))
         dataset_id = Dataset.objects.first().resourcebase_ptr_id
         url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
         payload = {
@@ -1085,7 +1121,141 @@ class BaseApiTests(APITestCase):
         response = self.client.post(url, data=payload, format='json')
 
         expected = {
-            "message": "Some exception during thumb creation"
+            'message': 'Some exception during thumb creation',
+            'success': False
         }
         self.assertEqual(response.status_code, 500)
         self.assertEqual(expected, response.json())
+
+    def test_manager_can_edit_map(self):
+        """
+        REST API must not forbid saving maps and apps to non-admin and non-owners.
+        """
+        from uuid import uuid1
+        from geonode.maps.models import Map
+        _map = Map.objects.filter(uuid__isnull=False, owner__username='admin').first()
+        if not len(_map.uuid):
+            _map.uuid = str(uuid1)
+            _map.save()
+        resource = ResourceBase.objects.filter(uuid=_map.uuid).first()
+        bobby = get_user_model().objects.get(username='bobby')
+
+        # Add perms to Bobby
+        resource_perm_spec_patch = {
+            'users': [
+                {
+                    'id': bobby.id,
+                    'username': bobby.username,
+                    'first_name': bobby.first_name,
+                    'last_name': bobby.last_name,
+                    'avatar': '',
+                    'permissions': 'manage'
+                }
+            ]
+        }
+
+        # Patch the resource perms
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec_patch)}"
+        set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
+        response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data.get('status'))
+        self.assertIsNotNone(response.data.get('status_url'))
+        status = response.data.get('status')
+        status_url = response.data.get('status_url')
+        _counter = 0
+        while _counter < 100 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
+            response = self.client.get(status_url)
+            status = response.data.get('status')
+            sleep(3.0)
+            _counter += 1
+            logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
+        self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
+
+        get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': _map.get_self_resource().pk})}/", 'permissions')
+        response = self.client.get(get_perms_url, format='json')
+        self.assertEqual(response.status_code, 200)
+        resource_perm_spec = response.data
+        self.assertEqual(
+            resource_perm_spec,
+            {
+                'users': [
+                    {
+                        'id': bobby.id,
+                        'username': 'bobby',
+                        'first_name': 'bobby',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'manage'
+                    },
+                    {
+                        'id': 1,
+                        'username': 'admin',
+                        'first_name': 'admin',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'permissions': 'owner'
+                    }
+                ],
+                'organizations': [],
+                'groups': [
+                    {
+                        'id': 3,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'download'
+                    },
+                    {
+                        'id': 2,
+                        'title': 'Registered Members',
+                        'name': 'registered-members',
+                        'permissions': 'none'
+                    }
+                ]
+            }
+        )
+
+        # Fetch the map perms as user "bobby"
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(get_perms_url, format='json')
+        self.assertEqual(response.status_code, 200)
+        resource_perm_spec = response.data
+        self.assertEqual(
+            resource_perm_spec,
+            {
+                'users': [
+                    {
+                        'id': 1,
+                        'username': 'admin',
+                        'first_name': 'admin',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'permissions': 'owner'
+                    },
+                    {
+                        'id': bobby.id,
+                        'username': 'bobby',
+                        'first_name': 'bobby',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'manage'
+                    }
+                ],
+                'organizations': [],
+                'groups': [
+                    {
+                        'id': 3,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'download'
+                    },
+                    {
+                        'id': 2,
+                        'title': 'Registered Members',
+                        'name': 'registered-members',
+                        'permissions': 'none'
+                    }
+                ]
+            }
+        )

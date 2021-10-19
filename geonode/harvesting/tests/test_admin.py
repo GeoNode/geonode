@@ -38,18 +38,20 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
 
     def test_add_harvester(self):
         data = {
-            'remote_url': "http://fake.com",
             'name': 'harvester',
+            'remote_url': "http://fake.com",
+            'harvesting_session_update_frequency': 60,
+            'refresh_harvestable_resources_update_frequency': 30,
+            'check_availability_frequency': 10,
             'harvester_type_specific_configuration': '{}',
             'harvester_type': self.harvester_type,
             'status': models.Harvester.STATUS_READY,
-            'update_frequency': 60,
-            'check_availability_frequency': 30,
             'default_owner': self.user.pk
 
         }
         self.assertFalse(models.Harvester.objects.filter(name=data["name"]).exists())
         response = self.client.post(reverse('admin:harvesting_harvester_add'), data)
+        print(f"response: {response.content}")
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)  # response from admin
         harvester = models.Harvester.objects.get(name=data["name"])
         self.assertEqual(harvester.name, data['name'])
@@ -103,6 +105,16 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
             model_admin.initiate_perform_harvesting(None, [mock_harvester])
             mock_harvester.update_availability.assert_called()
             mock_harvester.initiate_perform_harvesting.assert_not_called()
+
+    def test_reset_harvester_status(self):
+        mock_harvester_model = mock.MagicMock(spec=models.Harvester)
+        mock_harvester = mock_harvester_model.return_value
+        mock_harvester.status = models.Harvester.STATUS_PERFORMING_HARVESTING
+        model_admin = admin.HarvesterAdmin(model=mock_harvester, admin_site=AdminSite())
+        with mock.patch.object(model_admin, "message_user"):
+            model_admin.reset_harvester_status(None, [mock_harvester])
+            self.assertEqual(mock_harvester.status, models.Harvester.STATUS_READY)
+            mock_harvester.save.assert_called()
 
 
 class AsynchronousHarvestingSessionAdminTestCase(GeoNodeBaseTestSupport):

@@ -55,6 +55,7 @@ from .utils import (
     resourcebase_post_save)
 
 from ..base import enumerations
+from ..services.models import Service
 from ..base.models import ResourceBase
 from ..layers.metadata import parse_metadata
 from ..documents.models import Document, DocumentResourceLink
@@ -248,19 +249,6 @@ class ResourceManager(ResourceManagerInterface):
                     - Remove the layer default style.
                     """
                     try:
-                        if _resource.get_real_instance().remote_service is not None:
-                            from geonode.services.models import HarvestJob
-                            _resource_id = _resource.get_real_instance().alternate
-                            HarvestJob.objects.filter(
-                                service=_resource.get_real_instance().remote_service, resource_id=_resource_id).delete()
-                            _resource_id = _resource.get_real_instance().alternate.split(":")[-1] if len(_resource.get_real_instance().alternate.split(":")) else None
-                            if _resource_id:
-                                HarvestJob.objects.filter(
-                                    service=_resource.get_real_instance().remote_service, resource_id=_resource_id).delete()
-                    except Exception as e:
-                        logger.exception(e)
-
-                    try:
                         from geonode.maps.models import MapLayer
                         logger.debug(
                             "Going to delete associated maplayers for [%s]", _resource.get_real_instance().name)
@@ -298,6 +286,14 @@ class ResourceManager(ResourceManagerInterface):
 
                 self.remove_permissions(_resource.get_real_instance().uuid, instance=_resource.get_real_instance())
                 try:
+                    if _resource.remote_typename and Service.objects.filter(name=_resource.remote_typename).exists():
+                        _service = Service.objects.filter(name=_resource.remote_typename).get()
+                        if _service.harvester:
+                            _service.harvester.harvestable_resources.filter(
+                                geonode_resource__uuid=_resource.get_real_instance().uuid).update(should_be_harvested=False)
+                except Exception as e:
+                    logger.exception(e)
+                try:
                     _resource.get_real_instance().delete()
                 except ResourceBase.DoesNotExist:
                     pass
@@ -308,7 +304,7 @@ class ResourceManager(ResourceManagerInterface):
 
     def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
         if resource_type.objects.filter(uuid=uuid).exists():
-            raise ValidationError(f'Object of type {resource_type} with uuid [{uuid}] already exists.')
+            return resource_type.objects.filter(uuid=uuid).get()
         uuid = uuid or str(uuid1())
         _resource, _created = resource_type.objects.get_or_create(
             uuid=uuid,
@@ -319,12 +315,13 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
+                    if _resource.bbox_polygon and not _resource.ll_bbox_polygon:
+                        _resource.set_bounds_from_bbox(_resource.bbox_polygon, _resource.srid)
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
-                self.delete(instance=_resource)
+                self.delete(_resource.uuid, instance=_resource)
                 raise e
-            finally:
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
             resourcebase_post_save(_resource.get_real_instance())
         return _resource
 
@@ -358,6 +355,8 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.save()
                     _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
+                    if _resource.bbox_polygon and not _resource.ll_bbox_polygon:
+                        _resource.set_bounds_from_bbox(_resource.bbox_polygon, _resource.srid)
                     _resource = metadata_storers(_resource.get_real_instance(), custom)
 
                     # The following is only a demo proof of concept for a pluggable WF subsystem
@@ -366,13 +365,12 @@ class ResourceManager(ResourceManagerInterface):
                     if _p and _p.is_enabled:
                         for _task in _p.get_tasks():
                             _task.execute(_resource)
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                _resource.save(notify=notify)
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
                 _resource.set_dirty_state()
-            finally:
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
-                _resource.save(notify=notify)
             resourcebase_post_save(_resource.get_real_instance())
         return _resource
 
@@ -403,19 +401,20 @@ class ResourceManager(ResourceManagerInterface):
                     resource_type=resource_type,
                     defaults=to_update,
                     **kwargs)
+                instance.set_processing_state(enumerations.STATE_PROCESSED)
+                instance.save(notify=False)
         except Exception as e:
             logger.exception(e)
-            instance.set_processing_state(enumerations.STATE_INVALID)
-            instance.set_dirty_state()
-        finally:
-            instance.set_processing_state(enumerations.STATE_PROCESSED)
-            instance.save(notify=False)
-        resourcebase_post_save(instance.get_real_instance())
-        # Finalize Upload
-        if 'user' in to_update:
-            to_update.pop('user')
-        instance = self.update(instance.uuid, instance=instance, vals=to_update)
-        self.set_thumbnail(instance.uuid, instance=instance)
+            if instance:
+                instance.set_processing_state(enumerations.STATE_INVALID)
+                instance.set_dirty_state()
+        if instance:
+            resourcebase_post_save(instance.get_real_instance())
+            # Finalize Upload
+            if 'user' in to_update:
+                to_update.pop('user')
+            instance = self.update(instance.uuid, instance=instance, vals=to_update)
+            self.set_thumbnail(instance.uuid, instance=instance)
         return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
@@ -549,13 +548,14 @@ class ResourceManager(ResourceManagerInterface):
                     GroupObjectPermission.objects.filter(
                         content_type=ContentType.objects.get_for_model(_resource.get_self_resource()),
                         object_pk=_resource.id).delete()
-                    return self._concrete_resource_manager.remove_permissions(uuid, instance=_resource)
+                    if not self._concrete_resource_manager.remove_permissions(uuid, instance=_resource):
+                        raise Exception("Could not complete concrete manager operation successfully!")
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                return True
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
                 _resource.set_dirty_state()
-            finally:
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
     def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
@@ -688,13 +688,15 @@ class ResourceManager(ResourceManagerInterface):
                             assign_perm('change_dataset_style', _owner, _resource)
 
                     _resource.handle_moderated_uploads()
-                    return self._concrete_resource_manager.set_permissions(uuid, instance=_resource, owner=owner, permissions=permissions, created=created)
+                    if not self._concrete_resource_manager.set_permissions(
+                            uuid, instance=_resource, owner=owner, permissions=permissions, created=created):
+                        raise Exception("Could not complete concrete manager operation successfully!")
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                return True
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
                 _resource.set_dirty_state()
-            finally:
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
     def set_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, approved: bool = False, published: bool = False) -> bool:
@@ -722,13 +724,15 @@ class ResourceManager(ResourceManagerInterface):
                             assign_perm(perm,
                                         anonymous_group, _resource.get_self_resource())
 
-                    return self._concrete_resource_manager.set_workflow_permissions(uuid, instance=_resource, approved=approved, published=published)
+                    if not self._concrete_resource_manager.set_workflow_permissions(
+                            uuid, instance=_resource, approved=approved, published=published):
+                        raise Exception("Could not complete concrete manager operation successfully!")
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                return True
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
                 _resource.set_dirty_state()
-            finally:
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
@@ -742,13 +746,12 @@ class ResourceManager(ResourceManagerInterface):
                             from geonode.documents.tasks import create_document_thumbnail
                             create_document_thumbnail.apply((instance.id,))
                     self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
-                    return True
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                return True
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
                 _resource.set_dirty_state()
-            finally:
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
 

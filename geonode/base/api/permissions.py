@@ -22,7 +22,9 @@ from django.contrib.auth import get_user_model
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
 
-from geonode.security.utils import get_resources_with_perms
+from geonode.security.utils import (
+    get_users_with_perms,
+    get_resources_with_perms)
 
 logger = logging.getLogger(__name__)
 
@@ -113,14 +115,17 @@ class IsOwnerOrAdmin(permissions.BasePermission):
             return True
 
         # Instance must have an attribute named `owner`.
+        _request_matches = False
         if isinstance(obj, get_user_model()) and obj == request.user:
-            return True
+            _request_matches = True
         elif hasattr(obj, 'owner'):
-            return obj.owner == request.user
+            _request_matches = obj.owner == request.user
         elif hasattr(obj, 'user'):
-            return obj.user == request.user
-        else:
-            return False
+            _request_matches = obj.user == request.user
+
+        if not _request_matches:
+            _request_matches = request.user in get_users_with_perms(obj)
+        return _request_matches
 
 
 class IsOwnerOrReadOnly(IsOwnerOrAdmin):

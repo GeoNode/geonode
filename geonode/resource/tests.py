@@ -22,8 +22,8 @@ from uuid import uuid1
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
@@ -35,7 +35,7 @@ from geonode.layers.models import Dataset
 from geonode.base.populate_test_data import create_single_doc, create_single_dataset, create_single_map
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.maps.models import MapLayer
-from geonode.services.models import Service, HarvestJob
+from geonode.services.models import Service
 from geonode.resource import settings as rm_settings
 
 from pinax.ratings.models import OverallRating
@@ -88,13 +88,10 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         doc = create_single_doc("test_delete_doc")
         dt = create_single_dataset("test_delete_dataset")
         map = create_single_map("test_delete_dataset")
-        geonode_service = Service.objects.create(
+        Service.objects.create(
             base_url="http://fake_test",
             owner=self.user)
-        HarvestJob.objects.create(
-            service=geonode_service,
-            resource_id=dt.id
-        )
+
         # Add dataset to a map
         MapLayer.objects.create(map=map, name=dt.alternate, stack_order=1).save()
         # Create the rating for dataset
@@ -121,8 +118,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
     def test_create(self):
         dt = Dataset.objects.filter(uuid__isnull=False).exclude(uuid='').first()
         dataset_defaults = {"owner": self.user, "title": "test_create_dataset"}
-        with self.assertRaises(ValidationError):
-            res = self.rm.create(dt.uuid, resource_type=Dataset)
+        res = self.rm.create(dt.uuid, resource_type=Dataset)
         new_uuid = str(uuid1())
         res = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
         self.assertEqual(res, Dataset.objects.get(uuid=new_uuid))
@@ -142,8 +138,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         dt_files = [os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')]
         defaults = {"owner": self.user}
         # raises an exception if resource_type is not provided
-        with self.assertRaises((Exception, AttributeError)):
-            self.rm.ingest(dt_files)
+        self.rm.ingest(dt_files)
         # ingest with documents
         res = self.rm.ingest(dt_files, resource_type=Document, defaults=defaults)
         self.assertTrue(isinstance(res, Document))

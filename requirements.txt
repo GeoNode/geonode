@@ -1,13 +1,13 @@
 # native dependencies
-Pillow==8.3.2
+Pillow==8.4.0
 lxml==4.6.3
 psycopg2==2.9.1
-Django==3.2.4
+Django==3.2.7
 
 # Other
 amqp==5.0.6
 beautifulsoup4==4.10.0
-httplib2<0.19.2
+httplib2<0.20.2
 hyperlink==21.0.0
 idna>=2.5,<2.11
 urllib3==1.26.7
@@ -19,19 +19,18 @@ kombu==5.1.0
 vine==5.0.0
 tqdm==4.62.3
 Deprecated==1.2.13
-wrapt==1.12.1
-jsonschema==3.2.0
+wrapt==1.13.2
+jsonschema==4.1.0
 
 # Django Apps
 django-allauth==0.45.0
 django-appconf==1.0.5
-django-celery-beat==2.2.1
 django-celery-results==2.2.0
 django-filter==21.1
 django-imagekit==4.0.2
 django-taggit==1.5.1
 django-markdownify==0.9.0
-django-mptt==0.13.3
+django-mptt==0.13.4
 django-modeltranslation>=0.11,<0.18.0
 django-treebeard==4.5.1
 django-guardian<2.4.1
@@ -39,17 +38,17 @@ django-downloadview==2.1.1
 django-polymorphic==3.0.0
 django-tastypie<0.15.0
 django-tinymce==3.3.0
-django-grappelli==2.15.1
+django-grappelli==2.15.3
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.8
 django-sequences==2.6
 oauthlib==3.1.1
-pyopenssl==20.0.1
+pyopenssl==21.0.0
 
 # geopython dependencies
 pyproj==3.2.1
 OWSLib==0.25.0
-pycsw==2.6.0
+pycsw==2.6.1
 SQLAlchemy==1.4.25 # required by PyCSW
 Shapely==1.7.1
 mercantile==1.2.1
@@ -73,7 +72,7 @@ djangorestframework-gis==0.17
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.6.3
-drf-spectacular==0.19.0
+drf-spectacular==0.20.2
 git+https://github.com/GeoNode/dynamic-rest.git@v2.0.1#egg=dynamic-rest
 Markdown==3.3.4
 
@@ -102,11 +101,11 @@ elasticsearch>=2.0.0,<8.0.0
 django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
-django-storages==1.11.1
-dropbox==11.20.0
-google-cloud-storage==1.42.2
-google-cloud-core==2.0.0
-boto3==1.18.48
+django-storages==1.12.2
+dropbox==11.21.0
+google-cloud-storage==1.42.3
+google-cloud-core==2.1.0
+boto3==1.18.64
 
 # Django Caches
 python-memcached<=1.59
@@ -117,7 +116,7 @@ inflection>=0.4.0
 jdcal==1.4.1
 mock<5.0.0
 python-dateutil==2.8.2
-pytz==2021.1
+pytz==2021.3
 requests==2.26.0
 timeout-decorator==0.5.0
 pylibmc==1.6.1
@@ -125,7 +124,7 @@ sherlock==0.3.2
 
 # required by monitoring
 psutil==5.8.0
-django-cors-headers==3.8.0
+django-cors-headers==3.10.0
 user-agents
 django-user-agents
 xmljson
@@ -134,27 +133,27 @@ django-ipware<4.1
 pycountry
 
 # production
-uWSGI==2.0.19.1
+uWSGI==2.0.20
 gunicorn==20.1.0
 ipython==7.28.0
-docker==5.0.2
+docker==5.0.3
 invoke==1.6.0
 
 # tests
-coverage==5.5
+coverage==6.0.2
 requests-toolbelt==0.9.1
-flake8==3.9.2
+flake8==4.0.1
 pytest==6.2.5
 pytest-bdd==4.1.0
-splinter==0.15.0
+splinter==0.16.0
 pytest-splinter==3.3.1
 pytest-django==4.4.0
-setuptools==58.1.0
-pip==21.2.4
+setuptools==58.2.0
+pip==21.3
 Twisted==21.7.0
 pixelmatch==0.2.3
 factory-boy==3.2.0
 flaky==3.7.0
-selenium==3.141.0
+selenium>=3.141.0,<4.0
 selenium-requests==1.3.3
-webdriver_manager==3.4.2
+webdriver_manager==3.5.1

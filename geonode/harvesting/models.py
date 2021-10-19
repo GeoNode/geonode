@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-import json
+import datetime as dt
 import logging
 import typing
 
@@ -30,10 +30,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-from django_celery_beat.models import (
-    IntervalSchedule,
-    PeriodicTask,
-)
 
 from geonode import celery_app
 
@@ -58,7 +54,7 @@ class Harvester(models.Model):
         (STATUS_CHECKING_AVAILABILITY, _("checking-availability")),
     ]
 
-    name = models.CharField(max_length=100, help_text=_("Harvester name"))
+    name = models.CharField(max_length=255, help_text=_("Harvester name"))
     status = models.CharField(
         max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
     remote_url = models.URLField(
@@ -70,13 +66,15 @@ class Harvester(models.Model):
         ),
         default=True
     )
-    update_frequency = models.PositiveIntegerField(
+    harvesting_session_update_frequency = models.PositiveIntegerField(
         help_text=_(
-            "How often (in minutes) should new harvesting sessions be automatically "
-            "scheduled? Setting this value to zero has the same effect as setting "
-            "`scheduling_enabled` to False "
-        ),
+            "How often (in minutes) should new harvesting sessions be automatically scheduled?"),
         default=60
+    )
+    refresh_harvestable_resources_update_frequency = models.PositiveIntegerField(
+        help_text=_(
+            "How often (in minutes) should new refresh sessions be automatically scheduled?"),
+        default=30
     )
     remote_available = models.BooleanField(
         help_text=_("Whether the remote service is known to be available or not"),
@@ -88,7 +86,7 @@ class Harvester(models.Model):
             "How often (in minutes) should the remote service be checked for "
             "availability?"
         ),
-        default=30
+        default=10
     )
     last_checked_availability = models.DateTimeField(
         help_text=_("Last time the remote server was checked for availability"),
@@ -147,23 +145,6 @@ class Harvester(models.Model):
             "the very least an empty object (i.e. {}) must be supplied."
         )
     )
-    periodic_task = models.OneToOneField(
-        PeriodicTask,
-        on_delete=models.CASCADE,
-        help_text=_("Periodic task used to configure harvest scheduling"),
-        null=True,
-        blank=True,
-        editable=False,
-    )
-    availability_check_task = models.OneToOneField(
-        PeriodicTask,
-        on_delete=models.CASCADE,
-        related_name="checked_harvester",
-        help_text=_("Periodic task used to check availability of the remote"),
-        null=True,
-        blank=True,
-        editable=False,
-    )
     num_harvestable_resources = models.IntegerField(
         blank=True,
         default=0
@@ -180,15 +161,84 @@ class Harvester(models.Model):
 
     @property
     def latest_refresh_session(self):
-        return self.sessions.filter(
-            session_type=AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
-        ).latest("started")
+        try:
+            result = self.sessions.filter(
+                session_type=AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
+            ).latest("started")
+        except AsynchronousHarvestingSession.DoesNotExist:
+            result = None
+        return result
 
     @property
     def latest_harvesting_session(self):
-        return self.sessions.filter(
-            session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
-        ).latest("started")
+        try:
+            result = self.sessions.filter(
+                session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
+            ).latest("started")
+        except AsynchronousHarvestingSession.DoesNotExist:
+            result = None
+        return result
+
+    def get_next_check_availability_dispatch_time(self) -> dt.datetime:
+        now = timezone.now()
+        latest_check = self.last_checked_availability
+        try:
+            next_schedule = latest_check + dt.timedelta(minutes=self.check_availability_frequency)
+        except TypeError:
+            result = now
+        else:
+            result = now if next_schedule < now else next_schedule
+        return result
+
+    def get_next_refresh_session_dispatch_time(self) -> typing.Optional[dt.datetime]:
+        return self._get_next_dispatch_time(
+            AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES)
+
+    def get_next_harvesting_session_dispatch_time(self) -> typing.Optional[dt.datetime]:
+        return self._get_next_dispatch_time(
+            AsynchronousHarvestingSession.TYPE_HARVESTING)
+
+    def _get_next_dispatch_time(self, session_type: str) -> typing.Optional[dt.datetime]:
+        related_session_object_name, frequency_attribute = {
+            AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES: (
+                "latest_refresh_session",
+                "refresh_harvestable_resources_update_frequency"
+            ),
+            AsynchronousHarvestingSession.TYPE_HARVESTING: (
+                "latest_harvesting_session",
+                "harvesting_session_update_frequency"
+            ),
+        }[session_type]
+        latest_session: typing.Optional[AsynchronousHarvestingSession] = getattr(
+            self, related_session_object_name)
+        frequency = getattr(self, frequency_attribute)
+        now = timezone.now()
+        if not self.scheduling_enabled:
+            result = None
+        elif latest_session is None:
+            result = now
+        else:
+            next_schedule = latest_session.started + dt.timedelta(minutes=frequency)
+            if next_schedule < now:
+                result = now
+            else:
+                result = next_schedule
+        return result
+
+    def is_availability_check_due(self):
+        next_check_time = self.get_next_check_availability_dispatch_time()
+        now = timezone.now()
+        return next_check_time < now
+
+    def is_harvestable_resources_refresh_due(self):
+        next_session_time = self.get_next_refresh_session_dispatch_time()
+        now = timezone.now()
+        return next_session_time < now
+
+    def is_harvesting_due(self):
+        next_session_time = self.get_next_harvesting_session_dispatch_time()
+        now = timezone.now()
+        return next_session_time < now
 
     def clean(self):
         """Perform model validation by inspecting fields that depend on each other.
@@ -203,46 +253,6 @@ class Harvester(models.Model):
             # self.validate_worker_configuration()
         except jsonschema.exceptions.ValidationError as exc:
             raise ValidationError(str(exc))
-
-    def setup_periodic_tasks(self) -> None:
-        """Setup the related periodic tasks for the instance.
-
-        Periodic tasks are:
-
-        - perform harvesting
-        - check availability of the remote server
-
-        This function is automatically called by the
-        `signals.create_or_update_periodic_tasks` signal handler whenever a new
-        instance is saved (handler is listening to the `post_save` signal). It creates
-        the related `PeriodicTask` objects in order to allow the harvester to be
-        scheduled by celery beat.
-
-        """
-
-        update_interval, update_created = IntervalSchedule.objects.get_or_create(
-            every=self.update_frequency,
-            period="minutes"
-        )
-        self.periodic_task = PeriodicTask.objects.create(
-            name=_(self.name),
-            task="geonode.harvesting.tasks.harvesting_dispatcher",
-            interval=update_interval,
-            args=json.dumps([self.id]),
-            start_time=timezone.now()
-        )
-        check_interval, check_created = IntervalSchedule.objects.get_or_create(
-            every=self.check_availability_frequency,
-            period="minutes"
-        )
-        self.availability_check_task = PeriodicTask.objects.create(
-            name=_(f"Check availability of {self.name}"),
-            task="geonode.harvesting.tasks.check_harvester_available",
-            interval=check_interval,
-            args=json.dumps([self.id]),
-            start_time=timezone.now()
-        )
-        self.save()
 
     def update_availability(
             self,
@@ -462,6 +472,7 @@ class HarvestableResource(models.Model):
     status = models.CharField(
         max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
     title = models.CharField(max_length=255)
+    abstract = models.TextField(max_length=2000, blank=True)
     harvester = models.ForeignKey(
         Harvester,
         on_delete=models.CASCADE,

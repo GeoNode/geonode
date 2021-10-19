@@ -29,6 +29,7 @@ from geonode.tasks.tasks import (
     AcquireLock,
     FaultTolerantTask)
 from geonode.base.models import Link
+from geonode.base import enumerations
 from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase
 
@@ -217,7 +218,7 @@ def geoserver_post_save_datasets(
     expires=30,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 1, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -235,11 +236,15 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
+            instance.set_processing_state(enumerations.STATE_RUNNING)
             try:
+                instance.set_dirty_state()
                 create_gs_thumbnail(instance, overwrite=overwrite, check_bbox=check_bbox)
                 logger.debug(f"... Created Thumbnail for Dataset {instance.title}")
             except Exception as e:
                 geoserver_create_thumbnail.retry(exc=e)
+            finally:
+                instance.set_processing_state(enumerations.STATE_PROCESSED)
 
 
 @app.task(
