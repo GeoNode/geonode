@@ -32,12 +32,13 @@ or return response objects.
 State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
-
-from geonode.base.models import ResourceBase, SpatialRepresentationType, TopicCategory
+import pytz
 import uuid
+import shutil
 import logging
 import os.path
 import zipfile
+import datetime
 import traceback
 
 from django.conf import settings
@@ -53,7 +54,9 @@ import gsimporter
 from geonode import GeoNodeException
 from geoserver.resource import Coverage
 from geoserver.resource import FeatureType
+from geonode.layers.models import TIME_REGEX_FORMAT
 from geonode.upload import UploadException, LayerNotReady
+from geonode.base.models import ResourceBase, SpatialRepresentationType, TopicCategory
 
 from ..people.utils import get_default_user
 from ..layers.metadata import convert_keyword, parse_metadata
@@ -677,30 +680,30 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             _("The UUID identifier from the XML Metadata is already in use in this system."))
 
     # Is it a regular file or an ImageMosaic?
-    # if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
+    has_time = has_elevation = False
+    start = end = None
+    if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
+        has_time = True
+        start = datetime.datetime.strptime(upload_session.mosaic_time_value,
+                                           TIME_REGEX_FORMAT[upload_session.mosaic_time_regex])
+        start = pytz.utc.localize(start, is_dst=False)
+        end = start
+    if upload_session.time and upload_session.time_info and upload_session.time_transforms:
+        has_time = True
+
     saved_layer = None
     if upload_session.mosaic:
-        import pytz
-        import datetime
-        from geonode.layers.models import TIME_REGEX_FORMAT
-
-        start = None
-        end = None
-        if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
-            has_time = True
-            start = datetime.datetime.strptime(upload_session.mosaic_time_value,
-                                               TIME_REGEX_FORMAT[upload_session.mosaic_time_regex])
-            start = pytz.utc.localize(start, is_dst=False)
-            end = start
-        else:
-            has_time = False
-
         if not upload_session.append_to_mosaic_opts:
             try:
                 with transaction.atomic():
-                    saved_layer, created = Layer.objects.get_or_create(
-                        uuid=layer_uuid or str(uuid.uuid1()),
-                        defaults=dict(
+                    saved_dataset_filter = Layer.objects.filter(
+                        store=target.name,
+                        alternate=alternate,
+                        workspace=target.workspace_name,
+                        name=task.layer.name)
+                    if not saved_dataset_filter.exists():
+                        saved_layer = Layer.objects.create(
+                            uuid=layer_uuid or str(uuid.uuid1()),
                             store=target.name,
                             storeType=target.store_type,
                             alternate=alternate,
@@ -713,19 +716,20 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                             temporal_extent_end=end,
                             is_mosaic=True,
                             has_time=has_time,
-                            has_elevation=False,
+                            has_elevation=has_elevation,
                             time_regex=upload_session.mosaic_time_regex)
-                    )
+                        created = True
+                    else:
+                        saved_layer = saved_dataset_filter.get()
+                        created = False
             except IntegrityError as e:
                 Upload.objects.invalidate_from_session(upload_session)
                 raise UploadException.from_exc(_('Error configuring Layer'), e)
-            assert saved_layer
         else:
             # saved_layer = Layer.objects.filter(name=upload_session.append_to_mosaic_name)
             # created = False
             saved_layer, created = Layer.objects.get_or_create(
                 name=upload_session.append_to_mosaic_name)
-            assert saved_layer
             try:
                 if saved_layer.temporal_extent_start and end:
                     if pytz.utc.localize(
@@ -744,13 +748,16 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 _log(
                     f"There was an error updating the mosaic temporal extent: {str(e)}")
     else:
-        _has_time = (True if upload_session.time and upload_session.time_info and
-                     upload_session.time_transforms else False)
         try:
             with transaction.atomic():
-                saved_layer, created = Layer.objects.get_or_create(
-                    uuid=layer_uuid or str(uuid.uuid1()),
-                    defaults=dict(
+                saved_dataset_filter = Layer.objects.filter(
+                    store=target.name,
+                    alternate=alternate,
+                    workspace=target.workspace_name,
+                    name=task.layer.name)
+                if not saved_dataset_filter.exists():
+                    saved_layer = Layer.objects.create(
+                        uuid=layer_uuid or str(uuid.uuid1()),
                         store=target.name,
                         storeType=target.store_type,
                         alternate=alternate,
@@ -759,13 +766,21 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         name=task.layer.name,
                         abstract=abstract or '',
                         owner=user,
-                        has_time=_has_time)
-                )
-
+                        temporal_extent_start=start,
+                        temporal_extent_end=end,
+                        is_mosaic=False,
+                        has_time=has_time,
+                        has_elevation=has_elevation,
+                        time_regex=upload_session.mosaic_time_regex)
+                    created = True
+                else:
+                    saved_layer = saved_dataset_filter.get()
+                    created = False
         except IntegrityError as e:
             Upload.objects.invalidate_from_session(upload_session)
             raise UploadException.from_exc(_('Error configuring Layer'), e)
-        assert saved_layer
+
+    assert saved_layer
 
     # Create a new upload session
     try:
@@ -855,11 +870,22 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
             archive = upload_session.base_file.archive
+            _log(f'using uploaded sld file from {archive}')
             zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-            zf.extract(sld_file[0], os.path.dirname(archive))
+            zf.extract(sld_file[0], os.path.dirname(archive), path=upload_session.tempdir)
             # Assign the absolute path to this file
             sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
-        sld_file = sld_file[0]
+        else:
+            _sld_file = f"{os.path.dirname(upload_session.tempdir)}/{os.path.basename(sld_file[0])}"
+            _log(f"copying [{sld_file[0]}] to [{_sld_file}]")
+            try:
+                shutil.copyfile(sld_file[0], _sld_file)
+                sld_file = _sld_file
+            except (IsADirectoryError, shutil.SameFileError) as e:
+                logger.exception(e)
+                sld_file = sld_file[0]
+            except Exception as e:
+                raise UploadException.from_exc(_('Error uploading Dataset'), e)
         sld_uploaded = True
     else:
         # get_files will not find the sld if it doesn't match the base name
@@ -869,6 +895,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             base_file = upload_session.base_file
             sld_file = base_file[0].sld_files[0]
         sld_uploaded = False
+    _log(f'[sld_uploaded: {sld_uploaded}] sld_file: {sld_file}')
 
     if upload_session.time_info:
         set_time_info(saved_layer, **upload_session.time_info)
