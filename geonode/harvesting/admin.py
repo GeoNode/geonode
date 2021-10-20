@@ -26,7 +26,6 @@ from django.contrib import (
 )
 from django.contrib.humanize.templatetags import humanize
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.html import (
     format_html,
     mark_safe,
