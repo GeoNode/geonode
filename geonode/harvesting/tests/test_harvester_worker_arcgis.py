@@ -18,12 +18,8 @@
 #########################################################################
 from unittest import mock
 
-from django.contrib.gis import geos
-
 from geonode.harvesting.harvesters import arcgis
 from geonode.tests.base import GeoNodeBaseSimpleTestSupport
-
-from .. import models
 
 
 class ArcgisModuleTestCase(GeoNodeBaseSimpleTestSupport):
@@ -35,8 +31,8 @@ class ArcgisModuleTestCase(GeoNodeBaseSimpleTestSupport):
             "xmax": 20,
             "ymax": 45,
             "spatialReference": {
-                "wkid":102100,
-                "latestWkid":3857,
+                "wkid": 102100,
+                "latestWkid": 3857,
             }
         }
         epsg_code, polygon = arcgis._parse_spatial_extent(raw_extent)
@@ -50,7 +46,7 @@ class ArcgisModuleTestCase(GeoNodeBaseSimpleTestSupport):
             "xmax": 20,
             "ymax": 45,
             "spatialReference": {
-                "wkid":102100,
+                "wkid": 102100,
             }
         }
         epsg_code, polygon = arcgis._parse_spatial_extent(raw_extent)
@@ -73,11 +69,10 @@ class ArcgisModuleTestCase(GeoNodeBaseSimpleTestSupport):
     @mock.patch("geonode.harvesting.harvesters.arcgis.arcrest")
     def test_get_resource_extractor(self, mock_arcrest):
         fixtures = [
-            ("https://fake/rest/services/myservice/MapServer/1", mock_arcrest.MapService),
-            ("https://fake/rest/services/myservice/ImageServer/1", mock_arcrest.ImageService),
+            ("http://somewhere/rest/services/fakeservice1/MapServer/1", mock_arcrest.MapService, arcgis.ArcgisMapServiceResourceExtractor),
+            ("http://somewhere/rest/services/fakeservice1/ImageServer/1", mock_arcrest.ImageService, arcgis.ArcgisImageServiceResourceExtractor),
         ]
-        for unique_id, mock_to_assert in fixtures:
-            harvestable_resource = models.HarvestableResource(unique_identifier=unique_id)
-            result = arcgis.get_resource_extractor(harvestable_resource)
-            mock_to_assert.assert_called()
-
+        for identifier, mock_class, extractor_class in fixtures:
+            result = arcgis.get_resource_extractor(identifier)
+            mock_class.assert_called_with(identifier)
+            self.assertIsInstance(result, extractor_class)

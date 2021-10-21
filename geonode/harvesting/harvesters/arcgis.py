@@ -104,7 +104,6 @@ class ArcgisServiceResourceExtractor(abc.ABC):
         """Parse the remote resource into a HarvestedResourceInfo"""
 
 
-
 class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
     service: arcrest.MapService
     http_session: requests.Session
@@ -321,16 +320,16 @@ class ArcgisImageServiceResourceExtractor(ArcgisServiceResourceExtractor):
 
 
 def get_resource_extractor(
-        harvestable_resource: models.HarvestableResource
+        resource_unique_identifier: str
 ) -> typing.Optional[ArcgisServiceResourceExtractor]:
     """A factory for instantiating the correct extractor for the resource"""
-    service_type_name = parse_remote_url(harvestable_resource.unique_identifier)[-1]
+    service_type_name = parse_remote_url(resource_unique_identifier)[-1]
     service_type = ArcgisServiceType(service_type_name)
     if service_type == ArcgisServiceType.MAP_SERVICE:
-        service = arcrest.MapService(harvestable_resource.unique_identifier)
+        service = arcrest.MapService(resource_unique_identifier)
         result = ArcgisMapServiceResourceExtractor(service)
     elif service_type == ArcgisServiceType.IMAGE_SERVICE:
-        service = arcrest.ImageService(harvestable_resource.unique_identifier)
+        service = arcrest.ImageService(resource_unique_identifier)
         result = ArcgisImageServiceResourceExtractor(service)
     else:
         logger.error(f"Unsupported ArcGIS REST service {service_type!r}")
@@ -398,7 +397,7 @@ class ArcgisHarvesterWorker(base.BaseHarvesterWorker):
         return self._arc_catalog
 
     @classmethod
-    def from_django_record(cls, harvester: "Harvester"):
+    def from_django_record(cls, harvester: "Harvester"):  # noqa
         return cls(
             remote_url=harvester.remote_url,
             harvester_id=harvester.pk,
@@ -487,7 +486,7 @@ class ArcgisHarvesterWorker(base.BaseHarvesterWorker):
             self,
             harvestable_resource: models.HarvestableResource,
     ) -> typing.Optional[base.HarvestedResourceInfo]:
-        extractor = get_resource_extractor(harvestable_resource)
+        extractor = get_resource_extractor(harvestable_resource.unique_identifier)
         return extractor.get_resource(harvestable_resource)
 
     def _get_extractor_class(self, service_type: ArcgisServiceType) -> typing.Optional[typing.Type]:
@@ -562,4 +561,3 @@ def _parse_spatial_extent(raw_extent: typing.Dict) -> typing.Tuple[str, geos.Pol
         )
     )
     return epsg_code, extent
-
