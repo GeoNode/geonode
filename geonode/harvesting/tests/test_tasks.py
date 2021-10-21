@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import datetime as dt
 from unittest import mock
 
 from django.contrib.auth import get_user_model
