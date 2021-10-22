@@ -45,8 +45,8 @@ SERVICE_TYPES = (
     (OWS, _('Paired WMS/WFS/WCS')),
     (WMS, _('Web Map Service')),
     # (CSW, _('Catalogue Service')),
-    # (REST_MAP, _('ArcGIS REST MapServer')),
-    # (REST_IMG, _('ArcGIS REST ImageServer')),
+    (REST_MAP, _('ArcGIS REST MapServer')),
+    (REST_IMG, _('ArcGIS REST ImageServer')),
     # (OGP, _('OpenGeoPortal')),
     # (HGL, _('Harvard Geospatial Library')),
     (GN_WMS, _('GeoNode (Web Map Service)')),
@@ -56,6 +56,8 @@ SERVICE_TYPES = (
 HARVESTER_TYPES = {
     'WMS': 'geonode.harvesting.harvesters.wms.OgcWmsHarvester',
     'GN_WMS': 'geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker',
+    'REST_MAP': 'geonode.harvesting.harvesters.arcgis.ArcgisHarvesterWorker',
+    'REST_IMG': 'geonode.harvesting.harvesters.arcgis.ArcgisHarvesterWorker',
 }
 
 QUEUED = "QUEUED"
