@@ -18,6 +18,7 @@
 #########################################################################
 
 """Harvesters for ArcGIS based remote servers."""
+import re
 import abc
 import enum
 import json
@@ -65,18 +66,33 @@ class ArcgisServiceType(enum.Enum):
     GLOBE_SERVICE = "GlobeServer"
     MOBILE_SERVICE = "MobileServer"
 
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
+
 
 def parse_remote_url(url: str) -> typing.Tuple[str, typing.Optional[str], typing.Optional[str]]:
     """Parse the input url into the ArcGIS REST catalog URL and any service name."""
     url_fragments = url.partition("/rest/services")
     catalog_url = "".join(url_fragments[:2])
-    possible_service_name, other = url_fragments[-1].strip("/").partition("/")[::2]
-    if possible_service_name != "":
+    service_type = None
+    possible_service_name = None
+    service_type_regex = re.match(r'.*\/(.*Server).*', "".join(url_fragments[-1:]))
+    if service_type_regex:
+        for service_type_value in service_type_regex.groups():
+            if ArcgisServiceType.has_value(service_type_value):
+                service_type = service_type_value
+                possible_service_name = "".join(url_fragments[-1:]).strip("/").partition(service_type)[0].rstrip("/")
+                other = None
+                break
+    else:
+        possible_service_name, other = url_fragments[-1].strip("/").partition("/")[::2]
+    if possible_service_name is not None and possible_service_name != "":
         service_name = possible_service_name
-        service_type = other.partition("/")[0]
+        if not service_type and other:
+            service_type = other.partition("/")[0]
     else:
         service_name = None
-        service_type = None
 
     return catalog_url, service_name, service_type
 
@@ -193,7 +209,7 @@ class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
             resource_uuid = uuid.UUID(harvestable_resource.geonode_resource.uuid)
         name = layer_representation["name"]
         _, service_name, service_type = parse_remote_url(harvestable_resource.unique_identifier)
-        alternate = "-".join((service_name, name, str(layer_representation["id"])))
+        alternate = slugify(" ".join((service_name, name, str(layer_representation["id"]))))
         epsg_code, spatial_extent = _parse_spatial_extent(layer_representation["extent"])
         store = self.service.url.partition("?")[0].strip("/")
         return resourcedescriptor.RecordDescription(
@@ -564,7 +580,12 @@ class ArcgisHarvesterWorker(base.BaseHarvesterWorker):
             result = []
             relevant_service_names = self.service_names_filter or self.arc_catalog.servicenames
             for service_name in relevant_service_names:
-                service = self.arc_catalog[service_name]
+                service = None
+                for _folder in service_name.split('/'):
+                    if not service:
+                        service = self.arc_catalog[_folder]
+                    else:
+                        service = service[_folder]
                 extractors = self._get_service_extractors(service)
                 result.extend(extractors)
             self._relevant_service_extractors = result
