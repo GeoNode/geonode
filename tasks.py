@@ -268,7 +268,7 @@ def monitoringfixture(ctx):
 @task
 def updategeoip(ctx):
     print("**************************update geoip*******************************")
-    if os.environ.get('MONITORING_ENABLED', False):
+    if ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'False')):
         ctx.run(f"django-admin.py updategeoip --settings={_localsettings()}", pty=True)
 
 
