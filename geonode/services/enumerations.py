@@ -55,7 +55,7 @@ SERVICE_TYPES = (
 
 HARVESTER_TYPES = {
     'WMS': 'geonode.harvesting.harvesters.wms.OgcWmsHarvester',
-    'GN_WMS': 'geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester',
+    'GN_WMS': 'geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker',
 }
 
 QUEUED = "QUEUED"
