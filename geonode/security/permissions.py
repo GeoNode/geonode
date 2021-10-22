@@ -123,7 +123,13 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: s
         else:
             return EDIT_PERMISSIONS
     elif perm == MANAGE_RIGHTS:
-        return MANAGE_PERMISSIONS
+        if resource_type and resource_type.lower() in 'dataset':
+            if resource_subtype and resource_subtype.lower() in 'vector':
+                return DATASET_ADMIN_PERMISSIONS + ADMIN_PERMISSIONS
+            else:
+                return ADMIN_PERMISSIONS
+        else:
+            return ADMIN_PERMISSIONS
 
 
 def _to_compact_perms(perms: list, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False) -> str:
