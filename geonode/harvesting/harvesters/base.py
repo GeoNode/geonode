@@ -234,7 +234,6 @@ class BaseHarvesterWorker(abc.ABC):
         """
 
         defaults = {
-            "name": harvested_info.resource_descriptor.identification.name,
             "owner": harvestable_resource.harvester.default_owner,
             "uuid": str(harvested_info.resource_descriptor.uuid),
             "abstract": harvested_info.resource_descriptor.identification.abstract,

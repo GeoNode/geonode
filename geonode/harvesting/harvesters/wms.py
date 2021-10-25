@@ -285,6 +285,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             harvestable_resource: models.HarvestableResource,  # noqa
     ) -> typing.Dict:
         defaults = super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
+        defaults["name"] = harvested_info.resource_descriptor.identification.name
         defaults.update(harvested_info.resource_descriptor.additional_parameters)
         return defaults
 
