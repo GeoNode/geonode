@@ -1773,11 +1773,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'view_resourcebase',
                             'download_resourcebase'
                         ],
-                        'admin': [
+                        'admin':
+                        [
+                            'change_dataset_data',
+                            'change_dataset_style',
                             'change_resourcebase_metadata',
                             'delete_resourcebase',
                             'change_resourcebase_permissions',
-                            'publish_resourcebase'
+                            'publish_resourcebase',
+                            'change_resourcebase'
                         ],
                         'AnonymousUser': ['view_resourcebase']
                     },
@@ -1823,11 +1827,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'view_resourcebase',
                             'download_resourcebase'
                         ],
-                        'admin': [
+                        'admin':
+                        [
+                            'change_dataset_data',
+                            'change_dataset_style',
                             'change_resourcebase_metadata',
                             'delete_resourcebase',
                             'change_resourcebase_permissions',
-                            'publish_resourcebase'
+                            'publish_resourcebase',
+                            'change_resourcebase'
                         ],
                         'AnonymousUser': ['view_resourcebase']
                     },
