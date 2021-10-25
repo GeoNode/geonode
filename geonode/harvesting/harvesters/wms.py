@@ -20,6 +20,7 @@ import logging
 import typing
 import uuid
 from datetime import datetime
+from functools import lru_cache
 from urllib.parse import (
     unquote,
     urlparse,
@@ -36,22 +37,26 @@ from owslib.util import clean_ows_url
 
 from django.conf import settings
 from django.contrib.gis import geos
+from django.template.defaultfilters import slugify
 
 from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase
+from geonode.layers.enumerations import GXP_PTYPES
 from geonode.thumbs.thumbnails import create_thumbnail
 
-from . import base
-from ..models import Harvester, HarvestableResource
+from .. import models
 from ..utils import (
     XML_PARSER,
     get_xpath_value,
 )
 from .. import resourcedescriptor
 
+from . import base
+
 logger = logging.getLogger(__name__)
 
 
+@lru_cache()
 def WebMapService(url,
                   version='1.3.0',
                   xml=None,
@@ -129,7 +134,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         return False
 
     @classmethod
-    def from_django_record(cls, record: Harvester):
+    def from_django_record(cls, record: models.Harvester):
         return cls(
             record.remote_url,
             record.id,
@@ -239,10 +244,12 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         resources = []
         data = self._get_data()
         for layer in data['layers']:
+            name = layer['name']
+            title = layer.get('title') or name.rpartition(':')[-1]
             resources.append(
                 base.BriefRemoteResource(
-                    unique_identifier=layer['name'],
-                    title=layer['title'],
+                    unique_identifier=name,
+                    title=title,
                     abstract=layer['abstract'],
                     resource_type='layers',
                 )
@@ -272,9 +279,19 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         # So whatever remote_resource_type it is, it always return Layer.
         return Dataset
 
+    def get_geonode_resource_defaults(
+            self,
+            harvested_info: base.HarvestedResourceInfo,
+            harvestable_resource: models.HarvestableResource,  # noqa
+    ) -> typing.Dict:
+        defaults = super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
+        defaults["name"] = harvested_info.resource_descriptor.identification.name
+        defaults.update(harvested_info.resource_descriptor.additional_parameters)
+        return defaults
+
     def get_resource(
             self,
-            harvestable_resource: HarvestableResource,
+            harvestable_resource: models.HarvestableResource,
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         resource_unique_identifier = harvestable_resource.unique_identifier
         data = self._get_data()
@@ -292,6 +309,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             # WMS does not provide the date of the resource.
             # Use current time for the date stamp and resource time.
             time = datetime.now()
+            service_name = slugify(self.remote_url)[:255]
             contact = resourcedescriptor.RecordDescriptionContact(**data['contact'])
             result = base.HarvestedResourceInfo(
                 resource_descriptor=resourcedescriptor.RecordDescription(
@@ -305,7 +323,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                         date=time,
                         date_type='',
                         originator=contact,
-                        graphic_overview_uri='',
                         place_keywords=[],
                         other_keywords=relevant_layer['keywords'],
                         license=[],
@@ -313,10 +330,16 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
                         spatial_extent=relevant_layer['spatial_extent']
                     ),
                     distribution=resourcedescriptor.RecordDistribution(
-                        legend_url=relevant_layer['legend_url'],
-                        wms_url=relevant_layer['wms_url']
+                        wms_url=relevant_layer['wms_url'],
                     ),
                     reference_systems=[relevant_layer['crs']],
+                    additional_parameters={
+                        'alternate': relevant_layer["name"],
+                        'store': service_name,
+                        'workspace': 'remoteWorkspace',
+                        'ows_url': relevant_layer['wms_url'],
+                        'ptype': GXP_PTYPES["WMS"]
+                    }
                 ),
                 additional_information=None
             )
@@ -510,7 +533,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             self,
             geonode_resource: ResourceBase,
             harvested_info: base.HarvestedResourceInfo,
-            harvestable_resource: HarvestableResource
+            harvestable_resource: models.HarvestableResource
     ) -> ResourceBase:
         """Create a thumbnail with a WMS request."""
         if not geonode_resource.srid:

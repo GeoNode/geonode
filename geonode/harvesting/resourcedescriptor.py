@@ -45,13 +45,12 @@ class RecordDescriptionContact:
 class RecordIdentification:
     name: str
     title: str
-    date: dt.datetime
-    date_type: str
-    originator: RecordDescriptionContact
-    graphic_overview_uri: str
-    place_keywords: typing.List[str]
-    other_keywords: typing.Tuple
-    license: typing.List[str]
+    date: typing.Optional[dt.datetime] = None
+    date_type: typing.Optional[str] = None
+    originator: typing.Optional[RecordDescriptionContact] = None
+    place_keywords: typing.Optional[typing.List[str]] = None
+    other_keywords: typing.Optional[typing.Iterable] = None
+    license: typing.Optional[typing.List[str]] = None
     abstract: typing.Optional[str] = ""
     purpose: typing.Optional[str] = ""
     status: typing.Optional[str] = ""
@@ -70,9 +69,8 @@ class RecordDistribution:
     wfs_url: typing.Optional[str] = None
     wcs_url: typing.Optional[str] = None
     thumbnail_url: typing.Optional[str] = None
-    legend_url: typing.Optional[str] = None
-    geojson_url: typing.Optional[str] = None
-    original_format_url: typing.Optional[str] = None
+    download_url: typing.Optional[str] = None
+    embed_url: typing.Optional[str] = None
 
 
 @dataclasses.dataclass()
@@ -87,12 +85,11 @@ class MapDescriptorParameters:
 @dataclasses.dataclass()
 class RecordDescription:
     uuid: uuid.UUID
-    point_of_contact: RecordDescriptionContact
-    author: RecordDescriptionContact
-    date_stamp: dt.datetime
     identification: RecordIdentification
     distribution: RecordDistribution
-    hierarchy_level: typing.Optional[str] = "dataset"
+    point_of_contact: typing.Optional[RecordDescriptionContact] = None
+    author: typing.Optional[RecordDescriptionContact] = None
+    date_stamp: typing.Optional[dt.datetime] = None
     reference_systems: typing.Optional[typing.List[str]] = None
     data_quality: typing.Optional[str] = None
     additional_parameters: typing.Optional[typing.Dict] = dataclasses.field(

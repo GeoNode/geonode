@@ -24,7 +24,7 @@ import logging
 from collections import OrderedDict
 
 from .. import enumerations
-# from .arcgis import ArcMapServiceHandler, ArcImageServiceHandler
+from .arcgis import ArcMapServiceHandler, ArcImageServiceHandler
 from .wms import WmsServiceHandler, GeoNodeServiceHandler  # noqa
 
 logger = logging.getLogger(__name__)
@@ -39,8 +39,8 @@ def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=Non
         enumerations.GN_WMS: {"OWS": True, "handler": GeoNodeServiceHandler},
         # enumerations.WFS: {"OWS": True, "handler": ServiceHandlerBase},
         # enumerations.TMS: {"OWS": False, "handler": ServiceHandlerBase},
-        # enumerations.REST_MAP: {"OWS": False, "handler": ArcMapServiceHandler},
-        # enumerations.REST_IMG: {"OWS": False, "handler": ArcImageServiceHandler},
+        enumerations.REST_MAP: {"OWS": False, "handler": ArcMapServiceHandler},
+        enumerations.REST_IMG: {"OWS": False, "handler": ArcImageServiceHandler},
         # enumerations.CSW: {"OWS": False, "handler": ServiceHandlerBase},
         # enumerations.HGL: {"OWS": True, "handler": ServiceHandlerBase},  # TODO: verify this
         # enumerations.OGP: {"OWS": False, "handler": ServiceHandlerBase},  # TODO: verify this
