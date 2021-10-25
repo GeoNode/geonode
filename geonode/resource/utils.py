@@ -401,6 +401,7 @@ def dataset_post_save(instance, *args, **kwargs):
 
 def metadata_post_save(instance, *args, **kwargs):
     logger.debug("handling UUID In pre_save_dataset")
+    defaults = {}
     if isinstance(instance, Dataset) and hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
         logger.debug("using custom uuid handler In pre_save_dataset")
         from ..layers.utils import get_uuid_handler
@@ -408,14 +409,6 @@ def metadata_post_save(instance, *args, **kwargs):
         if _uuid != instance.uuid:
             instance.uuid = _uuid
             Dataset.objects.filter(id=instance.id).update(uuid=_uuid)
-
-    # Fixup bbox
-    if instance.bbox_polygon is None:
-        instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
-    instance.set_bounds_from_bbox(
-        instance.bbox_polygon,
-        instance.srid or instance.bbox_polygon.srid
-    )
 
     # Set a default user for accountstream to work correctly.
     if instance.owner is None:
@@ -430,17 +423,44 @@ def metadata_post_save(instance, *args, **kwargs):
         if license and len(license) > 0:
             instance.license = license[0]
 
-    instance.thumbnail_url = instance.get_thumbnail_url()
+    instance.thumbnail_url = instance.get_real_instance().get_thumbnail_url()
     instance.csw_insert_date = datetime.datetime.now(timezone.get_current_timezone())
     instance.set_missing_info()
 
-    ResourceBase.objects.filter(id=instance.id).update(
+    defaults = dict(
         uuid=instance.uuid,
-        srid=instance.srid,
+        owner=instance.owner,
+        license=instance.license,
         alternate=instance.alternate,
-        bbox_polygon=instance.bbox_polygon,
-        thumbnail_url=instance.get_thumbnail_url(),
-        csw_insert_date=datetime.datetime.now(timezone.get_current_timezone())
+        thumbnail_url=instance.thumbnail_url,
+        csw_insert_date=instance.csw_insert_date
+    )
+
+    # Fixup bbox
+    if instance.bbox_polygon is None:
+        instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
+        defaults.update(
+            dict(
+                srid='EPSG:4326',
+                bbox_polygon=instance.bbox_polygon,
+                ll_bbox_polygon=instance.ll_bbox_polygon
+            )
+        )
+    if instance.ll_bbox_polygon is None:
+        instance.set_bounds_from_bbox(
+            instance.bbox_polygon,
+            instance.srid or instance.bbox_polygon.srid
+        )
+        defaults.update(
+            dict(
+                srid=instance.srid,
+                bbox_polygon=instance.bbox_polygon,
+                ll_bbox_polygon=instance.ll_bbox_polygon
+            )
+        )
+
+    ResourceBase.objects.filter(id=instance.id).update(
+        **defaults
     )
 
     try:

@@ -315,8 +315,6 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
-                    if _resource.bbox_polygon and not _resource.ll_bbox_polygon:
-                        _resource.set_bounds_from_bbox(_resource.bbox_polygon, _resource.srid)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
@@ -355,8 +353,6 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.save()
                     _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
-                    if _resource.bbox_polygon and not _resource.ll_bbox_polygon:
-                        _resource.set_bounds_from_bbox(_resource.bbox_polygon, _resource.srid)
                     _resource = metadata_storers(_resource.get_real_instance(), custom)
 
                     # The following is only a demo proof of concept for a pluggable WF subsystem
