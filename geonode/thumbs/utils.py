@@ -16,12 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import re
 import time
 import base64
 import logging
 
-from pyproj import Transformer, CRS
+from pyproj import CRS
 from owslib.wms import WebMapService
 from typing import List, Tuple, Callable, Union
 
@@ -30,7 +30,9 @@ from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
-from geonode.utils import OGC_Servers_Handler
+from geonode.utils import (
+    bbox_to_projection,
+    OGC_Servers_Handler)
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
 
@@ -72,11 +74,9 @@ def transform_bbox(bbox: List, target_crs: str = "EPSG:3857"):
     Function transforming BBOX in dataset compliant format (xmin, xmax, ymin, ymax, 'EPSG:xxxx') to another CRS,
     preserving overflow values.
     """
-    transformer = Transformer.from_crs(bbox[-1].lower(), target_crs.lower(), always_xy=True)
-    x_min, y_min = transformer.transform(bbox[0], bbox[2])
-    x_max, y_max = transformer.transform(bbox[1], bbox[3])
-
-    return [x_min, x_max, y_min, y_max, target_crs]
+    match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(target_crs))
+    target_srid = int(match.group('srid')) if match else 4326
+    return list(bbox_to_projection(bbox, target_srid=target_srid))[:-1] + [target_crs]
 
 
 def expand_bbox_to_ratio(

@@ -68,6 +68,7 @@ from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
 from geonode.utils import (
     bbox_to_wkt,
     find_by_attr,
+    bbox_to_projection,
     is_monochromatic_image)
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
@@ -1426,7 +1427,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
             bbox_polygon.srid = int(match.group('srid')) if match else 4326
             try:
-                self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
+                # self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
+                self.ll_bbox_polygon = Polygon.from_bbox(
+                    bbox_to_projection(list(bbox_polygon.extent) + [srid])[:-1])
             except Exception as e:
                 logger.error(e)
                 self.ll_bbox_polygon = bbox_polygon
