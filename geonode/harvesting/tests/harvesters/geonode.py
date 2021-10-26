@@ -200,4 +200,4 @@ class TestGeonodeHarvester(GeoNodeBaseTestSupport):
         self.assertFalse(worker.harvest_documents)
         self.assertTrue(worker.harvest_datasets)
         self.assertTrue(worker.harvest_maps)
-        self.assertEqual(worker.resource_title_filter, '')
+        self.assertEqual(worker.resource_name_filter, '')

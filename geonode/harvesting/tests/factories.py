@@ -33,7 +33,6 @@ identification_example = resourcedescriptor.RecordIdentification(
     date=datetime.datetime.now(),
     date_type='type',
     originator=contact_example,
-    graphic_overview_uri='',
     place_keywords=['keyword'],
     other_keywords=('test',),
     license=['test']

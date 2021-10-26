@@ -379,11 +379,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 12)
+            self.assertGreaterEqual(geofence_rules_count, 10)
             set_geofence_all(test_perm_dataset)
             geofence_rules_count = get_geofence_rules_count()
             _log(f"2. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 13)
+            self.assertGreaterEqual(geofence_rules_count, 11)
 
         self.client.logout()
 

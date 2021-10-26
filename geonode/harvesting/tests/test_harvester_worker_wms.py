@@ -16,25 +16,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from django.apps import AppConfig
-from django.conf import settings
-from django.conf.urls import url, include
-
-from . import config
+from geonode.harvesting.harvesters import wms
+from geonode.tests.base import GeoNodeBaseSimpleTestSupport
 
 
-class HarvestingAppConfig(AppConfig):
+class WmsModuleTestCase(GeoNodeBaseSimpleTestSupport):
 
-    name = "geonode.harvesting"
-
-    def ready(self):
-        from geonode.urls import urlpatterns
-
-        urlpatterns += [
-            url(r'^api/v2/', include('geonode.harvesting.api.urls'))
+    def test_get_nsmap(self):
+        fixtures = [
+            ({None: "ns1uri", "ns2": "ns2uri"}, {"wms": "ns1uri", "ns2": "ns2uri"}),
+            ({"ns1": "ns1uri", "ns2": "ns2uri"}, {"ns1": "ns1uri", "ns2": "ns2uri"}),
         ]
-        settings.CELERY_BEAT_SCHEDULE['harvesting-scheduler'] = {
-            "task": "geonode.harvesting.tasks.harvesting_scheduler",
-            "schedule": config.get_setting("HARVESTER_SCHEDULER_FREQUENCY_MINUTES") * 60,
-        }
+        for original, expected in fixtures:
+            result = wms._get_nsmap(original)
+            self.assertEqual(result, expected)

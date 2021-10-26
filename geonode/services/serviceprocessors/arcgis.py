@@ -31,7 +31,7 @@ from django.template.defaultfilters import slugify, safe
 from geonode.layers.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
 
-# from geonode.harvesting.models import Harvester
+from geonode.harvesting.models import Harvester
 
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
 
@@ -91,6 +91,12 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     def parsed_service(self):
         return ArcMapService(self.url)
 
+    def probe(self):
+        try:
+            return True if len(self.parsed_service._json_struct) > 0 else False
+        except Exception:
+            return False
+
     def create_cascaded_store(self, service):
         return None
 
@@ -115,22 +121,28 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 abstract=str(self.parsed_service._json_struct.get("serviceDescription")).encode("utf-8", "ignore").decode('utf-8') or _(
                     "Not provided")
             )
-            # TODO: once the ArcGIS Harvester will be available
-            # service_harvester = Harvester.objects.create(
-            #     name=self.name,
-            #     default_owner=owner,
-            #     remote_url=instance.service_url,
-            #     harvester_type=enumerations.HARVESTER_TYPES[self.type]
-            # )
-            # service_harvester.update_availability()
-            # service_harvester.initiate_update_harvestable_resources()
-            # instance.harvester = service_harvester
+            service_harvester = Harvester.objects.create(
+                name=self.name,
+                default_owner=owner,
+                remote_url=instance.service_url,
+                harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
+                harvester_type_specific_configuration=self.get_harvester_configuration_options()
+            )
+            service_harvester.update_availability()
+            service_harvester.initiate_update_harvestable_resources()
+            instance.harvester = service_harvester
 
         self.geonode_service_id = instance.id
         return instance
 
     def get_keywords(self):
         return self.parsed_service._json_struct.get("capabilities", "").split(",")
+
+    def get_harvester_configuration_options(self):
+        return {
+            "harvest_map_services": True,
+            "harvest_image_services": False
+        }
 
     def _parse_datasets(self, layers):
         map_datasets = []
@@ -242,3 +254,9 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
     @property
     def parsed_service(self):
         return ArcImageService(self.url)
+
+    def get_harvester_configuration_options(self):
+        return {
+            "harvest_map_services": False,
+            "harvest_image_services": True
+        }
