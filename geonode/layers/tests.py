@@ -1417,30 +1417,35 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         Test that when changing the dataset title, if the entered title has a comma it is replaced by an undescore.
         """
-        self.test_dataset = Layer.objects.create(
-            name='test',
-            title='test',
-            is_approved=True,
-            bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
-            srid='EPSG:4326',
-            owner=self.not_admin)
+        self.test_dataset = None
+        try:
+            self.test_dataset = Layer.objects.create(
+                name='test',
+                title='test,comma,2021',
+                is_approved=True,
+                bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
+                srid='EPSG:4326',
+                owner=self.not_admin)
 
-        data = {
-            'resource-title': 'test,comma,2021',
-            'resource-owner': self.test_dataset.owner.id,
-            'resource-date': str(self.test_dataset.date),
-            'resource-date_type': self.test_dataset.date_type,
-            'resource-language': self.test_dataset.language,
-            'layer_attribute_set-TOTAL_FORMS': 0,
-            'layer_attribute_set-INITIAL_FORMS': 0,
-        }
+            data = {
+                'resource-title': 'test,comma,2021',
+                'resource-owner': self.test_dataset.owner.id,
+                'resource-date': str(self.test_dataset.date),
+                'resource-date_type': self.test_dataset.date_type,
+                'resource-language': self.test_dataset.language,
+                'layer_attribute_set-TOTAL_FORMS': 0,
+                'layer_attribute_set-INITIAL_FORMS': 0,
+            }
 
-        url = reverse('layer_metadata', args=(self.test_dataset.alternate,))
-        self.client.login(username=self.not_admin.username, password='very-secret')
-        response = self.client.post(url, data=data)
-        self.test_dataset.refresh_from_db()
-        self.assertEqual(self.test_dataset.title, 'test_comma_2021')
-        self.assertEqual(response.status_code, 200)
+            url = reverse('layer_metadata', args=(self.test_dataset.alternate,))
+            self.client.login(username=self.not_admin.username, password='very-secret')
+            response = self.client.post(url, data=data)
+            self.test_dataset.refresh_from_db()
+            self.assertEqual(self.test_dataset.title, 'test_comma_2021')
+            self.assertEqual(response.status_code, 200)
+        finally:
+            if self.test_dataset:
+                self.test_dataset.delete()
 
 
 '''

@@ -383,11 +383,11 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 12)
+            self.assertEqual(geofence_rules_count, 10)
             set_geofence_all(test_perm_layer)
             geofence_rules_count = get_geofence_rules_count()
             _log(f"2. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 13)
+            self.assertEqual(geofence_rules_count, 11)
 
         self.client.logout()
 
