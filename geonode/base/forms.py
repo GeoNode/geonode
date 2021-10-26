@@ -518,6 +518,12 @@ class ResourceBaseForm(TranslationModelForm):
                     _unsescaped_kwds.append(str(_k))
         return _unsescaped_kwds
 
+    def clean_title(self):
+        title = self.cleaned_data.get("title", None)
+        if title:
+            title = title.replace(",", "_")
+        return title
+
     class Meta:
         exclude = (
             'contacts',

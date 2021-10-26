@@ -1012,6 +1012,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def raw_data_quality_statement(self):
         return self._remove_html_tags(self.data_quality_statement)
 
+    def clean(self):
+        if self.title:
+            self.title = self.title.replace(",", "_")
+        return super().clean()
+
     def save(self, notify=False, *args, **kwargs):
         """
         Send a notification when a resource is created or updated
