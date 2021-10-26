@@ -642,6 +642,12 @@ class CommonModelApi(ModelResource):
         else:
             return []
 
+    def hydrate_title(self, bundle):
+        title = bundle.data.get("title", None)
+        if title:
+            bundle.data["title"] = title.replace(",", "_")
+        return bundle
+
 
 class ResourceBaseResource(CommonModelApi):
 

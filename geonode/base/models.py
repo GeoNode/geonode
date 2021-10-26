@@ -1071,6 +1071,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def detail_url(self):
         return self.get_absolute_url()
 
+    def clean(self):
+        if self.title:
+            self.title = self.title.replace(",", "_")
+        return super().clean()
+
     def save(self, notify=False, *args, **kwargs):
         """
         Send a notification when a resource is created or updated
