@@ -1190,8 +1190,14 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             'set_invalidate_cache',
             'update_rule',
             'update_rule',
+            'update_rule',
+            'update_rule',
+            'update_rule',
+            'update_rule',
+            'update_rule',
+            'update_rule',
             'set_invalidate_cache',
-            'set_invalidate_cache',
+            'set_invalidate_cache'
         ]
         stacked_requests = [call.args[0]['name'] for call in mocked_uow_add_request.call_args_list]
         self.assertEqual(expected_requests, stacked_requests)
