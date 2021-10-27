@@ -821,10 +821,10 @@ def dataset_metadata(
             layername,
             'base.change_resourcebase_metadata',
             _PERMISSION_MSG_METADATA)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
+    except PermissionDenied as e:
+        return HttpResponse(Exception(_("Not allowed"), e), status=403)
+    except Exception as e:
+        raise Http404(Exception(_("Not found"), e))
     if not layer:
         raise Http404(_("Not found"))
 
@@ -910,6 +910,7 @@ def dataset_metadata(
                 content_type='application/json',
                 status=400)
 
+        thumbnail_url = layer.thumbnail_url
         dataset_form = DatasetForm(request.POST, instance=layer, prefix="resource")
         if not dataset_form.is_valid():
             logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
@@ -922,6 +923,8 @@ def dataset_metadata(
                 json.dumps(out),
                 content_type='application/json',
                 status=400)
+        if not layer.thumbnail_url:
+            layer.thumbnail_url = thumbnail_url
         attribute_form = dataset_attribute_set(
             request.POST,
             instance=layer,
@@ -1121,7 +1124,7 @@ def dataset_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
-        layer.save(notify=True)
+        resource_manager.update(layer.uuid, instance=layer, notify=True)
         return HttpResponse(json.dumps({'message': message}))
 
     if settings.ADMIN_MODERATE_UPLOADS:

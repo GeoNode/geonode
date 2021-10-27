@@ -46,14 +46,22 @@ class DatasetForm(ResourceBaseForm):
     class Meta(ResourceBaseForm.Meta):
         model = Dataset
         exclude = ResourceBaseForm.Meta.exclude + (
-            'workspace',
             'store',
+            'styles',
             'subtype',
             'alternate',
+            'workspace',
             'default_style',
-            'styles',
             'upload_session',
-            'remote_service',)
+            'resource_type',
+            'remote_service',
+            'remote_typename',
+            'users_geolimits',
+            'groups_geolimits',
+            'blob',
+            'files',
+            'ows_url'
+        )
         # widgets = {
         #     'title': forms.TextInput({'placeholder': title_help_text})
         # }
