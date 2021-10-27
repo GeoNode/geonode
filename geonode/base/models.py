@@ -438,14 +438,15 @@ class TaggedContentItem(ItemBase):
 
     # see https://github.com/alex/django-taggit/issues/101
     @classmethod
-    def tags_for(cls, model, instance=None):
+    def tags_for(cls, model, instance=None, **extra_filters):
+        kwargs = extra_filters or {}
         if instance is not None:
             return cls.tag_model().objects.filter(**{
                 f'{cls.tag_relname()}__content_object': instance
-            })
+            }, **kwargs)
         return cls.tag_model().objects.filter(**{
             f'{cls.tag_relname()}__content_object__isnull': False
-        }).distinct()
+        }, **kwargs).distinct()
 
 
 class _HierarchicalTagManager(_TaggableManager):
