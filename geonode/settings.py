@@ -442,7 +442,8 @@ GEONODE_INTERNAL_APPS = (
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
-    'geonode.favorite'
+    'geonode.favorite',
+    'geonode.monitoring'
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -1861,9 +1862,8 @@ ADMINS_ONLY_NOTICE_TYPES = ast.literal_eval(os.getenv('ADMINS_ONLY_NOTICE_TYPES'
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(
     os.environ.get('USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS', 'True'))
 
-if NOTIFICATION_ENABLED:
-    if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
-        INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
+if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
+    INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 # ########################################################################### #
 # SECURITY SETTINGS
@@ -2077,8 +2077,6 @@ MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 365)))
 MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CSRF', 'False'))
 
 if MONITORING_ENABLED:
-    if 'geonode.monitoring' not in INSTALLED_APPS:
-        INSTALLED_APPS += ('geonode.monitoring',)
     if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE:
         MIDDLEWARE += \
             ('geonode.monitoring.middleware.MonitoringMiddleware',)
