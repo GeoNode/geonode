@@ -573,8 +573,74 @@ community."
 
         self.assertEqual(map_obj.title, title)
         self.assertEqual(map_obj.abstract, abstract)
-        self.assertEqual(map_obj.zoom, 6)
+        self.assertEqual(map_obj.zoom, 7)
         self.assertEqual(map_obj.projection, projection)
+
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_map_view(self, thumbnail_mock):
+        """Test that map view can be properly rendered
+        """
+        # first create a map
+
+        # Test successful new map creation
+        self.client.login(username=self.user, password=self.passwd)
+
+        new_map = reverse('new_map_json')
+        response = self.client.post(
+            new_map,
+            data=self.viewer_config,
+            content_type="text/json")
+        self.assertEqual(response.status_code, 200)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        map_id = int(json.loads(content)['id'])
+        self.client.logout()
+
+        url = reverse('map_view', args=(map_id,))
+
+        # test unauthenticated user to view map
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # TODO: unauthenticated user can still access the map view
+
+        # test a user without map view permission
+        self.client.login(username='norman', password='norman')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+        # TODO: the user can still access the map view without permission
+
+        # Now test with a valid user using GET method
+        self.client.login(username=self.user, password=self.passwd)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Config equals to that of the map whose id is given
+        map_obj = Map.objects.get(id=map_id)
+        config_map = map_obj.viewer_json(None)
+        response_config_dict = json.loads(response.context['config'])
+        self.assertEqual(
+            config_map['about']['abstract'],
+            response_config_dict['about']['abstract'])
+        self.assertEqual(
+            config_map['about']['title'],
+            response_config_dict['about']['title'])
+
+        map_obj.update_from_viewer(config_map, context={})
+        title = config_map.get('title', config_map['about']['title'])
+        abstract = config_map.get('abstract', config_map['about']['abstract'])
+        projection = config_map['map']['projection']
+
+        self.assertEqual(map_obj.title, title)
+        self.assertEqual(map_obj.abstract, abstract)
+        self.assertEqual(map_obj.zoom, 7)
+        self.assertEqual(map_obj.projection, projection)
+
+        for map_dataset in map_obj.datasets:
+            if Dataset.objects.filter(alternate=map_dataset.name).exists():
+                cfg = map_dataset.dataset_config()
+                self.assertIsNotNone(cfg["getFeatureInfo"])
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
     def test_new_map_config(self, thumbnail_mock):

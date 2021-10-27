@@ -374,11 +374,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 12)
+            self.assertGreaterEqual(geofence_rules_count, 10)
             set_geofence_all(test_perm_dataset)
             geofence_rules_count = get_geofence_rules_count()
             _log(f"2. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 13)
+            self.assertGreaterEqual(geofence_rules_count, 11)
 
         self.client.logout()
 
@@ -1747,11 +1747,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'view_resourcebase',
                             'download_resourcebase'
                         ],
-                        'admin': [
+                        'admin':
+                        [
+                            'change_dataset_data',
+                            'change_dataset_style',
                             'change_resourcebase_metadata',
                             'delete_resourcebase',
                             'change_resourcebase_permissions',
-                            'publish_resourcebase'
+                            'publish_resourcebase',
+                            'change_resourcebase'
                         ],
                         'AnonymousUser': ['view_resourcebase']
                     },
@@ -1797,11 +1801,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'view_resourcebase',
                             'download_resourcebase'
                         ],
-                        'admin': [
+                        'admin':
+                        [
+                            'change_dataset_data',
+                            'change_dataset_style',
                             'change_resourcebase_metadata',
                             'delete_resourcebase',
                             'change_resourcebase_permissions',
-                            'publish_resourcebase'
+                            'publish_resourcebase',
+                            'change_resourcebase'
                         ],
                         'AnonymousUser': ['view_resourcebase']
                     },

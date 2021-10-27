@@ -50,6 +50,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
+from geonode.layers.enumerations import GXP_PTYPES
 from geonode.layers.metadata import parse_metadata
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_dataset_style
@@ -565,11 +566,24 @@ def dataset_detail(request, layername, template='datasets/dataset_detail.html'):
             source_params=json.dumps(source_params)
         )
     else:
-        maplayer = GXPLayer(
-            name=layer.alternate,
-            ows_url=layer.ows_url,
-            dataset_params=json.dumps(config)
-        )
+        is_arcgis_layer = layer.ptype in (GXP_PTYPES["REST_MAP"], GXP_PTYPES["REST_IMG"])
+        if is_arcgis_layer:
+            maplayer = GXPLayer(
+                name=layer.alternate,
+                ows_url=layer.ows_url,
+                dataset_params=json.dumps(config),
+                source_params=json.dumps({
+                    "ptype": layer.ptype,
+                    "remote": True,
+                    "url": layer.ows_url,
+                })
+            )
+        else:
+            maplayer = GXPLayer(
+                name=layer.alternate,
+                ows_url=layer.ows_url,
+                dataset_params=json.dumps(config)
+            )
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     layer.view_count_up(request.user)

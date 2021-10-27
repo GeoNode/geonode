@@ -529,7 +529,8 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             g.Transform(CoordinateTransformation(source, dest))
             projected_bbox = [str(x) for x in g.GetEnvelope()]
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
-            return tuple([projected_bbox[0], projected_bbox[1], projected_bbox[2], projected_bbox[3]]) + \
+            return tuple(
+                [float(projected_bbox[0]), float(projected_bbox[1]), float(projected_bbox[2]), float(projected_bbox[3])]) + \
                 (f"EPSG:{target_srid}",)
         except Exception as e:
             logger.exception(e)

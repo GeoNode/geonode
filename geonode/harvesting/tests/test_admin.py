@@ -15,7 +15,7 @@ from .. import (
 
 
 class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
-    harvester_type = 'geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester'
+    harvester_type = 'geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker'
 
     def setUp(self):
         self.factory = RequestFactory()
