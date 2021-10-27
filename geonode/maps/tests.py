@@ -597,7 +597,7 @@ community."
         map_id = int(json.loads(content)['id'])
         self.client.logout()
 
-        url = reverse('map_view', args=(map_id,))
+        url = reverse('map_embed', args=(map_id,))
 
         # test unauthenticated user to view map
         response = self.client.get(url)
