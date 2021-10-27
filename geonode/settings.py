@@ -442,6 +442,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
+    'geonode.favorite'
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -1363,11 +1364,6 @@ if CREATE_LAYER:
 
 # Settings for FAVORITE plugin
 FAVORITE_ENABLED = ast.literal_eval(os.getenv('FAVORITE_ENABLED', 'True'))
-
-if FAVORITE_ENABLED:
-    if 'geonode.favorite' not in INSTALLED_APPS:
-        INSTALLED_APPS += ('geonode.favorite',)
-
 
 # Settings for RECAPTCHA plugin
 RECAPTCHA_ENABLED = ast.literal_eval(os.environ.get('RECAPTCHA_ENABLED', 'False'))
