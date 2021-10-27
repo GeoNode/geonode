@@ -25,13 +25,14 @@ import logging
 from collections import defaultdict
 from dialogos.models import Comment
 
+from django.apps import apps
 from django.conf import settings
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
+from geonode.geoapps.models import GeoApp
 
 # from actstream.exceptions import ModelNotActionable
 
-from mapstore2_adapter.geoapps.geostories.models import GeoStory
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
@@ -110,7 +111,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
         logger.exception(e)
 
     try:
-        action_settings['geostory'].update(object_name=getattr(instance, 'title', None),)
+        action_settings[obj_type].update(object_name=getattr(instance, 'title', None),)
     except Exception as e:
         logger.exception(e)
 
@@ -126,7 +127,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                 if not isinstance(instance, Layer) and \
                         not isinstance(instance, Document) and \
                         not isinstance(instance, Map) and \
-                        not isinstance(instance, GeoStory):
+                        not issubclass(type(instance), GeoApp):
                     verb = action.get('updated_verb')
                     raw_action = 'updated'
 
@@ -175,9 +176,11 @@ if activity:
 
     signals.post_save.connect(activity_post_modify_object, sender=Document)
     signals.post_delete.connect(activity_post_modify_object, sender=Document)
-
-    signals.post_save.connect(activity_post_modify_object, sender=GeoStory)
-    signals.post_delete.connect(activity_post_modify_object, sender=GeoStory)
+    models = [y for x, y in apps.app_configs.items() if hasattr(y, 'default_model')]
+    for m in models:
+        if m.name in settings.INSTALLED_APPS:
+            signals.post_save.connect(activity_post_modify_object, sender=m.label + '.' + m.default_model)
+            signals.post_delete.connect(activity_post_modify_object, sender=m.label + '.' + m.default_model)
 
 
 def rating_post_save(instance, sender, created, **kwargs):

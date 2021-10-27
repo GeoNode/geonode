@@ -237,28 +237,28 @@ class PeopleTest(GeoNodeBaseTestSupport):
         self.assertIn(bobby.voice, content)
 
     @patch('geonode.utils.get_subclasses_by_model')
-    def test_dashboards_excluded(self, _mock):
+    def test_geoapps_display(self, _mock):
         bobby = get_user_model().objects.get(username='bobby')
         bobby.voice = '+245-897-7889'
         bobby.save()
         url = reverse('profile_detail', args=['bobby'])
-        _mock.return_value = ['GeoStory']
+        _mock.return_value = ['Geoapp1']
         response = self.client.get(url)
         content = response.content
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('GeoStory', content)
-        self.assertNotIn('Dashboard', content)
+        self.assertIn('Geoapp1', content)
+        self.assertNotIn('Geoapp2', content)
 
-        _mock.return_value = ['Dashboard']
+        _mock.return_value = ['Geoapp2']
         response = self.client.get(url)
         content = response.content
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('Dashboard', content)
-        self.assertNotIn('GeoStory', content)
+        self.assertIn('Geoapp2', content)
+        self.assertNotIn('Geoapp1', content)
 
 
 class FacebookExtractorTestCase(GeoNodeBaseTestSupport):
