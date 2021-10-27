@@ -1266,7 +1266,6 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
             response = self.client.get(url)
             self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_dataset.alternate)
 
-
         response = self.client.get(reverse('dataset_embed', args=(self.layer.alternate,)))
         self.assertEqual(response.context['map_datasets'], [])
 
