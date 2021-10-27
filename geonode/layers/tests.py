@@ -1421,6 +1421,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         try:
             self.test_dataset = Layer.objects.create(
                 name='test',
+                alternate='geonode:test',
                 title='test,comma,2021',
                 is_approved=True,
                 bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
@@ -1430,15 +1431,15 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
             data = {
                 'resource-title': 'test,comma,2021',
                 'resource-owner': self.test_dataset.owner.id,
-                'resource-date': str(self.test_dataset.date),
-                'resource-date_type': self.test_dataset.date_type,
+                'resource-date': '2021-10-27 05:59 am',
+                'resource-date_type': 'publication',
                 'resource-language': self.test_dataset.language,
                 'layer_attribute_set-TOTAL_FORMS': 0,
                 'layer_attribute_set-INITIAL_FORMS': 0,
             }
 
             url = reverse('layer_metadata', args=(self.test_dataset.alternate,))
-            self.client.login(username=self.not_admin.username, password='very-secret')
+            self.assertTrue(self.client.login(username=self.not_admin.username, password='very-secret'))
             response = self.client.post(url, data=data)
             self.test_dataset.refresh_from_db()
             self.assertEqual(self.test_dataset.title, 'test_comma_2021')
