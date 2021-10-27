@@ -21,7 +21,7 @@ from mock import patch
 from django.contrib.auth import get_user_model
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.harvesting.models import Harvester
-from geonode.harvesting.harvesters.geonode import (
+from geonode.harvesting.harvesters.geonodeharvester import (
     GeonodeLegacyHarvester, GeoNodeResourceType)
 from geonode.harvesting.harvesters.base import BriefRemoteResource
 
@@ -200,4 +200,4 @@ class TestGeonodeHarvester(GeoNodeBaseTestSupport):
         self.assertFalse(worker.harvest_documents)
         self.assertTrue(worker.harvest_datasets)
         self.assertTrue(worker.harvest_maps)
-        self.assertEqual(worker.resource_title_filter, '')
+        self.assertEqual(worker.resource_name_filter, '')

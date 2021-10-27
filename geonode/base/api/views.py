@@ -114,7 +114,7 @@ class UserViewSet(DynamicModelViewSet):
             queryset = get_user_model().objects.filter(id=self.request.user.id)
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
+        return queryset.order_by("username")
 
     @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
                    description="API endpoint allowing to retrieve the Resources visible to the user.")
@@ -248,7 +248,8 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
         """
         Filter users with atleast a resource
         """
-        queryset = get_user_model().objects.all().exclude(pk=-1)
+
+        queryset = get_user_model().objects.exclude(pk=-1)
         filter_options = {}
         if self.request.query_params:
             filter_options = {
@@ -258,7 +259,7 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
         queryset = queryset.filter(id__in=Subquery(
             get_resources_with_perms(self.request.user, filter_options).values('owner'))
         )
-        return queryset
+        return queryset.order_by("username")
 
 
 class ResourceBaseViewSet(DynamicModelViewSet):
@@ -480,8 +481,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         """
         config = Configuration.load()
         resource = self.get_object()
+        _user_can_manage = request.user.has_perm('change_resourcebase', resource.get_self_resource()) or request.user.has_perm('change_resourcebase_permissions', resource.get_self_resource())
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
-                resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
+                resource is None or not _user_can_manage:
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource)
@@ -553,6 +555,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             IsAuthenticated,
         ])
     def set_thumbnail_from_bbox(self, request, resource_id):
+        import traceback
+        from django.utils.datastructures import MultiValueDictKeyError
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
 
@@ -560,23 +564,35 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 raise NotImplementedError("Not implemented: Endpoint available only for Dataset and Maps")
 
             request_body = request.data if request.data else json.loads(request.body)
-            bbox = request_body["bbox"] + [request_body["srid"]]
-            zoom = request_body.get("zoom", None)
+            try:
+                bbox = request_body["bbox"] + [request_body["srid"]]
+                zoom = request_body.get("zoom", None)
+            except MultiValueDictKeyError:
+                for _k, _v in request_body.items():
+                    request_body = json.loads(_k)
+                    break
+                bbox = request_body["bbox"] + [request_body["srid"]]
+                zoom = request_body.get("zoom", None)
 
             thumbnail_url = create_thumbnail(resource.get_real_instance(), bbox=bbox, background_zoom=zoom, overwrite=True)
-            return Response({"thumbnail_url": thumbnail_url}, status=200)
+            return Response({"message": "Thumbnail correctly created.", "success": True, "thumbnail_url": thumbnail_url}, status=200)
         except ResourceBase.DoesNotExist:
+            traceback.print_exc()
             logger.error(f"Resource selected with id {resource_id} does not exists")
-            return Response(data={"message": f"Resource selected with id {resource_id} does not exists"}, status=404, exception=True)
+            return Response(
+                data={"message": f"Resource selected with id {resource_id} does not exists", "success": False}, status=404, exception=True)
         except NotImplementedError as e:
+            traceback.print_exc()
             logger.error(e)
-            return Response(data={"message": e.args[0]}, status=405, exception=True)
+            return Response(data={"message": e.args[0], "success": False}, status=405, exception=True)
         except ThumbnailError as e:
+            traceback.print_exc()
             logger.error(e)
-            return Response(data={"message": e.args[0]}, status=500, exception=True)
+            return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
         except Exception as e:
+            traceback.print_exc()
             logger.error(e)
-            return Response(data={"message": e.args[0]}, status=500, exception=True)
+            return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
 
     @extend_schema(
         methods=["post"], responses={200}, description="Instructs the Async dispatcher to execute a 'INGEST' operation."

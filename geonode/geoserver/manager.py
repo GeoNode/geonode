@@ -115,7 +115,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         if instance and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             _real_instance = instance.get_real_instance()
             if isinstance(_real_instance, Dataset) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
-                if _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
+                if not hasattr(_real_instance, 'remote_service') or _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
                     geoserver_cascading_delete.apply_async((_real_instance.alternate,))
                     if "geonode.upload" in settings.INSTALLED_APPS:
                         from geonode.upload.models import Upload
@@ -147,7 +147,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 user=defaults.get('user', instance.owner),
                 defaults=defaults,
                 action_type='create',
-                importer_session_opts=kwargs)
+                **kwargs)
         return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
@@ -242,8 +242,9 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     instance = None
         return instance
 
-    def _revise_resource_value(self, instance, files: list, user, action_type: str, importer_session_opts: dict = {}):
+    def _revise_resource_value(self, instance, files: list, user, action_type: str, importer_session_opts: typing.Optional[typing.Dict] = None):
         from geonode.upload.files import ALLOWED_EXTENSIONS
+        session_opts = dict(importer_session_opts) if importer_session_opts is not None else {}
 
         spatial_files_type = get_spatial_files_dataset_type(ALLOWED_EXTENSIONS, files)
 
@@ -256,7 +257,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
         _name = instance.get_real_instance().name
         if not _name:
-            _name = importer_session_opts.get('name', None) or os.path.splitext(os.path.basename(spatial_files_type.base_file))[0]
+            _name = session_opts.get('name', None) or os.path.splitext(os.path.basename(spatial_files_type.base_file))[0]
         instance.get_real_instance().name = _name
 
         gs_dataset = None
@@ -272,8 +273,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
             _workspace = gs_dataset.resource.workspace.name if gs_dataset.resource.workspace else None
 
         if not _workspace:
-            if importer_session_opts:
-                _workspace = importer_session_opts.get('workspace', instance.get_real_instance().workspace)
+            _workspace = session_opts.get('workspace', instance.get_real_instance().workspace)
             if not _workspace:
                 _workspace = instance.get_real_instance().workspace or settings.DEFAULT_WORKSPACE
 
@@ -282,7 +282,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 _dsname = ogc_server_settings.datastore_db['NAME']
                 _ds = create_geoserver_db_featurestore(store_name=_dsname, workspace=_workspace)
                 if _ds:
-                    _target_store = importer_session_opts.get('target_store', None) or _dsname
+                    _target_store = session_opts.get('target_store', None) or _dsname
 
         #  opening Import session for the selected layer
         import_session = gs_uploader.start_import(
@@ -343,7 +343,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     store_name=_target_store,
                     workspace=_workspace
                 )
-                transforms = importer_session_opts.get('transforms', None)
+                transforms = session_opts.get('transforms', None)
                 if transforms:
                     task.set_transforms(transforms)
                 #  Starting import process
@@ -555,7 +555,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         if instance and not isinstance(instance.get_real_instance(), Document):
             if overwrite or instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
-                geoserver_create_thumbnail.apply_async((instance.id, overwrite, check_bbox, ))
+                geoserver_create_thumbnail.apply((instance.id, overwrite, check_bbox, ))
             return True
         return False
 

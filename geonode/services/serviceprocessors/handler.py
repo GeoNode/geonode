@@ -25,12 +25,12 @@ from collections import OrderedDict
 
 from .. import enumerations
 from .arcgis import ArcMapServiceHandler, ArcImageServiceHandler
-from .wms import WmsServiceHandler, GeoNodeServiceHandler
+from .wms import WmsServiceHandler, GeoNodeServiceHandler  # noqa
 
 logger = logging.getLogger(__name__)
 
 
-def get_service_handler(base_url, proxy_base=None, service_type=enumerations.AUTO):
+def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=None):
     """Return the appropriate remote service handler for the input URL.
     If the service type is not explicitly passed in it will be guessed from
     """
@@ -64,7 +64,7 @@ def get_service_handler(base_url, proxy_base=None, service_type=enumerations.AUT
     else:
         handler = handlers.get(service_type, {}).get("handler")
         try:
-            service = handler(base_url)
+            service = handler(base_url, service_id)
         except Exception:
             logger.exception(
                 msg=f"Could not parse service {base_url}")

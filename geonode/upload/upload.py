@@ -49,6 +49,7 @@ from geoserver.resource import (
 
 from django.conf import settings
 from django.db.models import Max
+from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
@@ -663,20 +664,32 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
             archive = upload_session.base_file.archive
+            logger.debug(f'using uploaded sld file from {archive}')
             zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-            zf.extract(sld_file[0], os.path.dirname(archive))
+            zf.extract(sld_file[0], os.path.dirname(archive), path=upload_session.tempdir)
             # Assign the absolute path to this file
             sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
-        sld_file = sld_file[0]
+        else:
+            _sld_file = f"{os.path.dirname(upload_session.tempdir)}/{os.path.basename(sld_file[0])}"
+            logger.debug(f"copying [{sld_file[0]}] to [{_sld_file}]")
+            try:
+                shutil.copyfile(sld_file[0], _sld_file)
+                sld_file = _sld_file
+            except (IsADirectoryError, shutil.SameFileError) as e:
+                logger.exception(e)
+                sld_file = sld_file[0]
+            except Exception as e:
+                raise UploadException.from_exc(_('Error uploading Dataset'), e)
         sld_uploaded = True
     else:
         # get_files will not find the sld if it doesn't match the base name
         # so we've worked around that in the view - if provided, it will be here
         if upload_session.import_sld_file:
-            logger.debug('using provided sld file')
+            logger.debug('using provided sld file from importer')
             base_file = upload_session.base_file
             sld_file = base_file[0].sld_files[0]
         sld_uploaded = False
+    logger.debug(f'[sld_uploaded: {sld_uploaded}] sld_file: {sld_file}')
 
     # Make sure the layer does not exists already
     if dataset_uuid and Dataset.objects.filter(uuid=dataset_uuid).count():
@@ -686,12 +699,13 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
             _("The UUID identifier from the XML Metadata is already in use in this system."))
 
     # Is it a regular file or an ImageMosaic?
-    # if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
     saved_dataset = None
+    is_mosaic = False
     has_time = has_elevation = False
     start = end = None
     if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
-        has_elevation = True
+        has_time = True
+        is_mosaic = True
         start = datetime.datetime.strptime(upload_session.mosaic_time_value,
                                            TIME_REGEX_FORMAT[upload_session.mosaic_time_regex])
         start = pytz.utc.localize(start, is_dst=False)
@@ -700,62 +714,100 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         has_time = True
 
     if upload_session.append_to_mosaic_opts:
-        saved_dataset, created = Dataset.objects.get_or_create(
-            name=upload_session.append_to_mosaic_name)
-        assert saved_dataset
         try:
-            if saved_dataset.temporal_extent_start and end:
-                if pytz.utc.localize(
-                        saved_dataset.temporal_extent_start,
-                        is_dst=False) < end:
-                    saved_dataset.temporal_extent_end = end
-                    Dataset.objects.filter(
-                        name=upload_session.append_to_mosaic_name).update(
-                        temporal_extent_end=end)
+            with transaction.atomic():
+                saved_dataset_filter = Dataset.objects.filter(
+                    name=upload_session.append_to_mosaic_name)
+                if not saved_dataset_filter.exists():
+                    saved_dataset = resource_manager.create(
+                        name=upload_session.append_to_mosaic_name)
+                    created = True
                 else:
-                    saved_dataset.temporal_extent_start = end
-                    Dataset.objects.filter(
-                        name=upload_session.append_to_mosaic_name).update(
-                        temporal_extent_start=end)
+                    saved_dataset = saved_dataset_filter.get()
+                    created = False
+                saved_dataset.set_dirty_state()
+                if saved_dataset.temporal_extent_start and end:
+                    if pytz.utc.localize(
+                            saved_dataset.temporal_extent_start,
+                            is_dst=False) < end:
+                        saved_dataset.temporal_extent_end = end
+                        Dataset.objects.filter(
+                            name=upload_session.append_to_mosaic_name).update(
+                            temporal_extent_end=end)
+                    else:
+                        saved_dataset.temporal_extent_start = end
+                        Dataset.objects.filter(
+                            name=upload_session.append_to_mosaic_name).update(
+                            temporal_extent_start=end)
         except Exception as e:
             _log(
                 f"There was an error updating the mosaic temporal extent: {str(e)}")
     else:
         try:
-            saved_dataset = resource_manager.create(
-                dataset_uuid,
-                resource_type=Dataset,
-                defaults=dict(
+            with transaction.atomic():
+                saved_dataset_filter = Dataset.objects.filter(
                     store=target.name,
-                    subtype=get_dataset_storetype(target.store_type),
                     alternate=alternate,
                     workspace=target.workspace_name,
-                    title=title,
-                    name=task.layer.name,
-                    abstract=abstract or _('No abstract provided'),
-                    owner=user,
-                    temporal_extent_start=start,
-                    temporal_extent_end=end,
-                    is_mosaic=has_elevation,
-                    has_time=has_time,
-                    has_elevation=has_elevation,
-                    time_regex=upload_session.mosaic_time_regex))
-            created = True
+                    name=task.layer.name)
+                if not saved_dataset_filter.exists():
+                    saved_dataset = resource_manager.create(
+                        dataset_uuid,
+                        resource_type=Dataset,
+                        defaults=dict(
+                            store=target.name,
+                            subtype=get_dataset_storetype(target.store_type),
+                            alternate=alternate,
+                            workspace=target.workspace_name,
+                            title=title,
+                            name=task.layer.name,
+                            abstract=abstract or _('No abstract provided'),
+                            owner=user,
+                            temporal_extent_start=start,
+                            temporal_extent_end=end,
+                            is_mosaic=is_mosaic,
+                            has_time=has_time,
+                            has_elevation=has_elevation,
+                            time_regex=upload_session.mosaic_time_regex))
+                    created = True
+                else:
+                    saved_dataset = saved_dataset_filter.get()
+                    created = False
+                saved_dataset.set_dirty_state()
         except Exception as e:
             Upload.objects.invalidate_from_session(upload_session)
             raise UploadException.from_exc(_('Error configuring Dataset'), e)
 
-        Upload.objects.update_from_session(upload_session, resource=saved_dataset)
+    assert saved_dataset
 
-    # Set default permissions on the newly created layer and send notifications
-    permissions = upload_session.permissions
+    if not created:
+        return saved_dataset
 
-    # Finalize Upload
-    resource_manager.set_permissions(None, instance=saved_dataset, permissions=permissions, created=created)
-    resource_manager.update(None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
-    resource_manager.exec('set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
-    resource_manager.exec('set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
-    resource_manager.set_thumbnail(None, instance=saved_dataset)
+    try:
+        saved_dataset.set_dirty_state()
+        with transaction.atomic():
+            Upload.objects.update_from_session(upload_session, resource=saved_dataset)
+
+            # Set default permissions on the newly created layer and send notifications
+            permissions = upload_session.permissions
+
+            # Finalize Upload
+            resource_manager.set_permissions(
+                None, instance=saved_dataset, permissions=permissions, created=created)
+            resource_manager.update(
+                None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
+            resource_manager.exec(
+                'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
+            resource_manager.exec(
+                'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
+            resource_manager.set_thumbnail(
+                None, instance=saved_dataset)
+            saved_dataset.set_processing_state(enumerations.STATE_PROCESSED)
+    except Exception as e:
+        saved_dataset.set_processing_state(enumerations.STATE_INVALID)
+        raise GeoNodeException(e)
+    finally:
+        saved_dataset.clear_dirty_state()
 
     try:
         logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")

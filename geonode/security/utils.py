@@ -31,6 +31,7 @@ from guardian.shortcuts import (
 
 from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
+from geonode.security.permissions import DATASET_EDIT_DATA_PERMISSIONS
 
 logger = logging.getLogger(__name__)
 
@@ -113,15 +114,19 @@ def get_users_with_perms(obj):
     # include explicit permissions appliable to "subtype == 'vector'"
     if obj.subtype == 'vector':
         PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
+        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+            permissions[perm.id] = perm.codename
     elif obj.subtype == 'raster':
         PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
-
-    for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
-        permissions[perm.id] = perm.codename
+        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+            permissions[perm.id] = perm.codename
+    else:
+        PERMISSIONS_TO_FETCH += DATASET_EDIT_DATA_PERMISSIONS
+        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH):
+            permissions[perm.id] = perm.codename
 
     user_model = get_user_obj_perms_model(obj)
     users_with_perms = user_model.objects.filter(object_pk=obj.pk,
-                                                 content_type_id=ctype.id,
                                                  permission_id__in=permissions).values('user_id', 'permission_id')
 
     users = {}

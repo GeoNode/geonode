@@ -710,7 +710,7 @@ community."
 
         self.assertEqual(map_obj.title, title)
         self.assertEqual(map_obj.abstract, abstract)
-        self.assertEqual(map_obj.zoom, 6)
+        self.assertEqual(map_obj.zoom, 7)
         self.assertEqual(map_obj.projection, projection)
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
@@ -771,7 +771,7 @@ community."
 
         self.assertEqual(map_obj.title, title)
         self.assertEqual(map_obj.abstract, abstract)
-        self.assertEqual(map_obj.zoom, 6)
+        self.assertEqual(map_obj.zoom, 7)
         self.assertEqual(map_obj.projection, projection)
 
         for map_dataset in map_obj.datasets:

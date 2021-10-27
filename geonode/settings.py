@@ -345,16 +345,13 @@ if not DEBUG and S3_MEDIA_ENABLED:
 
 # Cache Bustin Settings
 CACHE_BUSTING_STATIC_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_STATIC_ENABLED', 'False'))
-CACHE_BUSTING_MEDIA_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_MEDIA_ENABLED', 'False'))
 
 if not DEBUG and not S3_STATIC_ENABLED and not S3_MEDIA_ENABLED:
-    if CACHE_BUSTING_STATIC_ENABLED or CACHE_BUSTING_MEDIA_ENABLED:
+    if CACHE_BUSTING_STATIC_ENABLED:
         from django.contrib.staticfiles import storage
         storage.ManifestStaticFilesStorage.manifest_strict = False
     if CACHE_BUSTING_STATIC_ENABLED:
         STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-    if CACHE_BUSTING_MEDIA_ENABLED:
-        DEFAULT_FILE_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
@@ -440,6 +437,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.social',
     'geonode.groups',
     'geonode.services',
+    'geonode.management_commands_http',
 
     'geonode.resource',
     'geonode.resource.processing',
@@ -496,9 +494,9 @@ INSTALLED_APPS = (
     'floppyforms',
     'tinymce',
     'widget_tweaks',
-    'django_celery_beat',
     'django_celery_results',
     'markdownify',
+    'django_user_agents',
 
     # REST APIs
     'rest_framework',
@@ -706,7 +704,7 @@ integration_bdd_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_BD
 selenium_tests = ast.literal_eval(os.environ.get('TEST_RUN_SELENIUM', 'False'))
 
 # Django 1.11 ParallelTestSuite
-TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
+# TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
 TEST_RUNNER_KEEPDB = os.environ.get('TEST_RUNNER_KEEPDB', 0)
 TEST_RUNNER_PARALLEL = os.environ.get('TEST_RUNNER_PARALLEL', 1)
 
@@ -775,6 +773,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
     'geonode.base.middleware.MaintenanceMiddleware',
     'geonode.base.middleware.ReadOnlyMiddleware',   # a Middleware enabling Read Only mode of Geonode
 )
@@ -1694,6 +1693,7 @@ CELERY_TASK_QUEUES = (
     Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup', priority=0),
     Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
     Queue('security', GEONODE_EXCHANGE, routing_key='security', priority=0),
+    Queue('management_commands_http', GEONODE_EXCHANGE, routing_key='management_commands_http', priority=0),
 )
 
 if USE_GEOSERVER:
@@ -1729,7 +1729,9 @@ if USE_GEOSERVER:
 #          'task': 'my_app.tasks.send_notification',
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+CELERY_BEAT_SCHEDULER = os.environ.get(
+    'CELERY_BEAT_SCHEDULER', "celery.beat:PersistentScheduler")
 CELERY_BEAT_SCHEDULE = {}
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
@@ -2070,3 +2072,14 @@ UI_DEFAULT_MANDATORY_FIELDS = [
 UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv('UI_REQUIRED_FIELDS ', '[]'))
 
 UPLOAD_SESSION_EXPIRY_HOURS = os.getenv('UPLOAD_SESSION_EXPIRY_HOURS ', 24)
+
+# If a command name is listed here, the command will be available to admins over http
+# This list is used by the management_commands_http app
+MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set([
+    "ping_mngmt_commands_http",
+    "updatelayers",
+    "sync_geonode_datasets",
+    "sync_geonode_maps",
+    "importlayers",
+    "set_all_datasets_metadata",
+] + ast.literal_eval(os.getenv('MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ', '[]')))

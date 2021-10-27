@@ -68,6 +68,7 @@ from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
 from geonode.utils import (
     bbox_to_wkt,
     find_by_attr,
+    bbox_to_projection,
     is_monochromatic_image)
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
@@ -434,14 +435,15 @@ class TaggedContentItem(ItemBase):
 
     # see https://github.com/alex/django-taggit/issues/101
     @classmethod
-    def tags_for(cls, model, instance=None):
+    def tags_for(cls, model, instance=None, **extra_filters):
+        kwargs = extra_filters or {}
         if instance is not None:
             return cls.tag_model().objects.filter(**{
                 f'{cls.tag_relname()}__content_object': instance
-            })
+            }, **kwargs)
         return cls.tag_model().objects.filter(**{
             f'{cls.tag_relname()}__content_object__isnull': False
-        }).distinct()
+        }, **kwargs).distinct()
 
 
 class _HierarchicalTagManager(_TaggableManager):
@@ -1022,10 +1024,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def __init__(self, *args, **kwargs):
         # Provide legacy support for bbox fields
-        bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
-        if all(bbox):
-            kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
-            kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
+        try:
+            bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
+            if all(bbox):
+                kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
+                kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
+        except Exception as e:
+            logger.exception(e)
         super().__init__(*args, **kwargs)
 
     def __str__(self):
@@ -1066,6 +1071,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def detail_url(self):
         return self.get_absolute_url()
+
+    def clean(self):
+        if self.title:
+            self.title = self.title.replace(",", "_")
+        return super().clean()
 
     def save(self, notify=False, *args, **kwargs):
         """
@@ -1379,17 +1389,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
 
     def set_processing_state(self, state):
-        if self.state != state:
-            self.state = state
-            ResourceBase.objects.filter(id=self.id).update(state=state)
-            if state == enumerations.STATE_PROCESSED:
-                self.clear_dirty_state()
+        self.state = state
+        ResourceBase.objects.filter(id=self.id).update(state=state)
+        if state == enumerations.STATE_PROCESSED:
+            self.clear_dirty_state()
 
     @property
     def processed(self):
         if self.state == enumerations.STATE_PROCESSED:
             self.clear_dirty_state()
-        else:
+        elif self.state != enumerations.STATE_RUNNING:
             self.set_dirty_state()
         return not self.dirty_state
 
@@ -1424,7 +1433,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
             bbox_polygon.srid = int(match.group('srid')) if match else 4326
             try:
-                self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
+                # self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
+                self.ll_bbox_polygon = Polygon.from_bbox(
+                    bbox_to_projection(list(bbox_polygon.extent) + [srid])[:-1])
             except Exception as e:
                 logger.error(e)
                 self.ll_bbox_polygon = bbox_polygon
@@ -1507,17 +1518,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Sets the center coordinates and zoom level in EPSG:4326
         """
-        bbox = self.ll_bbox_polygon
-        center_x, center_y = self.ll_bbox_polygon.centroid.coords
-        center = Point(center_x, center_y, srid=4326)
-        self.center_x, self.center_y = center.coords
-        try:
-            ext = bbox.extent
-            width_zoom = math.log(360 / (ext[2] - ext[0]), 2)
-            height_zoom = math.log(360 / (ext[3] - ext[1]), 2)
-            self.zoom = math.ceil(min(width_zoom, height_zoom))
-        except ZeroDivisionError:
-            pass
+        if self.ll_bbox_polygon and len(self.ll_bbox_polygon.centroid.coords) > 0:
+            bbox = self.ll_bbox_polygon.clone()
+            center_x, center_y = bbox.centroid.coords
+            center = Point(center_x, center_y, srid=4326)
+            self.center_x, self.center_y = center.coords
+            try:
+                ext = bbox.extent
+                width_zoom = math.log(360 / (ext[2] - ext[0]), 2)
+                height_zoom = math.log(360 / (ext[3] - ext[1]), 2)
+                self.zoom = math.ceil(min(width_zoom, height_zoom))
+            except ZeroDivisionError:
+                pass
 
     def download_links(self):
         """assemble download links for pycsw"""

@@ -19,39 +19,11 @@
 
 import typing
 
-from django.utils.timezone import now
-from django.utils.module_loading import import_string
-import jsonschema
 from lxml import etree
 
 
 # explicitly disable resolving XML entities in order to prevent malicious attacks
 XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
-
-
-def update_harvester_availability(
-        harvester: "Harvester",  # noqa
-        timeout_seconds: typing.Optional[int] = 5
-) -> bool:
-    harvester.status = harvester.STATUS_CHECKING_AVAILABILITY
-    harvester.save()
-    worker = harvester.get_harvester_worker()
-    harvester.last_checked_availability = now()
-    available = worker.check_availability(timeout_seconds=timeout_seconds)
-    harvester.remote_available = available
-    harvester.status = harvester.STATUS_READY
-    harvester.save()
-    return available
-
-
-def validate_worker_configuration(harvester_type, configuration: typing.Dict):
-    worker_class = import_string(harvester_type)
-    schema = worker_class.get_extra_config_schema()
-    if schema is not None:
-        try:
-            jsonschema.validate(configuration, schema)
-        except jsonschema.exceptions.SchemaError as exc:
-            raise RuntimeError(f"Invalid schema: {exc}")
 
 
 def get_xpath_value(

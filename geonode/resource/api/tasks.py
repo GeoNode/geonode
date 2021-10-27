@@ -162,4 +162,4 @@ def resouce_service_dispatcher(self, execution_id: str):
                         )
                         _request.refresh_from_db()
 
-            logger.error(f"WARNING: The requested ExecutionRequest with 'exec_id'={execution_id} was not found!")
+            logger.debug(f"WARNING: The requested ExecutionRequest with 'exec_id'={execution_id} was not found!")

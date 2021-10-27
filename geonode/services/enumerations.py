@@ -41,28 +41,23 @@ LIVE = "X"
 OPENGEOPORTAL = "O"
 
 SERVICE_TYPES = (
-    (AUTO, _('Auto-detect')),
+    # (AUTO, _('Auto-detect')),
     (OWS, _('Paired WMS/WFS/WCS')),
     (WMS, _('Web Map Service')),
-    (CSW, _('Catalogue Service')),
+    # (CSW, _('Catalogue Service')),
     (REST_MAP, _('ArcGIS REST MapServer')),
     (REST_IMG, _('ArcGIS REST ImageServer')),
-    (OGP, _('OpenGeoPortal')),
-    (HGL, _('Harvard Geospatial Library')),
+    # (OGP, _('OpenGeoPortal')),
+    # (HGL, _('Harvard Geospatial Library')),
     (GN_WMS, _('GeoNode (Web Map Service)')),
-    (GN_CSW, _('GeoNode (Catalogue Service)')),
+    # (GN_CSW, _('GeoNode (Catalogue Service)')),
 )
 
-GXP_PTYPES = {
-    'AUTO': 'gxp_wmscsource',
-    'OWS': 'gxp_wmscsource',
-    'WMS': 'gxp_wmscsource',
-    'WFS': 'gxp_wmscsource',
-    'WCS': 'gxp_wmscsource',
-    'REST_MAP': 'gxp_arcrestsource',
-    'REST_IMG': 'gxp_arcrestsource',
-    'HGL': 'gxp_hglsource',
-    'GN_WMS': 'gxp_geonodecataloguesource',
+HARVESTER_TYPES = {
+    'WMS': 'geonode.harvesting.harvesters.wms.OgcWmsHarvester',
+    'GN_WMS': 'geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker',
+    'REST_MAP': 'geonode.harvesting.harvesters.arcgis.ArcgisHarvesterWorker',
+    'REST_IMG': 'geonode.harvesting.harvesters.arcgis.ArcgisHarvesterWorker',
 }
 
 QUEUED = "QUEUED"

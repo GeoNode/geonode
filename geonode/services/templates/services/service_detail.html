@@ -13,6 +13,18 @@
 
     {% autoescape off %}
         <h3>{% trans "Service Resources" %} <span class="badge">{{ total_resources }}</span></h3>
+        {% if service.harvester %}
+        {% with service.harvester.latest_harvesting_session.get_progress_percentage as harvesting_progress %}
+            {% if harvesting_progress >= 0 and harvesting_progress < 100.0 %}
+            <p>
+            <i class="fa fa-gear"></i> <i>{% trans "Resource harvesting in progress..." %}</i>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: {{ harvesting_progress }}%;" aria-valuenow="{{ harvesting_progress }}" aria-valuemin="0" aria-valuemax="100">{{ harvesting_progress }}%</div>
+            </div>
+            </p>
+            {% endif %}
+        {% endwith %}
+        {% endif %}
         {% if total_resources == 0 %}
             <p>{% trans "No resources have been imported yet." %}</p>
         {% else %}
@@ -22,37 +34,16 @@
                 <th>{% trans "Title" %}</th>
                 <th>{% trans "Description" %}</th>
                 </thead>
-                {% for job in resource_jobs %}
+                {% for dataset in datasets %}
                     <tr>
-                        {% if job.status != 'PROCESSED' %}
-                            <td>{{job.resource_id}}</td>
-                            <td>
-                                <div class="row">
-                                    <div class="col-md-9">
-                                        {{job.status}} - {{ job.details }}
-                                    </div>
-                                    <div class="btn-group pull-right">
-                                       {% if job.status == 'FAILED' %}
-                                        <button title="{% trans "Retry job" %}" class="btn" name="retry-{{ job.resource_id }}"><i
-                                                class="fa fa-refresh fa-fw" aria-hidden="true"></i></button>
-                                       {% endif %}
-                                    </div>
+                        <td><a href='{{ dataset.get_absolute_url }}'>{{dataset.title|striptags}}</a></td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-9">
+                                    {{dataset.abstract|striptags}}
                                 </div>
-                            </td>
-                        {% else %}
-                            {% for layer in layers %}
-                                {% if layer.name == job.resource_id or layer.alternate == job.resource_id %}
-                                    <td><a href='{{ layer.get_absolute_url }}'>{{layer.title|striptags}}</a></td>
-                                    <td>
-                                        <div class="row">
-                                            <div class="col-md-9">
-                                                {{layer.abstract|striptags}}
-                                            </div>
-                                        </div>
-                                    </td>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
+                            </div>
+                        </td>
                     </tr>
                 {% endfor %}
             </table>

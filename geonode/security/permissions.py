@@ -123,7 +123,13 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: s
         else:
             return EDIT_PERMISSIONS
     elif perm == MANAGE_RIGHTS:
-        return MANAGE_PERMISSIONS
+        if resource_type and resource_type.lower() in 'dataset':
+            if resource_subtype and resource_subtype.lower() in 'vector':
+                return DATASET_ADMIN_PERMISSIONS + ADMIN_PERMISSIONS
+            else:
+                return ADMIN_PERMISSIONS
+        else:
+            return ADMIN_PERMISSIONS
 
 
 def _to_compact_perms(perms: list, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False) -> str:
@@ -321,6 +327,30 @@ class PermSpec(PermSpecConverterBase):
                     'name': 'anonymous',
                     'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype)
                 }
+        # Let's make sure we don't lose control over the resource
+        if not any([_u.get('id', None) == self._resource.owner.id for _u in user_perms]):
+            user_perms.append(
+                {
+                    'id': self._resource.owner.id,
+                    'username': self._resource.owner.username,
+                    'first_name': self._resource.owner.first_name,
+                    'last_name': self._resource.owner.last_name,
+                    'avatar': build_absolute_uri(avatar_url(self._resource.owner, 240)),
+                    'permissions': OWNER_RIGHTS
+                }
+            )
+        for user in get_user_model().objects.filter(is_superuser=True):
+            if not any([_u.get('id', None) == user.id for _u in user_perms]):
+                user_perms.append(
+                    {
+                        'id': user.id,
+                        'username': user.username,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'avatar': build_absolute_uri(avatar_url(user, 240)),
+                        'permissions': MANAGE_RIGHTS
+                    }
+                )
 
         for _k in self.groups:
             _perms = self.groups[_k]
@@ -355,6 +385,19 @@ class PermSpec(PermSpecConverterBase):
 
         if anonymous_perms:
             group_perms.append(anonymous_perms)
+        else:
+            anonymous_group = Group.objects.get(name='anonymous')
+            group_perms.append(
+                {
+                    'id': anonymous_group.id,
+                    'title': 'anonymous',
+                    'name': 'anonymous',
+                    'permissions': _to_compact_perms(
+                        get_group_perms(anonymous_group, self._resource),
+                        self._resource.resource_type,
+                        self._resource.subtype)
+                }
+            )
         if contributors_perms:
             group_perms.append(contributors_perms)
         elif Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).exists():
@@ -444,7 +487,8 @@ class PermSpecCompact(PermSpecConverterBase):
         for _u in self.users:
             _user_profile = get_user_model().objects.get(id=_u.id)
             _is_owner = _user_profile == self._resource.owner
-            json['users'][_user_profile.username] = _to_extended_perms(_u.permissions, self._resource.resource_type, self._resource.subtype, _is_owner)
+            _perms = OWNER_RIGHTS if _is_owner else MANAGE_RIGHTS if _user_profile.is_superuser else _u.permissions
+            json['users'][_user_profile.username] = _to_extended_perms(_perms, self._resource.resource_type, self._resource.subtype, _is_owner)
         for _go in self.organizations:
             _group = Group.objects.get(id=_go.id)
             json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.subtype)
