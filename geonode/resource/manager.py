@@ -686,7 +686,8 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.handle_moderated_uploads()
                     if not self._concrete_resource_manager.set_permissions(
                             uuid, instance=_resource, owner=owner, permissions=permissions, created=created):
-                        raise Exception("Could not complete concrete manager operation successfully!")
+                        # This might not be a severe error. E.g. for datasets outside of local GeoServer
+                        logger.error(Exception("Could not complete concrete manager operation successfully!"))
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
