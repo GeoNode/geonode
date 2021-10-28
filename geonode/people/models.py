@@ -255,9 +255,8 @@ class Profile(AbstractUser):
                 email_template = 'pinax/notifications/account_active/account_active'
                 adapter = get_invitations_adapter()
                 adapter.send_invitation_email(email_template, self.email, ctx)
-            except Exception:
-                import traceback
-                traceback.print_exc()
+            except Exception as e:
+                logger.exception(e)
 
     def send_mail(self, template_prefix, context):
         if self.email:
