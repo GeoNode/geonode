@@ -29,6 +29,7 @@ from django.urls import reverse
 from django.db.models import Max
 
 from .models import Favorite
+from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
 
 
@@ -45,6 +46,11 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.adm_un = "admin"
         self.adm_pw = "admin"
         self.admin = get_user_model().objects.get(username="admin")
+        self.geoapp = GeoApp.objects.create(
+            resource_type='geoapp',
+            name="test geoapp1",
+            owner=self.admin
+            )
 
     # tests of Favorite and FavoriteManager methods.
     def test_favorite(self):
@@ -154,6 +160,16 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(json_content2["has_favorite"], "true")
         self.assertEqual(json_content2["delete_url"], expected_delete_url)
 
+        # test favourite geoapp from view
+        response = self._get_response("add_favorite_geoapp", (self.geoapp.pk,))
+        self.assertEqual(response.status_code, 200)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        json_content = json.loads(content)
+        self.assertEqual(json_content["has_favorite"], "true")
+        expected_delete_url = reverse("delete_favorite", args=[self.geoapp.pk])
+
     def test_create_favorite_view_login_required(self):
         """
         call create view, not logged in.
@@ -216,6 +232,15 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(response2.status_code, 200)
         json_content2 = json.loads(response2.content)
         self.assertEqual(json_content2["has_favorite"], "false")
+
+        # test delete geoapp from favorite
+        response = self._get_response("delete_favorite", (self.geoapp.pk,))
+        self.assertEqual(response.status_code, 200)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        json_content = json.loads(content)
+        self.assertEqual(json_content["has_favorite"], "false")
 
     def test_delete_favorite_view_login_required(self):
         """

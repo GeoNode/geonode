@@ -237,7 +237,7 @@ class PeopleTest(GeoNodeBaseTestSupport):
         self.assertIn(bobby.voice, content)
 
     @patch('geonode.utils.get_subclasses_by_model')
-    def test_geoapps_display(self, _mock):
+    def test_display_geoapps(self, _mock):
         bobby = get_user_model().objects.get(username='bobby')
         bobby.voice = '+245-897-7889'
         bobby.save()

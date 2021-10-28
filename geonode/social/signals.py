@@ -25,7 +25,6 @@ import logging
 from collections import defaultdict
 from dialogos.models import Comment
 
-from django.apps import apps
 from django.conf import settings
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
@@ -111,10 +110,11 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     except Exception as e:
         logger.exception(e)
 
-    try:
-        action_settings[obj_type].update(object_name=getattr(instance, 'title', None),)
-    except Exception as e:
-        logger.exception(e)
+    if obj_type not in ['document', 'layer', 'map', 'comment']:
+        try:
+            action_settings[obj_type].update(object_name=getattr(instance, 'title', None),)
+        except Exception as e:
+            logger.exception(e)
 
     try:
         action = action_settings[obj_type]

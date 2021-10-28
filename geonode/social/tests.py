@@ -35,7 +35,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
 from django.urls import reverse
 
-from geonode.geoapps.models import GeoApp
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.social.templatetags.social_tags import activity_item
@@ -144,64 +143,6 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
 
         # Pre-fecthing actstream breaks the actor stream
         self.assertIn(action, actor_stream(self.user))
-
-    def test_geoapp_activity(self):
-        """
-        Tests the activity functionality when a geostory is saved.
-        """
-
-        # A new activity should be created for each Layer.
-        self.assertNotEqual(Action.objects.all().count(), GeoApp.objects.all().count())
-        GeoApp.objects.create(owner=self.user, title='test geoapp1', name='test geoapp1', is_approved=True)
-        action = Action.objects.all()[0]
-        geoapp = action.action_object
-
-        # The activity should read:
-        # geoapp.owner (actor) 'uploaded' (verb) geoapp (object)
-        self.assertEqual(action.actor, action.action_object.owner)
-        data = action.data
-        if isinstance(data, (str, bytes)):
-            data = json.loads(data)
-        self.assertEqual(data.get('raw_action'), 'created')
-        self.assertEqual(data.get('object_name'), geoapp.name)
-        self.assertTrue(isinstance(action.action_object, GeoApp))
-        self.assertIsNone(action.target)
-
-        # Test the  activity_item template tag
-        template_tag = activity_item(Action.objects.all()[0])
-
-        self.assertEqual(template_tag.get('username'), action.actor.username)
-        self.assertEqual(template_tag.get('object_name'), geoapp.name)
-        self.assertEqual(template_tag.get('actor'), action.actor)
-        self.assertEqual(template_tag.get('verb'), _('created'))
-        self.assertEqual(template_tag.get('action'), action)
-        self.assertEqual(template_tag.get('activity_class'), 'geoapp')
-
-        geoapp_name = geoapp.name
-        geoapp.delete()
-
-        # <user> deleted <object_name>
-        action = Action.objects.all()[0]
-        data = action.data
-        if isinstance(data, (str, bytes)):
-            data = json.loads(data)
-        self.assertEqual(data.get('raw_action'), 'deleted')
-        self.assertEqual(data.get('object_name'), geoapp_name)
-
-        # objects are literally deleted so no action object or target should be related to a delete action.
-        self.assertIsNone(action.action_object)
-        self.assertIsNone(action.target)
-
-        # Test the activity_item template tag
-        action = Action.objects.all()[0]
-        template_tag = activity_item(action)
-
-        # Make sure the 'delete' class is returned
-        self.assertEqual(template_tag.get('activity_class'), 'delete')
-
-        # The geoapp's name should be returned
-        self.assertEqual(template_tag.get('object_name'), geoapp_name)
-        self.assertEqual(template_tag.get('verb'), _('deleted'))
 
     def test_get_recent_activities(self):
         url = reverse('recent-activity')
