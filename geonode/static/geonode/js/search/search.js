@@ -624,7 +624,7 @@
                 element.parents('ul').find('a').removeClass('selected');
 
                 element.addClass('selected');
-    
+
                 //save back the new query entry to the scope query
                 $scope.query[data_filter] = query_entry;
 

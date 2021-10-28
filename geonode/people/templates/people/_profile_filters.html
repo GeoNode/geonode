@@ -5,6 +5,9 @@
   <li><a data-value="dataset" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Datasets" %}</a></li>
   <li><a data-value="map" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Maps" %}</a></li>
   <li><a data-value="document" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Documents" %}</a></li>
-  <li><a data-value="geostory" data-filter="app_type__in" ng-click="single_choice_listener($event)">{% trans "GeoStories" %}</a></li>
-  <li><a data-value="dashboard" data-filter="app_type__in" ng-click="single_choice_listener($event)">{% trans "Dashboards" %}</a></li>
+  {% for app in GEONODE_APPS_TYPES %}
+    <li><a data-value="{{app}}" data-filter="app_type__in" ng-click="single_choice_listener($event)">
+      {% trans app|title %}
+    </a></li>
+  {% endfor %}
 </ul>
