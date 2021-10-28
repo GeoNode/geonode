@@ -35,7 +35,10 @@ notifications = None
 has_notifications = E and M and M in settings.INSTALLED_APPS
 
 if has_notifications:
-    notifications = import_module(M)
+    try:
+        notifications = import_module(M)
+    except Exception as e:
+        logger.error(e)
 
 
 class NotificationsAppConfigBase(AppConfig):
