@@ -33,6 +33,7 @@ import requests
 from django.contrib.gis import geos
 from lxml import etree
 
+from geonode.layers.enumerations import GXP_PTYPES
 from geonode.documents.models import Document
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
@@ -267,6 +268,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                     "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
                     "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
                     "srid": srid,
+                    "ptype": GXP_PTYPES["GN_WMS"],
                 })
         return defaults
 

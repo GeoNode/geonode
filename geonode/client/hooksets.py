@@ -133,7 +133,7 @@ class BaseHookSet:
     def update_from_viewer(self, conf, context=None):
         return NotImplemented
 
-    def metadata_update_redirect(self, url):
+    def metadata_update_redirect(self, url, request=None):
         if "metadata_uri" in url:
             return url.replace('/metadata_uri', '')
         return url.replace('/metadata', '')

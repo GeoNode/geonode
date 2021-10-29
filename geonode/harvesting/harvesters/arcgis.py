@@ -207,16 +207,19 @@ class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
             resource_uuid = uuid.uuid4()
         else:
             resource_uuid = uuid.UUID(harvestable_resource.geonode_resource.uuid)
-        name = layer_representation["name"]
         _, service_name, service_type = parse_remote_url(harvestable_resource.unique_identifier)
-        alternate = slugify(" ".join((service_name, name, str(layer_representation["id"]))))
         epsg_code, spatial_extent = _parse_spatial_extent(layer_representation["extent"])
-        store = self.service.url.partition("?")[0].strip("/")
+        ows_url = harvestable_resource.unique_identifier.rpartition("/")[0]
+        store = slugify(ows_url)
+        name = layer_representation['id']
+        title = layer_representation["name"]
+        workspace = "remoteWorkspace"
+        alternate = f"{workspace}:{name}"
         return resourcedescriptor.RecordDescription(
             uuid=resource_uuid,
             identification=resourcedescriptor.RecordIdentification(
                 name=name,
-                title=name,
+                title=title,
                 abstract=layer_representation.get("description", ""),
                 other_constraints=layer_representation.get("copyrightTest", ""),
                 spatial_extent=spatial_extent,
@@ -231,11 +234,10 @@ class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
             ),
             reference_systems=[epsg_code],
             additional_parameters={
-                "alternate": alternate,
                 "store": store,
-                "typename": slugify(f"{layer_representation['id']}-{''.join(c for c in name if ord(c) < 128)}"),
-                "workspace": "remoteWorkspace",
-                "ows_url": harvestable_resource.unique_identifier.rpartition("/")[0],
+                "workspace": workspace,
+                "alternate": alternate,
+                "ows_url": ows_url,
                 "ptype": GXP_PTYPES["REST_MAP"],
             },
         )
@@ -318,16 +320,19 @@ class ArcgisImageServiceResourceExtractor(ArcgisServiceResourceExtractor):
             resource_uuid = uuid.uuid4()
         else:
             resource_uuid = uuid.UUID(harvestable_resource.geonode_resource.uuid)
-        name = layer_representation["name"]
         _, service_name, service_type = parse_remote_url(harvestable_resource.unique_identifier)
-        alternate = "-".join((service_name, name))
         epsg_code, spatial_extent = _parse_spatial_extent(layer_representation["extent"])
         ows_url = harvestable_resource.unique_identifier.rpartition("/")[0]
+        store = slugify(ows_url)
+        name = layer_representation['id']
+        title = layer_representation["name"]
+        workspace = "remoteWorkspace"
+        alternate = f"{workspace}:{name}"
         return resourcedescriptor.RecordDescription(
             uuid=resource_uuid,
             identification=resourcedescriptor.RecordIdentification(
                 name=name,
-                title=name,
+                title=title,
                 abstract=layer_representation.get("description", ""),
                 other_constraints=layer_representation.get("copyrightTest", ""),
                 spatial_extent=spatial_extent,
@@ -342,10 +347,9 @@ class ArcgisImageServiceResourceExtractor(ArcgisServiceResourceExtractor):
             ),
             reference_systems=[epsg_code],
             additional_parameters={
+                "store": store,
+                "workspace": workspace,
                 "alternate": alternate,
-                "store": ows_url,
-                "typename": slugify(''.join(c for c in name if ord(c) < 128)),
-                "workspace": "remoteWorkspace",
                 "ows_url": ows_url,
                 "ptype": GXP_PTYPES["REST_IMG"],
             },
