@@ -24,6 +24,7 @@ import timeout_decorator
 
 from datetime import timedelta
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext_noop as _
 
@@ -74,6 +75,10 @@ class Command(BaseCommand):
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def handle(self, *args, **options):
+        # Exit early if MONITORING_ENABLED=False
+        if not settings.MONITORING_ENABLED:
+            return
+
         self.collector = CollectorAPI()
         if options['list_metrics']:
             self.list_metrics()
