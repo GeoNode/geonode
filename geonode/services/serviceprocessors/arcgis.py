@@ -28,9 +28,9 @@ from django.db import transaction
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify, safe
 
+from geonode import GeoNodeException
 from geonode.layers.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
-
 from geonode.harvesting.models import Harvester
 
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
@@ -128,9 +128,11 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
                 harvester_type_specific_configuration=self.get_harvester_configuration_options()
             )
-            service_harvester.update_availability()
-            service_harvester.initiate_update_harvestable_resources()
-            instance.harvester = service_harvester
+            if service_harvester.update_availability():
+                service_harvester.initiate_update_harvestable_resources()
+                instance.harvester = service_harvester
+            else:
+                raise GeoNodeException("Could not reach remote endpoint.")
 
         self.geonode_service_id = instance.id
         return instance
