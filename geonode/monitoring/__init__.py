@@ -77,11 +77,12 @@ class MonitoringAppConfig(NotificationsAppConfigBase):
 
     def ready(self):
         super(MonitoringAppConfig, self).ready()
-        post_migrate.connect(run_setup_hooks, sender=self)
-        settings.CELERY_BEAT_SCHEDULE['collect_metrics'] = {
-            'task': 'geonode.monitoring.tasks.collect_metrics',
-            'schedule': 300.0,
-        }
+        if settings.MONITORING_ENABLED:
+            post_migrate.connect(run_setup_hooks, sender=self)
+            settings.CELERY_BEAT_SCHEDULE['collect_metrics'] = {
+                'task': 'geonode.monitoring.tasks.collect_metrics',
+                'schedule': 300.0,
+            }
 
 
 default_app_config = 'geonode.monitoring.MonitoringAppConfig'
