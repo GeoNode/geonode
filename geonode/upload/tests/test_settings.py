@@ -209,8 +209,6 @@ MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 7)))
 MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CSRF', 'False'))
 
 if MONITORING_ENABLED:
-    if 'geonode.monitoring' not in settings.INSTALLED_APPS:
-        settings.INSTALLED_APPS += ('geonode.monitoring',)
     if 'geonode.monitoring.middleware.MonitoringMiddleware' not in settings.MIDDLEWARE:
         settings.MIDDLEWARE += \
             ('geonode.monitoring.middleware.MonitoringMiddleware',)
@@ -235,11 +233,6 @@ if MONITORING_ENABLED:
         (timedelta(days=1), timedelta(minutes=60),),
         (timedelta(days=14), timedelta(days=1),),
     )
-
-    settings.CELERY_BEAT_SCHEDULE['collect_metrics'] = {
-        'task': 'geonode.monitoring.tasks.collect_metrics',
-        'schedule': 60.0,
-    }
 
 LOGGING = {
     'version': 1,
