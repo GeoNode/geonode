@@ -1936,6 +1936,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         "bobby":
                             [
                                 "view_resourcebase",
+                                "download_resourcebase",
                             ]
                     },
                 "groups": {}
