@@ -150,11 +150,14 @@ def set_owner_permissions(resource, members=None):
         DOWNLOAD_PERMISSIONS,
         ADMIN_PERMISSIONS,
         SERVICE_PERMISSIONS,
+        DOWNLOADABLE_RESOURCES,
         DATASET_ADMIN_PERMISSIONS,
         DATASET_EDIT_STYLE_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
-        admin_perms = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS
+        admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
+        if resource.polymorphic_ctype.name in DOWNLOADABLE_RESOURCES:
+            admin_perms += DOWNLOAD_PERMISSIONS
         for perm in admin_perms:
             if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
