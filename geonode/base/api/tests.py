@@ -485,7 +485,7 @@ class BaseApiTests(APITestCase):
                         'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'download'
+                        'permissions': 'view'
                     },
                     {
                         'id': contributors_group.id,
@@ -565,7 +565,7 @@ class BaseApiTests(APITestCase):
                         'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'download'
+                        'permissions': 'view'
                     },
                     {
                         'id': contributors_group.id,
@@ -604,7 +604,7 @@ class BaseApiTests(APITestCase):
                     'id': anonymous_group.id,
                     'title': 'anonymous',
                     'name': 'anonymous',
-                    'permissions': 'download'
+                    'permissions': 'view'
                 },
                 {
                     'id': contributors_group.id,
@@ -660,7 +660,7 @@ class BaseApiTests(APITestCase):
                         'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'download'
+                        'permissions': 'view'
                     },
                     {
                         'id': contributors_group.id,
@@ -1204,7 +1204,7 @@ class BaseApiTests(APITestCase):
                         'id': 3,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'download'
+                        'permissions': 'view'
                     },
                     {
                         'id': 2,
@@ -1248,7 +1248,7 @@ class BaseApiTests(APITestCase):
                         'id': 3,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'download'
+                        'permissions': 'view'
                     },
                     {
                         'id': 2,
