@@ -1,7 +1,6 @@
 #########################################################################
 # This is to mock the GEONODE_APPS_INSTALLED for test in geonode.people.tests.PeopleTest
 #########################################################################
-import warnings
 from django.conf import settings
 from geonode import get_version
 from geonode.catalogue import default_catalogue_backend
@@ -11,11 +10,6 @@ from django.contrib.sites.models import Site
 def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
-    if hasattr(settings, 'THESAURUS'):
-        warnings.warn(
-            'Thesaurus settings is going to be'
-            'deprecated in the future versions, please move the settings to '
-            'the new configuration ', FutureWarning)
     defaults = dict(
         STATIC_URL=settings.STATIC_URL,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],

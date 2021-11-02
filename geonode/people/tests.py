@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from unittest.mock import patch
-
 from django.test.utils import override_settings
 from geonode.tests.base import GeoNodeBaseTestSupport
 
