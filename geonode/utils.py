@@ -2137,6 +2137,16 @@ def get_subclasses_by_model(model: str):
     return _app_subclasses
 
 
+def get_geoapps_models():
+    # Get models which are of subclass 'GeoApp'
+    models = []
+    for x, y in django_apps.app_configs.items():
+        if hasattr(y, 'type') and y.type == 'GEONODE_APP' and hasattr(y, 'default_model'):
+            if y.name in settings.INSTALLED_APPS:
+                models.append(y)
+    return models
+
+
 def find_by_attr(lst, val, attr="id"):
     """ Returns an object if the id matches in any list of objects """
     for item in lst:

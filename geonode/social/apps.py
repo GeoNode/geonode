@@ -27,11 +27,15 @@ class SocialConfig(AppConfig):
     def ready(self):
         from django.apps import apps
         from actstream import registry
+        from geonode.utils import get_geoapps_models
         registry.register(apps.get_app_config('layers').get_model('Layer'))
         registry.register(apps.get_app_config('maps').get_model('Map'))
         registry.register(apps.get_app_config('documents').get_model('Document'))
         registry.register(apps.get_app_config('services').get_model('Service'))
         registry.register(apps.get_app_config('dialogos').get_model('Comment'))
-        registry.register(apps.get_app_config('geoapp_geostories').get_model('GeoStory'))
         _auth_user_model = settings.AUTH_USER_MODEL.split('.')
         registry.register(apps.get_app_config(_auth_user_model[0]).get_model(_auth_user_model[1]))
+        # Get models which are of subclass 'GeoApp'
+        models = get_geoapps_models()
+        for m in models:
+            registry.register(apps.get_app_config(m.label).get_model(m.default_model))

@@ -20,8 +20,6 @@
 from geonode.base.models import ResourceBase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-from mapstore2_adapter.geoapps.geostories.models import GeoStory
-
 import json
 
 from django.contrib.auth import get_user_model
@@ -30,6 +28,7 @@ from django.urls import reverse
 from django.db.models import Max
 
 from .models import Favorite
+from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
 from geonode.base.populate_test_data import (
     all_public,
@@ -62,9 +61,9 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.adm_un = "admin"
         self.adm_pw = "admin"
         self.admin = get_user_model().objects.get(username="admin")
-        self.geostory = GeoStory.objects.create(
-            resource_type='geostory',
-            name="test geostory",
+        self.geoapp = GeoApp.objects.create(
+            resource_type='geoapp',
+            name="test geoapp1",
             owner=self.admin
             )
 
@@ -181,15 +180,15 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(json_content2["has_favorite"], "true")
         self.assertEqual(json_content2["delete_url"], expected_delete_url)
 
-        # test favourite geostory from view
-        response = self._get_response("add_favorite_geoapp", (self.geostory.pk,))
+        # test favourite geoapp from view
+        response = self._get_response("add_favorite_geoapp", (self.geoapp.pk,))
         self.assertEqual(response.status_code, 200)
         content = response.content
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         json_content = json.loads(content)
         self.assertEqual(json_content["has_favorite"], "true")
-        expected_delete_url = reverse("delete_favorite", args=[self.geostory.pk])
+        expected_delete_url = reverse("delete_favorite", args=[self.geoapp.pk])
 
     def test_create_favorite_view_login_required(self):
         """
@@ -257,8 +256,8 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         json_content2 = json.loads(response2.content)
         self.assertEqual(json_content2["has_favorite"], "false")
 
-        # test delete geostory from favorite
-        response = self._get_response("delete_favorite", (self.geostory.pk,))
+        # test delete geoapp from favorite
+        response = self._get_response("delete_favorite", (self.geoapp.pk,))
         self.assertEqual(response.status_code, 200)
         content = response.content
         if isinstance(content, bytes):

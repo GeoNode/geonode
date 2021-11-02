@@ -149,6 +149,30 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
             self.assertTrue(user not in perm_spec["users"])
 
 
+@override_settings(
+    TEMPLATES=[
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'context_processors': [
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.i18n',
+                    'django.template.context_processors.tz',
+                    'django.template.context_processors.request',
+                    'django.template.context_processors.media',
+                    'django.template.context_processors.static',
+                    'django.contrib.auth.context_processors.auth',
+                    'django.contrib.messages.context_processors.messages',
+                    'django.contrib.auth.context_processors.auth',
+                    'geonode.people.fixtures.mock_processor.resource_urls',
+                    'geonode.themes.context_processors.custom_theme'
+                ],
+            },
+        },
+    ]
+)
 class PeopleTest(GeoNodeBaseTestSupport):
 
     def test_forgot_username(self):
@@ -233,6 +257,18 @@ class PeopleTest(GeoNodeBaseTestSupport):
             content = content.decode('UTF-8')
         self.assertIn('Profile of bobby', content)
         self.assertIn(bobby.voice, content)
+
+    def test_display_geoapps(self):
+        bobby = get_user_model().objects.get(username='bobby')
+        bobby.voice = '+245-897-7889'
+        bobby.save()
+        url = reverse('profile_detail', args=['bobby'])
+        response = self.client.get(url)
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Geoapp1', content)
 
 
 class FacebookExtractorTestCase(GeoNodeBaseTestSupport):
