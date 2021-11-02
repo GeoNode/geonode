@@ -10,6 +10,7 @@
 
 {% block body_outer %}
 
+
 <style>
 
     .subtitle {
@@ -23,9 +24,12 @@
 
 </style>
 
+
 <div class="page-header">
     {% if resource.class_name == "Document" %}
-    <a href="{% document_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
+        {% if "download_resourcebase" in perms  %}
+            <a href="{% document_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
+        {% endif %}
     {% elif resource.class_name == "Layer" %}
     <a href="{% dataset_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Layer" %}</a>
     {% elif resource.class_name == "Map" %}
