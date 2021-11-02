@@ -130,9 +130,9 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             )
             if service_harvester.update_availability():
                 service_harvester.initiate_update_harvestable_resources()
-                instance.harvester = service_harvester
             else:
-                raise GeoNodeException("Could not reach remote endpoint.")
+                logger.exception(GeoNodeException("Could not reach remote endpoint."))
+            instance.harvester = service_harvester
 
         self.geonode_service_id = instance.id
         return instance
