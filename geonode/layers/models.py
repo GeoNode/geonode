@@ -23,6 +23,7 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
+from django.utils.functional import classproperty
 from django.utils.translation import ugettext_lazy as _
 
 from tinymce.models import HTMLField
@@ -30,6 +31,12 @@ from tinymce.models import HTMLField
 from geonode.client.hooks import hookset
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
+from geonode.groups.conf import settings as groups_settings
+from geonode.security.permissions import (
+    VIEW_PERMISSIONS,
+    OWNER_PERMISSIONS,
+    DOWNLOAD_PERMISSIONS,
+    DATASET_ADMIN_PERMISSIONS)
 from geonode.base.models import (
     ResourceBase,
     ResourceBaseManager)
@@ -310,6 +317,14 @@ class Dataset(ResourceBase):
     def maps(self):
         from geonode.maps.models import MapLayer
         return MapLayer.objects.filter(name=self.alternate)
+
+    @classproperty
+    def allowed_permissions(cls):
+        return {
+            "anonymous": VIEW_PERMISSIONS,
+            "default": OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS + DATASET_ADMIN_PERMISSIONS,
+            groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS + DATASET_ADMIN_PERMISSIONS
+        }
 
     @property
     def class_name(self):

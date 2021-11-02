@@ -107,7 +107,6 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: s
       - edit: view download and edit (metadata, style, data)
       - manage: change permissions, delete resource, etc.
       - owner: admin permissions
-
     """
     if is_owner:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
@@ -152,7 +151,6 @@ def _to_compact_perms(perms: list, resource_type: str = None, resource_subtype: 
       - edit: view download and edit (metadata, style, data)
       - manage: change permissions, delete resource, etc.
       - owner: admin permissions
-
     """
     if is_owner:
         return OWNER_RIGHTS
@@ -533,3 +531,21 @@ class PermSpecCompact(PermSpecConverterBase):
                         getattr(self, _elem).append(_up)
                     else:
                         getattr(self, _elem).add(_up)
+
+
+def get_compact_perms_list(perms: list, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False, is_none_allowed: bool = True) -> list:
+    _perms_list = []
+    _perm = _to_compact_perms(perms, resource_type, resource_subtype, is_owner)
+    if _perm:
+        for _p in COMPACT_RIGHT_MODES:
+            if (_p[1] not in [DOWNLOAD_RIGHTS] + DATASET_ADMIN_PERMISSIONS or
+                    _p[1] in [DOWNLOAD_RIGHTS] and any(__p in DOWNLOAD_PERMISSIONS for __p in perms) or
+                    _p[1] in DATASET_ADMIN_PERMISSIONS and any(__p in DATA_EDITABLE_RESOURCES_SUBTYPES for __p in perms)):
+                _perms_list.append(_p[1])
+                if _p[1] == _perm:
+                    break
+    if is_owner and OWNER_RIGHTS not in _perms_list:
+        _perms_list.append(OWNER_RIGHTS)
+    if is_none_allowed and NONE_RIGHTS not in _perms_list:
+        _perms_list.insert(0, NONE_RIGHTS)
+    return _perms_list
