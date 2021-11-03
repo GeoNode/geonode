@@ -75,13 +75,6 @@
                 <li><a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a></li>
                 <li><a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a></li>
                 {% endverbatim %}
-                  {% if "add_resource" in user.perms %}
-                    {% verbatim %}
-                    <li><a ng-if="item.detail_url.indexOf('/datasets/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
-                      {% endverbatim %}
-                      <i class="fa fa-map-marker"></i>{% trans "Create a Map" %}</a>
-                    </li>
-                  {% endif %}
                 {% verbatim %}
                 <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="{{ item.site_url }}maps/{{item.id}}/view">
                   {% endverbatim %}

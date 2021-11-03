@@ -62,69 +62,6 @@ def convertExifLocationToDecimalDegrees(location, direction):
         return None
 
 
-def exif_extract_dict(doc):
-
-    if not doc:
-        return None
-
-    if not doc.doc_file:
-        return None
-
-    if os.path.splitext(doc.doc_file.name)[1].lower()[1:] in {"jpg", "jpeg"}:
-        from PIL import Image, ExifTags
-        img = Image.open(doc.doc_file.path)
-        exif_data = {
-            ExifTags.TAGS[k]: v
-            for k, v in img._getexif().items() if k in ExifTags.TAGS
-        }
-
-        exif_dict = {
-            'width': exif_data.get('ExifImageWidth', None),
-            'height': exif_data.get('ExifImageHeight', None),
-            'make': exif_data.get('Make', None),
-            'model': exif_data.get('Model', None),
-            'date': None,
-            'lat': None,
-            'lon': None,
-            'flash': exif_data.get('Flash', 0),
-            'speed': exif_data.get('ISOSpeedRatings', 0)
-        }
-
-        date = None
-        if "DateTime" in exif_data:
-            date = exif_data["DateTime"]
-        elif "DateTimeOriginal" in exif_data:
-            date = exif_data["DateTimeOriginal"]
-        elif "DateTimeDigitized" in exif_data:
-            date = exif_data["DateTimeDigitized"]
-
-        if date:
-            try:
-                date = convertExifDateToDjangoDate(date)
-            except Exception:
-                logger.error("Could not parse exif date")
-                date = None
-
-        if date:
-            exif_dict['date'] = date
-
-        if "GPSInfo" in exif_data:
-            gpsinfo = {}
-            for key in exif_data["GPSInfo"].keys():
-                decode = ExifTags.GPSTAGS.get(key, key)
-                gpsinfo[decode] = exif_data["GPSInfo"][key]
-            if "GPSLatitude" in gpsinfo and "GPSLongitude" in gpsinfo:
-                lat = convertExifLocationToDecimalDegrees(gpsinfo["GPSLatitude"], gpsinfo.get('GPSLatitudeRef', 'N'))
-                lon = convertExifLocationToDecimalDegrees(gpsinfo["GPSLongitude"], gpsinfo.get('GPSLongitudeRef', 'E'))
-                exif_dict['lat'] = lat
-                exif_dict['lon'] = lon
-
-        return exif_dict
-
-    else:
-        return None
-
-
 def exif_extract_metadata_doc(doc):
 
     if not doc:
