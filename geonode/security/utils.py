@@ -17,6 +17,7 @@
 #
 #########################################################################
 import logging
+from itertools import chain
 
 from django.apps import apps
 from django.db.models import Q
@@ -261,12 +262,45 @@ def skip_registered_members_common_group(user_group):
 
 
 def get_user_groups(owner):
+    """
+    Returns all the groups belonging to the "owner"
+    """
     user_groups = Group.objects.filter(
         name__in=owner.groupmember_set.all().values_list("group__slug", flat=True))
     return user_groups
 
 
+def get_user_visible_groups(user, include_public_invite: bool = False):
+    """
+    Retrieves all the groups accordingly to the following conditions:
+    - The user is member of
+    - The group is public
+    """
+    metadata_author_groups = []
+    if user.is_superuser or user.is_staff:
+        metadata_author_groups = GroupProfile.objects.all()
+    else:
+        if include_public_invite:
+            group_profile_queryset = GroupProfile.objects.exclude(
+                access="private")
+        else:
+            group_profile_queryset = GroupProfile.objects.exclude(
+                access="private").exclude(access="public-invite")
+        try:
+            all_metadata_author_groups = chain(
+                user.group_list_all(),
+                group_profile_queryset)
+        except Exception:
+            all_metadata_author_groups = group_profile_queryset
+        [metadata_author_groups.append(item) for item in all_metadata_author_groups
+            if item not in metadata_author_groups]
+    return metadata_author_groups
+
+
 def get_obj_group_managers(owner):
+    """
+    Returns the managers of all the groups belonging to the "owner"
+    """
     obj_group_managers = []
     if get_user_groups(owner):
         for _user_group in get_user_groups(owner):

@@ -26,7 +26,6 @@ import tempfile
 import warnings
 import traceback
 
-from itertools import chain
 from dal import autocomplete
 from requests import Request
 from urllib.parse import quote
@@ -88,6 +87,7 @@ from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import get_visible_resources
+from geonode.security.utils import get_user_visible_groups
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import (
@@ -1163,19 +1163,7 @@ def dataset_metadata(
     viewer = json.dumps(map_obj.viewer_json(
         request, * (NON_WMS_BASE_LAYERS + [maplayer])))
 
-    metadata_author_groups = []
-    if request.user.is_superuser or request.user.is_staff:
-        metadata_author_groups = GroupProfile.objects.all()
-    else:
-        try:
-            all_metadata_author_groups = chain(
-                request.user.group_list_all().distinct(),
-                GroupProfile.objects.exclude(access="private"))
-        except Exception:
-            all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private")
-        [metadata_author_groups.append(item) for item in all_metadata_author_groups
-            if item not in metadata_author_groups]
+    metadata_author_groups = get_user_visible_groups(request.user)
 
     register_event(request, 'view_metadata', layer)
     return render(request, template, context={

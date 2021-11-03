@@ -59,7 +59,8 @@ from geonode.security.permissions import (
     get_compact_perms_list)
 from geonode.security.utils import (
     get_visible_resources,
-    get_resources_with_perms)
+    get_resources_with_perms,
+    get_user_visible_groups)
 
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
@@ -107,7 +108,7 @@ class UserViewSet(DynamicModelViewSet):
 
     def get_queryset(self):
         """
-        Filter ans sort objects.
+        Filters and sorts users.
         """
         queryset = get_user_model().objects.all()
         # Set up eager loading to avoid N+1 selects
@@ -145,13 +146,23 @@ class GroupViewSet(DynamicModelViewSet):
     API endpoint that allows gropus to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticatedOrReadOnly, ]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]
-    queryset = GroupProfile.objects.all()
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
+
+    def get_queryset(self):
+        """
+        Filters the public groups and private ones the current user is member of.
+        """
+        metadata_author_groups = get_user_visible_groups(
+            self.request.user, include_public_invite=True)
+        if not isinstance(metadata_author_groups, list):
+            metadata_author_groups = list(metadata_author_groups.all())
+        queryset = GroupProfile.objects.filter(id__in=[_g.id for _g in metadata_author_groups])
+        return queryset.order_by("title")
 
     @extend_schema(methods=['get'], responses={200: UserSerializer(many=True)},
                    description="API endpoint allowing to retrieve the Group members.")
@@ -244,9 +255,8 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
 
     def get_queryset(self):
         """
-        Filter users with atleast a resource
+        Filter users with at least one resource
         """
-
         queryset = get_user_model().objects.exclude(pk=-1)
         filter_options = {}
         if self.request.query_params:

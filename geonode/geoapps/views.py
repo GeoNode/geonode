@@ -21,7 +21,6 @@ import json
 import logging
 import warnings
 import traceback
-from itertools import chain
 
 from django.db.models import F
 from django.urls import reverse
@@ -40,6 +39,7 @@ from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
+from geonode.security.utils import get_user_visible_groups
 from geonode.geoapps.models import GeoApp
 from geonode.resource.manager import resource_manager
 from geonode.decorators import check_keyword_write_perms
@@ -512,20 +512,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
 
-    metadata_author_groups = []
-    if request.user.is_superuser or request.user.is_staff:
-        metadata_author_groups = GroupProfile.objects.all()
-    else:
-        try:
-            all_metadata_author_groups = chain(
-                request.user.group_list_all(),
-                GroupProfile.objects.exclude(
-                    access="private").exclude(access="public-invite"))
-        except Exception:
-            all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private").exclude(access="public-invite")
-        [metadata_author_groups.append(item) for item in all_metadata_author_groups
-            if item not in metadata_author_groups]
+    metadata_author_groups = get_user_visible_groups(request.user)
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:

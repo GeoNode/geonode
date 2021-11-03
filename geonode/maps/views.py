@@ -22,7 +22,6 @@ import logging
 import warnings
 import traceback
 
-from itertools import chain
 from dal import autocomplete
 from deprecated import deprecated
 from urllib.parse import quote, urlsplit, urljoin
@@ -62,6 +61,7 @@ from geonode.security.views import _perms_info_json
 from geonode.resource.manager import resource_manager
 from geonode.decorators import check_keyword_write_perms
 from geonode.documents.models import get_related_documents
+from geonode.security.utils import get_user_visible_groups
 from geonode.base.utils import ManageResourceOwnerPermissions
 
 from geonode.utils import (
@@ -396,19 +396,7 @@ def map_metadata(
     config = map_obj.viewer_json(request)
     layers = MapLayer.objects.filter(map=map_obj.id)
 
-    metadata_author_groups = []
-    if request.user.is_superuser or request.user.is_staff:
-        metadata_author_groups = GroupProfile.objects.all()
-    else:
-        try:
-            all_metadata_author_groups = chain(
-                request.user.group_list_all(),
-                GroupProfile.objects.exclude(access="private"))
-        except Exception:
-            all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private")
-        [metadata_author_groups.append(item) for item in all_metadata_author_groups
-            if item not in metadata_author_groups]
+    metadata_author_groups = get_user_visible_groups(request.user)
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
