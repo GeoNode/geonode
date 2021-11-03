@@ -42,6 +42,7 @@ from guardian.shortcuts import (
 from geonode import geoserver
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
+from geonode.documents.models import Document
 from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_dataset
@@ -1818,6 +1819,142 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'anonymous': ['view_resourcebase'],
                         'registered-members': []
                     }
+            }
+        )
+
+        # Test "download" permissions retention policy
+        # 1. "download" permissions are allowed on "Documents"
+        test_document = Document.objects.first()
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                ]
+            },
+            'groups': {}
+        }
+        _p = PermSpec(perm_spec, test_document)
+        self.assertDictEqual(
+            json.loads(str(_p)),
+            {
+                "users":
+                    {
+                        "bobby":
+                            [
+                                "view_resourcebase",
+                                "download_resourcebase",
+                            ]
+                    },
+                "groups": {}
+            }
+        )
+
+        self.assertDictEqual(
+            _p.compact,
+            {
+                'users':
+                [
+                    {
+                        'id': standard_user.id,
+                        'username': standard_user.username,
+                        'first_name': standard_user.first_name,
+                        'last_name': standard_user.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'download'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'owner',
+                        'username': 'admin'
+                    }
+                ],
+                'organizations': [],
+                'groups':
+                [
+                    {
+                        'id': 3,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'none'
+                    },
+                    {
+                        'id': 2,
+                        'name': 'registered-members',
+                        'permissions': 'none',
+                        'title': 'Registered Members'
+                    }
+                ]
+            }
+        )
+        # 2. "download" permissions are NOT allowed on "Maps"
+        test_map = Map.objects.first()
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                ]
+            },
+            'groups': {}
+        }
+        _p = PermSpec(perm_spec, test_map)
+        self.assertDictEqual(
+            json.loads(str(_p)),
+            {
+                "users":
+                    {
+                        "bobby":
+                            [
+                                "view_resourcebase",
+                                "download_resourcebase",
+                            ]
+                    },
+                "groups": {}
+            }
+        )
+
+        self.assertDictEqual(
+            _p.compact,
+            {
+                'users':
+                [
+                    {
+                        'id': standard_user.id,
+                        'username': standard_user.username,
+                        'first_name': standard_user.first_name,
+                        'last_name': standard_user.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'view'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'owner',
+                        'username': 'admin'
+                    }
+                ],
+                'organizations': [],
+                'groups':
+                [
+                    {
+                        'id': 3,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'none'
+                    },
+                    {
+                        'id': 2,
+                        'name': 'registered-members',
+                        'permissions': 'none',
+                        'title': 'Registered Members'
+                    }
+                ]
             }
         )
 

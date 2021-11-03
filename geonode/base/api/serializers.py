@@ -230,6 +230,19 @@ class UserSerializer(BaseDynamicModelSerializer):
         queryset = queryset.prefetch_related()
         return queryset
 
+    def to_representation(self, instance):
+        # Dehydrate users private fields
+        request = self.context.get('request')
+        data = super().to_representation(instance)
+        if not request or not request.user or not request.user.is_authenticated:
+            if 'perms' in data:
+                del data['perms']
+        elif not request.user.is_superuser and not request.user.is_staff:
+            if data['username'] != request.user.username:
+                if 'perms' in data:
+                    del data['perms']
+        return data
+
     avatar = AvatarUrlField(240, read_only=True)
 
 

@@ -37,7 +37,7 @@ from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 from django.db.models.fields.json import JSONField
-from django.utils.functional import cached_property
+from django.utils.functional import cached_property, classproperty
 from django.contrib.gis.geos import Polygon, Point
 from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import SuspiciousFileOperation, ValidationError
@@ -64,6 +64,7 @@ from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 
 from geonode.base import enumerations
 from geonode.singleton import SingletonModel
+from geonode.groups.conf import settings as groups_settings
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
 from geonode.utils import (
     bbox_to_wkt,
@@ -73,6 +74,10 @@ from geonode.utils import (
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
+from geonode.security.permissions import (
+    VIEW_PERMISSIONS,
+    OWNER_PERMISSIONS
+)
 
 from geonode.notifications_helper import (
     send_notification,
@@ -1047,6 +1052,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 _attribute_str = html.unescape(
                     attribute_str.replace('\n', ' ').replace('\r', '').strip())
         return strip_tags(_attribute_str)
+
+    @classproperty
+    def allowed_permissions(cls):
+        return {
+            "anonymous": VIEW_PERMISSIONS,
+            "default": OWNER_PERMISSIONS,
+            groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS
+        }
 
     @property
     def raw_abstract(self):
