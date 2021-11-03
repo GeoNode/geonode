@@ -35,7 +35,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import loader
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
 from geonode.client.hooks import hookset
 from geonode.utils import resolve_object
@@ -477,6 +477,39 @@ def document_metadata_advanced(request, docid):
         request,
         docid,
         template='documents/document_metadata_advanced.html')
+
+
+@login_required
+def document_metadata_detail(
+        request,
+        docid,
+        template='documents/document_metadata_detail.html'):
+    try:
+        document = _resolve_document(
+            request,
+            docid,
+            'view_resourcebase',
+            _PERMISSION_MSG_METADATA)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not document:
+        raise Http404(_("Not found"))
+
+    group = None
+    if document.group:
+        try:
+            group = GroupProfile.objects.get(slug=document.group.name)
+        except ObjectDoesNotExist:
+    register_event(request, EventType.EVENT_VIEW_METADATA, document)
+            group = None
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+    return render(request, template, context={
+        "group": group,
+        "resource": document,
+        'SITEURL': site_url
+    })
 
 
 @login_required
