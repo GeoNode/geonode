@@ -42,6 +42,7 @@ from guardian.shortcuts import (
 from geonode import geoserver
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
+from geonode.documents.models import Document
 from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_dataset
@@ -163,11 +164,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         black_list = [
             reverse('account_signup'),
-            reverse('document_browse'),
-            reverse('maps_browse'),
-            reverse('dataset_browse'),
-            reverse('dataset_detail', kwargs=dict(layername='geonode:Test')),
-            reverse('dataset_remove', kwargs=dict(layername='geonode:Test')),
             reverse('profile_browse'),
         ]
 
@@ -214,7 +210,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         from geonode.security.middleware import LoginRequiredMiddleware
         middleware = LoginRequiredMiddleware(None)
 
-        black_listed_url = reverse('maps_browse')
+        black_listed_url = reverse('dataset_upload')
         white_listed_url = reverse('account_login')
 
         # unauthorized request to black listed URL should be redirected to `redirect_to` URL
@@ -251,7 +247,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         site_url_settings = [f"{settings.SITEURL}login/custom", "/login/custom", "login/custom"]
-        black_listed_url = reverse("maps_browse")
+        black_listed_url = reverse("dataset_upload")
 
         for setting in site_url_settings:
             with override_settings(LOGIN_URL=setting):
@@ -290,7 +286,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         admin = get_user_model().objects.get(username='admin')
         self.assertTrue(admin.is_authenticated)
         request.user = admin
-        request.path = reverse('dataset_browse')
+        request.path = reverse('dataset_upload')
         middleware.process_request(request)
         response = self.client.get(request.path)
         self.assertEqual(response.status_code, 200)
@@ -1328,14 +1324,14 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'view_resourcebase',
                 layer.get_self_resource()))
 
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
         # 1.2 has not view_resourcebase: verify that bobby can not access the
         # layer detail page
         remove_perm('view_resourcebase', bob, layer.get_self_resource())
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (401, 403))
 
         # 2. change_resourcebase
@@ -1351,21 +1347,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'change_resourcebase',
                 layer.get_self_resource()))
         response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
-
-        # 3. delete_resourcebase
-        # 3.1 has not delete_resourcebase: verify that bobby cannot access the
-        # layer delete page
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
-        # 3.2 has delete_resourcebase: verify that bobby can access the layer
-        # delete page
-        assign_perm('delete_resourcebase', bob, layer.get_self_resource())
-        self.assertTrue(
-            bob.has_perm(
-                'delete_resourcebase',
-                layer.get_self_resource()))
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
 
         # 4. change_resourcebase_metadata
@@ -1438,26 +1419,20 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.anonymous_user.has_perm(
                 'view_resourcebase',
                 layer.get_self_resource()))
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
         # 1.2 has not view_resourcebase: verify that anonymous user can not
         # access the layer detail page
         remove_perm('view_resourcebase', self.anonymous_user, layer.get_self_resource())
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (302, 403))
 
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that anonymous user cannot
         # access the layer replace page but redirected to login
         response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
-        self.assertTrue(response.status_code in (302, 403))
-
-        # 3. delete_resourcebase
-        # 3.1 has not delete_resourcebase: verify that anonymous user cannot
-        # access the layer delete page but redirected to login
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (302, 403))
 
         # 4. change_resourcebase_metadata
@@ -1844,6 +1819,142 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'anonymous': ['view_resourcebase'],
                         'registered-members': []
                     }
+            }
+        )
+
+        # Test "download" permissions retention policy
+        # 1. "download" permissions are allowed on "Documents"
+        test_document = Document.objects.first()
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                ]
+            },
+            'groups': {}
+        }
+        _p = PermSpec(perm_spec, test_document)
+        self.assertDictEqual(
+            json.loads(str(_p)),
+            {
+                "users":
+                    {
+                        "bobby":
+                            [
+                                "view_resourcebase",
+                                "download_resourcebase",
+                            ]
+                    },
+                "groups": {}
+            }
+        )
+
+        self.assertDictEqual(
+            _p.compact,
+            {
+                'users':
+                [
+                    {
+                        'id': standard_user.id,
+                        'username': standard_user.username,
+                        'first_name': standard_user.first_name,
+                        'last_name': standard_user.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'download'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'owner',
+                        'username': 'admin'
+                    }
+                ],
+                'organizations': [],
+                'groups':
+                [
+                    {
+                        'id': 3,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'none'
+                    },
+                    {
+                        'id': 2,
+                        'name': 'registered-members',
+                        'permissions': 'none',
+                        'title': 'Registered Members'
+                    }
+                ]
+            }
+        )
+        # 2. "download" permissions are NOT allowed on "Maps"
+        test_map = Map.objects.first()
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                ]
+            },
+            'groups': {}
+        }
+        _p = PermSpec(perm_spec, test_map)
+        self.assertDictEqual(
+            json.loads(str(_p)),
+            {
+                "users":
+                    {
+                        "bobby":
+                            [
+                                "view_resourcebase",
+                                "download_resourcebase",
+                            ]
+                    },
+                "groups": {}
+            }
+        )
+
+        self.assertDictEqual(
+            _p.compact,
+            {
+                'users':
+                [
+                    {
+                        'id': standard_user.id,
+                        'username': standard_user.username,
+                        'first_name': standard_user.first_name,
+                        'last_name': standard_user.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'view'
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'owner',
+                        'username': 'admin'
+                    }
+                ],
+                'organizations': [],
+                'groups':
+                [
+                    {
+                        'id': 3,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'none'
+                    },
+                    {
+                        'id': 2,
+                        'name': 'registered-members',
+                        'permissions': 'none',
+                        'title': 'Registered Members'
+                    }
+                ]
             }
         )
 

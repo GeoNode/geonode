@@ -24,11 +24,7 @@ import tempfile
 import warnings
 import traceback
 
-from itertools import chain
-from dal import autocomplete
-from guardian.shortcuts import get_objects_for_user
 
-from django.db.models import F
 from django.urls import reverse
 from django.conf import settings
 from django.contrib import messages
@@ -37,27 +33,22 @@ from django.forms.utils import ErrorList
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.template import loader
-from django.views.generic.edit import UpdateView, CreateView
+from django.views.generic.edit import CreateView
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied
 
 from geonode.client.hooks import hookset
 from geonode.utils import resolve_object
 from geonode.base.views import batch_modify
-from geonode.utils import build_social_links
 from geonode.people.forms import ProfileForm
 from geonode.base import register_event
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
-from geonode.base.auth import get_or_create_token
-from geonode.security.views import _perms_info_json
 from geonode.storage.manager import storage_manager
 from geonode.resource.manager import resource_manager
-from geonode.resource.utils import get_related_resources
 from geonode.decorators import check_keyword_write_perms
-from geonode.security.utils import get_visible_resources
-from geonode.base.utils import ManageResourceOwnerPermissions
+from geonode.security.utils import get_user_visible_groups
 from geonode.base.forms import (
     CategoryForm,
     TKeywordForm,
@@ -68,14 +59,11 @@ from geonode.base.models import (
 
 from .utils import get_download_response
 
-from .enumerations import (
-    DOCUMENT_TYPE_MAP,
-    DOCUMENT_MIMETYPE_MAP)
 from .models import Document
 from .forms import (
     DocumentForm,
     DocumentCreateForm,
-    DocumentReplaceForm)
+)
 
 logger = logging.getLogger("geonode.documents.views")
 
@@ -96,107 +84,6 @@ def _resolve_document(request, docid, permission='base.change_resourcebase',
     '''
     return resolve_object(request, Document, {'pk': docid},
                           permission=permission, permission_msg=msg, **kwargs)
-
-
-def document_detail(request, docid):
-    """
-    The view that show details of each document
-    """
-    try:
-        document = _resolve_document(
-            request,
-            docid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not document:
-        raise Http404(_("Not found"))
-
-    permission_manager = ManageResourceOwnerPermissions(document)
-    permission_manager.set_owner_permissions_according_to_workflow()
-
-    # Add metadata_author or poc if missing
-    document.add_missing_metadata_author_or_poc()
-
-    related = get_related_resources(document)
-
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    if request.user != document.owner and not request.user.is_superuser:
-        Document.objects.filter(
-            id=document.id).update(
-            popular_count=F('popular_count') + 1)
-
-    metadata = document.link_set.metadata().filter(
-        name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-    # Call this first in order to be sure "perms_list" is correct
-    permissions_json = _perms_info_json(document)
-
-    perms_list = list(
-        document.get_self_resource().get_user_perms(request.user)
-        .union(document.get_user_perms(request.user))
-    )
-
-    group = None
-    if document.group:
-        try:
-            group = GroupProfile.objects.get(slug=document.group.name)
-        except ObjectDoesNotExist:
-            group = None
-
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
-
-    AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'audio']
-    IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'image']
-    VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'video']
-
-    context_dict = {
-        'access_token': access_token,
-        'resource': document,
-        'perms_list': perms_list,
-        'permissions_json': permissions_json,
-        'group': group,
-        'metadata': metadata,
-        'audiotypes': AUDIOTYPES,
-        'imgtypes': IMGTYPES,
-        'videotypes': VIDEOTYPES,
-        'mimetypemap': DOCUMENT_MIMETYPE_MAP,
-        'related': related}
-
-    if settings.SOCIAL_ORIGINS:
-        context_dict["social_links"] = build_social_links(
-            request, document)
-
-    if getattr(settings, 'EXIF_ENABLED', False):
-        try:
-            from geonode.documents.exif.utils import exif_extract_dict
-            exif = exif_extract_dict(document)
-            if exif:
-                context_dict['exif_data'] = exif
-        except Exception:
-            logger.debug("Exif extraction failed.")
-
-    if request.user.is_authenticated:
-        if getattr(settings, 'FAVORITE_ENABLED', False):
-            from geonode.favorite.utils import get_favorite_info
-            context_dict["favorite_info"] = get_favorite_info(request.user, document)
-
-    register_event(request, EventType.EVENT_VIEW, document)
-
-    return render(
-        request,
-        "documents/document_detail.html",
-        context=context_dict)
 
 
 def document_download(request, docid):
@@ -358,35 +245,6 @@ class DocumentUploadView(CreateView):
                 status=status_code)
         else:
             return HttpResponseRedirect(url)
-
-
-class DocumentUpdateView(UpdateView):
-    template_name = 'documents/document_replace.html'
-    pk_url_kwarg = 'docid'
-    form_class = DocumentReplaceForm
-    queryset = Document.objects.all()
-    context_object_name = 'document'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
-        return context
-
-    def form_valid(self, form):
-        """
-        If the form is valid, save the associated model.
-        """
-        self.object = resource_manager.replace(
-            self.object,
-            vals={
-                'files': form.cleaned_data.get('doc_file'),
-                'doc_url': form.cleaned_data.get('doc_url'),
-                'user': self.request.user
-            })
-        url = hookset.document_detail_url(self.object)
-        register_event(self.request, EventType.EVENT_CHANGE, self.object)
-
-        return HttpResponseRedirect(url)
 
 
 @login_required
@@ -576,19 +434,7 @@ def document_metadata(
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
 
-    metadata_author_groups = []
-    if request.user.is_superuser or request.user.is_staff:
-        metadata_author_groups = GroupProfile.objects.all()
-    else:
-        try:
-            all_metadata_author_groups = chain(
-                request.user.group_list_all(),
-                GroupProfile.objects.exclude(access="private"))
-        except Exception:
-            all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private")
-        [metadata_author_groups.append(item) for item in all_metadata_author_groups
-            if item not in metadata_author_groups]
+    metadata_author_groups = get_user_visible_groups(request.user)
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
@@ -634,102 +480,6 @@ def document_metadata_advanced(request, docid):
         template='documents/document_metadata_advanced.html')
 
 
-def document_search_page(request):
-    # for non-ajax requests, render a generic search page
-
-    if request.method == 'GET':
-        params = request.GET
-    elif request.method == 'POST':
-        params = request.POST
-    else:
-        return HttpResponse(status=405)
-
-    return render(
-        request,
-        'documents/document_search.html',
-        context={'init_search': json.dumps(params or {}), "site": settings.SITEURL})
-
-
-@login_required
-def document_remove(request, docid, template='documents/document_remove.html'):
-    try:
-        document = _resolve_document(
-            request,
-            docid,
-            'base.delete_resourcebase',
-            _PERMISSION_MSG_DELETE)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not document:
-        raise Http404(_("Not found"))
-
-    if request.method == 'GET':
-        return render(request, template, context={
-            "document": document
-        })
-    if request.method == 'POST':
-        resource_manager.delete(document.uuid, instance=document)
-
-        register_event(request, EventType.EVENT_REMOVE, document)
-        return HttpResponseRedirect(reverse("document_browse"))
-    else:
-        return HttpResponse(_("Not allowed"), status=403)
-
-
-def document_metadata_detail(
-        request,
-        docid,
-        template='documents/document_metadata_detail.html'):
-    try:
-        document = _resolve_document(
-            request,
-            docid,
-            'view_resourcebase',
-            _PERMISSION_MSG_METADATA)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not document:
-        raise Http404(_("Not found"))
-
-    group = None
-    if document.group:
-        try:
-            group = GroupProfile.objects.get(slug=document.group.name)
-        except ObjectDoesNotExist:
-            group = None
-    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-    register_event(request, EventType.EVENT_VIEW_METADATA, document)
-    return render(request, template, context={
-        "resource": document,
-        "group": group,
-        'SITEURL': site_url
-    })
-
-
 @login_required
 def document_batch_metadata(request):
     return batch_modify(request, 'Document')
-
-
-class DocumentAutocomplete(autocomplete.Select2QuerySetView):
-
-    def get_queryset(self):
-        request = self.request
-        permitted = get_objects_for_user(
-            request.user,
-            'base.view_resourcebase')
-        qs = Document.objects.all().filter(id__in=permitted)
-
-        if self.q:
-            qs = qs.filter(title__icontains=self.q)
-
-        return get_visible_resources(
-            qs,
-            request.user if request else None,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)

@@ -128,11 +128,6 @@ urlpatterns += [
         views.h_keywords,
         name='h_keywords_api'),
 
-    # Search views
-    url(r'^search/$',
-        TemplateView.as_view(template_name='search/search.html'),
-        name='search'),
-
     # Social views
     url(r'^account/signup/', CustomSignupView.as_view(), name='account_signup'),
     url(r"^account/", include("allauth.urls")),
@@ -253,14 +248,6 @@ handler401 = 'geonode.views.err403'
 handler403 = 'geonode.views.err403'
 handler404 = 'geonode.views.handler404'
 handler500 = 'geonode.views.handler500'
-
-# Featured Maps Pattens
-urlpatterns += [  # '',
-    url(r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$',
-        geonode.maps.views.featured_map),
-    url(r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$',
-        geonode.maps.views.featured_map_info),
-]
 
 
 if settings.MONITORING_ENABLED:

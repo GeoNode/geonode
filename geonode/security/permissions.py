@@ -34,6 +34,15 @@ PERMISSIONS = {
     'add_resourcebase': 'add_resource',
 }
 
+DOWNLOADABLE_RESOURCES = [
+    'dataset',
+    'document'
+]
+
+DATA_EDITABLE_RESOURCES_SUBTYPES = [
+    'vector'
+]
+
 # The following permissions will be filtered out when READ_ONLY mode is active
 READ_ONLY_AFFECTED_PERMISSIONS = [
     'add_resource',
@@ -61,7 +70,7 @@ MANAGE_PERMISSIONS = [
 
 ADMIN_PERMISSIONS = MANAGE_PERMISSIONS + EDIT_PERMISSIONS
 
-OWNER_PERMISSIONS = ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+OWNER_PERMISSIONS = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
 
 DATASET_EDIT_DATA_PERMISSIONS = ['change_dataset_data', ]
 DATASET_EDIT_STYLE_PERMISSIONS = ['change_dataset_style', ]
@@ -98,14 +107,13 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: s
       - edit: view download and edit (metadata, style, data)
       - manage: change permissions, delete resource, etc.
       - owner: admin permissions
-
     """
     if is_owner:
-        if resource_type and resource_type.lower() in 'dataset':
-            if resource_subtype and resource_subtype.lower() in 'vector':
-                return DATASET_ADMIN_PERMISSIONS + OWNER_PERMISSIONS
+        if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
+            if resource_subtype and resource_subtype.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
+                return DATASET_ADMIN_PERMISSIONS + OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS
             else:
-                return OWNER_PERMISSIONS
+                return OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS
         else:
             return OWNER_PERMISSIONS
     elif perm is None or len(perm) == 0 or perm == NONE_RIGHTS:
@@ -113,18 +121,21 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: s
     elif perm == VIEW_RIGHTS:
         return VIEW_PERMISSIONS
     elif perm == DOWNLOAD_RIGHTS:
-        return VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+        if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
+            return VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+        else:
+            return VIEW_PERMISSIONS
     elif perm == EDIT_RIGHTS:
-        if resource_type and resource_type.lower() in 'dataset':
-            if resource_subtype and resource_subtype.lower() in 'vector':
+        if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
+            if resource_subtype and resource_subtype.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
                 return DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS
             else:
                 return EDIT_PERMISSIONS
         else:
             return EDIT_PERMISSIONS
     elif perm == MANAGE_RIGHTS:
-        if resource_type and resource_type.lower() in 'dataset':
-            if resource_subtype and resource_subtype.lower() in 'vector':
+        if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
+            if resource_subtype and resource_subtype.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
                 return DATASET_ADMIN_PERMISSIONS + ADMIN_PERMISSIONS
             else:
                 return ADMIN_PERMISSIONS
@@ -140,7 +151,6 @@ def _to_compact_perms(perms: list, resource_type: str = None, resource_subtype: 
       - edit: view download and edit (metadata, style, data)
       - manage: change permissions, delete resource, etc.
       - owner: admin permissions
-
     """
     if is_owner:
         return OWNER_RIGHTS
@@ -148,11 +158,11 @@ def _to_compact_perms(perms: list, resource_type: str = None, resource_subtype: 
         return NONE_RIGHTS
     if any(_p in MANAGE_PERMISSIONS for _p in perms):
         return MANAGE_RIGHTS
-    elif resource_type and resource_type.lower() in 'dataset' and any(_p in DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS for _p in perms):
+    elif resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES and any(_p in DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS for _p in perms):
         return EDIT_RIGHTS
     elif any(_p in DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS for _p in perms):
         return EDIT_RIGHTS
-    elif any(_p in DOWNLOAD_PERMISSIONS for _p in perms):
+    elif resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES and any(_p in DOWNLOAD_PERMISSIONS for _p in perms):
         return DOWNLOAD_RIGHTS
     elif any(_p in VIEW_PERMISSIONS for _p in perms):
         return VIEW_RIGHTS
@@ -521,3 +531,21 @@ class PermSpecCompact(PermSpecConverterBase):
                         getattr(self, _elem).append(_up)
                     else:
                         getattr(self, _elem).add(_up)
+
+
+def get_compact_perms_list(perms: list, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False, is_none_allowed: bool = True) -> list:
+    _perms_list = []
+    _perm = _to_compact_perms(perms, resource_type, resource_subtype, is_owner)
+    if _perm:
+        for _p in COMPACT_RIGHT_MODES:
+            if (_p[1] not in [DOWNLOAD_RIGHTS] + DATASET_ADMIN_PERMISSIONS or
+                    _p[1] in [DOWNLOAD_RIGHTS] and any(__p in DOWNLOAD_PERMISSIONS for __p in perms) or
+                    _p[1] in DATASET_ADMIN_PERMISSIONS and any(__p in DATA_EDITABLE_RESOURCES_SUBTYPES for __p in perms)):
+                _perms_list.append(_p[1])
+                if _p[1] == _perm:
+                    break
+    if is_owner and OWNER_RIGHTS not in _perms_list:
+        _perms_list.append(OWNER_RIGHTS)
+    if is_none_allowed and NONE_RIGHTS not in _perms_list:
+        _perms_list.insert(0, NONE_RIGHTS)
+    return _perms_list

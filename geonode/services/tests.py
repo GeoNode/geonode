@@ -505,7 +505,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             self.assertNotEqual(geonode_dataset.srid, "EPSG:4326")
             self.assertEqual(geonode_dataset.sourcetype, base_enumerations.SOURCE_TYPE_REMOTE)
             self.client.login(username='admin', password='admin')
-            response = self.client.get(reverse('dataset_detail', args=(geonode_dataset.name,)))
+            response = self.client.get(reverse('dataset_embed', args=(geonode_dataset.name,)))
             self.assertEqual(response.status_code, 200)
             for _d in Dataset.objects.filter(remote_service=geonode_service):
                 resource_manager.delete(_d.uuid, instance=_d)

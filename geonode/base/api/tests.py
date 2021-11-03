@@ -37,6 +37,7 @@ from rest_framework.test import APITestCase
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.base import enumerations
+from geonode.groups.models import GroupProfile
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.base.models import (
     CuratedThumbnail,
@@ -79,24 +80,54 @@ class BaseApiTests(APITestCase):
         """
         Ensure we can access the gropus list.
         """
-        url = reverse('group-profiles-list')
-        # Unauhtorized
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 403)
+        pub_1 = GroupProfile.objects.create(slug="pub_1", title="pub_1", access="public")
+        priv_1 = GroupProfile.objects.create(slug="priv_1", title="priv_1", access="private")
+        priv_2 = GroupProfile.objects.create(slug="priv_2", title="priv_2", access="private")
+        pub_invite_1 = GroupProfile.objects.create(slug="pub_invite_1", title="pub_invite_1", access="public-invite")
+        pub_invite_2 = GroupProfile.objects.create(slug="pub_invite_2", title="pub_invite_2", access="public-invite")
+        try:
+            # Anonymous can access only public groups
+            url = reverse('group-profiles-list')
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            logger.debug(response.data)
+            self.assertEqual(len(response.data), 5)
+            self.assertEqual(response.data['total'], 4)
+            self.assertEqual(len(response.data['group_profiles']), 4)
+            self.assertTrue(all([_g['access'] != 'private' for _g in response.data['group_profiles']]))
 
-        # Auhtorized
-        self.assertTrue(self.client.login(username='admin', password='admin'))
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        logger.debug(response.data)
-        self.assertEqual(response.data['total'], 1)
-        self.assertEqual(len(response.data['group_profiles']), 1)
+            # Admin can access all groups
+            self.assertTrue(self.client.login(username='admin', password='admin'))
+            url = reverse('group-profiles-list')
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            logger.debug(response.data)
+            self.assertEqual(len(response.data), 5)
+            self.assertEqual(response.data['total'], 6)
+            self.assertEqual(len(response.data['group_profiles']), 6)
 
-        url = reverse('group-profiles-detail', kwargs={'pk': 1})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 404)
-        logger.debug(response.data)
+            # Bobby can access public groups and the ones he is member of
+            self.assertTrue(self.client.login(username='bobby', password='bob'))
+            priv_1.join(get_user_model().objects.get(username='bobby'))
+            url = reverse('group-profiles-list')
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            logger.debug(response.data)
+            self.assertEqual(len(response.data), 5)
+            self.assertEqual(response.data['total'], 5)
+            self.assertEqual(len(response.data['group_profiles']), 5)
+            self.assertTrue(any([_g['slug'] == 'priv_1' for _g in response.data['group_profiles']]))
+
+            url = reverse('group-profiles-detail', kwargs={'pk': priv_1.pk})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            logger.debug(response.data)
+        finally:
+            pub_1.delete()
+            priv_1.delete()
+            priv_2.delete()
+            pub_invite_1.delete()
+            pub_invite_2.delete()
 
     def test_users_list(self):
         """
@@ -108,8 +139,8 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         logger.debug(response.data)
-        self.assertEqual(response.data['total'], 0)
-        self.assertEqual(len(response.data['users']), 0)
+        self.assertEqual(response.data['total'], 10)
+        self.assertEqual(len(response.data['users']), 10)
 
         # Auhtorized
         self.assertTrue(self.client.login(username='admin', password='admin'))
@@ -136,9 +167,9 @@ class BaseApiTests(APITestCase):
 
         # Bobby
         self.assertTrue(self.client.login(username='bobby', password='bob'))
-        # Bobby cannot access other users' details
+        # Bobby can access other users' details
         response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
         # Bobby can see himself in the list
         url = reverse('users-list')
@@ -146,8 +177,8 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         logger.debug(response.data)
-        self.assertEqual(response.data['total'], 1)
-        self.assertEqual(len(response.data['users']), 1)
+        self.assertEqual(response.data['total'], 10)
+        self.assertEqual(len(response.data['users']), 10)
 
         # Bobby can access its own details
         bobby = get_user_model().objects.filter(username='bobby').get()
@@ -160,6 +191,17 @@ class BaseApiTests(APITestCase):
         # default contributor group_perm is returned in perms
         self.assertIn('add_resource', response.data['user']['perms'])
 
+        # Bobby can't access other users perms list
+        norman = get_user_model().objects.filter(username='norman').get()
+        url = reverse('users-detail', kwargs={'pk': norman.id})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        logger.debug(response.data)
+        self.assertEqual(response.data['user']['username'], 'norman')
+        self.assertIsNotNone(response.data['user']['avatar'])
+        # default contributor group_perm is returned in perms
+        self.assertNotIn('perms', response.data['user'])
+
     def test_register_users(self):
         """
         Ensure users are created with default groups.
@@ -168,10 +210,28 @@ class BaseApiTests(APITestCase):
         user_data = {
             'username': 'new_user',
         }
+        self.assertTrue(self.client.login(username="admin", password="admin"))
         response = self.client.post(url, data=user_data, format='json')
         self.assertEqual(response.status_code, 201)
         # default contributor group_perm is returned in perms
         self.assertIn('add_resource', response.data['user']['perms'])
+
+    def test_delete_users(self):
+        """
+        Ensure users cannot delete others.
+        """
+        norman = get_user_model().objects.get(username='norman')
+        url = reverse('users-detail', kwargs={'pk': norman.pk})
+        # Anonymous can read
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        # Anonymous can't write
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, 403)
+        # Bob can't delete Norman
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        response = self.client.delete(url, format='json')
+        self.assertEqual(response.status_code, 403)
 
     def test_base_resources(self):
         """
@@ -485,7 +545,7 @@ class BaseApiTests(APITestCase):
                         'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'download'
+                        'permissions': 'view'
                     },
                     {
                         'id': contributors_group.id,
@@ -565,7 +625,7 @@ class BaseApiTests(APITestCase):
                         'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'download'
+                        'permissions': 'view'
                     },
                     {
                         'id': contributors_group.id,
@@ -604,7 +664,7 @@ class BaseApiTests(APITestCase):
                     'id': anonymous_group.id,
                     'title': 'anonymous',
                     'name': 'anonymous',
-                    'permissions': 'download'
+                    'permissions': 'view'
                 },
                 {
                     'id': contributors_group.id,
@@ -660,7 +720,7 @@ class BaseApiTests(APITestCase):
                         'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'download'
+                        'permissions': 'view'
                     },
                     {
                         'id': contributors_group.id,
@@ -726,13 +786,160 @@ class BaseApiTests(APITestCase):
         """
         url = urljoin(f"{reverse('base-resources-list')}/", 'resource_types/')
         response = self.client.get(url, format='json')
-        r_type_names = [item['name'] for item in response.data['resource_types']]
+        r_types = [item for item in response.data['resource_types']]
+        r_type_names = [r_type['name'] for r_type in r_types]
         self.assertEqual(response.status_code, 200)
         self.assertTrue('resource_types' in response.data)
         self.assertTrue('dataset' in r_type_names)
         self.assertTrue('map' in r_type_names)
         self.assertTrue('document' in r_type_names)
         self.assertFalse('service' in r_type_names)
+
+        r_type_perms = {r_type['name']: r_type['allowed_perms'] for r_type in r_types}
+        self.assertDictEqual(
+            r_type_perms['dataset'],
+            {
+                "perms": {
+                    "anonymous": [
+                        "view_resourcebase"
+                    ],
+                    "default": [
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase",
+                        "change_resourcebase",
+                        "view_resourcebase",
+                        "download_resourcebase",
+                        "change_dataset_data",
+                        "change_dataset_style"
+                    ],
+                    "registered-members": [
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase",
+                        "change_resourcebase",
+                        "view_resourcebase",
+                        "download_resourcebase",
+                        "change_dataset_data",
+                        "change_dataset_style"
+                    ]
+                },
+                "compact": {
+                    "anonymous": [
+                        "none",
+                        "view"
+                    ],
+                    "default": [
+                        "view",
+                        "download",
+                        "edit",
+                        "manage",
+                        "owner"
+                    ],
+                    "registered-members": [
+                        "none",
+                        "view",
+                        "download",
+                        "edit",
+                        "manage"
+                    ]
+                }
+            }
+        )
+        self.assertDictEqual(
+            r_type_perms['document'],
+            {
+                "perms": {
+                    "anonymous": [
+                        "view_resourcebase"
+                    ],
+                    "default": [
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase",
+                        "change_resourcebase",
+                        "view_resourcebase",
+                        "download_resourcebase"
+                    ],
+                    "registered-members": [
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase",
+                        "change_resourcebase",
+                        "view_resourcebase",
+                        "download_resourcebase"
+                    ]
+                },
+                "compact": {
+                    "anonymous": [
+                        "none",
+                        "view"
+                    ],
+                    "default": [
+                        "view",
+                        "download",
+                        "edit",
+                        "manage",
+                        "owner"
+                    ],
+                    "registered-members": [
+                        "none",
+                        "view",
+                        "download",
+                        "edit",
+                        "manage"
+                    ]
+                }
+            }
+        )
+        self.assertDictEqual(
+            r_type_perms['map'],
+            {
+                "perms": {
+                    "anonymous": [
+                        "view_resourcebase"
+                    ],
+                    "default": [
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase",
+                        "change_resourcebase",
+                        "view_resourcebase"
+                    ],
+                    "registered-members": [
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase",
+                        "change_resourcebase",
+                        "view_resourcebase"
+                    ]
+                },
+                "compact": {
+                    "anonymous": [
+                        "none",
+                        "view"
+                    ],
+                    "default": [
+                        "view",
+                        "edit",
+                        "manage",
+                        "owner"
+                    ],
+                    "registered-members": [
+                        "none",
+                        "view",
+                        "edit",
+                        "manage"
+                    ]
+                }
+            }
+        )
 
     def test_get_favorites(self):
         """
@@ -1204,7 +1411,7 @@ class BaseApiTests(APITestCase):
                         'id': 3,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'download'
+                        'permissions': 'view'
                     },
                     {
                         'id': 2,
@@ -1248,7 +1455,7 @@ class BaseApiTests(APITestCase):
                         'id': 3,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'download'
+                        'permissions': 'view'
                     },
                     {
                         'id': 2,

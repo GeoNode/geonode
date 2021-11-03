@@ -40,7 +40,6 @@ class IsSelf(permissions.BasePermission):
         """ Always return True here.
         The fine-grained permissions are handled in has_object_permission().
         """
-
         return True
 
     def has_object_permission(self, request, view, obj):
@@ -54,7 +53,6 @@ class IsSelfOrReadOnly(IsSelf):
     """
 
     def has_object_permission(self, request, view, obj):
-
         if request.method in permissions.SAFE_METHODS:
             return True
 
@@ -66,9 +64,7 @@ class IsSelfOrAdmin(IsSelf):
     """ Grant R/W to self and superusers/staff members. Deny others. """
 
     def has_object_permission(self, request, view, obj):
-
         user = request.user
-
         if user.is_superuser or user.is_staff:
             return True
 
@@ -80,7 +76,6 @@ class IsSelfOrAdminOrReadOnly(IsSelfOrAdmin):
     """ Grant R/W to self and superusers/staff members, R/O to others. """
 
     def has_object_permission(self, request, view, obj):
-
         if request.method in permissions.SAFE_METHODS:
             return True
 
@@ -92,9 +87,7 @@ class IsSelfOrAdminOrAuthenticatedReadOnly(IsSelfOrAdmin):
     """ Grant R/W to self and superusers/staff members, R/O to auth. """
 
     def has_object_permission(self, request, view, obj):
-
         user = request.user
-
         if request.method in permissions.SAFE_METHODS:
             if user.is_authenticated():
                 return True

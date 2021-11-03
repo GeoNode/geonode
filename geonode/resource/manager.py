@@ -40,7 +40,12 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
 
-from geonode.security.permissions import VIEW_PERMISSIONS, DOWNLOAD_PERMISSIONS
+from geonode.security.permissions import (
+    VIEW_PERMISSIONS,
+    DOWNLOAD_PERMISSIONS,
+    DOWNLOADABLE_RESOURCES,
+    DATASET_EDIT_DATA_PERMISSIONS,
+    DATA_EDITABLE_RESOURCES_SUBTYPES,)
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.utils import (
     get_user_groups,
@@ -564,6 +569,13 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     logger.debug(f'Setting permissions {permissions} on {_resource}')
 
+                    def assignable_perm_condition(perm, resource_type):
+                        _assignable_perm_policy_condition = (perm in DOWNLOAD_PERMISSIONS and resource_type in DOWNLOADABLE_RESOURCES) or \
+                            (perm in DATASET_EDIT_DATA_PERMISSIONS and resource_type in DATA_EDITABLE_RESOURCES_SUBTYPES) or \
+                            (perm not in (DOWNLOAD_PERMISSIONS + DATASET_EDIT_DATA_PERMISSIONS))
+                        logger.debug(f" perm: {perm} - resource_type: {resource_type} --> assignable: {_assignable_perm_policy_condition}")
+                        return _assignable_perm_policy_condition
+
                     # default permissions for owner
                     if owner and owner != _resource.owner:
                         _resource.owner = owner
@@ -603,11 +615,11 @@ class ResourceManager(ResourceManagerInterface):
                         if 'users' in permissions and "AnonymousUser" in permissions['users']:
                             anonymous_group = Group.objects.get(name='anonymous')
                             for perm in permissions['users']['AnonymousUser']:
-                                if _resource.polymorphic_ctype.name == 'dataset' and perm in (
+                                if _resource.resource_type == 'dataset' and perm in (
                                         'change_dataset_data', 'change_dataset_style',
                                         'add_dataset', 'change_dataset', 'delete_dataset',):
                                     assign_perm(perm, anonymous_group, _resource.dataset)
-                                else:
+                                elif assignable_perm_condition(perm, _resource.resource_type):
                                     assign_perm(perm, anonymous_group, _resource.get_self_resource())
 
                         # All the other users
@@ -616,11 +628,11 @@ class ResourceManager(ResourceManagerInterface):
                                 _user = get_user_model().objects.get(username=user)
                                 if _user != _resource.owner and user != "AnonymousUser":
                                     for perm in perms:
-                                        if _resource.polymorphic_ctype.name == 'dataset' and perm in (
+                                        if _resource.resource_type == 'dataset' and perm in (
                                                 'change_dataset_data', 'change_dataset_style',
                                                 'add_dataset', 'change_dataset', 'delete_dataset',):
                                             assign_perm(perm, _user, _resource.dataset)
-                                        else:
+                                        elif assignable_perm_condition(perm, _resource.resource_type):
                                             assign_perm(perm, _user, _resource.get_self_resource())
 
                         # All the other groups
@@ -628,11 +640,11 @@ class ResourceManager(ResourceManagerInterface):
                             for group, perms in permissions['groups'].items():
                                 _group = Group.objects.get(name=group)
                                 for perm in perms:
-                                    if _resource.polymorphic_ctype.name == 'dataset' and perm in (
+                                    if _resource.resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset',):
                                         assign_perm(perm, _group, _resource.dataset)
-                                    else:
+                                    elif assignable_perm_condition(perm, _resource.resource_type):
                                         assign_perm(perm, _group, _resource.get_self_resource())
 
                         # AnonymousUser
@@ -641,11 +653,11 @@ class ResourceManager(ResourceManagerInterface):
                                 _user = get_anonymous_user()
                                 perms = permissions['users']["AnonymousUser"]
                                 for perm in perms:
-                                    if _resource.polymorphic_ctype.name == 'dataset' and perm in (
+                                    if _resource.resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset',):
                                         assign_perm(perm, _user, _resource.dataset)
-                                    else:
+                                    elif assignable_perm_condition(perm, _resource.resource_type):
                                         assign_perm(perm, _user, _resource.get_self_resource())
                     else:
                         # default permissions for anonymous users
@@ -668,15 +680,16 @@ class ResourceManager(ResourceManagerInterface):
                                     assign_perm('view_resourcebase',
                                                 user_group, _resource.get_self_resource())
 
-                        anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
-                        if anonymous_can_download:
-                            assign_perm('download_resourcebase',
-                                        anonymous_group, _resource.get_self_resource())
-                        else:
-                            for user_group in get_user_groups(_owner):
-                                if not skip_registered_members_common_group(user_group):
-                                    assign_perm('download_resourcebase',
-                                                user_group, _resource.get_self_resource())
+                        if assignable_perm_condition('download_resourcebase', _resource.resource_type):
+                            anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+                            if anonymous_can_download:
+                                assign_perm('download_resourcebase',
+                                            anonymous_group, _resource.get_self_resource())
+                            else:
+                                for user_group in get_user_groups(_owner):
+                                    if not skip_registered_members_common_group(user_group):
+                                        assign_perm('download_resourcebase',
+                                                    user_group, _resource.get_self_resource())
 
                         if _resource.__class__.__name__ == 'Dataset':
                             # only for layer owner

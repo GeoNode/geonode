@@ -1,5 +1,6 @@
 {% extends "datasets/dataset_base.html" %}
 {% load i18n %}
+{% load client_lib_tags %}
 
 {% block title %}{{ layer.alternate }} — {{ block.super }}{% endblock %}
 
@@ -13,7 +14,7 @@
 <div class="page-header">
   <h2>{% trans "Manage Styles" %}</h2>
 </div>
-{% url 'dataset_detail' layer.alternate as dataset_url %}
+{% dataset_detail_url layer as dataset_url %}
 <h4>{% blocktrans with dataset_title=layer.alternate  %}
       Manage Available Styles for <a href="{{ dataset_url }}">{{ dataset_title }}</a>
     {% endblocktrans %}</h4>

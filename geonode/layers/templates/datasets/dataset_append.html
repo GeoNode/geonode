@@ -22,7 +22,7 @@
 {% block body_outer %}
 <div class="page-header">
   <a href="{% dataset_list_url %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Explore Datasets" %}</a>
-  <a href="{% dataset_detail_url resource %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Return to Dataset" %}</a>
+  <a href="{{ resource.get_absolute_url }}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Return to Dataset" %}</a>
   <h2 class="page-title">{% trans "Append to Dataset" %} <small><a href="{{ resource.get_absolute_url }}">{{ resource.title }}</a><small></h2>
 </div>
 <div class="row">
