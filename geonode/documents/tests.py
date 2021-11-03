@@ -47,7 +47,7 @@ from geonode.groups.models import (
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
-from geonode.base.thumb_utils import get_thumbs
+from geonode.thumbs.utils import get_thumbs
 from geonode.base.models import License, Region
 from geonode.documents import DocumentsAppConfig
 from geonode.documents.forms import DocumentFormMixin

@@ -35,7 +35,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.base import thumb_utils
+from geonode.thumbs import utils as thumb_utils
 from geonode.base.models import (
     ResourceBase,
     MenuPlaceholder,

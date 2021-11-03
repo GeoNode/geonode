@@ -81,10 +81,6 @@ from geonode.notifications_helper import (
     send_notification,
     get_notification_recipients)
 from geonode.people.enumerations import ROLE_VALUES
-from geonode.base.thumb_utils import (
-    thumb_path,
-    thumb_size,
-    remove_thumbs)
 
 from pyproj import transform, Proj
 
@@ -1553,7 +1549,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
-        from geonode.thumbs.utils import get_unique_upload_path
+        from geonode.thumbs.utils import (
+            get_unique_upload_path,
+            thumb_path,
+            thumb_size,
+            remove_thumbs)
         upload_path = thumb_path(filename)
 
         try:
