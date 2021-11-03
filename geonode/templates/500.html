@@ -54,13 +54,13 @@
           <ul class="nav navbar-nav">
             {% block tabs %}
             <li id="nav_layers">
-              <a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a>
+              <a href="{% dataset_list_url %}">{% trans "Datasets" %}</a>
             </li>
             <li id="nav_maps">
-              <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
+              <a href="{% map_list_url %}">{% trans "Maps" %}</a>
             </li>
             <li id="nav_documents">
-              <a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a>
+              <a href="{% document_list_url %}">{% trans "Documents" %}</a>
             </li>
             {% if GEONODE_APPS_ENABLE and GEONODE_APPS_NAV_MENU_ENABLE %}
             <li id="nav_maps">
@@ -77,22 +77,6 @@
             </li>
             {% endblock %}
           </ul>
-          <form class="navbar-form" id="search" action="{% url "search" %}" >
-            <div class="col-md-3">
-              <div class="input-group">
-                <div id="search-container" class="autocomplete-input">
-                    {% if HAYSTACK_SEARCH %}
-                    <input autocomplete="off" id="search_input" type="text" placeholder="{% trans 'Search' %}" name="q">
-                    {% else %}
-                    <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="{% trans 'Search' %}" >
-                    {% endif %}
-                </div>
-                <span class="input-group-btn">
-                  <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
-                </span>
-              </div>
-            </div>
-          </form>
           <ul class="nav navbar-nav navbar-right">
             {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP %}
             <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
@@ -157,8 +141,8 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Data" %}</li>
-            <li><a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
-            <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
+            <li><a href="{% dataset_list_url %}">{% trans "Datasets" %}</a></li>
+            <li><a href="{% document_list_url %}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
             {% if "add_resource" in user.perms %}
                 <li role="separator" class="divider"></li>
@@ -179,9 +163,6 @@
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
             <li><a href="{% map_list_url %}">{% trans "Explore Maps" %}</a></li>
-            {% if "add_resource" in user.perms %}
-            <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
-            {% endif %}
           </ul>
         </div>
       <div class="col-md-2">

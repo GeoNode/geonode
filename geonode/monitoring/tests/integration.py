@@ -265,7 +265,7 @@ class RequestsTestCase(MonitoringTestBase):
         _l = create_single_dataset('san_andres_y_providencia_poi')
 
         self.client.get(
-            reverse('dataset_detail',
+            reverse('dataset_embed',
                     args=(_l.alternate,
                           )),
             **{"HTTP_USER_AGENT": self.ua})
@@ -288,7 +288,7 @@ class RequestsTestCase(MonitoringTestBase):
 
         self.assertIsNotNone(_l)
         self.client.get(
-            reverse('dataset_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
+            reverse('dataset_embed', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
         eq = ExceptionEvent.objects.all().last()
         if eq:
             self.assertEqual('django.http.response.Http404', eq.error_type)
@@ -305,7 +305,7 @@ class RequestsTestCase(MonitoringTestBase):
         for idx, _l in enumerate(Dataset.objects.all()):
             for inum in range(0, idx + 1):
                 self.client.get(
-                    reverse('dataset_detail',
+                    reverse('dataset_embed',
                             args=(_l.alternate,
                                   )),
                     **{"HTTP_USER_AGENT": self.ua})

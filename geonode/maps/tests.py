@@ -21,17 +21,14 @@ import logging
 
 from unittest.mock import patch
 from owslib.etree import etree as dlxml
-from pinax.ratings.models import OverallRating
 
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from django.test.utils import override_settings
 from django.contrib.contenttypes.models import ContentType
 
 from geonode import geoserver
-from geonode.settings import on_travis
 from geonode.maps import MapsAppConfig
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
@@ -325,82 +322,6 @@ community."
         cfg = json.loads(content)
         self.assertEqual(cfg['defaultSourceType'], "gxp_wmscsource")
 
-    def test_map_details(self):
-        """/maps/1 -> Test accessing the map browse view function"""
-        map_obj = Map.objects.all().first()
-        map_obj.set_default_permissions()
-        response = self.client.get(reverse('map_detail', args=(map_obj.id,)))
-        self.assertEqual(response.status_code, 200)
-
-    @patch('geonode.thumbs.thumbnails.create_thumbnail')
-    def test_describe_map(self, thumbnail_mock):
-        map_obj = Map.objects.all().first()
-        map_obj.set_default_permissions()
-        response = self.client.get(reverse('map_metadata_detail', args=(map_obj.id,)))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix='', html=False)
-        self.assertContains(response, "Published", count=1, status_code=200, msg_prefix='', html=False)
-        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix='', html=False)
-        self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix='', html=False)
-
-        # ... now assigning a Group to the map
-        group = Group.objects.first()
-        map_obj.group = group
-        map_obj.save()
-        response = self.client.get(reverse('map_metadata_detail', args=(map_obj.id,)))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix='', html=False)
-        map_obj.group = None
-        map_obj.save()
-
-    def test_new_map_without_datasets(self):
-        # TODO: Should this test have asserts in it?
-        self.client.get(reverse('new_map'))
-
-    def test_new_map_with_dataset(self):
-        layer = Dataset.objects.all().first()
-        self.client.get(f"{reverse('new_map')}?layer={layer.alternate}")
-
-    def test_new_map_with_dataset_view(self):
-        layer = Dataset.objects.all().first()
-        # anonymous user
-        response = self.client.get(f"{reverse('new_map')}?layer={layer.alternate}&view=True")
-        self.assertIn('view_resourcebase', response.context.get('perms_list', []))
-        self.assertFalse('change_resourcebase' in response.context.get('perms_list', []))
-        # admin
-        self.client.login(username=self.user, password=self.passwd)
-        response = self.client.get(f"{reverse('new_map')}?layer={layer.alternate}&view=True")
-        self.assertIn('publish_resourcebase', response.context.get('perms_list', []))
-        # Test with invalid layer name
-        response = self.client.get(f"{reverse('new_map')}?layer=invalid_name&view=True")
-        self.assertListEqual([], response.context.get('perms_list', []))
-
-    def test_new_map_with_empty_bbox_dataset(self):
-        layer = Dataset.objects.all().first()
-        self.client.get(f"{reverse('new_map')}?layer={layer.alternate}")
-
-    def test_add_dataset_to_existing_map(self):
-        layer = Dataset.objects.all().first()
-        map_obj = Map.objects.all().first()
-        self.client.get(f"{reverse('add_dataset')}?dataset_name={layer.alternate}&map_id={map_obj.id}")
-
-        map_obj = Map.objects.get(id=map_obj.id)
-        for map_dataset in map_obj.datasets:
-            dataset_title = map_dataset.dataset_title
-            local_link = map_dataset.local_link
-            if map_dataset.name == layer.alternate:
-                self.assertTrue(
-                    dataset_title in layer.alternate)
-                self.assertTrue(
-                    map_dataset.name in local_link)
-            if Dataset.objects.filter(alternate=map_dataset.name).exists():
-                attribute_cfg = Dataset.objects.get(alternate=map_dataset.name).attribute_config()
-                if "getFeatureInfo" in attribute_cfg:
-                    self.assertIsNotNone(attribute_cfg["getFeatureInfo"])
-                    cfg = map_dataset.dataset_config()
-                    self.assertIsNotNone(cfg["getFeatureInfo"])
-                    self.assertEqual(cfg["getFeatureInfo"], attribute_cfg["getFeatureInfo"])
-
     def test_ajax_map_permissions(self):
         """Verify that the ajax_dataset_permissions view is behaving as expected
         """
@@ -587,64 +508,6 @@ community."
 
         # TODO: only invalid mapform is tested
 
-    @override_settings(ASYNC_SIGNALS=False)
-    @patch('geonode.thumbs.thumbnails.create_thumbnail')
-    def test_map_remove(self, thumbnail_mock):
-        """Test that map can be properly removed
-        """
-        # first create a map
-
-        # Test successful new map creation
-        self.client.login(username=self.user, password=self.passwd)
-        new_map = reverse('new_map_json')
-        response = self.client.post(
-            new_map,
-            data=self.viewer_config,
-            content_type="text/json")
-        self.assertEqual(response.status_code, 200)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        map_id = int(json.loads(content)['id'])
-        self.client.logout()
-
-        url = reverse('map_remove', args=(map_id,))
-
-        # test unauthenticated user to remove map
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)
-
-        # test a user without map removal permission
-        self.client.login(username='foo', password='pass')
-        response = self.client.post(url)
-        self.assertTrue(response.status_code in (401, 403))
-        self.client.logout()
-
-        # Now test with a valid user using GET method
-        self.client.login(username=self.user, password=self.passwd)
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-        # Now test with a valid user using POST method,
-        # which removes map and associated layers, and redirects webpage
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue('/maps/' in response['Location'])
-
-        # After removal, map is not existent
-        """
-        Deletes a map and the associated map layers.
-        """
-        try:
-            map_obj = Map.objects.get(id=map_id)
-            map_obj.dataset_set.all().delete()
-            map_obj.delete()
-        except Map.DoesNotExist:
-            pass
-        url = reverse('map_detail', args=(map_id,))
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
     def test_map_embed(self, thumbnail_mock):
@@ -734,7 +597,7 @@ community."
         map_id = int(json.loads(content)['id'])
         self.client.logout()
 
-        url = reverse('map_view', args=(map_id,))
+        url = reverse('map_embed', args=(map_id,))
 
         # test unauthenticated user to view map
         response = self.client.get(url)
@@ -874,36 +737,6 @@ community."
             self.assertEqual(response.status_code, 405)
         except Exception:
             pass
-
-    @patch('geonode.thumbs.thumbnails.create_thumbnail')
-    def test_rating_map_remove(self, thumbnail_mock):
-        """Test map rating is removed on map remove
-        """
-        if not on_travis:
-            self.client.login(username=self.user, password=self.passwd)
-            new_map = reverse('new_map_json')
-            logger.debug("Create the map")
-            response = self.client.post(
-                new_map,
-                data=self.viewer_config,
-                content_type="text/json")
-            content = response.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            map_id = int(json.loads(content)['id'])
-            ctype = ContentType.objects.get(model='map')
-            logger.debug("Create the rating with the correct content type")
-            OverallRating.objects.create(
-                category=1,
-                object_id=map_id,
-                content_type=ctype,
-                rating=3)
-            logger.debug("Remove the map")
-            response = self.client.post(reverse('map_remove', args=(map_id,)))
-            self.assertEqual(response.status_code, 302)
-            logger.debug("Check there are no ratings matching the removed map")
-            rating = OverallRating.objects.filter(object_id=map_id)
-            self.assertEqual(rating.count(), 1)
 
     def test_fix_baselayers(self):
         """Test fix_baselayers function, used by the fix_baselayers command

@@ -193,8 +193,8 @@
           <li id="nav_layers">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
-                <li><a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
-                <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
+                <li><a href="{% dataset_list_url %}">{% trans "Datasets" %}</a></li>
+                <li><a href="{% document_list_url %}">{% trans "Documents" %}</a></li>
                 <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
                 {% if "add_resource" in user.perms %}
                     <li role="separator" class="divider"></li>
@@ -216,12 +216,9 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
                 <ul class="dropdown-menu">
                   <li><a href="{% map_list_url %}">{% trans "Explore Maps" %}</a></li>
-                  {% if "add_resource" in user.perms %}
-                    <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
-                  {% endif %}
                 </ul>
               {% else %}
-                <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
+                <a href="{% map_list_url %}">{% trans "Maps" %}</a>
               {% endif %}
           </li>
           {% if GEONODE_APPS_ENABLE and GEONODE_APPS_NAV_MENU_ENABLE %}
@@ -269,26 +266,6 @@
                {% render_nav_menu 'TOPBAR_MENU' %}
             {% endblock my_extra_right_tab %}
 
-            <li>
-              <div class="search">
-                <form id="search" action="{% url "search" %}" >
-                  <span class="fa fa-search"></span>
-                  <div id="search-container" class="autocomplete-input">
-                    {% if HAYSTACK_SEARCH %}
-                    <input autocomplete="off" id="search_input" type="text" placeholder="{% trans 'Search' %}" name="q">
-                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="{% trans 'Search' %}" >
-                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="{% trans 'Search' %}" >
-                    <input type="hidden" name="f_method" id="filtering_type" value="or" >
-                    {% else %}
-                    <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="{% trans 'Search' %}" >
-                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="{% trans 'Search' %}" >
-                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="{% trans 'Search' %}" >
-                    <input type="hidden" name="f_method" id="filtering_type" value="or" >
-                    {% endif %}
-                  </div>
-                </form>
-              </div>
-            </li>
             {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP and not READ_ONLY_MODE %}
               <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
@@ -379,8 +356,8 @@
         <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "Data" %}</li>
-            <li><a href="{% url "dataset_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Datasets" %}</a></li>
-            <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
+            <li><a href="{% dataset_list_url %}">{% trans "Datasets" %}</a></li>
+            <li><a href="{% document_list_url %}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
             {% if "add_resource" in user.perms %}
                 <li role="separator" class="divider"></li>
@@ -401,9 +378,6 @@
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
             <li><a href="{% map_list_url %}">{% trans "Explore Maps" %}</a></li>
-            {% if "add_resource" in user.perms %}
-              <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
-            {% endif %}
           </ul>
         </div>
         <div class="col-md-2">

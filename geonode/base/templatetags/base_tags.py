@@ -326,14 +326,6 @@ def facets(context):
     return facets
 
 
-@register.filter(is_safe=True)
-def get_facet_title(value):
-    """Converts a facet_type into a human readable string"""
-    if value in FACETS.keys():
-        return FACETS[value]
-    return value
-
-
 @register.simple_tag(takes_context=True)
 def get_current_path(context):
     request = context['request']
