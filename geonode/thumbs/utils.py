@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import os
 import time
 import base64
 import logging
@@ -24,15 +24,20 @@ import logging
 from pyproj import Transformer, CRS
 from owslib.wms import WebMapService
 from typing import List, Tuple, Callable, Union
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.geoserver.helpers import OGC_Servers_Handler
+from geonode.base.thumb_utils import (
+    thumb_path,
+    remove_thumbs)
 
 logger = logging.getLogger(__name__)
 
@@ -307,3 +312,15 @@ def exceeds_epsg3857_area_of_use(bbox: List) -> bool:
             exceeds = True
 
     return exceeds
+
+
+def get_unique_upload_path(resource, filename, upload_path):
+    mising_thumb = staticfiles.static(settings.MISSING_THUMBNAIL)
+    if resource.thumbnail_url and not resource.thumbnail_url == mising_thumb:
+        thumb_name = os.path.basename(resource.thumbnail_url)
+        name, ext = os.path.splitext(thumb_name)
+        remove_thumbs(name)
+    filename, ext = os.path.splitext(filename)
+    unique_file_name = f'{filename}-{uuid4()}{ext}'
+    upload_path = thumb_path(unique_file_name)
+    return upload_path

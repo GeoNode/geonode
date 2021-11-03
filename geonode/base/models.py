@@ -1553,6 +1553,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
+        from geonode.thumbs.utils import get_unique_upload_path
         upload_path = thumb_path(filename)
 
         try:
@@ -1567,6 +1568,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if upload_path and image:
                 name, ext = os.path.splitext(filename)
                 remove_thumbs(name)
+                upload_path = get_unique_upload_path(self, filename, upload_path)
                 actual_name = storage.save(upload_path, ContentFile(image))
                 url = storage.url(actual_name)
                 _url = urlparse(url)
