@@ -25,9 +25,11 @@ import logging
 from pyproj import CRS
 from owslib.wms import WebMapService
 from typing import List, Tuple, Callable, Union
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.templatetags.static import static
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
@@ -357,3 +359,15 @@ def remove_thumbs(name):
     for thumb in get_thumbs():
         if thumb.startswith(name):
             remove_thumb(thumb)
+
+
+def get_unique_upload_path(resource, filename, upload_path):
+    mising_thumb = static(settings.MISSING_THUMBNAIL)
+    if resource.thumbnail_url and not resource.thumbnail_url == mising_thumb:
+        thumb_name = os.path.basename(resource.thumbnail_url)
+        name, ext = os.path.splitext(thumb_name)
+        remove_thumbs(name)
+    filename, ext = os.path.splitext(filename)
+    unique_file_name = f'{filename}-{uuid4()}{ext}'
+    upload_path = thumb_path(unique_file_name)
+    return upload_path

@@ -105,6 +105,13 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             re.match(f"dataset-{self.re_uuid}-thumb.png", dataset_name, re.I), "Dataset name should meet a provided pattern"
         )
 
+    def test_get_unique_upload_path(self):
+        dataset = Dataset.objects.first()
+        thumbnail_name = thumbnails._generate_thumbnail_name(dataset)
+        upload_path = utils.thumb_path(thumbnail_name)
+        new_upload_path = utils.get_unique_upload_path(dataset, thumbnail_name, upload_path)
+        self.assertNotEqual(upload_path, new_upload_path)
+
     @patch("geonode.maps.models.Map.datasets", new_callable=PropertyMock)
     def test_generate_thumbnail_name_map_empty(self, layers_mock):
         layers_mock.return_value = []
