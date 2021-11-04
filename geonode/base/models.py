@@ -1554,7 +1554,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             thumb_path,
             thumb_size,
             remove_thumbs)
-        upload_path = thumb_path(filename)
+        upload_path = get_unique_upload_path(self, filename)
 
         try:
             # Check that the image is valid
@@ -1568,7 +1568,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if upload_path and image:
                 name, ext = os.path.splitext(filename)
                 remove_thumbs(name)
-                upload_path = get_unique_upload_path(self, filename, upload_path)
                 actual_name = storage.save(upload_path, ContentFile(image))
                 url = storage.url(actual_name)
                 _url = urlparse(url)
