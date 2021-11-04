@@ -43,6 +43,7 @@ from geonode.base.views import batch_modify
 from geonode.people.forms import ProfileForm
 from geonode.base import register_event
 from geonode.base.bbox_utils import BBOXHelper
+from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
 from geonode.storage.manager import storage_manager
 from geonode.resource.manager import resource_manager
