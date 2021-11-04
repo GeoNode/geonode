@@ -112,6 +112,8 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         upload_path = utils.thumb_path(thumbnail_name)
         new_upload_path = utils.get_unique_upload_path(layer, thumbnail_name)
         self.assertNotEqual(upload_path, new_upload_path)
+        new_upload_path2 = utils.get_unique_upload_path(layer, thumbnail_name)
+        self.assertNotEqual(new_upload_path, new_upload_path2)
 
     @patch("geonode.maps.models.Map.layers", new_callable=PropertyMock)
     def test_generate_thumbnail_name_map_empty(self, layers_mock):
