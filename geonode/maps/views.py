@@ -49,6 +49,7 @@ from geonode.base.views import batch_modify
 from geonode.people.forms import ProfileForm
 from geonode.maps.models import Map, MapLayer
 from geonode.base import register_event
+from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
 from geonode.layers.views import _resolve_dataset
 from geonode.resource.manager import resource_manager
@@ -1031,6 +1032,37 @@ def ajax_url_lookup(request):
         content=json.dumps(json_dict),
         content_type='text/plain'
     )
+
+
+def map_metadata_detail(
+        request,
+        mapid,
+        template='maps/map_metadata_detail.html'):
+    try:
+        map_obj = _resolve_map(
+            request,
+            mapid,
+            'view_resourcebase')
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not map_obj:
+        raise Http404(_("Not found"))
+
+    group = None
+    if map_obj.group:
+        try:
+            group = GroupProfile.objects.get(slug=map_obj.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+    register_event(request, EventType.EVENT_VIEW_METADATA, map_obj)
+    return render(request, template, context={
+        "resource": map_obj,
+        "group": group,
+        'SITEURL': site_url
+    })
 
 
 @login_required
