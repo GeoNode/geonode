@@ -28,7 +28,7 @@ from django.forms.utils import ErrorList
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from geonode.client.hooks import hookset

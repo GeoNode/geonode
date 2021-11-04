@@ -502,12 +502,12 @@ def document_metadata_detail(
         try:
             group = GroupProfile.objects.get(slug=document.group.name)
         except ObjectDoesNotExist:
-    register_event(request, EventType.EVENT_VIEW_METADATA, document)
             group = None
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+    register_event(request, EventType.EVENT_VIEW_METADATA, document)
     return render(request, template, context={
-        "group": group,
         "resource": document,
+        "group": group,
         'SITEURL': site_url
     })
 
