@@ -322,6 +322,27 @@ community."
         cfg = json.loads(content)
         self.assertEqual(cfg['defaultSourceType'], "gxp_wmscsource")
 
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_describe_map(self, thumbnail_mock):
+        map_obj = Map.objects.all().first()
+        map_obj.set_default_permissions()
+        response = self.client.get(reverse('map_metadata_detail', args=(map_obj.id,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "Published", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix='', html=False)
+
+        # ... now assigning a Group to the map
+        group = Group.objects.first()
+        map_obj.group = group
+        map_obj.save()
+        response = self.client.get(reverse('map_metadata_detail', args=(map_obj.id,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix='', html=False)
+        map_obj.group = None
+        map_obj.save()
+
     def test_ajax_map_permissions(self):
         """Verify that the ajax_dataset_permissions view is behaving as expected
         """
