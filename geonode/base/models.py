@@ -1654,11 +1654,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def save_thumbnail(self, filename, image):
         from geonode.thumbs.utils import (
             get_unique_upload_path,
-            thumb_path,
             thumb_size,
             remove_thumbs
         )
-        upload_path = thumb_path(filename)
+        upload_path = get_unique_upload_path(self, filename)
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
@@ -1671,7 +1670,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if upload_path and image:
                 name = os.path.basename(filename)
                 remove_thumbs(name)
-                upload_path = get_unique_upload_path(self, filename, upload_path)
                 actual_name = storage_manager.save(upload_path, ContentFile(image))
                 actual_file_name = os.path.basename(actual_name)
 
