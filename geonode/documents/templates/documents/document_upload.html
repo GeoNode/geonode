@@ -10,6 +10,8 @@
 {% block body %}
 
 <div class="col-md-8">
+  <div class="alert alert-warning" id="errors" style="display:none">
+  </div>
   <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
     {{ form.as_p }}
@@ -51,7 +53,20 @@
     });
 
     $('#upload-button').click(function(){
-      $('#_resource_uploading').modal('toggle');
+      $('#errors').empty()
+      if ($("#id_title").val() === '') {
+        $('#errors').append('<p>Document title is required.<p>');
+        $('#errors').show()
+        return false
+      }
+      if ($('#id_doc_file').get(0).files.length === 0 && $("#id_doc_url").val() === '') {
+        $('#errors').append('<p>Document must be a file or url.<p>');
+        $('#errors').show()
+        return false
+      }
+      else {
+        $('#_resource_uploading').modal('toggle');
+      }
     });
 </script>
 {% endblock extra_script %}
