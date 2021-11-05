@@ -128,17 +128,17 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: s
     elif perm == EDIT_RIGHTS:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
             if resource_subtype and resource_subtype.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
-                return DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS
+                return DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS + DOWNLOAD_PERMISSIONS
             else:
-                return EDIT_PERMISSIONS
+                return EDIT_PERMISSIONS + DOWNLOAD_PERMISSIONS
         else:
             return EDIT_PERMISSIONS
     elif perm == MANAGE_RIGHTS:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
             if resource_subtype and resource_subtype.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
-                return DATASET_ADMIN_PERMISSIONS + ADMIN_PERMISSIONS
+                return DATASET_ADMIN_PERMISSIONS + ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS
             else:
-                return ADMIN_PERMISSIONS
+                return ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS
         else:
             return ADMIN_PERMISSIONS
 

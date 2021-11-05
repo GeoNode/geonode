@@ -386,7 +386,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             self.client.login(username='bobby', password='bob')
             resp = self.client.get(self.list_url)
-            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
+            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 6)
 
             perms = get_users_with_perms(test_perm_dataset)
             _log(f"3. perms: {perms} ")
@@ -1756,7 +1756,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'delete_resourcebase',
                             'change_resourcebase_permissions',
                             'publish_resourcebase',
-                            'change_resourcebase'
+                            'change_resourcebase',
+                            'download_resourcebase'
                         ],
                         'AnonymousUser': ['view_resourcebase']
                     },
@@ -1810,7 +1811,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'delete_resourcebase',
                             'change_resourcebase_permissions',
                             'publish_resourcebase',
-                            'change_resourcebase'
+                            'change_resourcebase',
+                            'download_resourcebase'
                         ],
                         'AnonymousUser': ['view_resourcebase']
                     },
