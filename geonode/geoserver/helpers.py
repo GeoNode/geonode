@@ -2161,13 +2161,14 @@ def select_relevant_files(allowed_extensions, files):
     from geonode.upload.files import get_scan_hint
 
     result = []
-    for django_file in files:
-        _django_file_name = django_file if isinstance(django_file, str) else django_file.name
-        extension = os.path.splitext(_django_file_name)[-1].lower()[1:]
-        if extension in allowed_extensions or get_scan_hint(allowed_extensions):
-            already_selected = _django_file_name in (f if isinstance(f, str) else f.name for f in result)
-            if not already_selected:
-                result.append(django_file)
+    if files:
+        for django_file in files:
+            _django_file_name = django_file if isinstance(django_file, str) else django_file.name
+            extension = os.path.splitext(_django_file_name)[-1].lower()[1:]
+            if extension in allowed_extensions or get_scan_hint(allowed_extensions):
+                already_selected = _django_file_name in (f if isinstance(f, str) else f.name for f in result)
+                if not already_selected:
+                    result.append(django_file)
     return result
 
 

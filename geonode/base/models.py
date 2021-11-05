@@ -1206,7 +1206,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def topiccategory(self):
-        return self.category.identifier
+        return self.category.identifier if self.category else None
 
     @property
     def csw_crs(self):

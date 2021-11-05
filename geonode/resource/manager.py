@@ -396,14 +396,15 @@ class ResourceManager(ResourceManagerInterface):
                             uuid,
                             resource_type=Dataset,
                             defaults=to_update)
-                instance = self._concrete_resource_manager.ingest(
-                    storage_manager.copy_files_list(files),
-                    uuid=instance.uuid,
-                    resource_type=resource_type,
-                    defaults=to_update,
-                    **kwargs)
-                instance.set_processing_state(enumerations.STATE_PROCESSED)
-                instance.save(notify=False)
+                if instance:
+                    instance = self._concrete_resource_manager.ingest(
+                        storage_manager.copy_files_list(files),
+                        uuid=instance.uuid,
+                        resource_type=resource_type,
+                        defaults=to_update,
+                        **kwargs)
+                    instance.set_processing_state(enumerations.STATE_PROCESSED)
+                    instance.save(notify=False)
         except Exception as e:
             logger.exception(e)
             if instance:
