@@ -911,8 +911,7 @@ PINAX_RATINGS_CATEGORY_CHOICES = {
     },
     "documents.Document": {
         "document": "How good is this document?"
-    }
-    ,
+    },
     "geoapps.GeoApp": {
         "geoapp": "How good is this geoapp?"
     }
