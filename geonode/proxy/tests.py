@@ -155,8 +155,12 @@ class ProxyTest(GeoNodeBaseTestSupport):
         url = "http://example.org/test/test/../../image.tiff"
 
         response = self.client.get(f'{self.proxy_url}?url={url}')
+        if hasattr(response, 'headers'):
+            response_headers = response.headers
+        else:
+            response_headers = response._headers
         self.assertDictContainsSubset(
-            dict(response.headers.copy()),
+            dict(response_headers.copy()),
             {
                 'Content-Type': 'text/plain',
                 'Vary': 'Authorization, Accept-Language, Cookie, Origin',
