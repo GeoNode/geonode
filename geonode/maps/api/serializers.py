@@ -67,6 +67,7 @@ class MapLayerSerializer(DynamicModelSerializer):
         fields = (
             "pk",
             "extra_params",
+            "current_style",
             "styles",
         )
 

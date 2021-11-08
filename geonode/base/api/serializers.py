@@ -72,7 +72,7 @@ class BaseDynamicModelSerializer(DynamicModelSerializer):
         return data
 
 
-class ResourceBaseToRepresentationSerializerMixin:
+class ResourceBaseToRepresentationSerializerMixin(DynamicModelSerializer):
 
     def to_representation(self, instance):
         request = self.context.get('request')

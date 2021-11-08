@@ -66,7 +66,7 @@ class MapsApiTests(APITestCase):
         # Get Layers List (backgrounds)
         resource = Map.objects.first()
 
-        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", 'datasets/')
+        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", 'maplayers/')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         layers_data = response.data

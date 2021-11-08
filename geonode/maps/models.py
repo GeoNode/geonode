@@ -466,6 +466,13 @@ class MapLayer(models.Model, GXPLayerBase):
         blank=True)
     # The name of the style to use for this layer (only useful for WMS layers.)
 
+    current_style = models.TextField(
+        _('current style'),
+        null=True,
+        blank=True
+    )
+    # `styles` stores a list of styles as a string, here in `current_style` we store the selected style.
+
     transparent = models.BooleanField(_('transparent'), default=False)
     # A boolean value, true if we should request tiles with a transparent
     # background.
