@@ -7,7 +7,7 @@ Django==3.2.7
 # Other
 amqp==5.0.6
 beautifulsoup4==4.10.0
-httplib2<0.20.2
+httplib2<0.20.3
 hyperlink==21.0.0
 idna>=2.5,<2.11
 urllib3==1.26.7
@@ -15,19 +15,19 @@ Paver==1.3.4
 python-slugify==5.0.2
 decorator==5.1.0
 celery==5.1.2
-kombu==5.1.0
+kombu==5.2.1
 vine==5.0.0
 tqdm==4.62.3
 Deprecated==1.2.13
 wrapt==1.13.3
-jsonschema==4.1.2
+jsonschema==4.2.1
 
 # Django Apps
 django-allauth==0.45.0
 django-appconf==1.0.5
 django-celery-results==2.2.0
 django-filter==21.1
-django-imagekit==4.0.2
+django-imagekit==4.1.0
 django-taggit==1.5.1
 django-markdownify==0.9.0
 django-mptt==0.13.4
