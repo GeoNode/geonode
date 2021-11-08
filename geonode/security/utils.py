@@ -68,7 +68,10 @@ def get_visible_resources(queryset,
 
     if not is_admin:
         if user:
-            _allowed_resources = get_objects_for_user(user, 'base.view_resourcebase')
+            _allowed_resources = get_objects_for_user(
+                user,
+                ['base.view_resourcebase', 'base.change_resourcebase'],
+                any_perm=True)
             filter_set = filter_set.filter(id__in=_allowed_resources.values('id'))
 
         if admin_approval_required:
@@ -201,7 +204,8 @@ def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
     else:
         resources = get_objects_for_user(
             user,
-            'base.view_resourcebase',
+            ['base.view_resourcebase', 'base.change_resourcebase'],
+            any_perm=True,
             **shortcut_kwargs
         )
 

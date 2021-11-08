@@ -1752,6 +1752,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         [
                             'change_dataset_data',
                             'change_dataset_style',
+                            'view_resourcebase',
                             'change_resourcebase_metadata',
                             'delete_resourcebase',
                             'change_resourcebase_permissions',
@@ -1807,6 +1808,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         [
                             'change_dataset_data',
                             'change_dataset_style',
+                            'view_resourcebase',
                             'change_resourcebase_metadata',
                             'delete_resourcebase',
                             'change_resourcebase_permissions',
