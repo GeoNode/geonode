@@ -50,6 +50,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(ProxyTest, self).setUp()
+        self.maxDiff = None
         self.admin = get_user_model().objects.get(username='admin')
 
         # FIXME(Ariel): These tests do not work when the computer is offline.
@@ -118,6 +119,56 @@ class ProxyTest(GeoNodeBaseTestSupport):
 
         self.client.get(f'{self.proxy_url}?url={url}')
         assert request_mock.call_args[0][0] == 'http://example.org/index.html'
+
+    def test_proxy_preserve_headers(self):
+        """The GeoNode Proxy should preserve the original request headers."""
+        import geonode.proxy.views
+
+        _test_headers = {
+            'Access-Control-Allow-Credentials': False,
+            'Access-Control-Allow-Headers': 'Content-Type, Accept, Authorization, Origin, User-Agent',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, OPTIONS',
+            'Cache-Control': 'public, must-revalidate, max-age = 30',
+            'Connection': 'keep-alive',
+            'Content-Language': 'en',
+            'Content-Length': 116559,
+            'Content-Type': 'image/tiff',
+            'Content-Disposition': 'attachment; filename="filename.tif"',
+            'Date': 'Fri, 05 Nov 2021 17: 19: 11 GMT',
+            'Server': 'nginx/1.17.2',
+            'Set-Cookie': 'sessionid = bogus-pocus; HttpOnly; Path=/; SameSite=Lax',
+            'Strict-Transport-Security': 'max-age=3600; includeSubDomains',
+            'Vary': 'Authorization, Accept-Language, Cookie, Origin',
+            'X-Content-Type-Options': 'nosniff',
+            'X-XSS-Protection': '1; mode=block'
+        }
+
+        class Response:
+            status_code = 200
+            content = 'Hello World'
+            headers = _test_headers
+
+        request_mock = MagicMock()
+        request_mock.return_value = (Response(), None)
+
+        geonode.proxy.views.http_client.request = request_mock
+        url = "http://example.org/test/test/../../image.tiff"
+
+        response = self.client.get(f'{self.proxy_url}?url={url}')
+        self.assertDictContainsSubset(
+            dict(response.headers.copy()),
+            {
+                'Content-Type': 'text/plain',
+                'Vary': 'Authorization, Accept-Language, Cookie, Origin',
+                'X-Content-Type-Options': 'nosniff',
+                'X-XSS-Protection': '1; mode=block',
+                'Referrer-Policy': 'same-origin',
+                'X-Frame-Options': 'SAMEORIGIN',
+                'Content-Language': 'en',
+                'Content-Length': '119',
+                'Content-Disposition': 'attachment; filename="filename.tif"'
+            }
+        )
 
 
 class DownloadResourceTestCase(GeoNodeBaseTestSupport):
