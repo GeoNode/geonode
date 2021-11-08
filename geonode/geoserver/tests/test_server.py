@@ -860,19 +860,19 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertEqual(route, '^gs/rest/sldservice')
 
         store_resolver = resolve('/gs/rest/stores/geonode_data/')
-        self.assertEqual(store_resolver.url_name, 'stores')
+        self.assertEqual(store_resolver.url_name, 'gs_stores')
         self.assertEqual(store_resolver.kwargs['store_type'], 'geonode_data')
         self.assertEqual(store_resolver.route, '^gs/rest/stores/(?P<store_type>\\w+)/$')
 
         sld_resolver = resolve('/gs/rest/styles')
-        self.assertIsNone(sld_resolver.url_name)
+        self.assertEqual(sld_resolver.url_name, 'gs_styles')
         self.assertTrue('workspace' not in sld_resolver.kwargs)
         self.assertEqual(sld_resolver.kwargs['proxy_path'], '/gs/rest/styles')
         self.assertEqual(sld_resolver.kwargs['downstream_path'], 'rest/styles')
         self.assertEqual(sld_resolver.route, '^gs/rest/styles')
 
         sld_resolver = resolve('/gs/rest/workspaces/geonode/styles')
-        self.assertIsNone(sld_resolver.url_name)
+        self.assertEqual(sld_resolver.url_name, 'gs_workspaces')
         self.assertEqual(sld_resolver.kwargs['workspace'], 'geonode')
         self.assertEqual(sld_resolver.kwargs['proxy_path'], '/gs/rest/workspaces')
         self.assertEqual(sld_resolver.kwargs['downstream_path'], 'rest/workspaces')
