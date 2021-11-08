@@ -76,7 +76,7 @@ class ResourceBaseToRepresentationSerializerMixin:
 
     def to_representation(self, instance):
         request = self.context.get('request')
-        data = super().to_representation(instance)
+        data = super(ResourceBaseToRepresentationSerializerMixin, self).to_representation(instance)
         if request:
             data['perms'] = instance.get_user_perms(request.user).union(
                 instance.get_self_resource().get_user_perms(request.user)
