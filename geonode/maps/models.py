@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import ast
 import json
 import uuid
 import logging
@@ -430,6 +431,12 @@ class MapLayer(models.Model, GXPLayerBase):
     map = models.ForeignKey(Map, related_name="dataset_set", on_delete=models.CASCADE)
     # The map containing this layer
 
+    extra_params = models.JSONField(null=True, default=dict, blank=True)
+    # extra_params: an opaque JSONField where the client can put useful
+    #     information about the maplayer. For the moment the only extra
+    #     information will be the "msid", which is set by the client to match
+    #     the maplayer with the layer inside the mapconfig blob.
+
     stack_order = models.IntegerField(_('stack order'))
     # The z-index of this layer in the map; layers with a higher stack_order will
     # be drawn on top of others.
@@ -542,35 +549,29 @@ class MapLayer(models.Model, GXPLayerBase):
         return cfg
 
     @property
+    def styles_set(self):
+        styles = (
+            ast.literal_eval(self.styles)
+            if isinstance(self.styles, str) else
+            self.styles
+        )
+        return styles
+
+    @property
     def dataset_title(self):
-        title = None
-        try:
-            if self.local:
-                if self.store:
-                    title = Dataset.objects.get(
-                        store=self.store, alternate=self.name).title
-                else:
-                    title = Dataset.objects.get(alternate=self.name).title
-        except Exception:
-            title = None
-        if title is None:
+        layer = (self.dataset if self.local else None)
+        if layer:
+            title = layer.title
+        else:
             title = self.name
         return title
 
     @property
     def local_link(self):
-        link = None
-        try:
-            if self.local:
-                if self.store:
-                    layer = Dataset.objects.get(
-                        store=self.store, alternate=self.name)
-                else:
-                    layer = Dataset.objects.get(alternate=self.name)
-                link = f"<a href=\"{layer.get_absolute_url()}\">{layer.title}</a>"
-        except Exception:
-            link = None
-        if link is None:
+        layer = (self.dataset if self.local else None)
+        if layer:
+            link = f"<a href=\"{layer.get_absolute_url()}\">{layer.title}</a>"
+        else:
             link = f"<span>{self.name}</span> "
         return link
 
@@ -583,7 +584,7 @@ class MapLayer(models.Model, GXPLayerBase):
             # Use '' to represent default layer style
             style_name = capability.get('style', '')
             href = None
-            dataset_obj = Dataset.objects.filter(alternate=self.name).first()
+            dataset_obj = self.dataset
             if dataset_obj:
                 if ':' in style_name:
                     style_name = style_name.split(':')[1]
@@ -598,6 +599,17 @@ class MapLayer(models.Model, GXPLayerBase):
         except Exception as e:
             logger.exception(e)
             return None
+
+    @property
+    def dataset(self):
+        try:
+            if self.store:
+                dataset = Dataset.objects.get(store=self.store, alternate=self.name)
+            else:
+                dataset = Dataset.objects.get(alternate=self.name)
+        except Dataset.DoesNotExist:
+            dataset = None
+        return dataset
 
     class Meta:
         ordering = ["stack_order"]

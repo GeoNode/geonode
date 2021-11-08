@@ -58,7 +58,7 @@ class MapViewSet(DynamicModelViewSet):
     @extend_schema(methods=['get'], responses={200: MapLayerSerializer(many=True)},
                    description="API endpoint allowing to retrieve the MapLayers list.")
     @action(detail=True, methods=['get'])
-    def datasets(self, request, pk=None):
+    def maplayers(self, request, pk=None):
         map = self.get_object()
         resources = map.datasets
         return Response(MapLayerSerializer(embed=True, many=True).to_representation(resources))
