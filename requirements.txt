@@ -27,7 +27,7 @@ django-allauth==0.45.0
 django-appconf==1.0.5
 django-celery-results==2.2.0
 django-filter==21.1
-django-imagekit==4.0.2
+django-imagekit==4.1.0
 django-taggit==1.5.1
 django-markdownify==0.9.0
 django-mptt==0.13.4
