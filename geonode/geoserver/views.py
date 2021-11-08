@@ -470,7 +470,7 @@ def geoserver_proxy(request,
             raw_url = _url
 
     if downstream_path in 'ows' and (
-        'rest' in path or
+        re.match(r'/(rest).*$', path, re.IGNORECASE) or
             re.match(r'/(w.*s).*$', path, re.IGNORECASE) or
             re.match(r'/(ows).*$', path, re.IGNORECASE)):
         _url = str("".join([ogc_server_settings.LOCATION, '', path[1:]]))
