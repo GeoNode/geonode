@@ -23,19 +23,17 @@ from . import views
 
 urlpatterns = [  # 'geonode.geoserver.views',
     # REST Endpoints
-    url(r'^rest/stores/(?P<store_type>\w+)/$',
-        views.stores, name="stores"),
+    url(r'^rest/stores/(?P<store_type>\w+)/$', views.stores, name="gs_stores"),
     url(r'^rest/styles', views.geoserver_proxy, dict(proxy_path='/gs/rest/styles',
-                                                     downstream_path='rest/styles')),
-    url(r'^rest/workspaces/(?P<workspace>\w+)', views.geoserver_proxy,
-        dict(proxy_path='/gs/rest/workspaces',
-             downstream_path='rest/workspaces')),
+                                                     downstream_path='rest/styles'), name="gs_styles"),
+    url(r'^rest/workspaces/(?P<workspace>\w+)', views.geoserver_proxy, dict(proxy_path='/gs/rest/workspaces',
+                                                                            downstream_path='rest/workspaces'), name="gs_workspaces"),
     url(r'^rest/layers', views.geoserver_proxy, dict(proxy_path='/gs/rest/layers',
-                                                     downstream_path='rest/layers')),
+                                                     downstream_path='rest/layers'), name="gs_layers"),
     url(r'^rest/imports', views.geoserver_proxy, dict(proxy_path='/gs/rest/imports',
-                                                      downstream_path='rest/imports')),
+                                                      downstream_path='rest/imports'), name="gs_imports"),
     url(r'^rest/sldservice', views.geoserver_proxy, dict(proxy_path='/gs/rest/sldservice',
-                                                         downstream_path='rest/sldservice')),
+                                                         downstream_path='rest/sldservice'), name="gs_sldservice"),
 
     # OWS Endpoints
     url(r'^ows', views.geoserver_proxy, dict(proxy_path='/gs/ows',
