@@ -161,14 +161,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         self.assertDictContainsSubset(
             dict(response_headers.copy()),
             {
-                'Content-Type': 'text/plain',
-                'Vary': 'Authorization, Accept-Language, Cookie, Origin',
-                'X-Content-Type-Options': 'nosniff',
-                'X-XSS-Protection': '1; mode=block',
                 'Referrer-Policy': 'same-origin',
-                'X-Frame-Options': 'SAMEORIGIN',
-                'Content-Language': 'en',
-                'Content-Length': '119',
                 'Content-Disposition': 'attachment; filename="filename.tif"'
             }
         )
