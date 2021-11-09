@@ -58,7 +58,7 @@ logger = logging.getLogger(__name__)
 
 class ProfileUserManager(UserManager):
     def get_by_natural_key(self, username):
-        return self.get(username=username)
+        return self.get(username=username) if username else None
 
 
 class Profile(AbstractUser):
