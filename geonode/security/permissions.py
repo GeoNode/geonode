@@ -174,7 +174,7 @@ _Binding = collections.namedtuple('Binding', [
 ])
 
 _User = collections.namedtuple('User', [
-    'id', 'username', 'last_name', 'first_name', 'avatar'
+    'id', 'username', 'last_name', 'first_name', 'avatar', 'is_superuser', 'is_staff'
 ])
 
 _Group = collections.namedtuple('Group', [
@@ -284,7 +284,9 @@ class PermSpec(PermSpecConverterBase):
                     "first_name": "",
                     "last_name": "",
                     "avatar": "",
-                    "permissions": "manage"
+                    "permissions": "manage",
+                    "is_superuser": <bool>,
+                    "is_staff": <bool>
                 }
             ],
             "organizations": [],
@@ -318,7 +320,7 @@ class PermSpec(PermSpecConverterBase):
                 _k = get_user_model().objects.get(username=_k)
             if not _k.is_anonymous and _k.username != 'AnonymousUser':
                 avatar = build_absolute_uri(avatar_url(_k, 240))
-                user = _User(_k.id, _k.username, _k.last_name, _k.first_name, avatar)
+                user = _User(_k.id, _k.username, _k.last_name, _k.first_name, avatar, _k.is_superuser, _k.is_staff)
                 is_owner = _k == self._resource.owner
                 user_perms.append(
                     {
@@ -327,7 +329,9 @@ class PermSpec(PermSpecConverterBase):
                         'first_name': user.first_name,
                         'last_name': user.last_name,
                         'avatar': user.avatar,
-                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype, is_owner)
+                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype, is_owner),
+                        'is_superuser': user.is_superuser,
+                        'is_staff': user.is_staff
                     }
                 )
             else:
@@ -346,7 +350,9 @@ class PermSpec(PermSpecConverterBase):
                     'first_name': self._resource.owner.first_name,
                     'last_name': self._resource.owner.last_name,
                     'avatar': build_absolute_uri(avatar_url(self._resource.owner, 240)),
-                    'permissions': OWNER_RIGHTS
+                    'permissions': OWNER_RIGHTS,
+                    'is_superuser': self._resource.owner.is_superuser,
+                    'is_staff': self._resource.owner.is_staff
                 }
             )
         for user in get_user_model().objects.filter(is_superuser=True):
@@ -358,7 +364,9 @@ class PermSpec(PermSpecConverterBase):
                         'first_name': user.first_name,
                         'last_name': user.last_name,
                         'avatar': build_absolute_uri(avatar_url(user, 240)),
-                        'permissions': MANAGE_RIGHTS
+                        'permissions': MANAGE_RIGHTS,
+                        'is_superuser': user.is_superuser,
+                        'is_staff': user.is_staff
                     }
                 )
 
@@ -439,6 +447,8 @@ class PermSpecUserCompact(PermSpecConverterBase):
         _binding('last_name', expected=False),
         _binding('avatar', expected=False),
         _binding('permissions'),
+        _binding('is_superuser', expected=False),
+        _binding('is_staff', expected=False)
     )
 
 
