@@ -123,6 +123,12 @@ class PermissionLevelMixin:
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
+        # Remove duplicated perms if any
+        if info:
+            for _k, _v in info.items():
+                for _kk, _vv in info[_k].items():
+                    if _vv and isinstance(_vv, list):
+                        info[_k][_kk] = list(set(_vv))
         return info
 
     def get_self_resource(self):
