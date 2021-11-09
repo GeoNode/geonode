@@ -196,9 +196,9 @@ def get_layer_workspace(layer):
 
 
 def get_headers(request, url, raw_url, allowed_hosts=[]):
-    headers = {}
     cookies = None
     csrftoken = None
+    headers = dict(request.headers.copy())
 
     if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(
             url=raw_url, allowed_hosts=url.hostname):
