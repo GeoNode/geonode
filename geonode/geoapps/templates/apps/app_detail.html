@@ -69,13 +69,13 @@
         <!-- TODO: Move this to a reusable template snippet -->
           {% if request.user.is_authenticated %}
           <h3>{% trans "Rate this" %} {{ resource.type }}</h3>
-          {% user_rating request.user resource "map" as user_map_rating %}
-          <div id="user_rating" class="category-map" data-score="{{ user_map_rating }}"></div>
+          {% user_rating request.user resource "geoapp" as user_geoapp_rating %}
+          <div id="user_rating" class="category-map" data-score="{{ user_geoapp_rating }}"></div>
           {% endif %}
           <h3>{% trans 'Average Rating' %}</h3>
-          {% overall_rating resource "map" as map_rating %}
+          {% overall_rating resource "geoapp" as geoapp_rating %}
           {% num_ratings resource as num_votes %}
-          <div class="overall_rating" style="float:left" data-score="{{ map_rating }}"></div> ({{num_votes}})
+          <div class="overall_rating" style="float:left" data-score="{{ geoapp_rating }}"></div> ({{num_votes}})
         </article>
         {% endif %}
 
@@ -205,9 +205,9 @@
         {% include 'facebook_sdk.html' %}
     {% endif %}
     {% if request.user.is_authenticated %}
-          {% user_rating_js request.user resource "map" %}
+          {% user_rating_js request.user resource "geoapp" %}
     {% else %}
-          {% overall_rating resource "map" as the_map_rating %}
+          {% overall_rating resource "geoapp" as the_map_rating %}
     {% endif %}
     {% include 'rating.html' %}
     <script type="text/javascript">
