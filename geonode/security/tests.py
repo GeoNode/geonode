@@ -1190,8 +1190,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             for _kk, _vv in current_perms[_k].items():
                 if _vv and isinstance(_vv, list):
                     self.assertListEqual(
-                        _vv,
-                        list(set(_vv))
+                        _vv.sort(),
+                        list(set(_vv)).sort()
                     )
 
         # Test that the User permissions specified in the perm_spec were
