@@ -1190,7 +1190,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             for _kk, _vv in current_perms[_k].items():
                 if _vv and isinstance(_vv, list):
                     self.assertListEqual(
-                        _vv.sort(),
+                        list(_vv).sort(),
                         list(set(_vv)).sort()
                     )
 
