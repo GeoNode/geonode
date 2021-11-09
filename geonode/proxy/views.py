@@ -190,13 +190,17 @@ def proxy(request, url=None, response_callback=None,
     content = response.content or response.reason
     status = response.status_code
     content_type = response.headers.get('Content-Type')
+    content_disposition = response.headers.get('Content-Disposition')
 
     if status >= 400:
-        return HttpResponse(
+        _response = HttpResponse(
             content=content,
             reason=content,
             status=status,
             content_type=content_type)
+        if content_disposition:
+            _response.headers['Content-Disposition'] = content_disposition
+        return _response
 
     # decompress GZipped responses if not enabled
     # if content and response and response.getheader('Content-Encoding') == 'gzip':
@@ -240,6 +244,8 @@ def proxy(request, url=None, response_callback=None,
                                      content_type=content_type
                                      )
             _response['Location'] = response.getheader('Location')
+            if content_disposition:
+                _response.headers['Content-Disposition'] = content_disposition
             return _response
         else:
             def _get_message(text):
@@ -252,11 +258,14 @@ def proxy(request, url=None, response_callback=None,
                     found = _s
                 return found
 
-            return HttpResponse(
+            _response = HttpResponse(
                 content=content,
                 reason=_get_message(content) if status not in (200, 201) else None,
                 status=status,
                 content_type=content_type)
+            if content_disposition:
+                _response.headers['Content-Disposition'] = content_disposition
+            return _response
 
 
 def download(request, resourceid, sender=Dataset):
