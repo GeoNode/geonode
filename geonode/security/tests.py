@@ -1428,9 +1428,13 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         for _k, _v in current_perms.items():
             for _kk, _vv in current_perms[_k].items():
                 if _vv and isinstance(_vv, list):
+                    _vv_1 = _vv.copy()
+                    _vv_2 = list(set(_vv.copy()))
+                    _vv_1.sort()
+                    _vv_2.sort()
                     self.assertListEqual(
-                        _vv,
-                        list(set(_vv))
+                        _vv_1,
+                        _vv_2
                     )
 
         # Test that the User permissions specified in the perm_spec were
