@@ -2122,3 +2122,67 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         for authorized_subject, expected_perms in expected.items():
             perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
             self.assertSetEqual(set(expected_perms), set(perms_got))
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    def test_permissions_on_user_role_demote_to_member_only_RESOURCE_PUBLISHING_active(self):
+        sut = GroupMember.objects.filter(user=self.group_manager)\
+            .exclude(group__title='Registered Members')\
+            .first()
+        self.assertEqual(sut.role, "manager")
+        sut.demote()
+        sut.refresh_from_db()
+        self.assertEqual(sut.role, "member")
+        expected = {
+            self.author: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "view_resourcebase",
+            ],
+            self.group_manager: ["download_resourcebase", "view_resourcebase"],
+            self.group_member: ["download_resourcebase", "view_resourcebase"],
+        }
+        for authorized_subject, expected_perms in expected.items():
+            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+            self.assertSetEqual(set(expected_perms), set(perms_got))
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    def test_permissions_on_user_role_promote_to_manager_only_RESOURCE_PUBLISHING_active(self):
+        sut = GroupMember.objects.filter(user=self.group_member)\
+            .exclude(group__title='Registered Members')\
+            .first()
+        self.assertEqual(sut.role, "member")
+        sut.promote()
+        sut.refresh_from_db()
+        self.assertEqual(sut.role, "manager")
+        expected = {
+            self.author: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "view_resourcebase",
+            ],
+            self.group_manager: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "publish_resourcebase",
+                "change_resourcebase_permissions",
+                "view_resourcebase",
+            ],
+            self.group_member: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "publish_resourcebase",
+                "change_resourcebase_permissions",
+                "view_resourcebase"
+            ],
+        }
+        for authorized_subject, expected_perms in expected.items():
+            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+            self.assertSetEqual(set(expected_perms), set(perms_got))
