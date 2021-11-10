@@ -18,7 +18,7 @@
 #########################################################################
 import logging
 
-from dynamic_rest.fields.fields import DynamicComputedField, DynamicRelationField
+from dynamic_rest.fields.fields import DynamicComputedField, DynamicMethodField, DynamicRelationField
 from dynamic_rest.serializers import DynamicModelSerializer
 
 from geonode.base.api.serializers import (
@@ -37,6 +37,10 @@ class MapLayerDatasetSerializer(
     ResourceBaseToRepresentationSerializerMixin,
     BaseDynamicModelSerializer,
 ):
+    default_style = DynamicRelationField(StyleSerializer, embed=True, many=False, read_only=True)
+    styles = DynamicRelationField(StyleSerializer, embed=True, many=True, read_only=True)
+    featureinfo_custom_template = FeatureInfoTemplateField()
+
     class Meta:
         model = Dataset
         name = "dataset"
@@ -53,13 +57,15 @@ class MapLayerDatasetSerializer(
             "ptype",
         )
 
-    default_style = DynamicRelationField(StyleSerializer, embed=True, many=False, read_only=True)
-    styles = DynamicRelationField(StyleSerializer, embed=True, many=True, read_only=True)
-    featureinfo_custom_template = FeatureInfoTemplateField()
-
 
 class MapLayerSerializer(DynamicModelSerializer):
-    styles = DynamicComputedField(source="styles_set")
+    styles = DynamicComputedField(source="styles_set", requires=("styles",))
+    dataset = DynamicMethodField(
+        requires=(
+            "store",
+            "alternate",
+        )
+    )
 
     class Meta:
         model = MapLayer
@@ -69,22 +75,16 @@ class MapLayerSerializer(DynamicModelSerializer):
             "extra_params",
             "current_style",
             "styles",
+            "dataset",
         )
 
-    def to_representation(self, instance):
-        data = super(MapLayerSerializer, self).to_representation(instance)
-        data["dataset"] = None
-        if instance.dataset:
-            data["dataset"] = MapLayerDatasetSerializer(instance=instance.dataset).data
-        return data
+    def get_dataset(self, instance):
+        dataset = instance.dataset
+        return MapLayerDatasetSerializer(instance=dataset).data
 
 
 class MapSerializer(ResourceBaseSerializer):
     maplayers = DynamicRelationField(MapLayerSerializer, source="dataset_set", embed=True, many=True)
-
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super().__init__(*args, **kwargs)
 
     class Meta:
         model = Map
