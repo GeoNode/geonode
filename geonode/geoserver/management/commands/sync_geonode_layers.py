@@ -27,7 +27,7 @@ from geonode.base.utils import remove_duplicate_links
 from geonode.geoserver.helpers import (
     create_gs_thumbnail,
     set_attributes_from_geoserver,
-    update_bbox_from_geoserver
+    sync_instance_with_geoserver
 )
 
 
@@ -68,7 +68,8 @@ def sync_geonode_layers(ignore_errors,
                 print("Removing duplicate links...")
                 remove_duplicate_links(layer)
             if updatebbox:
-                update_bbox_from_geoserver(layer.id)
+                print("Regenerating BBOX...")
+                sync_instance_with_geoserver(layer.id)
         except (Exception, RuntimeError):
             layer_errors.append(layer.alternate)
             exception_type, error, traceback = sys.exc_info()
