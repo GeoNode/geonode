@@ -314,7 +314,7 @@ def dump_models(path=None):
         f.write(result)
 
 
-def create_single_layer(name, keywords=None, owner=None):
+def create_single_layer(name, keywords=None, owner=None, group=None):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -341,7 +341,8 @@ def create_single_layer(name, keywords=None, owner=None):
         date=start,
         storeType="dataStore",
         resource_type="layer",
-        typename=f"geonode:{title}"
+        typename=f"geonode:{title}",
+        group=group
     )
 
     layer.save()

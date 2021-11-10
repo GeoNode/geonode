@@ -265,25 +265,21 @@ class GroupMember(models.Model):
 
     def promote(self, *args, **kwargs):
         self.role = "manager"
-        if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
-            from geonode.security.permissions import ADMIN_PERMISSIONS
-            queryset = get_objects_for_user(
-                self.user, 'base.view_resourcebase').filter(group=self.group.group)
-            for _r in queryset.exclude(owner=self.user):
-                for perm in ADMIN_PERMISSIONS:
-                    assign_perm(perm, self.user, _r.get_self_resource())
         super().save(*args, **kwargs)
+        self._handle_perms()
 
     def demote(self, *args, **kwargs):
         self.role = "member"
-        if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
-            from geonode.security.permissions import ADMIN_PERMISSIONS
-            queryset = get_objects_for_user(
-                self.user, 'base.view_resourcebase').filter(group=self.group.group)
-            for _r in queryset.exclude(owner=self.user):
-                for perm in ADMIN_PERMISSIONS:
-                    remove_perm(perm, self.user, _r.get_self_resource())
         super().save(*args, **kwargs)
+        self._handle_perms()
+
+    def _handle_perms(self):
+        queryset = get_objects_for_user(self.user, 'base.view_resourcebase')\
+            .filter(group=self.group.group)\
+            .exclude(owner=self.user)
+        for _r in queryset:
+            _r.set_permissions({"users": {}, "groups": {}})
+
 
 
 def group_pre_delete(instance, sender, **kwargs):
