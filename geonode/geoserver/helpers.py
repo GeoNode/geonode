@@ -39,13 +39,16 @@ from urllib.parse import urlparse, urlencode, urlsplit, urljoin
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 from dialogos.models import Comment
+
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
+from django.db import transaction
 from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+
 from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.resource import FeatureType, Coverage
 from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
@@ -2054,3 +2057,95 @@ def set_time_dimension(cat, name, workspace, time_presentation, time_presentatio
 def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
     implementation = import_string(settings.THUMBNAIL_GENERATOR)
     return implementation(instance, overwrite, check_bbox)
+
+
+def update_bbox_from_geoserver(
+        instance_id,
+        *args, **kwargs):
+    """
+    Synchronizes the bbox for Django Instance with GeoServer layer's bbox.
+    """
+    instance = None
+    try:
+        instance = Layer.objects.get(id=instance_id)
+    except Layer.DoesNotExist:
+        logger.error(f"Layer id {instance_id} does not exist yet!")
+        raise
+
+    # Don't run this signal handler if it is a tile layer or a remote store (Service)
+    #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
+    if hasattr(instance, 'subtype') and getattr(instance, 'subtype') in ['tileStore', 'remote']:
+        return instance
+
+    values = None
+    _tries = 0
+    _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 2)
+
+    values, gs_resource = fetch_gs_resource(instance, values, _tries)
+    while not gs_resource and _tries < _max_tries:
+        values, gs_resource = fetch_gs_resource(instance, values, _tries)
+        _tries += 1
+
+    if gs_resource:
+        logger.debug(f"Found geoserver resource for this dataset: {instance.name}")
+
+        instance.gs_resource = gs_resource
+        """Get information from geoserver.
+        The attributes retrieved include:
+        * Bounding Box
+        * SRID
+        """
+        try:
+            # This is usually done in Dataset.pre_save, however if the hooks
+            # are bypassed by custom create/updates we need to ensure the
+            # bbox is calculated properly.
+            srid = gs_resource.projection
+            bbox = gs_resource.native_bbox
+            instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
+        except Exception as e:
+            logger.exception(e)
+            srid = instance.srid
+            bbox = instance.bbox
+
+        if instance.srid:
+            instance.srid_url = f"http://www.spatialreference.org/ref/{instance.srid.replace(':', '/').lower()}/"
+        elif instance.bbox_polygon is not None:
+            # Guessing 'EPSG:4326' by default
+            instance.srid = 'EPSG:4326'
+        else:
+            raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
+
+        # Save the modified information in the instance without triggering signals.
+        try:
+            with transaction.atomic():
+                # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
+                instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
+                Layer.objects.filter(id=instance.id).update(
+                    bbox_polygon=instance.bbox_polygon, srid=srid)
+                # Refresh from DB
+                instance.refresh_from_db()
+        except Exception as e:
+            logger.exception(e)
+
+        try:
+            with transaction.atomic():
+                match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+                instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
+                Layer.objects.filter(id=instance.id).update(
+                    ll_bbox_polygon=instance.bbox_polygon, srid=srid)
+
+                # Refresh from DB
+                instance.refresh_from_db()
+        except Exception as e:
+            logger.warning(e)
+            try:
+                with transaction.atomic():
+                    instance.bbox_polygon.srid = 4326
+                    Layer.objects.filter(id=instance.id).update(
+                        ll_bbox_polygon=instance.bbox_polygon, srid=srid)
+                    # Refresh from DB
+                    instance.refresh_from_db()
+            except Exception as e:
+                logger.warning(e)
+
+    return instance
