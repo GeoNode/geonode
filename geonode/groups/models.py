@@ -276,8 +276,8 @@ class GroupMember(models.Model):
             .filter(group=self.group.group)\
             .exclude(owner=self.user)
         for _r in queryset:
-            # the function expect this json structure as input value
-            _r.set_permissions({"users": {}, "groups": {}})
+            # let the user see and download the resource if is demoted
+            _r.set_permissions({"users": {self.user: ["download_resourcebase", "view_resourcebase"]}, "groups": {}})
 
 
 def group_pre_delete(instance, sender, **kwargs):

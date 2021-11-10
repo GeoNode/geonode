@@ -2140,7 +2140,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "download_resourcebase",
                 "view_resourcebase",
                 "publish_resourcebase",
-                "change_resourcebase_permissions",   
+                "change_resourcebase_permissions"
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
             self.group_member: ["download_resourcebase", "view_resourcebase"],
@@ -2166,15 +2166,13 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "download_resourcebase",
                 "view_resourcebase",
                 "publish_resourcebase",
-                "change_resourcebase_permissions",                
+                "change_resourcebase_permissions",
             ],
             self.group_manager: [
                 "change_resourcebase",
                 "change_resourcebase_metadata",
                 "delete_resourcebase",
                 "download_resourcebase",
-                "publish_resourcebase",
-                "change_resourcebase_permissions",
                 "view_resourcebase",
             ],
             self.group_member: [
@@ -2182,11 +2180,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "change_resourcebase_metadata",
                 "delete_resourcebase",
                 "download_resourcebase",
-                "publish_resourcebase",
-                "change_resourcebase_permissions",
                 "view_resourcebase"
             ],
         }
         for authorized_subject, expected_perms in expected.items():
             perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-            self.assertSetEqual(set(expected_perms), set(perms_got))
+            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
