@@ -2139,6 +2139,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
+                "publish_resourcebase",
+                "change_resourcebase_permissions",   
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
             self.group_member: ["download_resourcebase", "view_resourcebase"],
@@ -2163,6 +2165,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
+                "publish_resourcebase",
+                "change_resourcebase_permissions",                
             ],
             self.group_manager: [
                 "change_resourcebase",
