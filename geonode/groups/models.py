@@ -36,9 +36,7 @@ from taggit.managers import TaggableManager
 
 from guardian.shortcuts import (
     get_objects_for_user,
-    get_objects_for_group,
-    assign_perm,
-    remove_perm
+    get_objects_for_group
 )
 
 logger = logging.getLogger(__name__)
@@ -278,8 +276,8 @@ class GroupMember(models.Model):
             .filter(group=self.group.group)\
             .exclude(owner=self.user)
         for _r in queryset:
+            # the function expect this json structure as input value
             _r.set_permissions({"users": {}, "groups": {}})
-
 
 
 def group_pre_delete(instance, sender, **kwargs):
