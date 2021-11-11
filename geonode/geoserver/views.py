@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import os
 import re
 import json
@@ -55,7 +54,9 @@ from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
-from geonode.proxy.views import proxy
+from geonode.proxy.views import (
+    proxy,
+    fetch_response_headers)
 from .tasks import geoserver_update_layers
 from geonode.utils import (
     json_response,
@@ -524,9 +525,10 @@ def geoserver_proxy(request,
 
 
 def _response_callback(**kwargs):
-    content = kwargs['content']
-    status = kwargs['status']
-    content_type = kwargs['content_type']
+    status = kwargs.get('status')
+    content = kwargs.get('content')
+    content_type = kwargs.get('content_type')
+    response_headers = kwargs.get('response_headers', None)
     content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
 
     if content:
@@ -543,7 +545,10 @@ def _response_callback(**kwargs):
         # Replace Proxy URL
         try:
             if isinstance(content, bytes):
-                _content = content.decode('UTF-8')
+                try:
+                    _content = content.decode('UTF-8')
+                except UnicodeDecodeError:
+                    _content = content
             else:
                 _content = content
             if re.findall(f"(?=(\\b{'|'.join(content_type_list)}\\b))", content_type):
@@ -560,10 +565,11 @@ def _response_callback(**kwargs):
         for layer in kwargs['affected_layers']:
             geoserver_post_save_local(layer)
 
-    return HttpResponse(
+    _response = HttpResponse(
         content=content,
         status=status,
         content_type=content_type)
+    return fetch_response_headers(_response, response_headers)
 
 
 def resolve_user(request):
