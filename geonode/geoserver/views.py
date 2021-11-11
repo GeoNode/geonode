@@ -521,10 +521,10 @@ def geoserver_proxy(request,
 
 
 def _response_callback(**kwargs):
-    content = kwargs['content']
-    status = kwargs['status']
-    response_headers = kwargs['response_headers']
-    content_type = kwargs['content_type']
+    status = kwargs.get('status')
+    content = kwargs.get('content')
+    content_type = kwargs.get('content_type')
+    response_headers = kwargs.get('response_headers', None)
     content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
 
     if content:
