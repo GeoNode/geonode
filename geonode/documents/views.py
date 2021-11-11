@@ -480,7 +480,6 @@ def document_metadata_advanced(request, docid):
         template='documents/document_metadata_advanced.html')
 
 
-@login_required
 def document_metadata_detail(
         request,
         docid,
