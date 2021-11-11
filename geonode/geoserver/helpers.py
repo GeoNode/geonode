@@ -2334,7 +2334,7 @@ def _get_time_regex(spatial_files, base_file_name):
         basename = os.path.basename(aux)
         aux_head, aux_tail = os.path.splitext(basename)
         if 'timeregex' == aux_head and '.properties' == aux_tail:
-            with open(aux) as timeregex_prop_file:
+            with open(aux, 'rb') as timeregex_prop_file:
                 rr = timeregex_prop_file.read()
                 if rr and rr.split(","):
                     rrff = rr.split(",")
