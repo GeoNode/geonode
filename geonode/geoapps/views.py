@@ -388,6 +388,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
                 values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
                 tkeywords_form.fields[tid].initial = values
 
+    initial_thumb_url = geoapp_obj.thumbnail_url
     if request.method == "POST" and geoapp_form.is_valid(
     ) and category_form.is_valid() and tkeywords_form.is_valid():
         new_poc = geoapp_form.cleaned_data['poc']
@@ -441,6 +442,10 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
         if new_poc is not None and new_author is not None:
             geoapp_obj.poc = new_poc
             geoapp_obj.metadata_author = new_author
+
+        if initial_thumb_url and not geoapp_obj.thumbnail_url:
+            geoapp_obj.thumbnail_url = initial_thumb_url
+
         geoapp_obj.keywords.clear()
         geoapp_obj.keywords.add(*new_keywords)
         geoapp_obj.regions.clear()
