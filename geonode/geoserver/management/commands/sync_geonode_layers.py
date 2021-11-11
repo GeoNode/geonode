@@ -136,6 +136,12 @@ class Command(BaseCommand):
             dest="updateattributes",
             default=False,
             help="Update the layer attributes.")
+        parser.add_argument(
+            '--updatebbox',
+            action='store_true',
+            dest="updatebbox",
+            default=False,
+            help="Update the layer BBOX.")
 
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
@@ -144,7 +150,6 @@ class Command(BaseCommand):
         updatethumbnails = options.get('updatethumbnails')
         updateattributes = options.get('updateattributes')
         updatebbox = options.get('updatebbox')
-
         filter = options.get('filter')
         if not options.get('username'):
             username = None
