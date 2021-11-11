@@ -221,14 +221,15 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
               'geonode.geoserver.helpers.ogc_server_settings',
               new_callable=PropertyMock
             ) as ogc_sett:
+                ogc_sett.MAX_RETRIES = 2
                 ogc_sett.BACKEND_WRITE_ENABLED = False
                 # sync the attributes with GeoServer
-                # With update gs ressource disabled
-                sync_instance_with_geoserver(layer.id)
-                self.assertEqual(layer.bbox, original_gs_bbox)
-            # With update gs ressource enabled
+                # With update gs resource disabled
+                layer = sync_instance_with_geoserver(layer.id)
+                self.assertNotEqual(layer.bbox, original_gs_bbox)
+            # With update gs resource enabled
             self.change_bbox(layer)
-            sync_instance_with_geoserver(layer.id)
+            layer = sync_instance_with_geoserver(layer.id)
             self.assertEqual(layer.bbox, original_gs_bbox)
         finally:
             # Clean up and completely delete the layers
