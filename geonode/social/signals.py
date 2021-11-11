@@ -25,11 +25,9 @@ import logging
 from collections import defaultdict
 from dialogos.models import Comment
 
-from django.apps import apps
 from django.conf import settings
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
-from geonode.geoapps.models import GeoApp
 
 # from actstream.exceptions import ModelNotActionable
 
@@ -40,7 +38,7 @@ from geonode.documents.models import Document
 from geonode.notifications_helper import (send_notification, queue_notification,
                                           has_notifications, get_notification_recipients,
                                           get_comment_notification_recipients)
-from geonode.utils import get_geoapps_models
+from geonode.utils import get_geonode_app_types
 
 logger = logging.getLogger(__name__)
 
@@ -179,11 +177,8 @@ if activity:
 
     signals.post_save.connect(activity_post_modify_object, sender=Document)
     signals.post_delete.connect(activity_post_modify_object, sender=Document)
-    models = get_geoapps_models()
-    for m in models:
-        sender = f'{m.label}.{m.default_model}'
-        signals.post_save.connect(activity_post_modify_object, sender=sender)
-        signals.post_delete.connect(activity_post_modify_object, sender=sender)
+    signals.post_save.connect(activity_post_modify_object, sender=GeoApp)
+    signals.post_delete.connect(activity_post_modify_object, sender=GeoApp)
 
 
 def rating_post_save(instance, sender, created, **kwargs):

@@ -21,12 +21,12 @@
       <li><a href="#layers" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Layers" %}</a></li>
       <li><a href="#maps" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
       <li><a href="#documents" data-toggle="tab"><i class="fa fa-newspaper-o"></i> {% trans "Documents" %}</a></li>
-      <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
       {% for app in GEONODE_APPS_TYPES %}
-        <li><a data-value="{{app}}" data-filter="app_type__in" ng-click="single_choice_listener($event)">
+        <li><a href="#{{app}}" data-toggle="tab"><i class="fa fa-gears"></i> 
           {% trans app|title %}
         </a></li>
       {% endfor %}
+      <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
     </ul>
     <div class="tab-content">
       <article id="all" class="tab-pane active">

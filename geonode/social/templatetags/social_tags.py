@@ -22,7 +22,7 @@ import logging
 from django import template
 from django.utils.translation import ugettext_lazy as _
 
-from geonode.utils import get_subclasses_by_model
+from geonode.utils import get_geonode_app_types
 
 register = template.Library()
 logger = logging.getLogger(__name__)
@@ -73,7 +73,7 @@ def activity_item(action, **kwargs):
 
     # Set the item's class based on the object.
     if object:
-        geoapps = [app.lower() for app in get_subclasses_by_model('GeoApp')]
+        geoapps = [app.lower() for app in get_geonode_app_types()]
         if object_type in geoapps:
             activity_class = object_type
 
