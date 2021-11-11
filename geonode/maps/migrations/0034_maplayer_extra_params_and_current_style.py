@@ -7,7 +7,7 @@ from django.db import migrations, models
 def set_current_style_value(apps, schema_editor):
     MapLayer = apps.get_model("maps", "MapLayer")
 
-    for maplayer in MapLayer.objects.all():
+    for maplayer in MapLayer.objects.iterator():
         styles = (
             ast.literal_eval(maplayer.styles)
             if isinstance(maplayer.styles, str) else

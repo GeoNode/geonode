@@ -113,6 +113,57 @@ class MapsApiTests(APITestCase):
                 self.assertEqual(response.data["map"]["maplayers"][0]["styles"], ["some-style", "some-other-style"])
                 self.assertIsNotNone(response.data["map"]["maplayers"][0]["dataset"])
 
+    def test_patch_map(self):
+        """
+        Patch to maps/<pk>/
+        """
+        # Get Layers List (backgrounds)
+        resource = Map.objects.first()
+        url = reverse("maps-detail", kwargs={"pk": resource.pk})
+
+        data = {
+            "title": f"{resource.title}-edited",
+            "abstract": resource.abstract,
+            "data": DUMMY_MAPDATA,
+            "id": resource.id,
+        }
+        self.client.login(username="admin", password="admin")
+        response = self.client.patch(f"{url}?include[]=data", data=data, format="json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data) > 0)
+        self.assertTrue("data" in response.data["map"])
+        self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
+        response_maplayer = response.data["map"]["maplayers"][0]
+        self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
+        self.assertEqual(response_maplayer["styles"], ["some-style-first-layer", "some-other-style-first-layer"])
+        self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
+        self.assertIsNotNone(response_maplayer["dataset"])
+
+    def test_create_map(self):
+        """
+        Post to maps/
+        """
+        # Get Layers List (backgrounds)
+        url = reverse("maps-list")
+
+        data = {
+            "title": "Some created map",
+            "data": DUMMY_MAPDATA,
+        }
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(f"{url}?include[]=data", data=data, format="json")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(len(response.data) > 0)
+        self.assertTrue("data" in response.data["map"])
+        self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
+        response_maplayer = response.data["map"]["maplayers"][0]
+        self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
+        self.assertEqual(response_maplayer["styles"], ["some-style-first-layer", "some-other-style-first-layer"])
+        self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
+        self.assertIsNotNone(response_maplayer["dataset"])
+
 
 DUMMY_MAPDATA = {
     "map": {
@@ -132,6 +183,7 @@ DUMMY_MAPDATA = {
                 "provider": "Stamen.Watercolor",
                 "thumbURL": "https://stamen-tiles-c.a.ssl.fastly.net/watercolor/0/0/0.jpg",
                 "dimensions": [],
+                "styles": ["some-style-first-layer", "some-other-style-first-layer"],
                 "singleTile": False,
                 "visibility": False,
                 "extraParams": {"msId": "Stamen.Watercolor__0"},
