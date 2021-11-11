@@ -56,16 +56,29 @@ class RecentActivity(ListView):
                     ResourceBase.objects.filter(resource_type=action).values_list('id', flat=True)
                 )
                 _actions = Action.objects.filter(
-                    public=True, action_object_content_type__model=action)[:100]
-            if isinstance(_actions, dict):
-                # For Geoapps, return a dict mapping of each app with its actions
-                _filtered_actions = {}
-                for app_name, actions, in _actions.items():
-                    filtered = self.get_filtered_actions(request.user, actions)
-                    _filtered_actions[app_name] = Action.objects.filter(id__in=filtered)[:15]
-                return _filtered_actions
-            else:
-                return self.get_filtered_actions(request.user, _actions)
+                    public=True, action_object_object_id__in=resource_ids)[:100]
+            _filtered_actions = []
+            for _action in _actions:
+                if _action.target_object_id:
+                    action_object_filter = {
+                        'id': _action.target_object_id
+                    }
+                elif _action.action_object_object_id:
+                    action_object_filter = {
+                        'id': _action.action_object_object_id
+                    }
+                try:
+                    obj = get_object_or_404(ResourceBase, **action_object_filter)
+                    resource = obj.get_self_resource()
+                    user = request.user
+                    if user.has_perm('base.view_resourcebase', resource) or \
+                            user.has_perm('view_resourcebase', resource):
+                        _filtered_actions.append(_action.id)
+                except ResourceBase.DoesNotExist:
+                    _filtered_actions.append(_action.id)
+                except (PermissionDenied, Exception) as e:
+                    logger.debug(e)
+            return _filtered_actions
 
         context['action_list'] = Action.objects.filter(
             id__in=_filter_actions('all', self.request))[:15]

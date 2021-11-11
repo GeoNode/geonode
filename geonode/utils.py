@@ -2272,6 +2272,34 @@ def is_monochromatic_image(image_url, image_data=None):
         return False
 
 
+def get_subclasses_by_model(model: str):
+    from django.apps import apps
+    _app_subclasses = []
+    for _model in apps.get_models():
+        if _model.__name__ == model:
+            models = [(y.name, y.default_model) for x, y in apps.app_configs.items() if hasattr(y, 'default_model')]
+            for m in models:
+                if m[0] in settings.INSTALLED_APPS:
+                    _app_subclasses.append(m[1])
+    return _app_subclasses
+
+
+def get_geoapps_models():
+    # Get models which are of subclass 'GeoApp'
+    models = []
+    for x, y in django_apps.app_configs.items():
+        if hasattr(y, 'type') and y.type == 'GEONODE_APP' and hasattr(y, 'default_model'):
+            if y.name in settings.INSTALLED_APPS:
+                models.append(y)
+    return models
+
+
+def get_geonode_app_types():
+    from geonode.geoapps.models import GeoApp
+
+    return list(set(GeoApp.objects.values_list('resource_type', flat=True)))
+
+
 def find_by_attr(lst, val, attr="id"):
     """ Returns an object if the id matches in any list of objects """
     for item in lst:

@@ -40,6 +40,7 @@ from geonode.documents.models import Document
 from geonode.notifications_helper import (send_notification, queue_notification,
                                           has_notifications, get_notification_recipients,
                                           get_comment_notification_recipients)
+from geonode.utils import get_geoapps_models
 
 logger = logging.getLogger(__name__)
 
@@ -111,10 +112,11 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     except Exception as e:
         logger.exception(e)
 
-    try:
-        action_settings[obj_type].update(object_name=getattr(instance, 'title', None),)
-    except Exception as e:
-        logger.exception(e)
+    if obj_type not in ['document', 'layer', 'map', 'comment']:
+        try:
+            action_settings[obj_type].update(object_name=getattr(instance, 'title', None),)
+        except Exception as e:
+            logger.exception(e)
 
     try:
         action = action_settings[obj_type]
@@ -177,11 +179,11 @@ if activity:
 
     signals.post_save.connect(activity_post_modify_object, sender=Document)
     signals.post_delete.connect(activity_post_modify_object, sender=Document)
-    models = [y for x, y in apps.app_configs.items() if hasattr(y, 'default_model')]
+    models = get_geoapps_models()
     for m in models:
-        if m.name in settings.INSTALLED_APPS:
-            signals.post_save.connect(activity_post_modify_object, sender=m.label + '.' + m.default_model)
-            signals.post_delete.connect(activity_post_modify_object, sender=m.label + '.' + m.default_model)
+        sender = f'{m.label}.{m.default_model}'
+        signals.post_save.connect(activity_post_modify_object, sender=sender)
+        signals.post_delete.connect(activity_post_modify_object, sender=sender)
 
 
 def rating_post_save(instance, sender, created, **kwargs):
