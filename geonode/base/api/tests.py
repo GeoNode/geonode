@@ -528,7 +528,9 @@ class BaseApiTests(APITestCase):
                         'first_name': bobby.first_name,
                         'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'owner'
+                        'permissions': 'owner',
+                        'is_staff': False,
+                        'is_superuser': False,
                     },
                     {
                         'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
@@ -536,7 +538,9 @@ class BaseApiTests(APITestCase):
                         'id': 1,
                         'last_name': '',
                         'permissions': 'manage',
-                        'username': 'admin'
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
                     }
                 ],
                 'organizations': [],
@@ -567,7 +571,9 @@ class BaseApiTests(APITestCase):
                     'first_name': norman.first_name,
                     'last_name': norman.last_name,
                     'avatar': '',
-                    'permissions': 'edit'
+                    'permissions': 'edit',
+                    'is_staff': False,
+                    'is_superuser': False,
                 }
             ]
         }
@@ -600,7 +606,9 @@ class BaseApiTests(APITestCase):
                         'first_name': bobby.first_name,
                         'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'owner'
+                        'permissions': 'owner',
+                        'is_staff': False,
+                        'is_superuser': False,
                     },
                     {
                         'id': norman.id,
@@ -608,7 +616,9 @@ class BaseApiTests(APITestCase):
                         'first_name': norman.first_name,
                         'last_name': norman.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'edit'
+                        'permissions': 'edit',
+                        'is_staff': False,
+                        'is_superuser': False,
                     },
                     {
                         'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
@@ -616,7 +626,9 @@ class BaseApiTests(APITestCase):
                         'id': 1,
                         'last_name': '',
                         'permissions': 'manage',
-                        'username': 'admin'
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
                     }
                 ],
                 'organizations': [],
@@ -647,7 +659,9 @@ class BaseApiTests(APITestCase):
                     'first_name': bobby.first_name,
                     'last_name': bobby.last_name,
                     'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                    'permissions': 'owner'
+                    'permissions': 'owner',
+                    'is_staff': False,
+                    'is_superuser': False,
                 },
                 {
                     'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
@@ -655,7 +669,9 @@ class BaseApiTests(APITestCase):
                     'id': 1,
                     'last_name': '',
                     'permissions': 'manage',
-                    'username': 'admin'
+                    'username': 'admin',
+                    'is_staff': True,
+                    'is_superuser': True,
                 }
             ],
             'organizations': [],
@@ -703,7 +719,9 @@ class BaseApiTests(APITestCase):
                         'first_name': bobby.first_name,
                         'last_name': bobby.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'owner'
+                        'permissions': 'owner',
+                        'is_staff': False,
+                        'is_superuser': False,
                     },
                     {
                         'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
@@ -711,7 +729,9 @@ class BaseApiTests(APITestCase):
                         'id': 1,
                         'last_name': '',
                         'permissions': 'manage',
-                        'username': 'admin'
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
                     }
                 ],
                 'organizations': [],
@@ -1394,7 +1414,9 @@ class BaseApiTests(APITestCase):
                         'first_name': 'bobby',
                         'last_name': '',
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'manage'
+                        'permissions': 'manage',
+                        'is_staff': False,
+                        'is_superuser': False,
                     },
                     {
                         'id': 1,
@@ -1402,7 +1424,9 @@ class BaseApiTests(APITestCase):
                         'first_name': 'admin',
                         'last_name': '',
                         'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
-                        'permissions': 'owner'
+                        'permissions': 'owner',
+                        'is_staff': True,
+                        'is_superuser': True,
                     }
                 ],
                 'organizations': [],
@@ -1438,7 +1462,9 @@ class BaseApiTests(APITestCase):
                         'first_name': 'admin',
                         'last_name': '',
                         'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
-                        'permissions': 'owner'
+                        'permissions': 'owner',
+                        'is_staff': True,
+                        'is_superuser': True,
                     },
                     {
                         'id': bobby.id,
@@ -1446,7 +1472,9 @@ class BaseApiTests(APITestCase):
                         'first_name': 'bobby',
                         'last_name': '',
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'manage'
+                        'permissions': 'manage',
+                        'is_staff': False,
+                        'is_superuser': False,
                     }
                 ],
                 'organizations': [],

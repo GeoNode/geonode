@@ -1640,7 +1640,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'first_name': standard_user.first_name,
                         'last_name': standard_user.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'owner'
+                        'permissions': 'owner',
+                        'is_staff': False,
+                        'is_superuser': False,
                     },
                     {
                         'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
@@ -1648,7 +1650,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'id': 1,
                         'last_name': '',
                         'permissions': 'manage',
-                        'username': 'admin'
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
                     }
                 ],
                 'organizations': [],
@@ -1713,7 +1717,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'first_name': standard_user.first_name,
                         'last_name': standard_user.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'owner'
+                        'permissions': 'owner',
+                        'is_staff': False,
+                        'is_superuser': False,
                     },
                     {
                         'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
@@ -1721,7 +1727,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'id': 1,
                         'last_name': '',
                         'permissions': 'manage',
-                        'username': 'admin'
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
                     }
                 ],
                 'organizations': [],
@@ -1793,7 +1801,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'first_name': standard_user.first_name,
                             'last_name': standard_user.last_name,
                             'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                            'permissions': 'view'
+                            'permissions': 'view',
                         }
                     ]
             },
@@ -1878,7 +1886,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'first_name': standard_user.first_name,
                         'last_name': standard_user.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'download'
+                        'permissions': 'download',
+                        'is_staff': False,
+                        'is_superuser': False,
                     },
                     {
                         'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
@@ -1886,7 +1896,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'id': 1,
                         'last_name': '',
                         'permissions': 'owner',
-                        'username': 'admin'
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
                     }
                 ],
                 'organizations': [],
@@ -1945,7 +1957,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'first_name': standard_user.first_name,
                         'last_name': standard_user.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'view'
+                        'permissions': 'view',
+                        'is_staff': False,
+                        'is_superuser': False,
                     },
                     {
                         'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
@@ -1953,7 +1967,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'id': 1,
                         'last_name': '',
                         'permissions': 'owner',
-                        'username': 'admin'
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
                     }
                 ],
                 'organizations': [],
