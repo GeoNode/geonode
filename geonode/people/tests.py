@@ -254,36 +254,8 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertIn('Profile of bobby', content)
         self.assertIn(bobby.voice, content)
 
-    @patch('geonode.utils.get_subclasses_by_model')
-    def test_geoapps_display(self, _mock):
-        bobby = get_user_model().objects.get(username='bobby')
-        bobby.voice = '+245-897-7889'
-        bobby.save()
-        url = reverse('profile_detail', args=['bobby'])
-        _mock.return_value = ['Geoapp1']
-        response = self.client.get(url)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Geoapp1', content)
-        self.assertNotIn('Geoapp2', content)
-
-        _mock.return_value = ['Geoapp2']
-        response = self.client.get(url)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Geoapp2', content)
-        self.assertNotIn('Geoapp1', content)
-
-
-class FacebookExtractorTestCase(GeoNodeBaseTestSupport):
-
-    def setUp(self):
-        super().setUp()
-        self.data = {
+    def _facebook_extractor_init(self):
+        data = {
             "email": "phony_mail",
             "first_name": "phony_first_name",
             "last_name": "phony_last_name",
