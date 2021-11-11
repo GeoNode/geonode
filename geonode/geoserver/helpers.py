@@ -2107,7 +2107,7 @@ def sync_instance_with_geoserver(
 
     # Don't run this signal handler if it is a tile layer or a remote store (Service)
     #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-    if hasattr(instance, 'storetype') and getattr(instance, 'storetype') in ['tileStore', 'remote']:
+    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remote']:
         return instance
 
     gs_resource = None
@@ -2165,7 +2165,7 @@ def sync_instance_with_geoserver(
             gs_resource.attribution_link = site_url + profile.get_absolute_url()
 
         # Iterate over values from geoserver.
-        for key in ['alternate', 'store', 'storetype']:
+        for key in ['alternate', 'store', 'storeType']:
             # attr_name = key if 'typename' not in key else 'alternate'
             # print attr_name
             setattr(instance, key, get_layer_storetype(values[key]))
@@ -2233,7 +2233,7 @@ def sync_instance_with_geoserver(
                 # to_update['name'] = instance.name,
                 to_update['workspace'] = gs_resource.store.workspace.name
                 to_update['store'] = gs_resource.store.name
-                to_update['storetype'] = instance.storetype
+                to_update['storeType'] = instance.storeType
                 to_update['typename'] = instance.alternate
 
                 Layer.objects.filter(id=instance.id).update(**to_update)
