@@ -25,6 +25,7 @@ import uuid
 import json
 import errno
 import logging
+import zipfile
 import datetime
 import tempfile
 import traceback
@@ -52,7 +53,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
-from geoserver.catalog import Catalog, FailedRequestError
+from geoserver.catalog import Catalog, FailedRequestError, ConflictingDataError
 from geonode.catalogue.models import catalogue_post_save
 from geoserver.resource import FeatureType, Coverage
 from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
@@ -65,12 +66,8 @@ from defusedxml import lxml as dlxml
 from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
 from geonode import GeoNodeException
-from geonode.utils import (
-    get_legend_url,
-    http_client,
-    is_monochromatic_image,
-    set_resource_default_links)
-from geonode.layers.models import Layer, Attribute, Style
+from geonode.utils import http_client
+from geonode.layers.models import Layer, UploadSession, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import set_geowebcache_invalidate_cache
@@ -1121,6 +1118,8 @@ def set_styles(layer, gs_catalog):
     logger.debug(" -- Resource Links[Legend link]...")
     try:
         from geonode.base.models import Link
+        from geonode.utils import get_legend_url
+
         layer_legends = Link.objects.filter(resource=layer.resourcebase_ptr, name='Legend')
         for style in set(list(layer.styles.all()) + [layer.default_style, ]):
             if style:
@@ -1653,7 +1652,6 @@ def get_wms():
 
 def wps_execute_layer_attribute_statistics(layer_name, field):
     """Derive aggregate statistics from WPS endpoint"""
-
     # generate statistics using WPS
     url = urljoin(ogc_server_settings.LOCATION, 'ows')
 
@@ -2075,40 +2073,47 @@ def create_gs_thumbnail(instance, overwrite=False, check_bbox=False):
     return implementation(instance, overwrite, check_bbox)
 
 
-def get_layer_storetype(element):
-    return LAYER_SUBTYPES.get(element, element)
-
-
 def sync_instance_with_geoserver(
         instance_id,
         *args, **kwargs):
     """
     Synchronizes the Django Instance with GeoServer layers.
     """
+    from geonode.geoserver.upload import geoserver_upload
+    from geonode.geoserver.signals import geoserver_post_save_complete
+    from geonode.utils import is_monochromatic_image, set_resource_default_links
+
     instance = None
     try:
         instance = Layer.objects.get(id=instance_id)
     except Layer.DoesNotExist:
-        logger.error(f"Layer id {instance_id} does not exist yet!")
+        logger.debug(f"Layer id {instance_id} does not exist yet!")
         raise
+
+    # Don't run this signal if is a Layer from a remote service
+    if getattr(instance, "remote_service", None) is not None or instance.storeType == "remoteStore":
+        # Creating Layer Thumbnail by sending a signal
+        geoserver_post_save_complete.send(
+            sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
+        return
+
+    # Don't run this signal handler if it is a tile layer or a remote store (Service)
+    #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
+    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
+        # Creating Layer Thumbnail by sending a signal
+        geoserver_post_save_complete.send(
+            sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
+        return instance
 
     if isinstance(instance, ResourceBase):
         if hasattr(instance, 'layer'):
             instance = instance.layer
         else:
-            return instance
+            return
 
-    # Save layer attributes
-    logger.debug(f"... Refresh GeoServer attributes list for Layer {instance.title}")
-    try:
-        set_attributes_from_geoserver(instance)
-    except Exception as e:
-        logger.exception(e)
-
-    # Don't run this signal handler if it is a tile layer or a remote store (Service)
-    #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remote']:
-        return instance
+    geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
+    geonode_upload_sessions.update(processed=False)
+    instance.set_dirty_state()
 
     gs_resource = None
     values = None
@@ -2117,13 +2122,12 @@ def sync_instance_with_geoserver(
 
     # If the store in None then it's a new instance from an upload,
     # only in this case run the geoserver_upload method
-    if getattr(instance, 'overwrite', False):
+    if not instance.store or getattr(instance, 'overwrite', False):
         base_file, info = instance.get_base_file()
 
         # There is no need to process it if there is no file.
         if base_file is None:
             return
-        from geonode.geoserver.upload import geoserver_upload
         gs_name, workspace, values, gs_resource = geoserver_upload(
             instance,
             base_file.file.path,
@@ -2168,7 +2172,7 @@ def sync_instance_with_geoserver(
         for key in ['alternate', 'store', 'storeType']:
             # attr_name = key if 'typename' not in key else 'alternate'
             # print attr_name
-            setattr(instance, key, get_layer_storetype(values[key]))
+            setattr(instance, key, values[key])
 
         try:
             if settings.RESOURCE_PUBLISHING:
@@ -2184,7 +2188,8 @@ def sync_instance_with_geoserver(
             if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
                 gs_catalog.save(gs_resource)
         except Exception as e:
-            msg = (f'Error while trying to save resource named {gs_resource} in GeoServer, try to use: "{e}"')
+            msg = (f'Error while trying to save resource named {gs_resource} in GeoServer, '
+                   f'try to use: "{e}"')
             e.args = (msg,)
             logger.exception(e)
 
@@ -2284,6 +2289,13 @@ def sync_instance_with_geoserver(
         except Exception as e:
             logger.exception(e)
 
+        # Save layer attributes
+        logger.debug(f"... Refresh GeoServer attributes list for Layer {instance.title}")
+        try:
+            set_attributes_from_geoserver(instance)
+        except Exception as e:
+            logger.exception(e)
+
         # Save layer styles
         logger.debug(f"... Refresh Legend links for Layer {instance.title}")
         try:
@@ -2298,4 +2310,248 @@ def sync_instance_with_geoserver(
         except Exception:
             pass
 
+        # Creating Layer Thumbnail by sending a signal
+        geoserver_post_save_complete.send(
+            sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
+    try:
+        geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
+        geonode_upload_sessions.update(processed=True)
+    except Exception as e:
+        logger.exception(e)
+    finally:
+        instance.clear_dirty_state()
+
     return instance
+
+
+def _get_time_regex(spatial_files, base_file_name):
+    head, tail = os.path.splitext(base_file_name)
+
+    # 1. Look for 'timeregex.properties' files among auxillary_files
+    regex = None
+    format = None
+    for aux in spatial_files[0].auxillary_files:
+        basename = os.path.basename(aux)
+        aux_head, aux_tail = os.path.splitext(basename)
+        if 'timeregex' == aux_head and '.properties' == aux_tail:
+            with open(aux) as timeregex_prop_file:
+                rr = timeregex_prop_file.read()
+                if rr and rr.split(","):
+                    rrff = rr.split(",")
+                    regex = rrff[0].split("=")[1]
+                    if len(rrff) > 1:
+                        for rf in rrff:
+                            if 'format' in rf:
+                                format = rf.split("=")[1]
+                break
+    if regex:
+        time_regexp = re.compile(regex)
+        if time_regexp.match(head):
+            time_tokens = time_regexp.match(head).groups()
+            if time_tokens:
+                return regex, format
+    return None, None
+
+
+def import_imagemosaic_granules(
+        spatial_files,
+        append_to_mosaic_opts,
+        append_to_mosaic_name,
+        mosaic_time_regex,
+        mosaic_time_value,
+        time_presentation,
+        time_presentation_res,
+        time_presentation_default_value,
+        time_presentation_reference_value):
+
+    # The very first step is to rename the granule by adding the selected regex
+    #  matching value to the filename.
+
+    f = spatial_files[0].base_file
+    dirname = os.path.dirname(f)
+    basename = os.path.basename(f)
+    head, tail = os.path.splitext(basename)
+
+    if not mosaic_time_regex:
+        mosaic_time_regex, mosaic_time_format = _get_time_regex(spatial_files, basename)
+
+    # 0. A Time Regex is mandartory to validate the files
+    if not mosaic_time_regex:
+        raise GeoNodeException(_("Could not find any valid Time Regex for the Mosaic files."))
+
+    for spatial_file in spatial_files:
+        f = spatial_file.base_file
+        basename = os.path.basename(f)
+        head, tail = os.path.splitext(basename)
+        regexp = re.compile(mosaic_time_regex)
+        if regexp.match(head).groups():
+            mosaic_time_value = regexp.match(head).groups()[0]
+            head = head.replace(regexp.match(head).groups()[0], '{mosaic_time_value}')
+        if mosaic_time_value:
+            dst_file = os.path.join(
+                dirname,
+                head.replace('{mosaic_time_value}', mosaic_time_value) + tail)
+            os.rename(f, dst_file)
+            spatial_file.base_file = dst_file
+
+    # We use the GeoServer REST APIs in order to create the ImageMosaic
+    #  and later add the granule through the GeoServer Importer.
+    head = head.replace('{mosaic_time_value}', '')
+    head = re.sub('^[^a-zA-Z]*|[^a-zA-Z]*$', '', head)
+
+    # 1. Create a zip file containing the ImageMosaic .properties files
+    # 1a. Let's check and prepare the DB based DataStore
+    cat = gs_catalog
+    workspace = cat.get_workspace(settings.DEFAULT_WORKSPACE)
+    db = ogc_server_settings.datastore_db
+    db_engine = 'postgis' if \
+        'postgis' in db['ENGINE'] else db['ENGINE']
+
+    if not db_engine == 'postgis':
+        raise GeoNodeException(_("Unsupported DataBase for Mosaics!"))
+
+    # dsname = ogc_server_settings.DATASTORE
+    dsname = db['NAME']
+
+    ds_exists = False
+    try:
+        ds = get_store(cat, dsname, workspace=workspace)
+        ds_exists = (ds is not None)
+    except FailedRequestError:
+        ds = cat.create_datastore(dsname, workspace=workspace)
+        db = ogc_server_settings.datastore_db
+        db_engine = 'postgis' if \
+            'postgis' in db['ENGINE'] else db['ENGINE']
+        ds.connection_parameters.update(
+            {'validate connections': 'true',
+             'max connections': '10',
+             'min connections': '1',
+             'fetch size': '1000',
+             'host': db['HOST'],
+             'port': db['PORT'] if isinstance(
+                 db['PORT'], str) else str(db['PORT']) or '5432',
+             'database': db['NAME'],
+             'user': db['USER'],
+             'passwd': db['PASSWORD'],
+             'dbtype': db_engine}
+        )
+        cat.save(ds)
+        ds = get_store(cat, dsname, workspace=workspace)
+        ds_exists = (ds is not None)
+
+    if not ds_exists:
+        raise GeoNodeException(_("Unsupported DataBase for Mosaics!"))
+
+    context = {
+        "abs_path_flag": "True",
+        "time_attr": "time",
+        "aux_metadata_flag": "False",
+        "mosaic_time_regex": mosaic_time_regex,
+        "db_host": db['HOST'],
+        "db_port": db['PORT'],
+        "db_name": db['NAME'],
+        "db_user": db['USER'],
+        "db_password": db['PASSWORD'],
+        "db_conn_timeout": db['CONN_TOUT'] if 'CONN_TOUT' in db else "10",
+        "db_conn_min": db['CONN_MIN'] if 'CONN_MIN' in db else "1",
+        "db_conn_max": db['CONN_MAX'] if 'CONN_MAX' in db else "5",
+        "db_conn_validate": db['CONN_VALIDATE'] if 'CONN_VALIDATE' in db else "true",
+    }
+
+    indexer_template = """AbsolutePath={abs_path_flag}
+Schema= the_geom:Polygon,location:String,{time_attr}
+CheckAuxiliaryMetadata={aux_metadata_flag}
+SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
+    if mosaic_time_regex:
+        indexer_template = """AbsolutePath={abs_path_flag}
+TimeAttribute={time_attr}
+Schema= the_geom:Polygon,location:String,{time_attr}:java.util.Date
+PropertyCollectors=TimestampFileNameExtractorSPI[timeregex]({time_attr})
+CheckAuxiliaryMetadata={aux_metadata_flag}
+SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
+
+        timeregex_template = """regex=(?<=_)({mosaic_time_regex})"""
+
+        if not os.path.exists(f"{dirname}/timeregex.properties"):
+            with open(f"{dirname}/timeregex.properties", 'w') as timeregex_prop_file:
+                timeregex_prop_file.write(timeregex_template.format(**context))
+
+    datastore_template = r"""SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
+host={db_host}
+port={db_port}
+database={db_name}
+user={db_user}
+passwd={db_password}
+Loose\ bbox=true
+Estimated\ extends=false
+validate\ connections={db_conn_validate}
+Connection\ timeout={db_conn_timeout}
+min\ connections={db_conn_min}
+max\ connections={db_conn_max}"""
+
+    if not os.path.exists(f"{dirname}/indexer.properties"):
+        with open(f"{dirname}/indexer.properties", 'w') as indexer_prop_file:
+            indexer_prop_file.write(indexer_template.format(**context))
+
+    if not os.path.exists(f"{dirname}/datastore.properties"):
+        with open(f"{dirname}/datastore.properties", 'w') as datastore_prop_file:
+            datastore_prop_file.write(datastore_template.format(**context))
+
+    files_to_upload = []
+    if not append_to_mosaic_opts and spatial_files:
+        z = zipfile.ZipFile(f"{dirname}/{head}.zip", "w", allowZip64=True)
+        for spatial_file in spatial_files:
+            f = spatial_file.base_file
+            dst_basename = os.path.basename(f)
+            dst_head, dst_tail = os.path.splitext(dst_basename)
+            if not files_to_upload:
+                # Let's import only the first granule
+                z.write(spatial_file.base_file, arcname=dst_head + dst_tail)
+            files_to_upload.append(spatial_file.base_file)
+        if os.path.exists(f"{dirname}/indexer.properties"):
+            z.write(f"{dirname}/indexer.properties", arcname='indexer.properties')
+        if os.path.exists(f"{dirname}/datastore.properties"):
+            z.write(
+                f"{dirname}/datastore.properties",
+                arcname='datastore.properties')
+        if mosaic_time_regex:
+            z.write(
+                f"{dirname}/timeregex.properties",
+                arcname='timeregex.properties')
+        z.close()
+
+        # 2. Send a "create ImageMosaic" request to GeoServer through gs_config
+        # - name = name of the ImageMosaic (equal to the base_name)
+        # - data = abs path to the zip file
+        # - configure = parameter allows for future configuration after harvesting
+        name = head
+
+        with open(f"{dirname}/{head}.zip", 'rb') as data:
+            try:
+                cat.create_imagemosaic(name, data)
+            except ConflictingDataError:
+                # Trying to append granules to an existing mosaic
+                pass
+
+        # configure time as LIST
+        if mosaic_time_regex:
+            set_time_dimension(
+                cat,
+                name,
+                workspace,
+                time_presentation,
+                time_presentation_res,
+                time_presentation_default_value,
+                time_presentation_reference_value)
+
+        # - since GeoNode will upload the first granule again through the Importer, we need to /
+        #   delete the one created by the gs_config
+        # mosaic_delete_first_granule(cat, name)
+        if len(spatial_files) > 1:
+            spatial_files = spatial_files[0]
+        return head, files_to_upload
+    else:
+        cat._cache.clear()
+        cat.reset()
+        # cat.reload()
+        return append_to_mosaic_name, files_to_upload
