@@ -2122,7 +2122,7 @@ def sync_instance_with_geoserver(
 
     # If the store in None then it's a new instance from an upload,
     # only in this case run the geoserver_upload method
-    if not instance.store or getattr(instance, 'overwrite', False):
+    if getattr(instance, 'overwrite', False):
         base_file, info = instance.get_base_file()
 
         # There is no need to process it if there is no file.
