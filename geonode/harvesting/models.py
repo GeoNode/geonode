@@ -421,7 +421,7 @@ class AsynchronousHarvestingSession(models.Model):
             else:
                 task_signature = celery_app.app.signature(
                     "geonode.harvesting.tasks.harvest_resources",
-                    args=(self.pk, harvestable_resource_ids or [])
+                    args=(harvestable_resource_ids or [], self.pk)
                 )
         else:
             raise RuntimeError("Invalid selection")
