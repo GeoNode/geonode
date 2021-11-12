@@ -69,7 +69,7 @@ def sync_geonode_layers(ignore_errors,
                 remove_duplicate_links(layer)
             if updatebbox:
                 print("Regenerating BBOX...")
-                sync_instance_with_geoserver(layer.id)
+                sync_instance_with_geoserver(layer.id, updatemetadata=False, updatebbox=True)
         except (Exception, RuntimeError):
             layer_errors.append(layer.alternate)
             exception_type, error, traceback = sys.exc_info()
