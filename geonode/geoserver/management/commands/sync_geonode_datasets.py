@@ -64,7 +64,7 @@ def sync_geonode_datasets(
                 create_gs_thumbnail(layer, overwrite=True, check_bbox=False)
             if updatebbox:
                 print("Regenerating BBOX...")
-                sync_instance_with_geoserver(layer.id)
+                sync_instance_with_geoserver(layer.id, updatemetadata=False, updatebbox=True)
             if removeduplicates:
                 # remove duplicates
                 print("Removing duplicate links...")
