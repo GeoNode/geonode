@@ -213,7 +213,12 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         shp_file = os.path.join(
           gisdata.VECTOR_DATA,
           'san_andres_y_providencia_poi.shp')
-        layer = file_upload(shp_file, user=admin)
+        layer = file_upload(
+            shp_file,
+            name="san_andres_y_providencia_poi",
+            user=admin,
+            overwrite=True,
+        )
         original_gs_bbox = layer.bbox
         try:
             # tests if bbox is synced properly
@@ -227,7 +232,7 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
                 # sync the attributes with GeoServer
                 # With update gs resource disabled
                 layer = sync_instance_with_geoserver(layer.id)
-                self.assertNotEqual(layer.bbox, original_gs_bbox)
+                self.assertEqual(layer.bbox, original_gs_bbox)
             # With update gs resource enabled
             self.change_bbox(layer)
             layer = sync_instance_with_geoserver(layer.id)
