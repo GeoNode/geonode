@@ -369,12 +369,10 @@ def get_unique_upload_path(resource, filename):
     mising_thumb = static(settings.MISSING_THUMBNAIL)
     if resource.thumbnail_url and not resource.thumbnail_url == mising_thumb:
         # remove thumbnail from storage
-        if resource.thumbnail_path:
-            storage_manager.delete(resource.thumbnail_path)
-        else:
-            thumb_name = os.path.basename(resource.thumbnail_url)
-            name, _ext = os.path.splitext(thumb_name)
-            remove_thumb(name)
+        thumb_url = resource.thumbnail_path or resource.thumbnail_url
+        thumb_name = os.path.basename(thumb_url)
+        name, _ext = os.path.splitext(thumb_name)
+        remove_thumb(name)
     # create an upload path from a unique filename
     filename, ext = os.path.splitext(filename)
     unique_file_name = f'{filename}-{uuid4()}{ext}'
