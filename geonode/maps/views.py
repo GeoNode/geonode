@@ -525,12 +525,12 @@ def add_layer(request):
     if not map_obj:
         raise Http404(_("Not found"))
 
-    return map_view(request, str(map_obj.id), layer_name=layer_name)
+    return map_edit(request, str(map_obj.id), layer_name=layer_name)
 
 
 @xframe_options_sameorigin
 def map_view(request, mapid, layer_name=None,
-             template='maps/map_view.html'):
+             template='maps/map_view.html', edit=False):
     """
     The view that returns the map composer opened to
     the map with the given map ID.
@@ -556,8 +556,8 @@ def map_view(request, mapid, layer_name=None,
     if layer_name:
         config = add_layers_to_map_config(
             request, map_obj, (layer_name, ), False)
-
-    register_event(request, EventType.EVENT_VIEW, request.path)
+    if edit:
+        register_event(request, EventType.EVENT_VIEW, request.path)
     return render(request, template, context={
         'config': json.dumps(config),
         'map': map_obj,
@@ -647,39 +647,13 @@ def map_json(request, mapid):
 
 
 @xframe_options_sameorigin
-def map_edit(request, mapid, template='maps/map_edit.html'):
+def map_edit(request, mapid, template='maps/map_edit.html', layer_name=None):
     """
-    The view that returns the map composer opened to
+    The view that returns the map composer for editing opened to
     the map with the given map ID.
     """
-    try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    config = map_obj.viewer_json(request)
-    perms_list = list(
-        map_obj.get_self_resource().get_user_perms(request.user)
-        .union(map_obj.get_user_perms(request.user))
-    )
-    return render(request, template, context={
-        'mapId': mapid,
-        'config': json.dumps(config),
-        'map': map_obj,
-        'perms_list': perms_list,
-        'preview': getattr(
-            settings,
-            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'mapstore')
-    })
+    return map_view(request, mapid, layer_name=layer_name,
+                    template=template, edit=True)
 
 
 # NEW MAPS #
