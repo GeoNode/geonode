@@ -109,7 +109,8 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         dataset = Dataset.objects.first()
         thumbnail_name = thumbnails._generate_thumbnail_name(dataset)
         upload_path = utils.thumb_path(thumbnail_name)
-        new_upload_path = utils.get_unique_upload_path(dataset, thumbnail_name)
+        thumbnail_url = dataset.thumbnail_path or dataset.thumbnail_url
+        new_upload_path = utils.get_unique_upload_path(thumbnail_url, thumbnail_name)
         self.assertNotEqual(upload_path, new_upload_path)
 
     @patch("geonode.maps.models.Map.datasets", new_callable=PropertyMock)

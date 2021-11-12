@@ -31,8 +31,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.templatetags.static import static
 
-from geonode.maps.models import Map
-from geonode.layers.models import Dataset
 from geonode.utils import (
     bbox_to_projection,
     OGC_Servers_Handler)
@@ -41,6 +39,8 @@ from geonode.thumbs.exceptions import ThumbnailError
 from geonode.storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
+
+MISSING_THUMB = static(settings.MISSING_THUMBNAIL)
 
 
 def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[List, Tuple]) -> Callable:
@@ -138,9 +138,9 @@ def expand_bbox_to_ratio(
     return new_bbox
 
 
-def assign_missing_thumbnail(instance: Union[Dataset, Map]) -> None:
+def assign_missing_thumbnail(instance) -> None:
     """
-    Function assigning settings.MISSING_THUMBNAIL to a provided instance
+    Function assigning 'geonode.thumbs.utils.MISSING_THUMB' to a provided instance
 
     :param instance: instance of Dataset or Map models
     """
@@ -363,13 +363,12 @@ def remove_thumbs(name):
             remove_thumb(thumb)
 
 
-def get_unique_upload_path(resource, filename):
+def get_unique_upload_path(thumbnail_url, filename):
     """ Generates a unique name from the given filename and
     creates a unique file upload path"""
-    mising_thumb = static(settings.MISSING_THUMBNAIL)
-    if resource.thumbnail_url and not resource.thumbnail_url == mising_thumb:
+    if thumbnail_url and MISSING_THUMB not in thumbnail_url:
         # remove thumbnail from storage
-        thumb_url = resource.thumbnail_path or resource.thumbnail_url
+        thumb_url = thumbnail_url
         thumb_name = os.path.basename(thumb_url)
         name, _ext = os.path.splitext(thumb_name)
         remove_thumb(name)

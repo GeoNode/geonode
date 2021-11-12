@@ -71,6 +71,10 @@ from geonode.utils import (
     find_by_attr,
     bbox_to_projection,
     is_monochromatic_image)
+from geonode.thumbs.utils import (
+    MISSING_THUMB,
+    thumb_size,
+    get_unique_upload_path)
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
@@ -1637,7 +1641,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
            It could be a local one if it exists, a remote one (WMS GetImage) for example
            or a 'Missing Thumbnail' one.
         """
-        _thumbnail_url = self.thumbnail_url or static(settings.MISSING_THUMBNAIL)
+        _thumbnail_url = self.thumbnail_url or static(MISSING_THUMB)
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
         if local_thumbnails.exists():
@@ -1653,12 +1657,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
-        from geonode.thumbs.utils import (
-            get_unique_upload_path,
-            thumb_size,
-            remove_thumbs
-        )
-        upload_path = get_unique_upload_path(self, filename)
+        thumbnail_url = self.thumbnail_path or self.thumbnail_url
+        upload_path = get_unique_upload_path(thumbnail_url, filename)
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
@@ -1669,16 +1669,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     image = None
 
             if upload_path and image:
-                name = os.path.basename(filename)
-                remove_thumbs(name)
                 actual_name = storage_manager.save(upload_path, ContentFile(image))
                 actual_file_name = os.path.basename(actual_name)
 
                 if filename != actual_file_name:
                     upload_path = upload_path.replace(filename, actual_file_name)
-
                 url = storage_manager.url(upload_path)
-
                 try:
                     # Optimize the Thumbnail size and resolution
                     _default_thumb_size = getattr(
@@ -1725,6 +1721,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         link_type='image',
                     )
                 )
+                # Cleaning up the old stuff
+                if self.thumbnail_path and MISSING_THUMB not in self.thumbnail_path and storage_manager.exists(self.thumbnail_path):
+                    storage_manager.delete(self.thumbnail_path)
+                # Store the new url and path
                 self.thumbnail_url = url
                 self.thumbnail_path = upload_path
                 obj.url = url
@@ -1739,7 +1739,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             )
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
-                _thumbnail_url = static(settings.MISSING_THUMBNAIL)
+                _thumbnail_url = static(MISSING_THUMB)
                 obj, _created = Link.objects.get_or_create(
                     resource=self,
                     name='Thumbnail',
