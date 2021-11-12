@@ -363,15 +363,9 @@ def remove_thumbs(name):
             remove_thumb(thumb)
 
 
-def get_unique_upload_path(thumbnail_url, filename):
+def get_unique_upload_path(filename):
     """ Generates a unique name from the given filename and
     creates a unique file upload path"""
-    if thumbnail_url and MISSING_THUMB not in thumbnail_url:
-        # remove thumbnail from storage
-        thumb_url = thumbnail_url
-        thumb_name = os.path.basename(thumb_url)
-        name, _ext = os.path.splitext(thumb_name)
-        remove_thumb(name)
     # create an upload path from a unique filename
     filename, ext = os.path.splitext(filename)
     unique_file_name = f'{filename}-{uuid4()}{ext}'

@@ -1657,8 +1657,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
-        thumbnail_url = self.thumbnail_path or self.thumbnail_url
-        upload_path = get_unique_upload_path(thumbnail_url, filename)
+        upload_path = get_unique_upload_path(filename)
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
