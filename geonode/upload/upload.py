@@ -67,7 +67,8 @@ from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
     set_time_info,
     gs_catalog,
-    gs_uploader
+    gs_uploader,
+    import_imagemosaic_granules
 )
 from . import utils
 from .models import Upload
@@ -325,7 +326,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
         # Is it a regular file or an ImageMosaic?
         # if mosaic_time_regex and mosaic_time_value:
         if mosaic:  # we want to ingest as ImageMosaic
-            target_store, files_to_upload = utils.import_imagemosaic_granules(
+            target_store, files_to_upload = import_imagemosaic_granules(
                 spatial_files,
                 append_to_mosaic_opts,
                 append_to_mosaic_name,

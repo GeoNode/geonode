@@ -17,25 +17,25 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.contrib.auth import get_user_model
-from geonode.tests.base import GeoNodeBaseTestSupport
-
 import os
 import re
 import gisdata
+
 from urllib.parse import urljoin
 
 from django.conf import settings
 from django.urls import reverse
+from django.contrib.auth import get_user_model
+from unittest.mock import patch, PropertyMock
 
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
-
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.models import Layer
 from geonode.layers.utils import file_upload
 from geonode.layers.populate_layers_data import create_layer_data
-
 from geonode.geoserver.views import _response_callback
+from geonode.geoserver.helpers import sync_instance_with_geoserver
 
 import logging
 logger = logging.getLogger(__name__)
@@ -205,3 +205,44 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
 
         response = self.client.get(f"{reverse('ows_endpoint')}?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=geonode:tipi_forestali&outputFormat=image/png&access_token=something")
         self.assertEqual(response.status_code, 200)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_sync_instance_with_geoserver(self):
+        admin = get_user_model().objects.get(username="admin")
+        # upload a shapefile
+        shp_file = os.path.join(
+          gisdata.VECTOR_DATA,
+          'san_andres_y_providencia_poi.shp')
+        layer = file_upload(
+            shp_file,
+            name="san_andres_y_providencia_poi",
+            user=admin,
+            overwrite=True,
+        )
+        original_gs_bbox = layer.bbox
+        try:
+            # tests if bbox is synced properly
+            self.change_bbox(layer)
+            with patch(
+              'geonode.geoserver.helpers.ogc_server_settings',
+              new_callable=PropertyMock
+            ) as ogc_sett:
+                ogc_sett.MAX_RETRIES = 2
+                ogc_sett.BACKEND_WRITE_ENABLED = False
+                # sync the attributes with GeoServer
+                # With update gs resource disabled
+                layer = sync_instance_with_geoserver(layer.id)
+                self.assertEqual(layer.bbox, original_gs_bbox)
+            # With update gs resource enabled
+            self.change_bbox(layer)
+            layer = sync_instance_with_geoserver(layer.id)
+            self.assertEqual(layer.bbox, original_gs_bbox)
+        finally:
+            # Clean up and completely delete the layers
+            layer.delete()
+
+    def change_bbox(self, layer):
+        # set bbox for resource
+        layer.set_bbox_polygon([-150.0, -90.0, 90.0, 150.0], 'EPSG:4326')
+        layer.save()
+        layer.refresh_from_db()
