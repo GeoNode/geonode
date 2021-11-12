@@ -671,6 +671,10 @@ def dataset_from_viewer_config(map_id, model, dataset, source, ordering, save_ma
             else:
                 styles.append(style)
 
+    current_style = None
+    if styles and type(styles) == list and len(styles):
+        current_style = styles[0]
+
     _model = model(
         map_id=map_id,
         stack_order=ordering,
@@ -685,7 +689,9 @@ def dataset_from_viewer_config(map_id, model, dataset, source, ordering, save_ma
         visibility=dataset.get("visibility", True),
         ows_url=source.get("url", None) if source else None,
         dataset_params=json.dumps(dataset_cfg),
-        source_params=json.dumps(source_cfg)
+        source_params=json.dumps(source_cfg),
+        extra_params=dataset.get("extraParams", {}),
+        current_style=current_style,
     )
     if map_id and save_map:
         _model.save()

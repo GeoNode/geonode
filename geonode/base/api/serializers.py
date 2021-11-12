@@ -72,6 +72,39 @@ class BaseDynamicModelSerializer(DynamicModelSerializer):
         return data
 
 
+class ResourceBaseToRepresentationSerializerMixin(DynamicModelSerializer):
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        data = super(ResourceBaseToRepresentationSerializerMixin, self).to_representation(instance)
+        if request:
+            data['perms'] = instance.get_user_perms(request.user).union(
+                instance.get_self_resource().get_user_perms(request.user)
+            )
+            if not request.user.is_anonymous and getattr(settings, "FAVORITE_ENABLED", False):
+                favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
+                data['favorite'] = favorite > 0
+        # Adding links to resource_base api
+        obj_id = data.get('pk', None)
+        if obj_id:
+            dehydrated = []
+            link_fields = [
+                'extension',
+                'link_type',
+                'name',
+                'mime',
+                'url'
+            ]
+
+            links = Link.objects.filter(resource_id=int(obj_id), link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS', 'image'])
+            for lnk in links:
+                formatted_link = model_to_dict(lnk, fields=link_fields)
+                dehydrated.append(formatted_link)
+            if len(dehydrated) > 0:
+                data['links'] = dehydrated
+        return data
+
+
 class ResourceBaseTypesSerializer(DynamicEphemeralSerializer):
     name = serializers.CharField()
     count = serializers.IntegerField()
@@ -282,7 +315,10 @@ class DataBlobSerializer(DynamicModelSerializer):
         return {}
 
 
-class ResourceBaseSerializer(BaseDynamicModelSerializer):
+class ResourceBaseSerializer(
+    ResourceBaseToRepresentationSerializerMixin,
+    BaseDynamicModelSerializer,
+):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
@@ -380,36 +416,6 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             _data = data.pop('data')
             if self.is_valid():
                 data['blob'] = _data
-        return data
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        data = super().to_representation(instance)
-        if request:
-            data['perms'] = instance.get_user_perms(request.user).union(
-                instance.get_self_resource().get_user_perms(request.user)
-            )
-            if not request.user.is_anonymous and getattr(settings, "FAVORITE_ENABLED", False):
-                favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
-                data['favorite'] = favorite > 0
-        # Adding links to resource_base api
-        obj_id = data.get('pk', None)
-        if obj_id:
-            dehydrated = []
-            link_fields = [
-                'extension',
-                'link_type',
-                'name',
-                'mime',
-                'url'
-            ]
-
-            links = Link.objects.filter(resource_id=int(obj_id), link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS', 'image'])
-            for lnk in links:
-                formatted_link = model_to_dict(lnk, fields=link_fields)
-                dehydrated.append(formatted_link)
-            if len(dehydrated) > 0:
-                data['links'] = dehydrated
         return data
 
     """

@@ -17,103 +17,160 @@
 #
 #########################################################################
 import logging
-
 from urllib.parse import urljoin
-from rest_framework.test import APITestCase
 
 from django.conf import settings
 from django.urls import reverse
+from rest_framework.test import APITestCase
 
-from geonode.maps.models import Map
 from geonode.base.populate_test_data import create_models
+from geonode.layers.models import Dataset
+from geonode.maps.models import Map, MapLayer
 
 logger = logging.getLogger(__name__)
 
 
 class MapsApiTests(APITestCase):
 
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
-        create_models(b'document')
-        create_models(b'map')
-        create_models(b'dataset')
-        first = Map.objects.first()
-        first.blob = DUMMY_MAPDATA
-        first.save()
+        create_models(b"document")
+        create_models(b"map")
+        create_models(b"dataset")
+        first_map = Map.objects.first()
+        first_map.blob = DUMMY_MAPDATA
+        first_map.save()
+        first_dataset = Dataset.objects.first()
+        MapLayer.objects.create(
+            map=first_map,
+            extra_params={"foo": "bar"},
+            stack_order=0,
+            name=first_dataset.alternate,
+            store=first_dataset.store,
+            styles="['some-style', 'some-other-style']",
+            current_style="some-style",
+            local=True,
+        )
 
     def test_maps(self):
         """
         Ensure we can access the Maps list.
         """
-        url = reverse('maps-list')
+        url = reverse("maps-list")
         # Anonymous
-        response = self.client.get(url, format='json')
+        response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 9)
+        self.assertEqual(response.data["total"], 9)
+        # Check: No overfetching for maplayers
+        self.assertFalse(any([map.get("maplayers", []) for map in response.data["maps"]]))
+
         # Pagination
-        self.assertEqual(len(response.data['maps']), 9)
+        self.assertEqual(len(response.data["maps"]), 9)
         logger.debug(response.data)
 
-        for _l in response.data['maps']:
-            self.assertTrue(_l['resource_type'], 'map')
+        for _l in response.data["maps"]:
+            self.assertTrue(_l["resource_type"], "map")
 
         # Get Layers List (backgrounds)
         resource = Map.objects.first()
 
-        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", 'datasets/')
-        response = self.client.get(url, format='json')
+        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", "maplayers/")
+        response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
         layers_data = response.data
         self.assertIsNotNone(layers_data)
+        self.assertEqual(layers_data[0]["extra_params"], {"foo": "bar"})
+        self.assertEqual(layers_data[0]["styles"], ["some-style", "some-other-style"])
+        self.assertIsNotNone(layers_data[0]["dataset"])
 
         # Get Local-Layers List (GeoNode)
-        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", 'local_datasets/')
-        response = self.client.get(url, format='json')
+        url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", "local_datasets/")
+        response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
         layers_data = response.data
         self.assertIsNotNone(layers_data)
 
-        if settings.GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
-            url = reverse('maps-list')
-            self.assertEqual(url, '/api/v2/maps')
+        if settings.GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
+            url = reverse("maps-list")
+            self.assertEqual(url, "/api/v2/maps")
 
             # Anonymous
-            response = self.client.get(url, format='json')
+            response = self.client.get(url, format="json")
             self.assertEqual(response.status_code, 200)
             if response.data:
                 self.assertEqual(len(response.data), 5)  # now are 5 since will read from maps
 
                 # Get Full Map layer configuration
-                url = reverse('maps-detail', kwargs={'pk': resource.pk})
-                response = self.client.get(f"{url}?include[]=data", format='json')
+                url = reverse("maps-detail", kwargs={"pk": resource.pk})
+                response = self.client.get(f"{url}?include[]=data", format="json")
                 self.assertEqual(response.status_code, 200)
                 self.assertTrue(len(response.data) > 0)
-                self.assertTrue('data' in response.data['map'])
-                self.assertTrue(len(response.data['map']['data']['map']['layers']) == 7)
+                self.assertTrue("data" in response.data["map"])
+                self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
+                self.assertEqual(response.data["map"]["maplayers"][0]["extra_params"], {"foo": "bar"})
+                self.assertEqual(response.data["map"]["maplayers"][0]["styles"], ["some-style", "some-other-style"])
+                self.assertIsNotNone(response.data["map"]["maplayers"][0]["dataset"])
+
+    def test_patch_map(self):
+        """
+        Patch to maps/<pk>/
+        """
+        # Get Layers List (backgrounds)
+        resource = Map.objects.first()
+        url = reverse("maps-detail", kwargs={"pk": resource.pk})
+
+        data = {
+            "title": f"{resource.title}-edited",
+            "abstract": resource.abstract,
+            "data": DUMMY_MAPDATA,
+            "id": resource.id,
+        }
+        self.client.login(username="admin", password="admin")
+        response = self.client.patch(f"{url}?include[]=data", data=data, format="json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data) > 0)
+        self.assertTrue("data" in response.data["map"])
+        self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
+        response_maplayer = response.data["map"]["maplayers"][0]
+        self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
+        self.assertEqual(response_maplayer["styles"], ["some-style-first-layer", "some-other-style-first-layer"])
+        self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
+        self.assertIsNotNone(response_maplayer["dataset"])
+
+    def test_create_map(self):
+        """
+        Post to maps/
+        """
+        # Get Layers List (backgrounds)
+        url = reverse("maps-list")
+
+        data = {
+            "title": "Some created map",
+            "data": DUMMY_MAPDATA,
+        }
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(f"{url}?include[]=data", data=data, format="json")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(len(response.data) > 0)
+        self.assertTrue("data" in response.data["map"])
+        self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
+        response_maplayer = response.data["map"]["maplayers"][0]
+        self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
+        self.assertEqual(response_maplayer["styles"], ["some-style-first-layer", "some-other-style-first-layer"])
+        self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
+        self.assertIsNotNone(response_maplayer["dataset"])
 
 
 DUMMY_MAPDATA = {
     "map": {
         "zoom": 9,
         "units": "m",
-        "center": {
-            "x": 11.763505157657004,
-            "y": 43.7880264429571,
-            "crs": "EPSG:4326"
-        },
-        "groups": [
-            {
-                "id": "Default",
-                "title": "Default",
-                "expanded": True
-            }
-        ],
+        "center": {"x": 11.763505157657004, "y": 43.7880264429571, "crs": "EPSG:4326"},
+        "groups": [{"id": "Default", "title": "Default", "expanded": True}],
         "layers": [
             {
                 "id": "Stamen.Watercolor__0",
@@ -126,14 +183,13 @@ DUMMY_MAPDATA = {
                 "provider": "Stamen.Watercolor",
                 "thumbURL": "https://stamen-tiles-c.a.ssl.fastly.net/watercolor/0/0/0.jpg",
                 "dimensions": [],
+                "styles": ["some-style-first-layer", "some-other-style-first-layer"],
                 "singleTile": False,
                 "visibility": False,
-                "extraParams": {
-                    "msId": "Stamen.Watercolor__0"
-                },
+                "extraParams": {"msId": "Stamen.Watercolor__0"},
                 "hideLoading": False,
                 "useForElevation": False,
-                "handleClickOnLayer": False
+                "handleClickOnLayer": False,
             },
             {
                 "id": "Stamen.Terrain__1",
@@ -148,12 +204,10 @@ DUMMY_MAPDATA = {
                 "dimensions": [],
                 "singleTile": False,
                 "visibility": False,
-                "extraParams": {
-                    "msId": "Stamen.Terrain__1"
-                },
+                "extraParams": {"msId": "Stamen.Terrain__1"},
                 "hideLoading": False,
                 "useForElevation": False,
-                "handleClickOnLayer": False
+                "handleClickOnLayer": False,
             },
             {
                 "id": "Stamen.Toner__2",
@@ -168,12 +222,10 @@ DUMMY_MAPDATA = {
                 "dimensions": [],
                 "singleTile": False,
                 "visibility": False,
-                "extraParams": {
-                    "msId": "Stamen.Toner__2"
-                },
+                "extraParams": {"msId": "Stamen.Toner__2"},
                 "hideLoading": False,
                 "useForElevation": False,
-                "handleClickOnLayer": False
+                "handleClickOnLayer": False,
             },
             {
                 "id": "mapnik__3",
@@ -186,12 +238,10 @@ DUMMY_MAPDATA = {
                 "dimensions": [],
                 "singleTile": False,
                 "visibility": True,
-                "extraParams": {
-                    "msId": "mapnik__3"
-                },
+                "extraParams": {"msId": "mapnik__3"},
                 "hideLoading": False,
                 "useForElevation": False,
-                "handleClickOnLayer": False
+                "handleClickOnLayer": False,
             },
             {
                 "id": "OpenTopoMap__4",
@@ -205,12 +255,10 @@ DUMMY_MAPDATA = {
                 "dimensions": [],
                 "singleTile": False,
                 "visibility": False,
-                "extraParams": {
-                    "msId": "OpenTopoMap__4"
-                },
+                "extraParams": {"msId": "OpenTopoMap__4"},
                 "hideLoading": False,
                 "useForElevation": False,
-                "handleClickOnLayer": False
+                "handleClickOnLayer": False,
             },
             {
                 "id": "s2cloudless",
@@ -225,12 +273,10 @@ DUMMY_MAPDATA = {
                 "dimensions": [],
                 "singleTile": False,
                 "visibility": False,
-                "extraParams": {
-                    "msId": "s2cloudless"
-                },
+                "extraParams": {"msId": "s2cloudless"},
                 "hideLoading": False,
                 "useForElevation": False,
-                "handleClickOnLayer": False
+                "handleClickOnLayer": False,
             },
             {
                 "id": "none",
@@ -243,55 +289,43 @@ DUMMY_MAPDATA = {
                 "dimensions": [],
                 "singleTile": False,
                 "visibility": False,
-                "extraParams": {
-                    "msId": "none"
-                },
+                "extraParams": {"msId": "none"},
                 "hideLoading": False,
                 "useForElevation": False,
-                "handleClickOnLayer": False
-            }
+                "handleClickOnLayer": False,
+            },
         ],
-        "maxExtent": [
-            -20037508.34,
-            -20037508.34,
-            20037508.34,
-            20037508.34
-        ],
+        "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
         "mapOptions": {},
         "projection": "EPSG:3857",
-        "backgrounds": []
+        "backgrounds": [],
     },
     "version": 2,
     "timelineData": {},
     "dimensionData": {},
-    "widgetsConfig": {
-        "layouts": {
-            "md": [],
-            "xxs": []
-        }
-    },
+    "widgetsConfig": {"layouts": {"md": [], "xxs": []}},
     "catalogServices": {
         "services": {
             "Demo WMS Service": {
                 "url": "https://demo.geo-solutions.it/geoserver/wms",
                 "type": "wms",
                 "title": "Demo WMS Service",
-                "autoload": False
+                "autoload": False,
             },
             "Demo WMTS Service": {
                 "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
                 "type": "wmts",
                 "title": "Demo WMTS Service",
-                "autoload": False
+                "autoload": False,
             },
             "GeoNode Catalogue": {
                 "url": "http://localhost:8000/catalogue/csw",
                 "type": "csw",
                 "title": "GeoNode Catalogue",
-                "autoload": True
-            }
+                "autoload": True,
+            },
         },
-        "selectedService": "GeoNode Catalogue"
+        "selectedService": "GeoNode Catalogue",
     },
-    "mapInfoConfiguration": {}
+    "mapInfoConfiguration": {},
 }
