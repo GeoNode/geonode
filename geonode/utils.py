@@ -2272,12 +2272,6 @@ def is_monochromatic_image(image_url, image_data=None):
         return False
 
 
-def get_geonode_app_types():
-    from geonode.geoapps.models import GeoApp
-
-    return list(set(GeoApp.objects.values_list('resource_type', flat=True)))
-
-
 def find_by_attr(lst, val, attr="id"):
     """ Returns an object if the id matches in any list of objects """
     for item in lst:
@@ -2302,3 +2296,8 @@ def get_xpath_value(
         nsmap = element.nsmap
     values = element.xpath(f"{xpath_expression}//text()", namespaces=nsmap)
     return "".join(values).strip() or None
+
+
+def get_geonode_app_types():
+    from geonode.geoapps.models import GeoApp
+    return list(set(GeoApp.objects.values_list('resource_type', flat=True)))

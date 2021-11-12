@@ -110,7 +110,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     except Exception as e:
         logger.exception(e)
 
-    if obj_type not in ['document', 'layer', 'map', 'comment']:
+    if obj_type not in ['document', 'dataset', 'map', 'comment']:
         try:
             action_settings[obj_type].update(object_name=getattr(instance, 'title', None),)
         except Exception as e:
@@ -128,7 +128,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                 if not isinstance(instance, Dataset) and \
                         not isinstance(instance, Document) and \
                         not isinstance(instance, Map) and \
-                        not issubclass(type(instance), GeoApp):
+                        not isinstance(instance, GeoApp):
                     verb = action.get('updated_verb')
                     raw_action = 'updated'
 
