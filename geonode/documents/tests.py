@@ -36,15 +36,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from guardian.shortcuts import get_perms, get_anonymous_user
+from guardian.shortcuts import get_anonymous_user
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
-from geonode.base.thumb_utils import get_thumbs
 from geonode.base.models import License, Region
 from geonode.documents import DocumentsAppConfig
-from geonode.storage.manager import storage_manager
 from geonode.resource.manager import resource_manager
 from geonode.documents.forms import DocumentFormMixin
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -52,9 +50,6 @@ from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.documents.models import Document, DocumentResourceLink
 
-from geonode.groups.models import (
-    GroupProfile,
-    GroupMember)
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
@@ -186,18 +181,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         d = Document.objects.get(title='GeoNode Map')
         self.assertEqual(d.doc_url, 'http://www.geonode.org/map.pdf')
 
-        form_data['doc_url'] = 'http://www.geonode.org/mapz.pdf'
-        response = self.client.post(
-            reverse(
-                'document_replace',
-                args=[
-                    d.id]),
-            data=form_data)
-        self.assertEqual(response.status_code, 302)
-
-        d = Document.objects.get(title='GeoNode Map')
-        self.assertEqual(d.doc_url, 'http://www.geonode.org/mapz.pdf')
-
     def test_upload_document_form(self):
         """
         Tests the Upload form.
@@ -253,14 +236,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         self.assertFalse(form.is_valid())
         self.assertTrue('__all__' in form.errors)
 
-    def test_document_details(self):
-        """/documents/1 -> Test accessing the detail view of a document"""
-        d = Document.objects.all().first()
-        d.set_default_permissions()
-
-        response = self.client.get(reverse('document_detail', args=(str(d.id),)))
-        self.assertEqual(response.status_code, 200)
-
     def test_document_embed(self):
         """/documents/1 -> Test accessing the embed view of a document"""
         d = Document.objects.all().first()
@@ -268,29 +243,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         response = self.client.get(reverse('document_embed', args=(str(d.id),)))
         self.assertEqual(response.status_code, 200)
-
-    @patch("geonode.documents.tasks.create_document_thumbnail")
-    def test_document_metadata_details(self, thumb):
-        thumb.return_value = True
-        d = Document.objects.all().first()
-        d.set_default_permissions()
-
-        response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix='', html=False)
-        self.assertContains(response, "Published", count=1, status_code=200, msg_prefix='', html=False)
-        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix='', html=False)
-        self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix='', html=False)
-
-        # ... now assigning a Group to the document
-        group = Group.objects.first()
-        d.group = group
-        d.save()
-        response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix='', html=False)
-        d.group = None
-        d.save()
 
     def test_access_document_upload_form(self):
         """Test the form page is returned correctly via GET request /documents/upload"""
@@ -521,104 +473,6 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
                 content = json.loads(resp.content.decode('utf-8'))
                 self.assertTrue(content["success"])
                 self.assertIn("url", content)
-
-    def test_moderated_upload(self):
-        """
-        Test if moderation flag works
-        """
-        with self.settings(ADMIN_MODERATE_UPLOADS=False):
-            self.client.login(username=self.user, password=self.passwd)
-            input_path = self._get_input_path()
-            dname = 'document title'
-            with open(os.path.join(f"{self.project_root}", "tests/data/img.gif"), "rb") as f:
-                data = {
-                    'title': dname,
-                    'doc_file': f,
-                    'resource': '',
-                    'extension': 'txt',
-                    'permissions': '{}',
-                }
-                resp = self.client.post(self.document_upload_url, data=data)
-                self.assertEqual(resp.status_code, 200, resp.content)
-            _d = Document.objects.get(title=dname)
-
-            self.assertTrue(_d.is_published)
-            uuid = _d.uuid
-            _d.delete()
-
-            from geonode.documents.utils import delete_orphaned_document_files
-            if storage_manager.exists(os.path.join("documents", "document")):
-                _, document_files_before = storage_manager.listdir(os.path.join("documents", "document"))
-                deleted = delete_orphaned_document_files()
-                _, document_files_after = storage_manager.listdir(os.path.join("documents", "document"))
-                self.assertTrue(len(deleted) > 0)
-                self.assertEqual(set(deleted), set(document_files_before) - set(document_files_after))
-
-            from geonode.base.utils import delete_orphaned_thumbs
-            thumb_files_before = get_thumbs()
-            deleted = delete_orphaned_thumbs()
-            thumb_files_after = get_thumbs()
-            if deleted:
-                self.assertTrue(
-                    len(deleted) > 0,
-                    f"before: {thumb_files_before} - deleted: {deleted} - after: {thumb_files_after}")
-                self.assertEqual(
-                    set(deleted), set(thumb_files_before) - set(thumb_files_after),
-                    f"deleted: {deleted} vs {set(thumb_files_before) - set(thumb_files_after)}")
-
-            fn = os.path.join(
-                os.path.join("documents", "document"), os.path.basename(input_path))
-            self.assertFalse(storage_manager.exists(fn))
-
-            files = [thumb for thumb in get_thumbs() if uuid in thumb]
-            if files and len(files):
-                self.assertEqual(len(files), 1)
-
-        with self.settings(ADMIN_MODERATE_UPLOADS=True):
-            self.client.login(username=self.user, password=self.passwd)
-            norman = get_user_model().objects.get(username="norman")
-            group = GroupProfile.objects.get(slug="bar")
-            input_path = self._get_input_path()
-            dname = 'document title'
-            with open(input_path, 'rb') as f:
-                data = {
-                    'title': dname,
-                    'doc_file': f,
-                    'resource': '',
-                    'extension': 'txt',
-                    'permissions': '{}',
-                }
-                resp = self.client.post(self.document_upload_url, data=data)
-                self.assertEqual(resp.status_code, 200)
-            _d = Document.objects.get(title=dname)
-            self.assertFalse(_d.is_approved)
-            self.assertTrue(_d.is_published)
-
-            group.join(norman)
-            self.assertFalse(group.user_is_role(norman, "manager"))
-            GroupMember.objects.get(group=group, user=norman).promote()
-            self.assertTrue(group.user_is_role(norman, "manager"))
-
-            self.client.login(username="norman", password="norman")
-            resp = self.client.get(reverse('document_detail', args=(_d.id,)))
-            # Forbidden
-            self.assertEqual(resp.status_code, 403)
-            _d.group = group.group
-            _d.save()
-            resp = self.client.get(reverse('document_detail', args=(_d.id,)))
-            # Allowed - edit permissions
-            self.assertEqual(resp.status_code, 200)
-            perms_list = get_perms(norman, _d.get_self_resource()) + get_perms(norman, _d)
-            self.assertTrue('change_resourcebase_metadata' in perms_list)
-            GroupMember.objects.get(group=group, user=norman).demote()
-            self.assertFalse(group.user_is_role(norman, "manager"))
-            resp = self.client.get(
-                reverse('document_detail', args=(_d.id,)))
-            # Allowed - no edit
-            self.assertEqual(resp.status_code, 200)
-            perms_list = get_perms(norman, _d.get_self_resource()) + get_perms(norman, _d)
-            self.assertFalse('change_resourcebase_metadata' in perms_list)
-            group.leave(norman)
 
 
 class DocumentsNotificationsTestCase(NotificationsTestsHelper):

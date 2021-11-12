@@ -37,7 +37,7 @@ from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 from django.db.models.fields.json import JSONField
-from django.utils.functional import cached_property
+from django.utils.functional import cached_property, classproperty
 from django.contrib.gis.geos import Polygon, Point
 from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import SuspiciousFileOperation, ValidationError
@@ -64,14 +64,20 @@ from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 
 from geonode.base import enumerations
 from geonode.singleton import SingletonModel
+from geonode.groups.conf import settings as groups_settings
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
 from geonode.utils import (
     bbox_to_wkt,
     find_by_attr,
+    bbox_to_projection,
     is_monochromatic_image)
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
+from geonode.security.permissions import (
+    VIEW_PERMISSIONS,
+    OWNER_PERMISSIONS
+)
 
 from geonode.notifications_helper import (
     send_notification,
@@ -434,14 +440,15 @@ class TaggedContentItem(ItemBase):
 
     # see https://github.com/alex/django-taggit/issues/101
     @classmethod
-    def tags_for(cls, model, instance=None):
+    def tags_for(cls, model, instance=None, **extra_filters):
+        kwargs = extra_filters or {}
         if instance is not None:
             return cls.tag_model().objects.filter(**{
                 f'{cls.tag_relname()}__content_object': instance
-            })
+            }, **kwargs)
         return cls.tag_model().objects.filter(**{
             f'{cls.tag_relname()}__content_object__isnull': False
-        }).distinct()
+        }, **kwargs).distinct()
 
 
 class _HierarchicalTagManager(_TaggableManager):
@@ -1046,6 +1053,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     attribute_str.replace('\n', ' ').replace('\r', '').strip())
         return strip_tags(_attribute_str)
 
+    @classproperty
+    def allowed_permissions(cls):
+        return {
+            "anonymous": VIEW_PERMISSIONS,
+            "default": OWNER_PERMISSIONS,
+            groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS
+        }
+
     @property
     def raw_abstract(self):
         return self._remove_html_tags(self.abstract)
@@ -1069,6 +1084,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def detail_url(self):
         return self.get_absolute_url()
+
+    def clean(self):
+        if self.title:
+            self.title = self.title.replace(",", "_")
+        return super().clean()
 
     def save(self, notify=False, *args, **kwargs):
         """
@@ -1174,7 +1194,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def restriction_code(self):
-        return self.restriction_code_type.gn_description
+        return self.restriction_code_type.gn_description if self.restriction_code_type else None
 
     @property
     def publisher(self):
@@ -1186,7 +1206,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def topiccategory(self):
-        return self.category.identifier
+        return self.category.identifier if self.category else None
 
     @property
     def csw_crs(self):
@@ -1194,9 +1214,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def group_name(self):
-        if self.group:
-            return str(self.group).encode("utf-8", "replace")
-        return None
+        return str(self.group).encode("utf-8", "replace") if self.group else None
 
     @property
     def bbox(self):
@@ -1426,7 +1444,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
             bbox_polygon.srid = int(match.group('srid')) if match else 4326
             try:
-                self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
+                # self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
+                self.ll_bbox_polygon = Polygon.from_bbox(
+                    bbox_to_projection(list(bbox_polygon.extent) + [srid])[:-1])
             except Exception as e:
                 logger.error(e)
                 self.ll_bbox_polygon = bbox_polygon

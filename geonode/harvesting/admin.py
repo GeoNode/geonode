@@ -334,7 +334,6 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "last_harvested",
         "unique_identifier",
         "title",
-        "abstract",
         "show_link_to_harvester",
         "should_be_harvested",
         "remote_resource_type",
@@ -342,7 +341,6 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
     readonly_fields = (
         "unique_identifier",
         "title",
-        "abstract",
         "harvester",
         "last_updated",
         "last_refreshed",
@@ -360,7 +358,6 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
     )
     search_fields = (
         "title",
-        "abstract",
     )
     list_editable = (
         "should_be_harvested",

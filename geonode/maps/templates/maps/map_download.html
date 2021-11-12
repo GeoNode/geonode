@@ -1,5 +1,6 @@
 {% extends "maps/map_base.html" %}
 {% load i18n %}
+{% load client_lib_tags %}
 
 {% block body %}
 <div class="span12">
@@ -21,7 +22,7 @@
       {% empty %}
       {% blocktrans %}
       <div class="alert alert-warning">Could not find downloadable layers for this map. You can go back to  
-      {% endblocktrans %}<a href="{% url 'map_detail' map.id %}">{{map.title}}</a></div>
+      {% endblocktrans %}<a href="{% map_detail_url map %}">{{map.title}}</a></div>
       {% endfor %} 
     </ul>
    
@@ -118,7 +119,7 @@
       })
       .done(function(){
         window.alert("You successfuly canceled the download"); 
-        location.href = "{% url 'map_detail' map.id %}";
+        location.href = "{% map_detail_url map %}";
         clearInterval(checkStatus);
       })
       .fail(function(){

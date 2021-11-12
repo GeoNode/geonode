@@ -2,8 +2,8 @@
 {% trans "The user" %} {{ from_user.username }} {% trans "requested you to download this resource" %}:<br/>
 <strong>{{ resource.title }}</strong><br/>
 {% if resource.polymorphic_ctype.name == 'dataset' %}
-{% trans "Dataset" %}: {{ current_site }}{% url "dataset_detail" resource.dataset.service_typename %}<br/>
+{% trans "Dataset" %}: {{ current_site }}{{ resource.get_absolute_url }}<br/>
 {% else %}
-{% trans "Document" %}: {{ current_site }}{% url "document_detail" resource.document.id %}<br/>
+{% trans "Document" %}: {{ current_site }}{{ resource.get_absolute_url }}<br/>
 {% endif %}
 {% trans "Please go to resource page and assign the download permissions if you wish" %}.

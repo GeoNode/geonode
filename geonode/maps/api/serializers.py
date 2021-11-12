@@ -18,44 +18,87 @@
 #########################################################################
 import logging
 
-from rest_framework import serializers
-
+from dynamic_rest.fields.fields import DynamicComputedField, DynamicMethodField, DynamicRelationField
 from dynamic_rest.serializers import DynamicModelSerializer
 
+from geonode.base.api.serializers import (
+    BaseDynamicModelSerializer,
+    ResourceBaseSerializer,
+    ResourceBaseToRepresentationSerializerMixin,
+)
+from geonode.layers.api.serializers import FeatureInfoTemplateField, StyleSerializer
+from geonode.layers.models import Dataset
 from geonode.maps.models import Map, MapLayer
-from geonode.base.api.serializers import ResourceBaseSerializer
 
 logger = logging.getLogger(__name__)
 
 
+class MapLayerDatasetSerializer(
+    ResourceBaseToRepresentationSerializerMixin,
+    BaseDynamicModelSerializer,
+):
+    default_style = DynamicRelationField(StyleSerializer, embed=True, many=False, read_only=True)
+    styles = DynamicRelationField(StyleSerializer, embed=True, many=True, read_only=True)
+    featureinfo_custom_template = FeatureInfoTemplateField()
+
+    class Meta:
+        model = Dataset
+        name = "dataset"
+        view_name = "datasets-list"
+        fields = (
+            "alternate",
+            "featureinfo_custom_template",
+            "title",
+            "perms",
+            "pk",
+            "has_time",
+            "default_style",
+            "styles",
+            "ptype",
+        )
+
+
 class MapLayerSerializer(DynamicModelSerializer):
+    styles = DynamicComputedField(source="styles_set", requires=("styles",))
+    dataset = DynamicMethodField(
+        requires=(
+            "store",
+            "alternate",
+        )
+    )
 
     class Meta:
         model = MapLayer
-        name = 'maplayer'
+        name = "maplayer"
         fields = (
-            'pk', 'name', 'store',
-            'stack_order', 'format', 'opacity', 'styles',
-            'transparent', 'fixed', 'group', 'visibility',
-            'ows_url', 'dataset_params', 'source_params', 'local'
+            "pk",
+            "extra_params",
+            "current_style",
+            "styles",
+            "dataset",
         )
 
-    name = serializers.CharField(read_only=True)
-    store = serializers.CharField(read_only=True)
+    def get_dataset(self, instance):
+        dataset = instance.dataset
+        return MapLayerDatasetSerializer(instance=dataset).data
 
 
 class MapSerializer(ResourceBaseSerializer):
-
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super().__init__(*args, **kwargs)
+    maplayers = DynamicRelationField(MapLayerSerializer, source="dataset_set", embed=True, many=True)
 
     class Meta:
         model = Map
-        name = 'map'
-        view_name = 'maps-list'
+        name = "map"
+        view_name = "maps-list"
         fields = (
-            'pk', 'uuid',
-            'zoom', 'projection', 'center_x', 'center_y',
-            'urlsuffix', 'featuredurl', 'data',
+            "pk",
+            "uuid",
+            "zoom",
+            "projection",
+            "center_x",
+            "center_y",
+            "urlsuffix",
+            "featuredurl",
+            "data",
+            "maplayers",
         )

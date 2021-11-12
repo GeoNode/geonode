@@ -20,8 +20,6 @@
 from geonode import geoserver  # noqa
 from geonode.utils import check_ogc_backend
 from django.conf.urls import url, include
-from django.views.generic import TemplateView
-from geonode.base import register_url_event
 
 from . import views
 
@@ -29,25 +27,16 @@ js_info_dict = {
     'packages': ('geonode.layers',),
 }
 
-dataset_list = register_url_event()(TemplateView.as_view(template_name='datasets/dataset_list.html'))
-
 urlpatterns = [
     # 'geonode.layers.views',
-    url(r'^$',
-        dataset_list,
-        {'facet_type': 'dataset', 'is_dataset': True},
-        name='dataset_browse'),
     url(r'^upload$', views.dataset_upload, name='dataset_upload'),
     url(r'^upload_metadata$', views.dataset_metadata_upload,
         name='dataset_metadata_upload'),
     url(r'^load_dataset_data$', views.load_dataset_data, name='load_dataset_data'),
-    url(r'^(?P<layername>[^/]*)$', views.dataset_detail, name="dataset_detail"),
     url(r'^(?P<layername>[^/]*)/metadata$',
         views.dataset_metadata, name="dataset_metadata"),
     url(r'^(?P<layername>[^/]*)/metadata_advanced$',
         views.dataset_metadata_advanced, name="dataset_metadata_advanced"),
-    url(r'^(?P<layername>[^/]*)/remove$',
-        views.dataset_remove, name="dataset_remove"),
     url(r'^(?P<granule_id>[^/]*)/(?P<layername>[^/]*)/granule_remove$', views.dataset_granule_remove,
         name="dataset_granule_remove"),
     url(r'^(?P<layername>[^/]*)/replace$',
@@ -63,16 +52,10 @@ urlpatterns = [
         views.dataset_embed, name='dataset_embed'),
     url(r'^(?P<layername>[^/]*)/style_upload$',
         views.dataset_sld_upload, name='dataset_sld_upload'),
-    url(r'^(?P<layername>[^/]*)/style_edit$',
-        views.dataset_sld_edit, name='dataset_sld_edit'),
     url(r'^(?P<layername>[^/]*)/feature_catalogue$',
         views.dataset_feature_catalogue, name='dataset_feature_catalogue'),
     url(r'^metadata/batch/$',
         views.dataset_batch_metadata, name='dataset_batch_metadata'),
-    url(r'^permissions/batch/$',
-        views.dataset_batch_permissions, name='dataset_batch_permissions'),
-    url(r'^autocomplete/$',
-        views.LayerAutocomplete.as_view(), name='autocomplete_dataset'),
     url(r'^', include('geonode.layers.api.urls')),
 ]
 

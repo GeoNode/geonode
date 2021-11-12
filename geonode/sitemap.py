@@ -18,7 +18,8 @@
 #########################################################################
 
 from django.contrib.sitemaps import Sitemap
-from geonode.maps.models import Dataset, Map
+from geonode.maps.models import Map
+from geonode.layers.models import Dataset
 from guardian.shortcuts import get_objects_for_user
 from django.contrib.auth.models import AnonymousUser
 

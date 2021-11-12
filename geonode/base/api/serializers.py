@@ -72,6 +72,39 @@ class BaseDynamicModelSerializer(DynamicModelSerializer):
         return data
 
 
+class ResourceBaseToRepresentationSerializerMixin(DynamicModelSerializer):
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        data = super(ResourceBaseToRepresentationSerializerMixin, self).to_representation(instance)
+        if request:
+            data['perms'] = instance.get_user_perms(request.user).union(
+                instance.get_self_resource().get_user_perms(request.user)
+            )
+            if not request.user.is_anonymous and getattr(settings, "FAVORITE_ENABLED", False):
+                favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
+                data['favorite'] = favorite > 0
+        # Adding links to resource_base api
+        obj_id = data.get('pk', None)
+        if obj_id:
+            dehydrated = []
+            link_fields = [
+                'extension',
+                'link_type',
+                'name',
+                'mime',
+                'url'
+            ]
+
+            links = Link.objects.filter(resource_id=int(obj_id), link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS', 'image'])
+            for lnk in links:
+                formatted_link = model_to_dict(lnk, fields=link_fields)
+                dehydrated.append(formatted_link)
+            if len(dehydrated) > 0:
+                data['links'] = dehydrated
+        return data
+
+
 class ResourceBaseTypesSerializer(DynamicEphemeralSerializer):
     name = serializers.CharField()
     count = serializers.IntegerField()
@@ -222,13 +255,26 @@ class UserSerializer(BaseDynamicModelSerializer):
         model = get_user_model()
         name = 'user'
         view_name = 'users-list'
-        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar', 'perms')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar', 'perms', 'is_superuser', 'is_staff')
 
     @classmethod
     def setup_eager_loading(cls, queryset):
         """ Perform necessary eager loading of data. """
         queryset = queryset.prefetch_related()
         return queryset
+
+    def to_representation(self, instance):
+        # Dehydrate users private fields
+        request = self.context.get('request')
+        data = super().to_representation(instance)
+        if not request or not request.user or not request.user.is_authenticated:
+            if 'perms' in data:
+                del data['perms']
+        elif not request.user.is_superuser and not request.user.is_staff:
+            if data['username'] != request.user.username:
+                if 'perms' in data:
+                    del data['perms']
+        return data
 
     avatar = AvatarUrlField(240, read_only=True)
 
@@ -269,7 +315,10 @@ class DataBlobSerializer(DynamicModelSerializer):
         return {}
 
 
-class ResourceBaseSerializer(BaseDynamicModelSerializer):
+class ResourceBaseSerializer(
+    ResourceBaseToRepresentationSerializerMixin,
+    BaseDynamicModelSerializer,
+):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
@@ -344,7 +393,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id', 'perms',
             'owner', 'poc', 'metadata_author',
             'keywords', 'regions', 'category',
-            'title', 'abstract', 'attribution', 'doi', 'alternate', 'bbox_polygon', 'll_bbox_polygon', 'srid',
+            'title', 'abstract', 'attribution', 'alternate', 'doi', 'bbox_polygon', 'll_bbox_polygon', 'srid',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',
             'restriction_code_type', 'constraints_other', 'license', 'language',
             'spatial_representation_type', 'temporal_extent_start', 'temporal_extent_end',
@@ -367,36 +416,6 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             _data = data.pop('data')
             if self.is_valid():
                 data['blob'] = _data
-        return data
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        data = super().to_representation(instance)
-        if request:
-            data['perms'] = instance.get_user_perms(request.user).union(
-                instance.get_self_resource().get_user_perms(request.user)
-            )
-            if not request.user.is_anonymous and getattr(settings, "FAVORITE_ENABLED", False):
-                favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
-                data['favorite'] = favorite > 0
-        # Adding links to resource_base api
-        obj_id = data.get('pk', None)
-        if obj_id:
-            dehydrated = []
-            link_fields = [
-                'extension',
-                'link_type',
-                'name',
-                'mime',
-                'url'
-            ]
-
-            links = Link.objects.filter(resource_id=int(obj_id), link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
-            for lnk in links:
-                formatted_link = model_to_dict(lnk, fields=link_fields)
-                dehydrated.append(formatted_link)
-            if len(dehydrated) > 0:
-                data['links'] = dehydrated
         return data
 
     """

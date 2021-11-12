@@ -162,13 +162,7 @@ class HarvesterSerializer(BriefHarvesterSerializer):
                 f"Either omit it or provide a "
                 f"value of {models.Harvester.STATUS_READY!r}"
             )
-        harvester = super().create(validated_data)
-        available = harvester.update_availability()
-        if available:
-            harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
-            harvester.save()
-            tasks.update_harvestable_resources.apply_async(args=(harvester.pk,))
-        return harvester
+        return super().create(validated_data)
 
     def update(self, instance: models.Harvester, validated_data):
         """Update harvester and perform any required business logic as a side-effect.

@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-
 import os
 import logging
 import gzip
@@ -47,6 +45,7 @@ class Command(BaseCommand):
                             help=_("Overwrite file if exists"))
 
     def handle(self, *args, **options):
+        # Exit early if MONITORING_ENABLED=False
         if not settings.MONITORING_ENABLED or not URL:
             return
 

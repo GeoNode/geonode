@@ -129,56 +129,6 @@ class DocumentDescriptionForm(forms.Form):
     keywords = forms.CharField(max_length=500, required=False)
 
 
-class DocumentReplaceForm(forms.ModelForm):
-
-    doc_file = forms.FileField(
-        label=_("File"),
-        required=False)
-
-    files = forms.CharField(
-        label=_("File"),
-        required=False)
-
-    """
-    The form used to replace a document.
-    """
-
-    class Meta:
-        model = Document
-        fields = ['doc_url']
-        exclude = ['files']
-
-    def clean(self):
-        """
-        Ensures the doc_file or the doc_url field is populated.
-        """
-        cleaned_data = super().clean()
-        doc_file = self.cleaned_data.get('doc_file')
-        doc_url = self.cleaned_data.get('doc_url')
-
-        if not doc_file and not doc_url:
-            raise forms.ValidationError(_("Document must be a file or url."))
-
-        if doc_file and doc_url:
-            raise forms.ValidationError(
-                _("A document cannot have both a file and a url."))
-
-        return cleaned_data
-
-    def clean_files(self):
-        """
-        Ensures the doc_file is valid.
-        """
-        doc_file = self.cleaned_data.get('doc_file')
-
-        if doc_file and not os.path.splitext(
-                doc_file.name)[1].lower()[
-                1:] in settings.ALLOWED_DOCUMENT_TYPES:
-            raise forms.ValidationError(_("This file type is not allowed"))
-
-        return doc_file
-
-
 class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
 
     """

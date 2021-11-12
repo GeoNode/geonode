@@ -22,32 +22,27 @@ import logging
 import warnings
 import traceback
 
-from itertools import chain
-from dal import autocomplete
 from deprecated import deprecated
 from urllib.parse import quote, urlsplit, urljoin
 
 from django.urls import reverse
 from django.conf import settings
-from django.db.models import F
 from django.shortcuts import render
 from django.utils.translation import ugettext as _
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
-from django.views.decorators.http import require_http_methods
 from django.http import (
     Http404,
     HttpResponse,
     HttpResponseRedirect,
     HttpResponseNotAllowed,
     HttpResponseServerError)
-from django.views.decorators.clickjacking import (
-    xframe_options_exempt,
-    xframe_options_sameorigin)
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
+from geonode.client.hooks import hookset
 from geonode.maps.forms import MapForm
 from geonode.layers.models import Dataset
 from geonode.base.views import batch_modify
@@ -57,17 +52,13 @@ from geonode.base import register_event
 from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
 from geonode.layers.views import _resolve_dataset
-from geonode.base.auth import get_or_create_token
-from geonode.security.views import _perms_info_json
 from geonode.resource.manager import resource_manager
 from geonode.decorators import check_keyword_write_perms
-from geonode.documents.models import get_related_documents
-from geonode.base.utils import ManageResourceOwnerPermissions
+from geonode.security.utils import get_user_visible_groups
 
 from geonode.utils import (
     DEFAULT_TITLE,
     DEFAULT_ABSTRACT,
-    build_social_links,
     http_client,
     forward_mercator,
     bbox_to_projection,
@@ -114,101 +105,6 @@ def _resolve_map(request, id, permission='base.change_resourcebase',
 
     return resolve_object(request, Map, {key: id}, permission=permission,
                           permission_msg=msg, **kwargs)
-
-
-# BASIC MAP VIEWS #
-def map_detail(request, mapid, template='maps/map_detail.html'):
-    '''
-    The view that show details of each map
-    '''
-    try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    permission_manager = ManageResourceOwnerPermissions(map_obj)
-    permission_manager.set_owner_permissions_according_to_workflow()
-
-    # Add metadata_author or poc if missing
-    map_obj.add_missing_metadata_author_or_poc()
-
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    if request.user != map_obj.owner and not request.user.is_superuser:
-        Map.objects.filter(
-            id=map_obj.id).update(
-            popular_count=F('popular_count') + 1)
-
-    config = map_obj.viewer_json(request)
-
-    register_event(request, EventType.EVENT_VIEW, map_obj.title)
-
-    config = json.dumps(config)
-    datasets = MapLayer.objects.filter(map=map_obj.id)
-    links = map_obj.link_set.download()
-
-    # Call this first in order to be sure "perms_list" is correct
-    permissions_json = _perms_info_json(map_obj)
-
-    perms_list = list(
-        map_obj.get_self_resource().get_user_perms(request.user)
-        .union(map_obj.get_user_perms(request.user))
-    )
-
-    group = None
-    if map_obj.group:
-        try:
-            group = GroupProfile.objects.get(slug=map_obj.group.name)
-        except GroupProfile.DoesNotExist:
-            group = None
-
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
-
-    context_dict = {
-        'access_token': access_token,
-        'config': config,
-        'resource': map_obj,
-        'group': group,
-        'datasets': datasets,
-        'perms_list': perms_list,
-        'permissions_json': permissions_json,
-        "documents": get_related_documents(map_obj),
-        'links': links,
-        'preview': getattr(
-            settings,
-            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'mapstore'),
-        'crs': getattr(
-            settings,
-            'DEFAULT_MAP_CRS',
-            'EPSG:3857')
-    }
-
-    if settings.SOCIAL_ORIGINS:
-        context_dict["social_links"] = build_social_links(request, map_obj)
-
-    if request.user.is_authenticated:
-        if getattr(settings, 'FAVORITE_ENABLED', False):
-            from geonode.favorite.utils import get_favorite_info
-            context_dict["favorite_info"] = get_favorite_info(request.user, map_obj)
-
-    register_event(request, EventType.EVENT_VIEW, request.path)
-
-    return render(request, template, context=context_dict)
 
 
 @login_required
@@ -342,12 +238,7 @@ def map_metadata(
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, map_obj)
         if not ajax:
-            return HttpResponseRedirect(
-                reverse(
-                    'map_detail',
-                    args=(
-                        map_obj.id,
-                    )))
+            return HttpResponseRedirect(hookset.map_detail_url(map_obj))
 
         message = map_obj.id
 
@@ -396,19 +287,7 @@ def map_metadata(
     config = map_obj.viewer_json(request)
     layers = MapLayer.objects.filter(map=map_obj.id)
 
-    metadata_author_groups = []
-    if request.user.is_superuser or request.user.is_staff:
-        metadata_author_groups = GroupProfile.objects.all()
-    else:
-        try:
-            all_metadata_author_groups = chain(
-                request.user.group_list_all(),
-                GroupProfile.objects.exclude(access="private"))
-        except Exception:
-            all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private")
-        [metadata_author_groups.append(item) for item in all_metadata_author_groups
-            if item not in metadata_author_groups]
+    metadata_author_groups = get_user_visible_groups(request.user)
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
@@ -458,34 +337,6 @@ def map_metadata_advanced(request, mapid):
         template='maps/map_metadata_advanced.html')
 
 
-@login_required
-def map_remove(request, mapid, template='maps/map_remove.html'):
-    ''' Delete a map, and its constituent layers. '''
-    try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.delete_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    if request.method == 'GET':
-        return render(request, template, context={
-            "map": map_obj
-        })
-    elif request.method == 'POST':
-        resource_manager.delete(map_obj.uuid, instance=map_obj)
-
-        register_event(request, EventType.EVENT_REMOVE, map_obj)
-
-        return HttpResponseRedirect(reverse("maps_browse"))
-
-
 @xframe_options_exempt
 def map_embed(
         request,
@@ -508,71 +359,6 @@ def map_embed(
 
 
 # MAPS VIEWER #
-
-
-@require_http_methods(["GET", ])
-def add_dataset(request):
-    """
-    The view that returns the map composer opened to
-    a given map and adds a layer on top of it.
-    """
-    map_id = request.GET.get('map_id')
-    dataset_name = request.GET.get('dataset_name')
-    try:
-        map_obj = _resolve_map(
-            request,
-            map_id,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    return map_view(request, str(map_obj.id), dataset_name=dataset_name)
-
-
-@xframe_options_sameorigin
-def map_view(request, mapid, dataset_name=None,
-             template='maps/map_view.html'):
-    """
-    The view that returns the map composer opened to
-    the map with the given map ID.
-    """
-    try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    config = map_obj.viewer_json(request)
-    perms_list = list(
-        map_obj.get_self_resource().get_user_perms(request.user)
-        .union(map_obj.get_user_perms(request.user))
-    )
-    if dataset_name:
-        config = add_datasets_to_map_config(
-            request, map_obj, (dataset_name, ), False)
-
-    register_event(request, EventType.EVENT_VIEW, request.path)
-    return render(request, template, context={
-        'config': json.dumps(config),
-        'map': map_obj,
-        'perms_list': perms_list,
-        'preview': getattr(
-            settings,
-            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'mapstore')
-    })
 
 
 def map_view_js(request, mapid):
@@ -651,43 +437,6 @@ def map_json(request, mapid):
     elif request.method == 'PUT':
         return map_json_handle_put(request, mapid)
 
-
-@xframe_options_sameorigin
-def map_edit(request, mapid, template='maps/map_edit.html'):
-    """
-    The view that returns the map composer opened to
-    the map with the given map ID.
-    """
-    try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not map_obj:
-        raise Http404(_("Not found"))
-
-    config = map_obj.viewer_json(request)
-    perms_list = list(
-        map_obj.get_self_resource().get_user_perms(request.user)
-        .union(map_obj.get_user_perms(request.user))
-    )
-    return render(request, template, context={
-        'mapId': mapid,
-        'config': json.dumps(config),
-        'map': map_obj,
-        'perms_list': perms_list,
-        'preview': getattr(
-            settings,
-            'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'mapstore')
-    })
-
-
 # NEW MAPS #
 
 
@@ -711,45 +460,6 @@ def clean_config(conf):
         return json.dumps(config)
     else:
         return conf
-
-
-def new_map(request, template='maps/map_new.html'):
-    map_obj, config = new_map_config(request)
-    perms_list = []
-    dataset_name = request.GET.get('layer')
-    if dataset_name and request.GET.get('view'):
-        # Get permissions a user has on a layer when they click view layer.
-        try:
-            if ':' in dataset_name:
-                dataset_name = dataset_name.split(':')[1]
-            dataset_obj = Dataset.objects.get(name=dataset_name)
-            perms_list = list(
-                dataset_obj.get_self_resource().get_user_perms(request.user)
-                .union(dataset_obj.get_user_perms(request.user))
-            )
-        except Exception:
-            pass
-    elif map_obj:
-        perms_list = list(
-            map_obj.get_self_resource().get_user_perms(request.user)
-            .union(map_obj.get_user_perms(request.user))
-        )
-    context_dict = {
-        'config': config,
-        'map': map_obj,
-        'perms_list': perms_list
-    }
-    context_dict["preview"] = getattr(
-        settings,
-        'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-        'mapstore')
-    if isinstance(config, HttpResponse):
-        return config
-    else:
-        return render(
-            request,
-            template,
-            context=context_dict)
 
 
 def new_map_json(request):
@@ -1294,32 +1004,6 @@ def get_suffix_if_custom(map):
         return None
 
 
-def featured_map(request, site):
-    """
-    The view that returns the map composer opened to
-    the map with the given official site url.
-    """
-    map_obj = resolve_object(request,
-                             Map,
-                             {'featuredurl': site},
-                             permission='base.view_resourcebase',
-                             permission_msg=_PERMISSION_MSG_VIEW)
-    return map_view(request, str(map_obj.id))
-
-
-def featured_map_info(request, site):
-    '''
-    main view for map resources, dispatches to correct
-    view based on method and query args.
-    '''
-    map_obj = resolve_object(request,
-                             Map,
-                             {'featuredurl': site},
-                             permission='base.view_resourcebase',
-                             permission_msg=_PERMISSION_MSG_VIEW)
-    return map_detail(request, str(map_obj.id))
-
-
 def ajax_url_lookup(request):
     if request.method != 'POST':
         return HttpResponse(
@@ -1384,23 +1068,3 @@ def map_metadata_detail(
 @login_required
 def map_batch_metadata(request):
     return batch_modify(request, 'Map')
-
-
-class MapAutocomplete(autocomplete.Select2QuerySetView):
-
-    # Overriding both result label methods to ensure autocomplete labels display without ' by user' suffix
-    def get_selected_result_label(self, result):
-        """Return the label of a selected result."""
-        return self.get_result_label(result)
-
-    def get_result_label(self, result):
-        """Return the label of a selected result."""
-        return str(result.title)
-
-    def get_queryset(self):
-        qs = Map.objects.all()
-
-        if self.q:
-            qs = qs.filter(title__icontains=self.q).order_by('title')[:100]
-
-        return qs

@@ -28,6 +28,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode.base.models import ResourceBase
 from geonode.harvesting.models import Harvester
+from geonode.layers.enumerations import GXP_PTYPES
 from geonode.people.enumerations import ROLE_VALUES
 
 from . import enumerations
@@ -120,7 +121,7 @@ class Service(ResourceBase):
     @property
     def ptype(self):
         # Return the gxp ptype that should be used to display layers
-        return enumerations.GXP_PTYPES[self.type] if self.type else None
+        return GXP_PTYPES[self.type] if self.type else None
 
     @property
     def service_type(self):

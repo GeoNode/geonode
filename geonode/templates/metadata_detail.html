@@ -10,6 +10,7 @@
 
 {% block body_outer %}
 
+
 <style>
 
     .subtitle {
@@ -23,9 +24,12 @@
 
 </style>
 
+
 <div class="page-header">
     {% if resource.class_name == "Document" %}
-    <a href="{% document_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
+        {% if "download_resourcebase" in perms  %}
+            <a href="{% document_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
+        {% endif %}
     {% elif resource.class_name == "Layer" %}
     <a href="{% dataset_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Layer" %}</a>
     {% elif resource.class_name == "Map" %}
@@ -97,9 +101,9 @@
                 <ul>
                     {% for keyword in resource.keywords.all %}
                     <li>
-                        <a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?keywords__slug__in={{ keyword.slug|safe }}" >
+                        <span itemscope itemtype="http://schema.org/Text">
                         {{ keyword.name| safe }}
-                        </a>
+                        </span>
                     </li>
                     {% endfor %}
                     {% for tid in resource.tkeywords.all|get_unique_thesaurus_set %}
@@ -107,7 +111,7 @@
                         {% for tkeywords in resource.tkeywords.all %}
                         <ul>
                         {% if tid == tkeywords.thesaurus.id %}
-                            <li><a itemscope itemtype="http://schema.org/Text" href="{% url "search" %}?tkeywords__id__in={{ tkeywords.id }}">{{tkeywords|get_thesaurus_localized_label}}</a></li>
+                            <li><span itemscope itemtype="http://schema.org/Text">{{tkeywords|get_thesaurus_localized_label}}</span></li>
                         {% endif %}
                         </ul>
                         {% endfor %}
@@ -121,7 +125,7 @@
         {% block category %}
         {% if resource.category %}
         <dt>{% trans "Category" %}</dt>
-        <dd><a href="{% url 'search' %}/?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
+        <dd><span>{{ resource.category }}</span> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
         {% if resource.category.description %}
         <dd class="category-more collapse">
             {{ resource.category.description }}

@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2020 OSGeo
+# Copyright (C) 2021 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,3 +16,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.harvesting.harvesters import wms
+from geonode.tests.base import GeoNodeBaseSimpleTestSupport
+
+
+class WmsModuleTestCase(GeoNodeBaseSimpleTestSupport):
+
+    def test_get_nsmap(self):
+        fixtures = [
+            ({None: "ns1uri", "ns2": "ns2uri"}, {"wms": "ns1uri", "ns2": "ns2uri"}),
+            ({"ns1": "ns1uri", "ns2": "ns2uri"}, {"ns1": "ns1uri", "ns2": "ns2uri"}),
+        ]
+        for original, expected in fixtures:
+            result = wms._get_nsmap(original)
+            self.assertEqual(result, expected)

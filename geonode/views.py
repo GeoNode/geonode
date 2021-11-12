@@ -201,5 +201,5 @@ def moderator_contacted(request, inactive_user=None):
 @login_required
 def metadata_update_redirect(request):
     url = request.POST['url']
-    client_redirect_url = hookset.metadata_update_redirect(url)
+    client_redirect_url = hookset.metadata_update_redirect(url, request=request)
     return HttpResponse(content=client_redirect_url)

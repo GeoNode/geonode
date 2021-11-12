@@ -319,7 +319,7 @@ def toggle_dataset_cache(dataset_name, enable=True, filters=None, formats=None):
 
                 gwc_mimeFormats = tree.find('mimeFormats')
                 # Returns an element instance or None
-                if gwc_mimeFormats is not None:
+                if gwc_mimeFormats is not None and len(gwc_mimeFormats):
                     tree.remove(gwc_mimeFormats)
 
                 if formats is not None:
