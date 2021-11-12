@@ -37,7 +37,6 @@ from django.urls import reverse
 
 from dialogos.models import Comment
 
-from geonode.geoapps.models import GeoApp
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.social.templatetags.social_tags import activity_item

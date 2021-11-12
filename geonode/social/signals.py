@@ -29,8 +29,6 @@ from django.conf import settings
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 
-# from actstream.exceptions import ModelNotActionable
-
 from geonode.geoapps.models import GeoApp
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
@@ -38,7 +36,6 @@ from geonode.documents.models import Document
 from geonode.notifications_helper import (send_notification, queue_notification,
                                           has_notifications, get_notification_recipients,
                                           get_comment_notification_recipients)
-from geonode.utils import get_geonode_app_types
 
 logger = logging.getLogger(__name__)
 
