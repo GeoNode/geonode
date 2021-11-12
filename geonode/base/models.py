@@ -943,6 +943,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     # fields necessary for the apis
     thumbnail_url = models.TextField(_("Thumbnail url"), null=True, blank=True)
+    thumbnail_path = models.TextField(_("Thumbnail path"), null=True, blank=True)
     rating = models.IntegerField(default=0, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True, null=True, blank=True)
@@ -1725,16 +1726,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     )
                 )
                 self.thumbnail_url = url
+                self.thumbnail_path = upload_path
                 obj.url = url
                 obj.save()
                 ResourceBase.objects.filter(id=self.id).update(
-                    thumbnail_url=url
+                    thumbnail_url=url,
+                    thumbnail_path=upload_path
                 )
         except Exception as e:
             logger.error(
                 f'Error when generating the thumbnail for resource {self.id}. ({e})'
             )
-            logger.error(f'Check permissions for file {upload_path}.')
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
                 _thumbnail_url = static(settings.MISSING_THUMBNAIL)
