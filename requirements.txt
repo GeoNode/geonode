@@ -49,7 +49,7 @@ pyopenssl==21.0.0
 pyproj==3.2.1
 OWSLib==0.25.0
 pycsw==2.6.1
-SQLAlchemy==1.4.26 # required by PyCSW
+SQLAlchemy==1.4.27 # required by PyCSW
 Shapely==1.8.0
 mercantile==1.2.1
 geoip2==4.4.0
@@ -72,7 +72,7 @@ djangorestframework-gis==0.17
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.6.3
-drf-spectacular==0.20.2
+drf-spectacular==0.21.0
 git+https://github.com/GeoNode/dynamic-rest.git@v2.0.1#egg=dynamic-rest
 Markdown==3.3.4
 
@@ -104,7 +104,7 @@ django-bootstrap3-datetimepicker-2==2.8.2
 django-storages==1.12.3
 dropbox==11.23.0
 google-cloud-storage==1.42.3
-google-cloud-core==2.1.0
+google-cloud-core==2.2.1
 boto3==1.19.12
 
 # Django Caches
