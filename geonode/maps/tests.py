@@ -33,7 +33,7 @@ from geonode.maps import MapsAppConfig
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.decorators import on_ogc_backend
-from geonode.maps.utils import fix_baselayers
+from geonode.maps.utils.layers import fix_baselayers
 from geonode.maps.models import Map, MapLayer
 from geonode.base.models import License, Region
 from geonode.tests.utils import NotificationsTestsHelper

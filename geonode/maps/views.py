@@ -17,61 +17,57 @@
 #
 #########################################################################
 import json
-import math
 import logging
-import warnings
+import math
 import traceback
+import warnings
+from urllib.parse import quote, urljoin, urlsplit
 
 from deprecated import deprecated
-from urllib.parse import quote, urlsplit, urljoin
-
-from django.urls import reverse
 from django.conf import settings
-from django.shortcuts import render
-from django.utils.translation import ugettext as _
-from django.core.exceptions import PermissionDenied
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import (
-    Http404,
-    HttpResponse,
-    HttpResponseRedirect,
-    HttpResponseNotAllowed,
-    HttpResponseServerError)
+from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect, HttpResponseServerError
+from django.shortcuts import render
+from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
-from geonode.client.hooks import hookset
-from geonode.maps.forms import MapForm
-from geonode.layers.models import Dataset
-from geonode.base.views import batch_modify
-from geonode.people.forms import ProfileForm
-from geonode.maps.models import Map, MapLayer
 from geonode.base import register_event
-from geonode.groups.models import GroupProfile
-from geonode.monitoring.models import EventType
-from geonode.layers.views import _resolve_dataset
-from geonode.resource.manager import resource_manager
+from geonode.base.forms import CategoryForm, ThesaurusAvailableForm, TKeywordForm
+from geonode.base.models import Thesaurus, TopicCategory
+from geonode.base.views import batch_modify
+from geonode.client.hooks import hookset
 from geonode.decorators import check_keyword_write_perms
+from geonode.groups.models import GroupProfile
+from geonode.layers.models import Dataset
+from geonode.layers.views import _resolve_dataset
+from geonode.maps.contants import _PERMISSION_MSG_DELETE  # noqa: used by mapstore
+from geonode.maps.contants import _PERMISSION_MSG_SAVE  # noqa: used by mapstore
+from geonode.maps.contants import (
+    _PERMISSION_MSG_GENERIC,
+    _PERMISSION_MSG_LOGIN,
+    _PERMISSION_MSG_VIEW,
+    MSG_NOT_ALLOWED,
+    MSG_NOT_FOUND,
+)
+from geonode.maps.forms import MapForm
+from geonode.maps.models import Map, MapLayer
+from geonode.monitoring.models import EventType
+from geonode.people.forms import ProfileForm
+from geonode.resource.manager import resource_manager
 from geonode.security.utils import get_user_visible_groups
-
 from geonode.utils import (
-    DEFAULT_TITLE,
     DEFAULT_ABSTRACT,
-    http_client,
-    forward_mercator,
+    DEFAULT_TITLE,
     bbox_to_projection,
+    check_ogc_backend,
     default_map_config,
+    forward_mercator,
+    http_client,
     resolve_object,
-    check_ogc_backend)
-from geonode.base.forms import (
-    CategoryForm,
-    TKeywordForm,
-    ThesaurusAvailableForm)
-from geonode.base.models import (
-    Thesaurus,
-    TopicCategory)
+)
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -80,52 +76,28 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
 
 logger = logging.getLogger("geonode.maps.views")
 
-DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
-MAX_MAPS_SEARCH_BATCH_SIZE = 25
 
-_PERMISSION_MSG_DELETE = _("You are not permitted to delete this map.")
-_PERMISSION_MSG_GENERIC = _("You do not have permissions for this map.")
-_PERMISSION_MSG_LOGIN = _("You must be logged in to save this map")
-_PERMISSION_MSG_SAVE = _("You are not permitted to save or edit this map.")
-_PERMISSION_MSG_METADATA = _(
-    "You are not allowed to modify this map's metadata.")
-_PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
-_PERMISSION_MSG_UNKNOWN = _("An unknown error has occured.")
-
-
-def _resolve_map(request, id, permission='base.change_resourcebase',
-                 msg=_PERMISSION_MSG_GENERIC, **kwargs):
-    '''
+def _resolve_map(request, id, permission="base.change_resourcebase", msg=_PERMISSION_MSG_GENERIC, **kwargs):
+    """
     Resolve the Map by the provided typename and check the optional permission.
-    '''
-    if Map.objects.filter(urlsuffix=id).count() > 0:
-        key = 'urlsuffix'
-    else:
-        key = 'pk'
+    """
+    key = "urlsuffix" if Map.objects.filter(urlsuffix=id).exists() else "pk"
 
-    return resolve_object(request, Map, {key: id}, permission=permission,
-                          permission_msg=msg, **kwargs)
+    map_obj = resolve_object(request, Map, {key: id}, permission=permission, permission_msg=msg, **kwargs)
+    return map_obj
 
 
 @login_required
 @check_keyword_write_perms
-def map_metadata(
-        request,
-        mapid,
-        template='maps/map_metadata.html',
-        ajax=True):
+def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
     try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.change_resourcebase_metadata',
-            _PERMISSION_MSG_VIEW)
+        map_obj = _resolve_map(request, mapid, "base.change_resourcebase_metadata", _PERMISSION_MSG_VIEW)
     except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
+        return HttpResponse(MSG_NOT_ALLOWED, status=403)
     except Exception:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
     if not map_obj:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
 
     # Add metadata_author or poc if missing
     map_obj.add_missing_metadata_author_or_poc()
@@ -363,41 +335,29 @@ def map_embed(
 
 def map_view_js(request, mapid):
     try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
+        map_obj = _resolve_map(request, mapid, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
     except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
+        return HttpResponse(MSG_NOT_ALLOWED, status=403)
     except Exception:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
     if not map_obj:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
 
     config = map_obj.viewer_json(request)
-    return HttpResponse(
-        json.dumps(config),
-        content_type="application/javascript")
+    return HttpResponse(json.dumps(config), content_type="application/javascript")
 
 
 def map_json_handle_get(request, mapid):
     try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
+        map_obj = _resolve_map(request, mapid, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
     except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
+        return HttpResponse(MSG_NOT_ALLOWED, status=403)
     except Exception:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
     if not map_obj:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
 
-    return HttpResponse(
-        json.dumps(
-            map_obj.viewer_json(request)))
+    return HttpResponse(json.dumps(map_obj.viewer_json(request)))
 
 
 def map_json_handle_put(request, mapid):
@@ -437,6 +397,7 @@ def map_json(request, mapid):
     elif request.method == 'PUT':
         return map_json_handle_put(request, mapid)
 
+
 # NEW MAPS #
 
 
@@ -451,7 +412,8 @@ def clean_config(conf):
             "localCSWBaseUrl",
             "csrfToken",
             "db_datastore",
-            "authorizedRoles"]
+            "authorizedRoles",
+        ]
         for config_item in config_extras:
             if config_item in config:
                 del config[config_item]
@@ -512,30 +474,27 @@ def new_map_json(request):
 
 
 def new_map_config(request):
-    '''
+    """
     View that creates a new map.
 
     If the query argument 'copy' is given, the initial map is
     a copy of the map with the id specified, otherwise the
     default map configuration is used.  If copy is specified
     and the map specified does not exist a 404 is returned.
-    '''
+    """
     DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(request)
 
     map_obj = None
-    if request.method == 'GET' and 'copy' in request.GET:
-        mapid = request.GET['copy']
+    if request.method == "GET" and "copy" in request.GET:
+        mapid = request.GET["copy"]
         try:
-            map_obj = _resolve_map(
-                request,
-                mapid,
-                'base.view_resourcebase')
+            map_obj = _resolve_map(request, mapid, "base.view_resourcebase")
         except PermissionDenied:
-            return HttpResponse(_("Not allowed"), status=403)
+            return HttpResponse(MSG_NOT_ALLOWED, status=403)
         except Exception:
-            raise Http404(_("Not found"))
+            raise Http404(MSG_NOT_FOUND)
         if not map_obj:
-            raise Http404(_("Not found"))
+            raise Http404(MSG_NOT_FOUND)
 
         map_obj.abstract = DEFAULT_ABSTRACT
         map_obj.title = DEFAULT_TITLE
@@ -543,20 +502,18 @@ def new_map_config(request):
             map_obj.owner = request.user
 
         config = map_obj.viewer_json(request)
-        del config['id']
+        del config["id"]
     else:
-        if request.method == 'GET':
+        if request.method == "GET":
             params = request.GET
-        elif request.method == 'POST':
+        elif request.method == "POST":
             params = request.POST
         else:
             return HttpResponse(status=405)
 
-        if 'layer' in params:
-            map_obj = Map(projection=getattr(settings, 'DEFAULT_MAP_CRS',
-                                             'EPSG:3857'))
-            config = add_datasets_to_map_config(
-                request, map_obj, params.getlist('layer'))
+        if "layer" in params:
+            map_obj = Map(projection=getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857"))
+            config = add_datasets_to_map_config(request, map_obj, params.getlist("layer"))
         else:
             config = DEFAULT_MAP_CONFIG
     if map_obj:
@@ -824,32 +781,27 @@ def add_datasets_to_map_config(
 
 # MAPS DOWNLOAD #
 
-def map_download(request, mapid, template='maps/map_download.html'):
+
+def map_download(request, mapid, template="maps/map_download.html"):
     """
     Download all the layers of a map as a batch
     XXX To do, remove layer status once progress id done
     This should be fix because
     """
     try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.download_resourcebase',
-            _PERMISSION_MSG_VIEW)
+        map_obj = _resolve_map(request, mapid, "base.download_resourcebase", _PERMISSION_MSG_VIEW)
     except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
+        return HttpResponse(MSG_NOT_ALLOWED, status=403)
     except Exception:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
     if not map_obj:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
 
     map_status = dict()
-    if request.method == 'POST':
+    if request.method == "POST":
 
         def perm_filter(layer):
-            return request.user.has_perm(
-                'base.view_resourcebase',
-                obj=layer.get_self_resource())
+            return request.user.has_perm("base.view_resourcebase", obj=layer.get_self_resource())
 
         mapJson = map_obj.json(perm_filter)
 
@@ -865,9 +817,8 @@ def map_download(request, mapid, template='maps/map_download.html'):
         mapJson = json.dumps(j_map)
 
         # the path to geoserver backend continue here
-        url = urljoin(settings.SITEURL,
-                      reverse("download-map", kwargs={'mapid': mapid}))
-        resp, content = http_client.request(url, 'POST', data=mapJson)
+        url = urljoin(settings.SITEURL, reverse("download-map", kwargs={"mapid": mapid}))
+        resp, content = http_client.request(url, "POST", data=mapJson)
 
         status = int(resp.status_code)
 
@@ -875,8 +826,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             map_status = json.loads(content)
             request.session["map_status"] = map_status
         else:
-            raise Exception(
-                f'Could not start the download of {map_obj.title}. Error was: {content}')
+            raise Exception(f"Could not start the download of {map_obj.title}. Error was: {content}")
 
     locked_datasets = []
     remote_datasets = []
@@ -888,53 +838,55 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 remote_datasets.append(lyr)
             else:
                 ownable_dataset = Dataset.objects.get(alternate=lyr.name)
-                if not request.user.has_perm(
-                        'download_resourcebase',
-                        obj=ownable_dataset.get_self_resource()):
+                if not request.user.has_perm("download_resourcebase", obj=ownable_dataset.get_self_resource()):
                     locked_datasets.append(lyr)
                 else:
                     # we need to add the layer only once
-                    if len(
-                            [_l for _l in downloadable_datasets if _l.name == lyr.name]) == 0:
+                    if len([_l for _l in downloadable_datasets if _l.name == lyr.name]) == 0:
                         downloadable_datasets.append(lyr)
-    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+    site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
 
     register_event(request, EventType.EVENT_DOWNLOAD, map_obj)
 
-    return render(request, template, context={
-        "geoserver": ogc_server_settings.PUBLIC_LOCATION,
-        "map_status": map_status,
-        "map": map_obj,
-        "locked_datasets": locked_datasets,
-        "remote_datasets": remote_datasets,
-        "downloadable_datasets": downloadable_datasets,
-        "site": site_url
-    })
+    return render(
+        request,
+        template,
+        context={
+            "geoserver": ogc_server_settings.PUBLIC_LOCATION,
+            "map_status": map_status,
+            "map": map_obj,
+            "locked_datasets": locked_datasets,
+            "remote_datasets": remote_datasets,
+            "downloadable_datasets": downloadable_datasets,
+            "site": site_url,
+        },
+    )
 
 
 def map_wmc(request, mapid, template="maps/wmc.xml"):
     """Serialize an OGC Web Map Context Document (WMC) 1.1"""
     try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
+        map_obj = _resolve_map(request, mapid, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
     except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
+        return HttpResponse(MSG_NOT_ALLOWED, status=403)
     except Exception:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
     if not map_obj:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
 
-    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-    return render(request, template, context={
-        'map': map_obj,
-        'siteurl': site_url,
-    }, content_type='text/xml')
+    site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
+    return render(
+        request,
+        template,
+        context={
+            "map": map_obj,
+            "siteurl": site_url,
+        },
+        content_type="text/xml",
+    )
 
 
-@deprecated(version='2.10.1', reason="APIs have been changed on geospatial service")
+@deprecated(version="2.10.1", reason="APIs have been changed on geospatial service")
 def map_wms(request, mapid):
     """
     Publish local map layers as group layer in local OWS.
@@ -945,42 +897,34 @@ def map_wms(request, mapid):
     PUT: update existing or create new group layer.
     """
     try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
+        map_obj = _resolve_map(request, mapid, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
     except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
+        return HttpResponse(MSG_NOT_ALLOWED, status=403)
     except Exception:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
     if not map_obj:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
 
-    if request.method == 'PUT':
+    if request.method == "PUT":
         try:
             layerGroupName = map_obj.publish_dataset_group()
             response = dict(
                 layerGroupName=layerGroupName,
-                ows=getattr(ogc_server_settings, 'ows', ''),
+                ows=getattr(ogc_server_settings, "ows", ""),
             )
             register_event(request, EventType.EVENT_PUBLISH, map_obj)
-            return HttpResponse(
-                json.dumps(response),
-                content_type="application/json")
+            return HttpResponse(json.dumps(response), content_type="application/json")
         except Exception:
             return HttpResponseServerError()
 
-    if request.method == 'GET':
+    if request.method == "GET":
         response = dict(
-            layerGroupName=getattr(map_obj.dataset_group, 'name', ''),
-            ows=getattr(ogc_server_settings, 'ows', ''),
+            layerGroupName=getattr(map_obj.dataset_group, "name", ""),
+            ows=getattr(ogc_server_settings, "ows", ""),
         )
-        return HttpResponse(
-            json.dumps(response),
-            content_type="application/json")
+        return HttpResponse(json.dumps(response), content_type="application/json")
 
-    return HttpResponseNotAllowed(['PUT', 'GET'])
+    return HttpResponseNotAllowed(["PUT", "GET"])
 
 
 def mapdataset_attributes(request, layername):
@@ -1034,21 +978,15 @@ def ajax_url_lookup(request):
     )
 
 
-def map_metadata_detail(
-        request,
-        mapid,
-        template='maps/map_metadata_detail.html'):
+def map_metadata_detail(request, mapid, template="maps/map_metadata_detail.html"):
     try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'view_resourcebase')
+        map_obj = _resolve_map(request, mapid, "view_resourcebase")
     except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
+        return HttpResponse(MSG_NOT_ALLOWED, status=403)
     except Exception:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
     if not map_obj:
-        raise Http404(_("Not found"))
+        raise Http404(MSG_NOT_FOUND)
 
     group = None
     if map_obj.group:
@@ -1056,13 +994,9 @@ def map_metadata_detail(
             group = GroupProfile.objects.get(slug=map_obj.group.name)
         except GroupProfile.DoesNotExist:
             group = None
-    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+    site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
     register_event(request, EventType.EVENT_VIEW_METADATA, map_obj)
-    return render(request, template, context={
-        "resource": map_obj,
-        "group": group,
-        'SITEURL': site_url
-    })
+    return render(request, template, context={"resource": map_obj, "group": group, "SITEURL": site_url})
 
 
 @login_required
