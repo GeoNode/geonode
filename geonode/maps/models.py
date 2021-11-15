@@ -114,7 +114,7 @@ class Map(ResourceBase, GXPMapBase):
             layers = [lyr for lyr in layers if dataset_filter(lyr)]
 
         # the readme text will appear in a README file in the zip
-        readme = f"Title: {self.title}\n" + f"Author: {self.poc}\n" + f"Abstract: {self.abstract}\n"
+        readme = f"Title: {self.title}\nAuthor: {self.poc}\nAbstract: {self.abstract}\n"
         if self.license:
             readme += f"License: {self.license}"
             if self.license.url:
@@ -274,7 +274,7 @@ class Map(ResourceBase, GXPMapBase):
 
             if not user.has_perm("base.view_resourcebase", obj=layer.resourcebase_ptr):
                 # invisible layer, skip inclusion or raise Exception?
-                logger.error("User %s tried to create a map with layer %s without having premissions" % (user, layer))
+                logger.error(f"User {user} tried to create a map with layer {layer} without having premissions")
             else:
                 _datasets.append(layer)
 
@@ -462,7 +462,7 @@ class MapLayer(models.Model, GXPLayerBase):
     def dataset_config(self, user=None):
         # Try to use existing user-specific cache of layer config
         if self.id:
-            cfg = cache.get("dataset_config" + str(self.id) + "_" + str(0 if user is None else user.id))
+            cfg = cache.get(f"dataset_config{str(self.id)}_{str(0 if user is None else user.id)}")
             if cfg is not None:
                 return cfg
 
@@ -493,7 +493,7 @@ class MapLayer(models.Model, GXPLayerBase):
             # Create temporary cache of maplayer config, should not last too long in case
             # local layer permissions or configuration values change (default
             # is 5 minutes)
-            cache.set("dataset_config" + str(self.id) + "_" + str(0 if user is None else user.id), cfg)
+            cache.set(f"dataset_config{str(self.id)}_{str(0 if user is None else user.id)}", cfg)
         return cfg
 
     @property

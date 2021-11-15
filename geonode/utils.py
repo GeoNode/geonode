@@ -672,7 +672,7 @@ def dataset_from_viewer_config(map_id, model, dataset, source, ordering, save_ma
                 styles.append(style)
 
     current_style = None
-    if styles and type(styles) == list and len(styles):
+    if styles and isinstance(styles, list) and len(styles):
         current_style = styles[0]
 
     _model = model(

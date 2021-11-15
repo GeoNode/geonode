@@ -36,6 +36,7 @@ from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
+from geonode.thumbs.utils import MISSING_THUMB
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
 from geonode.groups.conf import settings as groups_settings
@@ -554,7 +555,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         if instance and not isinstance(instance.get_real_instance(), Document):
-            if overwrite or instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
+            if overwrite or instance.thumbnail_url == static(MISSING_THUMB):
                 geoserver_create_thumbnail.apply((instance.id, overwrite, check_bbox, ))
             return True
         return False

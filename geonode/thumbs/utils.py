@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 import re
 import time
 import base64
@@ -24,19 +25,22 @@ import logging
 from pyproj import CRS
 from owslib.wms import WebMapService
 from typing import List, Tuple, Callable, Union
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.templatetags.static import static
 
-from geonode.maps.models import Map
-from geonode.layers.models import Dataset
 from geonode.utils import (
     bbox_to_projection,
     OGC_Servers_Handler)
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
+from geonode.storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
+
+MISSING_THUMB = static(settings.MISSING_THUMBNAIL)
 
 
 def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[List, Tuple]) -> Callable:
@@ -134,9 +138,9 @@ def expand_bbox_to_ratio(
     return new_bbox
 
 
-def assign_missing_thumbnail(instance: Union[Dataset, Map]) -> None:
+def assign_missing_thumbnail(instance) -> None:
     """
-    Function assigning settings.MISSING_THUMBNAIL to a provided instance
+    Function assigning 'geonode.thumbs.utils.MISSING_THUMB' to a provided instance
 
     :param instance: instance of Dataset or Map models
     """
@@ -309,3 +313,61 @@ def exceeds_epsg3857_area_of_use(bbox: List) -> bool:
             exceeds = True
 
     return exceeds
+
+
+def thumb_path(filename):
+    """Return the complete path of the provided thumbnail file accessible
+    via Django storage API"""
+    return os.path.join(settings.THUMBNAIL_LOCATION, filename)
+
+
+def thumb_exists(filename):
+    """Determine if a thumbnail file exists in storage"""
+    return storage_manager.exists(thumb_path(filename))
+
+
+def thumb_size(filepath):
+    """Determine if a thumbnail file size in storage"""
+    if storage_manager.exists(filepath):
+        return storage_manager.size(filepath)
+    elif os.path.exists(filepath):
+        return os.path.getsize(filepath)
+    return 0
+
+
+def thumb_open(filename):
+    """Returns file handler of a thumbnail on the storage"""
+    return storage_manager.open(thumb_path(filename))
+
+
+def get_thumbs():
+    """Fetches a list of all stored thumbnails"""
+    if not storage_manager.exists(settings.THUMBNAIL_LOCATION):
+        return []
+    subdirs, thumbs = storage_manager.listdir(settings.THUMBNAIL_LOCATION)
+    return thumbs
+
+
+def remove_thumb(filename):
+    """Delete a thumbnail from storage"""
+    path = thumb_path(filename)
+    if storage_manager.exists(path):
+        storage_manager.delete(path)
+
+
+def remove_thumbs(name):
+    """Removes all stored thumbnails that start with the same name as the
+    file specified"""
+    for thumb in get_thumbs():
+        if thumb.startswith(name):
+            remove_thumb(thumb)
+
+
+def get_unique_upload_path(filename):
+    """ Generates a unique name from the given filename and
+    creates a unique file upload path"""
+    # create an upload path from a unique filename
+    filename, ext = os.path.splitext(filename)
+    unique_file_name = f'{filename}-{uuid4()}{ext}'
+    upload_path = thumb_path(unique_file_name)
+    return upload_path

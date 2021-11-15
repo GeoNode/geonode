@@ -66,6 +66,7 @@ from owslib.wms import WebMapService
 from geonode import GeoNodeException
 from geonode.base.models import Link
 from geonode.base.models import ResourceBase
+from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Dataset, Attribute, Style
@@ -1643,7 +1644,7 @@ def sync_instance_with_geoserver(
             }
 
         if updatebbox and is_monochromatic_image(instance.thumbnail_url):
-            to_update['thumbnail_url'] = static(settings.MISSING_THUMBNAIL)
+            to_update['thumbnail_url'] = static(MISSING_THUMB)
 
         # Save all the modified information in the instance without triggering signals.
         try:

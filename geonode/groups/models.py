@@ -35,6 +35,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.utils import build_absolute_uri
+from geonode.thumbs.utils import MISSING_THUMB
 
 from guardian.shortcuts import (
     assign_perm,
@@ -226,7 +227,7 @@ class GroupProfile(models.Model):
 
     @property
     def logo_url(self):
-        _missing_thumbnail_url = static(settings.MISSING_THUMBNAIL)
+        _missing_thumbnail_url = static(MISSING_THUMB)
         try:
             _base_path = os.path.split(self.logo.path)[0]
             _upload_path = os.path.split(self.logo.url)[1]

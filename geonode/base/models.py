@@ -71,6 +71,10 @@ from geonode.utils import (
     find_by_attr,
     bbox_to_projection,
     is_monochromatic_image)
+from geonode.thumbs.utils import (
+    MISSING_THUMB,
+    thumb_size,
+    get_unique_upload_path)
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
@@ -83,10 +87,6 @@ from geonode.notifications_helper import (
     send_notification,
     get_notification_recipients)
 from geonode.people.enumerations import ROLE_VALUES
-from geonode.base.thumb_utils import (
-    thumb_path,
-    thumb_size,
-    remove_thumbs)
 
 from pyproj import transform, Proj
 
@@ -947,6 +947,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     # fields necessary for the apis
     thumbnail_url = models.TextField(_("Thumbnail url"), null=True, blank=True)
+    thumbnail_path = models.TextField(_("Thumbnail path"), null=True, blank=True)
     rating = models.IntegerField(default=0, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True, null=True, blank=True)
@@ -1640,7 +1641,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
            It could be a local one if it exists, a remote one (WMS GetImage) for example
            or a 'Missing Thumbnail' one.
         """
-        _thumbnail_url = self.thumbnail_url or static(settings.MISSING_THUMBNAIL)
+        _thumbnail_url = self.thumbnail_url or static(MISSING_THUMB)
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
         if local_thumbnails.exists():
@@ -1656,7 +1657,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
-        upload_path = thumb_path(filename)
+        upload_path = get_unique_upload_path(filename)
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
@@ -1667,16 +1668,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     image = None
 
             if upload_path and image:
-                name = os.path.basename(filename)
-                remove_thumbs(name)
                 actual_name = storage_manager.save(upload_path, ContentFile(image))
                 actual_file_name = os.path.basename(actual_name)
 
                 if filename != actual_file_name:
                     upload_path = upload_path.replace(filename, actual_file_name)
-
                 url = storage_manager.url(upload_path)
-
                 try:
                     # Optimize the Thumbnail size and resolution
                     _default_thumb_size = getattr(
@@ -1723,20 +1720,25 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         link_type='image',
                     )
                 )
+                # Cleaning up the old stuff
+                if self.thumbnail_path and MISSING_THUMB not in self.thumbnail_path and storage_manager.exists(self.thumbnail_path):
+                    storage_manager.delete(self.thumbnail_path)
+                # Store the new url and path
                 self.thumbnail_url = url
+                self.thumbnail_path = upload_path
                 obj.url = url
                 obj.save()
                 ResourceBase.objects.filter(id=self.id).update(
-                    thumbnail_url=url
+                    thumbnail_url=url,
+                    thumbnail_path=upload_path
                 )
         except Exception as e:
             logger.error(
                 f'Error when generating the thumbnail for resource {self.id}. ({e})'
             )
-            logger.error(f'Check permissions for file {upload_path}.')
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
-                _thumbnail_url = static(settings.MISSING_THUMBNAIL)
+                _thumbnail_url = static(MISSING_THUMB)
                 obj, _created = Link.objects.get_or_create(
                     resource=self,
                     name='Thumbnail',
