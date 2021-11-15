@@ -104,7 +104,7 @@ django-bootstrap3-datetimepicker-2==2.8.2
 django-storages==1.12.3
 dropbox==11.23.0
 google-cloud-storage==1.42.3
-google-cloud-core==2.1.0
+google-cloud-core==2.2.1
 boto3==1.19.12
 
 # Django Caches
