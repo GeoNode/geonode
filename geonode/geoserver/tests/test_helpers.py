@@ -210,8 +210,8 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         admin = get_user_model().objects.get(username="admin")
         # upload a shapefile
         shp_file = os.path.join(
-          gisdata.VECTOR_DATA,
-          'san_andres_y_providencia_poi.shp')
+            gisdata.VECTOR_DATA,
+            'san_andres_y_providencia_poi.shp')
         layer = file_upload(
             shp_file,
             name="san_andres_y_providencia_poi",
@@ -223,8 +223,8 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
             # tests if bbox is synced properly
             self.change_bbox(layer)
             with patch(
-              'geonode.geoserver.helpers.ogc_server_settings',
-              new_callable=PropertyMock
+                'geonode.geoserver.helpers.ogc_server_settings',
+                new_callable=PropertyMock
             ) as ogc_sett:
                 ogc_sett.MAX_RETRIES = 2
                 ogc_sett.BACKEND_WRITE_ENABLED = False

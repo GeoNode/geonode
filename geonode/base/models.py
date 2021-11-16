@@ -1032,36 +1032,35 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             elif self.pk:
                 # Resource Updated
                 _notification_sent = False
+                _approval_status_changed = False
 
                 # Approval Notifications Here
-                if not _notification_sent and settings.ADMIN_MODERATE_UPLOADS and \
-                   not self.__is_approved and self.is_approved:
-                    # Set "approved" workflow permissions
-                    self.set_workflow_perms(approved=True)
-
+                if not _notification_sent and not self.__is_approved and self.is_approved:
                     # Send "approved" notification
                     notice_type_label = f'{self.class_name.lower()}_approved'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
                     _notification_sent = True
+                    _approval_status_changed = True
 
                 # Publishing Notifications Here
-                if not _notification_sent and settings.RESOURCE_PUBLISHING and \
-                   not self.__is_published and self.is_published:
-                    # Set "published" workflow permissions
-                    self.set_workflow_perms(published=True)
-
+                if not _notification_sent and not self.__is_published and self.is_published:
                     # Send "published" notification
                     notice_type_label = f'{self.class_name.lower()}_published'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
                     _notification_sent = True
+                    _approval_status_changed = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
                     notice_type_label = f'{self.class_name.lower()}_updated'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
+
+                # Update workflow permissions
+                if _approval_status_changed:
+                    self.set_permissions()
 
         super().save(*args, **kwargs)
         self.__is_approved = self.is_approved

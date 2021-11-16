@@ -34,10 +34,9 @@ from django.contrib.staticfiles.templatetags import staticfiles
 
 from taggit.managers import TaggableManager
 
-from guardian.shortcuts import (
-    get_objects_for_user,
-    get_objects_for_group
-)
+from guardian.shortcuts import get_objects_for_group
+
+from geonode.security.permissions import VIEW_PERMISSIONS
 
 logger = logging.getLogger(__name__)
 
@@ -269,14 +268,9 @@ class GroupMember(models.Model):
     def demote(self, *args, **kwargs):
         self.role = "member"
         super().save(*args, **kwargs)
-        self._handle_perms(perms={"users": {self.user: ["download_resourcebase", "view_resourcebase"]}, "groups": {}})
+        self._handle_perms(perms=VIEW_PERMISSIONS)
 
-    def _handle_perms(self, perms={}):
-        queryset = (
-            get_objects_for_user(self.user, "base.view_resourcebase")
-            .filter(group=self.group.group)
-            .exclude(owner=self.user)
-        )
+    def _handle_perms(self, perms=None):
         '''
         Internally the set_permissions function will automatically handle the permissions
         that needs to be assigned to re resource.
@@ -284,8 +278,14 @@ class GroupMember(models.Model):
         If the user is demoted, we assign by default at least the view and the download permission
         to the resource
         '''
-        for _r in queryset:
-            _r.set_permissions(perms)
+        for _r in self.group.resources():
+            perm_spec = None
+            if perms:
+                perm_spec = _r.get_all_level_info()
+                if "users" not in perm_spec:
+                    perm_spec["users"] = {}
+                perm_spec["users"][self.user] = perms
+            _r.set_permissions(perm_spec)
 
 
 def group_pre_delete(instance, sender, **kwargs):
