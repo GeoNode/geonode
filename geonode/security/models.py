@@ -305,6 +305,8 @@ class PermissionLevelMixin:
                 member_group_perm, group_managers = self._get_group_managers(user_groups)
 
                 if member_group_perm:
+                    if 'groups' not in perm_spec:
+                        perm_spec['groups'] = {}
                     for gr, perm in member_group_perm['groups'].items():
                         prev_perms = perm_spec['groups'].get(gr, [])
                         perm_spec['groups'][gr] = list(set(prev_perms + perm))

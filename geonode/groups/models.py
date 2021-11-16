@@ -269,15 +269,23 @@ class GroupMember(models.Model):
     def demote(self, *args, **kwargs):
         self.role = "member"
         super().save(*args, **kwargs)
-        self._handle_perms()
+        self._handle_perms(perms={"users": {self.user: ["download_resourcebase", "view_resourcebase"]}, "groups": {}})
 
-    def _handle_perms(self):
-        queryset = get_objects_for_user(self.user, 'base.view_resourcebase')\
-            .filter(group=self.group.group)\
+    def _handle_perms(self, perms={}):
+        queryset = (
+            get_objects_for_user(self.user, "base.view_resourcebase")
+            .filter(group=self.group.group)
             .exclude(owner=self.user)
+        )
+        '''
+        Internally the set_permissions function will automatically handle the permissions
+        that needs to be assigned to re resource.
+        Background at: https://github.com/GeoNode/geonode/pull/8145
+        If the user is demoted, we assign by default at least the view and the download permission
+        to the resource
+        '''
         for _r in queryset:
-            # let the user see and download the resource if is demoted
-            _r.set_permissions({"users": {self.user: ["download_resourcebase", "view_resourcebase"]}, "groups": {}})
+            _r.set_permissions(perms)
 
 
 def group_pre_delete(instance, sender, **kwargs):
