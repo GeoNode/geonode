@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import io
 import os
 import re
@@ -194,14 +193,16 @@ def proxy(request, url=None, response_callback=None,
             status=500)
     content = response.content or response.reason
     status = response.status_code
+    response_headers = response.headers
     content_type = response.headers.get('Content-Type')
 
     if status >= 400:
-        return HttpResponse(
+        _response = HttpResponse(
             content=content,
             reason=content,
             status=status,
             content_type=content_type)
+        return fetch_response_headers(_response, response_headers)
 
     # decompress GZipped responses if not enabled
     # if content and response and response.getheader('Content-Encoding') == 'gzip':
@@ -233,6 +234,7 @@ def proxy(request, url=None, response_callback=None,
             'response': response,
             'content': content,
             'status': status,
+            'response_headers': response_headers,
             'content_type': content_type
         })
         return response_callback(**kwargs)
@@ -245,7 +247,7 @@ def proxy(request, url=None, response_callback=None,
                                      content_type=content_type
                                      )
             _response['Location'] = response.getheader('Location')
-            return _response
+            return fetch_response_headers(_response, response_headers)
         else:
             def _get_message(text):
                 _s = text
@@ -257,11 +259,12 @@ def proxy(request, url=None, response_callback=None,
                     found = _s
                 return found
 
-            return HttpResponse(
+            _response = HttpResponse(
                 content=content,
                 reason=_get_message(content) if status not in (200, 201) else None,
                 status=status,
                 content_type=content_type)
+            return fetch_response_headers(_response, response_headers)
 
 
 def download(request, resourceid, sender=Layer):
@@ -475,3 +478,26 @@ class OWSListView(View):
         # main site url
         data.append({'url': settings.SITEURL, 'type': 'WWW:LINK'})
         return json_response(out)
+
+
+_hoppish = {
+    'connection', 'keep-alive', 'proxy-authenticate',
+    'proxy-authorization', 'te', 'trailers', 'transfer-encoding',
+    'upgrade', 'content-length', 'content-encoding'
+}.__contains__
+
+
+def is_hop_by_hop(header_name):
+    """Return true if 'header_name' is an HTTP/1.1 "Hop-by-Hop" header"""
+    return _hoppish(header_name.lower())
+
+
+def fetch_response_headers(response, response_headers):
+    if response_headers:
+        for _header in response_headers:
+            if not is_hop_by_hop(_header):
+                if hasattr(response, 'headers') and _header.lower() not in [_k.lower() for _k in response.headers.keys()]:
+                    response.headers[_header] = response_headers.get(_header)
+                elif hasattr(response, '_headers') and _header.lower() not in [_k.lower() for _k in response._headers.keys()]:
+                    response._headers[_header] = (_header, response_headers.get(_header))
+    return response

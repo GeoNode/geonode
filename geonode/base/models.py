@@ -1099,7 +1099,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def restriction_code(self):
-        return self.restriction_code_type.gn_description
+        return self.restriction_code_type.gn_description if self.restriction_code_type else None
 
     @property
     def publisher(self):
@@ -1111,7 +1111,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def topiccategory(self):
-        return self.category.identifier
+        return self.category.identifier if self.category else None
 
     @property
     def csw_crs(self):
@@ -1119,9 +1119,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def group_name(self):
-        if self.group:
-            return str(self.group).encode("utf-8", "replace")
-        return None
+        return str(self.group).encode("utf-8", "replace") if self.group else None
 
     @property
     def bbox(self):

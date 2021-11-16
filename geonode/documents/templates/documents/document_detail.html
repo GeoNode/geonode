@@ -52,7 +52,7 @@
         {% get_mime_type mimetypemap resource.extension as mimetype %}
         <div id="embedded_map" width="500px">
             <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
-                <video width="500" controls>
+                <video style="width:100%" controls>
                     <source src="{% url "document_download" resource.id %}" type="{{ mimetype }}">
                     {% trans "Your browser does not support the video tag." %}
                 </video>
