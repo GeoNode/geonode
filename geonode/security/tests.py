@@ -394,7 +394,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             self.client.login(username='bobby', password='bob')
             resp = self.client.get(self.list_url)
-            self.assertEqual(len(self.deserialize(resp)['objects']),7)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
             perms = get_users_with_perms(test_perm_layer)
             _log(f"3. perms: {perms} ")
@@ -1923,6 +1923,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
+                        "change_resourcebase_permissions",
+                        "view_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: [],
@@ -2129,8 +2131,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
-                "change_resourcebase_permissions",
-                "publish_resourcebase"
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
             self.group_member: ["download_resourcebase", "view_resourcebase"]
@@ -2198,7 +2198,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "change_resourcebase_metadata",
                 "delete_resourcebase",
                 "download_resourcebase",
-                "view_resourcebase"
+                "view_resourcebase",
+                "change_resourcebase_permissions",
+                "publish_resourcebase"
             ],
         }
         for authorized_subject, expected_perms in expected.items():

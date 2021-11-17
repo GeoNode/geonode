@@ -278,6 +278,10 @@ class GroupMember(models.Model):
         If the user is demoted, we assign by default at least the view and the download permission
         to the resource
         '''
+        # TODO: The following queryset includes only the resources accessible to the user
+        #       and assigned to the current group, via the metadata editor.
+        #       It may not include the "group.resources()", i.e. the resources accessible
+        #       by the group.
         queryset = (
             get_objects_for_user(
                 self.user,
