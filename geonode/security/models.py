@@ -233,7 +233,7 @@ class PermissionLevelMixin:
                 # All the other users
                 if 'users' in perm_spec and len(perm_spec['users']) > 0:
                     for user, perms in perm_spec['users'].items():
-                        _user = get_user_model().objects.get(username=user)
+                        _user = user if isinstance(user, get_user_model()) else get_user_model().objects.get(username=user)
                         if _user != self.owner and user != "AnonymousUser":
                             for perm in perms:
                                 if self.polymorphic_ctype.name == 'layer' and perm in (
@@ -246,7 +246,7 @@ class PermissionLevelMixin:
                 # All the other groups
                 if 'groups' in perm_spec and len(perm_spec['groups']) > 0:
                     for group, perms in perm_spec['groups'].items():
-                        _group = Group.objects.get(name=group)
+                        _group = group if isinstance(group, Group) else Group.objects.get(name=group)
                         for perm in perms:
                             if self.polymorphic_ctype.name == 'layer' and perm in (
                                     'change_layer_data', 'change_layer_style',
@@ -448,17 +448,24 @@ class PermissionLevelMixin:
         """
         if "users" in prev_perm_spec:
             if "users" in perm_spec:
-                for _user, _perms in prev_perm_spec["users"].items():
-                    if sorted(_perms) != sorted(perm_spec["users"].get(_user, [])):
-                        return False
+                if len(prev_perm_spec["users"]) != len(perm_spec["users"]):
+                    return False
+                else:
+                    _users_iterator = prev_perm_spec["users"].items() if isinstance(prev_perm_spec["users"], dict) else prev_perm_spec["users"]
+                    for _user, _perms in _users_iterator:
+                        if sorted(_perms) != sorted(perm_spec["users"].get(_user, [])):
+                            return False
             else:
                 return False
         if "groups" in prev_perm_spec:
             if "groups" in perm_spec:
-                _groups_iterator = prev_perm_spec["groups"].items() if isinstance(prev_perm_spec["groups"], dict) else prev_perm_spec["groups"]
-                for _group, _perms in _groups_iterator:
-                    if sorted(_perms) != sorted(perm_spec["groups"].get(_group, [])):
-                        return False
+                if len(prev_perm_spec["groups"]) != len(perm_spec["groups"]):
+                    return False
+                else:
+                    _groups_iterator = prev_perm_spec["groups"].items() if isinstance(prev_perm_spec["groups"], dict) else prev_perm_spec["groups"]
+                    for _group, _perms in _groups_iterator:
+                        if sorted(_perms) != sorted(perm_spec["groups"].get(_group, [])):
+                            return False
             else:
                 return False
         return True
@@ -500,7 +507,8 @@ class PermissionLevelMixin:
         """
         perm_spec_fixed = copy.deepcopy(perm_spec)
         if "users" in perm_spec:
-            for _user, _perms in perm_spec["users"].items():
+            _users_iterator = perm_spec["users"].items() if isinstance(perm_spec["users"], dict) else perm_spec["users"]
+            for _user, _perms in _users_iterator:
                 if not isinstance(_user, get_user_model()):
                     perm_spec_fixed["users"].pop(_user)
                     if _perms and get_user_model().objects.filter(username=_user).count() == 1:
@@ -529,8 +537,15 @@ class PermissionLevelMixin:
          - The Group Managers are missing from the provided "perm_spec"
         """
         perm_spec = perm_spec or copy.deepcopy(self.get_all_level_info())
+
         if "users" not in perm_spec:
             perm_spec["users"] = {}
+        elif isinstance(perm_spec["users"], list):
+            _users = {}
+            for _item in perm_spec["users"]:
+                _users[_item[0]] = _item[1]
+            perm_spec["users"] = _users
+
         if "groups" not in perm_spec:
             perm_spec["groups"] = {}
         elif isinstance(perm_spec["groups"], list):

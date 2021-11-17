@@ -128,7 +128,12 @@ workflows:
           name: geonode_test_suite
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS]))") geonode.catalogue.backends.tests geonode.thumbs.tests
+          test_suite: ./test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' not in a]))") geonode.catalogue.backends.tests geonode.thumbs.tests
+      - build:
+          name: geonode_test_security
+          load_docker_cache: false
+          save_docker_cache: false
+          test_suite: ./test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' in a]))")
       - build:
           name: geonode_test_rest_apis
           load_docker_cache: false
