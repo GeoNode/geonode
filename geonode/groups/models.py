@@ -34,7 +34,7 @@ from django.contrib.staticfiles.templatetags import staticfiles
 
 from taggit.managers import TaggableManager
 
-from guardian.shortcuts import get_objects_for_group
+from guardian.shortcuts import get_objects_for_user, get_objects_for_group
 
 from geonode.security.permissions import VIEW_PERMISSIONS
 
@@ -278,7 +278,15 @@ class GroupMember(models.Model):
         If the user is demoted, we assign by default at least the view and the download permission
         to the resource
         '''
-        for _r in self.group.resources():
+        queryset = (
+            get_objects_for_user(
+                self.user,
+                ["base.view_resourcebase", "base.change_resourcebase"],
+                any_perm=True)
+            .filter(group=self.group.group)
+            .exclude(owner=self.user)
+        )
+        for _r in queryset.iterator():
             perm_spec = None
             if perms:
                 perm_spec = _r.get_all_level_info()

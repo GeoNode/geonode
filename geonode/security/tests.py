@@ -394,7 +394,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             self.client.login(username='bobby', password='bob')
             resp = self.client.get(self.list_url)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 7)
+            self.assertEqual(len(self.deserialize(resp)['objects']),7)
 
             perms = get_users_with_perms(test_perm_layer)
             _log(f"3. perms: {perms} ")
@@ -861,7 +861,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
         featureType = etree.ElementTree(dlxml.fromstring(r.text))
         metadata = featureType.findall('./[metadata]')
-        self.assertEqual(len(metadata), 0)
+        self.assertEqual(len(metadata), 1)
 
         payload = """<featureType>
         <metadata>
@@ -1370,7 +1370,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
             # reduced to 12 because now the group manager by default doesn't have permissions
             # if the advanced workflow is disabled
-            self.assertEqual(geofence_rules_count, 12)
+            self.assertEqual(geofence_rules_count, 13)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 
@@ -1817,13 +1817,15 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_get_visible_resources(self):
         standard_user = get_user_model().objects.get(username="bobby")
+        anonymous_group = Group.objects.get(name='anonymous')
         layers = Layer.objects.all()
         # update user's perm on a layer,
         # this should not return the layer since it will not be in user's allowed resources
         x = Layer.objects.get(title='common bar')
         remove_perm('view_resourcebase', standard_user, x.get_self_resource())
-        anonymous_group = Group.objects.get(name='anonymous')
+        remove_perm('change_resourcebase', standard_user, x.get_self_resource())
         remove_perm('view_resourcebase', anonymous_group, x.get_self_resource())
+        remove_perm('change_resourcebase', anonymous_group, x.get_self_resource())
         actual = get_visible_resources(
             queryset=layers,
             user=standard_user,
@@ -1834,7 +1836,10 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # get layers as admin, this should return all layers with metadata_only = True
         actual = get_visible_resources(
             queryset=layers,
-            user=self.user)
+            user=self.user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
         self.assertIn(x.title, list(actual.values_list('title', flat=True)))
 
 
@@ -1932,9 +1937,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
-                        "publish_resourcebase",
-                        "change_resourcebase_permissions",
                         "view_resourcebase",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase"
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -1942,6 +1947,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase"
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["view_resourcebase"],
@@ -1953,7 +1960,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.resource.set_permissions(permissions)
             for authorized_subject, expected_perms in expected.items():
                 perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-                self.assertSetEqual(set(expected_perms), set(perms_got))
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
 
     @override_settings(RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
@@ -2003,7 +2010,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "view_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
-                    self.not_group_member: ["view_resourcebase"],
+                    self.not_group_member: ["download_resourcebase", "view_resourcebase"],
                     self.anonymous_user: [],
                 },
             ),
@@ -2012,7 +2019,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.resource.set_permissions(permissions)
             for authorized_subject, expected_perms in expected.items():
                 perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-                self.assertSetEqual(set(expected_perms), set(perms_got))
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
 
     @override_settings(RESOURCE_PUBLISHING=False)
     @override_settings(ADMIN_MODERATE_UPLOADS=False)
@@ -2059,7 +2066,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.resource.set_permissions(permissions)
             for authorized_subject, expected_perms in expected.items():
                 perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-                self.assertSetEqual(set(expected_perms), set(perms_got))
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
 
     @override_settings(RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
@@ -2098,9 +2105,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "view_resourcebase",
             ]
         }
-        for authorized_subject, expected_perms in expected.items():
-            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-            self.assertSetEqual(set(expected_perms), set(perms_got))
+        try:
+            for authorized_subject, expected_perms in expected.items():
+                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+        finally:
+            sut.demote()
 
     @override_settings(RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
@@ -2119,13 +2129,15 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
+                "change_resourcebase_permissions",
+                "publish_resourcebase"
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
             self.group_member: ["download_resourcebase", "view_resourcebase"]
         }
         for authorized_subject, expected_perms in expected.items():
             perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-            self.assertSetEqual(set(expected_perms), set(perms_got))
+            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
 
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_permissions_on_user_role_demote_to_member_only_RESOURCE_PUBLISHING_active(self):
@@ -2143,15 +2155,15 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
-                "publish_resourcebase",
-                "change_resourcebase_permissions"
+                "change_resourcebase_permissions",
+                "publish_resourcebase"
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
             self.group_member: ["download_resourcebase", "view_resourcebase"],
         }
         for authorized_subject, expected_perms in expected.items():
             perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-            self.assertSetEqual(set(expected_perms), set(perms_got))
+            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
 
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_permissions_on_user_role_promote_to_manager_only_RESOURCE_PUBLISHING_active(self):
@@ -2169,8 +2181,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
-                "publish_resourcebase",
                 "change_resourcebase_permissions",
+                "publish_resourcebase"
             ],
             self.group_manager: [
                 "change_resourcebase",
@@ -2178,6 +2190,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
+                "change_resourcebase_permissions",
+                "publish_resourcebase"
             ],
             self.group_member: [
                 "change_resourcebase",

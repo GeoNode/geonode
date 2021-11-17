@@ -17,11 +17,13 @@
 #
 #########################################################################
 
+import copy
 import logging
-import traceback
 import operator
+import traceback
 
 from functools import reduce
+
 from django.db.models import Q
 from django.conf import settings
 from django.db import transaction
@@ -80,6 +82,22 @@ class PermissionLevelMixin:
     """
 
     def get_all_level_info(self):
+        """
+        Translates the current object guardian perms into a JSON-like "perm_spec" object in the form:
+        {
+            'users': {
+                <Profile AnonymousUser>: ['view'],
+                <Profile username>: ['perm1','perm2','perm3'],
+                <Profile username2>: ['perm1','perm2','perm3']
+                ...
+            }
+            'groups': [
+                <Group groupname>: ['perm1','perm2','perm3'],
+                <Group groupname2>: ['perm1','perm2','perm3'],
+                ...
+                ]
+        }
+        """
         resource = self.get_self_resource()
         users = get_users_with_perms(resource)
         groups = get_groups_with_perms(
@@ -148,6 +166,9 @@ class PermissionLevelMixin:
         return info
 
     def get_self_resource(self):
+        """
+        Returns the "ResourceBase" associated to this "object".
+        """
         try:
             if hasattr(self, "resourcebase_ptr_id"):
                 return self.resourcebase_ptr
@@ -156,6 +177,11 @@ class PermissionLevelMixin:
         return self
 
     def get_group_managers(self, user_groups):
+        """
+        Given the groups belonging to a "user", this method returns a tuple containing:
+         - The "groups" perms spec with resource access permissions (at least VIEW ones)
+         - The list of "group managers" of the groups above
+        """
         obj_group_managers = []
         perm_spec = {"groups": {}}
         if user_groups:
@@ -183,56 +209,74 @@ class PermissionLevelMixin:
         return perm_spec, obj_group_managers
 
     def assign_perm_specs(self, perm_spec):
+        """
+        Given a "perm_spec" assigns the permissions accordingly through the guardian shortcuts.
 
-        # Anonymous User group
-        if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
-            anonymous_group = Group.objects.get(name='anonymous')
-            for perm in perm_spec['users']['AnonymousUser']:
-                if self.polymorphic_ctype.name == 'layer' and perm in ('change_layer_data', 'change_layer_style',
-                                                                       'add_layer', 'change_layer', 'delete_layer',):
-                    assign_perm(perm, anonymous_group, self.layer)
-                else:
-                    assign_perm(perm, anonymous_group, self.get_self_resource())
+        This one also makes sure the "owner" has always the "edit" permissions on its own resource and takes care of
+        refreshing the GeoFence rules if needed (i.e. the resource is a geospatial Layer).
+        """
+        try:
+            with transaction.atomic():
+                remove_object_permissions(self, purge=False)
+                set_owner_permissions(self)
 
-        # All the other users
-        if 'users' in perm_spec and len(perm_spec['users']) > 0:
-            for user, perms in perm_spec['users'].items():
-                _user = get_user_model().objects.get(username=user)
-                if _user != self.owner and user != "AnonymousUser":
-                    for perm in perms:
-                        if self.polymorphic_ctype.name == 'layer' and perm in (
-                                'change_layer_data', 'change_layer_style',
-                                'add_layer', 'change_layer', 'delete_layer',):
-                            assign_perm(perm, _user, self.layer)
+                # Anonymous User group
+                if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
+                    anonymous_group = Group.objects.get(name='anonymous')
+                    for perm in perm_spec['users']['AnonymousUser']:
+                        if self.polymorphic_ctype.name == 'layer' and perm in ('change_layer_data', 'change_layer_style',
+                                                                               'add_layer', 'change_layer', 'delete_layer',):
+                            assign_perm(perm, anonymous_group, self.layer)
                         else:
-                            assign_perm(perm, _user, self.get_self_resource())
+                            assign_perm(perm, anonymous_group, self.get_self_resource())
 
-        # All the other groups
-        if 'groups' in perm_spec and len(perm_spec['groups']) > 0:
-            for group, perms in perm_spec['groups'].items():
-                _group = Group.objects.get(name=group)
-                for perm in perms:
-                    if self.polymorphic_ctype.name == 'layer' and perm in (
-                            'change_layer_data', 'change_layer_style',
-                            'add_layer', 'change_layer', 'delete_layer',):
-                        assign_perm(perm, _group, self.layer)
-                    else:
-                        assign_perm(perm, _group, self.get_self_resource())
+                # All the other users
+                if 'users' in perm_spec and len(perm_spec['users']) > 0:
+                    for user, perms in perm_spec['users'].items():
+                        _user = get_user_model().objects.get(username=user)
+                        if _user != self.owner and user != "AnonymousUser":
+                            for perm in perms:
+                                if self.polymorphic_ctype.name == 'layer' and perm in (
+                                        'change_layer_data', 'change_layer_style',
+                                        'add_layer', 'change_layer', 'delete_layer',):
+                                    assign_perm(perm, _user, self.layer)
+                                else:
+                                    assign_perm(perm, _user, self.get_self_resource())
 
-        # AnonymousUser
-        if 'users' in perm_spec and len(perm_spec['users']) > 0:
-            if "AnonymousUser" in perm_spec['users']:
-                _user = get_anonymous_user()
-                perms = perm_spec['users']["AnonymousUser"]
-                for perm in perms:
-                    if self.polymorphic_ctype.name == 'layer' and perm in (
-                            'change_layer_data', 'change_layer_style',
-                            'add_layer', 'change_layer', 'delete_layer',):
-                        assign_perm(perm, _user, self.layer)
-                    else:
-                        assign_perm(perm, _user, self.get_self_resource())
+                # All the other groups
+                if 'groups' in perm_spec and len(perm_spec['groups']) > 0:
+                    for group, perms in perm_spec['groups'].items():
+                        _group = Group.objects.get(name=group)
+                        for perm in perms:
+                            if self.polymorphic_ctype.name == 'layer' and perm in (
+                                    'change_layer_data', 'change_layer_style',
+                                    'add_layer', 'change_layer', 'delete_layer',):
+                                assign_perm(perm, _group, self.layer)
+                            else:
+                                assign_perm(perm, _group, self.get_self_resource())
 
-        # Fixup GIS Backend Security Rules Accordingly
+                # AnonymousUser
+                if 'users' in perm_spec and len(perm_spec['users']) > 0:
+                    if "AnonymousUser" in perm_spec['users']:
+                        _user = get_anonymous_user()
+                        perms = perm_spec['users']["AnonymousUser"]
+                        for perm in perms:
+                            if self.polymorphic_ctype.name == 'layer' and perm in (
+                                    'change_layer_data', 'change_layer_style',
+                                    'add_layer', 'change_layer', 'delete_layer',):
+                                assign_perm(perm, _user, self.layer)
+                            else:
+                                assign_perm(perm, _user, self.get_self_resource())
+
+                # Fixup GIS Backend Security Rules Accordingly
+                self.fixup_geofence_rules(perm_spec)
+        except Exception as e:
+            raise GeoNodeException(e)
+
+    def fixup_geofence_rules(self, perm_spec):
+        """
+        Clean up and set again the set of rules on GeoFence for this resource (if it is a Layer)
+        """
         if self.polymorphic_ctype.name == 'layer':
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                 if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
@@ -318,53 +362,46 @@ class PermissionLevelMixin:
 
     def set_default_permissions(self, owner=None):
         """
-        Remove all the permissions except for the owner and assign the
-        view permission to the anonymous group
+        Removes all the permissions except for the owner and assign the
+        view permission to the anonymous group.
         """
-        try:
-            with transaction.atomic():
-                remove_object_permissions(self, purge=False)
+        # default permissions for anonymous users
+        anonymous_group, created = Group.objects.get_or_create(name='anonymous')
 
-                # default permissions for anonymous users
-                anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+        if not anonymous_group:
+            raise Exception("Could not acquire 'anonymous' Group.")
 
-                if not anonymous_group:
-                    raise Exception("Could not acquire 'anonymous' Group.")
+        perm_spec = copy.deepcopy(self.get_all_level_info())
+        if "users" not in perm_spec:
+            perm_spec["users"] = {}
+        if "groups" not in perm_spec:
+            perm_spec["groups"] = {}
 
-                # default permissions for owner
-                _owner = owner or self.owner
-                user_groups = Group.objects.filter(
-                    name__in=_owner.groupmember_set.all().values_list("group__slug", flat=True))
-                set_owner_permissions(self)
+        # default permissions for owner and owner's groups
+        _owner = owner or self.owner
+        user_groups = Group.objects.filter(
+            name__in=_owner.groupmember_set.all().values_list("group__slug", flat=True))
 
-                perm_spec = self.get_all_level_info()
-                if "users" not in perm_spec:
-                    perm_spec["users"] = {}
-                if "groups" not in perm_spec:
-                    perm_spec["groups"] = {}
+        # Anonymous
+        anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
+        if anonymous_can_view:
+            perm_spec["groups"][anonymous_group] = ['view_resourcebase']
+        else:
+            for user_group in user_groups:
+                if not skip_registered_members_common_group(user_group):
+                    perm_spec["groups"][user_group] = ['view_resourcebase']
 
-                # Anonymous
-                anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
-                if anonymous_can_view:
-                    perm_spec["groups"][anonymous_group] = ['view_resourcebase']
-                else:
-                    for user_group in user_groups:
-                        if not skip_registered_members_common_group(user_group):
-                            perm_spec["groups"][user_group] = ['view_resourcebase']
+        anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+        if anonymous_can_download:
+            perm_spec["groups"][anonymous_group] = ['view_resourcebase', 'download_resourcebase']
+        else:
+            for user_group in user_groups:
+                if not skip_registered_members_common_group(user_group):
+                    perm_spec["groups"][user_group] = ['view_resourcebase', 'download_resourcebase']
 
-                anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
-                if anonymous_can_download:
-                    perm_spec["groups"][anonymous_group] = ['view_resourcebase', 'download_resourcebase']
-                else:
-                    for user_group in user_groups:
-                        if not skip_registered_members_common_group(user_group):
-                            perm_spec["groups"][user_group] = ['view_resourcebase', 'download_resourcebase']
-
-                # Fixup Advanced Workflow permissions
-                perm_spec = self.set_workflow_perms(perm_spec)
-                self.assign_perm_specs(perm_spec)
-        except Exception as e:
-            raise GeoNodeException(e)
+        # Fixup Advanced Workflow permissions
+        perm_spec = self.get_workflow_perms(perm_spec)
+        self.assign_perm_specs(perm_spec)
 
     def set_permissions(self, perm_spec=None):
         """
@@ -374,89 +411,180 @@ class PermissionLevelMixin:
         {
             'users': {
                 'AnonymousUser': ['view'],
-                <username>: ['perm1','perm2','perm3'],
-                <username2>: ['perm1','perm2','perm3']
+                'username': ['perm1','perm2','perm3'],
+                'username2': ['perm1','perm2','perm3']
                 ...
             }
             'groups': [
-                <groupname>: ['perm1','perm2','perm3'],
-                <groupname2>: ['perm1','perm2','perm3'],
+                'groupname': ['perm1','perm2','perm3'],
+                'groupname2': ['perm1','perm2','perm3'],
                 ...
                 ]
         }
         """
-        try:
-            with transaction.atomic():
-                remove_object_permissions(self, purge=False)
-                set_owner_permissions(self)
+        # Fixup Advanced Workflow permissions
+        prev_perm_spec = copy.deepcopy(self.get_all_level_info())
+        perm_spec = self.get_workflow_perms(perm_spec)
+        # Avoid setting the permissions if nothing changed
+        if not self.compare_perms(prev_perm_spec, perm_spec):
+            self.assign_perm_specs(perm_spec)
 
-                # Fixup Advanced Workflow permissions
-                perm_spec = self.set_workflow_perms(perm_spec)
-                self.assign_perm_specs(perm_spec)
-        except Exception as e:
-            raise GeoNodeException(e)
-
-    def set_workflow_perms(self, perm_spec=None):
+    def compare_perms(self, prev_perm_spec, perm_spec):
         """
+        Compare two perm_specs in the form
+        {
+            'users': {
+                <Profile AnonymousUser>: ['view'],
+                <Profile username>: ['perm1','perm2','perm3'],
+                <Profile username2>: ['perm1','perm2','perm3']
+                ...
+            }
+            'groups': [
+                <Group groupname>: ['perm1','perm2','perm3'],
+                <Group groupname2>: ['perm1','perm2','perm3'],
+                ...
+                ]
+        }
+        """
+        if "users" in prev_perm_spec:
+            if "users" in perm_spec:
+                for _user, _perms in prev_perm_spec["users"].items():
+                    if sorted(_perms) != sorted(perm_spec["users"].get(_user, [])):
+                        return False
+            else:
+                return False
+        if "groups" in prev_perm_spec:
+            if "groups" in perm_spec:
+                _groups_iterator = prev_perm_spec["groups"].items() if isinstance(prev_perm_spec["groups"], dict) else prev_perm_spec["groups"]
+                for _group, _perms in _groups_iterator:
+                    if sorted(_perms) != sorted(perm_spec["groups"].get(_group, [])):
+                        return False
+            else:
+                return False
+        return True
+
+    def fixup_perms(self, perm_spec):
+        """
+        Transform a perm_spec in the form
+        {
+            'users': {
+                'AnonymousUser': ['view'],
+                'username': ['perm1','perm2','perm3'],
+                'username2': ['perm1','perm2','perm3']
+                ...
+            }
+            'groups': [
+                'groupname': ['perm1','perm2','perm3'],
+                'groupname2': ['perm1','perm2','perm3'],
+                ...
+                ]
+        }
+
+        to the one in the form:
+        {
+            'users': {
+                <Profile AnonymousUser>: ['view'],
+                <Profile username>: ['perm1','perm2','perm3'],
+                <Profile username2>: ['perm1','perm2','perm3']
+                ...
+            }
+            'groups': [
+                <Group groupname>: ['perm1','perm2','perm3'],
+                <Group groupname2>: ['perm1','perm2','perm3'],
+                ...
+                ]
+        }
+
+        It also removes items with empty permissions, e.g.:
+            'AnonymousUser': []  # the item will completely removed
+        """
+        perm_spec_fixed = copy.deepcopy(perm_spec)
+        if "users" in perm_spec:
+            for _user, _perms in perm_spec["users"].items():
+                if not isinstance(_user, get_user_model()):
+                    perm_spec_fixed["users"].pop(_user)
+                    if _perms and get_user_model().objects.filter(username=_user).count() == 1:
+                        perm_spec_fixed["users"][get_user_model().objects.get(username=_user)] = _perms
+        if "groups" in perm_spec:
+            _groups_iterator = perm_spec["groups"].items() if isinstance(perm_spec["groups"], dict) else perm_spec["groups"]
+            for _group, _perms in _groups_iterator:
+                if not isinstance(_group, Group):
+                    perm_spec_fixed["groups"].pop(_group)
+                    if _perms and Group.objects.filter(name=_group).count() == 1:
+                        perm_spec_fixed["groups"][Group.objects.get(name=_group)] = _perms
+        return perm_spec_fixed
+
+    def get_workflow_perms(self, perm_spec=None):
+        """
+        Adapts the provided "perm_spec" accordingly to the following schema:
+
                           |  N/PUBLISHED   | PUBLISHED
           --------------------------------------------
             N/APPROVED    |     GM/OWR     |     -
             APPROVED      |   registerd    |    all
           --------------------------------------------
+
+        It also adds Group Managers as "editors" to the "perm_spec" in the case:
+         - The Advanced Workflow has been enabled
+         - The Group Managers are missing from the provided "perm_spec"
         """
-        perm_spec = perm_spec or self.get_all_level_info()
+        perm_spec = perm_spec or copy.deepcopy(self.get_all_level_info())
         if "users" not in perm_spec:
             perm_spec["users"] = {}
         if "groups" not in perm_spec:
             perm_spec["groups"] = {}
+        elif isinstance(perm_spec["groups"], list):
+            _groups = {}
+            for _item in perm_spec["groups"]:
+                _groups[_item[0]] = _item[1]
+            perm_spec["groups"] = _groups
+
+        # Make sure we're dealing with "Profile"s and "Group"s...
+        perm_spec = self.fixup_perms(perm_spec)
 
         if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
-            try:
-                with transaction.atomic():
-                    # permissions = self._resolve_resource_permissions(resource=self, permissions=perm_spec)
-                    # default permissions for resource owner and group managers
-                    user_groups = Group.objects.filter(
-                        name__in=self.owner.groupmember_set.all().values_list("group__slug", flat=True))
-                    member_group_perm, group_managers = self.get_group_managers(user_groups)
+            # permissions = self._resolve_resource_permissions(resource=self, permissions=perm_spec)
+            # default permissions for resource owner and group managers
+            user_groups = Group.objects.filter(
+                name__in=self.owner.groupmember_set.all().values_list("group__slug", flat=True))
+            member_group_perm, group_managers = self.get_group_managers(user_groups)
 
-                    if group_managers:
-                        for group_manager in group_managers:
-                            prev_perms = perm_spec['users'].get(group_manager, [])
-                            if self.polymorphic_ctype.name == 'layer':
-                                perm_spec['users'][group_manager] = list(
-                                    set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS))
-                            else:
-                                perm_spec['users'][group_manager] = list(
-                                    set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS))
+            if group_managers:
+                for group_manager in group_managers:
+                    prev_perms = perm_spec['users'].get(group_manager, []) if isinstance(perm_spec['users'], dict) else []
+                    if self.polymorphic_ctype.name == 'layer':
+                        perm_spec['users'][group_manager] = list(
+                            set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS))
+                    else:
+                        perm_spec['users'][group_manager] = list(
+                            set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS))
 
-                    if member_group_perm:
-                        for gr, perm in member_group_perm['groups'].items():
-                            prev_perms = perm_spec['groups'].get(gr, [])
-                            perm_spec['groups'][gr] = list(set(prev_perms + perm))
+            if member_group_perm:
+                for gr, perm in member_group_perm['groups'].items():
+                    prev_perms = perm_spec['groups'].get(gr, []) if isinstance(perm_spec['groups'], dict) else []
+                    perm_spec['groups'][gr] = list(set(prev_perms + perm))
 
-                    anonymous_group = Group.objects.get(name='anonymous')
-                    members_group = None
-                    if self.is_approved:
-                        if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-                            _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                            members_group = Group.objects.get(name=_members_group_name)
-                            prev_perms = perm_spec['groups'].get(members_group, [])
-                            perm_spec['groups'][members_group] = list(set(prev_perms + VIEW_PERMISSIONS))
-                        else:
-                            prev_perms = perm_spec['groups'].get(anonymous_group, [])
-                            perm_spec['groups'][anonymous_group] = list(set(prev_perms + VIEW_PERMISSIONS))
+            anonymous_group = Group.objects.get(name='anonymous')
+            members_group = None
+            if self.is_approved:
+                if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
+                    _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                    members_group = Group.objects.get(name=_members_group_name)
+                    prev_perms = perm_spec['groups'].get(members_group, []) if isinstance(perm_spec['groups'], dict) else []
+                    perm_spec['groups'][members_group] = list(set(prev_perms + VIEW_PERMISSIONS))
+                else:
+                    prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
+                    perm_spec['groups'][anonymous_group] = list(set(prev_perms + VIEW_PERMISSIONS))
 
-                    if self.is_published:
-                        prev_perms = perm_spec['groups'].get(anonymous_group, [])
-                        perm_spec['groups'][anonymous_group] = list(set(prev_perms + VIEW_PERMISSIONS))
+            if self.is_published:
+                prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
+                perm_spec['groups'][anonymous_group] = list(set(prev_perms + VIEW_PERMISSIONS))
 
-            except Exception as e:
-                raise GeoNodeException(e)
         return perm_spec
 
     def get_user_perms(self, user):
         """
-        Returns a list of permissions a user has on a given resource
+        Returns a list of permissions a user has on a given resource.
         """
         # To avoid circular import
         from geonode.base.models import Configuration
@@ -501,7 +629,7 @@ class PermissionLevelMixin:
 
     def user_can(self, user, permission):
         """
-        Checks if a has a given permission to the resource
+        Checks if a has a given permission to the resource.
         """
         resource = self.get_self_resource()
         user_perms = self.get_user_perms(user).union(resource.get_user_perms(user))
