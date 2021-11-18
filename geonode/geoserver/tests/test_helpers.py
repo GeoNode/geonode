@@ -249,12 +249,14 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
                 ogc_sett.BACKEND_WRITE_ENABLED = False
                 # sync the attributes with GeoServer
                 # With update gs resource disabled
-                layer = sync_instance_with_geoserver(layer.id)
-                self.assertEqual(layer.bbox, original_gs_bbox)
+                _layer = sync_instance_with_geoserver(layer.id, updatebbox=True, updatemetadata=False)
+                if _layer:
+                    self.assertEqual(_layer.bbox, original_gs_bbox)
             # With update gs resource enabled
             self.change_bbox(layer)
-            layer = sync_instance_with_geoserver(layer.id)
-            self.assertEqual(layer.bbox, original_gs_bbox)
+            _layer = sync_instance_with_geoserver(layer.id, updatebbox=True, updatemetadata=False)
+            if _layer:
+                self.assertEqual(_layer.bbox, original_gs_bbox)
         finally:
             # Clean up and completely delete the layers
             layer.delete()
