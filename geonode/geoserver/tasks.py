@@ -277,7 +277,7 @@ def geoserver_finalize_upload(
 
             if permissions is not None:
                 logger.debug(f'Setting permissions {permissions} for {instance.name}')
-                instance.set_permissions(permissions, created=created)
+                instance.set_permissions(permissions)
 
             instance.save(notify=not created)
 

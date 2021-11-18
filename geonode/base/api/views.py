@@ -17,9 +17,8 @@
 #
 #########################################################################
 import ast
-from geonode.thumbs.exceptions import ThumbnailError
-from geonode.thumbs.thumbnails import create_thumbnail
 import json
+
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -37,6 +36,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticate
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode.favorite.models import Favorite
+from geonode.thumbs.exceptions import ThumbnailError
+from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember

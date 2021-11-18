@@ -681,7 +681,7 @@ class TestUpload(UploaderBase):
         self.assertIn(expected_url, data.get('redirect_to', ''))
 
         # - Before final step assert that status is WAITING
-        upload_file_url = "/api/v2/uploads/?filter{import_id}=" + str(upload_id)
+        upload_file_url = f"/api/v2/uploads/?filter{{import_id}}={str(upload_id)}"
         resp = self.client.make_request(upload_file_url, force_login=True)
         data = resp.json()
         self.assertEqual(resp.status_code, 200)

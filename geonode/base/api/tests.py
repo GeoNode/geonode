@@ -16,12 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.thumbs.exceptions import ThumbnailError
-import logging
+
 import sys
-from uuid import uuid4
+import logging
+
 from PIL import Image
 from io import BytesIO
+from uuid import uuid4
 from unittest.mock import patch
 from urllib.parse import urljoin
 
@@ -33,6 +34,16 @@ from rest_framework.test import APITestCase, URLPatternsTestCase
 
 from guardian.shortcuts import get_anonymous_user
 
+from geonode import geoserver
+from geonode.layers.models import Layer
+from geonode.utils import check_ogc_backend
+from geonode.favorite.models import Favorite
+from geonode.documents.models import Document
+from geonode.base.utils import build_absolute_uri
+from geonode.thumbs.exceptions import ThumbnailError
+from geonode.base.populate_test_data import create_models
+from geonode.security.utils import get_resources_with_perms
+
 from geonode.base.models import (
     CuratedThumbnail,
     HierarchicalKeyword,
@@ -42,14 +53,6 @@ from geonode.base.models import (
     ThesaurusKeyword,
 )
 
-from geonode import geoserver
-from geonode.favorite.models import Favorite
-from geonode.utils import check_ogc_backend
-from geonode.layers.models import Layer
-from geonode.base.utils import build_absolute_uri
-from geonode.base.populate_test_data import create_models
-from geonode.security.utils import get_resources_with_perms
-from geonode.documents.models import Document
 logger = logging.getLogger(__name__)
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))

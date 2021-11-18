@@ -65,7 +65,7 @@ class FavoriteTest(GeoNodeBaseTestSupport):
             resource_type='geoapp',
             name="test geoapp1",
             owner=self.admin
-            )
+        )
 
     # tests of Favorite and FavoriteManager methods.
     def test_favorite(self):

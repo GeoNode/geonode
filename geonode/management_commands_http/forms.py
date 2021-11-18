@@ -25,7 +25,7 @@ class ManagementCommandJobAdminForm(forms.ModelForm):
     def clean_args(self):
         value = self.cleaned_data.get('args')
         value_json = json.loads(value)
-        if type(value_json) != list:
+        if not isinstance(value_json, list):
             self.add_error("args", 'args must be a list')
 
         if "--help" in value_json:
@@ -36,7 +36,7 @@ class ManagementCommandJobAdminForm(forms.ModelForm):
     def clean_kwargs(self):
         value = self.cleaned_data.get('kwargs')
         value_json = json.loads(value)
-        if type(value_json) != dict:
+        if not isinstance(value_json, dict):
             self.add_error("kwargs", 'kwargs must be a dict')
 
         return value
