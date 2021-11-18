@@ -238,7 +238,7 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
             # With update gs resource enabled
             self.change_bbox(layer)
             layer = sync_instance_with_geoserver(layer.id)
-            self.assertEqual(layer.bbox, original_gs_bbox)
+            self.assertNotEqual(layer.bbox, original_gs_bbox)
         finally:
             # Clean up and completely delete the layers
             layer.delete()
