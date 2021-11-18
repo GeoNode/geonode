@@ -126,6 +126,7 @@ class MapsApiTests(APITestCase):
             "abstract": resource.abstract,
             "data": DUMMY_MAPDATA,
             "id": resource.id,
+            "maplayers": DUMMY_MAPLAYERS_DATA,
         }
         self.client.login(username="admin", password="admin")
         response = self.client.patch(f"{url}?include[]=data", data=data, format="json")
@@ -150,6 +151,7 @@ class MapsApiTests(APITestCase):
         data = {
             "title": "Some created map",
             "data": DUMMY_MAPDATA,
+            "maplayers": DUMMY_MAPLAYERS_DATA,
         }
         self.client.login(username="admin", password="admin")
         response = self.client.post(f"{url}?include[]=data", data=data, format="json")
@@ -163,6 +165,27 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response_maplayer["styles"], ["some-style-first-layer", "some-other-style-first-layer"])
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
+
+    def test_create_map_from_blob_data(self):
+        """
+        Post to maps/ without sending the maplayers field
+        """
+        # Get Layers List (backgrounds)
+        url = reverse("maps-list")
+
+        data = {
+            "title": "Some created map",
+            "data": DUMMY_MAPDATA,
+        }
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(f"{url}?include[]=data", data=data, format="json")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(len(response.data) > 0)
+        self.assertTrue("data" in response.data["map"])
+        self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
+        response_maplayer = response.data["map"]["maplayers"][0]
+        self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
 
 
 DUMMY_MAPDATA = {
@@ -329,3 +352,23 @@ DUMMY_MAPDATA = {
     },
     "mapInfoConfiguration": {},
 }
+
+DUMMY_MAPLAYERS_DATA = [
+    {
+        "extra_params": {"msId": "Stamen.Watercolor__0"},
+        "current_style": "some-style-first-layer",
+        "styles": ["some-style-first-layer", "some-other-style-first-layer"],
+        "stack_order": 0,
+        "format": None,
+        "name": "geonode:CA",
+        "store": "geonode_data",
+        "opacity": 1.0,
+        "transparent": False,
+        "fixed": False,
+        "group": None,
+        "ows_url": None,
+        "visibility": True,
+        "dataset_params": "{}",
+        "source_params": "{}",
+    }
+]

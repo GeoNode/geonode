@@ -35,11 +35,13 @@ from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.layers.api.serializers import DatasetSerializer
 from geonode.maps.api.permissions import MapPermissionsFilter
 from geonode.maps.api.serializers import MapLayerSerializer, MapSerializer
+from geonode.maps.contants import _PERMISSION_MSG_SAVE
 from geonode.maps.models import Map
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.utils.thumbnail import handle_map_thumbnail
 from geonode.monitoring.models import EventType
 from geonode.resource.manager import resource_manager
+from geonode.utils import resolve_object
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +112,12 @@ class MapViewSet(DynamicModelViewSet):
         )
 
     def perform_update(self, serializer):
+        # Check instance permissions with resolve_object
+        mapid = serializer.validated_data["id"]
+        key = "urlsuffix" if Map.objects.filter(urlsuffix=mapid).exists() else "pk"
+        map_obj = resolve_object(self.request, Map, {key: mapid}, permission="base.change_resourcebase", permission_msg=_PERMISSION_MSG_SAVE)
         instance = serializer.instance
+        assert instance == map_obj
         # Thumbnail will be handled later
         post_change_data = {
             "thumbnail": serializer.validated_data.pop("thumbnail_url", ""),
