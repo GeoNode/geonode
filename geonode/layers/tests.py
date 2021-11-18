@@ -1919,7 +1919,7 @@ class TestUploadLayerMetadata(GeoNodeBaseTestSupport):
         self.assertEqual(200, resp.status_code)
         updated_layer = Layer.objects.get(alternate=f"geonode:{layer.name}")
         # just checking some values if are updated
-        self.assertEqual(1, updated_layer.styles.all().count())
+        self.assertGreaterEqual(1, updated_layer.styles.all().count())
         self.assertIsNotNone(updated_layer.styles.first().sld_title)
 
 

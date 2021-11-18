@@ -18,6 +18,7 @@
 #########################################################################
 
 import copy
+import json
 import logging
 import operator
 import traceback
@@ -537,6 +538,10 @@ class PermissionLevelMixin:
          - The Group Managers are missing from the provided "perm_spec"
         """
         perm_spec = perm_spec or copy.deepcopy(self.get_all_level_info())
+
+        # Sanity checks
+        if isinstance(perm_spec, str):
+            perm_spec = json.loads(perm_spec)
 
         if "users" not in perm_spec:
             perm_spec["users"] = {}
