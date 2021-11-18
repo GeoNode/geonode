@@ -89,7 +89,7 @@ def fix_baselayers(map_id):
 
     map = Map.objects.get(pk=id)
     # first we delete all of the base layers
-    map.dataset_set.filter(local=False).delete()
+    map.maplayers.filter(local=False).delete()
 
     # now we re-add them
     source = 0
@@ -122,7 +122,7 @@ def fix_baselayers(map_id):
                     name = base_dataset["args"][0]
             map_dataset = MapLayer(
                 map=map,
-                stack_order=map.dataset_set.count() + 1,
+                stack_order=map.maplayers.count() + 1,
                 name=name,
                 opacity=1,
                 transparent=False,

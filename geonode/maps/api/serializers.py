@@ -17,8 +17,9 @@
 #
 #########################################################################
 import logging
+import ast
 
-from dynamic_rest.fields.fields import DynamicComputedField, DynamicMethodField, DynamicRelationField
+from dynamic_rest.fields.fields import DynamicRelationField, DynamicField
 from dynamic_rest.serializers import DynamicModelSerializer
 
 from geonode.base.api.serializers import (
@@ -31,6 +32,14 @@ from geonode.layers.models import Dataset
 from geonode.maps.models import Map, MapLayer
 
 logger = logging.getLogger(__name__)
+
+
+class DynamicListAsStringField(DynamicField):
+    def to_representation(self, value):
+        return ast.literal_eval(value) if isinstance(value, str) else value
+
+    def to_internal_value(self, data):
+        return str(data)
 
 
 class MapLayerDatasetSerializer(
@@ -59,13 +68,8 @@ class MapLayerDatasetSerializer(
 
 
 class MapLayerSerializer(DynamicModelSerializer):
-    styles = DynamicComputedField(source="styles_set", requires=("styles",))
-    dataset = DynamicMethodField(
-        requires=(
-            "store",
-            "alternate",
-        )
-    )
+    styles = DynamicListAsStringField()
+    dataset = DynamicRelationField(MapLayerDatasetSerializer, embed=True)
 
     class Meta:
         model = MapLayer
@@ -76,15 +80,24 @@ class MapLayerSerializer(DynamicModelSerializer):
             "current_style",
             "styles",
             "dataset",
+            "stack_order",
+            "format",
+            "name",
+            "store",
+            "opacity",
+            "transparent",
+            "fixed",
+            "group",
+            "ows_url",
+            "visibility",
+            "dataset_params",
+            "source_params",
+            "local",
         )
-
-    def get_dataset(self, instance):
-        dataset = instance.dataset
-        return MapLayerDatasetSerializer(instance=dataset).data
 
 
 class MapSerializer(ResourceBaseSerializer):
-    maplayers = DynamicRelationField(MapLayerSerializer, source="dataset_set", embed=True, many=True)
+    maplayers = DynamicRelationField(MapLayerSerializer, embed=True, many=True, deferred=False)
 
     class Meta:
         model = Map

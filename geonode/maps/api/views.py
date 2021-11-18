@@ -90,51 +90,117 @@ class MapViewSet(DynamicModelViewSet):
         return Response(DatasetSerializer(embed=True, many=True).to_representation(resources))
 
     def perform_create(self, serializer):
-        post_creation_data = self._pre_creation_routines(serializer)
-        super(MapViewSet, self).perform_create(serializer)
+        self._get_data_from_blob(serializer)
+        # Thumbnail will be handled later
+        post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
+        # M2M maplayers
+        serializer.validated_data["maplayers"] = self._create_m2m_maplayers(serializer)
+
+        instance = serializer.save(
+            owner=self.request.user,
+            resource_type="map",
+            uuid=str(uuid4()),
+        )
+
+        # thumbnail, events and resouce routines
         self._post_change_routines(
-            instance=serializer.instance,
-            created=True,
+            instance=instance,
+            create_action_perfomed=True,
             additional_data=post_creation_data,
         )
 
     def perform_update(self, serializer):
-        post_change_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
-        dataset_names_before_changes = [lyr.alternate for lyr in serializer.instance.local_datasets]
-        super(MapViewSet, self).perform_update(serializer)
-        dataset_names_after_changes = [lyr.alternate for lyr in serializer.instance.local_datasets]
-        if dataset_names_before_changes != dataset_names_after_changes:
-            map_changed_signal.send_robust(sender=serializer.instance, what_changed="datasets")
+        instance = serializer.instance
+        # Thumbnail will be handled later
+        post_change_data = {
+            "thumbnail": serializer.validated_data.pop("thumbnail_url", ""),
+            "dataset_names_before_changes": [lyr.alternate for lyr in instance.local_datasets],
+        }
+        # M2M maplayers
+        serializer.validated_data["maplayers"] = self._create_m2m_maplayers(serializer)
+
+        instance = serializer.save()
+
+        # thumbnail, events and resouce routines
         self._post_change_routines(
-            instance=serializer.instance,
-            created=False,
+            instance=instance,
+            create_action_perfomed=False,
             additional_data=post_change_data,
         )
 
-    def _pre_creation_routines(self, serializer):
-        serializer.validated_data["owner"] = self.request.user
-        serializer.validated_data["resource_type"] = "map"
-        serializer.validated_data["uuid"] = str(uuid4())
-        post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
+    def _create_m2m_maplayers(self, serializer):
+        if "maplayers" not in serializer.validated_data:
+            # Do nothing, partial update, without changes to maplayers
+            return []
 
-        ##################################################################
-        # TODO: To be removed, the blob data will not be read by geonode #
-        ##################################################################
+        if serializer.instance:
+            # Delete all existing maplayers
+            serializer.instance.maplayers.all().delete()
+
+        # Initialize maplayers serializer
+        maplayers_data = serializer.validated_data.pop("maplayers")
+        maplayers_serializer = MapLayerSerializer(data=maplayers_data, many=True)
+        maplayers_serializer.is_valid(raise_exception=True)
+
+        # Create new maplayers, map relation will be added by serializer.save()
+        maplayers = maplayers_serializer.save()
+        return maplayers
+
+    def _get_maplayers_data_from_blob(self, blob_map_data: dict):
+        maplayer_data = []
+        datasets = blob_map_data.get("layers", [])
+        for ordering, dataset in enumerate(datasets):
+            maplayer = {
+                "extra_params": {
+                    "msId": dataset["id"]
+                },
+                "stack_order": ordering,
+                "format": dataset.get("format", None),
+                "name": dataset.get("name", None),
+                "store": dataset.get("store", None),
+                "opacity": dataset.get("opacity", 1),
+                "transparent": dataset.get("transparent", False),
+                "fixed": dataset.get("fixed", False),
+                "group": dataset.get('group', None),
+                "visibility": dataset.get("visibility", True),
+                "ows_url": None,
+                "current_style": "",
+                "styles": [],
+                "dataset_params": "{}",
+                "source_params": "{}"
+            }
+            maplayer_data.append(maplayer)
+        return maplayer_data
+
+    def _get_data_from_blob(self, serializer):
+        """
+        TODO: To be removed, the blob data will not be read by geonode
+        This will be changed after the mapstore updates by the issue here below
+        Issue: https://github.com/GeoNode/geonode-mapstore-client/issues/574
+        """
         blob_map_data = serializer.validated_data["blob"]["map"]
         serializer.validated_data["center_x"] = blob_map_data["center"]["x"]
         serializer.validated_data["center_y"] = blob_map_data["center"]["y"]
         serializer.validated_data["projection"] = blob_map_data["projection"]
         serializer.validated_data["zoom"] = blob_map_data["zoom"]
         serializer.validated_data["srid"] = blob_map_data["projection"]
-        ##################################################################
-        return post_creation_data
 
-    def _post_change_routines(self, instance: Map, created: bool, additional_data: dict):
-        # Step 1: Register Event
-        event_type = EventType.EVENT_CREATE if created else EventType.EVENT_CHANGE
+        # Get MapLayer data
+        if "maplayers" not in serializer.validated_data:
+            serializer.validated_data["maplayers"] = self._get_maplayers_data_from_blob(blob_map_data)
+
+    def _post_change_routines(self, instance: Map, create_action_perfomed: bool, additional_data: dict):
+        # Step 1: Handle Maplayers signals if this is and update action
+        if not create_action_perfomed:
+            dataset_names_before_changes = additional_data.pop("dataset_names_before_changes", [])
+            dataset_names_after_changes = [lyr.alternate for lyr in instance.local_datasets]
+            if dataset_names_before_changes != dataset_names_after_changes:
+                map_changed_signal.send_robust(sender=instance, what_changed="datasets")
+        # Step 2: Register Event
+        event_type = EventType.EVENT_CREATE if create_action_perfomed else EventType.EVENT_CHANGE
         register_event(self.request, event_type, instance)
-        # Step 2: Resource Manager
+        # Step 3: Resource Manager
         resource_manager.update(instance.uuid, instance=instance, notify=True)
         resource_manager.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
-        # Step 3: Handle Thumbnail
+        # Step 4: Handle Thumbnail
         handle_map_thumbnail(thumbnail=additional_data["thumbnail"], map_obj=instance)

@@ -709,7 +709,7 @@ class GXPMapBase:
         The ``added_datasets`` parameter list allows a list of extra MapLayer
         instances to append to the Map's layer list when generating the
         configuration. These are not persisted; if you want to add layers you
-        should use ``.dataset_set.create()``.
+        should use ``.maplayers.create()``.
         """
 
         user = request.user if request else None

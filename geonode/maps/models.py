@@ -201,11 +201,11 @@ class Map(ResourceBase, GXPMapBase):
         layers = [lyr for lyr in _map.get("layers", [])]
         dataset_names = {lyr.alternate for lyr in self.local_datasets}
 
-        self.dataset_set.all().delete()
+        self.maplayers.all().delete()
         self.keywords.add(*_map.get("keywords", []))
 
         for ordering, layer in enumerate(layers):
-            self.dataset_set.add(dataset_from_viewer_config(self.id, MapLayer, layer, source_for(layer), ordering))
+            self.maplayers.add(dataset_from_viewer_config(self.id, MapLayer, layer, source_for(layer), ordering))
 
         from geonode.resource.manager import resource_manager
 
@@ -389,8 +389,11 @@ class MapLayer(models.Model, GXPLayerBase):
     and the file format to use for image tiles.
     """
 
-    map = models.ForeignKey(Map, related_name="dataset_set", on_delete=models.CASCADE)
+    map = models.ForeignKey(Map, related_name="maplayers", on_delete=models.CASCADE, null=True, blank=True)
     # The map containing this layer
+
+    dataset = models.ForeignKey(Dataset, related_name="maplayers", on_delete=models.SET_NULL, null=True, blank=True)
+    # The dataset object, retrieved by the `name` (Dataset alternate) and `store` attributes.
 
     extra_params = models.JSONField(null=True, default=dict, blank=True)
     # extra_params: an opaque JSONField where the client can put useful
@@ -469,12 +472,9 @@ class MapLayer(models.Model, GXPLayerBase):
         cfg = GXPLayerBase.dataset_config(self, user=user)
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
-        if Dataset.objects.filter(alternate=self.name).exists():
+        layer = self.dataset
+        if layer:
             try:
-                if self.local:
-                    layer = Dataset.objects.get(store=self.store, alternate=self.name)
-                else:
-                    layer = Dataset.objects.get(alternate=self.name, remote_service__base_url=self.ows_url)
                 attribute_cfg = layer.attribute_config()
                 if "ftInfoTemplate" in attribute_cfg:
                     cfg["ftInfoTemplate"] = attribute_cfg["ftInfoTemplate"]
@@ -503,9 +503,8 @@ class MapLayer(models.Model, GXPLayerBase):
 
     @property
     def dataset_title(self):
-        layer = self.dataset if self.local else None
-        if layer:
-            title = layer.title
+        if self.dataset:
+            title = self.dataset.title
         else:
             title = self.name
         return title
@@ -543,17 +542,6 @@ class MapLayer(models.Model, GXPLayerBase):
         except Exception as e:
             logger.exception(e)
             return None
-
-    @property
-    def dataset(self):
-        try:
-            if self.store:
-                dataset = Dataset.objects.get(store=self.store, alternate=self.name)
-            else:
-                dataset = Dataset.objects.get(alternate=self.name)
-        except Dataset.DoesNotExist:
-            dataset = None
-        return dataset
 
     class Meta:
         ordering = ["stack_order"]

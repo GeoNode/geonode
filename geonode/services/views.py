@@ -393,7 +393,7 @@ def remove_service(request, service_id):
         return render(request, "services/service_remove.html",
                       {"service": service})
     elif request.method == 'POST':
-        service.dataset_set.all().delete()
+        service.maplayers.all().delete()
         service.delete()
         messages.add_message(
             request,
