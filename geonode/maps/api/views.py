@@ -96,7 +96,7 @@ class MapViewSet(DynamicModelViewSet):
         # Thumbnail will be handled later
         post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
         # M2M maplayers
-        serializer.validated_data["maplayers"] = self._create_m2m_maplayers(serializer)
+        self._create_m2m_maplayers(serializer)
 
         instance = serializer.save(
             owner=self.request.user,
@@ -127,7 +127,7 @@ class MapViewSet(DynamicModelViewSet):
             "dataset_names_before_changes": [lyr.alternate for lyr in instance.local_datasets],
         }
         # M2M maplayers
-        serializer.validated_data["maplayers"] = self._create_m2m_maplayers(serializer)
+        self._create_m2m_maplayers(serializer)
 
         instance = serializer.save()
 
@@ -141,7 +141,7 @@ class MapViewSet(DynamicModelViewSet):
     def _create_m2m_maplayers(self, serializer):
         if "maplayers" not in serializer.validated_data:
             # Do nothing, partial update, without changes to maplayers
-            return []
+            return
 
         if serializer.instance:
             # Delete all existing maplayers
@@ -154,7 +154,7 @@ class MapViewSet(DynamicModelViewSet):
 
         # Create new maplayers, map relation will be added by serializer.save()
         maplayers = maplayers_serializer.save()
-        return maplayers
+        serializer.validated_data["maplayers"] = maplayers
 
     def _post_change_routines(self, instance: Map, create_action_perfomed: bool, additional_data: dict):
         # Step 1: Handle Maplayers signals if this is and update action
