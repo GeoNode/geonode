@@ -25,6 +25,7 @@ from dynamic_rest.viewsets import DynamicModelViewSet
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
@@ -92,7 +93,6 @@ class MapViewSet(DynamicModelViewSet):
         return Response(DatasetSerializer(embed=True, many=True).to_representation(resources))
 
     def perform_create(self, serializer):
-        self._get_data_from_blob(serializer)
         # Thumbnail will be handled later
         post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
         # M2M maplayers
@@ -115,9 +115,12 @@ class MapViewSet(DynamicModelViewSet):
         # Check instance permissions with resolve_object
         mapid = serializer.validated_data["id"]
         key = "urlsuffix" if Map.objects.filter(urlsuffix=mapid).exists() else "pk"
-        map_obj = resolve_object(self.request, Map, {key: mapid}, permission="base.change_resourcebase", permission_msg=_PERMISSION_MSG_SAVE)
+        map_obj = resolve_object(
+            self.request, Map, {key: mapid}, permission="base.change_resourcebase", permission_msg=_PERMISSION_MSG_SAVE
+        )
         instance = serializer.instance
-        assert instance == map_obj
+        if instance != map_obj:
+            raise ValidationError()
         # Thumbnail will be handled later
         post_change_data = {
             "thumbnail": serializer.validated_data.pop("thumbnail_url", ""),
@@ -152,38 +155,6 @@ class MapViewSet(DynamicModelViewSet):
         # Create new maplayers, map relation will be added by serializer.save()
         maplayers = maplayers_serializer.save()
         return maplayers
-
-    def _get_maplayers_data_from_blob(self, blob_map_data: dict):
-        maplayer_data = []
-        datasets = blob_map_data.get("layers", [])
-        for ordering, dataset in enumerate(datasets):
-            maplayer = {
-                "extra_params": {
-                    "msId": dataset["id"]
-                },
-                "name": dataset.get("name", None),
-                "current_style": "",
-                "styles": [],
-            }
-            maplayer_data.append(maplayer)
-        return maplayer_data
-
-    def _get_data_from_blob(self, serializer):
-        """
-        TODO: To be removed, the blob data will not be read by geonode
-        This will be changed after the mapstore updates by the issue here below
-        Issue: https://github.com/GeoNode/geonode-mapstore-client/issues/574
-        """
-        blob_map_data = serializer.validated_data["blob"]["map"]
-        serializer.validated_data["center_x"] = blob_map_data["center"]["x"]
-        serializer.validated_data["center_y"] = blob_map_data["center"]["y"]
-        serializer.validated_data["projection"] = blob_map_data["projection"]
-        serializer.validated_data["zoom"] = blob_map_data["zoom"]
-        serializer.validated_data["srid"] = blob_map_data["projection"]
-
-        # Get MapLayer data
-        if "maplayers" not in serializer.validated_data:
-            serializer.validated_data["maplayers"] = self._get_maplayers_data_from_blob(blob_map_data)
 
     def _post_change_routines(self, instance: Map, create_action_perfomed: bool, additional_data: dict):
         # Step 1: Handle Maplayers signals if this is and update action

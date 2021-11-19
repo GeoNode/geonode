@@ -49,19 +49,19 @@ class Map(ResourceBase, GXPMapBase):
     """
 
     # viewer configuration
-    zoom = models.IntegerField(_("zoom"))
+    zoom = models.IntegerField(_("zoom"), null=True, blank=True)
     # The zoom level to use when initially loading this map.  Zoom levels start
     # at 0 (most zoomed out) and each increment doubles the resolution.
 
-    projection = models.CharField(_("projection"), max_length=32)
+    projection = models.CharField(_("projection"), max_length=32, null=True, blank=True)
     # The projection used for this map.  This is stored as a string with the
     # projection's SRID.
 
-    center_x = models.FloatField(_("center X"))
+    center_x = models.FloatField(_("center X"), null=True, blank=True)
     # The x coordinate to center on when loading this map.  Its interpretation
     # depends on the projection.
 
-    center_y = models.FloatField(_("center Y"))
+    center_y = models.FloatField(_("center Y"), null=True, blank=True)
     # The y coordinate to center on when loading this map.  Its interpretation
     # depends on the projection.
 
