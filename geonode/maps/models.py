@@ -401,7 +401,7 @@ class MapLayer(models.Model, GXPLayerBase):
     # will be the "msid", which is set by the client to match the maplayer with
     # the layer inside the mapconfig blob.
 
-    stack_order = models.IntegerField(_("stack order"))
+    stack_order = models.IntegerField(_("stack order"), default=0, blank=True)
     # The z-index of this layer in the map; layers with a higher stack_order will
     # be drawn on top of others.
 
@@ -409,16 +409,16 @@ class MapLayer(models.Model, GXPLayerBase):
     # The content_type of the image format to use for tiles (image/png, image/jpeg,
     # image/gif...)
 
-    name = models.TextField(_("name"), null=True)
+    name = models.TextField(_("name"), null=True, blank=True)
     # The name of the layer to load.
 
-    store = models.TextField(_("store"), null=True)
+    store = models.TextField(_("store"), null=True, blank=True)
 
     # The interpretation of this name depends on the source of the layer (Google
     # has a fixed set of names, WMS services publish a list of available layers
     # in their capabilities documents, etc.)
 
-    opacity = models.FloatField(_("opacity"), default=1.0)
+    opacity = models.FloatField(_("opacity"), default=1.0, blank=True)
     # The opacity with which to render this layer, on a scale from 0 to 1.
 
     styles = models.TextField(_("styles"), null=True, blank=True)
@@ -427,11 +427,11 @@ class MapLayer(models.Model, GXPLayerBase):
     current_style = models.TextField(_("current style"), null=True, blank=True)
     # `styles` stores a list of styles as a string, here in `current_style` we store the selected style.
 
-    transparent = models.BooleanField(_("transparent"), default=False)
+    transparent = models.BooleanField(_("transparent"), default=False, blank=True)
     # A boolean value, true if we should request tiles with a transparent
     # background.
 
-    fixed = models.BooleanField(_("fixed"), default=False)
+    fixed = models.BooleanField(_("fixed"), default=False, blank=True)
     # A boolean value, true if we should prevent the user from dragging and
     # dropping this layer in the layer chooser.
 
@@ -442,24 +442,24 @@ class MapLayer(models.Model, GXPLayerBase):
     ows_url = models.URLField(_("ows URL"), null=True, blank=True)
     # The URL of the OWS service providing this layer, if any exists.
 
-    visibility = models.BooleanField(_("visibility"), default=True)
+    visibility = models.BooleanField(_("visibility"), default=True, blank=True)
     # A boolean value, true if this layer should be visible when the map loads.
 
-    dataset_params = models.TextField(_("dataset params"))
+    dataset_params = models.TextField(_("dataset params"), default="{}", blank=True)
     # A JSON-encoded dictionary of arbitrary parameters for the layer itself when
     # passed to the GXP viewer.
 
     # If this dictionary conflicts with options that are stored in other fields
     # (such as format, styles, etc.) then the fields override.
 
-    source_params = models.TextField(_("source params"))
+    source_params = models.TextField(_("source params"), default="{}", blank=True)
     # A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
     # configuration for this layer.
 
     # If this dictionary conflicts with options that are stored in other fields
     # (such as ows_url) then the fields override.
 
-    local = models.BooleanField(default=False)
+    local = models.BooleanField(default=False, blank=True)
     # True if this layer is served by the local geoserver
 
     def dataset_config(self, user=None):

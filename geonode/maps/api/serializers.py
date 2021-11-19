@@ -80,19 +80,7 @@ class MapLayerSerializer(DynamicModelSerializer):
             "current_style",
             "styles",
             "dataset",
-            "stack_order",
-            "format",
             "name",
-            "store",
-            "opacity",
-            "transparent",
-            "fixed",
-            "group",
-            "ows_url",
-            "visibility",
-            "dataset_params",
-            "source_params",
-            "local",
         )
 
 

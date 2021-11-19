@@ -358,17 +358,6 @@ DUMMY_MAPLAYERS_DATA = [
         "extra_params": {"msId": "Stamen.Watercolor__0"},
         "current_style": "some-style-first-layer",
         "styles": ["some-style-first-layer", "some-other-style-first-layer"],
-        "stack_order": 0,
-        "format": None,
         "name": "geonode:CA",
-        "store": "geonode_data",
-        "opacity": 1.0,
-        "transparent": False,
-        "fixed": False,
-        "group": None,
-        "ows_url": None,
-        "visibility": True,
-        "dataset_params": "{}",
-        "source_params": "{}",
     }
 ]

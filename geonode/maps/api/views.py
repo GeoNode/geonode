@@ -161,20 +161,9 @@ class MapViewSet(DynamicModelViewSet):
                 "extra_params": {
                     "msId": dataset["id"]
                 },
-                "stack_order": ordering,
-                "format": dataset.get("format", None),
                 "name": dataset.get("name", None),
-                "store": dataset.get("store", None),
-                "opacity": dataset.get("opacity", 1),
-                "transparent": dataset.get("transparent", False),
-                "fixed": dataset.get("fixed", False),
-                "group": dataset.get('group', None),
-                "visibility": dataset.get("visibility", True),
-                "ows_url": None,
                 "current_style": "",
                 "styles": [],
-                "dataset_params": "{}",
-                "source_params": "{}"
             }
             maplayer_data.append(maplayer)
         return maplayer_data
