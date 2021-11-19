@@ -35,6 +35,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
 from geonode.base import register_event
+from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, ThesaurusAvailableForm, TKeywordForm
 from geonode.base.models import Thesaurus, TopicCategory
 from geonode.base.views import batch_modify
@@ -314,6 +315,7 @@ def map_embed(
         request,
         mapid=None,
         template='maps/map_embed.html'):
+    map_obj = None
     if mapid is None:
         config = default_map_config(request)[0]
     else:
@@ -325,8 +327,19 @@ def map_embed(
 
         config = map_obj.viewer_json(request)
         register_event(request, EventType.EVENT_VIEW, map_obj)
+
+    access_token = None
+    if request and request.user:
+        access_token = get_or_create_token(request.user)
+        if access_token and not access_token.is_expired():
+            access_token = access_token.token
+        else:
+            access_token = None
+
     return render(request, template, context={
-        'config': json.dumps(config)
+        'access_token': access_token,
+        'resource': map_obj,
+        'config': json.dumps(config),
     })
 
 
