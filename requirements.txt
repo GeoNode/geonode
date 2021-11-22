@@ -105,7 +105,7 @@ django-storages==1.12.3
 dropbox==11.23.0
 google-cloud-storage==1.42.3
 google-cloud-core==2.2.1
-boto3==1.20.5
+boto3==1.20.10
 
 # Django Caches
 python-memcached<=1.59
