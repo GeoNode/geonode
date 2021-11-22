@@ -449,11 +449,11 @@ class _HierarchicalTagManager(_TaggableManager):
         if tag_kwargs is None:
             tag_kwargs = {}
 
-        str_tags = {
+        str_tags = set([
             t
             for t in tags
             if not isinstance(t, self.through.tag_model())
-        }
+        ])
         tag_objs = set(tags) - str_tags
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
@@ -462,7 +462,7 @@ class _HierarchicalTagManager(_TaggableManager):
         )
         tag_objs.update(existing)
         new_ids = set()
-        for new_tag in str_tags - {t.name for t in existing}:
+        for new_tag in str_tags - set(t.name for t in existing):
             if new_tag:
                 new_tag = escape(new_tag)
                 new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
@@ -903,8 +903,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True)
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
-    featured = models.BooleanField(_("Featured"), default=False, help_text=_(
-        'Should this resource be advertised in home page?'))
+    featured = models.BooleanField(
+        _("Featured"),
+        default=False,
+        help_text=_('Should this resource be advertised in home page?'))
     was_published = models.BooleanField(
         _("Was Published"),
         default=True,
@@ -973,10 +975,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def __init__(self, *args, **kwargs):
         # Provide legacy support for bbox fields
-        bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
-        if all(bbox):
-            kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
-            kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
+        try:
+            bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
+            if all(bbox):
+                kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
+                kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
+        except Exception as e:
+            logger.exception(e)
         super().__init__(*args, **kwargs)
 
     def __str__(self):
@@ -1028,9 +1033,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.resource_type = self.polymorphic_ctype.model.lower()
 
         if hasattr(self, 'class_name') and (self.pk is None or notify):
-            if self.pk is None and self.title:
+            if self.pk is None and (self.title or getattr(self, 'name', None)):
                 # Resource Created
-
+                if not self.title and getattr(self, 'name', None):
+                    self.title = getattr(self, 'name', None)
                 notice_type_label = f'{self.class_name.lower()}_created'
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
@@ -1736,10 +1742,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return the_ma
 
     def handle_moderated_uploads(self):
-        if settings.RESOURCE_PUBLISHING:
-            self.is_published = False
         if settings.ADMIN_MODERATE_UPLOADS:
             self.is_approved = False
+            self.was_approved = False
+        if settings.RESOURCE_PUBLISHING:
+            self.is_published = False
+            self.was_published = False
 
     def add_missing_metadata_author_or_poc(self):
         """

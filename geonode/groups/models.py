@@ -287,7 +287,11 @@ class GroupMember(models.Model):
             .filter(group=self.group.group)
             .exclude(owner=self.user)
         )
-        _resources = set([_r for _r in queryset.iterator()] + [_r for _r in self.group.resources()])
+        # A.F.: By including 'self.group.resources()' here, we will look also for resources
+        #       having permissions related to the current 'group' and not only the ones assigned
+        #       to the 'group' through the metadata settings.
+        # _resources = set([_r for _r in queryset.iterator()] + [_r for _r in self.group.resources()])
+        _resources = queryset.iterator()
         for _r in _resources:
             perm_spec = None
             if perms:
