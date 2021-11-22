@@ -553,7 +553,7 @@ def file_upload(filename,
             defaults['is_approved'] = defaults['was_approved'] = is_approved
         if settings.RESOURCE_PUBLISHING:
             is_published = False
-            defaults['is_approved'] = defaults['was_published'] = is_approved
+            defaults['is_published'] = defaults['was_published'] = is_published
 
     # set metadata
     if 'xml' in files:
