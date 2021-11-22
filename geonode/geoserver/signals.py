@@ -22,6 +22,7 @@ import logging
 from deprecated import deprecated
 from geoserver.layer import Layer as GsLayer
 
+from django.db.models import Q
 from django.templatetags.static import static
 
 # use different name to avoid module clash
@@ -31,6 +32,7 @@ from geonode.geoserver.helpers import (
     gs_catalog,
     ogc_server_settings)
 from geonode.geoserver.tasks import geoserver_create_thumbnail
+from geonode.layers.models import Dataset
 from geonode.services.enumerations import CASCADED
 from geonode.thumbs.utils import MISSING_THUMB
 
@@ -94,6 +96,18 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             logger.warn(msg)
         else:
             raise e
+
+    # Set dataset
+    if instance.dataset is None:
+        dataset_queryset = Dataset.objects.filter(Q(alternate=instance.name) | Q(name=instance.name))
+        if instance.local and instance.store:
+            dataset_queryset = dataset_queryset.filter(store=instance.store)
+        elif instance.ows_url:
+            dataset_queryset = dataset_queryset.filter(remote_service__base_url=instance.ows_url)
+        try:
+            instance.dataset = dataset_queryset.get()
+        except Dataset.DoesNotExist:
+            pass
 
 
 @deprecated(version='3.2.1', reason="Use direct calls to the ReourceManager.")

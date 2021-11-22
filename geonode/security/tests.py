@@ -1098,7 +1098,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
 
-    def test_dataset_set_default_permissions(self):
+    def test_maplayers_default_permissions(self):
         """Verify that Dataset.set_default_permissions is behaving as expected
         """
 

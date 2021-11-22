@@ -33,7 +33,7 @@ from geonode.maps import MapsAppConfig
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.decorators import on_ogc_backend
-from geonode.maps.utils import fix_baselayers
+from geonode.maps.utils.layers import fix_baselayers
 from geonode.maps.models import Map, MapLayer
 from geonode.base.models import License, Region
 from geonode.tests.utils import NotificationsTestsHelper
@@ -200,7 +200,7 @@ community."
         map_obj = Map.objects.all().first()
         self.assertEqual(map_obj.title, "Title2")
         self.assertEqual(map_obj.abstract, "Abstract2")
-        self.assertEqual(map_obj.dataset_set.all().count(), 1)
+        self.assertEqual(map_obj.maplayers.all().count(), 1)
 
         for map_dataset in map_obj.datasets:
             self.assertEqual(
@@ -237,7 +237,7 @@ community."
         map_obj = Map.objects.get(id=map_id)
         self.assertEqual(map_obj.title, "Title")
         self.assertEqual(map_obj.abstract, "Abstract")
-        self.assertEqual(map_obj.dataset_set.all().count(), 1)
+        self.assertEqual(map_obj.maplayers.all().count(), 1)
         self.assertEqual(map_obj.keyword_list(), ["keywords", "saving"])
         self.assertNotEqual(map_obj.bbox_polygon, None)
 
@@ -769,7 +769,7 @@ community."
             # number of base layers (we remove the local geoserver entry from the total)
             n_baselayers = len(settings.MAP_BASELAYERS) - 1
             # number of local layers
-            n_locallayers = map_obj.dataset_set.filter(local=True).count()
+            n_locallayers = map_obj.maplayers.filter(local=True).count()
             fix_baselayers(map_id)
             self.assertEqual(1, n_baselayers + n_locallayers)
 
