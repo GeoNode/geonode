@@ -862,7 +862,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
         featureType = etree.ElementTree(dlxml.fromstring(r.text))
         metadata = featureType.findall('./[metadata]')
-        self.assertEqual(len(metadata), 1)
+        self.assertEqual(len(metadata), 0)
 
         payload = """<featureType>
         <metadata>
