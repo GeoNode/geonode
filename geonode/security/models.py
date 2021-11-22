@@ -66,7 +66,7 @@ from .utils import (
     skip_registered_members_common_group
 )
 
-logger = logging.getLogger("geonode.security.models")
+logger = logging.getLogger(__name__)
 
 
 class PermissionLevelError(Exception):
@@ -415,12 +415,12 @@ class PermissionLevelMixin:
                 'username': ['perm1','perm2','perm3'],
                 'username2': ['perm1','perm2','perm3']
                 ...
-            }
+            },
             'groups': [
                 'groupname': ['perm1','perm2','perm3'],
                 'groupname2': ['perm1','perm2','perm3'],
                 ...
-                ]
+            ]
         }
         """
         # Fixup Advanced Workflow permissions
@@ -439,12 +439,12 @@ class PermissionLevelMixin:
                 <Profile username>: ['perm1','perm2','perm3'],
                 <Profile username2>: ['perm1','perm2','perm3']
                 ...
-            }
+            },
             'groups': [
                 <Group groupname>: ['perm1','perm2','perm3'],
                 <Group groupname2>: ['perm1','perm2','perm3'],
                 ...
-                ]
+            ]
         }
         """
         if "users" in prev_perm_spec:
@@ -480,12 +480,12 @@ class PermissionLevelMixin:
                 'username': ['perm1','perm2','perm3'],
                 'username2': ['perm1','perm2','perm3']
                 ...
-            }
+            },
             'groups': [
                 'groupname': ['perm1','perm2','perm3'],
                 'groupname2': ['perm1','perm2','perm3'],
                 ...
-                ]
+            ]
         }
 
         to the one in the form:
@@ -495,12 +495,12 @@ class PermissionLevelMixin:
                 <Profile username>: ['perm1','perm2','perm3'],
                 <Profile username2>: ['perm1','perm2','perm3']
                 ...
-            }
+            },
             'groups': [
                 <Group groupname>: ['perm1','perm2','perm3'],
                 <Group groupname2>: ['perm1','perm2','perm3'],
                 ...
-                ]
+            ]
         }
 
         It also removes items with empty permissions, e.g.:
@@ -536,6 +536,64 @@ class PermissionLevelMixin:
         It also adds Group Managers as "editors" to the "perm_spec" in the case:
          - The Advanced Workflow has been enabled
          - The Group Managers are missing from the provided "perm_spec"
+
+        Advanced Workflow Settings:
+
+            **Scenario 1**: Default values: **AUTO PUBLISH**
+            - `RESOURCE_PUBLISHING = False`
+              `ADMIN_MODERATE_UPLOADS = False`
+
+            - When user creates a resource
+            - OWNER gets all the owner permissions (publish resource included)
+            - ANONYMOUS can view and download
+
+            **Scenario 2**: **SIMPLE PUBLISHING**
+            - `RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
+              `ADMIN_MODERATE_UPLOADS = False`
+
+            - When user creates a resource
+            - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` INCLUDED)
+            - Group MANAGERS of the user's groups will get the owner permissions (`publish_resource` EXCLUDED)
+            - Group MEMBERS of the user's groups will get the `view_resourcebase` permission
+            - ANONYMOUS can not view and download if the resource is not published
+
+            - When resource has a group assigned:
+            - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` INCLUDED)
+            - Group MANAGERS of the *resource's group* will get the owner permissions (`publish_resource` EXCLUDED)
+            - Group MEMBERS of the *resource's group* will get the `view_resourcebase` permission
+
+            **Scenario 3**: **ADVANCED WORKFLOW**
+            - `RESOURCE_PUBLISHING = True`
+              `ADMIN_MODERATE_UPLOADS = True`
+
+            - When user creates a resource
+            - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` EXCLUDED)
+            - Group MANAGERS of the user's groups will get the owner permissions (`publish_resource` INCLUDED)
+            - Group MEMBERS of the user's groups will get the `view_resourcebase` permission
+            - ANONYMOUS can not view and download if the resource is not published
+
+            - When resource has a group assigned:
+            - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` EXCLUDED)
+            - Group MANAGERS of the resource's group will get the owner permissions (`publish_resource` INCLUDED)
+            - Group MEMBERS of the resource's group will get the `view_resourcebase` permission
+
+            **Scenario 4**: **SIMPLE WORKFLOW**
+            - `RESOURCE_PUBLISHING = False`
+              `ADMIN_MODERATE_UPLOADS = True`
+
+            - **NOTE**: Is it even possibile? when the resource is automatically published, can it be un-published?
+            If this combination is not allowed, we should either stop the process when reading the settings or log a warning and force a safe combination.
+
+            - When user creates a resource
+            - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` INCLUDED)
+            - Group MANAGERS of the user's groups will get the owner permissions (`publish_resource` INCLUDED)
+            - Group MEMBERS of the user's group will get the `view_resourcebase` permission
+            - ANONYMOUS can view and download
+
+            Recap:
+            - OWNER can always publish, except in the ADVANCED WORKFLOW
+            - Group MANAGERS have publish privs only when `ADMIN_MODERATE_UPLOADS` is True (no DATA EDIT perms assigned by default)
+            - Group MEMBERS have always access to the resource, except for the AUTOPUBLISH, where everybody has access to it.
         """
         perm_spec = perm_spec or copy.deepcopy(self.get_all_level_info())
 
@@ -565,6 +623,8 @@ class PermissionLevelMixin:
         if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
             # permissions = self._resolve_resource_permissions(resource=self, permissions=perm_spec)
             # default permissions for resource owner and group managers
+            anonymous_group = Group.objects.get(name='anonymous')
+            registered_members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
             user_groups = Group.objects.filter(
                 name__in=self.owner.groupmember_set.all().values_list("group__slug", flat=True))
             member_group_perm, group_managers = self.get_group_managers(user_groups)
@@ -572,26 +632,26 @@ class PermissionLevelMixin:
             if group_managers:
                 for group_manager in group_managers:
                     prev_perms = perm_spec['users'].get(group_manager, []) if isinstance(perm_spec['users'], dict) else []
-                    if self.polymorphic_ctype.name == 'layer':
-                        perm_spec['users'][group_manager] = list(
-                            set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS))
-                    else:
-                        perm_spec['users'][group_manager] = list(
-                            set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS))
+                    # AF: Should be a manager being able to change the dataset data and style too by default?
+                    #     For the time being let's give to the manager "management" perms only.
+                    # if self.polymorphic_ctype.name == 'layer':
+                    #     perm_spec['users'][group_manager] = list(
+                    #         set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS))
+                    # else:
+                    perm_spec['users'][group_manager] = list(
+                        set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS))
 
             if member_group_perm:
                 for gr, perm in member_group_perm['groups'].items():
-                    prev_perms = perm_spec['groups'].get(gr, []) if isinstance(perm_spec['groups'], dict) else []
-                    perm_spec['groups'][gr] = list(set(prev_perms + perm))
+                    if gr != anonymous_group and gr.name != registered_members_group_name:
+                        prev_perms = perm_spec['groups'].get(gr, []) if isinstance(perm_spec['groups'], dict) else []
+                        perm_spec['groups'][gr] = list(set(prev_perms + perm))
 
-            anonymous_group = Group.objects.get(name='anonymous')
-            members_group = None
             if self.is_approved:
                 if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-                    _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                    members_group = Group.objects.get(name=_members_group_name)
-                    prev_perms = perm_spec['groups'].get(members_group, []) if isinstance(perm_spec['groups'], dict) else []
-                    perm_spec['groups'][members_group] = list(set(prev_perms + VIEW_PERMISSIONS))
+                    registered_members_group = Group.objects.get(name=registered_members_group_name)
+                    prev_perms = perm_spec['groups'].get(registered_members_group, []) if isinstance(perm_spec['groups'], dict) else []
+                    perm_spec['groups'][registered_members_group] = list(set(prev_perms + VIEW_PERMISSIONS))
                 else:
                     prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
                     perm_spec['groups'][anonymous_group] = list(set(prev_perms + VIEW_PERMISSIONS))
@@ -619,7 +679,7 @@ class PermissionLevelMixin:
         ).values_list('codename', flat=True)
 
         # Don't filter for admin users
-        if not (user.is_superuser or user.is_staff):
+        if not user.is_superuser:
             user_model = get_user_obj_perms_model(self)
             user_resource_perms = user_model.objects.filter(
                 object_pk=self.pk,
@@ -639,7 +699,7 @@ class PermissionLevelMixin:
         if config.read_only:
             clauses = (Q(codename__contains=prefix) for prefix in perm_prefixes)
             query = reduce(operator.or_, clauses)
-            if (user.is_superuser or user.is_staff):
+            if user.is_superuser:
                 resource_perms = resource_perms.exclude(query)
             else:
                 perm_objects = Permission.objects.filter(codename__in=resource_perms)
