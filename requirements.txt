@@ -28,7 +28,7 @@ django-appconf==1.0.5
 django-celery-results==2.2.0
 django-filter==21.1
 django-imagekit==4.1.0
-django-taggit==1.5.1
+django-taggit==2.0.0
 django-markdownify==0.9.0
 django-mptt==0.13.4
 django-modeltranslation>=0.11,<0.18.0
