@@ -5896,7 +5896,7 @@ msgstr ""
 
 msgid ""
 "As for the layers and maps GeoNode allows to publish tabular and text data, "
-"manage theirs metadata and associated documents."
+"manage their metadata and associated documents."
 msgstr ""
 
 #, fuzzy
