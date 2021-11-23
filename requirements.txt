@@ -74,7 +74,7 @@ drf-extensions==0.7.1
 drf-writable-nested==0.6.3
 drf-spectacular==0.21.0
 git+https://github.com/GeoNode/dynamic-rest.git@v2.0.1#egg=dynamic-rest
-Markdown==3.3.4
+Markdown==3.3.6
 
 pinax-notifications==6.0.0
 pinax-ratings==4.0.0
