@@ -7453,7 +7453,7 @@ msgstr "Preskúmajte mapy"
 #: geonode/templates/index.html:149
 msgid ""
 "As for the layers and maps GeoNode allows to publish tabular and text data, "
-"manage theirs metadata and associated documents."
+"manage their metadata and associated documents."
 msgstr ""
 "Pokiaľ ide o vrstvy a mapy, GeoNode umožňuje publikovať tabuľkové a textové "
 "údaje, spravovať ich metadáta a súvisiace dokumenty."
