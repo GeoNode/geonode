@@ -80,6 +80,7 @@ from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.permissions import (
     VIEW_PERMISSIONS,
+    DOWNLOAD_PERMISSIONS,
     OWNER_PERMISSIONS
 )
 
@@ -936,10 +937,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("Featured"),
         default=False,
         help_text=_('Should this resource be advertised in home page?'))
+    was_published = models.BooleanField(
+        _("Was Published"),
+        default=True,
+        help_text=_('Previous Published state.'))
     is_published = models.BooleanField(
         _("Is Published"),
         default=True,
         help_text=_('Should this resource be published and searchable?'))
+    was_approved = models.BooleanField(
+        _("Was Approved"),
+        default=True,
+        help_text=_('Previous Approved state.'))
     is_approved = models.BooleanField(
         _("Approved"),
         default=True,
@@ -1012,9 +1021,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     subtype = models.CharField(max_length=128, null=True, blank=True)
 
-    __is_approved = False
-    __is_published = False
-
     objects = ResourceBaseManager()
 
     class Meta:
@@ -1057,7 +1063,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @classproperty
     def allowed_permissions(cls):
         return {
-            "anonymous": VIEW_PERMISSIONS,
+            "anonymous": VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS,
             "default": OWNER_PERMISSIONS,
             groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS
         }
@@ -1110,36 +1116,39 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             elif self.pk:
                 # Resource Updated
                 _notification_sent = False
+                _approval_status_changed = False
 
                 # Approval Notifications Here
-                if not _notification_sent and settings.ADMIN_MODERATE_UPLOADS and \
-                   not self.__is_approved and self.is_approved:
-                    # Set "approved" workflow permissions
-                    self.set_workflow_perms(approved=True)
-
-                    # Send "approved" notification
-                    notice_type_label = f'{self.class_name.lower()}_approved'
-                    recipients = get_notification_recipients(notice_type_label, resource=self)
-                    send_notification(recipients, notice_type_label, {'resource': self})
-                    _notification_sent = True
+                if self.was_approved != self.is_approved:
+                    if not _notification_sent and not self.was_approved and self.is_approved:
+                        # Send "approved" notification
+                        notice_type_label = f'{self.class_name.lower()}_approved'
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
+                        send_notification(recipients, notice_type_label, {'resource': self})
+                        _notification_sent = True
+                    self.was_approved = self.is_approved
+                    _approval_status_changed = True
 
                 # Publishing Notifications Here
-                if not _notification_sent and settings.RESOURCE_PUBLISHING and \
-                   not self.__is_published and self.is_published:
-                    # Set "published" workflow permissions
-                    self.set_workflow_perms(published=True)
-
-                    # Send "published" notification
-                    notice_type_label = f'{self.class_name.lower()}_published'
-                    recipients = get_notification_recipients(notice_type_label, resource=self)
-                    send_notification(recipients, notice_type_label, {'resource': self})
-                    _notification_sent = True
+                if self.was_published != self.is_published:
+                    if not _notification_sent and not self.was_published and self.is_published:
+                        # Send "published" notification
+                        notice_type_label = f'{self.class_name.lower()}_published'
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
+                        send_notification(recipients, notice_type_label, {'resource': self})
+                        _notification_sent = True
+                    self.was_published = self.is_published
+                    _approval_status_changed = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
                     notice_type_label = f'{self.class_name.lower()}_updated'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
+
+                # Update workflow permissions
+                if _approval_status_changed:
+                    self.set_permissions()
 
         if self.pk is None:
             _initial_value = ResourceBase.objects.aggregate(Max("pk"))['pk__max']
@@ -1157,8 +1166,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.pk = self.id = _next_value
 
         super().save(*args, **kwargs)
-        self.__is_approved = self.is_approved
-        self.__is_published = self.is_published
 
     def delete(self, notify=True, *args, **kwargs):
         """
@@ -1839,10 +1846,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return the_ma
 
     def handle_moderated_uploads(self):
-        if settings.RESOURCE_PUBLISHING:
-            self.is_published = False
         if settings.ADMIN_MODERATE_UPLOADS:
             self.is_approved = False
+            self.was_approved = False
+        if settings.RESOURCE_PUBLISHING:
+            self.is_published = False
+            self.was_published = False
 
     def add_missing_metadata_author_or_poc(self):
         """

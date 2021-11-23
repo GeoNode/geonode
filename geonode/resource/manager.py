@@ -17,6 +17,7 @@
 #
 #########################################################################
 import copy
+import json
 import typing
 import logging
 import importlib
@@ -43,6 +44,7 @@ from django.contrib.contenttypes.models import ContentType
 from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.permissions import (
     VIEW_PERMISSIONS,
+    ADMIN_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
     DOWNLOADABLE_RESOURCES,
     DATASET_EDIT_DATA_PERMISSIONS,
@@ -197,7 +199,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def set_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, approved: bool = False, published: bool = False) -> bool:
+    def get_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> dict:
         """Fix-up the permissions of a Resource accordingly to the currently active advanced workflow configuraiton"""
         pass
 
@@ -601,12 +603,12 @@ class ResourceManager(ResourceManagerInterface):
                                 <username>: ['perm1','perm2','perm3'],
                                 <username2>: ['perm1','perm2','perm3']
                                 ...
-                            }
+                            },
                             'groups': [
                                 <groupname>: ['perm1','perm2','perm3'],
                                 <groupname2>: ['perm1','perm2','perm3'],
                                 ...
-                                ]
+                            ]
                         }
                         """
 
@@ -698,7 +700,9 @@ class ResourceManager(ResourceManagerInterface):
                             assign_perm('change_dataset_data', _owner, _resource)
                             assign_perm('change_dataset_style', _owner, _resource)
 
-                    _resource.handle_moderated_uploads()
+                        _resource.handle_moderated_uploads()
+
+                    # Fixup GIS Backend Security Rules Accordingly
                     if not self._concrete_resource_manager.set_permissions(
                             uuid, instance=_resource, owner=owner, permissions=permissions, created=created):
                         # This might not be a severe error. E.g. for datasets outside of local GeoServer
@@ -711,41 +715,150 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.set_dirty_state()
         return False
 
-    def set_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, approved: bool = False, published: bool = False) -> bool:
+    def get_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> dict:
         """
+        Adapts the provided "perm_spec" accordingly to the following schema:
+
                           |  N/PUBLISHED   | PUBLISHED
           --------------------------------------------
             N/APPROVED    |     GM/OWR     |     -
             APPROVED      |   registerd    |    all
           --------------------------------------------
+
+        It also adds Group Managers as "editors" to the "perm_spec" in the case:
+         - The Advanced Workflow has been enabled
+         - The Group Managers are missing from the provided "perm_spec"
+
+        Advanced Workflow Settings:
+
+            **Scenario 1**: Default values: **AUTO PUBLISH**
+            - `RESOURCE_PUBLISHING = False`
+              `ADMIN_MODERATE_UPLOADS = False`
+
+            - When user creates a resource
+            - OWNER gets all the owner permissions (publish resource included)
+            - ANONYMOUS can view and download
+
+            **Scenario 2**: **SIMPLE PUBLISHING**
+            - `RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
+              `ADMIN_MODERATE_UPLOADS = False`
+
+            - When user creates a resource
+            - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` INCLUDED)
+            - Group MANAGERS of the user's groups will get the owner permissions (`publish_resource` EXCLUDED)
+            - Group MEMBERS of the user's groups will get the `view_resourcebase` permission
+            - ANONYMOUS can not view and download if the resource is not published
+
+            - When resource has a group assigned:
+            - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` INCLUDED)
+            - Group MANAGERS of the *resource's group* will get the owner permissions (`publish_resource` EXCLUDED)
+            - Group MEMBERS of the *resource's group* will get the `view_resourcebase` permission
+
+            **Scenario 3**: **ADVANCED WORKFLOW**
+            - `RESOURCE_PUBLISHING = True`
+              `ADMIN_MODERATE_UPLOADS = True`
+
+            - When user creates a resource
+            - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` EXCLUDED)
+            - Group MANAGERS of the user's groups will get the owner permissions (`publish_resource` INCLUDED)
+            - Group MEMBERS of the user's groups will get the `view_resourcebase` permission
+            - ANONYMOUS can not view and download if the resource is not published
+
+            - When resource has a group assigned:
+            - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` EXCLUDED)
+            - Group MANAGERS of the resource's group will get the owner permissions (`publish_resource` INCLUDED)
+            - Group MEMBERS of the resource's group will get the `view_resourcebase` permission
+
+            **Scenario 4**: **SIMPLE WORKFLOW**
+            - `RESOURCE_PUBLISHING = False`
+              `ADMIN_MODERATE_UPLOADS = True`
+
+            - **NOTE**: Is it even possibile? when the resource is automatically published, can it be un-published?
+            If this combination is not allowed, we should either stop the process when reading the settings or log a warning and force a safe combination.
+
+            - When user creates a resource
+            - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` INCLUDED)
+            - Group MANAGERS of the user's groups will get the owner permissions (`publish_resource` INCLUDED)
+            - Group MEMBERS of the user's group will get the `view_resourcebase` permission
+            - ANONYMOUS can view and download
+
+            Recap:
+            - OWNER can always publish, except in the ADVANCED WORKFLOW
+            - Group MANAGERS have publish privs only when `ADMIN_MODERATE_UPLOADS` is True (no DATA EDIT perms assigned by default)
+            - Group MEMBERS have always access to the resource, except for the AUTOPUBLISH, where everybody has access to it.
         """
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
-            _resource.set_processing_state(enumerations.STATE_RUNNING)
-            try:
-                with transaction.atomic():
-                    anonymous_group = Group.objects.get(name='anonymous')
-                    if approved:
-                        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                        _members_group_group = Group.objects.get(name=_members_group_name)
-                        for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
-                            assign_perm(perm,
-                                        _members_group_group, _resource.get_self_resource())
-                    if published:
-                        for perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
-                            assign_perm(perm,
-                                        anonymous_group, _resource.get_self_resource())
+            perm_spec = permissions or copy.deepcopy(_resource.get_all_level_info())
 
-                    if not self._concrete_resource_manager.set_workflow_permissions(
-                            uuid, instance=_resource, approved=approved, published=published):
-                        raise Exception("Could not complete concrete manager operation successfully!")
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
-                return True
-            except Exception as e:
-                logger.exception(e)
-                _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.set_dirty_state()
-        return False
+            # Sanity checks
+            if isinstance(perm_spec, str):
+                perm_spec = json.loads(perm_spec)
+
+            if "users" not in perm_spec:
+                perm_spec["users"] = {}
+            elif isinstance(perm_spec["users"], list):
+                _users = {}
+                for _item in perm_spec["users"]:
+                    _users[_item[0]] = _item[1]
+                perm_spec["users"] = _users
+
+            if "groups" not in perm_spec:
+                perm_spec["groups"] = {}
+            elif isinstance(perm_spec["groups"], list):
+                _groups = {}
+                for _item in perm_spec["groups"]:
+                    _groups[_item[0]] = _item[1]
+                perm_spec["groups"] = _groups
+
+            # Make sure we're dealing with "Profile"s and "Group"s...
+            perm_spec = _resource.fixup_perms(perm_spec)
+
+            if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
+                if _resource.resource_type not in DOWNLOADABLE_RESOURCES:
+                    view_perms = VIEW_PERMISSIONS
+                else:
+                    view_perms = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+                anonymous_group = Group.objects.get(name='anonymous')
+                registered_members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                user_groups = Group.objects.filter(
+                    name__in=_resource.owner.groupmember_set.all().values_list("group__slug", flat=True))
+                member_group_perm, group_managers = _resource.get_group_managers(user_groups)
+
+                if group_managers:
+                    for group_manager in group_managers:
+                        prev_perms = perm_spec['users'].get(group_manager, []) if isinstance(perm_spec['users'], dict) else []
+                        # AF: Should be a manager being able to change the dataset data and style too by default?
+                        #     For the time being let's give to the manager "management" perms only.
+                        # if _resource.polymorphic_ctype.name == 'layer':
+                        #     perm_spec['users'][group_manager] = list(
+                        #         set(prev_perms + view_perms + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS))
+                        # else:
+                        perm_spec['users'][group_manager] = list(
+                            set(prev_perms + view_perms + ADMIN_PERMISSIONS))
+
+                if member_group_perm:
+                    for gr, perm in member_group_perm['groups'].items():
+                        if gr != anonymous_group and gr.name != registered_members_group_name:
+                            prev_perms = perm_spec['groups'].get(gr, []) if isinstance(perm_spec['groups'], dict) else []
+                            perm_spec['groups'][gr] = list(set(prev_perms + perm))
+
+                if _resource.is_approved:
+                    if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
+                        registered_members_group = Group.objects.get(name=registered_members_group_name)
+                        prev_perms = perm_spec['groups'].get(registered_members_group, []) if isinstance(perm_spec['groups'], dict) else []
+                        perm_spec['groups'][registered_members_group] = list(set(prev_perms + view_perms))
+                    else:
+                        prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
+                        perm_spec['groups'][anonymous_group] = list(set(prev_perms + view_perms))
+
+                if _resource.is_published:
+                    prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
+                    perm_spec['groups'][anonymous_group] = list(set(prev_perms + view_perms))
+
+            return self._concrete_resource_manager.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=perm_spec)
+
+        return permissions
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)

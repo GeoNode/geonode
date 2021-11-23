@@ -53,7 +53,7 @@ from django.db.models import signals
 from django.utils.http import is_safe_url
 from django.apps import apps as django_apps
 from django.middleware.csrf import get_token
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -1046,7 +1046,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     obj = get_object_or_404(model, **query)
     obj_to_check = obj.get_self_resource()
 
-    from guardian.shortcuts import assign_perm, get_groups_with_perms
+    from guardian.shortcuts import get_groups_with_perms
     from geonode.groups.models import GroupProfile
 
     groups = get_groups_with_perms(obj_to_check,
@@ -1071,48 +1071,6 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                     obj_group_members.append(user)
             except GroupProfile.DoesNotExist:
                 pass
-
-    if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
-        is_admin = False
-        is_manager = False
-        is_owner = user == obj_to_check.owner
-        if user and user.is_authenticated:
-            is_admin = user.is_superuser if user else False
-            try:
-                is_manager = user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-        if (not obj_to_check.is_approved):
-            if not user or user.is_anonymous:
-                raise Http404
-            elif not is_admin:
-                if is_manager and user in obj_group_managers:
-                    if (not user.has_perm('publish_resourcebase', obj_to_check)) and (
-                        not user.has_perm('view_resourcebase', obj_to_check)) and (
-                            not user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
-                                not is_owner and not settings.ADMIN_MODERATE_UPLOADS):
-                        pass
-                    else:
-                        assign_perm(
-                            'view_resourcebase', user, obj_to_check)
-                        assign_perm(
-                            'publish_resourcebase',
-                            user,
-                            obj_to_check)
-                        assign_perm(
-                            'change_resourcebase_metadata',
-                            user,
-                            obj_to_check)
-                        assign_perm(
-                            'download_resourcebase',
-                            user,
-                            obj_to_check)
-
-                        if is_owner:
-                            assign_perm(
-                                'change_resourcebase', user, obj_to_check)
-                            assign_perm(
-                                'delete_resourcebase', user, obj_to_check)
 
     allowed = True
     if permission.split('.')[-1] in ['change_dataset_data',

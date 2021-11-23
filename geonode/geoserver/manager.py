@@ -505,7 +505,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
             return False
         return True
 
-    def set_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, approved: bool = False, published: bool = False) -> bool:
+    def get_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> dict:
         instance = instance or ResourceManager._get_instance(uuid)
 
         try:
@@ -513,14 +513,14 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 if isinstance(instance.get_real_instance(), Dataset):
                     _disable_cache = []
                     gf_services = _get_gf_services(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
-                    if approved:
+                    if instance.is_approved:
                         # Set the GeoFence Rules (user = None)
                         _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
                         _members_group_group = Group.objects.get(name=_members_group_name)
                         sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
                         _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, _members_group_group, gf_services)
                         _disable_cache.append(_disable_dataset_cache)
-                    if published:
+                    if instance.is_published:
                         # Set the GeoFence Rules (user = None)
                         sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
                         _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
@@ -550,8 +550,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         pass
         except Exception as e:
             logger.exception(e)
-            return False
-        return True
+        return permissions
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         if instance and not isinstance(instance.get_real_instance(), Document):
