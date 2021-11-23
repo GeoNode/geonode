@@ -5379,7 +5379,7 @@ msgstr "データセットを探す"
 
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps which can be saved, "
-"downloaded, shared publicly or restricted to specify users only."
+"downloaded, shared publicly or restricted to specific users only."
 msgstr ""
 "データを閲覧、集計、およびスタイリングして地図を作成します。地図は一般に公開または特定のユー"
 "ザーのみが閲覧できます。"
