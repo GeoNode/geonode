@@ -2077,7 +2077,6 @@ def sync_instance_with_geoserver(
     """
     Synchronizes the Django Instance with GeoServer layers.
     """
-    from geonode.geoserver.upload import geoserver_upload
     from geonode.geoserver.signals import geoserver_post_save_complete
     from geonode.utils import is_monochromatic_image, set_resource_default_links
 
@@ -2090,6 +2089,20 @@ def sync_instance_with_geoserver(
     except Layer.DoesNotExist:
         logger.debug(f"Layer id {instance_id} does not exist yet!")
         raise
+
+    if isinstance(instance, ResourceBase):
+        if hasattr(instance, 'layer'):
+            instance = instance.layer
+        else:
+            return instance
+
+    if updatemetadata:
+        # Save layer attributes
+        logger.debug(f"... Refresh GeoServer attributes list for Dataset {instance.title}")
+        try:
+            set_attributes_from_geoserver(instance)
+        except Exception as e:
+            logger.exception(e)
 
     # Don't run this signal if is a Layer from a remote service
     if getattr(instance, "remote_service", None) is not None or instance.storeType == "remoteStore":
@@ -2105,12 +2118,6 @@ def sync_instance_with_geoserver(
         geoserver_post_save_complete.send(
             sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
         return instance
-
-    if isinstance(instance, ResourceBase):
-        if hasattr(instance, 'layer'):
-            instance = instance.layer
-        else:
-            return instance
 
     geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
     geonode_upload_sessions.update(processed=False)
@@ -2130,6 +2137,7 @@ def sync_instance_with_geoserver(
             # There is no need to process it if there is no file.
             if base_file is None:
                 return
+            from geonode.geoserver.upload import geoserver_upload
             gs_name, workspace, values, gs_resource = geoserver_upload(
                 instance,
                 base_file.file.path,
@@ -2192,8 +2200,7 @@ def sync_instance_with_geoserver(
                     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
                         gs_catalog.save(gs_resource)
                 except Exception as e:
-                    msg = (f'Error while trying to save resource named {gs_resource} in GeoServer, '
-                           f'try to use: "{e}"')
+                    msg = (f'Error while trying to save resource named {gs_resource} in GeoServer, try to use: "{e}"')
                     e.args = (msg,)
                     logger.exception(e)
 
@@ -2286,27 +2293,6 @@ def sync_instance_with_geoserver(
                         logger.warning(e)
 
             if updatemetadata:
-                # Refreshing CSW records
-                logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")
-                try:
-                    catalogue_post_save(instance=instance, sender=instance.__class__)
-                except Exception as e:
-                    logger.exception(e)
-
-                # Refreshing layer links
-                logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
-                try:
-                    set_resource_default_links(instance, instance, prune=True)
-                except Exception as e:
-                    logger.exception(e)
-
-                # Save layer attributes
-                logger.debug(f"... Refresh GeoServer attributes list for Layer {instance.title}")
-                try:
-                    set_attributes_from_geoserver(instance)
-                except Exception as e:
-                    logger.exception(e)
-
                 # Save layer styles
                 logger.debug(f"... Refresh Legend links for Layer {instance.title}")
                 try:
@@ -2333,6 +2319,21 @@ def sync_instance_with_geoserver(
         geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
         geonode_upload_sessions.update(processed=True)
         instance.clear_dirty_state()
+
+    # Refreshing layer links
+    logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
+    try:
+        _prune = (gs_resource is not None)
+        set_resource_default_links(instance, instance, prune=_prune)
+    except Exception as e:
+        logger.exception(e)
+
+    # Refreshing CSW records
+    logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")
+    try:
+        catalogue_post_save(instance=instance, sender=instance.__class__)
+    except Exception as e:
+        logger.exception(e)
 
     return instance
 
