@@ -80,7 +80,6 @@ from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.permissions import (
     VIEW_PERMISSIONS,
-    DOWNLOAD_PERMISSIONS,
     OWNER_PERMISSIONS
 )
 
@@ -1063,7 +1062,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @classproperty
     def allowed_permissions(cls):
         return {
-            "anonymous": VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS,
+            "anonymous": VIEW_PERMISSIONS,
             "default": OWNER_PERMISSIONS,
             groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS
         }

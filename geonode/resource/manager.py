@@ -51,6 +51,7 @@ from geonode.security.permissions import (
     DATA_EDITABLE_RESOURCES_SUBTYPES,)
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.utils import (
+    perms_as_set,
     get_user_groups,
     set_owner_permissions,
     get_obj_group_managers,
@@ -585,6 +586,7 @@ class ResourceManager(ResourceManagerInterface):
                         _resource.owner = owner
                         ResourceBase.objects.filter(uuid=_resource.uuid).update(owner=owner)
                     _owner = _resource.owner
+                    _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
 
                     """
                     Remove all the permissions except for the owner and assign the
@@ -592,7 +594,7 @@ class ResourceManager(ResourceManagerInterface):
                     """
                     self.remove_permissions(uuid, instance=_resource)
 
-                    if permissions is not None:
+                    if permissions is not None and len(permissions):
                         """
                         Sets an object's the permission levels based on the perm_spec JSON.
 
@@ -613,18 +615,22 @@ class ResourceManager(ResourceManagerInterface):
                         """
 
                         # default permissions for resource owner
-                        set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
+                        _perm_spec = set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
 
                         # Anonymous User group
                         if 'users' in permissions and "AnonymousUser" in permissions['users']:
                             anonymous_group = Group.objects.get(name='anonymous')
                             for perm in permissions['users']['AnonymousUser']:
-                                if _resource.resource_type == 'dataset' and perm in (
+                                if _resource_type == 'dataset' and perm in (
                                         'change_dataset_data', 'change_dataset_style',
-                                        'add_dataset', 'change_dataset', 'delete_dataset',):
+                                        'add_dataset', 'change_dataset', 'delete_dataset'):
                                     assign_perm(perm, anonymous_group, _resource.dataset)
-                                elif assignable_perm_condition(perm, _resource.resource_type):
+                                    _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
+                                    _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
+                                elif assignable_perm_condition(perm, _resource_type):
                                     assign_perm(perm, anonymous_group, _resource.get_self_resource())
+                                    _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
+                                    _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # All the other users
                         if 'users' in permissions and len(permissions['users']) > 0:
@@ -632,24 +638,32 @@ class ResourceManager(ResourceManagerInterface):
                                 _user = get_user_model().objects.get(username=user)
                                 if _user != _resource.owner and user != "AnonymousUser":
                                     for perm in perms:
-                                        if _resource.resource_type == 'dataset' and perm in (
+                                        if _resource_type == 'dataset' and perm in (
                                                 'change_dataset_data', 'change_dataset_style',
-                                                'add_dataset', 'change_dataset', 'delete_dataset',):
+                                                'add_dataset', 'change_dataset', 'delete_dataset'):
                                             assign_perm(perm, _user, _resource.dataset)
-                                        elif assignable_perm_condition(perm, _resource.resource_type):
+                                            _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
+                                            _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
+                                        elif assignable_perm_condition(perm, _resource_type):
                                             assign_perm(perm, _user, _resource.get_self_resource())
+                                            _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
+                                            _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # All the other groups
                         if 'groups' in permissions and len(permissions['groups']) > 0:
                             for group, perms in permissions['groups'].items():
                                 _group = Group.objects.get(name=group)
                                 for perm in perms:
-                                    if _resource.resource_type == 'dataset' and perm in (
+                                    if _resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
-                                            'add_dataset', 'change_dataset', 'delete_dataset',):
+                                            'add_dataset', 'change_dataset', 'delete_dataset'):
                                         assign_perm(perm, _group, _resource.dataset)
-                                    elif assignable_perm_condition(perm, _resource.resource_type):
+                                        _prev_perm = _perm_spec["groups"].get(_group, []) if "groups" in _perm_spec else []
+                                        _perm_spec["groups"][_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
+                                    elif assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _group, _resource.get_self_resource())
+                                        _prev_perm = _perm_spec["groups"].get(_group, []) if "groups" in _perm_spec else []
+                                        _perm_spec["groups"][_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # AnonymousUser
                         if 'users' in permissions and len(permissions['users']) > 0:
@@ -657,12 +671,16 @@ class ResourceManager(ResourceManagerInterface):
                                 _user = get_anonymous_user()
                                 perms = permissions['users']["AnonymousUser"]
                                 for perm in perms:
-                                    if _resource.resource_type == 'dataset' and perm in (
+                                    if _resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
-                                            'add_dataset', 'change_dataset', 'delete_dataset',):
+                                            'add_dataset', 'change_dataset', 'delete_dataset'):
                                         assign_perm(perm, _user, _resource.dataset)
-                                    elif assignable_perm_condition(perm, _resource.resource_type):
+                                        _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
+                                        _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
+                                    elif assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _user, _resource.get_self_resource())
+                                        _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
+                                        _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
                     else:
                         # default permissions for anonymous users
                         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
@@ -671,40 +689,50 @@ class ResourceManager(ResourceManagerInterface):
                             raise Exception("Could not acquire 'anonymous' Group.")
 
                         # default permissions for resource owner
-                        set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
+                        _perm_spec = set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
 
                         # Anonymous
                         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
                         if anonymous_can_view:
                             assign_perm('view_resourcebase',
                                         anonymous_group, _resource.get_self_resource())
+                            _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
+                            _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set('view_resourcebase'))
                         else:
                             for user_group in get_user_groups(_owner):
                                 if not skip_registered_members_common_group(user_group):
                                     assign_perm('view_resourcebase',
                                                 user_group, _resource.get_self_resource())
+                                    _prev_perm = _perm_spec["groups"].get(user_group, []) if "groups" in _perm_spec else []
+                                    _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('view_resourcebase'))
 
-                        if assignable_perm_condition('download_resourcebase', _resource.resource_type):
+                        if assignable_perm_condition('download_resourcebase', _resource_type):
                             anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
                             if anonymous_can_download:
                                 assign_perm('download_resourcebase',
                                             anonymous_group, _resource.get_self_resource())
+                                _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
+                                _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set('download_resourcebase'))
                             else:
                                 for user_group in get_user_groups(_owner):
                                     if not skip_registered_members_common_group(user_group):
                                         assign_perm('download_resourcebase',
                                                     user_group, _resource.get_self_resource())
+                                        _prev_perm = _perm_spec["groups"].get(user_group, []) if "groups" in _perm_spec else []
+                                        _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('download_resourcebase'))
 
                         if _resource.__class__.__name__ == 'Dataset':
                             # only for layer owner
                             assign_perm('change_dataset_data', _owner, _resource)
                             assign_perm('change_dataset_style', _owner, _resource)
+                            _prev_perm = _perm_spec["users"].get(_owner, []) if "users" in _perm_spec else []
+                            _perm_spec["users"][_owner] = set.union(perms_as_set(_prev_perm), perms_as_set(['change_dataset_data', 'change_dataset_style']))
 
                         _resource.handle_moderated_uploads()
 
                     # Fixup GIS Backend Security Rules Accordingly
                     if not self._concrete_resource_manager.set_permissions(
-                            uuid, instance=_resource, owner=owner, permissions=permissions, created=created):
+                            uuid, instance=_resource, owner=owner, permissions=_perm_spec, created=created):
                         # This might not be a severe error. E.g. for datasets outside of local GeoServer
                         logger.error(Exception("Could not complete concrete manager operation successfully!"))
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
@@ -813,9 +841,10 @@ class ResourceManager(ResourceManagerInterface):
 
             # Make sure we're dealing with "Profile"s and "Group"s...
             perm_spec = _resource.fixup_perms(perm_spec)
+            _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
 
             if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
-                if _resource.resource_type not in DOWNLOADABLE_RESOURCES:
+                if _resource_type not in DOWNLOADABLE_RESOURCES:
                     view_perms = VIEW_PERMISSIONS
                 else:
                     view_perms = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS

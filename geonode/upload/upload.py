@@ -259,7 +259,7 @@ def _check_geoserver_store(store_name, dataset_type, overwrite):
                         if not overwrite:
                             raise GeoNodeException(
                                 _("Name already in use and overwrite is False"))
-                        existing_type = resource.resource_type
+                        existing_type = resource.resource_type or resource.polymorphic_ctype.name
                         if existing_type != dataset_type:
                             msg = (f"Type of uploaded file {store_name} ({dataset_type}) does not "
                                    "match type of existing resource type "

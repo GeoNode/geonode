@@ -400,7 +400,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
                         _disable_cache = []
                         _owner = owner or instance.owner
-                        if permissions is not None:
+                        if permissions is not None and len(permissions):
                             if not created:
                                 purge_geofence_dataset_rules(instance.get_self_resource())
 
@@ -477,17 +477,15 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                     _disable_cache.append(_disable_dataset_cache)
 
                             # Anonymous
-                            perms = ["view_resourcebase"]
                             if anonymous_can_view:
-                                sync_geofence_with_guardian(instance, perms, user=None, group=None)
-                                gf_services = _get_gf_services(instance, perms)
+                                sync_geofence_with_guardian(instance, VIEW_PERMISSIONS, user=None, group=None)
+                                gf_services = _get_gf_services(instance, VIEW_PERMISSIONS)
                                 _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                                 _disable_cache.append(_disable_dataset_cache)
 
-                            perms = ["download_resourcebase"]
                             if anonymous_can_download:
-                                sync_geofence_with_guardian(instance, perms, user=None, group=None)
-                                gf_services = _get_gf_services(instance, perms)
+                                sync_geofence_with_guardian(instance, DOWNLOAD_PERMISSIONS, user=None, group=None)
+                                gf_services = _get_gf_services(instance, DOWNLOAD_PERMISSIONS)
                                 _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                                 _disable_cache.append(_disable_dataset_cache)
 
