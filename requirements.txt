@@ -46,13 +46,13 @@ oauthlib==3.1.1
 pyopenssl==21.0.0
 
 # geopython dependencies
-pyproj==3.2.1
+pyproj==3.3.0
 OWSLib==0.25.0
 pycsw==2.6.1
 SQLAlchemy==1.4.27 # required by PyCSW
 Shapely==1.8.0
 mercantile==1.2.1
-geoip2==4.4.0
+geoip2==4.5.0
 numpy==1.21.*
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
@@ -74,7 +74,7 @@ drf-extensions==0.7.1
 drf-writable-nested==0.6.3
 drf-spectacular==0.21.0
 git+https://github.com/GeoNode/dynamic-rest.git@v2.0.1#egg=dynamic-rest
-Markdown==3.3.4
+Markdown==3.3.6
 
 pinax-notifications==6.0.0
 pinax-ratings==4.0.0

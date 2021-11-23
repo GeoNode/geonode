@@ -5956,7 +5956,7 @@ msgstr "Esplora mappe"
 
 msgid ""
 "As for the layers and maps GeoNode allows to publish tabular and text data, "
-"manage theirs metadata and associated documents."
+"manage their metadata and associated documents."
 msgstr ""
 "Per quanto riguarda i livelli e le mappe, GeoNode consente di pubblicare "
 "dati tabulari e di testo, gestirne i metadati e i documenti associati."

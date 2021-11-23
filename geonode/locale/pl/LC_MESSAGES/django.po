@@ -5319,7 +5319,7 @@ msgstr "Przeglądaj zbiory danych"
 
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps which can be saved, "
-"downloaded, shared publicly or restricted to specify users only."
+"downloaded, shared publicly or restricted to specific users only."
 msgstr ""
 "Dane są dostępne do przeglądania, agregowania i stylizacji w celu generowania map, które "
 "można zapisywać, pobierać, udostępniać publicznie lub ograniczyć dostęp tylko dla wskazanych "
