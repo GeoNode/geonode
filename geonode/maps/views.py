@@ -315,18 +315,20 @@ def map_embed(
         request,
         mapid=None,
         template='maps/map_embed.html'):
-    map_obj = None
-    if mapid is None:
-        config = default_map_config(request)[0]
-    else:
+    try:
         map_obj = _resolve_map(
             request,
             mapid,
             'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
+            _PERMISSION_MSG_VIEW
+        )
+    except PermissionDenied:
+        return HttpResponse(MSG_NOT_ALLOWED, status=403)
+    except Exception:
+        raise Http404(MSG_NOT_FOUND)
 
-        config = map_obj.viewer_json(request)
-        register_event(request, EventType.EVENT_VIEW, map_obj)
+    if not map_obj:
+        raise Http404(MSG_NOT_FOUND)
 
     access_token = None
     if request and request.user:
@@ -336,11 +338,13 @@ def map_embed(
         else:
             access_token = None
 
-    return render(request, template, context={
+    context_dict = {
         'access_token': access_token,
         'resource': map_obj,
-        'config': json.dumps(config),
-    })
+    }
+
+    register_event(request, EventType.EVENT_VIEW, map_obj)
+    return render(request, template, context=context_dict)
 
 
 # MAPS VIEWER #

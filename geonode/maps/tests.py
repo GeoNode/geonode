@@ -21,6 +21,7 @@ import logging
 
 from unittest.mock import patch
 from owslib.etree import etree as dlxml
+from rest_framework import status
 
 from django.urls import reverse
 from django.conf import settings
@@ -565,37 +566,13 @@ community."
 
         # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json(None)
-        response_config_dict = json.loads(response.context['config'])
-        self.assertEqual(
-            config_map['about']['abstract'],
-            response_config_dict['about']['abstract'])
-        self.assertEqual(
-            config_map['about']['title'],
-            response_config_dict['about']['title'])
+        self.assertEqual(response.context['resource'], map_obj)
+        self.assertIsNotNone(response.context['access_token'])
+        self.assertEqual(response.context['is_embed'], 'true')
 
         # Now test without a map id
         response = self.client.get(url_no_id)
-        self.assertEqual(response.status_code, 200)
-        # Config equals to that of the default map
-        config_default = default_map_config(None)[0]
-        response_config_dict = json.loads(response.context['config'])
-        self.assertEqual(
-            config_default['about']['abstract'],
-            response_config_dict['about']['abstract'])
-        self.assertEqual(
-            config_default['about']['title'],
-            response_config_dict['about']['title'])
-
-        map_obj.update_from_viewer(config_map, context={})
-        title = config_map.get('title', config_map['about']['title'])
-        abstract = config_map.get('abstract', config_map['about']['abstract'])
-        projection = config_map['map']['projection']
-
-        self.assertEqual(map_obj.title, title)
-        self.assertEqual(map_obj.abstract, abstract)
-        self.assertEqual(map_obj.zoom, 7)
-        self.assertEqual(map_obj.projection, projection)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
     def test_map_view(self, thumbnail_mock):
@@ -639,29 +616,10 @@ community."
 
         # Config equals to that of the map whose id is given
         map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json(None)
-        response_config_dict = json.loads(response.context['config'])
-        self.assertEqual(
-            config_map['about']['abstract'],
-            response_config_dict['about']['abstract'])
-        self.assertEqual(
-            config_map['about']['title'],
-            response_config_dict['about']['title'])
-
-        map_obj.update_from_viewer(config_map, context={})
-        title = config_map.get('title', config_map['about']['title'])
-        abstract = config_map.get('abstract', config_map['about']['abstract'])
-        projection = config_map['map']['projection']
-
-        self.assertEqual(map_obj.title, title)
-        self.assertEqual(map_obj.abstract, abstract)
-        self.assertEqual(map_obj.zoom, 7)
-        self.assertEqual(map_obj.projection, projection)
-
-        for map_dataset in map_obj.datasets:
-            if Dataset.objects.filter(alternate=map_dataset.name).exists():
-                cfg = map_dataset.dataset_config()
-                self.assertIsNotNone(cfg["getFeatureInfo"])
+        map_obj = Map.objects.get(id=map_id)
+        self.assertEqual(response.context['resource'], map_obj)
+        self.assertIsNotNone(response.context['access_token'])
+        self.assertEqual(response.context['is_embed'], 'true')
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
     def test_new_map_config(self, thumbnail_mock):
