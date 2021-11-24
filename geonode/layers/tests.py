@@ -1267,7 +1267,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
             self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_dataset.alternate)
 
         response = self.client.get(reverse('dataset_embed', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_datasets'], [])
+        self.assertIsNotNone(response.context['resource'])
 
     def test_that_only_users_with_permissions_can_view_maps_in_dataset_view(self):
         """
@@ -1276,7 +1276,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('dataset_embed', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_datasets'], [self.map_dataset])
+        self.assertEqual(response.context['resource'].alternate, self.map_dataset.name)
 
     def test_update_with_a_comma_in_title_is_replaced_by_undescore(self):
         """
