@@ -80,11 +80,9 @@ from geonode.security.utils import get_user_visible_groups
 from geonode.people.forms import ProfileForm
 from geonode.utils import (
     resolve_object,
-    default_map_config,
     check_ogc_backend,
     llbbox_to_mercator,
-    GXPLayer,
-    GXPMap)
+)
 from geonode.geoserver.helpers import (
     ogc_server_settings,
     select_relevant_files,
@@ -512,43 +510,11 @@ def dataset_metadata(
     config["title"] = layer.title
     config["queryable"] = True
 
-    if layer.subtype in ['tileStore', 'remote']:
-        service = layer.remote_service
-        source_params = {}
-        if service.type in ('REST_MAP', 'REST_IMG'):
-            source_params = {
-                "ptype": service.ptype,
-                "remote": True,
-                "url": service.service_url,
-                "name": service.name,
-                "title": f"[R] {service.title}"}
-        maplayer = GXPLayer(
-            name=layer.alternate,
-            ows_url=layer.ows_url,
-            dataset_params=json.dumps(config),
-            source_params=json.dumps(source_params)
-        )
-    else:
-        maplayer = GXPLayer(
-            name=layer.alternate,
-            ows_url=layer.ows_url,
-            dataset_params=json.dumps(config))
-
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     if request.user != layer.owner and not request.user.is_superuser:
         Dataset.objects.filter(
             id=layer.id).update(popular_count=F('popular_count') + 1)
-
-    # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(
-        projection=getattr(
-            settings,
-            'DEFAULT_MAP_CRS',
-            'EPSG:3857'))
-
-    NON_WMS_BASE_LAYERS = [
-        la for la in default_map_config(request)[1] if la.ows_url is None]
 
     if request.method == "POST":
         if layer.metadata_uploaded_preserve:  # layer metadata cannot be edited
@@ -806,9 +772,6 @@ def dataset_metadata(
         author_form = ProfileForm(prefix="author")
         author_form.hidden = False
 
-    viewer = json.dumps(map_obj.viewer_json(
-        request, * (NON_WMS_BASE_LAYERS + [maplayer])))
-
     metadata_author_groups = get_user_visible_groups(request.user)
 
     register_event(request, 'view_metadata', layer)
@@ -821,7 +784,6 @@ def dataset_metadata(
         "attribute_form": attribute_form,
         "category_form": category_form,
         "tkeywords_form": tkeywords_form,
-        "viewer": viewer,
         "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         "metadataxsl": getattr(settings, 'GEONODE_CATALOGUE_METADATA_XSL', True),
