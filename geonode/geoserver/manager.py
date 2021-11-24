@@ -127,14 +127,16 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
         _resource = resource_type.objects.get(uuid=uuid)
         if resource_type == Dataset:
-            sync_instance_with_geoserver(_resource.id)
+            _synced_resource = sync_instance_with_geoserver(_resource.id)
+            _resource = _synced_resource or _resource
         return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
                vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
         if instance:
             if isinstance(instance.get_real_instance(), Dataset):
-                sync_instance_with_geoserver(instance.id)
+                _synced_resource = sync_instance_with_geoserver(instance.id)
+                instance = _synced_resource or instance
         return instance
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
