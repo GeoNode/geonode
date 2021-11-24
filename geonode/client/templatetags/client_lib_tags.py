@@ -132,9 +132,7 @@ class GeoNodeClientLibraryTag(template.Node):
                 hookset.dataset_list_template(
                     context=context))
         elif self.tag_name == 'get_dataset_detail':
-            t = context.template.engine.get_template(
-                hookset.dataset_detail_template(
-                    context=context))
+            t = context.template.engine.get_template('geonode-mapstore-client/legacy/dataset_detail.html')
         elif self.tag_name == 'get_dataset_new':
             t = context.template.engine.get_template(
                 hookset.dataset_new_template(
@@ -190,9 +188,7 @@ class GeoNodeClientLibraryTag(template.Node):
                 hookset.map_update_template(
                     context=context))
         elif self.tag_name == 'get_map_embed':
-            t = context.template.engine.get_template(
-                hookset.map_embed_template(
-                    context=context))
+            t = context.template.engine.get_template('geonode-mapstore-client/map_embed.html')
         elif self.tag_name == 'get_map_download':
             t = context.template.engine.get_template(
                 hookset.map_download_template(
