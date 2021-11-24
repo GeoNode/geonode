@@ -1325,7 +1325,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 12)
+            self.assertGreaterEqual(geofence_rules_count, 12)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 

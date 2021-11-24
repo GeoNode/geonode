@@ -873,7 +873,7 @@ class ResourceManager(ResourceManagerInterface):
                             perm_spec['groups'][gr] = list(set(prev_perms + perm))
 
                 if _resource.is_approved:
-                    if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
+                    if getattr(groups_settings, 'AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME', False):
                         registered_members_group = Group.objects.get(name=registered_members_group_name)
                         prev_perms = perm_spec['groups'].get(registered_members_group, []) if isinstance(perm_spec['groups'], dict) else []
                         perm_spec['groups'][registered_members_group] = list(set(prev_perms + view_perms))
