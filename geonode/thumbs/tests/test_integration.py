@@ -36,7 +36,7 @@ from django.templatetags.static import static
 
 
 from geonode import geoserver
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapLayer
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
 from geonode.utils import http_client, DisableDjangoSignals
@@ -498,12 +498,55 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             cls.dataset_highway = create_single_dataset('san_andres_y_providencia_highway')
 
             # create a map from loaded layers
-            cls.map_composition = Map()
             admin_user = get_user_model().objects.get(username="admin")
-            cls.map_composition.create_from_dataset_list(
-                admin_user, [cls.dataset_coast_line, cls.dataset_highway], "composition", "abstract"
+            cls.map_composition = Map.objects.create(
+                title="composition",
+                abstract="abstract",
+                owner=admin_user,
+                zoom=21,
+                projection="EPSG:3857",
+                center_x=9.8814681250932e-05,
+                center_y=9.8814681250932e-05
             )
-
+            cls.map_composition.id
+            MapLayer.objects.create(
+                map=cls.map_composition,
+                extra_params={},
+                stack_order=0,
+                format=None,
+                name="geonode:san_andres_y_providencia_coastline",
+                store=None,
+                opacity=1.0,
+                styles=None,
+                current_style=None,
+                transparent=False,
+                fixed=False,
+                group=None,
+                ows_url=None,
+                visibility=True,
+                dataset_params="{}",
+                source_params="{}",
+                local=True
+            )
+            MapLayer.objects.create(
+                map=cls.map_composition,
+                extra_params={},
+                stack_order=1,
+                format=None,
+                name="geonode:san_andres_y_providencia_highway",
+                store=None,
+                opacity=1.0,
+                styles=None,
+                current_style=None,
+                transparent=False,
+                fixed=False,
+                group=None,
+                ows_url=None,
+                visibility=True,
+                dataset_params="{}",
+                source_params="{}",
+                local=True
+            )
             # update MapLayers to correctly show layers' location
             with DisableDjangoSignals():
                 for maplayer in cls.map_composition.datasets:

@@ -24,7 +24,6 @@ import uuid
 from deprecated import deprecated
 from django.conf import settings
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
@@ -36,7 +35,7 @@ from geonode.client.hooks import hookset
 from geonode.compat import ensure_string
 from geonode.layers.models import Dataset, Style
 from geonode.maps.signals import map_changed_signal
-from geonode.utils import GXPLayerBase, GXPMapBase, check_ogc_backend, dataset_from_viewer_config, default_map_config
+from geonode.utils import GXPLayerBase, GXPMapBase, check_ogc_backend, dataset_from_viewer_config
 
 logger = logging.getLogger("geonode.maps.models")
 
@@ -249,56 +248,6 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[3] = max(bbox[3], dataset_bbox[3])
 
         return bbox
-
-    def create_from_dataset_list(self, user, layers, title, abstract):
-        self.owner = user
-        self.title = title
-        self.abstract = abstract
-        self.projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
-        self.zoom = 0
-        self.center_x = 0
-        self.center_y = 0
-
-        if self.uuid is None or self.uuid == "":
-            self.uuid = str(uuid.uuid1())
-
-        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(None)
-
-        _datasets = []
-        for layer in layers:
-            if not isinstance(layer, Dataset):
-                try:
-                    layer = Dataset.objects.get(alternate=layer)
-                except ObjectDoesNotExist:
-                    raise Exception(f"Could not find layer with name {layer}")
-
-            if not user.has_perm("base.view_resourcebase", obj=layer.resourcebase_ptr):
-                # invisible layer, skip inclusion or raise Exception?
-                logger.error(f"User {user} tried to create a map with layer {layer} without having premissions")
-            else:
-                _datasets.append(layer)
-
-        # Set bounding box based on all layers extents.
-        # bbox format: [xmin, xmax, ymin, ymax]
-        bbox = self.get_bbox_from_datasets(_datasets)
-        self.set_bounds_from_bbox(bbox, self.projection)
-
-        # Save the map in order to create an id in the database
-        # used below for the maplayers.
-        self.save()
-
-        if _datasets and len(_datasets) > 0:
-            index = 0
-            for layer in _datasets:
-                MapLayer.objects.create(
-                    map=self, name=layer.alternate, ows_url=layer.get_ows_url(), stack_order=index, visibility=True
-                )
-                index += 1
-
-        # Save again to persist the zoom and bbox changes and
-        # to generate the thumbnail.
-        self.set_missing_info()
-        self.save(notify=True)
 
     @property
     def sender(self):
