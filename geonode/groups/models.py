@@ -18,6 +18,7 @@
 #########################################################################
 import os
 import logging
+
 from shutil import copyfile
 
 from django.conf import settings
@@ -36,7 +37,7 @@ from taggit.managers import TaggableManager
 
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group
 
-from geonode.security.permissions import VIEW_PERMISSIONS
+from geonode.security.permissions import VIEW_PERMISSIONS, ADMIN_PERMISSIONS
 
 logger = logging.getLogger(__name__)
 
@@ -263,7 +264,7 @@ class GroupMember(models.Model):
     def promote(self, *args, **kwargs):
         self.role = "manager"
         super().save(*args, **kwargs)
-        self._handle_perms()
+        self._handle_perms(perms=VIEW_PERMISSIONS + ADMIN_PERMISSIONS)
 
     def demote(self, *args, **kwargs):
         self.role = "member"
@@ -278,10 +279,6 @@ class GroupMember(models.Model):
         If the user is demoted, we assign by default at least the view and the download permission
         to the resource
         '''
-        # TODO: The following queryset includes only the resources accessible to the user
-        #       and assigned to the current group, via the metadata editor.
-        #       It may not include the "group.resources()", i.e. the resources accessible
-        #       by the group.
         queryset = (
             get_objects_for_user(
                 self.user,
@@ -290,7 +287,12 @@ class GroupMember(models.Model):
             .filter(group=self.group.group)
             .exclude(owner=self.user)
         )
-        for _r in queryset.iterator():
+        # A.F.: By including 'self.group.resources()' here, we will look also for resources
+        #       having permissions related to the current 'group' and not only the ones assigned
+        #       to the 'group' through the metadata settings.
+        # _resources = set([_r for _r in queryset.iterator()] + [_r for _r in self.group.resources()])
+        _resources = queryset.iterator()
+        for _r in _resources:
             perm_spec = None
             if perms:
                 perm_spec = _r.get_all_level_info()

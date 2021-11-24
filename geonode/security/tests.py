@@ -17,6 +17,7 @@
 #
 #########################################################################
 import os
+import copy
 import json
 import base64
 import logging
@@ -1207,14 +1208,23 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         """
 
         # Get a layer to work with
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
 
         # FIXME Test a comprehensive set of permissions specifications
+
+        # Set the Default Permissions
+        layer.set_default_permissions()
+
+        # Test that the Permissions for anonymous user are set
+        self.assertTrue(
+            self.anonymous_user.has_perm(
+                'view_resourcebase',
+                layer.get_self_resource()))
 
         # Set the Permissions
         layer.set_permissions(self.perm_spec)
 
-        # Test that the Permissions for anonymous user is are set
+        # Test that the Permissions for anonymous user are un-set
         self.assertFalse(
             self.anonymous_user.has_perm(
                 'view_resourcebase',
@@ -1358,7 +1368,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # grab a layer
         layer = Layer.objects.filter(owner=bob).first()
         layer.set_default_permissions()
-        # verify bobby has view/change permissions on it but not manage
+        # verify bobby has view/change and manage permissions on it
         self.assertTrue(
             bob.has_perm(
                 'change_resourcebase_permissions',
@@ -1817,30 +1827,46 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_get_visible_resources(self):
         standard_user = get_user_model().objects.get(username="bobby")
-        anonymous_group = Group.objects.get(name='anonymous')
         layers = Layer.objects.all()
         # update user's perm on a layer,
         # this should not return the layer since it will not be in user's allowed resources
-        x = Layer.objects.get(title='common bar')
-        remove_perm('view_resourcebase', standard_user, x.get_self_resource())
-        remove_perm('change_resourcebase', standard_user, x.get_self_resource())
-        remove_perm('view_resourcebase', anonymous_group, x.get_self_resource())
-        remove_perm('change_resourcebase', anonymous_group, x.get_self_resource())
-        actual = get_visible_resources(
-            queryset=layers,
-            user=standard_user,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
-            private_groups_not_visibile=True)
-        self.assertNotIn(x.title, list(actual.values_list('title', flat=True)))
-        # get layers as admin, this should return all layers with metadata_only = True
-        actual = get_visible_resources(
-            queryset=layers,
-            user=self.user,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
-            private_groups_not_visibile=True)
-        self.assertIn(x.title, list(actual.values_list('title', flat=True)))
+        x = Layer.objects.filter(~Q(owner=standard_user)).first()
+        x_perms = copy.deepcopy(x.get_all_level_info())
+        try:
+            Layer.objects.filter(id=x.id).update(is_approved=False, is_published=False)
+            x.refresh_from_db()
+            x.set_permissions(
+                {
+                    'users': {
+                        'bobby': []
+                    },
+                    'groups': {
+                        'anonymous': [],
+                        'registered-members': []
+                    }
+                }
+            )
+            self.assertFalse(standard_user.has_perm('view_resourcebase', x.get_self_resource()))
+            self.assertFalse(standard_user.has_perm('change_resourcebase', x.get_self_resource()))
+            actual = get_visible_resources(
+                queryset=layers,
+                user=standard_user,
+                admin_approval_required=True,
+                unpublished_not_visible=True,
+                private_groups_not_visibile=True)
+            self.assertNotIn(x.title, list(actual.values_list('title', flat=True)))
+            # get layers as admin, this should return all layers with metadata_only = True
+            actual = get_visible_resources(
+                queryset=layers,
+                user=self.user,
+                admin_approval_required=True,
+                unpublished_not_visible=True,
+                private_groups_not_visibile=True)
+            self.assertIn(x.title, list(actual.values_list('title', flat=True)))
+        finally:
+            Layer.objects.filter(id=x.id).update(is_approved=True, is_published=True)
+            x.refresh_from_db()
+            x.set_permissions(x_perms)
 
 
 class TestGetUserGeolimits(TestCase):
@@ -1913,9 +1939,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
-                        "publish_resourcebase",
-                        "change_resourcebase_permissions",
                         "view_resourcebase",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase"
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -1924,7 +1950,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "download_resourcebase",
                         "publish_resourcebase",
                         "change_resourcebase_permissions",
-                        "view_resourcebase",
+                        "view_resourcebase"
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["download_resourcebase", "view_resourcebase"],
