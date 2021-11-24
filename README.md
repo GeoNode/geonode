@@ -49,7 +49,8 @@ Workshop](https://docs.geonode.org/en/3.x/usage/index.html).
 Install
 -------
 
-    The latest official release is 3.2.1!
+    - The latest stable release is: 3.3.0
+    - The latest maintenance release is: 3.2.2
 
 GeoNode can be setup in different ways, flavors and plattforms. If
 you´re planning to do development or install for production please visit
