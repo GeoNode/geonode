@@ -36,10 +36,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode.utils import build_absolute_uri
 from geonode.thumbs.utils import MISSING_THUMB
+from geonode.security.permissions import VIEW_PERMISSIONS, DOWNLOAD_PERMISSIONS, ADMIN_PERMISSIONS
 
 from guardian.shortcuts import (
-    assign_perm,
-    remove_perm,
     get_objects_for_user,
     get_objects_for_group
 )
@@ -268,25 +267,43 @@ class GroupMember(models.Model):
 
     def promote(self, *args, **kwargs):
         self.role = "manager"
-        if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
-            from geonode.security.permissions import ADMIN_PERMISSIONS
-            queryset = get_objects_for_user(
-                self.user, 'base.view_resourcebase').filter(group=self.group.group)
-            for _r in queryset.exclude(owner=self.user):
-                for perm in ADMIN_PERMISSIONS:
-                    assign_perm(perm, self.user, _r.get_self_resource())
         super().save(*args, **kwargs)
+        self._handle_perms(perms=VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS)
 
     def demote(self, *args, **kwargs):
         self.role = "member"
-        if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
-            from geonode.security.permissions import ADMIN_PERMISSIONS
-            queryset = get_objects_for_user(
-                self.user, 'base.view_resourcebase').filter(group=self.group.group)
-            for _r in queryset.exclude(owner=self.user):
-                for perm in ADMIN_PERMISSIONS:
-                    remove_perm(perm, self.user, _r.get_self_resource())
         super().save(*args, **kwargs)
+        self._handle_perms(perms=VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
+
+    def _handle_perms(self, perms=None):
+        '''
+        Internally the set_permissions function will automatically handle the permissions
+        that needs to be assigned to re resource.
+        Background at: https://github.com/GeoNode/geonode/pull/8145
+        If the user is demoted, we assign by default at least the view and the download permission
+        to the resource
+        '''
+        queryset = (
+            get_objects_for_user(
+                self.user,
+                ["base.view_resourcebase", "base.change_resourcebase"],
+                any_perm=True)
+            .filter(group=self.group.group)
+            .exclude(owner=self.user)
+        )
+        # A.F.: By including 'self.group.resources()' here, we will look also for resources
+        #       having permissions related to the current 'group' and not only the ones assigned
+        #       to the 'group' through the metadata settings.
+        # _resources = set([_r for _r in queryset.iterator()] + [_r for _r in self.group.resources()])
+        _resources = queryset.iterator()
+        for _r in _resources:
+            perm_spec = None
+            if perms:
+                perm_spec = _r.get_all_level_info()
+                if "users" not in perm_spec:
+                    perm_spec["users"] = {}
+                perm_spec["users"][self.user] = perms
+            _r.set_permissions(perm_spec)
 
 
 def group_pre_delete(instance, sender, **kwargs):
