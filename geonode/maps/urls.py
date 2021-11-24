@@ -26,12 +26,10 @@ js_info_dict = {
 }
 
 map_embed = views.map_embed
-map_json = views.map_json
 
 urlpatterns = [
     # 'geonode.maps.views',
     url(r'^checkurl/?$', views.ajax_url_lookup),
-    url(r'^(?P<mapid>[^/]+)/data$', map_json, name='map_json'),
     url(r'^(?P<mapid>[^/]+)/wmc$', views.map_wmc, name='map_wmc'),
     url(r'^(?P<mapid>[^/]+)/metadata$', views.map_metadata, name='map_metadata'),
     url(r'^(?P<mapid>[^/]+)/metadata_advanced$', views.map_metadata_advanced, name='map_metadata_advanced'),

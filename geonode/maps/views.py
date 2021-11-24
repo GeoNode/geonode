@@ -45,7 +45,6 @@ from geonode.maps.contants import _PERMISSION_MSG_DELETE  # noqa: used by mapsto
 from geonode.maps.contants import _PERMISSION_MSG_SAVE  # noqa: used by mapstore
 from geonode.maps.contants import (
     _PERMISSION_MSG_GENERIC,
-    _PERMISSION_MSG_LOGIN,
     _PERMISSION_MSG_VIEW,
     MSG_NOT_ALLOWED,
     MSG_NOT_FOUND,
@@ -248,7 +247,6 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
 
-    config = map_obj.viewer_json(request)
     layers = MapLayer.objects.filter(map=map_obj.id)
 
     metadata_author_groups = get_user_visible_groups(request.user)
@@ -271,7 +269,6 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
 
     register_event(request, EventType.EVENT_VIEW_METADATA, map_obj)
     return render(request, template, context={
-        "config": json.dumps(config),
         "resource": map_obj,
         "map": map_obj,
         "map_form": map_form,
@@ -336,74 +333,6 @@ def map_embed(
 
     register_event(request, EventType.EVENT_VIEW, map_obj)
     return render(request, template, context=context_dict)
-
-
-# MAPS VIEWER #
-
-
-def map_view_js(request, mapid):
-    try:
-        map_obj = _resolve_map(request, mapid, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(MSG_NOT_ALLOWED, status=403)
-    except Exception:
-        raise Http404(MSG_NOT_FOUND)
-    if not map_obj:
-        raise Http404(MSG_NOT_FOUND)
-
-    config = map_obj.viewer_json(request)
-    return HttpResponse(json.dumps(config), content_type="application/javascript")
-
-
-def map_json_handle_get(request, mapid):
-    try:
-        map_obj = _resolve_map(request, mapid, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(MSG_NOT_ALLOWED, status=403)
-    except Exception:
-        raise Http404(MSG_NOT_FOUND)
-    if not map_obj:
-        raise Http404(MSG_NOT_FOUND)
-
-    return HttpResponse(json.dumps(map_obj.viewer_json(request)))
-
-
-def map_json_handle_put(request, mapid):
-    if not request.user.is_authenticated:
-        return HttpResponse(
-            _PERMISSION_MSG_LOGIN,
-            status=401,
-            content_type="text/plain"
-        )
-
-    map_obj = Map.objects.get(id=mapid)
-    if not request.user.has_perm(
-        'change_resourcebase',
-            map_obj.get_self_resource()):
-        return HttpResponse(
-            _PERMISSION_MSG_SAVE,
-            status=401,
-            content_type="text/plain"
-        )
-    try:
-        map_obj.update_from_viewer(request.body, context={'request': request, 'mapId': mapid, 'map': map_obj})
-        register_event(request, EventType.EVENT_CHANGE, map_obj)
-        return HttpResponse(
-            json.dumps(
-                map_obj.viewer_json(request)))
-    except ValueError as e:
-        return HttpResponse(
-            f"The server could not understand the request.{str(e)}",
-            content_type="text/plain",
-            status=400
-        )
-
-
-def map_json(request, mapid):
-    if request.method == 'GET':
-        return map_json_handle_get(request, mapid)
-    elif request.method == 'PUT':
-        return map_json_handle_put(request, mapid)
 
 
 # NEW MAPS #
