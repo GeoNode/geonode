@@ -38,8 +38,9 @@ from geonode.maps.utils.layers import fix_baselayers
 from geonode.maps.models import Map, MapLayer
 from geonode.base.models import License, Region
 from geonode.tests.utils import NotificationsTestsHelper
-from geonode.utils import default_map_config, check_ogc_backend
+from geonode.utils import check_ogc_backend
 from geonode.maps.tests_populate_maplayers import create_maplayers
+from geonode.resource.manager import resource_manager
 
 from geonode.base.populate_test_data import (
     all_public,
@@ -208,52 +209,6 @@ community."
                 map_dataset.dataset_title,
                 "base:nic_admin")
 
-    @patch('geonode.thumbs.thumbnails.create_thumbnail')
-    def test_map_save(self, thumbnail_mock):
-        """POST /maps/new/data -> Test saving a new map"""
-
-        new_map = reverse("new_map_json")
-        # Test that saving a map when not logged in gives 401
-        response = self.client.post(
-            new_map,
-            data=self.viewer_config,
-            content_type="text/json")
-        self.assertEqual(response.status_code, 401)
-
-        # Test successful new map creation
-        self.client.login(username=self.user, password=self.passwd)
-        response = self.client.post(
-            new_map,
-            data=self.viewer_config,
-            content_type="text/json")
-        self.assertEqual(response.status_code, 200)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        map_id = int(json.loads(content)['id'])
-        self.client.logout()
-
-        # We have now 10 maps and 8 layers
-        self.assertEqual(Map.objects.all().count(), 11)
-        map_obj = Map.objects.get(id=map_id)
-        self.assertEqual(map_obj.title, "Title")
-        self.assertEqual(map_obj.abstract, "Abstract")
-        self.assertEqual(map_obj.maplayers.all().count(), 1)
-        self.assertEqual(map_obj.keyword_list(), ["keywords", "saving"])
-        self.assertNotEqual(map_obj.bbox_polygon, None)
-
-        # Test an invalid map creation request
-        self.client.login(username=self.user, password=self.passwd)
-
-        try:
-            response = self.client.post(
-                new_map,
-                data="not a valid viewer config",
-                content_type="text/json")
-            self.assertEqual(response.status_code, 400)
-        except Exception:
-            pass
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_map_fetch(self):
         """/maps/[id]/data -> Test fetching a map in JSON"""
@@ -312,16 +267,6 @@ community."
         self.assertEqual(
             wmc.find(abstract).text,
             'GeoNode default map abstract')
-
-    def test_newmap_to_json(self):
-        """ Make some assertions about the data structure produced for serialization
-            to a new JSON map configuration"""
-        response = self.client.get(reverse('new_map_json'))
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        cfg = json.loads(content)
-        self.assertEqual(cfg['defaultSourceType'], "gxp_wmscsource")
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
     def test_describe_map(self, thumbnail_mock):
@@ -491,22 +436,22 @@ community."
         """Test that map metadata can be properly rendered
         """
         # first create a map
-
-        # Test successful new map creation
-        self.client.login(username=self.user, password=self.passwd)
-        new_map = reverse('new_map_json')
-        response = self.client.post(
-            new_map,
-            data=self.viewer_config,
-            content_type="text/json")
-        self.assertEqual(response.status_code, 200)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        map_id = int(json.loads(content)['id'])
-        self.client.logout()
-
+        map_created = Map.objects.create(
+            zoom=7,
+            projection="EPSG:3857",
+            center_x=-9428760.8688778,
+            center_y=1436891.8972581,
+            owner=self.u
+        )
+        MapLayer.objects.create(
+            map=map_created,
+            name='base:nic_admin',
+            ows_url='http://localhost:8080/geoserver/wms',
+            dataset_params='{"buffer": 0, "wms": "capra", "id": 1, "wrapDateLine": true, "displayOutsideMaxExtent": true}',
+        )
+        map_id = map_created.id
         url = reverse('map_metadata', args=(map_id,))
+        self.client.logout()
 
         # test unauthenticated user to modify map metadata
         response = self.client.post(url)
@@ -536,20 +481,21 @@ community."
         """Test that map can be properly embedded
         """
         # first create a map
-
-        # Test successful new map creation
-        self.client.login(username=self.user, password=self.passwd)
-
-        new_map = reverse('new_map_json')
-        response = self.client.post(
-            new_map,
-            data=self.viewer_config,
-            content_type="text/json")
-        self.assertEqual(response.status_code, 200)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        map_id = int(json.loads(content)['id'])
+        map_created = Map.objects.create(
+            zoom=7,
+            projection="EPSG:3857",
+            center_x=-9428760.8688778,
+            center_y=1436891.8972581,
+            owner=self.u
+        )
+        MapLayer.objects.create(
+            map=map_created,
+            name='base:nic_admin',
+            ows_url='http://localhost:8080/geoserver/wms',
+            dataset_params='{"buffer": 0, "wms": "capra", "id": 1, "wrapDateLine": true, "displayOutsideMaxExtent": true}',
+        )
+        map_id = map_created.id
+        url = reverse('map_metadata', args=(map_id,))
         self.client.logout()
 
         url = reverse('map_embed', args=(map_id,))
@@ -579,20 +525,22 @@ community."
         """Test that map view can be properly rendered
         """
         # first create a map
-
-        # Test successful new map creation
-        self.client.login(username=self.user, password=self.passwd)
-
-        new_map = reverse('new_map_json')
-        response = self.client.post(
-            new_map,
-            data=self.viewer_config,
-            content_type="text/json")
-        self.assertEqual(response.status_code, 200)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        map_id = int(json.loads(content)['id'])
+        map_created = Map.objects.create(
+            zoom=7,
+            projection="EPSG:3857",
+            center_x=-9428760.8688778,
+            center_y=1436891.8972581,
+            owner=self.u
+        )
+        MapLayer.objects.create(
+            map=map_created,
+            name='base:nic_admin',
+            ows_url='http://localhost:8080/geoserver/wms',
+            dataset_params='{"buffer": 0, "wms": "capra", "id": 1, "wrapDateLine": true, "displayOutsideMaxExtent": true}',
+        )
+        resource_manager.set_permissions(None, instance=map_created, permissions=None, created=True)
+        map_id = map_created.id
+        url = reverse('map_metadata', args=(map_id,))
         self.client.logout()
 
         url = reverse('map_embed', args=(map_id,))
@@ -620,102 +568,6 @@ community."
         self.assertEqual(response.context['resource'], map_obj)
         self.assertIsNotNone(response.context['access_token'])
         self.assertEqual(response.context['is_embed'], 'true')
-
-    @patch('geonode.thumbs.thumbnails.create_thumbnail')
-    def test_new_map_config(self, thumbnail_mock):
-        """Test that new map config can be properly assigned
-        """
-        self.client.login(username='admin', password='admin')
-
-        # Test successful new map creation
-        m = Map()
-        admin_user = get_user_model().objects.get(username='admin')
-        dataset_name = Dataset.objects.all().first().alternate
-        m.create_from_dataset_list(admin_user, [dataset_name], "title", "abstract")
-        map_id = m.id
-
-        url = reverse('new_map_json')
-
-        # Test GET method with COPY
-        response = self.client.get(url, {'copy': map_id})
-        self.assertEqual(response.status_code, 200)
-        map_obj = Map.objects.get(id=map_id)
-        config_map = map_obj.viewer_json(None)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        response_config_dict = json.loads(content)
-        self.assertEqual(
-            config_map['map']['layers'],
-            response_config_dict['map']['layers'])
-
-        # Test GET method no COPY and no layer in params
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        config_default = default_map_config(None)[0]
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        response_config_dict = json.loads(content)
-        self.assertEqual(
-            config_default['about']['abstract'],
-            response_config_dict['about']['abstract'])
-        self.assertEqual(
-            config_default['about']['title'],
-            response_config_dict['about']['title'])
-
-        # Test GET method no COPY but with layer in params
-        response = self.client.get(url, {'layer': dataset_name})
-        self.assertEqual(response.status_code, 200)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        response_dict = json.loads(content)
-        self.assertEqual(response_dict['fromLayer'], True)
-
-        # Test POST method without authentication
-        self.client.logout()
-        response = self.client.post(url, {'layer': dataset_name})
-        self.assertEqual(response.status_code, 401)
-
-        # Test POST method with authentication and a layer in params
-        self.client.login(username='admin', password='admin')
-
-        try:
-            response = self.client.post(url, {'layer': dataset_name})
-            # Should not accept the request
-            self.assertEqual(response.status_code, 400)
-
-            # Test POST method with map data in json format
-            response = self.client.post(
-                url,
-                data=self.viewer_config,
-                content_type="text/json")
-            self.assertEqual(response.status_code, 200)
-            content = response.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            map_id = int(json.loads(content)['id'])
-            # Check new map saved
-            map_obj = Map.objects.get(id=map_id)
-            # Check
-            # BBox format: [xmin, xmax, ymin, ymax
-            bbox_str = [
-                '-90.193207913954200', '-79.206792062465500',
-                '9.059219904470890', '16.540780092025600', 'EPSG:4326']
-
-            self.assertEqual(
-                bbox_str,
-                [str(c) for c in map_obj.bbox])
-            bbox_long_str = '-90.193207913954200,9.059219904470890,' \
-                            '-79.206792062465500,16.540780092025600'
-            self.assertEqual(bbox_long_str, map_obj.bbox_string)
-
-            # Test methods other than GET or POST and no layer in params
-            response = self.client.put(url)
-            self.assertEqual(response.status_code, 405)
-        except Exception:
-            pass
 
     def test_fix_baselayers(self):
         """Test fix_baselayers function, used by the fix_baselayers command
@@ -816,34 +668,36 @@ community."
         Test if moderation flag works
         """
         with self.settings(ADMIN_MODERATE_UPLOADS=False):
-            self.client.login(username=self.user, password=self.passwd)
-            new_map = reverse('new_map_json')
-            response = self.client.post(new_map,
-                                        data=VIEWER_CONFIG,
-                                        content_type="text/json")
-            self.assertEqual(response.status_code, 200)
-            content = response.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            map_id = int(json.loads(content)['id'])
-            _l = Map.objects.get(id=map_id)
-            self.assertTrue(_l.is_approved)
-            self.assertTrue(_l.is_published)
+            # first create a map
+            map_created = resource_manager.create(
+                None,
+                resource_type=Map,
+                defaults=dict(
+                    zoom=0,
+                    center_x=0,
+                    center_y=0,
+                    owner=self.u
+                )
+            )
+            resource_manager.set_permissions(None, instance=map_created, permissions=None, created=True)
+            self.assertTrue(map_created.is_approved)
+            self.assertTrue(map_created.is_published)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
-            self.client.login(username=self.user, password=self.passwd)
-            new_map = reverse('new_map_json')
-            response = self.client.post(new_map,
-                                        data=VIEWER_CONFIG,
-                                        content_type="text/json")
-            self.assertEqual(response.status_code, 200)
-            content = response.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            map_id = int(json.loads(content)['id'])
-            _l = Map.objects.get(id=map_id)
-            self.assertFalse(_l.is_approved)
-            self.assertTrue(_l.is_published)
+            # first create a map
+            map_created = resource_manager.create(
+                None,
+                resource_type=Map,
+                defaults=dict(
+                    zoom=0,
+                    center_x=0,
+                    center_y=0,
+                    owner=self.u
+                )
+            )
+            resource_manager.set_permissions(None, instance=map_created, permissions=None, created=True)
+            self.assertFalse(map_created.is_approved)
+            self.assertTrue(map_created.is_published)
 
     def testMapsNotifications(self):
         with self.settings(
@@ -852,18 +706,30 @@ community."
                 NOTIFICATIONS_BACKEND="pinax.notifications.backends.email.EmailBackend",
                 PINAX_NOTIFICATIONS_QUEUE_ALL=False):
             self.clear_notifications_queue()
+
+            # first create a map
+            url = reverse("maps-list")
+
+            data = {
+                "title": "Some created map",
+                "zoom": 7,
+                "projection": "EPSG:3857",
+                "center_x": -9428760.8688778,
+                "center_y": 1436891.8972581,
+                "maplayers": [
+                    {
+                        "name": "base:nic_admin",
+                        "styles": [],
+                    }
+                ]
+            }
             self.client.login(username='norman', password='norman')
-            new_map = reverse('new_map_json')
-            response = self.client.post(
-                new_map,
-                data=VIEWER_CONFIG,
-                content_type="text/json")
-            self.assertEqual(response.status_code, 200)
-            content = response.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
-            map_id = int(json.loads(content)['id'])
+            response = self.client.post(url, data=json.dumps(data), content_type="application/json")
+            self.assertEqual(response.status_code, 201)
+
+            map_id = int(response.data["map"]["pk"])
             _l = Map.objects.get(id=map_id)
+
             self.assertTrue(self.check_notification_out('map_created', self.u))
 
             self.clear_notifications_queue()
