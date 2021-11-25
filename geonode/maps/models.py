@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import ast
 import json
 import logging
 
@@ -327,11 +326,6 @@ class MapLayer(models.Model):
 
     local = models.BooleanField(default=False, blank=True)
     # True if this layer is served by the local geoserver
-
-    @property
-    def styles_set(self):
-        styles = ast.literal_eval(self.styles) if isinstance(self.styles, str) else self.styles
-        return styles
 
     @property
     def dataset_title(self):

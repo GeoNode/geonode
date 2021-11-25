@@ -628,31 +628,6 @@ class GXPLayerBase:
     pass
 
 
-max_extent = [-MAX_EXTENT, -MAX_EXTENT, MAX_EXTENT, MAX_EXTENT]
-_viewer_projection_lookup = {
-    "EPSG:900913": {
-        "maxResolution": 156543.03390625,
-        "units": "m",
-        "maxExtent": max_extent,
-    },
-    "EPSG:3857": {
-        "maxResolution": 156543.03390625,
-        "units": "m",
-        "maxExtent": max_extent,
-    },
-    "EPSG:4326": {
-        "max_resolution": FULL_ROTATION_DEG / 256,
-        "units": "degrees",
-        "maxExtent": [-180, -90, 180, 90]
-    }
-}
-
-
-def _get_viewer_projection_info(srid):
-    # TODO: Look up projection details in EPSG database
-    return _viewer_projection_lookup.get(srid, {})
-
-
 def resolve_object(request, model, query, permission='base.view_resourcebase',
                    user=None, permission_required=True, permission_msg=None):
     """Resolve an object using the provided query and check the optional

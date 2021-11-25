@@ -88,8 +88,6 @@ from geonode.notifications_helper import (
     get_notification_recipients)
 from geonode.people.enumerations import ROLE_VALUES
 
-from pyproj import transform, Proj
-
 from urllib.parse import urlsplit, urljoin
 from imagekit.cachefiles.backends import Simple
 from geonode.storage.manager import storage_manager
@@ -1457,49 +1455,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             except Exception as e:
                 logger.error(e)
                 self.ll_bbox_polygon = bbox_polygon
-
-    def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
-        """
-        Calculate zoom level and center coordinates in mercator.
-        """
-        self.center_x = center_x
-        self.center_y = center_y
-        self.zoom = zoom
-
-        deg_len_equator = 40075160.0 / 360.0
-
-        # covert center in lat lon
-        def get_lon_lat():
-            wgs84 = Proj(init='epsg:4326')
-            mercator = Proj(init='epsg:3857')
-            lon, lat = transform(mercator, wgs84, center_x, center_y)
-            return lon, lat
-
-        # calculate the degree length at this latitude
-        def deg_len():
-            lon, lat = get_lon_lat()
-            return math.cos(lat) * deg_len_equator
-
-        lon, lat = get_lon_lat()
-
-        # taken from http://wiki.openstreetmap.org/wiki/Zoom_levels
-        # it might be not precise but enough for the purpose
-        distance_per_pixel = 40075160 * math.cos(lat) / 2 ** (zoom + 8)
-
-        # calculate the distance from the center of the map in degrees
-        # we use the calculated degree length on the x axis and the
-        # normal degree length on the y axis assumin that it does not change
-
-        # Assuming a map of 1000 px of width and 700 px of height
-        distance_x_degrees = distance_per_pixel * 500.0 / deg_len()
-        distance_y_degrees = distance_per_pixel * 350.0 / deg_len_equator
-
-        bbox_x0 = lon - distance_x_degrees
-        bbox_x1 = lon + distance_x_degrees
-        bbox_y0 = lat - distance_y_degrees
-        bbox_y1 = lat + distance_y_degrees
-        self.srid = 'EPSG:4326'
-        self.set_bbox_polygon((bbox_x0, bbox_y0, bbox_x1, bbox_y1), self.srid)
 
     def set_bounds_from_bbox(self, bbox, srid):
         """
