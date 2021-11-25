@@ -19,10 +19,8 @@
 import ast
 import json
 import logging
-import uuid
 
 from deprecated import deprecated
-from django.conf import settings
 from django.core.cache import cache
 from django.db import models
 from django.template.defaultfilters import slugify
@@ -32,15 +30,13 @@ from django.utils.translation import ugettext_lazy as _
 from geonode import geoserver  # noqa
 from geonode.base.models import ResourceBase
 from geonode.client.hooks import hookset
-from geonode.compat import ensure_string
 from geonode.layers.models import Dataset, Style
-from geonode.maps.signals import map_changed_signal
-from geonode.utils import GXPLayerBase, GXPMapBase, check_ogc_backend, dataset_from_viewer_config
+from geonode.utils import GXPLayerBase, check_ogc_backend
 
 logger = logging.getLogger("geonode.maps.models")
 
 
-class Map(ResourceBase, GXPMapBase):
+class Map(ResourceBase):
 
     """
     A Map aggregates several layers together and annotates them with a viewport
@@ -137,84 +133,6 @@ class Map(ResourceBase, GXPMapBase):
         }
 
         return json.dumps(map_config)
-
-    def update_from_viewer(self, conf, context=None):
-        """
-        Update this Map's details by parsing a JSON object as produced by
-        a GXP Viewer.
-
-        This method automatically persists to the database!
-        """
-
-        template_name = hookset.update_from_viewer(conf, context=context)
-        if not isinstance(context, dict):
-            try:
-                context = json.loads(ensure_string(context))
-            except Exception:
-                pass
-
-        conf = context.get("config", {})
-        if not isinstance(conf, dict) or isinstance(conf, bytes):
-            try:
-                conf = json.loads(ensure_string(conf))
-            except Exception:
-                conf = {}
-
-        about = conf.get("about", {})
-        self.title = conf.get("title", about.get("title", ""))
-        self.abstract = conf.get("abstract", about.get("abstract", ""))
-
-        _map = conf.get("map", {})
-        center = _map.get("center", settings.DEFAULT_MAP_CENTER)
-        self.zoom = _map.get("zoom", settings.DEFAULT_MAP_ZOOM)
-
-        if isinstance(center, dict):
-            self.center_x = center.get("x")
-            self.center_y = center.get("y")
-        else:
-            self.center_x, self.center_y = center
-
-        projection = _map.get("projection", settings.DEFAULT_MAP_CRS)
-        bbox = _map.get("bbox", None)
-
-        if bbox:
-            self.set_bounds_from_bbox(bbox, projection)
-        else:
-            self.set_bounds_from_center_and_zoom(self.center_x, self.center_y, self.zoom)
-
-        if self.projection is None or self.projection == "":
-            self.projection = projection
-
-        if self.uuid is None or self.uuid == "":
-            self.uuid = str(uuid.uuid1())
-
-        def source_for(layer):
-            try:
-                return conf["sources"][layer["source"]]
-            except Exception:
-                if "url" in layer:
-                    return {"url": layer["url"]}
-                else:
-                    return {}
-
-        layers = [lyr for lyr in _map.get("layers", [])]
-        dataset_names = {lyr.alternate for lyr in self.local_datasets}
-
-        self.maplayers.all().delete()
-        self.keywords.add(*_map.get("keywords", []))
-
-        for ordering, layer in enumerate(layers):
-            self.maplayers.add(dataset_from_viewer_config(self.id, MapLayer, layer, source_for(layer), ordering))
-
-        from geonode.resource.manager import resource_manager
-
-        resource_manager.update(self.uuid, instance=self, notify=True)
-        resource_manager.set_thumbnail(self.uuid, instance=self, overwrite=False)
-
-        if dataset_names != {lyr.alternate for lyr in self.local_datasets}:
-            map_changed_signal.send_robust(sender=self, what_changed="datasets")
-
-        return template_name
 
     def keyword_list(self):
         keywords_qs = self.keywords.all()
