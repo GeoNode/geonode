@@ -21,7 +21,6 @@ import json
 import logging
 
 from deprecated import deprecated
-from django.core.cache import cache
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
@@ -31,7 +30,7 @@ from geonode import geoserver  # noqa
 from geonode.base.models import ResourceBase
 from geonode.client.hooks import hookset
 from geonode.layers.models import Dataset, Style
-from geonode.utils import GXPLayerBase, check_ogc_backend
+from geonode.utils import check_ogc_backend
 
 logger = logging.getLogger("geonode.maps.models")
 
@@ -248,7 +247,7 @@ class Map(ResourceBase):
         pass
 
 
-class MapLayer(models.Model, GXPLayerBase):
+class MapLayer(models.Model):
 
     """
     The MapLayer model represents a layer included in a map.  This doesn't just
@@ -328,40 +327,6 @@ class MapLayer(models.Model, GXPLayerBase):
 
     local = models.BooleanField(default=False, blank=True)
     # True if this layer is served by the local geoserver
-
-    def dataset_config(self, user=None):
-        # Try to use existing user-specific cache of layer config
-        if self.id:
-            cfg = cache.get(f"dataset_config{str(self.id)}_{str(0 if user is None else user.id)}")
-            if cfg is not None:
-                return cfg
-
-        cfg = GXPLayerBase.dataset_config(self, user=user)
-        # if this is a local layer, get the attribute configuration that
-        # determines display order & attribute labels
-        layer = self.dataset
-        if layer:
-            try:
-                attribute_cfg = layer.attribute_config()
-                if "ftInfoTemplate" in attribute_cfg:
-                    cfg["ftInfoTemplate"] = attribute_cfg["ftInfoTemplate"]
-                if "getFeatureInfo" in attribute_cfg:
-                    cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
-                if not user.has_perm("base.view_resourcebase", obj=layer.resourcebase_ptr):
-                    cfg["disabled"] = True
-                    cfg["visibility"] = False
-            except Exception:
-                # shows maplayer with pink tiles,
-                # and signals that there is problem
-                # TODO: clear orphaned MapLayers
-                layer = None
-
-        if self.id:
-            # Create temporary cache of maplayer config, should not last too long in case
-            # local layer permissions or configuration values change (default
-            # is 5 minutes)
-            cache.set(f"dataset_config{str(self.id)}_{str(0 if user is None else user.id)}", cfg)
-        return cfg
 
     @property
     def styles_set(self):

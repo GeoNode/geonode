@@ -19,7 +19,6 @@
 import os
 import gc
 import re
-import ast
 import json
 import time
 import base64
@@ -78,10 +77,8 @@ from urllib.parse import (
     urlparse,
     urlsplit,
     urlencode,
-    parse_qs,
     parse_qsl,
     ParseResult,
-    SplitResult
 )
 
 MAX_EXTENT = 20037508.34
@@ -628,107 +625,7 @@ class GXPMapBase:
 
 
 class GXPLayerBase:
-
-    def source_config(self, access_token):
-        """
-        Generate a dict that can be serialized to a GXP layer source
-        configuration suitable for loading this layer.
-        """
-        try:
-            cfg = json.loads(self.source_params)
-        except Exception:
-            cfg = dict(ptype="gxp_wmscsource", restUrl="/gs/rest")
-
-        if self.ows_url:
-            '''
-            This limits the access token we add to only the OGC servers decalred in OGC_SERVER.
-            Will also override any access_token in the request and replace it with an existing one.
-            '''
-            urls = []
-            for name, server in settings.OGC_SERVER.items():
-                url = urlsplit(server['PUBLIC_LOCATION'])
-                urls.append(url.netloc)
-
-            my_url = urlsplit(self.ows_url)
-
-            if str(access_token) and my_url.netloc in urls:
-                request_params = parse_qs(my_url.query)
-                if 'access_token' in request_params:
-                    del request_params['access_token']
-                # request_params['access_token'] = [access_token]
-                encoded_params = urlencode(request_params, doseq=True)
-
-                parsed_url = SplitResult(
-                    my_url.scheme,
-                    my_url.netloc,
-                    my_url.path,
-                    encoded_params,
-                    my_url.fragment)
-                cfg["url"] = parsed_url.geturl()
-            else:
-                cfg["url"] = self.ows_url
-
-        return cfg
-
-    def dataset_config(self, user=None):
-        """
-        Generate a dict that can be serialized to a GXP layer configuration
-        suitable for loading this layer.
-
-        The "source" property will be left unset; the layer is not aware of the
-        name assigned to its source plugin.  See
-        geonode.maps.models.Map.viewer_json for an example of
-        generating a full map configuration.
-        """
-        try:
-            cfg = json.loads(self.dataset_params)
-        except Exception:
-            cfg = dict()
-
-        if self.format:
-            cfg['format'] = self.format
-        if self.name:
-            cfg["name"] = self.name
-        if self.opacity:
-            cfg['opacity'] = self.opacity
-        if self.styles:
-            try:
-                cfg['styles'] = ast.literal_eval(self.styles) \
-                    if isinstance(self.styles, str) else self.styles
-            except Exception:
-                pass
-        if self.transparent:
-            cfg['transparent'] = True
-
-        cfg["fixed"] = self.fixed
-        if self.group:
-            cfg["group"] = self.group
-        cfg["visibility"] = self.visibility
-
-        return cfg
-
-
-class GXPLayer(GXPLayerBase):
-
-    '''GXPLayer represents an object to be included in a GXP map.
-    '''
-
-    def __init__(self, name=None, ows_url=None, **kw):
-        self.format = None
-        self.name = name
-        self.opacity = 1.0
-        self.styles = None
-        self.transparent = False
-        self.fixed = False
-        self.group = None
-        self.visibility = True
-        self.wrapDateLine = True
-        self.displayOutsideMaxExtent = True
-        self.ows_url = ows_url
-        self.dataset_params = ""
-        self.source_params = ""
-        for k in kw:
-            setattr(self, k, kw[k])
+    pass
 
 
 max_extent = [-MAX_EXTENT, -MAX_EXTENT, MAX_EXTENT, MAX_EXTENT]
