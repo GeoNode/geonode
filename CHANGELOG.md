@@ -1,5 +1,29 @@
 # Change Log
 
+## [3.2.2](https://github.com/GeoNode/geonode/tree/3.2.2) (2021-11-24)
+
+### Breaking Changes
+
+ - Based on MapStore client [3.2.2](https://github.com/GeoNode/geonode-mapstore-client/releases/tag/3.2.2)
+ - MapStore client is no more compatible with 3.1.x/3.x train
+
+### Features
+
+ - Python upgrade 3.7+
+ - Django upgrade 2.2.24+
+ - GeoServer upgrade 2.19.0+
+
+  - [Features](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.2+label%3Afeature)
+  - [Enhancements](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.2+label%3Aenhancement)
+  - [Security Fixes](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.2+label%3Asecurity)
+  - [Severe Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.2+label%3Ablocker)
+  - [Regressions](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.2+label%3Aregression)
+  - [Bug Fixes](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.2+label%3Amajor)
+  - [Minor Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.2+label%3Aminor)
+  - [Performance](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.2+label%3Aperformance)
+  - [Translations](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.2.2+label%3Atranslations)
+  - [Dependencies](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A3.2.2+label%3Adependencies)
+
 ## [3.2.1](https://github.com/GeoNode/geonode/tree/3.2.1) (2021-07-16)
 
 ### Breaking Changes
