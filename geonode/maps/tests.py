@@ -288,8 +288,7 @@ community."
         Test that keyword multiselect widget is disabled when the user is not an admin
         when FREETEXT_KEYWORDS_READONLY=False
         """
-        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
-                                      zoom=0, center_x=0.0, center_y=0.0)
+        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True)
         self.client.login(username=self.not_admin.username, password='very-secret')
         test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
@@ -303,8 +302,7 @@ community."
         """
         Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=False
         """
-        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
-                                      zoom=0, center_x=0.0, center_y=0.0)
+        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True)
         self.client.login(username=self.not_admin.username, password='very-secret')
         test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
@@ -319,8 +317,7 @@ community."
         Test that non admin users can write to maps without creating/editing keywords
         when FREETEXT_KEYWORDS_READONLY=False
         """
-        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
-                                      zoom=0, center_x=0.0, center_y=0.0)
+        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True)
         self.client.login(username=self.not_admin.username, password='very-secret')
         test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
@@ -334,8 +331,7 @@ community."
         Test that keyword multiselect widget is not disabled when the user is not an admin
         and FREETEXT_KEYWORDS_READONLY=False
         """
-        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
-                                      zoom=0, center_x=0.0, center_y=0.0)
+        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True)
         self.client.login(username=self.not_admin.username, password='very-secret')
         test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
@@ -349,8 +345,7 @@ community."
         """
         Test that non admin users can edit/create keywords when FREETEXT_KEYWORDS_READONLY=False
         """
-        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
-                                      zoom=0, center_x=0.0, center_y=0.0)
+        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True)
         self.client.login(username=self.not_admin.username, password='very-secret')
         test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
@@ -365,10 +360,6 @@ community."
         """
         # first create a map
         map_created = Map.objects.create(
-            zoom=7,
-            projection="EPSG:3857",
-            center_x=-9428760.8688778,
-            center_y=1436891.8972581,
             owner=self.u
         )
         MapLayer.objects.create(
@@ -409,10 +400,6 @@ community."
         """
         # first create a map
         map_created = Map.objects.create(
-            zoom=7,
-            projection="EPSG:3857",
-            center_x=-9428760.8688778,
-            center_y=1436891.8972581,
             owner=self.u
         )
         MapLayer.objects.create(
@@ -452,10 +439,6 @@ community."
         """
         # first create a map
         map_created = Map.objects.create(
-            zoom=7,
-            projection="EPSG:3857",
-            center_x=-9428760.8688778,
-            center_y=1436891.8972581,
             owner=self.u
         )
         MapLayer.objects.create(
@@ -598,9 +581,6 @@ community."
                 None,
                 resource_type=Map,
                 defaults=dict(
-                    zoom=0,
-                    center_x=0,
-                    center_y=0,
                     owner=self.u
                 )
             )
@@ -614,9 +594,6 @@ community."
                 None,
                 resource_type=Map,
                 defaults=dict(
-                    zoom=0,
-                    center_x=0,
-                    center_y=0,
                     owner=self.u
                 )
             )
@@ -637,10 +614,6 @@ community."
 
             data = {
                 "title": "Some created map",
-                "zoom": 7,
-                "projection": "EPSG:3857",
-                "center_x": -9428760.8688778,
-                "center_y": 1436891.8972581,
                 "maplayers": [
                     {
                         "name": "base:nic_admin",

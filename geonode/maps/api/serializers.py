@@ -94,10 +94,6 @@ class MapSerializer(ResourceBaseSerializer):
         fields = (
             "pk",
             "uuid",
-            "zoom",
-            "projection",
-            "center_x",
-            "center_y",
             "urlsuffix",
             "featuredurl",
             "data",

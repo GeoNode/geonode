@@ -503,10 +503,6 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
                 title="composition",
                 abstract="abstract",
                 owner=admin_user,
-                zoom=21,
-                projection="EPSG:3857",
-                center_x=9.8814681250932e-05,
-                center_y=9.8814681250932e-05
             )
             cls.map_composition.id
             MapLayer.objects.create(

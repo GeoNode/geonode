@@ -40,24 +40,6 @@ class Map(ResourceBase):
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
     """
-
-    # viewer configuration
-    zoom = models.IntegerField(_("zoom"), null=True, blank=True)
-    # The zoom level to use when initially loading this map.  Zoom levels start
-    # at 0 (most zoomed out) and each increment doubles the resolution.
-
-    projection = models.CharField(_("projection"), max_length=32, null=True, blank=True)
-    # The projection used for this map.  This is stored as a string with the
-    # projection's SRID.
-
-    center_x = models.FloatField(_("center X"), null=True, blank=True)
-    # The x coordinate to center on when loading this map.  Its interpretation
-    # depends on the projection.
-
-    center_y = models.FloatField(_("center Y"), null=True, blank=True)
-    # The y coordinate to center on when loading this map.  Its interpretation
-    # depends on the projection.
-
     last_modified = models.DateTimeField(auto_now_add=True)
     # The last time the map was modified.
 
@@ -70,14 +52,6 @@ class Map(ResourceBase):
 
     def __str__(self):
         return f'{self.title} by {(self.owner.username if self.owner else "<Anonymous>")}'
-
-    @property
-    def center(self):
-        """
-        A handy shortcut for the center_x and center_y properties as a tuple
-        (read only)
-        """
-        return (self.center_x, self.center_y)
 
     @property
     def datasets(self):

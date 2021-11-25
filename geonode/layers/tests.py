@@ -1164,7 +1164,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.user = get_user_model().objects.create(username='dybala', email='dybala@gmail.com')
         self.user.set_password('very-secret')
         self.admin = get_user_model().objects.get(username='admin')
-        self.map = Map.objects.create(owner=self.admin, title='test', is_approved=True, zoom=0, center_x=0.0, center_y=0.0)
+        self.map = Map.objects.create(owner=self.admin, title='test', is_approved=True)
         self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
         self.not_admin.set_password('very-secret')
         self.not_admin.save()
