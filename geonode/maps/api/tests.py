@@ -45,7 +45,6 @@ class MapsApiTests(APITestCase):
         MapLayer.objects.create(
             map=first_map,
             extra_params={"foo": "bar"},
-            stack_order=0,
             name=first_dataset.alternate,
             store=first_dataset.store,
             styles="['some-style', 'some-other-style']",

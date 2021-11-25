@@ -94,7 +94,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             owner=self.user)
 
         # Add dataset to a map
-        MapLayer.objects.create(map=map, name=dt.alternate, stack_order=1).save()
+        MapLayer.objects.create(map=map, name=dt.alternate).save()
         # Create the rating for dataset
         OverallRating.objects.create(
             category=2,

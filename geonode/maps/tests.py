@@ -375,7 +375,6 @@ community."
             map=map_created,
             name='base:nic_admin',
             ows_url='http://localhost:8080/geoserver/wms',
-            dataset_params='{"buffer": 0, "wms": "capra", "id": 1, "wrapDateLine": true, "displayOutsideMaxExtent": true}',
         )
         map_id = map_created.id
         url = reverse('map_metadata', args=(map_id,))
@@ -420,7 +419,6 @@ community."
             map=map_created,
             name='base:nic_admin',
             ows_url='http://localhost:8080/geoserver/wms',
-            dataset_params='{"buffer": 0, "wms": "capra", "id": 1, "wrapDateLine": true, "displayOutsideMaxExtent": true}',
         )
         map_id = map_created.id
         url = reverse('map_metadata', args=(map_id,))
@@ -464,7 +462,6 @@ community."
             map=map_created,
             name='base:nic_admin',
             ows_url='http://localhost:8080/geoserver/wms',
-            dataset_params='{"buffer": 0, "wms": "capra", "id": 1, "wrapDateLine": true, "displayOutsideMaxExtent": true}',
         )
         resource_manager.set_permissions(None, instance=map_created, permissions=None, created=True)
         map_id = map_created.id
@@ -584,11 +581,11 @@ community."
 
     def test_get_legend(self):
         layer = Dataset.objects.all().first()
-        map_dataset = MapLayer.objects.filter(name=layer.alternate).exclude(dataset_params='').first()
+        map_dataset = MapLayer.objects.filter(name=layer.alternate).first()
         if map_dataset and layer.default_style:
             self.assertIsNone(map_dataset.get_legend)
         elif map_dataset:
-            # when there is no style in dataset_params
+            # when there is no style
             self.assertIsNone(map_dataset.get_legend)
 
     def test_moderated_upload(self):

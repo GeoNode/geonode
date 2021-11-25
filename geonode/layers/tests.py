@@ -59,7 +59,6 @@ from geonode.resource.manager import resource_manager
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
 from geonode.layers.forms import JSONField, LayerUploadForm
-from geonode.maps.tests_populate_maplayers import maplayers as ml
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.utils import check_ogc_backend, set_resource_default_links
@@ -1174,16 +1173,8 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         create_dataset_data(self.layer.resourcebase_ptr_id)
         with DisableDjangoSignals():
             self.map_dataset = MapLayer.objects.create(
-                fixed=ml[0]['fixed'],
-                group=ml[0]['group'],
                 name=self.layer.alternate,
-                dataset_params=ml[0]['dataset_params'],
                 map=self.map,
-                source_params=ml[0]['source_params'],
-                stack_order=ml[0]['stack_order'],
-                opacity=ml[0]['opacity'],
-                transparent=True,
-                visibility=True
             )
 
     def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):

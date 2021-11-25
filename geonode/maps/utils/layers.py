@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import logging
 
 from django.conf import settings
@@ -49,24 +48,6 @@ def fix_baselayers(map_id):
     source = 0
     for base_dataset in settings.MAP_BASELAYERS:
         if "group" in base_dataset:
-            # dataset_params
-            dataset_params = {}
-            dataset_params["selected"] = True
-            if "title" in base_dataset:
-                dataset_params["title"] = base_dataset["title"]
-            if "type" in base_dataset:
-                dataset_params["type"] = base_dataset["type"]
-            if "args" in base_dataset:
-                dataset_params["args"] = base_dataset["args"]
-            if "wrapDateLine" in base_dataset:
-                dataset_params["wrapDateLine"] = base_dataset["wrapDateLine"]
-            else:
-                dataset_params["wrapDateLine"] = True
-            # source_params
-            source_params = {}
-            source_params["id"] = source
-            for param in base_dataset["source"]:
-                source_params[param] = base_dataset["source"][param]
             # let's create the map layer
             name = ""
             if "name" in base_dataset:
@@ -76,14 +57,7 @@ def fix_baselayers(map_id):
                     name = base_dataset["args"][0]
             map_dataset = MapLayer(
                 map=map,
-                stack_order=map.maplayers.count() + 1,
                 name=name,
-                opacity=1,
-                transparent=False,
-                fixed=True,
-                group="background",
-                dataset_params=json.dumps(dataset_params),
-                source_params=json.dumps(source_params),
             )
             map_dataset.save()
         source += 1

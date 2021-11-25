@@ -512,39 +512,21 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             MapLayer.objects.create(
                 map=cls.map_composition,
                 extra_params={},
-                stack_order=0,
-                format=None,
                 name="geonode:san_andres_y_providencia_coastline",
                 store=None,
-                opacity=1.0,
                 styles=None,
                 current_style=None,
-                transparent=False,
-                fixed=False,
-                group=None,
                 ows_url=None,
-                visibility=True,
-                dataset_params="{}",
-                source_params="{}",
                 local=True
             )
             MapLayer.objects.create(
                 map=cls.map_composition,
                 extra_params={},
-                stack_order=1,
-                format=None,
                 name="geonode:san_andres_y_providencia_highway",
                 store=None,
-                opacity=1.0,
                 styles=None,
                 current_style=None,
-                transparent=False,
-                fixed=False,
-                group=None,
                 ows_url=None,
-                visibility=True,
-                dataset_params="{}",
-                source_params="{}",
                 local=True
             )
             # update MapLayers to correctly show layers' location

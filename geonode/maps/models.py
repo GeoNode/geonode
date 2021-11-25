@@ -266,14 +266,6 @@ class MapLayer(models.Model):
     # will be the "msid", which is set by the client to match the maplayer with
     # the layer inside the mapconfig blob.
 
-    stack_order = models.IntegerField(_("stack order"), default=0, blank=True)
-    # The z-index of this layer in the map; layers with a higher stack_order will
-    # be drawn on top of others.
-
-    format = models.TextField(_("format"), null=True, blank=True)
-    # The content_type of the image format to use for tiles (image/png, image/jpeg,
-    # image/gif...)
-
     name = models.TextField(_("name"), null=True, blank=True)
     # The name of the layer to load.
 
@@ -283,52 +275,23 @@ class MapLayer(models.Model):
     # has a fixed set of names, WMS services publish a list of available layers
     # in their capabilities documents, etc.)
 
-    opacity = models.FloatField(_("opacity"), default=1.0, blank=True)
-    # The opacity with which to render this layer, on a scale from 0 to 1.
-
     styles = models.TextField(_("styles"), null=True, blank=True)
     # The name of the style to use for this layer (only useful for WMS layers.)
 
     current_style = models.TextField(_("current style"), null=True, blank=True)
     # `styles` stores a list of styles as a string, here in `current_style` we store the selected style.
 
-    transparent = models.BooleanField(_("transparent"), default=False, blank=True)
-    # A boolean value, true if we should request tiles with a transparent
-    # background.
-
-    fixed = models.BooleanField(_("fixed"), default=False, blank=True)
-    # A boolean value, true if we should prevent the user from dragging and
-    # dropping this layer in the layer chooser.
-
-    group = models.TextField(_("group"), null=True, blank=True)
-    # A group label to apply to this layer.  This affects the hierarchy displayed
-    # in the map viewer's layer tree.
-
     ows_url = models.URLField(_("ows URL"), null=True, blank=True)
     # The URL of the OWS service providing this layer, if any exists.
-
-    visibility = models.BooleanField(_("visibility"), default=True, blank=True)
-    # A boolean value, true if this layer should be visible when the map loads.
-
-    dataset_params = models.TextField(_("dataset params"), default="{}", blank=True)
-    # A JSON-encoded dictionary of arbitrary parameters for the layer itself when
-    # passed to the GXP viewer.
-
-    # If this dictionary conflicts with options that are stored in other fields
-    # (such as format, styles, etc.) then the fields override.
-
-    source_params = models.TextField(_("source params"), default="{}", blank=True)
-    # A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
-    # configuration for this layer.
-
-    # If this dictionary conflicts with options that are stored in other fields
-    # (such as ows_url) then the fields override.
 
     local = models.BooleanField(default=False, blank=True)
     # True if this layer is served by the local geoserver
 
     @property
     def dataset_title(self):
+        """
+            Used by geonode/maps/templates/maps/map_download.html
+        """
         if self.dataset:
             title = self.dataset.title
         else:
@@ -337,6 +300,9 @@ class MapLayer(models.Model):
 
     @property
     def local_link(self):
+        """
+            Used by geonode/maps/templates/maps/map_download.html
+        """
         layer = self.dataset if self.local else None
         if layer:
             link = f'<a href="{layer.get_absolute_url()}">{layer.title}</a>'
@@ -346,31 +312,25 @@ class MapLayer(models.Model):
 
     @property
     def get_legend(self):
-        try:
-            dataset_params = json.loads(self.dataset_params)
-
-            capability = dataset_params.get("capability", {})
-            # Use '' to represent default layer style
-            style_name = capability.get("style", "")
-            href = None
-            dataset_obj = self.dataset
-            if dataset_obj:
-                if ":" in style_name:
-                    style_name = style_name.split(":")[1]
-                elif dataset_obj.default_style:
-                    style_name = dataset_obj.default_style.name
-                href = dataset_obj.get_legend_url(style_name=style_name)
-                style = Style.objects.filter(name=style_name).first()
-                if style:
-                    # replace map-legend display name if style has a title
-                    style_name = style.sld_title or style_name
-            return {style_name: href}
-        except Exception as e:
-            logger.exception(e)
+        # Get style name or return None
+        if self.dataset and self.dataset.default_style:
+            style_name = self.dataset.default_style.name
+        elif self.current_style and ":" in self.current_style:
+            style_name = self.current_style.split(":")[1]
+        elif self.current_style:
+            style_name = self.current_style
+        else:
             return None
 
+        href = self.dataset.get_legend_url(style_name=style_name)
+        style = Style.objects.filter(name=style_name).first()
+        if style:
+            # replace map-legend display name if style has a title
+            style_name = style.sld_title or style_name
+        return {style_name: href}
+
     class Meta:
-        ordering = ["stack_order"]
+        ordering = ["-pk"]
 
     def __str__(self):
         return f"{self.ows_url}?datasets={self.name}"
