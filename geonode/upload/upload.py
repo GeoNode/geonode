@@ -750,39 +750,37 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 _log(
                     f"There was an error updating the mosaic temporal extent: {str(e)}")
     else:
-        try:
-            with transaction.atomic():
-                saved_dataset_filter = Layer.objects.filter(
-                    store=target.name,
-                    alternate=alternate,
-                    workspace=target.workspace_name,
-                    name=task.layer.name)
-                if not saved_dataset_filter.exists():
-                    saved_layer = Layer.objects.create(
-                        uuid=layer_uuid or str(uuid.uuid1()),
-                        store=target.name,
-                        storeType=target.store_type,
-                        alternate=alternate,
-                        workspace=target.workspace_name,
-                        title=title,
-                        name=task.layer.name,
-                        abstract=abstract or '',
-                        owner=user,
-                        temporal_extent_start=start,
-                        temporal_extent_end=end,
-                        is_mosaic=False,
-                        has_time=has_time,
-                        has_elevation=has_elevation,
-                        time_regex=upload_session.mosaic_time_regex)
-                    created = True
-                else:
-                    saved_layer = saved_dataset_filter.get()
-                    created = False
-        except IntegrityError as e:
-            Upload.objects.invalidate_from_session(upload_session)
-            raise UploadException.from_exc(_('Error configuring Layer'), e)
+        saved_dataset_filter = Layer.objects.filter(
+            store=target.name,
+            alternate=alternate,
+            workspace=target.workspace_name,
+            name=task.layer.name)
+        if not saved_dataset_filter.exists():
+            saved_layer = Layer.objects.create(
+                uuid=layer_uuid or str(uuid.uuid1()),
+                store=target.name,
+                storeType=target.store_type,
+                alternate=alternate,
+                workspace=target.workspace_name,
+                title=title,
+                name=task.layer.name,
+                abstract=abstract or '',
+                owner=user,
+                temporal_extent_start=start,
+                temporal_extent_end=end,
+                is_mosaic=False,
+                has_time=has_time,
+                has_elevation=has_elevation,
+                time_regex=upload_session.mosaic_time_regex)
+            created = True
+        else:
+            saved_layer = saved_dataset_filter.get()
+            created = False
 
     assert saved_layer
+
+    if not created:
+        return saved_layer
 
     # Create a new upload session
     try:
