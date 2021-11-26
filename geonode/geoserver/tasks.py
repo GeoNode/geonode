@@ -216,10 +216,6 @@ def geoserver_finalize_upload(
         if lock.acquire() is True:
             from geonode.upload.models import Upload
             upload = Upload.objects.get(import_id=import_id)
-
-            if upload.layer is not None:
-                return
-
             upload.layer = instance
             upload.save()
 
