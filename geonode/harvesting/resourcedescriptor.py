@@ -75,6 +75,10 @@ class RecordDistribution:
 
 @dataclasses.dataclass()
 class MapDescriptorParameters:
+    zoom: int
+    projection: str
+    center_x: float
+    center_y: float
     last_modified: dt.datetime
 
 
