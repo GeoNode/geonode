@@ -30,7 +30,6 @@ from django.utils.module_loading import import_string
 
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Layer
-from geonode.base.thumb_utils import thumb_exists
 from geonode.geoserver.helpers import OGC_Servers_Handler
 from geonode.utils import get_layer_name, get_layer_workspace
 from geonode.thumbs import utils
@@ -98,9 +97,9 @@ def create_thumbnail(
     # handle custom, uploaded thumbnails, which may have different extensions from the default thumbnail
     thumbnail_exists = False
     if instance.thumbnail_url and instance.thumbnail_url != settings.MISSING_THUMBNAIL:
-        thumbnail_exists = thumb_exists(instance.thumbnail_url.rsplit('/')[-1])
+        thumbnail_exists = utils.thumb_exists(instance.thumbnail_url.rsplit('/')[-1])
 
-    if (thumbnail_exists or thumb_exists(default_thumbnail_name)) and not overwrite:
+    if (thumbnail_exists or utils.thumb_exists(default_thumbnail_name)) and not overwrite:
         logger.debug(f"Thumbnail for {instance.name} already exists. Skipping thumbnail generation.")
         return
 

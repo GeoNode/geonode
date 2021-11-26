@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import os
 import time
 import base64
 import logging
@@ -25,9 +25,13 @@ import logging
 from pyproj import Transformer, CRS
 from owslib.wms import WebMapService
 from typing import List, Tuple, Callable, Union
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles.templatetags import staticfiles
+from django.core.files.storage import default_storage as storage
+
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
@@ -308,3 +312,65 @@ def exceeds_epsg3857_area_of_use(bbox: List) -> bool:
             exceeds = True
 
     return exceeds
+
+
+def thumb_path(filename):
+    """Return the complete path of the provided thumbnail file accessible
+    via Django storage API"""
+    return os.path.join(settings.THUMBNAIL_LOCATION, filename)
+
+
+def thumb_exists(filename):
+    """Determine if a thumbnail file exists in storage"""
+    return storage.exists(thumb_path(filename))
+
+
+def thumb_size(filepath):
+    """Determine if a thumbnail file size in storage"""
+    if storage.exists(filepath):
+        return storage.size(filepath)
+    elif os.path.exists(filepath):
+        return os.path.getsize(filepath)
+    return 0
+
+
+def thumb_open(filename):
+    """Returns file handler of a thumbnail on the storage"""
+    return storage.open(thumb_path(filename))
+
+
+def get_thumbs():
+    """Fetches a list of all stored thumbnails"""
+    if not storage.exists(settings.THUMBNAIL_LOCATION):
+        return []
+    subdirs, thumbs = storage.listdir(settings.THUMBNAIL_LOCATION)
+    return thumbs
+
+
+def remove_thumb(filename):
+    """Delete a thumbnail from storage"""
+    storage.delete(thumb_path(filename))
+
+
+def remove_thumbs(name):
+    """Removes all stored thumbnails that start with the same name as the
+    file specified"""
+    for thumb in get_thumbs():
+        if thumb.startswith(name):
+            remove_thumb(thumb)
+
+
+def get_unique_upload_path(resource, filename):
+    """ Generates a unique name from the given filename and
+    creates a unique file upload path"""
+    mising_thumb = staticfiles.static(settings.MISSING_THUMBNAIL)
+    if resource.thumbnail_url and not resource.thumbnail_url == mising_thumb:
+        # remove thumbnail from storage
+        thumb_name = os.path.basename(resource.thumbnail_url)
+        name, _ext = os.path.splitext(thumb_name)
+        remove_thumbs(name)
+    # create an upload path from a unique filename
+    filename, ext = os.path.splitext(filename)
+    unique_file_name = f'{filename}-{uuid4()}{ext}'
+    upload_path = thumb_path(unique_file_name)
+    return upload_path
