@@ -158,7 +158,7 @@ class DatasetListSerializer(DatasetSerializer):
         fields = (
             'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',
-            'featureinfo_custom_template', 'default_style', 'styles'
+            'featureinfo_custom_template', 'ptype', 'default_style', 'styles'
         )
 
     featureinfo_custom_template = FeatureInfoTemplateField()
