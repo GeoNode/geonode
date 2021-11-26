@@ -16,11 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import logging
 import ast
+import logging
 
-from dynamic_rest.fields.fields import DynamicRelationField, DynamicField
+from dynamic_rest.fields.fields import DynamicField, DynamicRelationField
 from dynamic_rest.serializers import DynamicModelSerializer
+from rest_framework.exceptions import ParseError, ValidationError
 
 from geonode.base.api.serializers import (
     BaseDynamicModelSerializer,
@@ -40,6 +41,67 @@ class DynamicListAsStringField(DynamicField):
 
     def to_internal_value(self, data):
         return str(data)
+
+
+class DynamicFullyEmbedM2MRelationField(DynamicRelationField):
+    def __init__(self, serializer_class, queryset=None, sideloading=None, debug=False, **kwargs):
+        kwargs["queryset"] = queryset
+        kwargs["sideloading"] = sideloading
+        kwargs["debug"] = debug
+        # Assures embed and many are always true
+        kwargs["many"] = True
+        kwargs["embed"] = True
+        super(DynamicFullyEmbedM2MRelationField, self).__init__(serializer_class, **kwargs)
+
+    def to_internal_value_single(self, data, serializer):
+        """Return the underlying object, given the serialized form."""
+        related_model = serializer.Meta.model
+        instance = None
+
+        # When updating a Map element, it's possible to update or create new m2m elements
+        if self.root_serializer.instance and ("pk" in data or "id" in data):
+            instance_pk = data["pk"] if "pk" in data else data["id"]
+            # Get object
+            if instance_pk is not None:
+                try:
+                    instance = related_model.objects.get(pk=instance_pk)
+                except related_model.DoesNotExist:
+                    raise ValidationError(
+                        "Invalid value for '%s': %s object with ID=%s not found"
+                        % (self.field_name, related_model.__name__, data)
+                    )
+
+        # If we found a instance, we should update it instead of creating a new one
+        if instance and not serializer.instance:
+            serializer.instance = instance
+
+        # Save object
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+
+        return instance
+
+    def to_internal_value(self, data):
+        """Return the underlying object(s), given the serialized form."""
+        if not isinstance(data, list):
+            raise ParseError("'%s' value must be a list" % self.field_name)
+
+        instance_list = []
+        instance_pk_list = []
+        for instance_data in data:
+            if isinstance(instance_data, self.serializer_class.Meta.model):
+                return instance_data
+            serializer = self.get_serializer(data=instance_data, many=False)
+            instance = self.to_internal_value_single(instance_data, serializer)
+            instance_list.append(instance)
+            instance_pk_list.append(instance.pk)
+
+        # Delete removed instances
+        if self.root_serializer.instance:
+            m2m_field_manager = getattr(self.root_serializer.instance, self.field_name)
+            m2m_field_manager.exclude(pk__in=instance_pk_list).delete()
+
+        return instance_list
 
 
 class MapLayerDatasetSerializer(
@@ -85,7 +147,7 @@ class MapLayerSerializer(DynamicModelSerializer):
 
 
 class MapSerializer(ResourceBaseSerializer):
-    maplayers = DynamicRelationField(MapLayerSerializer, embed=True, many=True, deferred=False)
+    maplayers = DynamicFullyEmbedM2MRelationField(MapLayerSerializer, deferred=False)
 
     class Meta:
         model = Map
