@@ -47,7 +47,6 @@ class MapsApiTests(APITestCase):
             extra_params={"foo": "bar"},
             name=first_dataset.alternate,
             store=first_dataset.store,
-            styles="['some-style', 'some-other-style']",
             current_style="some-style",
             local=True,
         )
@@ -81,7 +80,6 @@ class MapsApiTests(APITestCase):
         layers_data = response.data
         self.assertIsNotNone(layers_data)
         self.assertEqual(layers_data[0]["extra_params"], {"foo": "bar"})
-        self.assertEqual(layers_data[0]["styles"], ["some-style", "some-other-style"])
         self.assertIsNotNone(layers_data[0]["dataset"])
 
         # Get Local-Layers List (GeoNode)
@@ -109,7 +107,6 @@ class MapsApiTests(APITestCase):
                 self.assertTrue("data" in response.data["map"])
                 self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
                 self.assertEqual(response.data["map"]["maplayers"][0]["extra_params"], {"foo": "bar"})
-                self.assertEqual(response.data["map"]["maplayers"][0]["styles"], ["some-style", "some-other-style"])
                 self.assertIsNotNone(response.data["map"]["maplayers"][0]["dataset"])
 
     def test_patch_map(self):
@@ -136,7 +133,6 @@ class MapsApiTests(APITestCase):
         self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
         response_maplayer = response.data["map"]["maplayers"][0]
         self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
-        self.assertEqual(response_maplayer["styles"], ["some-style-first-layer", "some-other-style-first-layer"])
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
 
@@ -161,7 +157,6 @@ class MapsApiTests(APITestCase):
         self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
         response_maplayer = response.data["map"]["maplayers"][0]
         self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
-        self.assertEqual(response_maplayer["styles"], ["some-style-first-layer", "some-other-style-first-layer"])
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
 
@@ -335,7 +330,6 @@ DUMMY_MAPLAYERS_DATA = [
     {
         "extra_params": {"msId": "Stamen.Watercolor__0"},
         "current_style": "some-style-first-layer",
-        "styles": ["some-style-first-layer", "some-other-style-first-layer"],
         "name": "geonode:CA",
     }
 ]

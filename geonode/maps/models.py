@@ -249,11 +249,8 @@ class MapLayer(models.Model):
     # has a fixed set of names, WMS services publish a list of available layers
     # in their capabilities documents, etc.)
 
-    styles = models.TextField(_("styles"), null=True, blank=True)
-    # The name of the style to use for this layer (only useful for WMS layers.)
-
     current_style = models.TextField(_("current style"), null=True, blank=True)
-    # `styles` stores a list of styles as a string, here in `current_style` we store the selected style.
+    # Here in `current_style` we store the selected style.
 
     ows_url = models.URLField(_("ows URL"), null=True, blank=True)
     # The URL of the OWS service providing this layer, if any exists.

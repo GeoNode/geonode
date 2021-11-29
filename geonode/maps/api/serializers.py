@@ -68,7 +68,6 @@ class MapLayerDatasetSerializer(
 
 
 class MapLayerSerializer(DynamicModelSerializer):
-    styles = DynamicListAsStringField()
     dataset = DynamicRelationField(MapLayerDatasetSerializer, embed=True)
 
     class Meta:
@@ -78,7 +77,6 @@ class MapLayerSerializer(DynamicModelSerializer):
             "pk",
             "extra_params",
             "current_style",
-            "styles",
             "dataset",
             "name",
         )

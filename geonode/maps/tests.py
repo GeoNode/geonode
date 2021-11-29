@@ -617,7 +617,6 @@ community."
                 "maplayers": [
                     {
                         "name": "base:nic_admin",
-                        "styles": [],
                     }
                 ]
             }

@@ -23,32 +23,27 @@ from geonode.maps.models import Map, MapLayer
 maplayers = [{
               "map": 'GeoNode Default Map',
               "name": "geonode:CA",
-              "styles": "[]",
               "current_style": "",
               "ows_url": "http://localhost:8080/geoserver/wms",
               },
              {
               "map": 'GeoNode Default Map',
               "name": None,
-              "styles": "[]",
               "current_style": "",
               },
              {
               "map": 'GeoNode Default Map',
               "name": None,
-              "styles": "[]",
               "current_style": "",
               },
              {
               "map": 'GeoNode Default Map',
               "name": "SATELLITE",
-              "styles": "[]",
               "current_style": "",
               },
              {
               "map": 'GeoNode Default Map',
               "name": None,
-              "styles": "[]",
               "current_style": "",
               }]
 
@@ -59,7 +54,6 @@ def create_maplayers():
         for ml in maplayers:
             MapLayer.objects.create(
                 name=ml['name'],
-                styles=ml['styles'],
                 current_style=ml['current_style'],
                 map=Map.objects.get(title=ml['map']),
             )

@@ -510,7 +510,6 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
                 extra_params={},
                 name="geonode:san_andres_y_providencia_coastline",
                 store=None,
-                styles=None,
                 current_style=None,
                 ows_url=None,
                 local=True
@@ -520,7 +519,6 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
                 extra_params={},
                 name="geonode:san_andres_y_providencia_highway",
                 store=None,
-                styles=None,
                 current_style=None,
                 ows_url=None,
                 local=True

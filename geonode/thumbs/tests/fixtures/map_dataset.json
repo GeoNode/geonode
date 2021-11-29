@@ -6,7 +6,6 @@
          "map":1002,
          "name":"mapnik",
          "store":null,
-         "styles":"[]",
          "ows_url":null,
          "extra_params":{
             "msId":"mapnik__0"
@@ -21,7 +20,6 @@
          "map":1002,
          "name":"OpenTopoMap",
          "store":null,
-         "styles":"[]",
          "ows_url":null,
          "extra_params":{
             "msId":"OpenTopoMap__1"
@@ -36,7 +34,6 @@
          "map":1002,
          "name":"s2cloudless:s2cloudless",
          "store":null,
-         "styles":"[]",
          "ows_url":"https://maps.geo-solutions.it/geoserver/wms",
          "extra_params":{
             "msId":"s2cloudless"
@@ -51,7 +48,6 @@
          "map":1002,
          "name":"empty",
          "store":null,
-         "styles":"[]",
          "ows_url":null,
          "extra_params":{
             "msId":"none"
@@ -66,7 +62,6 @@
          "map":1002,
          "name":"geonode:theaters_nyc",
          "store":"geonode_data",
-         "styles":"['theaters_nyc']",
          "current_style":"theaters_nyc",
          "ows_url":"http://geoserver:8080/geoserver/ows",
          "extra_params":{
@@ -82,7 +77,6 @@
          "map":1009,
          "name":"mapnik",
          "store":null,
-         "styles":"[]",
          "ows_url":null,
          "extra_params":{
             "msId":"mapnik__0"
@@ -97,7 +91,6 @@
          "map":1009,
          "name":"OpenTopoMap",
          "store":null,
-         "styles":"[]",
          "ows_url":null,
          "extra_params":{
             "msId":"OpenTopoMap__1"
@@ -112,7 +105,6 @@
          "map":1009,
          "name":"s2cloudless:s2cloudless",
          "store":null,
-         "styles":"[]",
          "ows_url":"https://maps.geo-solutions.it/geoserver/wms",
          "extra_params":{
             "msId":"s2cloudless"
@@ -127,7 +119,6 @@
          "map":1009,
          "name":"empty",
          "store":null,
-         "styles":"[]",
          "ows_url":null,
          "extra_params":{
             "msId":"none"
@@ -142,7 +133,6 @@
          "map":1009,
          "name":"geonode:theaters_nyc",
          "store":"geonode_data",
-         "styles":"[]",
          "current_style":"",
          "ows_url":"http://geoserver:8080/geoserver/ows",
          "extra_params":{
@@ -158,7 +148,6 @@
          "map":1009,
          "name":"geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1",
          "store":"geonode_data",
-         "styles":"[]",
          "current_style":"",
          "ows_url":"http://geoserver:8080/geoserver/ows",
          "extra_params":{
@@ -174,7 +163,6 @@
          "map":1009,
          "name":"rt_geologia.dbg_risorse_minerarie",
          "store":"httpwww502regionetoscanaitwmsrastercomrtwmsrtmapwmsmapwmsgeologiamap_resolution91",
-         "styles":"[]",
          "ows_url":"http://www502.regione.toscana.it/wmsraster/com.rt.wms.RTmap/wms",
          "extra_params":{
             "msId":"rt_geologia.dbg_risorse_minerarie__6"

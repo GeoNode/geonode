@@ -164,7 +164,6 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         MapLayer(
             map=map,
             name="Meteorite_Landings_from_NASA_Open_Data_Portal1",
-            styles="['test_style']",
             current_style="test_style",
             ows_url="https://maps.geo-solutions.it/geoserver/wms",
         ).save()
