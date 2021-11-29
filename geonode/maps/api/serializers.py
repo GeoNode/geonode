@@ -130,7 +130,7 @@ class MapLayerDatasetSerializer(
 
 
 class MapLayerSerializer(DynamicModelSerializer):
-    styles = DynamicListAsStringField()
+    styles = DynamicListAsStringField(required=False)
     dataset = DynamicRelationField(MapLayerDatasetSerializer, embed=True)
 
     class Meta:
