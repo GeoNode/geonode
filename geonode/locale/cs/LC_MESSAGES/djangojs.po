@@ -1,0 +1,812 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# trendspotter, 2018
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoNode\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"PO-Revision-Date: 2021-11-27 18:33+0100\n"
+"Last-Translator: trendspotter\n"
+"Language-Team: Jiří Podhorecký\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: cs\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+"X-Generator: Poedit 3.0\n"
+
+#: geonode/static/geonode/js/search/search.js:373
+msgid "Enter your text here ..."
+msgstr "Zadat svůj text zde ..."
+
+#: geonode/static/geonode/js/search/search.js:414
+msgid "Enter your region here ..."
+msgstr "Zadat svůj region zde ..."
+
+#: geonode/static/geonode/js/upload/FileType.js:33
+#, javascript-format
+msgid "Missing a %s file, which is required"
+msgstr "Chybí soubor %s který je požadován"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:7
+msgid "ESRI Shapefile"
+msgstr "ESRI Shapefile"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:13 geonode/static/geonode/js/upload/FileTypes.js:18
+msgid "GeoTIFF"
+msgstr "GeoTIFF"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:24
+msgid "Comma Separated Value"
+msgstr "Comma Separated Value"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:29
+msgid "Google Earth KML"
+msgstr "Google Earth KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:34
+msgid "GeoJSON"
+msgstr "GeoJSON"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:39
+msgid "Zip Archive"
+msgstr "Zip Archive"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:45
+msgid "ERDAS Imagine"
+msgstr "ERDAS Imagine"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:50 geonode/static/geonode/js/upload/FileTypes.js:55
+msgid "National Imagery Transmission Format"
+msgstr "Formát snímků National Imagery Transmission"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:61
+msgid "Controlled Image Base-1 Meter"
+msgstr "Controlled Image Base-1 Meter"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:68
+msgid "Controlled Image Base-5 Meter"
+msgstr "Controlled Image Base-5 Meter"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:75
+msgid "Controlled Image Base-10 Meter"
+msgstr "Controlled Image Base-10 Meter"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:82
+msgid "CADRG-Global Navigation Chart"
+msgstr "CADRG-Global Navigation Chart"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:89
+msgid "CADRG-Jet Navigation Chart"
+msgstr "CADRG-Jet Navigation Chart"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:96
+msgid "CADRG-Operational Navigation Chart"
+msgstr "CADRG-Operational Navigation Chart"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:103
+msgid "CADRG-Tactical Pilotage Chart"
+msgstr "CADRG-Tactical Pilotage Chart"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:110
+msgid "CADRG-Joint Operations Graphic"
+msgstr "CADRG-Joint Operations Graphic"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:117
+msgid "CADRG-Topographic Line Map 100K"
+msgstr "CADRG-Topographic Line Map 100K"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:124
+msgid "CADRG-Topographic Line Map 50K"
+msgstr "CADRG-Topographic Line Map 50K"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:131
+msgid "JPEG2000"
+msgstr "JPEG2000"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:136
+msgid "MrSID-Multi-resolution Seamless Image Database"
+msgstr "MrSID-Databáze bezešvých obrázků s více rozlišeními"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:331
+msgid "Layer Info"
+msgstr "Info o vrstvě"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:332
+msgid "Edit Metadata"
+msgstr "Upravit Metadata"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:333
+msgid "Manage Styles"
+msgstr "Správa stylů"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:336
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr "Sloupec %1 byl přejmenován na %2 <br/>"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:342
+msgid "Your layer was successfully uploaded"
+msgstr "Vaše vrstva byla úspěšně nahrána"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
+msgid "Performing Final GeoServer Config Step"
+msgstr "Provedení konečného kroku konfigurace GeoServeru"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:386 geonode/static/geonode/js/upload/LayerInfo.js:412
+msgid "You need to specify more information in order to complete your upload"
+msgstr "Chcete-li dokončit nahrávání, musíte zadat další informace"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:404
+msgid "You need to specify more information in order to complete your upload."
+msgstr "Chcete-li dokončit nahrávání, musíte zadat další informace."
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:404
+msgid "You can continue configuring your layer."
+msgstr "Můžete pokračovat v konfiguraci vrstvy."
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:422 geonode/static/geonode/js/upload/LayerInfo.js:509
+msgid "Unexpected Error"
+msgstr "Neočekávaná chyba"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:438
+msgid "Performing GeoServer Config Step"
+msgstr "Provedení kroku konfigurace GeoServeru"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:516
+msgid "Layer files uploaded, configuring in GeoServer"
+msgstr "Nahrané soubory vrstev, konfigurace v GeoServeru"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:532
+msgid "Select or create a Geogig repository."
+msgstr "Vybrat nebo vytvořit repozitář Geogig."
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:695
+msgid "Remove"
+msgstr "Odstranit"
+
+#: geonode/static/geonode/js/upload/upload.js:125
+#, javascript-format
+msgid "The file %s is an unsupported file type, please select another file."
+msgstr "Soubor %s je nepodporovaný typ souboru, prosím vyberte jiný soubor."
+
+#: geonode/static/geonode/js/upload/upload.js:285
+msgid ""
+"You are trying to upload an incomplete set of files or not all mandatory options have been validated.\n"
+"\n"
+"Please check for errors in the form!"
+msgstr ""
+"Pokoušíte se nahrát neúplnou sadu souborů, nebo ne všechny povinné možnosti jsou ověřené.\n"
+"\n"
+"Prosím zkontrolujte chyby ve formuláři!"
+
+#: geonode/static/lib/js/assets.min.js:2
+msgid "<iframe frameborder='0' width='0' height='0'/>"
+msgstr "<iframe frameborder='0' width='0' height='0'/>"
+
+#: geonode/static/lib/js/assets.min.js:4
+msgid "<script>"
+msgstr "<script>"
+
+#: geonode/static/lib/js/assets.min.js:4
+msgid "<div>"
+msgstr "<div>"
+
+#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: geonode/templates/lang.js:10
+msgid "Save as Copy"
+msgstr "Uložit jako kopii"
+
+#: geonode/templates/lang.js:11
+msgid "About this Map"
+msgstr "O této mapě"
+
+#: geonode/templates/lang.js:12 geonode/templates/lang.js:96 geonode/templates/lang.js:165
+msgid "Abstract"
+msgstr "Koncept"
+
+#: geonode/templates/lang.js:13
+msgid "Save"
+msgstr "Uložit"
+
+#: geonode/templates/lang.js:14 geonode/templates/lang.js:100 geonode/templates/lang.js:109 geonode/templates/lang.js:162
+#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
+msgid "Title"
+msgstr "Název"
+
+#: geonode/templates/lang.js:20
+msgid "Connection Error"
+msgstr "Chyba připojení"
+
+#: geonode/templates/lang.js:21
+msgid "The server returned an error"
+msgstr "Server vrátil chybu"
+
+#: geonode/templates/lang.js:22
+msgid "Details..."
+msgstr "Detaily..."
+
+#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
+msgid "Add Layers"
+msgstr "Přidat vrstvy"
+
+#: geonode/templates/lang.js:29
+msgid "Area"
+msgstr "Oblast"
+
+#: geonode/templates/lang.js:30
+msgid "Background"
+msgstr "Pozadí"
+
+#: geonode/templates/lang.js:32
+msgid "Done"
+msgstr "Hotovo"
+
+#: geonode/templates/lang.js:33
+msgid "Available Layers"
+msgstr "Dostupné vrstvy"
+
+#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
+msgid "Height"
+msgstr "Výška"
+
+#: geonode/templates/lang.js:36
+msgid "Get Feature Info"
+msgstr "Získat info o funkci"
+
+#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
+msgid "Large"
+msgstr "Velký"
+
+#: geonode/templates/lang.js:38
+msgid "or add a new server."
+msgstr "nebo přidat nový server."
+
+#: geonode/templates/lang.js:39
+msgid "Map Layers"
+msgstr "Mapové vrstvy"
+
+#: geonode/templates/lang.js:40
+msgid "View available data from:"
+msgstr "Zobrazit dostupné údaje od:"
+
+#: geonode/templates/lang.js:41
+msgid "Data"
+msgstr "Data"
+
+#: geonode/templates/lang.js:42
+msgid "Layers"
+msgstr "Vrstvy"
+
+#: geonode/templates/lang.js:43
+msgid "Legend"
+msgstr "Legenda"
+
+#: geonode/templates/lang.js:44
+msgid "Length"
+msgstr "Délka"
+
+#: geonode/templates/lang.js:45
+msgid "Loading Map..."
+msgstr "Načítání mapy..."
+
+#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
+msgid "Map Size"
+msgstr "Velikost mapy"
+
+#: geonode/templates/lang.js:47
+msgid "Measure"
+msgstr "Měřítko"
+
+#: geonode/templates/lang.js:48 geonode/templates/lang.js:97 geonode/templates/lang.js:163
+msgid "Contact"
+msgstr "Kontakt"
+
+#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
+msgid "Permalink"
+msgstr "Trvalý odkaz"
+
+#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
+msgid "Mini"
+msgstr "Mini"
+
+#: geonode/templates/lang.js:51
+msgid "Pan Map"
+msgstr "Posun Mapy"
+
+#: geonode/templates/lang.js:52
+msgid "Zoom to Next Extent"
+msgstr "Přiblížit na další oblast"
+
+#: geonode/templates/lang.js:53
+msgid "Zoom to Previous Extent"
+msgstr "Přiblížit na předchozí oblast"
+
+#: geonode/templates/lang.js:54
+msgid "This map has not yet been saved."
+msgstr "Tato mapa dosud nebyla uložena."
+
+#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
+msgid "Premium"
+msgstr "Přidaný bonus"
+
+#: geonode/templates/lang.js:57
+msgid "Print Map"
+msgstr "Tisknout mapu"
+
+#: geonode/templates/lang.js:58
+msgid "Print Preview"
+msgstr "Náhled před tiskem"
+
+#: geonode/templates/lang.js:59
+msgid "Properties"
+msgstr "Vlastnosti"
+
+#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
+msgid "Publish Map"
+msgstr "Publikovat mapu"
+
+#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
+msgid "Remove Layer"
+msgstr "Odebrat vrstvu"
+
+#: geonode/templates/lang.js:63
+msgid "Sorry, your map could not be saved."
+msgstr "Litujeme, vaši mapu se nepodařilo uložit."
+
+#: geonode/templates/lang.js:64
+msgid "Error While Saving"
+msgstr "Chyba při ukládání"
+
+#: geonode/templates/lang.js:65
+msgid "Save Map"
+msgstr "Uložit mapu"
+
+#: geonode/templates/lang.js:66
+msgid "You must be logged in to save this map."
+msgstr "Pro uložení této mapy musíte být přihlášeni."
+
+#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
+msgid "Small"
+msgstr "Malý"
+
+#: geonode/templates/lang.js:68
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr ""
+"Chyba při kontaktování serveru. \n"
+"Zkontrolujte adresu URL a zkuste to znovu."
+
+#: geonode/templates/lang.js:69
+msgid "Layer Properties"
+msgstr "Vlastnosti vrstvy"
+
+#: geonode/templates/lang.js:70
+msgid "Change layer format and style"
+msgstr "Změnit formát vrstvy a styl"
+
+#: geonode/templates/lang.js:71
+msgid "Edit Styles"
+msgstr "Upravit styly"
+
+#: geonode/templates/lang.js:72
+msgid "Edit layer styles"
+msgstr "Upravit styly vrstev"
+
+#: geonode/templates/lang.js:73
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "Přepnout do Prohlížeče 3D Google Earth"
+
+#: geonode/templates/lang.js:74
+msgid "The map that you are trying to load does not exist.  Creating a new map instead."
+msgstr "Mapa, kterou se pokoušíte načíst, neexistuje. Vytvoření nové mapy místo toho."
+
+#: geonode/templates/lang.js:75
+msgid "Unknown Map"
+msgstr "Neznámá mapa"
+
+#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
+msgid "Width"
+msgstr "Šířka"
+
+#: geonode/templates/lang.js:77
+msgid "Zoom In"
+msgstr "Přiblížit"
+
+#: geonode/templates/lang.js:78
+msgid "Zoom Out"
+msgstr "Oddálit"
+
+#: geonode/templates/lang.js:79
+msgid "Zoom level"
+msgstr "Úroveň zvětšení"
+
+#: geonode/templates/lang.js:80
+msgid "Zoom Level"
+msgstr "Úroveň zvětšení"
+
+#: geonode/templates/lang.js:81
+msgid "Zoom to Layer Extent"
+msgstr "Přiblížení na úroveň vrstvy"
+
+#: geonode/templates/lang.js:82
+msgid "Zoom to Visible Extent"
+msgstr "Přiblížit na viditelnou oblast"
+
+#: geonode/templates/lang.js:88
+msgid "Zoom Level {zoom}"
+msgstr "Úroveň zvětšení {zoom}"
+
+#: geonode/templates/lang.js:94
+msgid "Create Map"
+msgstr "Vytvořit mapu"
+
+#: geonode/templates/lang.js:95
+msgid "Export Map"
+msgstr "Exportovat mapu"
+
+#: geonode/templates/lang.js:98
+msgid "Map"
+msgstr "Mapa"
+
+#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
+msgid "View this Map"
+msgstr "Zobrazit tuto mapu"
+
+#: geonode/templates/lang.js:101
+msgid "Open Map"
+msgstr "Otevřít mapu"
+
+#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
+msgid "Name"
+msgstr "Název"
+
+#: geonode/templates/lang.js:108
+msgid "Queryable"
+msgstr "Dotazovatelný pomocí query"
+
+#: geonode/templates/lang.js:115
+msgid "No background"
+msgstr "Žádné pozadí"
+
+#: geonode/templates/lang.js:127
+msgid "Your map is ready to be published to the web!  Simply copy the following HTML to embed the map in your website:"
+msgstr "Vaše mapa je připravena k publikování na webu. Jednoduše zkopírujte následující kód HTML pro vložení mapy do vašeho webu:"
+
+#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
+msgid "Abstract:"
+msgstr "Shrnutí:"
+
+#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
+msgid "No attribution information is provided for this layer."
+msgstr "Pro tuto vrstvu nejsou poskytnuty žádné informace o atributech."
+
+#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
+msgid "Provided by:"
+msgstr "Poskytuje:"
+
+#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
+msgid "Download:"
+msgstr "Stažení:"
+
+#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
+msgid "No keywords are listed for this layer."
+msgstr "Pro tuto vrstvu nejsou uvedeny žádná klíčová slova."
+
+#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
+msgid "Keywords:"
+msgstr "Klíčová slova:"
+
+#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
+msgid "No metadata URLs are defined for this layer."
+msgstr "Pro tuto vrstvu nejsou definovány žádné adresy URL metadat."
+
+#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
+msgid "Metadata Links:"
+msgstr "Odkazy na metadata:"
+
+#: geonode/templates/lang.js:149
+msgid "Paper size:"
+msgstr "Velikost papíru:"
+
+#: geonode/templates/lang.js:150
+msgid "Resolution:"
+msgstr "Rozlišení:"
+
+#: geonode/templates/lang.js:151
+msgid "Print"
+msgstr "Tisk"
+
+#: geonode/templates/lang.js:152
+msgid "Enter map title here."
+msgstr "Zde zadejte název mapy."
+
+#: geonode/templates/lang.js:153
+msgid "Include legend?"
+msgstr "Zahrnout legendu?"
+
+#: geonode/templates/lang.js:154
+msgid "Enter comments here."
+msgstr "Zde zadejte komentáře."
+
+#: geonode/templates/lang.js:155
+msgid "Creating PDF..."
+msgstr "Vytváření PDF ..."
+
+#: geonode/templates/lang.js:164
+msgid "Last Modified"
+msgstr "Naposledy změněno"
+
+#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
+msgid "Prev"
+msgstr "Předchozí"
+
+#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
+msgid "Next"
+msgstr "Další"
+
+#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
+msgid "of"
+msgstr "z"
+
+#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
+msgid "Your search did not match any items."
+msgstr "Vaše vyhledávání neodpovídá žádným položkám."
+
+#: geonode/templates/lang.js:171
+msgid "Search Maps"
+msgstr "Hledat mapy"
+
+#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
+msgid "Search"
+msgstr "Hledat"
+
+#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
+msgid "Showing"
+msgstr "Zobrazování"
+
+#: geonode/templates/lang.js:174
+msgid "Loading"
+msgstr "Načítání"
+
+#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
+msgid "permalink"
+msgstr "trvalý odkaz"
+
+#: geonode/templates/lang.js:182
+msgid "Select"
+msgstr "Vybrat"
+
+#: geonode/templates/lang.js:185
+msgid "Select:"
+msgstr "Vybrat:"
+
+#: geonode/templates/lang.js:186
+msgid "All"
+msgstr "Vše"
+
+#: geonode/templates/lang.js:187
+msgid "None"
+msgstr "Nic"
+
+#: geonode/templates/lang.js:194
+msgid "Loading..."
+msgstr "Načítání..."
+
+#: geonode/templates/lang.js:196
+msgid "You do not have permission to view this data"
+msgstr "Nemáte oprávnění k zobrazení těchto dat"
+
+#: geonode/templates/lang.js:197
+msgid "This data is stored on a remote server"
+msgstr "Tato data jsou uložena na vzdáleném serveru"
+
+#: geonode/templates/lang.js:203
+msgid "No abstract is provided for this layer."
+msgstr "Pro tuto vrstvu není uveden žádný abstrakt."
+
+#: geonode/templates/lang.js:207
+msgid "No download URLs are definied for this layer."
+msgstr "Pro tuto vrstvu nejsou definovány žádné adresy URL pro stahování."
+
+#: geonode/templates/lang.js:217
+msgid "Selected Layers"
+msgstr "Vybrané vrstvy"
+
+#: geonode/templates/lang.js:218
+msgid "No Layers Selected"
+msgstr "Nevybrány žádné vrstvy"
+
+#: geonode/templates/lang.js:220
+msgid "Clear Selected"
+msgstr "Vymazat vybrané"
+
+#: geonode/templates/lang.js:221
+msgid "Clear All"
+msgstr "Vymazat vše"
+
+#: geonode/templates/lang.js:227
+msgid "Operation Failed"
+msgstr "Operace se nezdařila"
+
+#: geonode/templates/lang.js:228
+msgid "No layers are currently selected."
+msgstr "V současné době nejsou vybrány žádné vrstvy."
+
+#: geonode/templates/lang.js:235
+msgid "Downloading..."
+msgstr "Stahování ..."
+
+#: geonode/templates/lang.js:237
+msgid "Please wait"
+msgstr "Prosím, čekejte"
+
+#~ msgid "Available %s"
+#~ msgstr "Available %s"
+
+#~ msgid ""
+#~ "This is the list of available %s. You may choose some by selecting them in the box below and then clicking the \"Choose\" arrow between "
+#~ "the two boxes."
+#~ msgstr ""
+#~ "This is the list of available %s. You may choose some by selecting them in the box below and then clicking the \"Choose\" arrow between "
+#~ "the two boxes."
+
+#~ msgid "Type into this box to filter down the list of available %s."
+#~ msgstr "Type into this box to filter down the list of available %s."
+
+#~ msgid "Filter"
+#~ msgstr "Filter"
+
+#~ msgid "Choose all"
+#~ msgstr "Choose all"
+
+#~ msgid "Click to choose all %s at once."
+#~ msgstr "Click to choose all %s at once."
+
+#~ msgid "Choose"
+#~ msgstr "Choose"
+
+#~ msgid "Chosen %s"
+#~ msgstr "Chosen %s"
+
+#~ msgid ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in the box below and then clicking the \"Remove\" arrow between "
+#~ "the two boxes."
+#~ msgstr ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in the box below and then clicking the \"Remove\" arrow between "
+#~ "the two boxes."
+
+#~ msgid "Remove all"
+#~ msgstr "Remove all"
+
+#~ msgid "Click to remove all chosen %s at once."
+#~ msgstr "Click to remove all chosen %s at once."
+
+#~ msgid "%(sel)s of %(cnt)s selected"
+#~ msgid_plural "%(sel)s of %(cnt)s selected"
+#~ msgstr[0] "94d7ef36d54e81afde607d8fd121772b_pl_0"
+#~ msgstr[1] "94d7ef36d54e81afde607d8fd121772b_pl_1"
+#~ msgstr[2] "94d7ef36d54e81afde607d8fd121772b_pl_2"
+#~ msgstr[3] "94d7ef36d54e81afde607d8fd121772b_pl_3"
+
+#~ msgid "You have unsaved changes on individual editable fields. If you run an action, your unsaved changes will be lost."
+#~ msgstr "You have unsaved changes on individual editable fields. If you run an action, your unsaved changes will be lost."
+
+#~ msgid ""
+#~ "You have selected an action, but you haven't saved your changes to individual fields yet. Please click OK to save. You'll need to re-"
+#~ "run the action."
+#~ msgstr ""
+#~ "You have selected an action, but you haven't saved your changes to individual fields yet. Please click OK to save. You'll need to re-"
+#~ "run the action."
+
+#~ msgid ""
+#~ "You have selected an action, and you haven't made any changes on individual fields. You're probably looking for the Go button rather "
+#~ "than the Save button."
+#~ msgstr ""
+#~ "You have selected an action, and you haven't made any changes on individual fields. You're probably looking for the Go button rather "
+#~ "than the Save button."
+
+#~ msgid "January February March April May June July August September October November December"
+#~ msgstr "January February March April May June July August September October November December"
+
+#~ msgid "S M T W T F S"
+#~ msgstr "S M T W T F S"
+
+#~ msgid "Show"
+#~ msgstr "Show"
+
+#~ msgid "Hide"
+#~ msgstr "Hide"
+
+#~ msgid "Now"
+#~ msgstr "Now"
+
+#~ msgid "Clock"
+#~ msgstr "Clock"
+
+#~ msgid "Choose a time"
+#~ msgstr "Choose a time"
+
+#~ msgid "Midnight"
+#~ msgstr "Midnight"
+
+#~ msgid "6 a.m."
+#~ msgstr "6 a.m."
+
+#~ msgid "Noon"
+#~ msgstr "Noon"
+
+#~ msgid "Today"
+#~ msgstr "Today"
+
+#~ msgid "Calendar"
+#~ msgstr "Calendar"
+
+#~ msgid "Yesterday"
+#~ msgstr "Yesterday"
+
+#~ msgid "Tomorrow"
+#~ msgstr "Tomorrow"
+
+#~ msgid "Add user..."
+#~ msgstr "Add user..."
+
+#~ msgid "Who can view and download this data?"
+#~ msgstr "Who can view and download this data?"
+
+#~ msgid "Anyone"
+#~ msgstr "Anyone"
+
+#~ msgid "Any registered user"
+#~ msgstr "Any registered user"
+
+#~ msgid "Only users who can edit"
+#~ msgstr "Only users who can edit"
+
+#~ msgid "Who can edit this data?"
+#~ msgstr "Who can edit this data?"
+
+#~ msgid "Only the following users or groups:"
+#~ msgstr "Only the following users or groups:"
+
+#~ msgid "Who can manage and edit this data?"
+#~ msgstr "Who can manage and edit this data?"
+
+#~ msgid "GeoTiff File"
+#~ msgstr "GeoTiff File"
+
+#~ msgid "Comma Separated File"
+#~ msgstr "Comma Separated File"
+
+#~ msgid "Zip Archives"
+#~ msgstr "Zip Archives"
+
+#~ msgid "You are uploading an incomplete set of files."
+#~ msgstr "You are uploading an incomplete set of files."
+
+#~ msgid "No error message supplied"
+#~ msgstr "No error message supplied"
