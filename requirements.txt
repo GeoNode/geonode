@@ -37,7 +37,7 @@ django-guardian<2.4.1
 django-downloadview==2.1.1
 django-polymorphic==3.1.0
 django-tastypie<0.15.0
-django-tinymce==3.3.0
+django-tinymce==3.4.0
 django-grappelli==2.15.3
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.9
