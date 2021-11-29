@@ -66,8 +66,7 @@ class DynamicFullyEmbedM2MRelationField(DynamicRelationField):
                     instance = related_model.objects.get(pk=instance_pk)
                 except related_model.DoesNotExist:
                     raise ValidationError(
-                        "Invalid value for '%s': %s object with ID=%s not found"
-                        % (self.field_name, related_model.__name__, data)
+                        f"Invalid value for '{self.field_name}': {related_model.__name__} object with ID={data} not found"
                     )
 
         # If we found a instance, we should update it instead of creating a new one
@@ -83,7 +82,7 @@ class DynamicFullyEmbedM2MRelationField(DynamicRelationField):
     def to_internal_value(self, data):
         """Return the underlying object(s), given the serialized form."""
         if not isinstance(data, list):
-            raise ParseError("'%s' value must be a list" % self.field_name)
+            raise ParseError(f"'{self.field_name}' value must be a list")
 
         instance_list = []
         instance_pk_list = []
