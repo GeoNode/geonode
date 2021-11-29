@@ -37,7 +37,7 @@ django-guardian<2.4.1
 django-downloadview==2.1.1
 django-polymorphic==3.1.0
 django-tastypie<0.15.0
-django-tinymce==3.3.0
+django-tinymce==3.4.0
 django-grappelli==2.15.3
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.9
@@ -105,7 +105,7 @@ django-storages==1.12.3
 dropbox==11.24.0
 google-cloud-storage==1.43.0
 google-cloud-core==2.2.1
-boto3==1.20.11
+boto3==1.20.15
 
 # Django Caches
 python-memcached<=1.59
@@ -135,12 +135,12 @@ pycountry
 # production
 uWSGI==2.0.20
 gunicorn==20.1.0
-ipython==7.29.0
+ipython==7.30.0
 docker==5.0.3
 invoke==1.6.0
 
 # tests
-coverage==6.1.2
+coverage==6.2
 requests-toolbelt==0.9.1
 flake8==4.0.1
 pytest==6.2.5
@@ -148,7 +148,7 @@ pytest-bdd==5.0.0
 splinter==0.16.0
 pytest-splinter==3.3.1
 pytest-django==4.4.0
-setuptools==59.2.0
+setuptools==59.4.0
 pip==21.3.1
 Twisted==21.7.0
 pixelmatch==0.2.3
