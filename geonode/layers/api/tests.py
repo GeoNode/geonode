@@ -60,7 +60,7 @@ class DatasetsApiTests(APITestCase):
         for _l in response.data['datasets']:
             self.assertTrue(_l['resource_type'], 'dataset')
         # Test list response doesn't have attribute_set
-        self.assertIsNotNone(response.data['dataset'].get('ptype'))
+        self.assertIsNotNone(response.data['datasets'][0].get('ptype'))
         self.assertIsNone(response.data['datasets'][0].get('attribute_set'))
         self.assertIsNone(response.data['datasets'][0].get('featureinfo_custom_template'))
 

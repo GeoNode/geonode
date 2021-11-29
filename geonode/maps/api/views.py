@@ -19,6 +19,7 @@
 import logging
 from uuid import uuid4
 
+from django.db import transaction
 from drf_spectacular.utils import extend_schema
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 from dynamic_rest.viewsets import DynamicModelViewSet
@@ -70,6 +71,22 @@ class MapViewSet(DynamicModelViewSet):
         request.query_params.add("exclude[]", "maplayers")
         return super(MapViewSet, self).list(request, *args, **kwargs)
 
+    @transaction.atomic
+    def update(self, request, *args, **kwargs):
+        """
+        Changes in the m2m `maplayers` are committed before object changes.
+        To protect the db, this action is done within an atomic tansation.
+        """
+        return super(MapViewSet, self).update(request, *args, **kwargs)
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        """
+        Changes in the m2m `maplayers` are committed before object changes.
+        To protect the db, this action is done within an atomic tansation.
+        """
+        return super(MapViewSet, self).create(request, *args, **kwargs)
+
     @extend_schema(
         methods=["get"],
         responses={200: MapLayerSerializer(many=True)},
@@ -95,8 +112,6 @@ class MapViewSet(DynamicModelViewSet):
     def perform_create(self, serializer):
         # Thumbnail will be handled later
         post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
-        # M2M maplayers
-        self._create_m2m_maplayers(serializer)
 
         instance = serializer.save(
             owner=self.request.user,
@@ -113,7 +128,7 @@ class MapViewSet(DynamicModelViewSet):
 
     def perform_update(self, serializer):
         # Check instance permissions with resolve_object
-        mapid = serializer.validated_data["id"]
+        mapid = serializer.instance.id
         key = "urlsuffix" if Map.objects.filter(urlsuffix=mapid).exists() else "pk"
         map_obj = resolve_object(
             self.request, Map, {key: mapid}, permission="base.change_resourcebase", permission_msg=_PERMISSION_MSG_SAVE
@@ -126,8 +141,6 @@ class MapViewSet(DynamicModelViewSet):
             "thumbnail": serializer.validated_data.pop("thumbnail_url", ""),
             "dataset_names_before_changes": [lyr.alternate for lyr in instance.local_datasets],
         }
-        # M2M maplayers
-        self._create_m2m_maplayers(serializer)
 
         instance = serializer.save()
 
@@ -137,24 +150,6 @@ class MapViewSet(DynamicModelViewSet):
             create_action_perfomed=False,
             additional_data=post_change_data,
         )
-
-    def _create_m2m_maplayers(self, serializer):
-        if "maplayers" not in serializer.validated_data:
-            # Do nothing, partial update, without changes to maplayers
-            return
-
-        if serializer.instance:
-            # Delete all existing maplayers
-            serializer.instance.maplayers.all().delete()
-
-        # Initialize maplayers serializer
-        maplayers_data = serializer.validated_data.pop("maplayers")
-        maplayers_serializer = MapLayerSerializer(data=maplayers_data, many=True)
-        maplayers_serializer.is_valid(raise_exception=True)
-
-        # Create new maplayers, map relation will be added by serializer.save()
-        maplayers = maplayers_serializer.save()
-        serializer.validated_data["maplayers"] = maplayers
 
     def _post_change_routines(self, instance: Map, create_action_perfomed: bool, additional_data: dict):
         # Step 1: Handle Maplayers signals if this is and update action
