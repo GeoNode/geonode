@@ -24,7 +24,6 @@ from dynamic_rest.serializers import DynamicModelSerializer
 from rest_framework.exceptions import ParseError, ValidationError
 
 from geonode.base.api.serializers import (
-    BaseDynamicModelSerializer,
     ResourceBaseSerializer,
     ResourceBaseToRepresentationSerializerMixin,
 )
