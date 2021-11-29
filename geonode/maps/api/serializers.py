@@ -104,10 +104,7 @@ class DynamicFullyEmbedM2MRelationField(DynamicRelationField):
         return instance_list
 
 
-class MapLayerDatasetSerializer(
-    ResourceBaseToRepresentationSerializerMixin,
-    BaseDynamicModelSerializer,
-):
+class MapLayerDatasetSerializer(ResourceBaseToRepresentationSerializerMixin):
     default_style = DynamicRelationField(StyleSerializer, embed=True, many=False, read_only=True)
     styles = DynamicRelationField(StyleSerializer, embed=True, many=True, read_only=True)
     featureinfo_custom_template = FeatureInfoTemplateField()
