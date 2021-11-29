@@ -115,7 +115,6 @@ class MapLayerDatasetSerializer(
     class Meta:
         model = Dataset
         name = "dataset"
-        view_name = "datasets-list"
         fields = (
             "alternate",
             "featureinfo_custom_template",
