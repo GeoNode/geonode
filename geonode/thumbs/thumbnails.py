@@ -109,7 +109,7 @@ def create_thumbnail(
     is_map_with_datasets = True
 
     if isinstance(instance, Map):
-        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(ows_url__isnull=True).exclude(ows_url__exact='').count() > 0
+        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(dataset=None).count() > 0
     if bbox:
         # make sure BBOX is provided with the CRS in a correct format
         source_crs = bbox[-1]
@@ -166,7 +166,7 @@ def create_thumbnail(
                 )
             )
         except Exception as e:
-            logger.error(f"Exception occurred while fetching partial thumbnail for {instance.name}.")
+            logger.error(f"Exception occurred while fetching partial thumbnail for {instance.title}.")
             logger.exception(e)
 
     if not partial_thumbs and is_map_with_datasets:
