@@ -29,7 +29,6 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.templatetags.static import static
 
 from geonode.utils import (
     bbox_to_projection,
@@ -40,7 +39,7 @@ from geonode.storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
 
-MISSING_THUMB = static(settings.MISSING_THUMBNAIL)
+MISSING_THUMB = settings.MISSING_THUMBNAIL
 
 
 def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[List, Tuple]) -> Callable:
