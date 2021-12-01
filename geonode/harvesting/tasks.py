@@ -445,7 +445,6 @@ def _update_harvestable_resources_batch(
     ignore_result=False,
 )
 def _finish_harvestable_resources_update(self, refresh_session_id: int):
-    logger.debug(f"Inside _finish_harvestable_resources_update: {locals()}")
     session = models.AsynchronousHarvestingSession.objects.get(pk=refresh_session_id)
     harvester = session.harvester
     if session.status == session.STATUS_ABORTING:
