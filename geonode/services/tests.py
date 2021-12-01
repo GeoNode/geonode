@@ -17,7 +17,6 @@
 #
 #########################################################################
 import logging
-from unittest.mock import MagicMock
 
 from urllib.error import HTTPError
 from geonode.services.enumerations import WMS, INDEXED
@@ -934,10 +933,12 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
                 # self.selenium.find_element_by_id('option_atlantis:tiger_roads_tiger_roads').click()
                 # self.selenium.find_element_by_tag_name('form').submit()
 
+
 SERVICES_TYPE_MODULES = [
     "geonode.services.tests.dummy_services_type",
     "geonode.services.tests.dummy_services_type2",
 ]
+
 
 class TestServiceViews(GeoNodeBaseTestSupport):
     def setUp(self):
@@ -975,7 +976,7 @@ class TestServiceViews(GeoNodeBaseTestSupport):
         self.assertDictEqual(expected, elems)
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
-    def test_will_use_multiple_service_types_defined(self):
+    def test_will_use_multiple_service_types_defined_for_choices(self):
         elems = set(get_service_type_choices())
         expected = {
             ("test", "Test Number 1"),
@@ -987,19 +988,22 @@ class TestServiceViews(GeoNodeBaseTestSupport):
             (enumerations.REST_MAP, 'ArcGIS REST MapServer'),
         }
         self.assertSetEqual(expected, elems)
+
+
 '''
 Just a dummy function required for the smoke test above
 '''
 
+
 class dummy_services_type:
-    services_type={
+    services_type = {
         "test": {"OWS": True, "handler": "TestHandler", "label": "Test Number 1", "management_view": "path.to.view1"},
         "test2": {"OWS": False, "handler": "TestHandler2", "label": "Test Number 2", "management_view": "path.to.view2"},
     }
 
 
 class dummy_services_type2:
-    services_type={
+    services_type = {
         "test3": {"OWS": True, "handler": "TestHandler3", "label": "Test Number 3", "management_view": "path.to.view3"},
         "test4": {"OWS": False, "handler": "TestHandler4", "label": "Test Number 4", "management_view": "path.to.view4"},
     }

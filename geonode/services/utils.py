@@ -21,7 +21,6 @@ import re
 import math
 import logging
 
-from geonode import settings
 from django.conf import settings as django_settings
 from django.utils.translation import ugettext as _
 
@@ -165,6 +164,7 @@ def test_resource_table_status(test_cls, table, is_row_filtered):
         test_cls.assertEqual(result["visible_rows_count"], 20)
         test_cls.assertEqual(result["hidden_row_count"], 0)
 
+
 def parse_services_types():
     from django.utils.module_loading import import_string
     services_type_modules = (
@@ -180,6 +180,7 @@ def parse_services_types():
             **custom_services_type_module.services_type
         }
     return custom_services_types
+
 
 def get_service_type_choices():
     parsed = [(key, value["label"]) for key, value in parse_services_types().items()]

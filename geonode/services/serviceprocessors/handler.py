@@ -44,6 +44,7 @@ service_handlers = OrderedDict({
     **parse_services_types(),
 })
 
+
 def get_service_handler(base_url, proxy_base=None, service_type=enumerations.AUTO, handlers=service_handlers):
     """Return the appropriate remote service handler for the input URL.
     If the service type is not explicitly passed in it will be guessed from

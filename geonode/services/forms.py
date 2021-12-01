@@ -31,6 +31,7 @@ from .utils import get_service_type_choices
 
 logger = logging.getLogger(__name__)
 
+
 class CreateServiceForm(forms.Form):
     url = forms.CharField(
         label=_("Service URL"),
