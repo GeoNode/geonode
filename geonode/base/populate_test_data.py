@@ -323,7 +323,7 @@ def dump_models(path=None):
         f.write(result)
 
 
-def create_single_dataset(name):
+def create_single_dataset(name, keywords=None, owner=None, group=None):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -344,15 +344,20 @@ def create_single_dataset(name):
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
         uuid=str(uuid4()),
-        owner=user,
+        owner=owner or user,
         temporal_extent_start=test_datetime,
         temporal_extent_end=test_datetime,
         date=start,
         subtype="vector",
         resource_type="dataset",
-        typename=f"geonode:{title}"
+        typename=f"geonode:{title}",
+        group=group
     )
     dataset.save()
+
+    if isinstance(keywords, list):
+        dataset = add_keywords_to_resource(dataset, keywords)
+
     dataset.set_default_permissions()
     dataset.clear_dirty_state()
     dataset.set_processing_state(enumerations.STATE_PROCESSED)
@@ -419,6 +424,14 @@ def create_single_doc(name):
     m.clear_dirty_state()
     m.set_processing_state(enumerations.STATE_PROCESSED)
     return m
+
+
+def add_keywords_to_resource(resource, keywords):
+    for keyword in keywords:
+        resource.keywords.add(keyword)
+
+    resource.save()
+    return resource
 
 
 if __name__ == '__main__':

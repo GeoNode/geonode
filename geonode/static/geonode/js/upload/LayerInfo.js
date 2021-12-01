@@ -625,7 +625,9 @@ define(function (require, exports) {
                         if (resp.input_required === true) {
                             self.doFinal(resp, callback, array);
                         } else {
-                            self.doStep(resp, callback, array);
+                            setTimeout(() => {
+                                self.doStep(resp, callback, array);
+                            }, 1000);
                         }
                     } else if (resp.status === 'error') {
                         self.polling = false;

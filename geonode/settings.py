@@ -345,16 +345,13 @@ if not DEBUG and S3_MEDIA_ENABLED:
 
 # Cache Bustin Settings
 CACHE_BUSTING_STATIC_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_STATIC_ENABLED', 'False'))
-CACHE_BUSTING_MEDIA_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_MEDIA_ENABLED', 'False'))
 
 if not DEBUG and not S3_STATIC_ENABLED and not S3_MEDIA_ENABLED:
-    if CACHE_BUSTING_STATIC_ENABLED or CACHE_BUSTING_MEDIA_ENABLED:
+    if CACHE_BUSTING_STATIC_ENABLED:
         from django.contrib.staticfiles import storage
         storage.ManifestStaticFilesStorage.manifest_strict = False
     if CACHE_BUSTING_STATIC_ENABLED:
         STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-    if CACHE_BUSTING_MEDIA_ENABLED:
-        DEFAULT_FILE_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
@@ -454,6 +451,8 @@ GEONODE_INTERNAL_APPS = (
     'geonode.upload',
     'geonode.tasks',
     'geonode.messaging',
+    'geonode.favorite',
+    'geonode.monitoring'
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -497,7 +496,6 @@ INSTALLED_APPS = (
     'floppyforms',
     'tinymce',
     'widget_tweaks',
-    'django_celery_beat',
     'django_celery_results',
     'markdownify',
     'django_user_agents',
@@ -708,7 +706,7 @@ integration_bdd_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTEGRATION_BD
 selenium_tests = ast.literal_eval(os.environ.get('TEST_RUN_SELENIUM', 'False'))
 
 # Django 1.11 ParallelTestSuite
-TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
+# TEST_RUNNER = 'geonode.tests.suite.runner.GeoNodeBaseSuiteDiscoverRunner'
 TEST_RUNNER_KEEPDB = os.environ.get('TEST_RUNNER_KEEPDB', 0)
 TEST_RUNNER_PARALLEL = os.environ.get('TEST_RUNNER_PARALLEL', 1)
 
@@ -921,6 +919,9 @@ PINAX_RATINGS_CATEGORY_CHOICES = {
     },
     "documents.Document": {
         "document": "How good is this document?"
+    },
+    "geoapps.GeoApp": {
+        "geoapp": "How good is this geoapp?"
     }
 }
 
@@ -1378,11 +1379,6 @@ if CREATE_LAYER:
 # Settings for FAVORITE plugin
 FAVORITE_ENABLED = ast.literal_eval(os.getenv('FAVORITE_ENABLED', 'True'))
 
-if FAVORITE_ENABLED:
-    if 'geonode.favorite' not in INSTALLED_APPS:
-        INSTALLED_APPS += ('geonode.favorite',)
-
-
 # Settings for RECAPTCHA plugin
 RECAPTCHA_ENABLED = ast.literal_eval(os.environ.get('RECAPTCHA_ENABLED', 'False'))
 
@@ -1733,10 +1729,9 @@ if USE_GEOSERVER:
 #          'task': 'my_app.tasks.send_notification',
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
-_CELERY_BEAT_SCHEDULER_DEFAULT = 'celery.beat:PersistentScheduler'
-if 'django_celery_beat' in INSTALLED_APPS:
-    _CELERY_BEAT_SCHEDULER_DEFAULT = 'django_celery_beat.schedulers:DatabaseScheduler'
-CELERY_BEAT_SCHEDULER = os.environ.get('CELERY_BEAT_SCHEDULER', _CELERY_BEAT_SCHEDULER_DEFAULT)
+
+CELERY_BEAT_SCHEDULER = os.environ.get(
+    'CELERY_BEAT_SCHEDULER', "celery.beat:PersistentScheduler")
 CELERY_BEAT_SCHEDULE = {}
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
@@ -1799,9 +1794,8 @@ ADMINS_ONLY_NOTICE_TYPES = ast.literal_eval(os.getenv('ADMINS_ONLY_NOTICE_TYPES'
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(
     os.environ.get('USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS', 'True'))
 
-if NOTIFICATION_ENABLED:
-    if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
-        INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
+if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
+    INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 # ########################################################################### #
 # SECURITY SETTINGS
@@ -2022,8 +2016,6 @@ MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 365)))
 MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CSRF', 'False'))
 
 if MONITORING_ENABLED:
-    if 'geonode.monitoring' not in INSTALLED_APPS:
-        INSTALLED_APPS += ('geonode.monitoring',)
     if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE:
         MIDDLEWARE += \
             ('geonode.monitoring.middleware.MonitoringMiddleware',)

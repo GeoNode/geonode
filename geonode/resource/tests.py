@@ -47,6 +47,7 @@ class ResourceManagerClassTest:
 
 
 class TestResourceManager(GeoNodeBaseTestSupport):
+
     def setUp(self):
         create_models(b'dataset')
         create_models(b'map')
@@ -208,7 +209,9 @@ class TestResourceManager(GeoNodeBaseTestSupport):
     def test_set_permissions(self):
         norman = get_user_model().objects.get(username="norman")
         anonymous = get_user_model().objects.get(username="AnonymousUser")
-        dt = create_single_dataset("test_perms_dataset")
+        doc = create_single_doc("test_delete_doc")
+        map = create_single_map("test_delete_dataset")
+        dt = create_single_dataset("test_delete_dataset")
         public_group, _public_created = GroupProfile.objects.get_or_create(
             slug='public_group',
             title='public_group',
@@ -232,20 +235,34 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertFalse(self.rm.set_permissions("invalid_uuid", instance=None, permissions=perm_spec))
         # Test permissions assigned
         self.assertTrue(norman.has_perm('change_dataset_style', dt))
-        self.assertFalse(norman.has_perm('change_resourcebase', dt))
+        self.assertFalse(norman.has_perm('change_resourcebase', dt.get_self_resource()))
         # Test with no specified permissions
         with patch('geonode.security.utils.skip_registered_members_common_group') as mock_v:
             mock_v.return_value = True
             with self.settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False, DEFAULT_ANONYMOUS_VIEW_PERMISSION=False):
                 self.assertTrue(self.rm.remove_permissions(dt.uuid, instance=dt))
-                self.assertFalse(anonymous.has_perm('view_resourcebase', dt))
-                self.assertFalse(anonymous.has_perm('download_resourcebase', dt))
-
-    def test_set_workflow_permissions(self):
-        dt = create_single_dataset("test_workflow_dataset")
-
-        self.assertFalse(self.rm.set_workflow_permissions('invalid_uuid', instance=None))
-        self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, approved=True, published=True))
+                self.assertFalse(anonymous.has_perm('view_resourcebase', dt.get_self_resource()))
+                self.assertFalse(anonymous.has_perm('download_resourcebase', dt.get_self_resource()))
+        # Test "download" permissions retention policy
+        perm_spec = {
+            "users": {
+                "AnonymousUser": ['view_resourcebase', 'download_resourcebase'],
+                "norman": ['view_resourcebase', 'download_resourcebase'],
+            },
+            "groups": {
+                "public_group": ['view_resourcebase', 'download_resourcebase'],
+                "private_group": ['view_resourcebase', 'download_resourcebase', 'change_resourcebase']
+            }
+        }
+        # 1. "download" permissions are allowed on "Datasets"
+        self.assertTrue(self.rm.set_permissions(dt.uuid, instance=dt, permissions=perm_spec))
+        self.assertTrue(norman.has_perm('download_resourcebase', dt.get_self_resource()))
+        # 2. "download" permissions are allowed on "Documents"
+        self.assertTrue(self.rm.set_permissions(doc.uuid, instance=doc, permissions=perm_spec))
+        self.assertTrue(norman.has_perm('download_resourcebase', doc.get_self_resource()))
+        # 3. "download" permissions are NOT allowed on "Maps"
+        self.assertTrue(self.rm.set_permissions(map.uuid, instance=map, permissions=perm_spec))
+        self.assertFalse(norman.has_perm('download_resourcebase', map.get_self_resource()))
 
     def test_set_thumbnail(self):
         doc = create_single_doc("test_thumb_doc")

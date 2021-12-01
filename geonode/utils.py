@@ -53,7 +53,7 @@ from django.db.models import signals
 from django.utils.http import is_safe_url
 from django.apps import apps as django_apps
 from django.middleware.csrf import get_token
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -65,6 +65,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode import geoserver, GeoNodeException  # noqa
 from geonode.compat import ensure_string
+from geonode.layers.enumerations import GXP_PTYPES
+from geonode.services.enumerations import SERVICE_TYPES
 from geonode.storage.manager import storage_manager
 from geonode.base.auth import (
     extend_token,
@@ -97,6 +99,11 @@ ALPHABET_REVERSE = {c: i for (i, c) in enumerate(ALPHABET)}
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
 SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
+
+FORWARDED_HEADERS = [
+    'content-type',
+    'content-disposition'
+]
 
 requests.packages.urllib3.disable_warnings()
 
@@ -343,10 +350,13 @@ def get_dataset_workspace(dataset):
 
 
 def get_headers(request, url, raw_url, allowed_hosts=[]):
-    headers = {}
     cookies = None
     csrftoken = None
+    headers = {}
 
+    for _header_key, _header_value in dict(request.headers.copy()).items():
+        if _header_key.lower() in FORWARDED_HEADERS:
+            headers[_header_key] = _header_value
     if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(
             url=raw_url, allowed_hosts=url.hostname):
         cookies = request.META["HTTP_COOKIE"]
@@ -424,11 +434,6 @@ def _get_basic_auth_info(request):
         raise ValueError
     username, password = base64.b64decode(auth.encode()).decode().split(':')
     return username, password
-
-
-def batch_permissions(request):
-    # TODO
-    pass
 
 
 def batch_delete(request):
@@ -534,7 +539,8 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             g.Transform(CoordinateTransformation(source, dest))
             projected_bbox = [str(x) for x in g.GetEnvelope()]
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
-            return tuple([projected_bbox[0], projected_bbox[1], projected_bbox[2], projected_bbox[3]]) + \
+            return tuple(
+                [float(projected_bbox[0]), float(projected_bbox[1]), float(projected_bbox[2]), float(projected_bbox[3])]) + \
                 (f"EPSG:{target_srid}",)
         except Exception as e:
             logger.exception(e)
@@ -665,6 +671,10 @@ def dataset_from_viewer_config(map_id, model, dataset, source, ordering, save_ma
             else:
                 styles.append(style)
 
+    current_style = None
+    if styles and isinstance(styles, list) and len(styles):
+        current_style = styles[0]
+
     _model = model(
         map_id=map_id,
         stack_order=ordering,
@@ -679,7 +689,9 @@ def dataset_from_viewer_config(map_id, model, dataset, source, ordering, save_ma
         visibility=dataset.get("visibility", True),
         ows_url=source.get("url", None) if source else None,
         dataset_params=json.dumps(dataset_cfg),
-        source_params=json.dumps(source_cfg)
+        source_params=json.dumps(source_cfg),
+        extra_params=dataset.get("extraParams", {}),
+        current_style=current_style,
     )
     if map_id and save_map:
         _model.save()
@@ -697,7 +709,7 @@ class GXPMapBase:
         The ``added_datasets`` parameter list allows a list of extra MapLayer
         instances to append to the Map's layer list when generating the
         configuration. These are not persisted; if you want to add layers you
-        should use ``.dataset_set.create()``.
+        should use ``.maplayers.create()``.
         """
 
         user = request.user if request else None
@@ -1034,7 +1046,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     obj = get_object_or_404(model, **query)
     obj_to_check = obj.get_self_resource()
 
-    from guardian.shortcuts import assign_perm, get_groups_with_perms
+    from guardian.shortcuts import get_groups_with_perms
     from geonode.groups.models import GroupProfile
 
     groups = get_groups_with_perms(obj_to_check,
@@ -1059,48 +1071,6 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                     obj_group_members.append(user)
             except GroupProfile.DoesNotExist:
                 pass
-
-    if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
-        is_admin = False
-        is_manager = False
-        is_owner = user == obj_to_check.owner
-        if user and user.is_authenticated:
-            is_admin = user.is_superuser if user else False
-            try:
-                is_manager = user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-        if (not obj_to_check.is_approved):
-            if not user or user.is_anonymous:
-                raise Http404
-            elif not is_admin:
-                if is_manager and user in obj_group_managers:
-                    if (not user.has_perm('publish_resourcebase', obj_to_check)) and (
-                        not user.has_perm('view_resourcebase', obj_to_check)) and (
-                            not user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
-                                not is_owner and not settings.ADMIN_MODERATE_UPLOADS):
-                        pass
-                    else:
-                        assign_perm(
-                            'view_resourcebase', user, obj_to_check)
-                        assign_perm(
-                            'publish_resourcebase',
-                            user,
-                            obj_to_check)
-                        assign_perm(
-                            'change_resourcebase_metadata',
-                            user,
-                            obj_to_check)
-                        assign_perm(
-                            'download_resourcebase',
-                            user,
-                            obj_to_check)
-
-                        if is_owner:
-                            assign_perm(
-                                'change_resourcebase', user, obj_to_check)
-                            assign_perm(
-                                'delete_resourcebase', user, obj_to_check)
 
     allowed = True
     if permission.split('.')[-1] in ['change_dataset_data',
@@ -2056,53 +2026,75 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         logger.debug(" -- Resource Links[Thumbnail link]...done!")
 
         logger.debug(" -- Resource Links[OWS Links]...")
-        ogc_wms_url = instance.ows_url or urljoin(ogc_server_settings.public_url, 'ows')
-        ogc_wms_name = f'OGC WMS: {instance.workspace} Service'
-        if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count() < 2:
-            Link.objects.get_or_create(
-                resource=instance.resourcebase_ptr,
-                url=ogc_wms_url,
-                name=ogc_wms_name,
-                defaults=dict(
-                    extension='html',
-                    url=ogc_wms_url,
-                    mime='text/html',
-                    link_type='OGC:WMS',
-                )
-            )
-
-        if instance.subtype == "vector":
-            ogc_wfs_url = instance.ows_url or urljoin(ogc_server_settings.public_url, 'ows')
-            ogc_wfs_name = f'OGC WFS: {instance.workspace} Service'
-            if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).count() < 2:
-                Link.objects.get_or_create(
-                    resource=instance.resourcebase_ptr,
-                    url=ogc_wfs_url,
-                    name=ogc_wfs_name,
-                    defaults=dict(
-                        extension='html',
-                        url=ogc_wfs_url,
-                        mime='text/html',
-                        link_type='OGC:WFS',
+        try:
+            if not hasattr(instance.get_real_instance(), 'ptype') or instance.get_real_instance().ptype == GXP_PTYPES["WMS"]:
+                ogc_wms_url = instance.ows_url or urljoin(ogc_server_settings.public_url, 'ows')
+                ogc_wms_name = f'OGC WMS: {instance.workspace} Service'
+                if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count() < 2:
+                    Link.objects.get_or_create(
+                        resource=instance.resourcebase_ptr,
+                        url=ogc_wms_url,
+                        name=ogc_wms_name,
+                        defaults=dict(
+                            extension='html',
+                            url=ogc_wms_url,
+                            mime='text/html',
+                            link_type='OGC:WMS',
+                        )
                     )
-                )
 
-        if instance.subtype == "raster":
-            ogc_wcs_url = instance.ows_url or urljoin(ogc_server_settings.public_url, 'ows')
-            ogc_wcs_name = f'OGC WCS: {instance.workspace} Service'
-            if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).count() < 2:
-                Link.objects.get_or_create(
-                    resource=instance.resourcebase_ptr,
-                    url=ogc_wcs_url,
-                    name=ogc_wcs_name,
-                    defaults=dict(
-                        extension='html',
-                        url=ogc_wcs_url,
-                        mime='text/html',
-                        link_type='OGC:WCS',
+                if instance.subtype == "vector":
+                    ogc_wfs_url = instance.ows_url or urljoin(ogc_server_settings.public_url, 'ows')
+                    ogc_wfs_name = f'OGC WFS: {instance.workspace} Service'
+                    if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).count() < 2:
+                        Link.objects.get_or_create(
+                            resource=instance.resourcebase_ptr,
+                            url=ogc_wfs_url,
+                            name=ogc_wfs_name,
+                            defaults=dict(
+                                extension='html',
+                                url=ogc_wfs_url,
+                                mime='text/html',
+                                link_type='OGC:WFS',
+                            )
+                        )
+
+                if instance.subtype == "raster":
+                    ogc_wcs_url = instance.ows_url or urljoin(ogc_server_settings.public_url, 'ows')
+                    ogc_wcs_name = f'OGC WCS: {instance.workspace} Service'
+                    if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).count() < 2:
+                        Link.objects.get_or_create(
+                            resource=instance.resourcebase_ptr,
+                            url=ogc_wcs_url,
+                            name=ogc_wcs_name,
+                            defaults=dict(
+                                extension='html',
+                                url=ogc_wcs_url,
+                                mime='text/html',
+                                link_type='OGC:WCS',
+                            )
+                        )
+
+            elif hasattr(instance.get_real_instance(), 'ptype') and instance.get_real_instance().ptype:
+                ptype_link = dict((v, k) for k, v in GXP_PTYPES.items()).get(instance.get_real_instance().ptype)
+                ptype_link_name = dict(SERVICE_TYPES).get(ptype_link)
+                ptype_link_url = instance.ows_url
+                if Link.objects.filter(resource=instance.resourcebase_ptr, name=ptype_link_name, url=ptype_link_url).count() < 2:
+                    Link.objects.get_or_create(
+                        resource=instance.resourcebase_ptr,
+                        url=ptype_link_url,
+                        name=ptype_link_name,
+                        defaults=dict(
+                            extension='html',
+                            url=ptype_link_url,
+                            mime='text/html',
+                            link_type='image',
+                        )
                     )
-                )
-        logger.debug(" -- Resource Links[OWS Links]...done!")
+            logger.debug(" -- Resource Links[OWS Links]...done!")
+        except Exception as e:
+            logger.error(" -- Resource Links[OWS Links]...error!")
+            logger.exception(e)
 
 
 def add_url_params(url, params):

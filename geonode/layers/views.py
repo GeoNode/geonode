@@ -26,8 +26,6 @@ import tempfile
 import warnings
 import traceback
 
-from itertools import chain
-from dal import autocomplete
 from requests import Request
 from urllib.parse import quote
 from owslib.wfs import WebFeatureService
@@ -37,7 +35,6 @@ from django.conf import settings
 from django.db.models import Q
 from django.db.models import F
 from django.http import Http404
-from django.urls import reverse
 from django.contrib import messages
 from django.shortcuts import render
 from django.utils.html import escape
@@ -51,17 +48,16 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from guardian.shortcuts import get_objects_for_user
-
 from geonode import geoserver
+from geonode.layers.enumerations import GXP_PTYPES
 from geonode.layers.metadata import parse_metadata
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_dataset_style
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
-from geonode.base.views import batch_modify, get_url_for_model
+from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
+from geonode.base.views import batch_modify
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
@@ -86,7 +82,7 @@ from geonode.base import register_event
 from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
-from geonode.security.utils import get_visible_resources
+from geonode.security.utils import get_user_visible_groups
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import (
@@ -104,9 +100,6 @@ from geonode.geoserver.helpers import (
     write_uploaded_files_to_disk)
 from geonode.geoserver.security import set_geowebcache_invalidate_cache
 from geonode.base.utils import ManageResourceOwnerPermissions
-from geonode.tasks.tasks import set_permissions
-
-from celery.utils.log import get_logger
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog
@@ -114,7 +107,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
-celery_logger = get_logger(__name__)
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
@@ -574,11 +566,24 @@ def dataset_detail(request, layername, template='datasets/dataset_detail.html'):
             source_params=json.dumps(source_params)
         )
     else:
-        maplayer = GXPLayer(
-            name=layer.alternate,
-            ows_url=layer.ows_url,
-            dataset_params=json.dumps(config)
-        )
+        is_arcgis_layer = layer.ptype in (GXP_PTYPES["REST_MAP"], GXP_PTYPES["REST_IMG"])
+        if is_arcgis_layer:
+            maplayer = GXPLayer(
+                name=layer.alternate,
+                ows_url=layer.ows_url,
+                dataset_params=json.dumps(config),
+                source_params=json.dumps({
+                    "ptype": layer.ptype,
+                    "remote": True,
+                    "url": layer.ows_url,
+                })
+            )
+        else:
+            maplayer = GXPLayer(
+                name=layer.alternate,
+                ows_url=layer.ows_url,
+                dataset_params=json.dumps(config)
+            )
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     layer.view_count_up(request.user)
@@ -807,10 +812,10 @@ def dataset_metadata(
             layername,
             'base.change_resourcebase_metadata',
             _PERMISSION_MSG_METADATA)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
+    except PermissionDenied as e:
+        return HttpResponse(Exception(_("Not allowed"), e), status=403)
+    except Exception as e:
+        raise Http404(Exception(_("Not found"), e))
     if not layer:
         raise Http404(_("Not found"))
 
@@ -896,6 +901,7 @@ def dataset_metadata(
                 content_type='application/json',
                 status=400)
 
+        thumbnail_url = layer.thumbnail_url
         dataset_form = DatasetForm(request.POST, instance=layer, prefix="resource")
         if not dataset_form.is_valid():
             logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
@@ -908,6 +914,8 @@ def dataset_metadata(
                 json.dumps(out),
                 content_type='application/json',
                 status=400)
+        if not layer.thumbnail_url:
+            layer.thumbnail_url = thumbnail_url
         attribute_form = dataset_attribute_set(
             request.POST,
             instance=layer,
@@ -1079,12 +1087,7 @@ def dataset_metadata(
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, layer)
         if not ajax:
-            return HttpResponseRedirect(
-                reverse(
-                    'dataset_detail',
-                    args=(
-                        layer.service_typename,
-                    )))
+            return HttpResponseRedirect(layer.get_absolute_url())
 
         message = layer.alternate
 
@@ -1107,7 +1110,7 @@ def dataset_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
-        layer.save(notify=True)
+        resource_manager.update(layer.uuid, instance=layer, notify=True)
         return HttpResponse(json.dumps({'message': message}))
 
     if settings.ADMIN_MODERATE_UPLOADS:
@@ -1146,19 +1149,7 @@ def dataset_metadata(
     viewer = json.dumps(map_obj.viewer_json(
         request, * (NON_WMS_BASE_LAYERS + [maplayer])))
 
-    metadata_author_groups = []
-    if request.user.is_superuser or request.user.is_staff:
-        metadata_author_groups = GroupProfile.objects.all()
-    else:
-        try:
-            all_metadata_author_groups = chain(
-                request.user.group_list_all().distinct(),
-                GroupProfile.objects.exclude(access="private"))
-        except Exception:
-            all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private")
-        [metadata_author_groups.append(item) for item in all_metadata_author_groups
-            if item not in metadata_author_groups]
+    metadata_author_groups = get_user_visible_groups(request.user)
 
     register_event(request, 'view_metadata', layer)
     return render(request, template, context={
@@ -1248,9 +1239,7 @@ def dataset_append_replace_view(request, layername, template, action_type):
                             'files': list(files.values()),
                             'user': request.user})
                     out['success'] = True
-                    out['url'] = reverse(
-                        'dataset_detail', args=[
-                            layer.service_typename])
+                    out['url'] = layer.get_absolute_url()
                     #  invalidating resource chache
                     set_geowebcache_invalidate_cache(layer.typename)
             except Exception as e:
@@ -1279,39 +1268,6 @@ def dataset_append_replace_view(request, layername, template, action_type):
             json.dumps(out),
             content_type='application/json',
             status=status_code)
-
-
-@login_required
-def dataset_remove(request, layername, template='datasets/dataset_remove.html'):
-    try:
-        layer = _resolve_dataset(
-            request,
-            layername,
-            'base.delete_resourcebase',
-            _PERMISSION_MSG_DELETE)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not layer:
-        raise Http404(_("Not found"))
-
-    if (request.method == 'GET'):
-        return render(request, template, context={
-            "dataset": layer
-        })
-    if (request.method == 'POST'):
-        logger.debug(f'Deleting Dataset {layer}')
-        if not resource_manager.delete(layer.uuid, instance=layer):
-            message = f'{_("Unable to delete layer")}: {layer.alternate}.'
-            messages.error(request, message)
-            return render(
-                request, template, context={"layer": layer})
-
-        register_event(request, 'remove', layer)
-        return HttpResponseRedirect(reverse("dataset_browse"))
-    else:
-        return HttpResponse("Not allowed", status=403)
 
 
 @login_required
@@ -1357,10 +1313,7 @@ def dataset_granule_remove(
             messages.error(request, message)
             return render(
                 request, template, context={"layer": layer})
-        return HttpResponseRedirect(
-            reverse(
-                'dataset_detail', args=(
-                    layer.service_typename,)))
+        return HttpResponseRedirect(layer.get_absolute_url())
     else:
         return HttpResponse("Not allowed", status=403)
 
@@ -1495,13 +1448,6 @@ def dataset_sld_upload(
     })
 
 
-def dataset_sld_edit(
-        request,
-        layername,
-        template='datasets/dataset_style_edit.html'):
-    return dataset_detail(request, layername, template)
-
-
 @xframe_options_exempt
 def dataset_embed(
         request,
@@ -1515,116 +1461,7 @@ def dataset_batch_metadata(request):
     return batch_modify(request, 'Dataset')
 
 
-def batch_permissions(request, model):
-    Resource = None
-    if model == 'Dataset':
-        Resource = Dataset
-    if not Resource or not request.user.is_superuser:
-        raise PermissionDenied
-
-    template = 'base/batch_permissions.html'
-    ids = request.POST.get("ids")
-
-    if "cancel" in request.POST or not ids:
-        return HttpResponseRedirect(
-            get_url_for_model(model)
-        )
-
-    if request.method == 'POST':
-        form = BatchPermissionsForm(request.POST)
-        if form.is_valid():
-            _data = form.cleaned_data
-            resources_names = []
-            for resource in Resource.objects.filter(id__in=ids.split(',')):
-                resources_names.append(resource.name)
-            users_usernames = [_data['user'].username, ] if _data['user'] else None
-            groups_names = [_data['group'].name, ] if _data['group'] else None
-            if users_usernames and 'AnonymousUser' in users_usernames and \
-                    (not groups_names or 'anonymous' not in groups_names):
-                if not groups_names:
-                    groups_names = []
-                groups_names.append('anonymous')
-            if groups_names and 'anonymous' in groups_names and \
-                    (not users_usernames or 'AnonymousUser' not in users_usernames):
-                if not users_usernames:
-                    users_usernames = []
-                users_usernames.append('AnonymousUser')
-            delete_flag = _data['mode'] == 'unset'
-            permissions_names = _data['permission_type']
-            if permissions_names:
-                try:
-                    set_permissions.apply_async((
-                        permissions_names,
-                        resources_names,
-                        users_usernames,
-                        groups_names,
-                        delete_flag))
-                except set_permissions.OperationalError as exc:
-                    celery_logger.exception('Sending task raised: %r', exc)
-            return HttpResponseRedirect(
-                get_url_for_model(model)
-            )
-        return render(
-            request,
-            template,
-            context={
-                'form': form,
-                'ids': ids,
-                'model': model,
-            }
-        )
-
-    form = BatchPermissionsForm(
-        {
-            'permission_type': ('r', ),
-            'mode': 'set'
-        })
-    return render(
-        request,
-        template,
-        context={
-            'form': form,
-            'ids': ids,
-            'model': model,
-        }
-    )
-
-
-@login_required
-def dataset_batch_permissions(request):
-    return batch_permissions(request, 'Dataset')
-
-
 def dataset_view_counter(dataset_id, viewer):
     _l = Dataset.objects.get(id=dataset_id)
     _u = get_user_model().objects.get(username=viewer)
     _l.view_count_up(_u, do_local=True)
-
-
-class LayerAutocomplete(autocomplete.Select2QuerySetView):
-
-    # Overriding both result label methods to ensure autocomplete labels display without 'geonode:' prefix
-    def get_selected_result_label(self, result):
-        """Return the label of a selected result."""
-        return self.get_result_label(result)
-
-    def get_result_label(self, result):
-        """Return the label of a selected result."""
-        return str(result.title)
-
-    def get_queryset(self):
-        request = self.request
-        permitted = get_objects_for_user(
-            request.user,
-            'base.view_resourcebase')
-        qs = Dataset.objects.all().filter(id__in=permitted)
-
-        if self.q:
-            qs = qs.filter(title__icontains=self.q)
-
-        return get_visible_resources(
-            qs,
-            request.user if request else None,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)

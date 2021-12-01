@@ -18,15 +18,12 @@
 #########################################################################
 import json
 
-from django.conf import settings
-from django.urls.base import reverse
-
 
 class BaseHookSet:
 
     # Layers
     def dataset_list_template(self, context=None):
-        return 'datasets/dataset_list_default.html'
+        return NotImplemented
 
     def dataset_detail_template(self, context=None):
         return NotImplemented
@@ -53,14 +50,14 @@ class BaseHookSet:
         return NotImplemented
 
     def dataset_list_url(self):
-        return self.add_limit_settings(reverse('dataset_browse'))
+        return NotImplemented
 
     def dataset_detail_url(self, layer):
-        return reverse('dataset_detail', args=(layer.alternate,))
+        return NotImplemented
 
     # Maps
     def map_list_template(self, context=None):
-        return 'maps/map_list_default.html'
+        return NotImplemented
 
     def map_detail_template(self, context=None):
         return NotImplemented
@@ -84,14 +81,14 @@ class BaseHookSet:
         return NotImplemented
 
     def map_list_url(self):
-        return self.add_limit_settings(reverse('maps_browse'))
+        return NotImplemented
 
     def map_detail_url(self, map):
-        return reverse('map_detail', args=(map.id,))
+        return NotImplemented
 
     # GeoApps
     def geoapp_list_template(self, context=None):
-        return 'apps/app_list_default.html'
+        return NotImplemented
 
     def geoapp_detail_template(self, context=None):
         return NotImplemented
@@ -115,17 +112,17 @@ class BaseHookSet:
         return NotImplemented
 
     def geoapp_list_url(self):
-        return self.add_limit_settings(reverse('apps_browse'))
+        return NotImplemented
 
     def geoapp_detail_url(self, geoapp):
-        return reverse('geoapp_detail', args=(geoapp.id,))
+        return NotImplemented
 
     # Documents
     def document_list_url(self):
-        return self.add_limit_settings(reverse('document_browse'))
+        return NotImplemented
 
     def document_detail_url(self, document):
-        return reverse('document_detail', args=(document.id,))
+        return NotImplemented
 
     # Map Persisting
     def viewer_json(self, conf, context=None):
@@ -134,15 +131,9 @@ class BaseHookSet:
         return conf
 
     def update_from_viewer(self, conf, context=None):
-        conf = self.viewer_json(conf, context=context)
-        context['config'] = conf
-        return 'maps/map_edit.html'
+        return NotImplemented
 
-    def add_limit_settings(self, url):
-        CLIENT_RESULTS_LIMIT = settings.CLIENT_RESULTS_LIMIT
-        return f"{url}?limit={CLIENT_RESULTS_LIMIT}"
-
-    def metadata_update_redirect(self, url):
+    def metadata_update_redirect(self, url, request=None):
         if "metadata_uri" in url:
             return url.replace('/metadata_uri', '')
         return url.replace('/metadata', '')

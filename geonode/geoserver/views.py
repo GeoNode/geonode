@@ -40,7 +40,6 @@ from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
 from django.template.loader import get_template
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
@@ -48,6 +47,7 @@ from django.utils.translation import ugettext as _
 from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import ResourceBase
+from geonode.client.hooks import hookset
 from geonode.compat import ensure_string
 from geonode.base.auth import get_or_create_token
 from geonode.decorators import logged_in_or_basicauth
@@ -55,7 +55,9 @@ from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Dataset, Style
 from geonode.layers.views import _resolve_dataset, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
-from geonode.proxy.views import proxy
+from geonode.proxy.views import (
+    proxy,
+    fetch_response_headers)
 from .tasks import geoserver_update_datasets
 from geonode.utils import (
     json_response,
@@ -106,7 +108,7 @@ def updatelayers(request):
     # Attempt to run task synchronously
     result.get()
 
-    return HttpResponseRedirect(reverse('dataset_browse'))
+    return HttpResponseRedirect(hookset.dataset_list_url())
 
 
 @login_required
@@ -321,12 +323,7 @@ def dataset_style_manage(request, layername):
             except Exception:
                 pass
 
-            return HttpResponseRedirect(
-                reverse(
-                    'dataset_detail',
-                    args=(
-                        layer.service_typename,
-                    )))
+            return HttpResponseRedirect(layer.get_absolute_url())
         except (FailedRequestError, OSError, MultiValueDictKeyError):
             tb = traceback.format_exc()
             logger.debug(tb)
@@ -469,7 +466,7 @@ def geoserver_proxy(request,
             raw_url = _url
 
     if downstream_path in 'ows' and (
-        'rest' in path or
+        re.match(r'/(rest).*$', path, re.IGNORECASE) or
             re.match(r'/(w.*s).*$', path, re.IGNORECASE) or
             re.match(r'/(ows).*$', path, re.IGNORECASE)):
         _url = str("".join([ogc_server_settings.LOCATION, '', path[1:]]))
@@ -524,9 +521,10 @@ def geoserver_proxy(request,
 
 
 def _response_callback(**kwargs):
-    content = kwargs['content']
-    status = kwargs['status']
-    content_type = kwargs['content_type']
+    status = kwargs.get('status')
+    content = kwargs.get('content')
+    content_type = kwargs.get('content_type')
+    response_headers = kwargs.get('response_headers', None)
     content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
 
     if content:
@@ -563,10 +561,11 @@ def _response_callback(**kwargs):
         for layer in kwargs['affected_datasets']:
             geoserver_post_save_local(layer)
 
-    return HttpResponse(
+    _response = HttpResponse(
         content=content,
         status=status,
         content_type=content_type)
+    return fetch_response_headers(_response, response_headers)
 
 
 def resolve_user(request):

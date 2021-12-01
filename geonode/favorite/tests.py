@@ -18,7 +18,6 @@
 #########################################################################
 
 from geonode.base.models import ResourceBase
-from geonode.base.populate_test_data import create_single_dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import json
@@ -30,6 +29,11 @@ from django.db.models import Max
 
 from .models import Favorite
 from geonode.documents.models import Document
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models,
+    create_single_dataset)
 
 
 class FavoriteTest(GeoNodeBaseTestSupport):
@@ -39,6 +43,17 @@ class FavoriteTest(GeoNodeBaseTestSupport):
     """
     Tests geonode.favorite app/module
     """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
         super().setUp()
@@ -51,6 +66,8 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         test_user = get_user_model().objects.first()
         test_document_1 = Document.objects.first()
         test_document_2 = Document.objects.last()
+        self.assertIsNotNone(test_document_1)
+        self.assertIsNotNone(test_document_2)
 
         # test create favorite.
         Favorite.objects.create_favorite(test_document_1, test_user)
@@ -87,8 +104,6 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         # test bulk favorites.
         bulk_favorites = Favorite.objects.bulk_favorite_objects(test_user)
         self.assertEqual(len(bulk_favorites[ct.name]), 2)
-        self.assertEqual(len(bulk_favorites["layer"]), 0)
-        self.assertEqual(len(bulk_favorites["map"]), 0)
         self.assertEqual(len(bulk_favorites["user"]), 0)
 
     def test_given_resource_base_object_will_assign_subtype_as_content_type(self):
@@ -107,6 +122,7 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         If the input object is a subtype, should save the relative content type
         '''
         test_document_1 = Document.objects.first()
+        self.assertIsNotNone(test_document_1)
         Favorite.objects.create_favorite(test_document_1, test_user)
         fav = Favorite.objects.last()
         ct = ContentType.objects.get_for_model(test_document_1)
@@ -120,7 +136,9 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         """
         self.client.login(username=self.adm_un, password=self.adm_pw)
 
-        document_pk = Document.objects.first().pk
+        document = Document.objects.first()
+        self.assertIsNotNone(document)
+        document_pk = document.pk
         response = self._get_response("add_favorite_document", (document_pk,))
 
         # check persisted.
@@ -140,7 +158,9 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(json_content["delete_url"], expected_delete_url)
 
         # call method again, check for idempotent.
-        document_pk = Document.objects.first().pk
+        document = Document.objects.first()
+        self.assertIsNotNone(document)
+        document_pk = document.pk
         response2 = self._get_response("add_favorite_document", (document_pk,))
 
         # check still one only persisted, same as before second call.
@@ -168,6 +188,7 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         """
         # get a pk that is not in the db for Document object.
         max_document_pk = Document.objects.aggregate(Max("pk"))
+        self.assertIsNotNone(max_document_pk)
         pk_not_in_db = str(max_document_pk["pk__max"] + 1)
 
         self.client.login(username=self.adm_un, password=self.adm_pw)
@@ -182,7 +203,9 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.client.login(username=self.adm_un, password=self.adm_pw)
 
         # first, add one to delete.
-        document_pk = Document.objects.first().pk
+        document = Document.objects.first()
+        self.assertIsNotNone(document)
+        document_pk = document.pk
         response = self._get_response("add_favorite_document", (document_pk,))
 
         # check persisted.

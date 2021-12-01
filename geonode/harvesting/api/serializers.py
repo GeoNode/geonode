@@ -62,7 +62,9 @@ class BriefHarvesterSerializer(DynamicModelSerializer):
             "remote_url",
             "remote_available",
             "scheduling_enabled",
-            "update_frequency",
+            "harvesting_session_update_frequency",
+            "refresh_harvestable_resources_update_frequency",
+            "check_availability_frequency",
             "default_owner",
             "links",
         )
@@ -102,12 +104,12 @@ class HarvesterSerializer(BriefHarvesterSerializer):
             "remote_url",
             "remote_available",
             "scheduling_enabled",
-            "update_frequency",
+            "check_availability_frequency",
+            "harvesting_session_update_frequency",
+            "refresh_harvestable_resources_update_frequency",
             "default_owner",
             "harvester_type",
             "harvester_type_specific_configuration",
-            "update_frequency",
-            "check_availability_frequency",
             "last_checked_availability",
             "last_checked_harvestable_resources",
             "last_check_harvestable_resources_message",
@@ -160,13 +162,7 @@ class HarvesterSerializer(BriefHarvesterSerializer):
                 f"Either omit it or provide a "
                 f"value of {models.Harvester.STATUS_READY!r}"
             )
-        harvester = super().create(validated_data)
-        available = harvester.update_availability()
-        if available:
-            harvester.status = harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES
-            harvester.save()
-            tasks.update_harvestable_resources.apply_async(args=(harvester.pk,))
-        return harvester
+        return super().create(validated_data)
 
     def update(self, instance: models.Harvester, validated_data):
         """Update harvester and perform any required business logic as a side-effect.

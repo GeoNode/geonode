@@ -72,6 +72,39 @@ class BaseDynamicModelSerializer(DynamicModelSerializer):
         return data
 
 
+class ResourceBaseToRepresentationSerializerMixin(DynamicModelSerializer):
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        data = super(ResourceBaseToRepresentationSerializerMixin, self).to_representation(instance)
+        if request:
+            data['perms'] = instance.get_user_perms(request.user).union(
+                instance.get_self_resource().get_user_perms(request.user)
+            )
+            if not request.user.is_anonymous and getattr(settings, "FAVORITE_ENABLED", False):
+                favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
+                data['favorite'] = favorite > 0
+        # Adding links to resource_base api
+        obj_id = data.get('pk', None)
+        if obj_id:
+            dehydrated = []
+            link_fields = [
+                'extension',
+                'link_type',
+                'name',
+                'mime',
+                'url'
+            ]
+
+            links = Link.objects.filter(resource_id=int(obj_id), link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS', 'image'])
+            for lnk in links:
+                formatted_link = model_to_dict(lnk, fields=link_fields)
+                dehydrated.append(formatted_link)
+            if len(dehydrated) > 0:
+                data['links'] = dehydrated
+        return data
+
+
 class ResourceBaseTypesSerializer(DynamicEphemeralSerializer):
     name = serializers.CharField()
     count = serializers.IntegerField()
@@ -222,13 +255,26 @@ class UserSerializer(BaseDynamicModelSerializer):
         model = get_user_model()
         name = 'user'
         view_name = 'users-list'
-        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar', 'perms')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar', 'perms', 'is_superuser', 'is_staff')
 
     @classmethod
     def setup_eager_loading(cls, queryset):
         """ Perform necessary eager loading of data. """
         queryset = queryset.prefetch_related()
         return queryset
+
+    def to_representation(self, instance):
+        # Dehydrate users private fields
+        request = self.context.get('request')
+        data = super().to_representation(instance)
+        if not request or not request.user or not request.user.is_authenticated:
+            if 'perms' in data:
+                del data['perms']
+        elif not request.user.is_superuser and not request.user.is_staff:
+            if data['username'] != request.user.username:
+                if 'perms' in data:
+                    del data['perms']
+        return data
 
     avatar = AvatarUrlField(240, read_only=True)
 
@@ -269,7 +315,10 @@ class DataBlobSerializer(DynamicModelSerializer):
         return {}
 
 
-class ResourceBaseSerializer(BaseDynamicModelSerializer):
+class ResourceBaseSerializer(
+    ResourceBaseToRepresentationSerializerMixin,
+    BaseDynamicModelSerializer,
+):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
@@ -279,35 +328,35 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
         self.fields['uuid'] = serializers.CharField(read_only=True)
         self.fields['resource_type'] = serializers.CharField(read_only=True)
         self.fields['polymorphic_ctype_id'] = serializers.CharField(read_only=True)
-        self.fields['owner'] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True)
+        self.fields['owner'] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True, required=False)
         self.fields['poc'] = ContactRoleField('poc', read_only=True)
         self.fields['metadata_author'] = ContactRoleField('metadata_author', read_only=True)
         self.fields['title'] = serializers.CharField()
-        self.fields['abstract'] = serializers.CharField()
-        self.fields['attribution'] = serializers.CharField()
-        self.fields['doi'] = serializers.CharField()
+        self.fields['abstract'] = serializers.CharField(required=False)
+        self.fields['attribution'] = serializers.CharField(required=False)
+        self.fields['doi'] = serializers.CharField(required=False)
         self.fields['alternate'] = serializers.CharField(read_only=True)
-        self.fields['date'] = serializers.DateTimeField()
-        self.fields['date_type'] = serializers.CharField()
-        self.fields['temporal_extent_start'] = serializers.DateTimeField()
-        self.fields['temporal_extent_end'] = serializers.DateTimeField()
-        self.fields['edition'] = serializers.CharField()
-        self.fields['purpose'] = serializers.CharField()
-        self.fields['maintenance_frequency'] = serializers.CharField()
-        self.fields['constraints_other'] = serializers.CharField()
-        self.fields['language'] = serializers.CharField()
-        self.fields['supplemental_information'] = serializers.CharField()
-        self.fields['data_quality_statement'] = serializers.CharField()
-        self.fields['bbox_polygon'] = fields.GeometryField()
-        self.fields['ll_bbox_polygon'] = fields.GeometryField()
-        self.fields['srid'] = serializers.CharField()
+        self.fields['date'] = serializers.DateTimeField(required=False)
+        self.fields['date_type'] = serializers.CharField(required=False)
+        self.fields['temporal_extent_start'] = serializers.DateTimeField(required=False)
+        self.fields['temporal_extent_end'] = serializers.DateTimeField(required=False)
+        self.fields['edition'] = serializers.CharField(required=False)
+        self.fields['purpose'] = serializers.CharField(required=False)
+        self.fields['maintenance_frequency'] = serializers.CharField(required=False)
+        self.fields['constraints_other'] = serializers.CharField(required=False)
+        self.fields['language'] = serializers.CharField(required=False)
+        self.fields['supplemental_information'] = serializers.CharField(required=False)
+        self.fields['data_quality_statement'] = serializers.CharField(required=False)
+        self.fields['bbox_polygon'] = fields.GeometryField(required=False)
+        self.fields['ll_bbox_polygon'] = fields.GeometryField(required=False)
+        self.fields['srid'] = serializers.CharField(required=False)
         self.fields['group'] = DynamicRelationField(GroupSerializer, embed=True, many=False)
-        self.fields['popular_count'] = serializers.CharField()
-        self.fields['share_count'] = serializers.CharField()
-        self.fields['rating'] = serializers.CharField()
-        self.fields['featured'] = serializers.BooleanField()
-        self.fields['is_published'] = serializers.BooleanField()
-        self.fields['is_approved'] = serializers.BooleanField()
+        self.fields['popular_count'] = serializers.CharField(required=False)
+        self.fields['share_count'] = serializers.CharField(required=False)
+        self.fields['rating'] = serializers.CharField(required=False)
+        self.fields['featured'] = serializers.BooleanField(required=False)
+        self.fields['is_published'] = serializers.BooleanField(required=False)
+        self.fields['is_approved'] = serializers.BooleanField(required=False)
         self.fields['detail_url'] = DetailUrlField(read_only=True)
         self.fields['created'] = serializers.DateTimeField(read_only=True)
         self.fields['last_updated'] = serializers.DateTimeField(read_only=True)
@@ -316,13 +365,13 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
         self.fields['raw_constraints_other'] = serializers.CharField(read_only=True)
         self.fields['raw_supplemental_information'] = serializers.CharField(read_only=True)
         self.fields['raw_data_quality_statement'] = serializers.CharField(read_only=True)
-        self.fields['metadata_only'] = serializers.BooleanField()
+        self.fields['metadata_only'] = serializers.BooleanField(required=False)
         self.fields['processed'] = serializers.BooleanField(read_only=True)
         self.fields['state'] = serializers.CharField(read_only=True)
         self.fields['sourcetype'] = serializers.CharField(read_only=True)
 
-        self.fields['embed_url'] = EmbedUrlField()
-        self.fields['thumbnail_url'] = ThumbnailUrlField()
+        self.fields['embed_url'] = EmbedUrlField(required=False)
+        self.fields['thumbnail_url'] = ThumbnailUrlField(required=False)
         self.fields['keywords'] = DynamicRelationField(
             SimpleHierarchicalKeywordSerializer, embed=False, many=True)
         self.fields['regions'] = DynamicRelationField(
@@ -336,6 +385,8 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
         self.fields['spatial_representation_type'] = DynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False)
 
+        self.fields['blob'] = serializers.JSONField(required=False, write_only=True)
+
     class Meta:
         model = ResourceBase
         name = 'resource'
@@ -344,7 +395,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id', 'perms',
             'owner', 'poc', 'metadata_author',
             'keywords', 'regions', 'category',
-            'title', 'abstract', 'attribution', 'doi', 'alternate', 'bbox_polygon', 'll_bbox_polygon', 'srid',
+            'title', 'abstract', 'attribution', 'alternate', 'doi', 'bbox_polygon', 'll_bbox_polygon', 'srid',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',
             'restriction_code_type', 'constraints_other', 'license', 'language',
             'spatial_representation_type', 'temporal_extent_start', 'temporal_extent_end',
@@ -353,50 +404,50 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
             'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', 'state',
-            'data', 'subtype', 'sourcetype'
+            'data', 'subtype', 'sourcetype',
+            'blob',
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
             # users_geolimits, groups_geolimits
         )
+        extra_kwargs = {
+            "abstract": {"required": False},
+            "attribution": {"required": False},
+            "doi": {"required": False},
+            "date": {"required": False},
+            "date_type": {"required": False},
+            "temporal_extent_start": {"required": False},
+            "temporal_extent_end": {"required": False},
+            "edition": {"required": False},
+            "purpose": {"required": False},
+            "maintenance_frequency": {"required": False},
+            "constraints_other": {"required": False},
+            "language": {"required": False},
+            "supplemental_information": {"required": False},
+            "data_quality_statement": {"required": False},
+            "bbox_polygon": {"required": False},
+            "ll_bbox_polygon": {"required": False},
+            "srid": {"required": False},
+            "popular_count": {"required": False},
+            "share_count": {"required": False},
+            "rating": {"required": False},
+            "featured": {"required": False},
+            "is_published": {"required": False},
+            "is_approved": {"required": False},
+            "metadata_only": {"required": False},
+            "embed_url": {"required": False},
+            "thumbnail_url": {"required": False},
+            "blob": {"required": False, "write_only": True},
+            "owner": {"required": False},
+        }
 
     def to_internal_value(self, data):
         if isinstance(data, str):
             data = json.loads(data)
         if 'data' in data:
-            _data = data.pop('data')
-            if self.is_valid():
-                data['blob'] = _data
-        return data
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        data = super().to_representation(instance)
-        if request:
-            data['perms'] = instance.get_user_perms(request.user).union(
-                instance.get_self_resource().get_user_perms(request.user)
-            )
-            if not request.user.is_anonymous and getattr(settings, "FAVORITE_ENABLED", False):
-                favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
-                data['favorite'] = favorite > 0
-        # Adding links to resource_base api
-        obj_id = data.get('pk', None)
-        if obj_id:
-            dehydrated = []
-            link_fields = [
-                'extension',
-                'link_type',
-                'name',
-                'mime',
-                'url'
-            ]
-
-            links = Link.objects.filter(resource_id=int(obj_id), link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS'])
-            for lnk in links:
-                formatted_link = model_to_dict(lnk, fields=link_fields)
-                dehydrated.append(formatted_link)
-            if len(dehydrated) > 0:
-                data['links'] = dehydrated
+            data['blob'] = data.pop('data')
+        data = super(ResourceBaseSerializer, self).to_internal_value(data)
         return data
 
     """
@@ -407,7 +458,9 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
         source='id',
         many=False,
         embed=False,
-        deferred=True)
+        deferred=True,
+        required=False,
+    )
 
 
 class FavoriteSerializer(DynamicModelSerializer):
@@ -446,8 +499,9 @@ class BaseResourceCountSerializer(BaseDynamicModelSerializer):
 
 class HierarchicalKeywordSerializer(BaseResourceCountSerializer):
 
-    class Meta(SimpleHierarchicalKeywordSerializer.Meta):
+    class Meta:
         name = 'keywords'
+        model = HierarchicalKeyword
         count_type = 'keywords'
         view_name = 'keywords-list'
         fields = '__all__'
@@ -465,8 +519,9 @@ class ThesaurusKeywordSerializer(BaseResourceCountSerializer):
 
 class RegionSerializer(BaseResourceCountSerializer):
 
-    class Meta(SimpleRegionSerializer.Meta):
+    class Meta:
         name = 'regions'
+        model = Region
         count_type = 'regions'
         view_name = 'regions-list'
         fields = '__all__'
@@ -474,16 +529,21 @@ class RegionSerializer(BaseResourceCountSerializer):
 
 class TopicCategorySerializer(BaseResourceCountSerializer):
 
-    class Meta(SimpleTopicCategorySerializer.Meta):
+    class Meta:
         name = 'categories'
+        model = TopicCategory
         count_type = 'category'
         view_name = 'categories-list'
         fields = '__all__'
 
 
-class OwnerSerializer(BaseResourceCountSerializer, UserSerializer):
+class OwnerSerializer(BaseResourceCountSerializer):
 
-    class Meta(UserSerializer.Meta):
+    class Meta:
         name = 'owners'
         count_type = 'owner'
         view_name = 'owners-list'
+        model = get_user_model()
+        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar', 'perms')
+
+    avatar = AvatarUrlField(240, read_only=True)

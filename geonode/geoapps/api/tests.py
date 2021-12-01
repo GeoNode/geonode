@@ -124,7 +124,7 @@ class GeoAppsApiTests(APITestCase):
                 }
             }
         }
-        response = self.client.patch(url, data=json.dumps(data), format='json')
+        response = self.client.patch(url, data=json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(

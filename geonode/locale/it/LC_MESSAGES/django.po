@@ -4250,16 +4250,23 @@ msgid "Permissions successfully updated!"
 msgstr "Autorizzazioni aggiornate con successo!"
 
 msgid "Error updating permissions :("
-msgstr "Errore durante l'aggiornamento delle :("
+msgstr "Errore durante l'aggiornamento delle autorizzazioni :("
+
+msgid ""
+"User {username} has download permissions but cannot access the resource. "
+"Please update permission consistently!"
+msgstr ""
+"L'utente {username} ha le autorizzazioni di scaricamento ma non può "
+"visualizzare la risorsa. Controllare che le autorizzazioni siano consistenti."
 
 msgid "You are not allowed to change permissions for this resource"
-msgstr "Non è consentito modificare le autorizzazioni per questa risorsa"
+msgstr "Non ti è consentito modificare le autorizzazioni per questa risorsa"
 
 msgid "Security Rules Cache Refreshed!"
-msgstr "Aggiornamento della cache delle regole di sicurezza!"
+msgstr "Cache delle regole di sicurezza aggiornata!"
 
 msgid "You cannot modify this resource!"
-msgstr "Non è possibile modificare questa risorsa!"
+msgstr "Non puoi modificare questa risorsa!"
 
 msgid "Attributes/Stats Refreshed Successfully!"
 msgstr "Attributi/Statistiche aggiornati correttamente!"
@@ -5949,7 +5956,7 @@ msgstr "Esplora mappe"
 
 msgid ""
 "As for the layers and maps GeoNode allows to publish tabular and text data, "
-"manage theirs metadata and associated documents."
+"manage their metadata and associated documents."
 msgstr ""
 "Per quanto riguarda i livelli e le mappe, GeoNode consente di pubblicare "
 "dati tabulari e di testo, gestirne i metadati e i documenti associati."

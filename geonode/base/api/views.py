@@ -49,15 +49,18 @@ from geonode.favorite.models import Favorite
 from geonode.base.models import Configuration
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
+from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.security.permissions import (
     PermSpec,
-    PermSpecCompact)
+    PermSpecCompact,
+    get_compact_perms_list)
 from geonode.security.utils import (
     get_visible_resources,
-    get_resources_with_perms)
+    get_resources_with_perms,
+    get_user_visible_groups)
 
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
@@ -65,7 +68,7 @@ from geonode.resource.api.tasks import resouce_service_dispatcher
 from guardian.shortcuts import get_objects_for_user
 
 from .permissions import (
-    IsSelfOrAdmin,
+    IsSelfOrAdminOrReadOnly,
     IsOwnerOrAdmin,
     IsOwnerOrReadOnly,
     ResourceBasePermissionsFilter
@@ -95,7 +98,7 @@ class UserViewSet(DynamicModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsSelfOrAdmin, ]
+    permission_classes = [IsSelfOrAdminOrReadOnly, ]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]
@@ -105,16 +108,12 @@ class UserViewSet(DynamicModelViewSet):
 
     def get_queryset(self):
         """
-        Filter objects so a user only sees his own stuff.
-        If user is admin, let him see all.
+        Filters and sorts users.
         """
-        if self.request.user.is_superuser or self.request.user.is_staff:
-            queryset = get_user_model().objects.all()
-        else:
-            queryset = get_user_model().objects.filter(id=self.request.user.id)
+        queryset = get_user_model().objects.all()
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset
+        return queryset.order_by("username")
 
     @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
                    description="API endpoint allowing to retrieve the Resources visible to the user.")
@@ -147,13 +146,23 @@ class GroupViewSet(DynamicModelViewSet):
     API endpoint that allows gropus to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticatedOrReadOnly, ]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]
-    queryset = GroupProfile.objects.all()
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
+
+    def get_queryset(self):
+        """
+        Filters the public groups and private ones the current user is member of.
+        """
+        metadata_author_groups = get_user_visible_groups(
+            self.request.user, include_public_invite=True)
+        if not isinstance(metadata_author_groups, list):
+            metadata_author_groups = list(metadata_author_groups.all())
+        queryset = GroupProfile.objects.filter(id__in=[_g.id for _g in metadata_author_groups])
+        return queryset.order_by("title")
 
     @extend_schema(methods=['get'], responses={200: UserSerializer(many=True)},
                    description="API endpoint allowing to retrieve the Group members.")
@@ -246,9 +255,9 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
 
     def get_queryset(self):
         """
-        Filter users with atleast a resource
+        Filter users with at least one resource
         """
-        queryset = get_user_model().objects.all().exclude(pk=-1)
+        queryset = get_user_model().objects.exclude(pk=-1)
         filter_options = {}
         if self.request.query_params:
             filter_options = {
@@ -258,7 +267,7 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
         queryset = queryset.filter(id__in=Subquery(
             get_resources_with_perms(self.request.user, filter_options).values('owner'))
         )
-        return queryset
+        return queryset.order_by("username")
 
 
 class ResourceBaseViewSet(DynamicModelViewSet):
@@ -364,13 +373,27 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         """)
     @action(detail=False, methods=['get'])
     def resource_types(self, request):
+
+        def _to_compact_perms_list(allowed_perms: dict, resource_type: str, resource_subtype: str) -> list:
+            _compact_perms_list = {}
+            for _k, _v in allowed_perms.items():
+                _is_owner = _k not in ["anonymous", groups_settings.REGISTERED_MEMBERS_GROUP_NAME]
+                _is_none_allowed = not _is_owner
+                _compact_perms_list[_k] = get_compact_perms_list(_v, resource_type, resource_subtype, _is_owner, _is_none_allowed)
+            return _compact_perms_list
+
         resource_types = []
         _types = []
+        _allowed_perms = {}
         for _model in apps.get_models():
             if _model.__name__ == "ResourceBase":
                 for _m in _model.__subclasses__():
                     if _m.__name__.lower() not in ['service']:
                         _types.append(_m.__name__.lower())
+                        _allowed_perms[_m.__name__.lower()] = {
+                            "perms": _m.allowed_permissions,
+                            "compact": _to_compact_perms_list(_m.allowed_permissions, _m.__name__.lower(), _m.__name__.lower())
+                        }
 
         if settings.GEONODE_APPS_ENABLE and 'geoapp' in _types:
             _types.remove('geoapp')
@@ -381,10 +404,27 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 geoapp_types = [x for x in GeoApp.objects.values_list('resource_type', flat=True).all().distinct()]
                 _types += geoapp_types
 
+            if hasattr(settings, 'CLIENT_APP_ALLOWED_PERMS') and settings.CLIENT_APP_ALLOWED_PERMS:
+                for _type in settings.CLIENT_APP_ALLOWED_PERMS:
+                    for _type_name, _type_perms in _type.items():
+                        _allowed_perms[_type_name] = {
+                            "perms": _type_perms,
+                            "compact": _to_compact_perms_list(_type_perms, _type_name, _type_name)
+                        }
+            else:
+                from geonode.geoapps.models import GeoApp
+                for _m in GeoApp.objects.filter(resource_type__in=_types).iterator():
+                    if hasattr(_m, 'resource_type') and _m.resource_type and _m.resource_type not in _allowed_perms:
+                        _allowed_perms[_m.resource_type] = {
+                            "perms": _m.allowed_permissions,
+                            "compact": _to_compact_perms_list(_m.allowed_permissions, _m.resource_type, _m.subtype)
+                        }
+
         for _type in _types:
             resource_types.append({
                 "name": _type,
-                "count": get_resources_with_perms(request.user).filter(resource_type=_type).count()
+                "count": get_resources_with_perms(request.user).filter(resource_type=_type).count(),
+                "allowed_perms": _allowed_perms[_type] if _type in _allowed_perms else []
             })
         return Response({"resource_types": resource_types})
 
@@ -480,8 +520,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         """
         config = Configuration.load()
         resource = self.get_object()
+        _user_can_manage = request.user.has_perm('change_resourcebase', resource.get_self_resource()) or request.user.has_perm('change_resourcebase_permissions', resource.get_self_resource())
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
-                resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
+                resource is None or not _user_can_manage:
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource)

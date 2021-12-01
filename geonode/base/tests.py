@@ -30,7 +30,7 @@ from imagekit.cachefiles.backends import Simple
 from guardian.shortcuts import assign_perm, get_perms
 
 from geonode.maps.models import Map
-from geonode.base import thumb_utils
+from geonode.thumbs import utils as thumb_utils
 from geonode.base import enumerations
 from geonode.layers.models import Dataset
 from geonode.services.models import Service

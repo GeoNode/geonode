@@ -32,6 +32,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 
 from geonode.base.models import ResourceBase
+from geonode.harvesting.models import Harvester
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import get_visible_resources
 
@@ -248,7 +249,14 @@ def rescan_service(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
     try:
         _get_service_handler(request, service)
-        if service.harvester:
+        if service.harvester and service.harvester.update_availability():
+            if service.harvester.status != Harvester.STATUS_READY:
+                service.harvester.status = Harvester.STATUS_READY
+                service.harvester.save()
+            if service.harvester.latest_refresh_session:
+                service.harvester.latest_refresh_session.delete()
+            if service.harvester.latest_harvesting_session:
+                service.harvester.latest_harvesting_session.delete()
             service.harvester.initiate_update_harvestable_resources()
     except Exception:
         return render(

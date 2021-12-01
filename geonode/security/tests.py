@@ -40,7 +40,9 @@ from guardian.shortcuts import (
 )
 
 from geonode import geoserver
+from geonode.maps.models import Map
 from geonode.layers.models import Dataset
+from geonode.documents.models import Document
 from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_dataset
@@ -48,7 +50,7 @@ from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import gs_slurp
 from geonode.resource.manager import resource_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.groups.models import Group, GroupProfile
+from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 
 from geonode.base.models import (
@@ -75,8 +77,8 @@ from geonode.geoserver.security import (
 )
 
 from .utils import (
+    get_users_with_perms,
     get_visible_resources,
-    get_users_with_perms
 )
 
 from .permissions import (
@@ -162,11 +164,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         black_list = [
             reverse('account_signup'),
-            reverse('document_browse'),
-            reverse('maps_browse'),
-            reverse('dataset_browse'),
-            reverse('dataset_detail', kwargs=dict(layername='geonode:Test')),
-            reverse('dataset_remove', kwargs=dict(layername='geonode:Test')),
             reverse('profile_browse'),
         ]
 
@@ -213,7 +210,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         from geonode.security.middleware import LoginRequiredMiddleware
         middleware = LoginRequiredMiddleware(None)
 
-        black_listed_url = reverse('maps_browse')
+        black_listed_url = reverse('dataset_upload')
         white_listed_url = reverse('account_login')
 
         # unauthorized request to black listed URL should be redirected to `redirect_to` URL
@@ -250,7 +247,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         site_url_settings = [f"{settings.SITEURL}login/custom", "/login/custom", "login/custom"]
-        black_listed_url = reverse("maps_browse")
+        black_listed_url = reverse("dataset_upload")
 
         for setting in site_url_settings:
             with override_settings(LOGIN_URL=setting):
@@ -289,7 +286,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         admin = get_user_model().objects.get(username='admin')
         self.assertTrue(admin.is_authenticated)
         request.user = admin
-        request.path = reverse('dataset_browse')
+        request.path = reverse('dataset_upload')
         middleware.process_request(request)
         response = self.client.get(request.path)
         self.assertEqual(response.status_code, 200)
@@ -378,18 +375,18 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 12)
+            self.assertGreaterEqual(geofence_rules_count, 10)
             set_geofence_all(test_perm_dataset)
             geofence_rules_count = get_geofence_rules_count()
             _log(f"2. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 13)
+            self.assertGreaterEqual(geofence_rules_count, 11)
 
         self.client.logout()
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             self.client.login(username='bobby', password='bob')
             resp = self.client.get(self.list_url)
-            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
+            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 6)
 
             perms = get_users_with_perms(test_perm_dataset)
             _log(f"3. perms: {perms} ")
@@ -1101,12 +1098,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
 
-    def test_dataset_set_default_permissions(self):
+    def test_maplayers_default_permissions(self):
         """Verify that Dataset.set_default_permissions is behaving as expected
         """
 
         # Get a Dataset object to work with
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         # Set the default permissions
         layer.set_default_permissions()
 
@@ -1170,7 +1167,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Get a layer to work with
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
 
         # FIXME Test a comprehensive set of permissions specifications
 
@@ -1187,6 +1184,19 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # the perm_spec (and the layers owner) were removed
         current_perms = layer.get_all_level_info()
         self.assertGreaterEqual(len(current_perms['users']), 1)
+
+        # Test that there are no duplicates on returned permissions
+        for _k, _v in current_perms.items():
+            for _kk, _vv in current_perms[_k].items():
+                if _vv and isinstance(_vv, list):
+                    _vv_1 = _vv.copy()
+                    _vv_2 = list(set(_vv.copy()))
+                    _vv_1.sort()
+                    _vv_2.sort()
+                    self.assertListEqual(
+                        _vv_1,
+                        _vv_2
+                    )
 
         # Test that the User permissions specified in the perm_spec were
         # applied properly
@@ -1259,7 +1269,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         # Test with a Dataset object
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         layer.set_default_permissions()
         # Test that the anonymous user can read
         self.assertTrue(
@@ -1274,7 +1284,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 layer.get_self_resource()))
 
         # Test with a Map object
-        # TODO
+        a_map = Map.objects.first()
+        a_map.set_default_permissions()
+        perms = get_users_with_perms(a_map)
+        self.assertIsNotNone(perms)
+        self.assertGreaterEqual(len(perms), 1)
 
     # now we test permissions, first on an authenticated user and then on the
     # anonymous user
@@ -1311,7 +1325,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertEqual(geofence_rules_count, 12)
+            self.assertGreaterEqual(geofence_rules_count, 12)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 
@@ -1323,14 +1337,14 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'view_resourcebase',
                 layer.get_self_resource()))
 
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
         # 1.2 has not view_resourcebase: verify that bobby can not access the
         # layer detail page
         remove_perm('view_resourcebase', bob, layer.get_self_resource())
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (401, 403))
 
         # 2. change_resourcebase
@@ -1346,21 +1360,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'change_resourcebase',
                 layer.get_self_resource()))
         response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
-
-        # 3. delete_resourcebase
-        # 3.1 has not delete_resourcebase: verify that bobby cannot access the
-        # layer delete page
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
-        # 3.2 has delete_resourcebase: verify that bobby can access the layer
-        # delete page
-        assign_perm('delete_resourcebase', bob, layer.get_self_resource())
-        self.assertTrue(
-            bob.has_perm(
-                'delete_resourcebase',
-                layer.get_self_resource()))
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
 
         # 4. change_resourcebase_metadata
@@ -1424,7 +1423,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_anonymus_permissions(self):
         # grab a layer
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         layer.set_default_permissions()
         # 1. view_resourcebase
         # 1.1 has view_resourcebase: verify that anonymous user can access
@@ -1433,26 +1432,20 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.anonymous_user.has_perm(
                 'view_resourcebase',
                 layer.get_self_resource()))
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
         # 1.2 has not view_resourcebase: verify that anonymous user can not
         # access the layer detail page
         remove_perm('view_resourcebase', self.anonymous_user, layer.get_self_resource())
         anonymous_group = Group.objects.get(name='anonymous')
         remove_perm('view_resourcebase', anonymous_group, layer.get_self_resource())
-        response = self.client.get(reverse('dataset_detail', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (302, 403))
 
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that anonymous user cannot
         # access the layer replace page but redirected to login
         response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
-        self.assertTrue(response.status_code in (302, 403))
-
-        # 3. delete_resourcebase
-        # 3.1 has not delete_resourcebase: verify that anonymous user cannot
-        # access the layer delete page but redirected to login
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (302, 403))
 
         # 4. change_resourcebase_metadata
@@ -1647,7 +1640,19 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'first_name': standard_user.first_name,
                         'last_name': standard_user.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'owner'
+                        'permissions': 'owner',
+                        'is_staff': False,
+                        'is_superuser': False,
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'manage',
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
                     }
                 ],
                 'organizations': [],
@@ -1712,7 +1717,19 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'first_name': standard_user.first_name,
                         'last_name': standard_user.last_name,
                         'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                        'permissions': 'owner'
+                        'permissions': 'owner',
+                        'is_staff': False,
+                        'is_superuser': False,
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'manage',
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
                     }
                 ],
                 'organizations': [],
@@ -1752,6 +1769,18 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'view_resourcebase',
                             'download_resourcebase'
                         ],
+                        'admin':
+                        [
+                            'change_dataset_data',
+                            'change_dataset_style',
+                            'view_resourcebase',
+                            'change_resourcebase_metadata',
+                            'delete_resourcebase',
+                            'change_resourcebase_permissions',
+                            'publish_resourcebase',
+                            'change_resourcebase',
+                            'download_resourcebase'
+                        ],
                         'AnonymousUser': ['view_resourcebase']
                     },
                 'groups':
@@ -1772,7 +1801,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'first_name': standard_user.first_name,
                             'last_name': standard_user.last_name,
                             'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
-                            'permissions': 'view'
+                            'permissions': 'view',
                         }
                     ]
             },
@@ -1796,6 +1825,18 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             'view_resourcebase',
                             'download_resourcebase'
                         ],
+                        'admin':
+                        [
+                            'change_dataset_data',
+                            'change_dataset_style',
+                            'view_resourcebase',
+                            'change_resourcebase_metadata',
+                            'delete_resourcebase',
+                            'change_resourcebase_permissions',
+                            'publish_resourcebase',
+                            'change_resourcebase',
+                            'download_resourcebase'
+                        ],
                         'AnonymousUser': ['view_resourcebase']
                     },
                 'groups':
@@ -1803,6 +1844,150 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'anonymous': ['view_resourcebase'],
                         'registered-members': []
                     }
+            }
+        )
+
+        # Test "download" permissions retention policy
+        # 1. "download" permissions are allowed on "Documents"
+        test_document = Document.objects.first()
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                ]
+            },
+            'groups': {}
+        }
+        _p = PermSpec(perm_spec, test_document)
+        self.assertDictEqual(
+            json.loads(str(_p)),
+            {
+                "users":
+                    {
+                        "bobby":
+                            [
+                                "view_resourcebase",
+                                "download_resourcebase",
+                            ]
+                    },
+                "groups": {}
+            }
+        )
+
+        self.assertDictEqual(
+            _p.compact,
+            {
+                'users':
+                [
+                    {
+                        'id': standard_user.id,
+                        'username': standard_user.username,
+                        'first_name': standard_user.first_name,
+                        'last_name': standard_user.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'download',
+                        'is_staff': False,
+                        'is_superuser': False,
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'owner',
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
+                    }
+                ],
+                'organizations': [],
+                'groups':
+                [
+                    {
+                        'id': 3,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'none'
+                    },
+                    {
+                        'id': 2,
+                        'name': 'registered-members',
+                        'permissions': 'none',
+                        'title': 'Registered Members'
+                    }
+                ]
+            }
+        )
+        # 2. "download" permissions are NOT allowed on "Maps"
+        test_map = Map.objects.first()
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                ]
+            },
+            'groups': {}
+        }
+        _p = PermSpec(perm_spec, test_map)
+        self.assertDictEqual(
+            json.loads(str(_p)),
+            {
+                "users":
+                    {
+                        "bobby":
+                            [
+                                "view_resourcebase",
+                                "download_resourcebase",
+                            ]
+                    },
+                "groups": {}
+            }
+        )
+
+        self.assertDictEqual(
+            _p.compact,
+            {
+                'users':
+                [
+                    {
+                        'id': standard_user.id,
+                        'username': standard_user.username,
+                        'first_name': standard_user.first_name,
+                        'last_name': standard_user.last_name,
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'view',
+                        'is_staff': False,
+                        'is_superuser': False,
+                    },
+                    {
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'first_name': 'admin',
+                        'id': 1,
+                        'last_name': '',
+                        'permissions': 'owner',
+                        'username': 'admin',
+                        'is_staff': True,
+                        'is_superuser': True,
+                    }
+                ],
+                'organizations': [],
+                'groups':
+                [
+                    {
+                        'id': 3,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'none'
+                    },
+                    {
+                        'id': 2,
+                        'name': 'registered-members',
+                        'permissions': 'none',
+                        'title': 'Registered Members'
+                    }
+                ]
             }
         )
 
@@ -1883,3 +2068,322 @@ class TestGetUserGeolimits(TestCase):
         self.layer.refresh_from_db()
         _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(self.layer, None, None, self.gf_services)
         self.assertTrue(_disable_dataset_cache)
+
+
+class SetPermissionsTestCase(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        # Creating groups and asign also to the anonymous_group
+        self.author, created = get_user_model().objects.get_or_create(username="author")
+        self.group_manager, created = get_user_model().objects.get_or_create(username="group_manager")
+        self.group_member, created = get_user_model().objects.get_or_create(username="group_member")
+        self.not_group_member, created = get_user_model().objects.get_or_create(username="not_group_member")
+
+        # Defining group profiles and members
+        self.group_profile, created = GroupProfile.objects.get_or_create(slug="custom_group")
+        self.second_custom_group, created = GroupProfile.objects.get_or_create(slug="second_custom_group")
+
+        # defining group members
+        GroupMember.objects.get_or_create(group=self.group_profile, user=self.author, role="member")
+        GroupMember.objects.get_or_create(group=self.group_profile, user=self.group_manager, role="manager")
+        GroupMember.objects.get_or_create(group=self.group_profile, user=self.group_member, role="member")
+        GroupMember.objects.get_or_create(group=self.second_custom_group, user=self.not_group_member, role="member")
+
+        # Creating he default resource
+        self.resource = create_single_dataset(name="test_layer", owner=self.author, group=self.group_profile.group)
+        self.anonymous_user = get_anonymous_user()
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    def test_permissions_are_set_as_expected_resource_publishing_True(self):
+        use_cases = [
+            (
+                {"users": {}, "groups": {}},
+                {
+                    self.author: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "view_resourcebase"
+                    ],
+                    self.group_manager: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "publish_resourcebase",
+                        "change_resourcebase_permissions",
+                        "view_resourcebase"
+                    ],
+                    self.group_member: ["download_resourcebase", "view_resourcebase"],
+                    self.not_group_member: ["download_resourcebase", "view_resourcebase"],
+                    self.anonymous_user: ["download_resourcebase", "view_resourcebase"],
+                },
+            ),
+            (
+                {"users": [], "groups": {"second_custom_group": ["view_resourcebase"]}},
+                {
+                    self.author: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "view_resourcebase"
+                    ],
+                    self.group_manager: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "view_resourcebase",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase"
+                    ],
+                    self.group_member: ["download_resourcebase", "view_resourcebase"],
+                    self.not_group_member: ["download_resourcebase", "view_resourcebase"],
+                    self.anonymous_user: ["download_resourcebase", "view_resourcebase"],
+                },
+            ),
+        ]
+        for permissions, expected in use_cases:
+            self.resource.set_permissions(permissions)
+            for authorized_subject, expected_perms in expected.items():
+                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    def test_permissions_are_set_as_expected_admin_upload_resource_publishing_True(self):
+        use_cases = [
+            (
+                {"users": {}, "groups": {}},
+                {
+                    self.author: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "view_resourcebase",
+                    ],
+                    self.group_manager: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "view_resourcebase",
+                    ],
+                    self.group_member: ["download_resourcebase", "view_resourcebase"],
+                    self.not_group_member: ["download_resourcebase", "view_resourcebase"],
+                    self.anonymous_user: ["download_resourcebase", "view_resourcebase"],
+                },
+            ),
+            (
+                {"users": {}, "groups": {"second_custom_group": ["view_resourcebase"]}},
+                {
+                    self.author: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "view_resourcebase",
+                    ],
+                    self.group_manager: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "view_resourcebase",
+                    ],
+                    self.group_member: ["download_resourcebase", "view_resourcebase"],
+                    self.not_group_member: ["download_resourcebase", "view_resourcebase"],
+                    self.anonymous_user: ["download_resourcebase", "view_resourcebase"],
+                },
+            ),
+        ]
+        for permissions, expected in use_cases:
+            self.resource.set_permissions(permissions)
+            for authorized_subject, expected_perms in expected.items():
+                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+
+    @override_settings(RESOURCE_PUBLISHING=False)
+    @override_settings(ADMIN_MODERATE_UPLOADS=False)
+    def test_permissions_are_set_as_expected_admin_upload_resource_publishing_False(self):
+        use_cases = [
+            (
+                {"users": {}, "groups": {}},
+                {
+                    self.author: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase_permissions",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "publish_resourcebase",
+                        "view_resourcebase",
+                    ],
+                    self.group_manager: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase_permissions",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "publish_resourcebase",
+                        "view_resourcebase",
+                    ],
+                    self.group_member: [],
+                    self.not_group_member: [],
+                    self.anonymous_user: [],
+                },
+            ),
+            (
+                {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {"second_custom_group": ["change_resourcebase"]}},
+                {
+                    self.author: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase_permissions",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "publish_resourcebase",
+                        "view_resourcebase",
+                    ],
+                    self.group_manager: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase_permissions",
+                        "delete_resourcebase",
+                        "download_resourcebase",
+                        "publish_resourcebase",
+                        "view_resourcebase",
+                    ],
+                    self.group_member: [],
+                    self.not_group_member: ["change_resourcebase"],
+                    self.anonymous_user: ["view_resourcebase"],
+                },
+            ),
+        ]
+        for permissions, expected in use_cases:
+            self.resource.set_permissions(permissions)
+            for authorized_subject, expected_perms in expected.items():
+                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    def test_permissions_on_user_role_promotion_to_manager(self):
+        sut = GroupMember.objects.filter(user=self.group_member)\
+            .exclude(group__title='Registered Members')\
+            .first()
+        self.assertEqual(sut.role, "member")
+        sut.promote()
+        sut.refresh_from_db()
+        self.assertEqual(sut.role, "manager")
+        expected = {
+            self.author: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "view_resourcebase",
+            ]
+        }
+        try:
+            for authorized_subject, expected_perms in expected.items():
+                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+        finally:
+            sut.demote()
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    def test_permissions_on_user_role_demote_to_member(self):
+        sut = GroupMember.objects.filter(user=self.group_manager)\
+            .exclude(group__title='Registered Members')\
+            .first()
+        self.assertEqual(sut.role, "manager")
+        sut.demote()
+        sut.refresh_from_db()
+        self.assertEqual(sut.role, "member")
+        expected = {
+            self.author: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "view_resourcebase",
+            ],
+            self.group_manager: ["download_resourcebase", "view_resourcebase"],
+            self.group_member: ["download_resourcebase", "view_resourcebase"]
+        }
+        for authorized_subject, expected_perms in expected.items():
+            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    def test_permissions_on_user_role_demote_to_member_only_RESOURCE_PUBLISHING_active(self):
+        sut = GroupMember.objects.filter(user=self.group_manager)\
+            .exclude(group__title='Registered Members')\
+            .first()
+        self.assertEqual(sut.role, "manager")
+        sut.demote()
+        sut.refresh_from_db()
+        self.assertEqual(sut.role, "member")
+        expected = {
+            self.author: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "view_resourcebase"
+            ],
+            self.group_manager: ["download_resourcebase", "view_resourcebase"],
+            self.group_member: ["download_resourcebase", "view_resourcebase"],
+        }
+        for authorized_subject, expected_perms in expected.items():
+            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    def test_permissions_on_user_role_promote_to_manager_only_RESOURCE_PUBLISHING_active(self):
+        sut = GroupMember.objects.filter(user=self.group_member)\
+            .exclude(group__title='Registered Members')\
+            .first()
+        self.assertEqual(sut.role, "member")
+        sut.promote()
+        sut.refresh_from_db()
+        self.assertEqual(sut.role, "manager")
+        expected = {
+            self.author: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "view_resourcebase"
+            ],
+            self.group_manager: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "view_resourcebase",
+                "change_resourcebase_permissions",
+                "publish_resourcebase"
+            ],
+            self.group_member: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "view_resourcebase",
+                "change_resourcebase_permissions",
+                "publish_resourcebase"
+            ],
+        }
+        for authorized_subject, expected_perms in expected.items():
+            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")

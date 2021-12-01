@@ -29,9 +29,9 @@ from django.conf import settings
 
 
 _DEFAULT_HARVESTERS: typing.Final = [
-    "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester",
+    "geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker",
     "geonode.harvesting.harvesters.wms.OgcWmsHarvester",
-    # "geonode.harvesting.harvesters.geonode.GeonodeCswHarvester",
+    "geonode.harvesting.harvesters.arcgis.ArcgisHarvesterWorker",
 ]
 
 
@@ -49,6 +49,7 @@ def get_setting(setting_key: str) -> typing.Any:
             getattr(settings, "HARVESTER_CLASSES", [])
         ),
         "HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE": getattr(
-            settings, "HARVESTED_RESOURCE_MAX_MEMORY_SIZE", settings.FILE_UPLOAD_MAX_MEMORY_SIZE)
+            settings, "HARVESTED_RESOURCE_MAX_MEMORY_SIZE", settings.FILE_UPLOAD_MAX_MEMORY_SIZE),
+        "HARVESTER_SCHEDULER_FREQUENCY_MINUTES": getattr(settings, "HARVESTER_SCHEDULER_FREQUENCY_MINUTES", 0.5)
     }.get(setting_key, getattr(settings, setting_key, None))
     return result

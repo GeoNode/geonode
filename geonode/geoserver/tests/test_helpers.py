@@ -22,6 +22,7 @@ import logging
 from urllib.parse import urljoin
 
 from django.conf import settings
+from django.urls import reverse
 
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
@@ -193,3 +194,11 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
     def test_remoteStore_should_return_remote(self):
         el = get_dataset_storetype('remoteStore')
         self.assertEqual('remote', el)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_geoserver_proxy_strip_paths(self):
+        response = self.client.get(f"{reverse('gs_layers')}?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=geonode:tipi_forestali&outputFormat=application/json&access_token=something")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(f"{reverse('ows_endpoint')}?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=geonode:tipi_forestali&outputFormat=image/png&access_token=something")
+        self.assertEqual(response.status_code, 200)

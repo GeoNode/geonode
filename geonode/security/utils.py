@@ -17,6 +17,7 @@
 #
 #########################################################################
 import logging
+from itertools import chain
 
 from django.apps import apps
 from django.db.models import Q
@@ -31,6 +32,7 @@ from guardian.shortcuts import (
 
 from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
+from geonode.security.permissions import DATASET_EDIT_DATA_PERMISSIONS
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +68,10 @@ def get_visible_resources(queryset,
 
     if not is_admin:
         if user:
-            _allowed_resources = get_objects_for_user(user, 'base.view_resourcebase')
+            _allowed_resources = get_objects_for_user(
+                user,
+                ['base.view_resourcebase', 'base.change_resourcebase'],
+                any_perm=True)
             filter_set = filter_set.filter(id__in=_allowed_resources.values('id'))
 
         if admin_approval_required:
@@ -113,15 +118,19 @@ def get_users_with_perms(obj):
     # include explicit permissions appliable to "subtype == 'vector'"
     if obj.subtype == 'vector':
         PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
+        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+            permissions[perm.id] = perm.codename
     elif obj.subtype == 'raster':
         PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
-
-    for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
-        permissions[perm.id] = perm.codename
+        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+            permissions[perm.id] = perm.codename
+    else:
+        PERMISSIONS_TO_FETCH += DATASET_EDIT_DATA_PERMISSIONS
+        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH):
+            permissions[perm.id] = perm.codename
 
     user_model = get_user_obj_perms_model(obj)
     users_with_perms = user_model.objects.filter(object_pk=obj.pk,
-                                                 content_type_id=ctype.id,
                                                  permission_id__in=permissions).values('user_id', 'permission_id')
 
     users = {}
@@ -138,6 +147,10 @@ def get_users_with_perms(obj):
     return profiles
 
 
+def perms_as_set(perm) -> set:
+    return perm if isinstance(perm, set) else set(perm if isinstance(perm, list) else [perm])
+
+
 def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
     from .permissions import (
@@ -145,19 +158,32 @@ def set_owner_permissions(resource, members=None):
         DOWNLOAD_PERMISSIONS,
         ADMIN_PERMISSIONS,
         SERVICE_PERMISSIONS,
+        DOWNLOADABLE_RESOURCES,
         DATASET_ADMIN_PERMISSIONS,
         DATASET_EDIT_STYLE_PERMISSIONS)
+    _perm_spec = {
+        "users": {},
+        "groups": {}
+    }
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
-        admin_perms = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS
+        admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
+        if resource.polymorphic_ctype.name in DOWNLOADABLE_RESOURCES:
+            admin_perms += DOWNLOAD_PERMISSIONS
         for perm in admin_perms:
             if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
+                _prev_perm = _perm_spec["users"].get(resource.owner, []) if "users" in _perm_spec else []
+                _perm_spec["users"][resource.owner] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
             elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
+                _prev_perm = _perm_spec["users"].get(resource.owner, []) if "users" in _perm_spec else []
+                _perm_spec["users"][resource.owner] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
             if members:
                 for user in members:
                     assign_perm(perm, user, resource.get_self_resource())
+                    _prev_perm = _perm_spec["users"].get(user, []) if "users" in _perm_spec else []
+                    _perm_spec["users"][user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
         # Set the GeoFence Owner Rule
         if resource.polymorphic_ctype.name == 'dataset':
@@ -168,16 +194,25 @@ def set_owner_permissions(resource, members=None):
                 DATA_EDIT_PERMISSIONS = DATASET_EDIT_STYLE_PERMISSIONS
             for perm in DATA_EDIT_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.dataset)
+                _prev_perm = _perm_spec["users"].get(resource.owner, []) if "users" in _perm_spec else []
+                _perm_spec["users"][resource.owner] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
                 if members:
                     for user in members:
                         assign_perm(perm, user, resource.dataset)
+                        _prev_perm = _perm_spec["users"].get(user, []) if "users" in _perm_spec else []
+                        _perm_spec["users"][user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
         if resource.polymorphic_ctype.name == 'service':
             for perm in SERVICE_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.service)
+                _prev_perm = _perm_spec["users"].get(resource.owner, []) if "users" in _perm_spec else []
+                _perm_spec["users"][resource.owner] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
                 if members:
                     for user in members:
                         assign_perm(perm, user, resource.service)
+                        _prev_perm = _perm_spec["users"].get(user, []) if "users" in _perm_spec else []
+                        _perm_spec["users"][user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
+    return _perm_spec
 
 
 def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
@@ -192,7 +227,8 @@ def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
     else:
         resources = get_objects_for_user(
             user,
-            'base.view_resourcebase',
+            ['base.view_resourcebase', 'base.change_resourcebase'],
+            any_perm=True,
             **shortcut_kwargs
         )
 
@@ -253,12 +289,45 @@ def skip_registered_members_common_group(user_group):
 
 
 def get_user_groups(owner):
+    """
+    Returns all the groups belonging to the "owner"
+    """
     user_groups = Group.objects.filter(
         name__in=owner.groupmember_set.all().values_list("group__slug", flat=True))
     return user_groups
 
 
+def get_user_visible_groups(user, include_public_invite: bool = False):
+    """
+    Retrieves all the groups accordingly to the following conditions:
+    - The user is member of
+    - The group is public
+    """
+    metadata_author_groups = []
+    if user.is_superuser or user.is_staff:
+        metadata_author_groups = GroupProfile.objects.all()
+    else:
+        if include_public_invite:
+            group_profile_queryset = GroupProfile.objects.exclude(
+                access="private")
+        else:
+            group_profile_queryset = GroupProfile.objects.exclude(
+                access="private").exclude(access="public-invite")
+        try:
+            all_metadata_author_groups = chain(
+                user.group_list_all(),
+                group_profile_queryset)
+        except Exception:
+            all_metadata_author_groups = group_profile_queryset
+        [metadata_author_groups.append(item) for item in all_metadata_author_groups
+            if item not in metadata_author_groups]
+    return metadata_author_groups
+
+
 def get_obj_group_managers(owner):
+    """
+    Returns the managers of all the groups belonging to the "owner"
+    """
     obj_group_managers = []
     if get_user_groups(owner):
         for _user_group in get_user_groups(owner):

@@ -259,7 +259,7 @@ def _check_geoserver_store(store_name, dataset_type, overwrite):
                         if not overwrite:
                             raise GeoNodeException(
                                 _("Name already in use and overwrite is False"))
-                        existing_type = resource.resource_type
+                        existing_type = resource.resource_type or resource.polymorphic_ctype.name
                         if existing_type != dataset_type:
                             msg = (f"Type of uploaded file {store_name} ({dataset_type}) does not "
                                    "match type of existing resource type "
@@ -664,20 +664,32 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
             archive = upload_session.base_file.archive
+            logger.debug(f'using uploaded sld file from {archive}')
             zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-            zf.extract(sld_file[0], os.path.dirname(archive))
+            zf.extract(sld_file[0], os.path.dirname(archive), path=upload_session.tempdir)
             # Assign the absolute path to this file
             sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
-        sld_file = sld_file[0]
+        else:
+            _sld_file = f"{os.path.dirname(upload_session.tempdir)}/{os.path.basename(sld_file[0])}"
+            logger.debug(f"copying [{sld_file[0]}] to [{_sld_file}]")
+            try:
+                shutil.copyfile(sld_file[0], _sld_file)
+                sld_file = _sld_file
+            except (IsADirectoryError, shutil.SameFileError) as e:
+                logger.exception(e)
+                sld_file = sld_file[0]
+            except Exception as e:
+                raise UploadException.from_exc(_('Error uploading Dataset'), e)
         sld_uploaded = True
     else:
         # get_files will not find the sld if it doesn't match the base name
         # so we've worked around that in the view - if provided, it will be here
         if upload_session.import_sld_file:
-            logger.debug('using provided sld file')
+            logger.debug('using provided sld file from importer')
             base_file = upload_session.base_file
             sld_file = base_file[0].sld_files[0]
         sld_uploaded = False
+    logger.debug(f'[sld_uploaded: {sld_uploaded}] sld_file: {sld_file}')
 
     # Make sure the layer does not exists already
     if dataset_uuid and Dataset.objects.filter(uuid=dataset_uuid).count():
@@ -687,12 +699,13 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
             _("The UUID identifier from the XML Metadata is already in use in this system."))
 
     # Is it a regular file or an ImageMosaic?
-    # if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
     saved_dataset = None
+    is_mosaic = False
     has_time = has_elevation = False
     start = end = None
     if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
-        has_elevation = True
+        has_time = True
+        is_mosaic = True
         start = datetime.datetime.strptime(upload_session.mosaic_time_value,
                                            TIME_REGEX_FORMAT[upload_session.mosaic_time_regex])
         start = pytz.utc.localize(start, is_dst=False)
@@ -752,7 +765,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                             owner=user,
                             temporal_extent_start=start,
                             temporal_extent_end=end,
-                            is_mosaic=has_elevation,
+                            is_mosaic=is_mosaic,
                             has_time=has_time,
                             has_elevation=has_elevation,
                             time_regex=upload_session.mosaic_time_regex))

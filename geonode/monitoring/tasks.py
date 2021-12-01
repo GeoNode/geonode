@@ -17,6 +17,7 @@
 #
 #########################################################################
 from celery import shared_task
+from django.conf import settings
 from django.core.management import call_command
 
 
@@ -35,4 +36,6 @@ def collect_metrics(self):
     """
     Collect metrics events data
     """
-    return call_command('collect_metrics', '-n', '-t', 'xml')
+    if settings.MONITORING_ENABLED:
+        return call_command('collect_metrics', '-n', '-t', 'xml')
+    return True

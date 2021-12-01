@@ -399,6 +399,10 @@ def extend_datetime_input_formats(formats):
 
 
 def collect_metric(**options):
+    # Exit early if MONITORING_ENABLED=False
+    if not settings.MONITORING_ENABLED:
+        return
+
     # Avoid possible module circular dependency issues
     from geonode.monitoring.models import Service
     from geonode.monitoring.collector import CollectorAPI

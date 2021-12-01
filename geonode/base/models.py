@@ -37,7 +37,7 @@ from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 from django.db.models.fields.json import JSONField
-from django.utils.functional import cached_property
+from django.utils.functional import cached_property, classproperty
 from django.contrib.gis.geos import Polygon, Point
 from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import SuspiciousFileOperation, ValidationError
@@ -64,23 +64,29 @@ from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 
 from geonode.base import enumerations
 from geonode.singleton import SingletonModel
+from geonode.groups.conf import settings as groups_settings
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
 from geonode.utils import (
     bbox_to_wkt,
     find_by_attr,
+    bbox_to_projection,
     is_monochromatic_image)
+from geonode.thumbs.utils import (
+    MISSING_THUMB,
+    thumb_size,
+    get_unique_upload_path)
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
+from geonode.security.permissions import (
+    VIEW_PERMISSIONS,
+    OWNER_PERMISSIONS
+)
 
 from geonode.notifications_helper import (
     send_notification,
     get_notification_recipients)
 from geonode.people.enumerations import ROLE_VALUES
-from geonode.base.thumb_utils import (
-    thumb_path,
-    thumb_size,
-    remove_thumbs)
 
 from pyproj import transform, Proj
 
@@ -434,14 +440,15 @@ class TaggedContentItem(ItemBase):
 
     # see https://github.com/alex/django-taggit/issues/101
     @classmethod
-    def tags_for(cls, model, instance=None):
+    def tags_for(cls, model, instance=None, **extra_filters):
+        kwargs = extra_filters or {}
         if instance is not None:
             return cls.tag_model().objects.filter(**{
                 f'{cls.tag_relname()}__content_object': instance
-            })
+            }, **kwargs)
         return cls.tag_model().objects.filter(**{
             f'{cls.tag_relname()}__content_object__isnull': False
-        }).distinct()
+        }, **kwargs).distinct()
 
 
 class _HierarchicalTagManager(_TaggableManager):
@@ -929,10 +936,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("Featured"),
         default=False,
         help_text=_('Should this resource be advertised in home page?'))
+    was_published = models.BooleanField(
+        _("Was Published"),
+        default=True,
+        help_text=_('Previous Published state.'))
     is_published = models.BooleanField(
         _("Is Published"),
         default=True,
         help_text=_('Should this resource be published and searchable?'))
+    was_approved = models.BooleanField(
+        _("Was Approved"),
+        default=True,
+        help_text=_('Previous Approved state.'))
     is_approved = models.BooleanField(
         _("Approved"),
         default=True,
@@ -940,6 +955,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     # fields necessary for the apis
     thumbnail_url = models.TextField(_("Thumbnail url"), null=True, blank=True)
+    thumbnail_path = models.TextField(_("Thumbnail path"), null=True, blank=True)
     rating = models.IntegerField(default=0, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True, null=True, blank=True)
@@ -1004,9 +1020,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     subtype = models.CharField(max_length=128, null=True, blank=True)
 
-    __is_approved = False
-    __is_published = False
-
     objects = ResourceBaseManager()
 
     class Meta:
@@ -1046,6 +1059,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     attribute_str.replace('\n', ' ').replace('\r', '').strip())
         return strip_tags(_attribute_str)
 
+    @classproperty
+    def allowed_permissions(cls):
+        return {
+            "anonymous": VIEW_PERMISSIONS,
+            "default": OWNER_PERMISSIONS,
+            groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS
+        }
+
     @property
     def raw_abstract(self):
         return self._remove_html_tags(self.abstract)
@@ -1070,6 +1091,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def detail_url(self):
         return self.get_absolute_url()
 
+    def clean(self):
+        if self.title:
+            self.title = self.title.replace(",", "_")
+        return super().clean()
+
     def save(self, notify=False, *args, **kwargs):
         """
         Send a notification when a resource is created or updated
@@ -1089,36 +1115,39 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             elif self.pk:
                 # Resource Updated
                 _notification_sent = False
+                _approval_status_changed = False
 
                 # Approval Notifications Here
-                if not _notification_sent and settings.ADMIN_MODERATE_UPLOADS and \
-                   not self.__is_approved and self.is_approved:
-                    # Set "approved" workflow permissions
-                    self.set_workflow_perms(approved=True)
-
-                    # Send "approved" notification
-                    notice_type_label = f'{self.class_name.lower()}_approved'
-                    recipients = get_notification_recipients(notice_type_label, resource=self)
-                    send_notification(recipients, notice_type_label, {'resource': self})
-                    _notification_sent = True
+                if self.was_approved != self.is_approved:
+                    if not _notification_sent and not self.was_approved and self.is_approved:
+                        # Send "approved" notification
+                        notice_type_label = f'{self.class_name.lower()}_approved'
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
+                        send_notification(recipients, notice_type_label, {'resource': self})
+                        _notification_sent = True
+                    self.was_approved = self.is_approved
+                    _approval_status_changed = True
 
                 # Publishing Notifications Here
-                if not _notification_sent and settings.RESOURCE_PUBLISHING and \
-                   not self.__is_published and self.is_published:
-                    # Set "published" workflow permissions
-                    self.set_workflow_perms(published=True)
-
-                    # Send "published" notification
-                    notice_type_label = f'{self.class_name.lower()}_published'
-                    recipients = get_notification_recipients(notice_type_label, resource=self)
-                    send_notification(recipients, notice_type_label, {'resource': self})
-                    _notification_sent = True
+                if self.was_published != self.is_published:
+                    if not _notification_sent and not self.was_published and self.is_published:
+                        # Send "published" notification
+                        notice_type_label = f'{self.class_name.lower()}_published'
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
+                        send_notification(recipients, notice_type_label, {'resource': self})
+                        _notification_sent = True
+                    self.was_published = self.is_published
+                    _approval_status_changed = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
                     notice_type_label = f'{self.class_name.lower()}_updated'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
+
+                # Update workflow permissions
+                if _approval_status_changed:
+                    self.set_permissions()
 
         if self.pk is None:
             _initial_value = ResourceBase.objects.aggregate(Max("pk"))['pk__max']
@@ -1136,8 +1165,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.pk = self.id = _next_value
 
         super().save(*args, **kwargs)
-        self.__is_approved = self.is_approved
-        self.__is_published = self.is_published
 
     def delete(self, notify=True, *args, **kwargs):
         """
@@ -1174,7 +1201,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def restriction_code(self):
-        return self.restriction_code_type.gn_description
+        return self.restriction_code_type.gn_description if self.restriction_code_type else None
 
     @property
     def publisher(self):
@@ -1186,7 +1213,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def topiccategory(self):
-        return self.category.identifier
+        return self.category.identifier if self.category else None
 
     @property
     def csw_crs(self):
@@ -1194,9 +1221,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def group_name(self):
-        if self.group:
-            return str(self.group).encode("utf-8", "replace")
-        return None
+        return str(self.group).encode("utf-8", "replace") if self.group else None
 
     @property
     def bbox(self):
@@ -1382,17 +1407,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
 
     def set_processing_state(self, state):
-        if self.state != state:
-            self.state = state
-            ResourceBase.objects.filter(id=self.id).update(state=state)
-            if state == enumerations.STATE_PROCESSED:
-                self.clear_dirty_state()
+        self.state = state
+        ResourceBase.objects.filter(id=self.id).update(state=state)
+        if state == enumerations.STATE_PROCESSED:
+            self.clear_dirty_state()
 
     @property
     def processed(self):
         if self.state == enumerations.STATE_PROCESSED:
             self.clear_dirty_state()
-        else:
+        elif self.state != enumerations.STATE_RUNNING:
             self.set_dirty_state()
         return not self.dirty_state
 
@@ -1427,7 +1451,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
             bbox_polygon.srid = int(match.group('srid')) if match else 4326
             try:
-                self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
+                # self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
+                # self.ll_bbox_polygon = Polygon.from_bbox(
+                #     bbox_to_projection(
+                #         [
+                #             bbox_polygon.extent[0],
+                #             bbox_polygon.extent[2],
+                #             bbox_polygon.extent[1],
+                #             bbox_polygon.extent[3]
+                #         ] + [f'EPSG:{bbox_polygon.srs.srid}']
+                #     )[:-1])
+                self.ll_bbox_polygon = Polygon.from_bbox(
+                    bbox_to_projection(list(bbox_polygon.extent) + [srid])[:-1])
             except Exception as e:
                 logger.error(e)
                 self.ll_bbox_polygon = bbox_polygon
@@ -1621,7 +1656,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
            It could be a local one if it exists, a remote one (WMS GetImage) for example
            or a 'Missing Thumbnail' one.
         """
-        _thumbnail_url = self.thumbnail_url or static(settings.MISSING_THUMBNAIL)
+        _thumbnail_url = self.thumbnail_url or static(MISSING_THUMB)
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
         if local_thumbnails.exists():
@@ -1637,7 +1672,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
-        upload_path = thumb_path(filename)
+        upload_path = get_unique_upload_path(filename)
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
@@ -1648,16 +1683,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     image = None
 
             if upload_path and image:
-                name = os.path.basename(filename)
-                remove_thumbs(name)
                 actual_name = storage_manager.save(upload_path, ContentFile(image))
                 actual_file_name = os.path.basename(actual_name)
 
                 if filename != actual_file_name:
                     upload_path = upload_path.replace(filename, actual_file_name)
-
                 url = storage_manager.url(upload_path)
-
                 try:
                     # Optimize the Thumbnail size and resolution
                     _default_thumb_size = getattr(
@@ -1704,20 +1735,25 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         link_type='image',
                     )
                 )
+                # Cleaning up the old stuff
+                if self.thumbnail_path and MISSING_THUMB not in self.thumbnail_path and storage_manager.exists(self.thumbnail_path):
+                    storage_manager.delete(self.thumbnail_path)
+                # Store the new url and path
                 self.thumbnail_url = url
+                self.thumbnail_path = upload_path
                 obj.url = url
                 obj.save()
                 ResourceBase.objects.filter(id=self.id).update(
-                    thumbnail_url=url
+                    thumbnail_url=url,
+                    thumbnail_path=upload_path
                 )
         except Exception as e:
             logger.error(
                 f'Error when generating the thumbnail for resource {self.id}. ({e})'
             )
-            logger.error(f'Check permissions for file {upload_path}.')
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
-                _thumbnail_url = static(settings.MISSING_THUMBNAIL)
+                _thumbnail_url = static(MISSING_THUMB)
                 obj, _created = Link.objects.get_or_create(
                     resource=self,
                     name='Thumbnail',
@@ -1818,10 +1854,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return the_ma
 
     def handle_moderated_uploads(self):
-        if settings.RESOURCE_PUBLISHING:
-            self.is_published = False
         if settings.ADMIN_MODERATE_UPLOADS:
             self.is_approved = False
+            self.was_approved = False
+        if settings.RESOURCE_PUBLISHING:
+            self.is_published = False
+            self.was_published = False
 
     def add_missing_metadata_author_or_poc(self):
         """
