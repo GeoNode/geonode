@@ -21,6 +21,12 @@ import re
 import math
 import logging
 
+from geonode import settings
+from django.conf import settings as django_settings
+from django.utils.translation import ugettext as _
+
+from geonode.services import enumerations
+
 logger = logging.getLogger(__name__)
 
 
@@ -158,3 +164,36 @@ def test_resource_table_status(test_cls, table, is_row_filtered):
         test_cls.assertEqual(result["filter_row_count"], 0)
         test_cls.assertEqual(result["visible_rows_count"], 20)
         test_cls.assertEqual(result["hidden_row_count"], 0)
+
+def parse_services_types():
+    from django.utils.module_loading import import_string
+    services_type_modules = (
+        django_settings.SERVICES_TYPE_MODULES
+        if hasattr(django_settings, "SERVICES_TYPE_MODULES")
+        else []
+    )
+    custom_services_types = {}
+    for services_type_path in services_type_modules:
+        custom_services_type_module = import_string(services_type_path)
+        custom_services_types = {
+            **custom_services_types,
+            **custom_services_type_module.services_type
+        }
+    return custom_services_types
+
+def get_service_type_choices():
+    parsed = [(key, value["label"]) for key, value in parse_services_types().items()]
+    default = [
+        # (enumerations.AUTO, _('Auto-detect')),
+        # (enumerations.OWS, _('Paired WMS/WFS/WCS')),
+        (enumerations.WMS, _('Web Map Service')),
+        (enumerations.GN_WMS, _('GeoNode (Web Map Service)')),
+        # (enumerations.GN_CSW, _('GeoNode (Catalogue Service)')),
+        # (enumerations.CSW, _('Catalogue Service')),
+        (enumerations.REST_MAP, _('ArcGIS REST MapServer')),
+        # (enumerations.REST_IMG, _('ArcGIS REST ImageServer')),
+        # (enumerations.OGP, _('OpenGeoPortal')),
+        # (enumerations.HGL, _('Harvard Geospatial Library')),
+    ]
+
+    return list(set(parsed+default))

@@ -17,11 +17,12 @@
 #
 #########################################################################
 import logging
+from unittest.mock import MagicMock
 
 from urllib.error import HTTPError
 from geonode.services.enumerations import WMS, INDEXED
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.test import Client
+from django.test import Client, override_settings
 from selenium import webdriver
 from unittest import TestCase as StandardTestCase
 from flaky import flaky
@@ -37,7 +38,7 @@ from owslib.map.wms111 import ContentMetadata
 
 from geonode.layers.models import Layer
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.services.utils import test_resource_table_status
+from geonode.services.utils import test_resource_table_status, parse_services_types, get_service_type_choices
 from . import enumerations, forms
 from .models import HarvestJob, Service
 from .serviceprocessors import (
@@ -793,40 +794,40 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             'type': service_type
         }
         form = forms.CreateServiceForm(form_data)
-        # The service sometimes is not available, therefore the form won't be valid...
-        if form.is_valid():
-            self.client.login(username='serviceowner', password='somepassword')
-            response = self.client.post(reverse('register_service'), data=form_data)
+        self.assertTrue(form.is_valid())
 
-            s = Service.objects.all().first()
-            self.assertEqual(len(Service.objects.all()), 1)
-            self.assertEqual(s.owner, self.test_user)
+        self.client.login(username='serviceowner', password='somepassword')
+        response = self.client.post(reverse('register_service'), data=form_data)
 
-            self.client.login(username='serviceuser', password='somepassword')
-            response = self.client.post(reverse('edit_service', args=(s.id,)))
-            self.assertEqual(response.status_code, 401)
-            response = self.client.post(reverse('remove_service', args=(s.id,)))
-            self.assertEqual(response.status_code, 401)
-            self.assertEqual(len(Service.objects.all()), 1)
+        s = Service.objects.all().first()
+        self.assertEqual(len(Service.objects.all()), 1)
+        self.assertEqual(s.owner, self.test_user)
 
-            self.client.login(username='serviceowner', password='somepassword')
-            form_data = {
-                'service-title': 'Foo Title',
-                'service-description': 'Foo Description',
-                'service-abstract': 'Foo Abstract',
-                'service-keywords': 'Foo, Service, OWS'
-            }
-            form = forms.ServiceForm(form_data, instance=s, prefix="service")
-            self.assertTrue(form.is_valid())
+        self.client.login(username='serviceuser', password='somepassword')
+        response = self.client.post(reverse('edit_service', args=(s.id,)))
+        self.assertEqual(response.status_code, 401)
+        response = self.client.post(reverse('remove_service', args=(s.id,)))
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(len(Service.objects.all()), 1)
 
-            response = self.client.post(reverse('edit_service', args=(s.id,)), data=form_data)
-            self.assertEqual(s.title, 'Foo Title')
-            self.assertEqual(s.description, 'Foo Description')
-            self.assertEqual(s.abstract, 'Foo Abstract')
-            self.assertEqual(['Foo', 'OWS', 'Service'],
-                             list(s.keywords.all().values_list('name', flat=True)))
-            response = self.client.post(reverse('remove_service', args=(s.id,)))
-            self.assertEqual(len(Service.objects.all()), 0)
+        self.client.login(username='serviceowner', password='somepassword')
+        form_data = {
+            'service-title': 'Foo Title',
+            'service-description': 'Foo Description',
+            'service-abstract': 'Foo Abstract',
+            'service-keywords': 'Foo, Service, OWS'
+        }
+        form = forms.ServiceForm(form_data, instance=s, prefix="service")
+        self.assertTrue(form.is_valid())
+
+        response = self.client.post(reverse('edit_service', args=(s.id,)), data=form_data)
+        self.assertEqual(s.title, 'Foo Title')
+        self.assertEqual(s.description, 'Foo Description')
+        self.assertEqual(s.abstract, 'Foo Abstract')
+        self.assertEqual(['Foo', 'OWS', 'Service'],
+                         list(s.keywords.all().values_list('name', flat=True)))
+        response = self.client.post(reverse('remove_service', args=(s.id,)))
+        self.assertEqual(len(Service.objects.all()), 0)
 
     @flaky(max_runs=3)
     def test_add_duplicate_remote_service_url(self):
@@ -846,17 +847,16 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             'type': service_type
         }
         form = forms.CreateServiceForm(form_data)
-        # The service sometimes is not available, therefore the form won't be valid...
-        if form.is_valid():
-            self.assertEqual(Service.objects.count(), 0)
-            self.client.post(reverse('register_service'), data=form_data)
-            self.assertEqual(Service.objects.count(), 1)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(Service.objects.count(), 0)
+        self.client.post(reverse('register_service'), data=form_data)
+        self.assertEqual(Service.objects.count(), 1)
 
-            # Try adding the same URL again
-            form = forms.CreateServiceForm(form_data)
-            self.assertEqual(Service.objects.count(), 1)
-            self.client.post(reverse('register_service'), data=form_data)
-            self.assertEqual(Service.objects.count(), 1)
+        # Try adding the same URL again
+        form = forms.CreateServiceForm(form_data)
+        self.assertEqual(Service.objects.count(), 1)
+        self.client.post(reverse('register_service'), data=form_data)
+        self.assertEqual(Service.objects.count(), 1)
 
 
 class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
@@ -934,6 +934,10 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
                 # self.selenium.find_element_by_id('option_atlantis:tiger_roads_tiger_roads').click()
                 # self.selenium.find_element_by_tag_name('form').submit()
 
+SERVICES_TYPE_MODULES = [
+    "geonode.services.tests.dummy_services_type",
+    "geonode.services.tests.dummy_services_type2",
+]
 
 class TestServiceViews(GeoNodeBaseTestSupport):
     def setUp(self):
@@ -958,3 +962,44 @@ class TestServiceViews(GeoNodeBaseTestSupport):
     def test_anonymous_user_can_see_the_services(self):
         response = self.client.get(reverse('services'))
         self.assertEqual(response.status_code, 200)
+
+    @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
+    def test_will_use_multiple_service_types_defined(self):
+        elems = parse_services_types()
+        expected = {
+            "test": {"OWS": True, "handler": "TestHandler", "label": "Test Number 1", "management_view": "path.to.view1"},
+            "test2": {"OWS": False, "handler": "TestHandler2", "label": "Test Number 2", "management_view": "path.to.view2"},
+            "test3": {"OWS": True, "handler": "TestHandler3", "label": "Test Number 3", "management_view": "path.to.view3"},
+            "test4": {"OWS": False, "handler": "TestHandler4", "label": "Test Number 4", "management_view": "path.to.view4"},
+        }
+        self.assertDictEqual(expected, elems)
+
+    @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
+    def test_will_use_multiple_service_types_defined(self):
+        elems = set(get_service_type_choices())
+        expected = {
+            ("test", "Test Number 1"),
+            ("test2", "Test Number 2"),
+            ("test3", "Test Number 3"),
+            ("test4", "Test Number 4"),
+            (enumerations.WMS, 'Web Map Service'),
+            (enumerations.GN_WMS, 'GeoNode (Web Map Service)'),
+            (enumerations.REST_MAP, 'ArcGIS REST MapServer'),
+        }
+        self.assertSetEqual(expected, elems)
+'''
+Just a dummy function required for the smoke test above
+'''
+
+class dummy_services_type:
+    services_type={
+        "test": {"OWS": True, "handler": "TestHandler", "label": "Test Number 1", "management_view": "path.to.view1"},
+        "test2": {"OWS": False, "handler": "TestHandler2", "label": "Test Number 2", "management_view": "path.to.view2"},
+    }
+
+
+class dummy_services_type2:
+    services_type={
+        "test3": {"OWS": True, "handler": "TestHandler3", "label": "Test Number 3", "management_view": "path.to.view3"},
+        "test4": {"OWS": False, "handler": "TestHandler4", "label": "Test Number 4", "management_view": "path.to.view4"},
+    }
