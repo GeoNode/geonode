@@ -214,6 +214,9 @@ def geoserver_finalize_upload(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
+            # Hide the resource until finished
+            instance.set_dirty_state()
+
             from geonode.upload.models import Upload
             upload = Upload.objects.get(import_id=import_id)
             upload.layer = instance
@@ -287,9 +290,19 @@ def geoserver_finalize_upload(
                     shutil.rmtree(tempdir)
             except Exception as e:
                 logger.warning(e)
+
+            try:
+                # Update the upload sessions
+                geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
+                geonode_upload_sessions.update(processed=True)
+                instance.upload_session = geonode_upload_sessions.first()
+            except Exception as e:
+                logger.exception(e)
             finally:
                 upload.complete = True
                 upload.save()
+                # Show the resource finally finished
+                upload.set_processing_state(Upload.STATE_PROCESSED)
 
             signals.upload_complete.send(sender=geoserver_finalize_upload, layer=instance)
 
@@ -302,7 +315,7 @@ def geoserver_finalize_upload(
     expires=3600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 0, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -331,7 +344,7 @@ def geoserver_post_save_layers(
     expires=30,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 0, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)

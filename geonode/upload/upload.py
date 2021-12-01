@@ -567,6 +567,7 @@ def srs_step(upload_session, source, target):
     Upload.objects.update_from_session(upload_session)
 
 
+@transaction.atomic
 def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     import_session = upload_session.import_session
     import_id = import_session.id
@@ -774,19 +775,16 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     if not created:
         return saved_layer
 
+    # Hide the resource until finished
+    saved_layer.set_dirty_state()
+
     # Create a new upload session
-    try:
-        with transaction.atomic():
-            geonode_upload_session, created = UploadSession.objects.get_or_create(
-                resource=saved_layer, user=user
-            )
-            geonode_upload_session.processed = False
-            geonode_upload_session.save()
-            Upload.objects.update_from_session(
-                upload_session, layer=saved_layer)
-    except IntegrityError as e:
-        Upload.objects.invalidate_from_session(upload_session)
-        raise UploadException.from_exc(_('Error configuring Layer'), e)
+    geonode_upload_session, created = UploadSession.objects.get_or_create(
+        resource=saved_layer, user=user
+    )
+    geonode_upload_session.processed = False
+    geonode_upload_session.save()
+    Upload.objects.update_from_session(upload_session, layer=saved_layer)
 
     # Add them to the upload session (new file fields are created).
     assigned_name = None

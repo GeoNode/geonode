@@ -181,12 +181,7 @@ class Upload(models.Model):
             return 50.0
         elif self.state == Upload.STATE_PROCESSED:
             return 100.0
-        elif self.complete or self.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
-            if self.layer and self.layer.processed:
-                self.set_processing_state(Upload.STATE_PROCESSED)
-                return 100.0
-            elif self.state == Upload.STATE_RUNNING:
-                return 66.0
+        elif self.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
             return 80.0
 
     def set_resume_url(self, resume_url):

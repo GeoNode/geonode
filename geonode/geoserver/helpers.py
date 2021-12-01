@@ -66,7 +66,7 @@ from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
 from geonode import GeoNodeException
 from geonode.utils import http_client
-from geonode.layers.models import Layer, UploadSession, Attribute, Style
+from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json
 from geonode.security.utils import set_geowebcache_invalidate_cache
@@ -2119,10 +2119,6 @@ def sync_instance_with_geoserver(
             sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
         return instance
 
-    geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
-    geonode_upload_sessions.update(processed=False)
-    instance.set_dirty_state()
-
     gs_resource = None
     values = None
     _tries = 0
@@ -2315,10 +2311,6 @@ def sync_instance_with_geoserver(
     except Exception as e:
         logger.exception(e)
         return None
-    finally:
-        geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
-        geonode_upload_sessions.update(processed=True)
-        instance.clear_dirty_state()
 
     # Refreshing layer links
     logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
