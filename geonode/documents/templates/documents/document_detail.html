@@ -1,5 +1,6 @@
 {% extends "documents/document_base.html" %}
 {% load i18n %}
+{% load l10n %}
 {% load dialogos_tags %}
 {% load pinax_ratings_tags %}
 {% load bootstrap_tags %}
@@ -97,7 +98,7 @@
         <h4>{% trans 'Average Rating' %}</h4>
         {% overall_rating resource "document" as document_rating %}
         {% num_ratings resource as num_votes %}
-        <div class="overall_rating" style="float:left" data-score="{{ document_rating }}"></div> ({{num_votes}})
+        <div class="overall_rating" style="float:left" data-score="{{ document_rating|unlocalize }}"></div> ({{num_votes}})
         <!-- TODO: Add display of who gave what rating based -->
       </article>
       {% endif %}
