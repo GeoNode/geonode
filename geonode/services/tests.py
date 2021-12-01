@@ -856,8 +856,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             # Try adding the same URL again
             form = forms.CreateServiceForm(form_data)
             self.assertEqual(Service.objects.count(), 1)
-            with self.assertRaises(IntegrityError):
-                self.client.post(reverse('register_service'), data=form_data)
+            self.client.post(reverse('register_service'), data=form_data)
             self.assertEqual(Service.objects.count(), 1)
 
 
