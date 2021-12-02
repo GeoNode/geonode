@@ -274,8 +274,6 @@ def _finish_harvesting(self, harvesting_session_id: int):
         f"(harvester: {harvester.pk!r} - session: {harvesting_session_id!r}) "
         f"{message}"
     )
-    harvester.status = harvester.STATUS_READY
-    harvester.save()
 
 
 @app.task(
@@ -313,9 +311,6 @@ def _handle_harvesting_error(self, task_id, *args, **kwargs):
     logger.debug(f"traceback: {result.traceback}")
     logger.debug(f"harvesting task with kwargs: {kwargs} has failed")
     session = models.AsynchronousHarvestingSession.objects.get(pk=kwargs["harvesting_session_id"])
-    harvester = session.harvester
-    harvester.status = harvester.STATUS_READY
-    harvester.save()
     details = f"state: {result.state}\nresult: {result.result}\ntraceback: {result.traceback}"
     finish_asynchronous_session(
         kwargs["harvesting_session_id"],
@@ -462,8 +457,8 @@ def _finish_harvestable_resources_update(self, refresh_session_id: int):
             refresh_session_id, session.STATUS_FINISHED_ALL_OK, final_details=message)
         if harvester.last_checked_harvestable_resources is not None:
             _delete_stale_harvestable_resources(harvester)
-    harvester.status = harvester.STATUS_READY
     now_ = timezone.now()
+    harvester.refresh_from_db()
     harvester.last_checked_harvestable_resources = now_
     harvester.last_check_harvestable_resources_message = f"{now_} - {message}"
     harvester.save()
@@ -485,7 +480,6 @@ def _handle_harvestable_resources_update_error(self, task_id, *args, **kwargs):
     result = self.app.AsyncResult(str(task_id))
     session = models.AsynchronousHarvestingSession.objects.get(pk=kwargs["refresh_session_id"])
     harvester = session.harvester
-    harvester.status = harvester.STATUS_READY
     now_ = timezone.now()
     harvester.last_checked_harvestable_resources = now_
     harvester.last_check_harvestable_resources_message = (
@@ -540,6 +534,7 @@ def finish_asynchronous_session(
         final_details: typing.Optional[str] = None,
         additional_processed_records: typing.Optional[int] = None
 ) -> None:
+    """Finish the asynchronous session and also reset the harvester status."""
     update_kwargs = {
         "ended": timezone.now(),
         "status": final_status,
@@ -549,6 +544,8 @@ def finish_asynchronous_session(
     if final_details is not None:
         update_kwargs["details"] = Concat("details", Value(f"\n{final_details}"))
     models.AsynchronousHarvestingSession.objects.filter(id=session_id).update(**update_kwargs)
+    models.Harvester.objects.filter(sessions__pk=session_id).update(
+        status=models.Harvester.STATUS_READY)
 
 
 def update_asynchronous_session(
