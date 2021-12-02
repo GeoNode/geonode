@@ -26,6 +26,8 @@ from django.contrib.sites.models import Site
 from geonode.notifications_helper import has_notifications
 from geonode.base.models import Configuration, Thesaurus
 
+from allauth.socialaccount.models import SocialApp
+
 
 def resource_urls(request):
     """Global values to pass to templates"""
@@ -200,5 +202,6 @@ def resource_urls(request):
         ],
         ADVANCED_EDIT_EXCLUDE_FIELD=getattr(settings, "ADVANCED_EDIT_EXCLUDE_FIELD", []),
         PROFILE_EDIT_EXCLUDE_FIELD=getattr(settings, "PROFILE_EDIT_EXCLUDE_FIELD", []),
+        AVAILABLE_SOCIAL_APPS_COUNT=SocialApp.objects.count(),
     )
     return defaults
