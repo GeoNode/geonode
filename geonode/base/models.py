@@ -1414,10 +1414,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def processed(self):
-        if self.state == enumerations.STATE_PROCESSED:
-            self.clear_dirty_state()
-        elif self.state != enumerations.STATE_RUNNING:
-            self.set_dirty_state()
         return not self.dirty_state
 
     @property

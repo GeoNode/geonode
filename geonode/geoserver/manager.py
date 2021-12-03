@@ -35,7 +35,6 @@ from geonode.base import enumerations
 from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
-from geonode.documents.models import Document
 from geonode.thumbs.utils import MISSING_THUMB
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
@@ -54,8 +53,7 @@ from .tasks import (
     geoserver_set_style,
     geoserver_delete_map,
     geoserver_create_style,
-    geoserver_cascading_delete,
-    geoserver_create_thumbnail)
+    geoserver_cascading_delete)
 from .helpers import (
     SpatialFilesLayerType,
     gs_catalog,
@@ -66,6 +64,7 @@ from .helpers import (
     get_spatial_files_dataset_type,
     sync_instance_with_geoserver,
     set_attributes_from_geoserver,
+    create_gs_thumbnail,
     create_geoserver_db_featurestore)
 from .security import (
     _get_gf_services,
@@ -553,9 +552,9 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return permissions
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
-        if instance and not isinstance(instance.get_real_instance(), Document):
+        if instance and (isinstance(instance.get_real_instance(), Dataset) or isinstance(instance.get_real_instance(), Map)):
             if overwrite or instance.thumbnail_url == static(MISSING_THUMB):
-                geoserver_create_thumbnail.apply((instance.id, overwrite, check_bbox, ))
+                create_gs_thumbnail(instance.get_real_instance(), overwrite=overwrite, check_bbox=check_bbox)
             return True
         return False
 
