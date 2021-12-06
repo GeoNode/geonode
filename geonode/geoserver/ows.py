@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import ast
 import logging
 
 from django.conf import settings
@@ -55,11 +55,23 @@ def _wcs_link(wcs_url, identifier, mime, srid=None, bbox=None):
         'format': mime,
         'version': '2.0.1',
     }
+
     if srid:
-        wcs_params['srs'] = srid
+        wcs_params['&outputCrs'] = srid
+
+    _wcs_params = urlencode(wcs_params)
+
     if bbox:
-        wcs_params['bbox'] = bbox
-    return wcs_url + urlencode(wcs_params)
+        _bbox = None
+        if isinstance(bbox, list):
+            _bbox = bbox
+        elif isinstance(bbox, str):
+            _bbox = ast.literal_eval(f'[{bbox}]') if all([_x in bbox for _x in ['[', ']']]) else ast.literal_eval(f'[{bbox}]')
+        if _bbox:
+            _x_axis_label = 'Long'
+            _y_axis_label = 'Lat'
+            _wcs_params += f'&subset={_x_axis_label}({_bbox[0]},{_bbox[2]})&subset={_y_axis_label}({_bbox[1]},{_bbox[3]})'
+    return f'{wcs_url}{_wcs_params}'
 
 
 def wcs_links(wcs_url, identifier, bbox=None, srid=None):

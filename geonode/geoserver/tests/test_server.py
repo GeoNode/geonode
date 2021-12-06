@@ -946,7 +946,6 @@ class LayerTests(GeoNodeBaseTestSupport):
 
         # Default Style (expect exception since we are offline)
         style = get_sld_for(gs_catalog, instance)
-        logger.error(f" style -------------------------------------------> {style}")
         if isinstance(style, str):
             style = gs_catalog.get_style(instance.name, workspace=instance.workspace)
         self.assertIsNotNone(style)
@@ -1007,6 +1006,11 @@ class LayerTests(GeoNodeBaseTestSupport):
             self.assertTrue(wcs_url in _link[3])
             logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
+            if srid:
+                self.assertTrue('outputCrs' in _link[3])
+            if bbox:
+                self.assertTrue('subset=Long' in _link[3])
+                self.assertTrue('subset=Lat' in _link[3])
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):

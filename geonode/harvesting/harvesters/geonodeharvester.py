@@ -325,12 +325,15 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                     "service": "WCS",
                     "version": "2.0.1",
                     "request": "GetCoverage",
-                    "srs": resource["srid"],
+                    "outputCrs": resource["srid"],
                     "format": "image/tiff",
-                    "coverageid": coverage_id,
-                    "bbox": f"{min_x},{min_y},{max_x},{max_y}"
+                    "coverageid": coverage_id
                 }
-                download_url = f"{wcs_url}?{urllib.parse.urlencode(query_params)}"
+                _query_params = urllib.parse.urlencode(query_params)
+                _x_axis_label = 'Long'
+                _y_axis_label = 'Lat'
+                _query_params += f'&subset={_x_axis_label}({min_x},{max_x})&subset={_y_axis_label}({min_y},{max_y})'
+                download_url = f"{wcs_url}?{_query_params}"
         return native_format, download_url, wms_url, wfs_url, wcs_url
 
     def _get_resource_link_info(
