@@ -57,7 +57,7 @@ def _wcs_link(wcs_url, identifier, mime, srid=None, bbox=None):
     }
 
     if srid:
-        wcs_params['&outputCrs'] = srid
+        wcs_params['outputCrs'] = srid
 
     _wcs_params = urlencode(wcs_params)
 
