@@ -1942,6 +1942,15 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     )
 
         elif instance.subtype == 'raster':
+            """
+            Going to create the WCS GetCoverage Default download links.
+            By providing 'None' bbox and srid, we are going to ask to the WCS to
+            skip subsetting, i.e. output the whole coverage in the netive SRS.
+
+            Notice that the "wcs_links" method also generates 2 default "outputFormats":
+             - "x-gzip"; ASCII Grid output format GZIP compressed
+             - "geotiff"; GeoTIFF which will be compressed and tiled by passing to the WCS the default query params compression='DEFLATE' and tile_size=512
+            """
             links = wcs_links(instance_ows_url,
                               instance.alternate)
 

@@ -994,9 +994,7 @@ class LayerTests(GeoNodeBaseTestSupport):
 
         # WCS Links
         wcs_links = wcs_links(f"{ogc_settings.public_url}wcs?",
-                              instance.alternate,
-                              bbox,
-                              srid)
+                              instance.alternate)
         self.assertIsNotNone(wcs_links)
         self.assertEqual(len(wcs_links), 2)
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
