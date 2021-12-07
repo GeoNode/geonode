@@ -18,13 +18,8 @@
 #########################################################################
 from lxml import etree
 
-from geonode.tests.base import (
-    GeoNodeBaseSimpleTestSupport,
-)
-
-from .. import (
-    utils,
-)
+from geonode.tests.base import GeoNodeBaseSimpleTestSupport
+from geonode.utils import get_xpath_value
 
 
 class UtilsTestCase(GeoNodeBaseSimpleTestSupport):
@@ -52,5 +47,5 @@ class UtilsTestCase(GeoNodeBaseSimpleTestSupport):
         ]
         for element, xpath_expr, nsmap, expected in fixtures:
             xml_el = etree.fromstring(element)
-            result = utils.get_xpath_value(xml_el, xpath_expr, nsmap=nsmap)
+            result = get_xpath_value(xml_el, xpath_expr, nsmap=nsmap)
             self.assertEqual(result, expected)
