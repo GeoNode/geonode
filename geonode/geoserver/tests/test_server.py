@@ -1007,10 +1007,10 @@ class LayerTests(GeoNodeBaseTestSupport):
             logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
             if srid:
-                self.assertTrue('outputCrs' in _link[3])
+                self.assertFalse('outputCrs' in _link[3])
             if bbox:
-                self.assertTrue('subset=Long' in _link[3])
-                self.assertTrue('subset=Lat' in _link[3])
+                self.assertFalse('subset=Long' in _link[3])
+                self.assertFalse('subset=Lat' in _link[3])
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
