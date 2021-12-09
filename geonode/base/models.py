@@ -2015,6 +2015,9 @@ def resourcebase_post_save(instance, *args, **kwargs):
             if license and len(license) > 0:
                 instance.license = license[0]
 
+        if instance.uuid is None or instance.uuid == '':
+            instance.uuid = str(uuid.uuid1())
+
         ResourceBase.objects.filter(id=instance.id).update(
             thumbnail_url=instance.get_thumbnail_url(),
             detail_url=instance.get_absolute_url(),
