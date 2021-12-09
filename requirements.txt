@@ -105,7 +105,7 @@ django-storages==1.12.3
 dropbox==11.25.0
 google-cloud-storage==1.43.0
 google-cloud-core==2.2.1
-boto3==1.20.15
+boto3==1.20.20
 
 # Django Caches
 python-memcached<=1.59
@@ -124,7 +124,7 @@ sherlock==0.3.2
 
 # required by monitoring
 psutil==5.8.0
-django-cors-headers==3.10.0
+django-cors-headers==3.10.1
 user-agents
 django-user-agents
 xmljson
@@ -135,7 +135,7 @@ pycountry
 # production
 uWSGI==2.0.20
 gunicorn==20.1.0
-ipython==7.30.0
+ipython==7.30.1
 docker==5.0.3
 invoke==1.6.0
 
@@ -147,8 +147,8 @@ pytest==6.2.5
 pytest-bdd==5.0.0
 splinter==0.16.0
 pytest-splinter==3.3.1
-pytest-django==4.4.0
-setuptools==59.4.0
+pytest-django==4.5.1
+setuptools==59.5.0
 pip==21.3.1
 Twisted==21.7.0
 pixelmatch==0.2.3

@@ -714,69 +714,66 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         has_time = True
 
     if upload_session.append_to_mosaic_opts:
-        try:
-            with transaction.atomic():
-                saved_dataset_filter = Dataset.objects.filter(
-                    name=upload_session.append_to_mosaic_name)
-                if not saved_dataset_filter.exists():
-                    saved_dataset = resource_manager.create(
-                        name=upload_session.append_to_mosaic_name)
-                    created = True
-                else:
-                    saved_dataset = saved_dataset_filter.get()
-                    created = False
-                saved_dataset.set_dirty_state()
-                if saved_dataset.temporal_extent_start and end:
-                    if pytz.utc.localize(
-                            saved_dataset.temporal_extent_start,
-                            is_dst=False) < end:
-                        saved_dataset.temporal_extent_end = end
-                        Dataset.objects.filter(
-                            name=upload_session.append_to_mosaic_name).update(
-                            temporal_extent_end=end)
-                    else:
-                        saved_dataset.temporal_extent_start = end
-                        Dataset.objects.filter(
-                            name=upload_session.append_to_mosaic_name).update(
-                            temporal_extent_start=end)
-        except Exception as e:
-            _log(
-                f"There was an error updating the mosaic temporal extent: {str(e)}")
+        # Is it a mosaic or a granule that must be added to an Image Mosaic?
+        saved_dataset_filter = Dataset.objects.filter(
+            name=upload_session.append_to_mosaic_name)
+        if not saved_dataset_filter.exists():
+            saved_dataset = resource_manager.create(
+                name=upload_session.append_to_mosaic_name,
+                defaults=dict(
+                    dirty_state=True,
+                    state=enumerations.STATE_READY)
+            )
+            created = True
+        else:
+            saved_dataset = saved_dataset_filter.get()
+            created = False
+        saved_dataset.set_dirty_state()
+        if saved_dataset.temporal_extent_start and end:
+            if pytz.utc.localize(
+                    saved_dataset.temporal_extent_start,
+                    is_dst=False) < end:
+                saved_dataset.temporal_extent_end = end
+                Dataset.objects.filter(
+                    name=upload_session.append_to_mosaic_name).update(
+                    temporal_extent_end=end)
+            else:
+                saved_dataset.temporal_extent_start = end
+                Dataset.objects.filter(
+                    name=upload_session.append_to_mosaic_name).update(
+                    temporal_extent_start=end)
     else:
-        try:
-            with transaction.atomic():
-                saved_dataset_filter = Dataset.objects.filter(
+        # The dataset is a standard one, no mosaic options enabled...
+        saved_dataset_filter = Dataset.objects.filter(
+            store=target.name,
+            alternate=alternate,
+            workspace=target.workspace_name,
+            name=task.layer.name)
+        if not saved_dataset_filter.exists():
+            saved_dataset = resource_manager.create(
+                dataset_uuid,
+                resource_type=Dataset,
+                defaults=dict(
                     store=target.name,
+                    subtype=get_dataset_storetype(target.store_type),
                     alternate=alternate,
                     workspace=target.workspace_name,
-                    name=task.layer.name)
-                if not saved_dataset_filter.exists():
-                    saved_dataset = resource_manager.create(
-                        dataset_uuid,
-                        resource_type=Dataset,
-                        defaults=dict(
-                            store=target.name,
-                            subtype=get_dataset_storetype(target.store_type),
-                            alternate=alternate,
-                            workspace=target.workspace_name,
-                            title=title,
-                            name=task.layer.name,
-                            abstract=abstract or _('No abstract provided'),
-                            owner=user,
-                            temporal_extent_start=start,
-                            temporal_extent_end=end,
-                            is_mosaic=is_mosaic,
-                            has_time=has_time,
-                            has_elevation=has_elevation,
-                            time_regex=upload_session.mosaic_time_regex))
-                    created = True
-                else:
-                    saved_dataset = saved_dataset_filter.get()
-                    created = False
-                saved_dataset.set_dirty_state()
-        except Exception as e:
-            Upload.objects.invalidate_from_session(upload_session)
-            raise UploadException.from_exc(_('Error configuring Dataset'), e)
+                    title=title,
+                    name=task.layer.name,
+                    abstract=abstract or _('No abstract provided'),
+                    owner=user,
+                    dirty_state=True,
+                    state=enumerations.STATE_READY,
+                    temporal_extent_start=start,
+                    temporal_extent_end=end,
+                    is_mosaic=is_mosaic,
+                    has_time=has_time,
+                    has_elevation=has_elevation,
+                    time_regex=upload_session.mosaic_time_regex))
+            created = True
+        else:
+            saved_dataset = saved_dataset_filter.get()
+            created = False
 
     assert saved_dataset
 
@@ -784,10 +781,14 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         return saved_dataset
 
     try:
-        saved_dataset.set_dirty_state()
-        with transaction.atomic():
-            Upload.objects.update_from_session(upload_session, resource=saved_dataset)
+        # Update the state from session...
+        Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
+        # Hide the dataset until the upload process finishes...
+        saved_dataset.set_dirty_state()
+
+        # Finalize the upload...
+        with transaction.atomic():
             # Set default permissions on the newly created layer and send notifications
             permissions = upload_session.permissions
 
@@ -802,20 +803,19 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
             resource_manager.set_thumbnail(
                 None, instance=saved_dataset)
-            saved_dataset.set_processing_state(enumerations.STATE_PROCESSED)
+
+            Upload.objects.filter(resource=saved_dataset.get_self_resource()).update(complete=True)
+            Upload.objects.get(resource=saved_dataset.get_self_resource()).set_processing_state(enumerations.STATE_PROCESSED)
     except Exception as e:
         saved_dataset.set_processing_state(enumerations.STATE_INVALID)
         raise GeoNodeException(e)
     finally:
-        saved_dataset.clear_dirty_state()
-
-    try:
-        logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
-        if upload_session.tempdir and os.path.exists(upload_session.tempdir):
-            shutil.rmtree(upload_session.tempdir)
-    except Exception as e:
-        logger.warning(e)
-    finally:
-        Upload.objects.filter(import_id=import_id).update(complete=True)
+        # Get rid if temporary files that have been uploaded via Upload form
+        try:
+            logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
+            if saved_dataset.processed and upload_session.tempdir and os.path.exists(upload_session.tempdir):
+                shutil.rmtree(upload_session.tempdir)
+        except Exception as e:
+            logger.warning(e)
 
     return saved_dataset

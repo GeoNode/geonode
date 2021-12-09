@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
 import gc
 import re
@@ -25,6 +26,7 @@ import base64
 import select
 import shutil
 import string
+import typing
 import logging
 import tarfile
 import datetime
@@ -33,6 +35,7 @@ import tempfile
 import traceback
 import subprocess
 
+from lxml import etree
 from osgeo import ogr
 from PIL import Image
 from io import BytesIO, StringIO
@@ -99,6 +102,9 @@ FORWARDED_HEADERS = [
     'content-type',
     'content-disposition'
 ]
+
+# explicitly disable resolving XML entities in order to prevent malicious attacks
+XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
 
 requests.packages.urllib3.disable_warnings()
 
@@ -1532,10 +1538,16 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     )
 
         elif instance.subtype == 'raster':
+            """
+            Going to create the WCS GetCoverage Default download links.
+            By providing 'None' bbox and srid, we are going to ask to the WCS to
+            skip subsetting, i.e. output the whole coverage in the netive SRS.
+
+            Notice that the "wcs_links" method also generates 1 default "outputFormat":
+             - "geotiff"; GeoTIFF which will be compressed and tiled by passing to the WCS the default query params compression='DEFLATE' and tile_size=512
+            """
             links = wcs_links(instance_ows_url,
-                              instance.alternate,
-                              bbox,
-                              srid)
+                              instance.alternate)
 
         for ext, name, mime, wcs_url in links:
             if (Link.objects.filter(resource=instance.resourcebase_ptr,
@@ -1869,3 +1881,14 @@ def build_absolute_uri(url):
     if url and 'http' not in url:
         url = urljoin(settings.SITEURL, url)
     return url
+
+
+def get_xpath_value(
+        element: etree.Element,
+        xpath_expression: str,
+        nsmap: typing.Optional[dict] = None
+) -> typing.Optional[str]:
+    if not nsmap:
+        nsmap = element.nsmap
+    values = element.xpath(f"{xpath_expression}//text()", namespaces=nsmap)
+    return "".join(values).strip() or None

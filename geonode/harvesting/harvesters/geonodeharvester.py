@@ -42,7 +42,7 @@ from .. import (
     models,
     resourcedescriptor,
 )
-from ..utils import (
+from geonode.utils import (
     XML_PARSER,
     get_xpath_value
 )
@@ -295,6 +295,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         wcs_url = None
         download_url = None
         native_format = None
+        from geonode.geoserver.ows import _wfs_link, _wcs_link
         for link_info in resource.get("links", []):
             type_ = link_info["link_type"]
             if type_ == "OGC:WMS":
@@ -302,16 +303,17 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             elif type_ == "OGC:WFS":
                 wfs_url = link_info["url"]
                 native_format = "shapefile"
-                query_params = {
-                    "service": "WFS",
-                    "version": "1.0.0",
-                    "request": "GetFeature",
-                    "typename": resource["name"],
-                    "outputformat": "SHAPE-ZIP",
-                    "srs": resource["srid"],
-                    "format_options": "charset:UTF-8",
-                }
-                download_url = f"{wfs_url}?{urllib.parse.urlencode(query_params)}"
+
+                download_url = _wfs_link(
+                    wfs_url,
+                    resource["name"],
+                    "SHAPE-ZIP",
+                    {
+                        "format_options": "charset:UTF-8"
+                    },
+                    srid=resource["srid"],
+                    bbox=None
+                )
             elif type_ == "OGC:WCS":
                 wcs_url = link_info["url"]
                 native_format = "geotiff"
@@ -320,17 +322,15 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                 max_x = max([i[0] for i in coords])
                 min_y = min([i[1] for i in coords])
                 max_y = max([i[1] for i in coords])
-                coverage_id = resource["alternate"].replace(":", "__")
-                query_params = {
-                    "service": "WCS",
-                    "version": "2.0.1",
-                    "request": "GetCoverage",
-                    "srs": resource["srid"],
-                    "format": "image/tiff",
-                    "coverageid": coverage_id,
-                    "bbox": f"{min_x},{min_y},{max_x},{max_y}"
-                }
-                download_url = f"{wcs_url}?{urllib.parse.urlencode(query_params)}"
+
+                download_url = _wcs_link(
+                    wcs_url,
+                    resource["alternate"],
+                    "image/tiff",
+                    srid=resource["srid"],
+                    bbox=[min_x, min_y, max_x, max_y],
+                    compression="DEFLATE",
+                    tile_size=512)
         return native_format, download_url, wms_url, wfs_url, wcs_url
 
     def _get_resource_link_info(
