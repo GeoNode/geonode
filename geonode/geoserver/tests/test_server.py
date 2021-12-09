@@ -978,11 +978,9 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         # WCS Links
         wcs_links = wcs_links(f"{ogc_settings.public_url}wcs?",
-                              instance.alternate,
-                              bbox,
-                              srid)
+                              instance.alternate)
         self.assertIsNotNone(wcs_links)
-        self.assertEqual(len(wcs_links), 2)
+        self.assertEqual(len(wcs_links), 1)
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
         identifier = urlencode({'coverageid': instance.alternate.replace(':', '__', 1)})
         for _link in wcs_links:
@@ -990,6 +988,11 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(wcs_url in _link[3])
             logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
+            if srid:
+                self.assertFalse('outputCrs' in _link[3])
+            if bbox:
+                self.assertFalse('subset=Long' in _link[3])
+                self.assertFalse('subset=Lat' in _link[3])
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
