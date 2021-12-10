@@ -2022,7 +2022,8 @@ def resourcebase_post_save(instance, *args, **kwargs):
             thumbnail_url=instance.get_thumbnail_url(),
             detail_url=instance.get_absolute_url(),
             csw_insert_date=now(),
-            license=instance.license)
+            license=instance.license,
+            uuid=instance.uuid)
         instance.refresh_from_db()
     except Exception:
         tb = traceback.format_exc()
