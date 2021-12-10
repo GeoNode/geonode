@@ -47,3 +47,5 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(gep_app.thumbnail_url, GeoApp.objects.get(id=gep_app.id).thumbnail_url)
         self.assertEqual(GeoApp.objects.get(id=gep_app.id).title, 'New title')
+        #   Check uuid is populate
+        self.assertTrue(GeoApp.objects.get(id=gep_app.id).uuid)
