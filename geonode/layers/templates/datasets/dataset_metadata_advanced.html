@@ -98,12 +98,15 @@
           {% block dataset_fields %}
           {% for field in dataset_form %}
             {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' and field.name not in ADVANCED_EDIT_EXCLUDE_FIELD  %}
+            {% if field.name == 'featured' and not user.is_superuser %}
+            {% else %}
             <div class="form_item_spacing">
               <div {% if field.auto_id in UI_MANDATORY_FIELDS %} id='adv_req' {% else %}{% endif %} >
                 <span><label for="{{ field.auto_id }}">{{ field.label }}</label></span>
                 {{ field }}
                 </div>
             </div>
+            {% endif %}
             {% endif %}
           {% endfor %}
           {% endblock dataset_fields %}
