@@ -122,6 +122,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         }
         response = self.client.post(url, data=data, format='json')
         self.assertEqual(response.status_code, 201)  # 201 - Created
+        #   Check uuid is populate
+        app = GeoApp.objects.last()
+        self.assertTrue(app.uuid)
 
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
