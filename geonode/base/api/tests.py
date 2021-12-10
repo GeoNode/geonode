@@ -549,7 +549,7 @@ class BaseApiTests(APITestCase):
                         'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'view'
+                        'permissions': 'download'
                     },
                     {
                         'id': contributors_group.id,
@@ -637,7 +637,7 @@ class BaseApiTests(APITestCase):
                         'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'view'
+                        'permissions': 'download'
                     },
                     {
                         'id': contributors_group.id,
@@ -821,7 +821,8 @@ class BaseApiTests(APITestCase):
             {
                 "perms": {
                     "anonymous": [
-                        "view_resourcebase"
+                        "view_resourcebase",
+                        "download_resourcebase"
                     ],
                     "default": [
                         "change_resourcebase_metadata",
@@ -849,7 +850,8 @@ class BaseApiTests(APITestCase):
                 "compact": {
                     "anonymous": [
                         "none",
-                        "view"
+                        "view",
+                        "download"
                     ],
                     "default": [
                         "view",
@@ -873,7 +875,8 @@ class BaseApiTests(APITestCase):
             {
                 "perms": {
                     "anonymous": [
-                        "view_resourcebase"
+                        "view_resourcebase",
+                        "download_resourcebase"
                     ],
                     "default": [
                         "change_resourcebase_metadata",
@@ -897,7 +900,8 @@ class BaseApiTests(APITestCase):
                 "compact": {
                     "anonymous": [
                         "none",
-                        "view"
+                        "view",
+                        "download"
                     ],
                     "default": [
                         "view",
@@ -921,7 +925,7 @@ class BaseApiTests(APITestCase):
             {
                 "perms": {
                     "anonymous": [
-                        "view_resourcebase"
+                        "view_resourcebase",
                     ],
                     "default": [
                         "change_resourcebase_metadata",
@@ -943,7 +947,7 @@ class BaseApiTests(APITestCase):
                 "compact": {
                     "anonymous": [
                         "none",
-                        "view"
+                        "view",
                     ],
                     "default": [
                         "view",

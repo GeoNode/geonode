@@ -25,6 +25,7 @@ from PIL import Image, UnidentifiedImageError
 from typing import List, Union, Optional, Tuple
 
 from django.conf import settings
+from django.templatetags.static import static
 from django.utils.module_loading import import_string
 
 from geonode.maps.models import Map, MapLayer
@@ -33,7 +34,6 @@ from geonode.utils import OGC_Servers_Handler
 from geonode.utils import get_dataset_name, get_dataset_workspace
 from geonode.thumbs import utils
 from geonode.thumbs.exceptions import ThumbnailError
-
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ def create_thumbnail(
 
     # handle custom, uploaded thumbnails, which may have different extensions from the default thumbnail
     thumbnail_exists = False
-    if instance.thumbnail_url and instance.thumbnail_url != utils.MISSING_THUMB:
+    if instance.thumbnail_url and instance.thumbnail_url != static(utils.MISSING_THUMB):
         thumbnail_exists = utils.thumb_exists(instance.thumbnail_url.rsplit('/')[-1])
 
     if (thumbnail_exists or utils.thumb_exists(default_thumbnail_name)) and not overwrite:
@@ -109,7 +109,7 @@ def create_thumbnail(
     is_map_with_datasets = True
 
     if isinstance(instance, Map):
-        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(ows_url__isnull=True).exclude(ows_url__exact='').count() > 0
+        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(dataset=None).count() > 0
     if bbox:
         # make sure BBOX is provided with the CRS in a correct format
         source_crs = bbox[-1]
@@ -166,7 +166,7 @@ def create_thumbnail(
                 )
             )
         except Exception as e:
-            logger.error(f"Exception occurred while fetching partial thumbnail for {instance.name}.")
+            logger.error(f"Exception occurred while fetching partial thumbnail for {instance.title}.")
             logger.exception(e)
 
     if not partial_thumbs and is_map_with_datasets:

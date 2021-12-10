@@ -93,13 +93,12 @@ class GeoAppsApiTests(APITestCase):
         # Bobby
         self.assertTrue(self.client.login(username='bobby', password='bob'))
         # Create
-        url = reverse('geoapps-list')
+        url = f"{reverse('geoapps-list')}?include[]=data"
         data = {
-            "geoapp": {
-                "name": "Test Create",
-                "title": "Test Create",
-                "owner": "bobby"
-            }
+            "name": "Test Create",
+            "title": "Test Create",
+            "resource_type": "geostory",
+            "owner": "bobby"
         }
         response = self.client.post(url, data=data, format='json')
         self.assertEqual(response.status_code, 201)  # 201 - Created
@@ -114,6 +113,7 @@ class GeoAppsApiTests(APITestCase):
         # Update: PATCH
         url = reverse('geoapps-detail', kwargs={'pk': self.gep_app.pk})
         data = {
+            "resource_type": "geostory",
             "blob": {
                 "test_data": {
                     "test": [
@@ -124,7 +124,7 @@ class GeoAppsApiTests(APITestCase):
                 }
             }
         }
-        response = self.client.patch(url, data=json.dumps(data), format='json')
+        response = self.client.patch(url, data=json.dumps(data), content_type="application/json")
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(
@@ -133,6 +133,10 @@ class GeoAppsApiTests(APITestCase):
         self.assertEqual(len(response.data), 1)
         # Pagination
         self.assertTrue('data' in response.data['geoapp'])
+        self.assertEqual(
+            response.data['geoapp']['resource_type'],
+            'geostory'
+        )
         self.assertEqual(
             response.data['geoapp']['data'],
             {

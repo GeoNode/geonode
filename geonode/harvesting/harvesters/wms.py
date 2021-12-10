@@ -45,7 +45,7 @@ from geonode.layers.enumerations import GXP_PTYPES
 from geonode.thumbs.thumbnails import create_thumbnail
 
 from .. import models
-from ..utils import (
+from geonode.utils import (
     XML_PARSER,
     get_xpath_value,
 )

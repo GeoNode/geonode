@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
 import gc
 import re
@@ -27,6 +28,7 @@ import base64
 import select
 import shutil
 import string
+import typing
 import logging
 import tarfile
 import datetime
@@ -35,6 +37,7 @@ import tempfile
 import traceback
 import subprocess
 
+from lxml import etree
 from osgeo import ogr
 from PIL import Image
 from io import BytesIO, StringIO
@@ -53,7 +56,7 @@ from django.db.models import signals
 from django.utils.http import is_safe_url
 from django.apps import apps as django_apps
 from django.middleware.csrf import get_token
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -104,6 +107,9 @@ FORWARDED_HEADERS = [
     'content-type',
     'content-disposition'
 ]
+
+# explicitly disable resolving XML entities in order to prevent malicious attacks
+XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
 
 requests.packages.urllib3.disable_warnings()
 
@@ -1046,7 +1052,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     obj = get_object_or_404(model, **query)
     obj_to_check = obj.get_self_resource()
 
-    from guardian.shortcuts import assign_perm, get_groups_with_perms
+    from guardian.shortcuts import get_groups_with_perms
     from geonode.groups.models import GroupProfile
 
     groups = get_groups_with_perms(obj_to_check,
@@ -1071,48 +1077,6 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                     obj_group_members.append(user)
             except GroupProfile.DoesNotExist:
                 pass
-
-    if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
-        is_admin = False
-        is_manager = False
-        is_owner = user == obj_to_check.owner
-        if user and user.is_authenticated:
-            is_admin = user.is_superuser if user else False
-            try:
-                is_manager = user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-        if (not obj_to_check.is_approved):
-            if not user or user.is_anonymous:
-                raise Http404
-            elif not is_admin:
-                if is_manager and user in obj_group_managers:
-                    if (not user.has_perm('publish_resourcebase', obj_to_check)) and (
-                        not user.has_perm('view_resourcebase', obj_to_check)) and (
-                            not user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
-                                not is_owner and not settings.ADMIN_MODERATE_UPLOADS):
-                        pass
-                    else:
-                        assign_perm(
-                            'view_resourcebase', user, obj_to_check)
-                        assign_perm(
-                            'publish_resourcebase',
-                            user,
-                            obj_to_check)
-                        assign_perm(
-                            'change_resourcebase_metadata',
-                            user,
-                            obj_to_check)
-                        assign_perm(
-                            'download_resourcebase',
-                            user,
-                            obj_to_check)
-
-                        if is_owner:
-                            assign_perm(
-                                'change_resourcebase', user, obj_to_check)
-                            assign_perm(
-                                'delete_resourcebase', user, obj_to_check)
 
     allowed = True
     if permission.split('.')[-1] in ['change_dataset_data',
@@ -1978,10 +1942,16 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     )
 
         elif instance.subtype == 'raster':
+            """
+            Going to create the WCS GetCoverage Default download links.
+            By providing 'None' bbox and srid, we are going to ask to the WCS to
+            skip subsetting, i.e. output the whole coverage in the netive SRS.
+
+            Notice that the "wcs_links" method also generates 1 default "outputFormat":
+             - "geotiff"; GeoTIFF which will be compressed and tiled by passing to the WCS the default query params compression='DEFLATE' and tile_size=512
+            """
             links = wcs_links(instance_ows_url,
-                              instance.alternate,
-                              bbox,
-                              srid)
+                              instance.alternate)
 
         for ext, name, mime, wcs_url in links:
             if (Link.objects.filter(resource=instance.resourcebase_ptr,
@@ -2315,3 +2285,14 @@ def build_absolute_uri(url):
     if url and 'http' not in url:
         url = urljoin(settings.SITEURL, url)
     return url
+
+
+def get_xpath_value(
+        element: etree.Element,
+        xpath_expression: str,
+        nsmap: typing.Optional[dict] = None
+) -> typing.Optional[str]:
+    if not nsmap:
+        nsmap = element.nsmap
+    values = element.xpath(f"{xpath_expression}//text()", namespaces=nsmap)
+    return "".join(values).strip() or None

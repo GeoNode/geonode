@@ -188,8 +188,10 @@ class DocumentUploadView(CreateView):
 
         if settings.ADMIN_MODERATE_UPLOADS:
             self.object.is_approved = False
+            self.object.was_approved = False
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
+            self.object.was_published = False
 
         resource_manager.set_permissions(
             None, instance=self.object, permissions=form.cleaned_data["permissions"], created=True
