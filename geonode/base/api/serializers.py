@@ -326,7 +326,7 @@ class ResourceBaseSerializer(
 
         self.fields['pk'] = serializers.CharField(read_only=True)
         self.fields['uuid'] = serializers.CharField(read_only=True)
-        self.fields['resource_type'] = serializers.CharField(read_only=True)
+        self.fields['resource_type'] = serializers.CharField(required=False)
         self.fields['polymorphic_ctype_id'] = serializers.CharField(read_only=True)
         self.fields['owner'] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True, required=False)
         self.fields['poc'] = ContactRoleField('poc', read_only=True)
@@ -440,6 +440,7 @@ class ResourceBaseSerializer(
             "thumbnail_url": {"required": False},
             "blob": {"required": False, "write_only": True},
             "owner": {"required": False},
+            "resource_type": {"required": False}
         }
 
     def to_internal_value(self, data):

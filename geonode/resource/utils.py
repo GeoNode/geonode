@@ -193,8 +193,17 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
         defaults['date'] = instance.date or timezone.now()
 
     to_update = {}
+    for _key in ('name', ):
+        if hasattr(instance, _key):
+            if _key in defaults:
+                to_update[_key] = defaults.pop(_key)
+            else:
+                to_update[_key] = getattr(instance, _key)
+        elif _key in defaults:
+            defaults.pop(_key)
+
     if isinstance(instance, Dataset):
-        for _key in ('name', 'workspace', 'store', 'subtype', 'alternate', 'typename'):
+        for _key in ('workspace', 'store', 'subtype', 'alternate', 'typename'):
             if hasattr(instance, _key):
                 if _key in defaults:
                     to_update[_key] = defaults.pop(_key)
