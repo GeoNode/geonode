@@ -17,7 +17,6 @@
 #
 #########################################################################
 import json
-import re
 import logging
 
 from io import BytesIO
