@@ -20,7 +20,7 @@
 from django.core.management.base import BaseCommand
 
 from geonode.maps.models import Map
-from geonode.maps.utils import fix_baselayers
+from geonode.maps.utils.layers import fix_baselayers
 
 
 class Command(BaseCommand):

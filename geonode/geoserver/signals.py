@@ -22,7 +22,7 @@ import logging
 from deprecated import deprecated
 from geoserver.layer import Layer as GsLayer
 
-from django.conf import settings
+from django.db.models import Q
 from django.templatetags.static import static
 
 # use different name to avoid module clash
@@ -32,7 +32,9 @@ from geonode.geoserver.helpers import (
     gs_catalog,
     ogc_server_settings)
 from geonode.geoserver.tasks import geoserver_create_thumbnail
+from geonode.layers.models import Dataset
 from geonode.services.enumerations import CASCADED
+from geonode.thumbs.utils import MISSING_THUMB
 
 from . import BACKEND_PACKAGE
 from .tasks import geoserver_cascading_delete, geoserver_post_save_datasets
@@ -95,13 +97,25 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
         else:
             raise e
 
+    # Set dataset
+    if instance.dataset is None:
+        dataset_queryset = Dataset.objects.filter(Q(alternate=instance.name) | Q(name=instance.name))
+        if instance.local and instance.store:
+            dataset_queryset = dataset_queryset.filter(store=instance.store)
+        elif instance.ows_url:
+            dataset_queryset = dataset_queryset.filter(remote_service__base_url=instance.ows_url)
+        try:
+            instance.dataset = dataset_queryset.get()
+        except Dataset.DoesNotExist:
+            pass
+
 
 @deprecated(version='3.2.1', reason="Use direct calls to the ReourceManager.")
 def geoserver_post_save_map(instance, sender, created, **kwargs):
     instance.set_missing_info()
     if not created:
         if not instance.thumbnail_url or \
-                instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
+                instance.thumbnail_url == static(MISSING_THUMB):
             logger.debug(f"... Creating Thumbnail for Map [{instance.title}]")
             geoserver_create_thumbnail.apply_async((instance.id, False, True, ))
 
@@ -118,7 +132,7 @@ def geoserver_set_thumbnail(instance, **kwargs):
                 'thumbnail_url' in kwargs['update_fields']:
             _recreate_thumbnail = True
         if not instance.thumbnail_url or \
-                instance.thumbnail_url == static(settings.MISSING_THUMBNAIL) or \
+                instance.thumbnail_url == static(MISSING_THUMB) or \
                 is_monochromatic_image(instance.thumbnail_url):
             _recreate_thumbnail = True
         if _recreate_thumbnail:

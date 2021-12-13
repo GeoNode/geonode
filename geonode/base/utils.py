@@ -36,7 +36,7 @@ from guardian.shortcuts import get_perms, remove_perm, assign_perm
 
 from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase, Link, Configuration
-from geonode.base.thumb_utils import (
+from geonode.thumbs.utils import (
     get_thumbs,
     remove_thumb)
 from geonode.utils import get_legend_url
@@ -49,7 +49,7 @@ _names = ['Zipped Shapefile', 'Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CS
           'Dublin Core', 'ebRIM', 'FGDC', 'ISO', 'ISO with XSL']
 
 thumb_filename_regex = re.compile(
-    r"^(document|map|layer)-([a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12})-thumb\.png$")
+    r"^(document|map|layer)-([a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12})-thumb-([a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12})\.png$")
 
 
 def get_thumb_uuid(filename):

@@ -126,6 +126,7 @@ class MapsApiTests(APITestCase):
             "abstract": resource.abstract,
             "data": DUMMY_MAPDATA,
             "id": resource.id,
+            "maplayers": DUMMY_MAPLAYERS_DATA,
         }
         self.client.login(username="admin", password="admin")
         response = self.client.patch(f"{url}?include[]=data", data=data, format="json")
@@ -150,6 +151,7 @@ class MapsApiTests(APITestCase):
         data = {
             "title": "Some created map",
             "data": DUMMY_MAPDATA,
+            "maplayers": DUMMY_MAPLAYERS_DATA,
         }
         self.client.login(username="admin", password="admin")
         response = self.client.post(f"{url}?include[]=data", data=data, format="json")
@@ -329,3 +331,12 @@ DUMMY_MAPDATA = {
     },
     "mapInfoConfiguration": {},
 }
+
+DUMMY_MAPLAYERS_DATA = [
+    {
+        "extra_params": {"msId": "Stamen.Watercolor__0"},
+        "current_style": "some-style-first-layer",
+        "styles": ["some-style-first-layer", "some-other-style-first-layer"],
+        "name": "geonode:CA",
+    }
+]

@@ -35,7 +35,7 @@ from geonode.base import enumerations
 from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
-from geonode.documents.models import Document
+from geonode.thumbs.utils import MISSING_THUMB
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
 from geonode.groups.conf import settings as groups_settings
@@ -53,8 +53,7 @@ from .tasks import (
     geoserver_set_style,
     geoserver_delete_map,
     geoserver_create_style,
-    geoserver_cascading_delete,
-    geoserver_create_thumbnail)
+    geoserver_cascading_delete)
 from .helpers import (
     SpatialFilesLayerType,
     gs_catalog,
@@ -65,6 +64,7 @@ from .helpers import (
     get_spatial_files_dataset_type,
     sync_instance_with_geoserver,
     set_attributes_from_geoserver,
+    create_gs_thumbnail,
     create_geoserver_db_featurestore)
 from .security import (
     _get_gf_services,
@@ -126,14 +126,16 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
         _resource = resource_type.objects.get(uuid=uuid)
         if resource_type == Dataset:
-            return sync_instance_with_geoserver(_resource.id)
+            _synced_resource = sync_instance_with_geoserver(_resource.id)
+            _resource = _synced_resource or _resource
         return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
                vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
         if instance:
             if isinstance(instance.get_real_instance(), Dataset):
-                return sync_instance_with_geoserver(instance.id)
+                _synced_resource = sync_instance_with_geoserver(instance.id)
+                instance = _synced_resource or instance
         return instance
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
@@ -399,7 +401,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
                         _disable_cache = []
                         _owner = owner or instance.owner
-                        if permissions is not None:
+                        if permissions is not None and len(permissions):
                             if not created:
                                 purge_geofence_dataset_rules(instance.get_self_resource())
 
@@ -476,17 +478,15 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                     _disable_cache.append(_disable_dataset_cache)
 
                             # Anonymous
-                            perms = ["view_resourcebase"]
                             if anonymous_can_view:
-                                sync_geofence_with_guardian(instance, perms, user=None, group=None)
-                                gf_services = _get_gf_services(instance, perms)
+                                sync_geofence_with_guardian(instance, VIEW_PERMISSIONS, user=None, group=None)
+                                gf_services = _get_gf_services(instance, VIEW_PERMISSIONS)
                                 _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                                 _disable_cache.append(_disable_dataset_cache)
 
-                            perms = ["download_resourcebase"]
                             if anonymous_can_download:
-                                sync_geofence_with_guardian(instance, perms, user=None, group=None)
-                                gf_services = _get_gf_services(instance, perms)
+                                sync_geofence_with_guardian(instance, DOWNLOAD_PERMISSIONS, user=None, group=None)
+                                gf_services = _get_gf_services(instance, DOWNLOAD_PERMISSIONS)
                                 _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
                                 _disable_cache.append(_disable_dataset_cache)
 
@@ -504,25 +504,25 @@ class GeoServerResourceManager(ResourceManagerInterface):
             return False
         return True
 
-    def set_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, approved: bool = False, published: bool = False) -> bool:
+    def get_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> dict:
         instance = instance or ResourceManager._get_instance(uuid)
 
         try:
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                 if isinstance(instance.get_real_instance(), Dataset):
                     _disable_cache = []
-                    gf_services = _get_gf_services(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
-                    if approved:
+                    gf_services = _get_gf_services(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
+                    if instance.is_approved:
                         # Set the GeoFence Rules (user = None)
                         _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
                         _members_group_group = Group.objects.get(name=_members_group_name)
-                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
-                        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, _members_group_group, gf_services)
+                        sync_geofence_with_guardian(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
+                        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance.get_real_instance(), None, _members_group_group, gf_services)
                         _disable_cache.append(_disable_dataset_cache)
-                    if published:
+                    if instance.is_published:
                         # Set the GeoFence Rules (user = None)
-                        sync_geofence_with_guardian(instance, VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
-                        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, None, None, gf_services)
+                        sync_geofence_with_guardian(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
+                        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance.get_real_instance(), None, None, gf_services)
                         _disable_cache.append(_disable_dataset_cache)
 
                     if _disable_cache and any(_disable_cache):
@@ -549,13 +549,12 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         pass
         except Exception as e:
             logger.exception(e)
-            return False
-        return True
+        return permissions
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
-        if instance and not isinstance(instance.get_real_instance(), Document):
-            if overwrite or instance.thumbnail_url == static(settings.MISSING_THUMBNAIL):
-                geoserver_create_thumbnail.apply((instance.id, overwrite, check_bbox, ))
+        if instance and (isinstance(instance.get_real_instance(), Dataset) or isinstance(instance.get_real_instance(), Map)):
+            if overwrite or instance.thumbnail_url == static(MISSING_THUMB):
+                create_gs_thumbnail(instance.get_real_instance(), overwrite=overwrite, check_bbox=check_bbox)
             return True
         return False
 

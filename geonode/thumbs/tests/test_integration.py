@@ -43,6 +43,7 @@ from geonode.utils import http_client, DisableDjangoSignals
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
 from geonode.layers.models import Dataset
+from geonode.thumbs.utils import MISSING_THUMB
 from geonode.thumbs.background import (
     OSMTileBackground,
     WikiMediaTileBackground,
@@ -57,7 +58,7 @@ from geonode.base.populate_test_data import (
 
 logger = logging.getLogger(__name__)
 
-missing_thumbnail_url = static(settings.MISSING_THUMBNAIL)
+missing_thumbnail_url = static(MISSING_THUMB)
 
 LOCAL_TIMEOUT = 300
 EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"

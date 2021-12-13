@@ -321,7 +321,7 @@ class Dataset(ResourceBase):
     @classproperty
     def allowed_permissions(cls):
         return {
-            "anonymous": VIEW_PERMISSIONS,
+            "anonymous": VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS,
             "default": OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS + DATASET_ADMIN_PERMISSIONS,
             groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS + DATASET_ADMIN_PERMISSIONS
         }

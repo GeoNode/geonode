@@ -18,13 +18,17 @@
 #########################################################################
 
 import warnings
+
 from django.conf import settings
-from geonode import get_version
-from geonode.catalogue import default_catalogue_backend
 from django.contrib.sites.models import Site
 
+from geonode import get_version
+from geonode.catalogue import default_catalogue_backend
 from geonode.notifications_helper import has_notifications
 from geonode.base.models import Configuration, Thesaurus
+from geonode.utils import get_geonode_app_types
+
+from allauth.socialaccount.models import SocialApp
 
 
 def resource_urls(request):
@@ -200,5 +204,7 @@ def resource_urls(request):
         ],
         ADVANCED_EDIT_EXCLUDE_FIELD=getattr(settings, "ADVANCED_EDIT_EXCLUDE_FIELD", []),
         PROFILE_EDIT_EXCLUDE_FIELD=getattr(settings, "PROFILE_EDIT_EXCLUDE_FIELD", []),
+        AVAILABLE_SOCIAL_APPS_COUNT=SocialApp.objects.count(),
+        GEONODE_APPS_TYPES=get_geonode_app_types(),
     )
     return defaults

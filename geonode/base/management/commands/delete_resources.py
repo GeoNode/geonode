@@ -144,7 +144,7 @@ class Command(BaseCommand):
 
             for map in maps_to_delete:
                 print(f'Deleting map "{map.title}" with ID: {map.id}')
-                map.dataset_set.all().delete()
+                map.maplayers.all().delete()
                 map.delete()
 
         if document_filters:

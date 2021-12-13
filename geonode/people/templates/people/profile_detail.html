@@ -142,17 +142,19 @@
       {% if not READ_ONLY_MODE %}
         <li class="list-group-item"><a href="{% url "profile_edit" user.username %}"><i class="fa fa-edit"></i> {% trans "Edit profile" %}</a></li>
       {% endif %}
-      <li class="list-group-item"><a href="{% url "socialaccount_connections" %}"><i class="fa fa-sign-in"></i> {% trans "Connected social accounts" %}</a></li>
-      <li class="list-group-item"><a href="{% url "account_email" %}"><i class="fa fa-envelope-o"></i> {% trans "Associated e-mails" %}</a></li>
+      {% if not AVAILABLE_SOCIAL_APPS_COUNT == 0 %}
+        <li class="list-group-item"><a href="{% url "socialaccount_connections" %}"><i class="fa fa-sign-in"></i> {% trans "Connected social accounts" %}</a></li>
+      {% endif %}
+        <li class="list-group-item"><a href="{% url "account_email" %}"><i class="fa fa-envelope-o"></i> {% trans "Associated e-mails" %}</a></li>
       {% if not READ_ONLY_MODE %}
         <li class="list-group-item"><a href="{% url "account_change_password" %}"><i class="fa fa-lock"></i> {% trans "Set/Change password" %}</a></li>
       {% endif %}
     </ul>
     <ul class="list-group">
       {% if "add_resource" in user.perms %}
-        <li class="list-group-item"><a href="{% url "dataset_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
+        <li class="list-group-item"><a href="{% url "dataset_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new datasets" %}</a></li>
         {% if USE_GEOSERVER and CREATE_LAYER %}
-          <li class="list-group-item"><a href="{% url "dataset_create" %}"><i class="fa fa-map-o"></i> {% trans "Create a new layer" %}</a></li>
+          <li class="list-group-item"><a href="{% url "dataset_create" %}"><i class="fa fa-map-o"></i> {% trans "Create a new dataset" %}</a></li>
         {% endif %}
         <li class="list-group-item"><a href="{% url "document_upload" %}"><i class="fa fa-file"></i> {% trans "Upload new document" %}</a></li>
       {% endif %}

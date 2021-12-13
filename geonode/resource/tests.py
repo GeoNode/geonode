@@ -264,11 +264,6 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertTrue(self.rm.set_permissions(map.uuid, instance=map, permissions=perm_spec))
         self.assertFalse(norman.has_perm('download_resourcebase', map.get_self_resource()))
 
-    def test_set_workflow_permissions(self):
-        dt = create_single_dataset("test_workflow_dataset")
-        self.assertFalse(self.rm.set_workflow_permissions('invalid_uuid', instance=None))
-        self.assertTrue(self.rm.set_workflow_permissions(dt.uuid, instance=dt, approved=True, published=True))
-
     def test_set_thumbnail(self):
         doc = create_single_doc("test_thumb_doc")
         dt = create_single_dataset("test_thumb_dataset")

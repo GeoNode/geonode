@@ -52,6 +52,7 @@ from geonode.base.models import HierarchicalKeyword
 from geonode.base.bbox_utils import filter_bbox
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
+from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.utils import get_visible_resources
 from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
@@ -159,7 +160,7 @@ class CommonModelApi(ModelResource):
         if 'type__in' in filters and (filters['type__in'] in FILTER_TYPES.keys() or filters['type__in'] in LAYER_TYPES):
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'app_type__in' in filters:
-            orm_filters.update({'polymorphic_ctype__model': filters['app_type__in'].lower()})
+            orm_filters.update({'resource_type': filters['app_type__in'].lower()})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
         orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'
@@ -566,7 +567,7 @@ class CommonModelApi(ModelResource):
                 formatted_obj['site_url'] = settings.SITEURL
 
             if formatted_obj['thumbnail_url'] and len(formatted_obj['thumbnail_url']) == 0:
-                formatted_obj['thumbnail_url'] = static(settings.MISSING_THUMBNAIL)
+                formatted_obj['thumbnail_url'] = static(MISSING_THUMB)
 
             formatted_obj['owner__username'] = obj.owner.username
             formatted_obj['owner_name'] = obj.owner.get_full_name() or obj.owner.username

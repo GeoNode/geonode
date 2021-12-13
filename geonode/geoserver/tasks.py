@@ -293,7 +293,7 @@ def geoserver_delete_map(self, object_id):
             except Map.DoesNotExist:
                 return
 
-            map_obj.dataset_set.all().delete()
+            map_obj.maplayers.all().delete()
             map_obj.delete()
 
 
