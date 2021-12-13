@@ -20,8 +20,9 @@
 import re
 import uuid
 
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch, PropertyMock, MagicMock
 from django.conf import settings
+from django.contrib.gis.geos import Polygon
 
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
@@ -207,3 +208,18 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
         self.assertEqual(locations, expected_locations, "Expected calculated locations to match pre-computed.")
+
+    def test_create_map_thumbnail_using_ll_bbox_polygon(self):
+        map = Map.objects.get(title_en="theaters_nyc_map")
+
+        with patch("geonode.thumbs.thumbnails._datasets_locations") as _mck:
+            _mck.return_value = [MagicMock(), MagicMock()]
+            if not map.ll_bbox_polygon:
+                thumbnails.create_thumbnail(map, overwrite=True)
+                _mck.assert_called_with(map, compute_bbox=True, target_crs="EPSG:3857")
+
+            ll_bbox_polygon = Polygon.from_bbox((0, 22, 0, 22))
+            map.ll_bbox_polygon = ll_bbox_polygon
+            map.save()
+            thumbnails.create_thumbnail(map, overwrite=True)
+            _mck.assert_called_with(map, compute_bbox=False, target_crs="EPSG:3857")
