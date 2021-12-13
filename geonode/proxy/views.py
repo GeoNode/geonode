@@ -381,7 +381,8 @@ def download(request, resourceid, sender=Layer):
                                 headers=headers,
                                 timeout=TIMEOUT,
                                 user=request.user)
-                            link_file_data = response.content
+                            if response is not None:
+                                link_file_data = b"".join(response.streaming_content)
                         except Exception:
                             traceback.print_exc()
                             tb = traceback.format_exc()
