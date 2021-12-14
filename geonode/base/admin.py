@@ -90,29 +90,6 @@ def metadata_batch_edit(modeladmin, request, queryset):
 metadata_batch_edit.short_description = 'Metadata batch edit'
 
 
-def set_batch_permissions(modeladmin, request, queryset):
-    ids = ','.join([str(element.pk) for element in queryset])
-    resource = queryset[0].class_name.lower()
-    form = BatchPermissionsForm(
-        {
-            'permission_type': ('r', ),
-            'mode': 'set',
-            'ids': ids
-        })
-
-    return render(
-        request,
-        "base/batch_permissions.html",
-        context={
-            'form': form,
-            'model': resource,
-        }
-    )
-
-
-set_batch_permissions.short_description = 'Set permissions'
-
-
 def set_user_and_group_dataset_permission(modeladmin, request, queryset):
     ids = ','.join(str(element.pk) for element in queryset)
     resource = queryset[0].__class__.__name__.lower()
