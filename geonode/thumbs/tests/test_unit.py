@@ -189,7 +189,6 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], ["theaters_nyc"]]])
 
     def test_datasets_locations_composition_map_default_bbox(self):
-        expected_bbox = [-20033947.41086791, 1414810.0631394347, -20041642.2309585, 16329038.485056704, 'EPSG:3857']
         expected_locations = [
             [
                 settings.GEOSERVER_LOCATION,
@@ -206,7 +205,6 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         locations, bbox = thumbnails._datasets_locations(map, compute_bbox=True)
 
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
-        self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
         self.assertEqual(locations, expected_locations, "Expected calculated locations to match pre-computed.")
 
     def test_create_map_thumbnail_using_ll_bbox_polygon(self):
