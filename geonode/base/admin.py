@@ -52,7 +52,7 @@ from geonode.base.models import (
 
 from geonode.base.forms import (
     BatchEditForm,
-    BatchPermissionsForm, ThesaurusImportForm,
+    ThesaurusImportForm,
     UserAndGroupPermissionsForm
 )
 from geonode.base.widgets import TaggitSelect2Custom
