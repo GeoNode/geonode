@@ -228,8 +228,6 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         self.assertIn(".dbf", "".join(zip_files))
         self.assertIn(".shx", "".join(zip_files))
         self.assertIn(".prj", "".join(zip_files))
-        self.assertIn(".sld", "".join(zip_files))
-        self.assertIn("_remote.sld", "".join(zip_files))
 
 
 class OWSApiTestCase(GeoNodeBaseTestSupport):
