@@ -222,7 +222,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         zip_content = io.BytesIO(b"".join(response.streaming_content))
         zip = zipfile.ZipFile(zip_content)
         zip_files = zip.namelist()
-        self.assertEqual(len(zip_files), 5)
+        self.assertEqual(len(zip_files), 11)
         self.assertIn(".metadata/", "".join(zip_files))
         self.assertIn(".shp", "".join(zip_files))
         self.assertIn(".dbf", "".join(zip_files))
