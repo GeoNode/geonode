@@ -72,15 +72,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
             data['owner'] = request.user
         return data
 
-    def create(self, validated_data):
-        # Sanity checks
-        if 'name' not in validated_data or \
-                'owner' not in validated_data:
-            raise ValidationError("No valid data: 'name' and 'owner' are mandatory fields!")
-
-        if self.Meta.model.objects.filter(name=validated_data['name']).count():
-            raise ValidationError("A GeoApp with the same 'name' already exists!")
-
+    def _sanitize_validated_data(self, validated_data, instance=None):
         # Extract users' profiles
         _user_profiles = {}
         for _key, _value in validated_data.items():
@@ -93,6 +85,10 @@ class GeoAppSerializer(ResourceBaseSerializer):
                 validated_data[_key] = _u
             else:
                 raise ValidationError(f"The specified '{_key}' does not exist!")
+
+        return validated_data
+
+    def _create_and_update(self, validated_data, instance=None):
 
         # Extract JSON blob
         _data = {}
@@ -100,45 +96,43 @@ class GeoAppSerializer(ResourceBaseSerializer):
             _data = validated_data.pop('blob')
 
         # Create a new instance
-        _instance = resource_manager.create(
-            None,
-            resource_type=self.Meta.model,
-            defaults=validated_data)
-
-        return resource_manager.update(
-            _instance.uuid,
-            instance=_instance,
-            vals=dict(
-                blob=_data
-            ),
-            notify=True)
-
-    def update(self, instance, validated_data):
-
-        # Extract users' profiles
-        _user_profiles = {}
-        for _key, _value in validated_data.items():
-            if _key in ('owner', 'poc', 'metadata_owner'):
-                _user_profiles[_key] = _value
-        for _key, _value in _user_profiles.items():
-            validated_data.pop(_key)
-            _u = get_user_model().objects.filter(username=_value).first()
-            if _u:
-                validated_data[_key] = _u
-            else:
-                raise ValidationError(f"The specified '{_key}' does not exist!")
-
-        # Extract JSON blob
-        _data = None
-        if 'blob' in validated_data:
-            _data = validated_data.pop('blob')
+        if not instance:
+            _instance = resource_manager.create(
+                None,
+                resource_type=self.Meta.model,
+                defaults=validated_data)
+        else:
+            _instance = instance
 
         try:
-            self.Meta.model.objects.filter(pk=instance.id).update(**validated_data)
-            instance.refresh_from_db()
+            self.Meta.model.objects.filter(pk=_instance.id).update(**validated_data)
+            _instance.refresh_from_db()
         except Exception as e:
             raise ValidationError(e)
 
-        instance.blob = _data
-        instance.save()
-        return instance
+        # Let's finalize the instance and notify the users
+        validated_data['blob'] = _data
+        return resource_manager.update(
+            _instance.uuid,
+            instance=_instance,
+            vals=validated_data,
+            notify=True)
+
+    def create(self, validated_data):
+        # Sanity checks
+        _mandatory_fields = ['name', 'owner', 'resource_type']
+        if not all([_x in validated_data for _x in _mandatory_fields]):
+            raise ValidationError(f"No valid data: {_mandatory_fields} are mandatory fields!")
+
+        if self.Meta.model.objects.filter(name=validated_data['name']).count():
+            raise ValidationError("A GeoApp with the same 'name' already exists!")
+
+        return self._create_and_update(self._sanitize_validated_data(validated_data))
+
+    def update(self, instance, validated_data):
+        # Sanity checks
+        _mandatory_fields = ['resource_type', ]
+        if not all([_x in validated_data for _x in _mandatory_fields]):
+            raise ValidationError(f"No valid data: {_mandatory_fields} are mandatory fields!")
+
+        return self._create_and_update(self._sanitize_validated_data(validated_data), instance=instance)

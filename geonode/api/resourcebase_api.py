@@ -160,7 +160,7 @@ class CommonModelApi(ModelResource):
         if 'type__in' in filters and (filters['type__in'] in FILTER_TYPES.keys() or filters['type__in'] in LAYER_TYPES):
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'app_type__in' in filters:
-            orm_filters.update({'polymorphic_ctype__model': filters['app_type__in'].lower()})
+            orm_filters.update({'resource_type': filters['app_type__in'].lower()})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
         orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'
