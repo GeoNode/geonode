@@ -149,6 +149,10 @@ class GeoAppsApiTests(APITestCase):
                 }
             }
         )
+        # Update: PATCH with no resource_type in data
+        data.pop('resource_type')
+        response = self.client.patch(url, data=json.dumps(data), content_type="application/json")
+        self.assertEqual(response.status_code, 200)
 
         # Update: POST
         data = {
