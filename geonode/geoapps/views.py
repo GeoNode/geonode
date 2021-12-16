@@ -235,7 +235,8 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
         geoapp_form = GeoAppForm(
             request.POST,
             instance=geoapp_obj,
-            prefix="resource")
+            prefix="resource",
+            user=request.user)
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
@@ -246,7 +247,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             tkeywords_form = ThesaurusAvailableForm(request.POST, prefix='tkeywords')
 
     else:
-        geoapp_form = GeoAppForm(instance=geoapp_obj, prefix="resource")
+        geoapp_form = GeoAppForm(instance=geoapp_obj, prefix="resource", user=request.user)
         geoapp_form.disable_keywords_widget_for_non_superuser(request.user)
         category_form = CategoryForm(
             prefix="category_choice_field",

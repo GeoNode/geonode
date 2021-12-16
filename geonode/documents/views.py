@@ -281,7 +281,8 @@ def document_metadata(
         document_form = DocumentForm(
             request.POST,
             instance=document,
-            prefix="resource")
+            prefix="resource",
+            user=request.user)
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
@@ -292,7 +293,7 @@ def document_metadata(
             tkeywords_form = ThesaurusAvailableForm(request.POST, prefix='tkeywords')
 
     else:
-        document_form = DocumentForm(instance=document, prefix="resource")
+        document_form = DocumentForm(instance=document, prefix="resource", user=request.user)
         document_form.disable_keywords_widget_for_non_superuser(request.user)
         category_form = CategoryForm(
             prefix="category_choice_field",
