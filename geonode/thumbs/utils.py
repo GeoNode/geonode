@@ -286,7 +286,7 @@ def crop_to_3857_area_of_use(bbox: List) -> List:
         else:
             bbox.append(coord)
 
-    bbox.append('EPSG:4236')
+    bbox.append('EPSG:4326')
 
     return bbox
 
@@ -312,6 +312,25 @@ def exceeds_epsg3857_area_of_use(bbox: List) -> bool:
             exceeds = True
 
     return exceeds
+
+
+def clean_bbox(bbox, target_crs):
+    # make sure BBOX is provided with the CRS in a correct format
+    source_crs = bbox[-1]
+
+    srid_regex = re.match(r"EPSG:\d+", source_crs)
+    if not srid_regex:
+        logger.error(f"Thumbnail bbox is in a wrong format: {bbox}")
+        raise ThumbnailError("Wrong BBOX format")
+
+    # for the EPSG:3857 (default thumb's CRS) - make sure received BBOX can be transformed to the target CRS;
+    # if it can't be (original coords are outside of the area of use of EPSG:3857), thumbnail generation with
+    # the provided bbox is impossible.
+    if target_crs == 'EPSG:3857' and bbox[-1].upper() != 'EPSG:3857':
+        bbox = crop_to_3857_area_of_use(bbox)
+
+    bbox = transform_bbox(bbox, target_crs=target_crs)
+    return bbox
 
 
 def thumb_path(filename):

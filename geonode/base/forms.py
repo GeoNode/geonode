@@ -615,37 +615,6 @@ class BatchEditForm(forms.Form):
     ids = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
-class BatchPermissionsForm(forms.Form):
-    group = forms.ModelChoiceField(
-        label=_('Group'),
-        queryset=Group.objects.all(),
-        required=False)
-    user = forms.ModelChoiceField(
-        label=_('User'),
-        queryset=get_user_model().objects.all(),
-        required=False)
-    permission_type = forms.MultipleChoiceField(
-        label=_('Permission Type'),
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        choices=(
-            ('r', 'Read'),
-            ('w', 'Write'),
-            ('d', 'Download'),
-        ),
-    )
-    mode = forms.ChoiceField(
-        label=_('Mode'),
-        required=True,
-        widget=forms.RadioSelect,
-        choices=(
-            ('set', 'Set'),
-            ('unset', 'Unset'),
-        ),
-    )
-    ids = forms.CharField(required=False, widget=forms.HiddenInput())
-
-
 class UserAndGroupPermissionsForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
