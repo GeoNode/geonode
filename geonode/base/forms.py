@@ -482,8 +482,11 @@ class ResourceBaseForm(TranslationModelForm):
     regions.widget.attrs = {"size": 20}
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         for field in self.fields:
+            if field == 'featured' and self.user and not self.user.is_superuser:
+                self.fields[field].disabled = True
             help_text = self.fields[field].help_text
             if help_text != '':
                 self.fields[field].widget.attrs.update(
