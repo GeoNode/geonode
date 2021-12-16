@@ -110,7 +110,7 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
     topic_category = map_obj.category
 
     if request.method == "POST":
-        map_form = MapForm(request.POST, instance=map_obj, prefix="resource")
+        map_form = MapForm(request.POST, instance=map_obj, prefix="resource", user=request.user)
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
@@ -120,7 +120,7 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
         else:
             tkeywords_form = ThesaurusAvailableForm(request.POST, prefix='tkeywords')
     else:
-        map_form = MapForm(instance=map_obj, prefix="resource")
+        map_form = MapForm(instance=map_obj, prefix="resource", user=request.user)
         map_form.disable_keywords_widget_for_non_superuser(request.user)
         category_form = CategoryForm(
             prefix="category_choice_field",

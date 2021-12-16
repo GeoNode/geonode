@@ -152,9 +152,9 @@
     </ul>
     <ul class="list-group">
       {% if "add_resource" in user.perms %}
-        <li class="list-group-item"><a href="{% url "dataset_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
+        <li class="list-group-item"><a href="{% url "dataset_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new datasets" %}</a></li>
         {% if USE_GEOSERVER and CREATE_LAYER %}
-          <li class="list-group-item"><a href="{% url "dataset_create" %}"><i class="fa fa-map-o"></i> {% trans "Create a new layer" %}</a></li>
+          <li class="list-group-item"><a href="{% url "dataset_create" %}"><i class="fa fa-map-o"></i> {% trans "Create a new dataset" %}</a></li>
         {% endif %}
         <li class="list-group-item"><a href="{% url "document_upload" %}"><i class="fa fa-file"></i> {% trans "Upload new document" %}</a></li>
       {% endif %}

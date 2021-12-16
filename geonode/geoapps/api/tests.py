@@ -47,6 +47,7 @@ class GeoAppsApiTests(APITestCase):
         self.gep_app = GeoApp.objects.create(
             title="Test GeoApp",
             owner=self.bobby,
+            resource_type="geostory",
             blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}'
         )
         self.gep_app.set_default_permissions()
@@ -113,7 +114,6 @@ class GeoAppsApiTests(APITestCase):
         # Update: PATCH
         url = reverse('geoapps-detail', kwargs={'pk': self.gep_app.pk})
         data = {
-            "resource_type": "geostory",
             "blob": {
                 "test_data": {
                     "test": [

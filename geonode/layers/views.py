@@ -902,7 +902,7 @@ def dataset_metadata(
                 status=400)
 
         thumbnail_url = layer.thumbnail_url
-        dataset_form = DatasetForm(request.POST, instance=layer, prefix="resource")
+        dataset_form = DatasetForm(request.POST, instance=layer, prefix="resource", user=request.user)
         if not dataset_form.is_valid():
             logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
             out = {
@@ -963,7 +963,7 @@ def dataset_metadata(
                 content_type='application/json',
                 status=400)
     else:
-        dataset_form = DatasetForm(instance=layer, prefix="resource")
+        dataset_form = DatasetForm(instance=layer, prefix="resource", user=request.user)
         dataset_form.disable_keywords_widget_for_non_superuser(request.user)
         attribute_form = dataset_attribute_set(
             instance=layer,
