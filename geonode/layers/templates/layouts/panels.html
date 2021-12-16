@@ -668,10 +668,12 @@ span.grippy::after {
                             <span><label for="{{ dataset_form.is_published|id }}">{{ dataset_form.is_published.label }}</label></span>
                             {{ dataset_form.is_published }}
                         </div>
+                        {% if user.is_superuser %}
                         <div>
                             <span><label for="{{ dataset_form.featured|id }}">{{ dataset_form.featured.label }}</label></span>
                             {{ dataset_form.featured }}
                         </div>
+                        {% endif %}
                       </div>
                 </div>
               </div>

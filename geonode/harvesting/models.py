@@ -250,7 +250,6 @@ class Harvester(models.Model):
 
         try:
             validate_worker_configuration(self.harvester_type, self.harvester_type_specific_configuration)
-            # self.validate_worker_configuration()
         except jsonschema.exceptions.ValidationError as exc:
             raise ValidationError(str(exc))
 
@@ -425,9 +424,9 @@ class AsynchronousHarvestingSession(models.Model):
                 )
         else:
             raise RuntimeError("Invalid selection")
-        task_signature.apply_async()
         self.status = self.STATUS_PENDING
         self.save()
+        task_signature.apply_async()
 
     def abort(self):
         """Abort a pending or on-going session."""

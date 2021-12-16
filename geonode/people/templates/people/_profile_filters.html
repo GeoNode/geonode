@@ -2,7 +2,12 @@
 
 <ul class="nav nav-pills filter pull-left" id="sort">
   <li><a data-value="all" data-filter="type__in" class="selected" ng-click="single_choice_listener($event)">{% trans "All contents" %}</a></li>
-  <li><a data-value="layer" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Layers" %}</a></li>
+  <li><a data-value="dataset" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Datasets" %}</a></li>
   <li><a data-value="map" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Maps" %}</a></li>
   <li><a data-value="document" data-filter="type__in" ng-click="single_choice_listener($event)">{% trans "Documents" %}</a></li>
+  {% for app in GEONODE_APPS_TYPES %}
+    <li><a data-value="{{app}}" data-filter="app_type__in" ng-click="single_choice_listener($event)">
+      {% trans app|title %}
+    </a></li>
+  {% endfor %}
 </ul>

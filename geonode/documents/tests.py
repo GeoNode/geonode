@@ -650,6 +650,20 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
             self.assertTrue(response.context['form']['keywords'].field.disabled)
 
+    def test_that_featured_enabling_and_disabling_for_users(self):
+        # Non Admins
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        url = reverse('document_metadata', args=(self.test_doc.pk,))
+        response = self.client.get(url)
+        self.assertFalse(self.not_admin.is_superuser)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form']['featured'].field.disabled)
+        # Admin
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['form']['featured'].field.disabled)
+
     def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
         """
         Test that only admin users can create/edit keywords

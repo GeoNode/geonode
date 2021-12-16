@@ -1892,3 +1892,8 @@ def get_xpath_value(
         nsmap = element.nsmap
     values = element.xpath(f"{xpath_expression}//text()", namespaces=nsmap)
     return "".join(values).strip() or None
+
+
+def get_geonode_app_types():
+    from geonode.geoapps.models import GeoApp
+    return list(set(GeoApp.objects.values_list('resource_type', flat=True)))

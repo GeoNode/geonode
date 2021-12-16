@@ -1218,6 +1218,28 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
             response = self.client.get(url)
             self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_dataset.alternate)
 
+    def test_that_featured_enabling_and_disabling_for_users(self):
+        self.test_dataset = resource_manager.create(
+            None,
+            resource_type=Dataset,
+            defaults=dict(
+                owner=self.not_admin,
+                title='test',
+                is_approved=True))
+
+        url = reverse('dataset_metadata', args=(self.test_dataset.alternate,))
+        # Non Admins
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        response = self.client.get(url)
+        self.assertFalse(self.not_admin.is_superuser)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form']['featured'].field.disabled)
+        # Admin
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['form']['featured'].field.disabled)
+
     def test_that_non_admin_user_cannot_create_edit_keyword(self):
         """
         Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
