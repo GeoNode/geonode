@@ -1120,7 +1120,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="ratings",
         methods=['post', 'get'],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticatedOrReadOnly,
         ])
     def ratings(self, request, pk=None):
         resource = self.get_object()
@@ -1146,11 +1146,13 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 category=cat_choice,
                 rating=rating_input
             )
-        user_rating = Rating.objects.filter(
-                object_id=resource.pk,
-                content_type=ct,
-                user=request.user
-            ).first()
+        user_rating = None
+        if request.user.is_authenticated:
+            user_rating = Rating.objects.filter(
+                    object_id=resource.pk,
+                    content_type=ct,
+                    user=request.user
+                ).first()
         overall_rating = OverallRating.objects.filter(
                 object_id=resource.pk,
                 content_type=ct
