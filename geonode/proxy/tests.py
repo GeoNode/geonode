@@ -24,9 +24,7 @@ unittest). These will both pass when you run "manage.py test".
 Replace these with more appropriate tests for your application.
 """
 import json
-import os
 import io
-import gisdata
 import zipfile
 
 from urllib.parse import urljoin
@@ -51,7 +49,6 @@ from django.test.utils import override_settings
 from geonode import geoserver
 from geonode.base.models import Link
 from geonode.layers.models import Dataset
-from geonode.layers.utils import file_upload
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import create_models, create_single_dataset
@@ -241,31 +238,41 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         self.assertEqual('application/zip', response.headers.get('Content-Type'))
         self.assertEqual('attachment; filename="CA.zip"', response.headers.get('Content-Disposition'))
 
+    @patch('geonode.storage.manager.storage_manager.exists')
+    @patch('geonode.storage.manager.storage_manager.open')
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_download_files(self):
-        admin = get_user_model().objects.get(username="admin")
-        # upload a shapefile
-        shp_file = os.path.join(
-            gisdata.VECTOR_DATA,
-            'san_andres_y_providencia_poi.shp')
-        layer = file_upload(
-            shp_file,
-            name="san_andres_y_providencia_poi",
-            user=admin,
-            overwrite=True,
-        )
-        self.client.login(username='admin', password='admin')
+    def test_download_files(self, fopen, fexists):
+        fexists.return_value = True
+        fopen.return_value = SimpleUploadedFile('foo_file.shp', b'scc')
+        dataset = Dataset.objects.all().first()
 
-        response = self.client.get(reverse('download', args=(layer.id,)))
+        dataset.files = [
+            "/tmpe1exb9e9/foo_file.dbf",
+            "/tmpe1exb9e9/foo_file.prj",
+            "/tmpe1exb9e9/foo_file.shp",
+            "/tmpe1exb9e9/foo_file.shx"
+        ]
+
+        dataset.save()
+
+        dataset.refresh_from_db()
+
+        Upload.objects.create(
+            state='COMPLETE',
+            resource=dataset
+        )
+
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('download', args=(dataset.id,)))
         # headers and status assertions
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('content-type'), "application/zip")
-        self.assertEqual(response.get('content-disposition'), 'attachment; filename="san_andres_y_providencia_poi.zip"')
+        self.assertEqual(response.get('content-disposition'), f'attachment; filename="{dataset.name}.zip"')
         # Inspect content
         zip_content = io.BytesIO(b"".join(response.streaming_content))
         zip = zipfile.ZipFile(zip_content)
         zip_files = zip.namelist()
-        self.assertEqual(len(zip_files), 11)
+        self.assertEqual(len(zip_files), 4)
         self.assertIn(".shp", "".join(zip_files))
         self.assertIn(".dbf", "".join(zip_files))
         self.assertIn(".shx", "".join(zip_files))
