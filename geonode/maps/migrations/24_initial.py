@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=('base.resourcebase', geonode.utils.GXPMapBase),
+            bases=('base.resourcebase',),
         ),
         migrations.CreateModel(
             name='MapLayer',
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['stack_order'],
             },
-            bases=(models.Model, geonode.utils.GXPLayerBase),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='MapSnapshot',
