@@ -1,6 +1,5 @@
 from django.db import migrations, models
 from django.conf import settings
-import geonode.utils
 
 
 class Migration(migrations.Migration):
@@ -33,7 +32,6 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-            bases=('base.resourcebase', geonode.utils.GXPMapBase),
         ),
         migrations.CreateModel(
             name='MapLayer',
@@ -57,7 +55,6 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['stack_order'],
             },
-            bases=(models.Model, geonode.utils.GXPLayerBase),
         ),
         migrations.CreateModel(
             name='MapSnapshot',

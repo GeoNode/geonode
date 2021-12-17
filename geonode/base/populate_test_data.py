@@ -197,10 +197,6 @@ def create_models(type=None, integration=False):
                     m = Map(
                         title=title,
                         abstract=abstract,
-                        zoom=4,
-                        projection='EPSG:4326',
-                        center_x=42,
-                        center_y=-73,
                         owner=user,
                         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
@@ -379,10 +375,6 @@ def create_single_map(name):
     m = Map(
         title=title,
         abstract=abstract,
-        zoom=4,
-        projection='EPSG:4326',
-        center_x=42,
-        center_y=-73,
         owner=user,
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
