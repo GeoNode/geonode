@@ -21,9 +21,11 @@ import logging
 
 from dynamic_rest.fields.fields import DynamicField, DynamicRelationField
 from dynamic_rest.serializers import DynamicModelSerializer
+from rest_framework import serializers
 from rest_framework.exceptions import ParseError, ValidationError
 
 from geonode.base.api.serializers import (
+    DetailUrlField,
     ResourceBaseSerializer,
     ResourceBaseToRepresentationSerializerMixin,
 )
@@ -138,6 +140,16 @@ class MapLayerSerializer(DynamicModelSerializer):
         )
 
 
+class SimpleMapLayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MapLayer
+        name = "maplayer"
+        fields = (
+            "pk",
+            "name"
+        )
+
+
 class MapSerializer(ResourceBaseSerializer):
     maplayers = DynamicFullyEmbedM2MRelationField(MapLayerSerializer, deferred=False)
 
@@ -152,4 +164,18 @@ class MapSerializer(ResourceBaseSerializer):
             "featuredurl",
             "data",
             "maplayers",
+        )
+
+
+class SimpleMapSerializer(serializers.ModelSerializer):
+    detail_url = DetailUrlField(read_only=True)
+
+    class Meta:
+        model = Map
+        name = "map"
+        view_name = "maps-list"
+        fields = (
+            "pk",
+            "title",
+            "detail_url",
         )

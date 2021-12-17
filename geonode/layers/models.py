@@ -318,6 +318,17 @@ class Dataset(ResourceBase):
         from geonode.maps.models import MapLayer
         return MapLayer.objects.filter(name=self.alternate)
 
+    @property
+    def dataset_maps(self):
+        from geonode.maps.models import Map
+        map_ids = list(self.maplayers.values_list('map__id', flat=True))
+        return Map.objects.filter(id__in=map_ids)
+
+    @property
+    def maplayers(self):
+        from geonode.maps.models import MapLayer
+        return MapLayer.objects.filter(name=self.alternate)
+
     @classproperty
     def allowed_permissions(cls):
         return {
