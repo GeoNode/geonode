@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('harvesting', '0036_alter_harvester_harvester_type'),
-        ('services', '0047_service_operations'),
+        ('services', '0046_auto_20210903_1427'),
     ]
 
     operations = [

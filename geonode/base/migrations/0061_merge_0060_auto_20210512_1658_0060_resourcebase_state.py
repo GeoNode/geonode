@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0060_auto_20210512_1658'),
+        ('base', '0061_auto_20211117_1238'),
         ('base', '0060_resourcebase_state'),
     ]
 

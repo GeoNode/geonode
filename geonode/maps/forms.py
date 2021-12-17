@@ -25,12 +25,7 @@ class MapForm(ResourceBaseForm):
 
     class Meta(ResourceBaseForm.Meta):
         model = Map
-        exclude = ResourceBaseForm.Meta.exclude + (
-            'zoom',
-            'projection',
-            'center_x',
-            'center_y',
-        )
+        exclude = ResourceBaseForm.Meta.exclude
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

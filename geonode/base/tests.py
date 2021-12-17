@@ -742,8 +742,7 @@ class TestOwnerRightsRequestUtils(TestCase):
         self.d = Document.objects.create(owner=self.user, title='test', is_approved=True)
         self.la = Dataset.objects.create(owner=self.user, title='test', is_approved=True)
         self.s = Service.objects.create(owner=self.user, title='test', is_approved=True)
-        self.m = Map.objects.create(owner=self.user, title='test', is_approved=True, zoom=0, center_x=0.0,
-                                    center_y=0.0)
+        self.m = Map.objects.create(owner=self.user, title='test', is_approved=True)
 
     def test_get_concrete_resource(self):
         self.assertTrue(isinstance(

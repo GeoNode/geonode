@@ -26,13 +26,10 @@ import tempfile
 import warnings
 import traceback
 
-from requests import Request
-from urllib.parse import quote
 from owslib.wfs import WebFeatureService
 
 from django.conf import settings
 
-from django.db.models import Q
 from django.db.models import F
 from django.http import Http404
 from django.contrib import messages
@@ -49,7 +46,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
-from geonode.layers.enumerations import GXP_PTYPES
 from geonode.layers.metadata import parse_metadata
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_dataset_style
@@ -76,30 +72,22 @@ from geonode.layers.utils import (
     is_sld_upload_only,
     is_xml_upload_only,
     validate_input_source)
-from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.base import register_event
 from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
-from geonode.security.views import _perms_info_json
 from geonode.security.utils import get_user_visible_groups
-from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import (
     resolve_object,
-    default_map_config,
     check_ogc_backend,
     llbbox_to_mercator,
-    bbox_to_projection,
-    build_social_links,
-    GXPLayer,
-    GXPMap)
+)
 from geonode.geoserver.helpers import (
     ogc_server_settings,
     select_relevant_files,
     write_uploaded_files_to_disk)
 from geonode.geoserver.security import set_geowebcache_invalidate_cache
-from geonode.base.utils import ManageResourceOwnerPermissions
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog
@@ -348,257 +336,9 @@ def dataset_detail(request, layername, template='datasets/dataset_detail.html'):
     if not layer:
         raise Http404(_("Not found"))
 
-    permission_manager = ManageResourceOwnerPermissions(layer)
-    permission_manager.set_owner_permissions_according_to_workflow()
-
-    # Add metadata_author or poc if missing
-    layer.add_missing_metadata_author_or_poc()
-
-    def decimal_encode(bbox):
-        _bbox = []
-        for o in [float(coord) for coord in bbox]:
-            if isinstance(o, decimal.Decimal):
-                o = (str(o) for o in [o])
-            _bbox.append(o)
-        return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
-
-    def sld_definition(style):
-        _sld = {
-            "title": style.sld_title or style.name,
-            "legend": {
-                "height": "40",
-                "width": "22",
-                "href": f"{layer.ows_url}?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer={quote(layer.service_typename, safe='')}",
-                "format": "image/png"
-            },
-            "name": style.name
-        }
-        return _sld
-
-    # assert False, str(dataset_bbox)
-    config = layer.attribute_config()
-    if hasattr(layer, 'srid'):
-        config['crs'] = {
-            'type': 'name',
-            'properties': layer.srid
-        }
-    # Add required parameters for GXP lazy-loading
-    dataset_bbox = layer.bbox[0:4]
-    # Must be in the form xmin, ymin, xmax, ymax
-    bbox = [
-        float(dataset_bbox[0]), float(dataset_bbox[2]),
-        float(dataset_bbox[1]), float(dataset_bbox[3])
-    ]
-
-    # Add required parameters for GXP lazy-loading
-    attribution = f"{layer.owner.first_name} {layer.owner.last_name}" if layer.owner.first_name or \
-        layer.owner.last_name else str(layer.owner)
-    srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
-    srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
-    config["attribution"] = f"<span class='gx-attribution-title'>{attribution}</span>"
-    config["format"] = getattr(
-        settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
-    config["title"] = layer.title
-    config["wrapDateLine"] = True
-    config["visibility"] = True
-    config["srs"] = srs
-    config["bbox"] = bbox_to_projection([float(coord) for coord in dataset_bbox] + [layer.srid, ],
-                                        target_srid=int(srs.split(":")[1]))[:4]
-
-    config["capability"] = {
-        "abstract": layer.abstract,
-        "store": layer.store,
-        "name": layer.alternate,
-        "title": layer.title,
-        "style": '',
-        "queryable": True,
-        "subtype": layer.subtype,
-        "bbox": {
-            layer.srid: {
-                "srs": layer.srid,
-                "bbox": decimal_encode(bbox)
-            },
-            srs: {
-                "srs": srs,
-                "bbox": bbox_to_projection([float(coord) for coord in dataset_bbox] + [layer.srid, ],
-                                           target_srid=srs_srid)[:4]
-            },
-            "EPSG:4326": {
-                "srs": "EPSG:4326",
-                "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
-                bbox_to_projection(
-                    [float(coord) for coord in dataset_bbox] + [layer.srid, ], target_srid=4326)[:4]
-            },
-            "EPSG:900913": {
-                "srs": "EPSG:900913",
-                "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:900913' else
-                bbox_to_projection(
-                    [float(coord) for coord in dataset_bbox] + [layer.srid, ], target_srid=3857)[:4]
-            }
-        },
-        "srs": {
-            srs: True
-        },
-        "formats": ["image/png", "application/atom xml", "application/atom+xml", "application/json;type=utfgrid",
-                    "application/openlayers", "application/pdf", "application/rss xml", "application/rss+xml",
-                    "application/vnd.google-earth.kml", "application/vnd.google-earth.kml xml",
-                    "application/vnd.google-earth.kml+xml", "application/vnd.google-earth.kml+xml;mode=networklink",
-                    "application/vnd.google-earth.kmz", "application/vnd.google-earth.kmz xml",
-                    "application/vnd.google-earth.kmz+xml", "application/vnd.google-earth.kmz;mode=networklink",
-                    "atom", "image/geotiff", "image/geotiff8", "image/gif", "image/gif;subtype=animated",
-                    "image/jpeg", "image/png8", "image/png; mode=8bit", "image/svg", "image/svg xml",
-                    "image/svg+xml", "image/tiff", "image/tiff8", "image/vnd.jpeg-png",
-                    "kml", "kmz", "openlayers", "rss", "text/html; subtype=openlayers", "utfgrid"],
-        "attribution": {
-            "title": attribution
-        },
-        "infoFormats": ["text/plain", "application/vnd.ogc.gml", "text/xml", "application/vnd.ogc.gml/3.1.1",
-                        "text/xml; subtype=gml/3.1.1", "text/html", "application/json"],
-        "styles": [sld_definition(s) for s in layer.styles.all()],
-        "prefix": layer.alternate.split(":")[0] if ":" in layer.alternate else "",
-        "keywords": [k.name for k in layer.keywords.all()] if layer.keywords else [],
-        "llbbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
-        bbox_to_projection(
-            [float(coord) for coord in dataset_bbox] + [layer.srid, ], target_srid=4326)[:4]
-    }
-
-    granules = None
-    all_times = None
-    all_granules = None
-    filter = None
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        if layer.has_time:
-            from geonode.geoserver.views import get_capabilities
-            # WARNING Please make sure to have enabled DJANGO CACHE as per
-            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-            wms_capabilities_resp = get_capabilities(
-                request, layer.id, tolerant=True)
-            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-                wms_capabilities = wms_capabilities_resp.getvalue()
-                if wms_capabilities:
-                    from owslib.etree import etree as dlxml
-                    namespaces = {'wms': 'http://www.opengis.net/wms',
-                                  'xlink': 'http://www.w3.org/1999/xlink',
-                                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-
-                    e = dlxml.fromstring(wms_capabilities)
-                    for atype in e.findall(
-                            f"./[wms:Name='{layer.alternate}']/wms:Dimension[@name='time']", namespaces):
-                        dim_name = atype.get('name')
-                        if dim_name:
-                            dim_name = str(dim_name).lower()
-                            if dim_name == 'time':
-                                dim_values = atype.text
-                                if dim_values:
-                                    all_times = dim_values.split(",")
-                                    break
-            if all_times:
-                config["capability"]["dimensions"] = {
-                    "time": {
-                        "name": "time",
-                        "units": "ISO8601",
-                        "unitsymbol": None,
-                        "nearestVal": False,
-                        "multipleVal": False,
-                        "current": False,
-                        "default": "current",
-                        "values": all_times
-                    }
-                }
-        if layer.is_mosaic:
-            try:
-                cat = gs_catalog
-                cat._cache.clear()
-                store = cat.get_store(layer.name)
-                coverages = cat.mosaic_coverages(store)
-                try:
-                    if request.GET["filter"]:
-                        filter = request.GET["filter"]
-                except Exception:
-                    pass
-
-                offset = 10 * (request.page - 1)
-                granules = cat.mosaic_granules(
-                    coverages['coverages']['coverage'][0]['name'],
-                    store,
-                    limit=10,
-                    offset=offset,
-                    filter=filter)
-                all_granules = cat.mosaic_granules(
-                    coverages['coverages']['coverage'][0]['name'], store, filter=filter)
-            except Exception:
-                granules = {"features": []}
-                all_granules = {"features": []}
-
-    # Call this first in order to be sure "perms_list" is correct
-    permissions_json = _perms_info_json(layer)
-
-    perms_list = list(
-        layer.get_self_resource().get_user_perms(request.user)
-        .union(layer.get_user_perms(request.user))
-    )
-
-    group = None
-    if layer.group:
-        try:
-            group = GroupProfile.objects.get(slug=layer.group.name)
-        except GroupProfile.DoesNotExist:
-            group = None
-
-    show_popup = False
-    if 'show_popup' in request.GET and request.GET["show_popup"]:
-        show_popup = True
-
-    if layer.subtype in ['tileStore', 'remote']:
-        service = layer.remote_service
-        source_params = {}
-        if service.type in ('REST_MAP', 'REST_IMG'):
-            source_params = {
-                "ptype": service.ptype,
-                "remote": True,
-                "url": service.service_url,
-                "name": service.name,
-                "title": f"[R] {service.title}"}
-        maplayer = GXPLayer(
-            name=layer.alternate,
-            ows_url=layer.ows_url,
-            dataset_params=json.dumps(config),
-            source_params=json.dumps(source_params)
-        )
-    else:
-        is_arcgis_layer = layer.ptype in (GXP_PTYPES["REST_MAP"], GXP_PTYPES["REST_IMG"])
-        if is_arcgis_layer:
-            maplayer = GXPLayer(
-                name=layer.alternate,
-                ows_url=layer.ows_url,
-                dataset_params=json.dumps(config),
-                source_params=json.dumps({
-                    "ptype": layer.ptype,
-                    "remote": True,
-                    "url": layer.ows_url,
-                })
-            )
-        else:
-            maplayer = GXPLayer(
-                name=layer.alternate,
-                ows_url=layer.ows_url,
-                dataset_params=json.dumps(config)
-            )
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     layer.view_count_up(request.user)
-    # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(
-        sender=Dataset,
-        projection=getattr(
-            settings,
-            'DEFAULT_MAP_CRS',
-            'EPSG:3857'))
-    NON_WMS_BASE_LAYERS = [
-        la for la in default_map_config(request)[1] if la.ows_url is None]
-
-    metadata = layer.link_set.metadata().filter(
-        name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
     access_token = None
     if request and request.user:
@@ -611,90 +351,8 @@ def dataset_detail(request, layername, template='datasets/dataset_detail.html'):
     context_dict = {
         'access_token': access_token,
         'resource': layer,
-        'group': group,
-        'perms_list': perms_list,
-        "permissions_json": permissions_json,
-        "documents": get_related_documents(layer),
-        "metadata": metadata,
-        "is_dataset": True,
-        "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
-        "granules": granules,
-        "all_granules": all_granules,
-        "all_times": all_times,
-        "show_popup": show_popup,
-        "filter": filter,
-        "subtype": layer.subtype,
-        "online": (layer.remote_service.probe == 200) if layer.subtype in ['tileStore', 'remote'] else True,
-        "processed": layer.processed
     }
-
-    context_dict["viewer"] = json.dumps(map_obj.viewer_json(
-        request, * (NON_WMS_BASE_LAYERS + [maplayer])))
-    context_dict["preview"] = getattr(
-        settings,
-        'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-        'mapstore')
-    context_dict["crs"] = getattr(
-        settings,
-        'DEFAULT_MAP_CRS',
-        'EPSG:3857')
-
-    if layer.subtype == 'vector':
-        links = layer.link_set.download().filter(
-            Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
-            Q(link_type='original'))
-    else:
-        links = layer.link_set.download().filter(
-            Q(name__in=settings.DOWNLOAD_FORMATS_RASTER) |
-            Q(link_type='original'))
-    links_view = [item for item in links if
-                  item.link_type == 'image']
-    links_download = [item for item in links if item.link_type in ('data', 'original')]
-    for item in links_view:
-        if item.url and access_token and 'access_token' not in item.url:
-            params = {'access_token': access_token}
-            item.url = Request('GET', item.url, params=params).prepare().url
-    for item in links_download:
-        if item.url and access_token and 'access_token' not in item.url:
-            params = {'access_token': access_token}
-            item.url = Request('GET', item.url, params=params).prepare().url
-    if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
-        context_dict["links"] = links_view
-    if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
-        context_dict["links_download"] = links_download
-    if settings.SOCIAL_ORIGINS:
-        context_dict["social_links"] = build_social_links(request, layer)
-    layers_names = layer.alternate
-    context_dict["dataset_name"] = json.dumps(layers_names)
-    try:
-        # get type of layer (raster or vector)
-        if layer.subtype == 'raster':
-            context_dict["dataset_type"] = "raster"
-        elif layer.subtype == 'vector':
-            if layer.has_time:
-                context_dict["dataset_type"] = "vector_time"
-            else:
-                context_dict["dataset_type"] = "vector"
-    except Exception:
-        logger.error(
-            "Possible error with OWSLib. Turning all available properties to string")
-    # maps owned by user needed to fill the "add to existing map section" in template
-    if request.user.is_authenticated:
-        context_dict["maps"] = Map.objects.filter(owner=request.user)
-        if getattr(settings, 'FAVORITE_ENABLED', False):
-            from geonode.favorite.utils import get_favorite_info
-            context_dict["favorite_info"] = get_favorite_info(request.user, layer)
-
-    if request.user.is_authenticated and (request.user.is_superuser or "change_resourcebase_permissions" in perms_list):
-        context_dict['users'] = [user for user in get_user_model().objects.all().exclude(
-            id=request.user.id).exclude(is_superuser=True).order_by('username')]
-        if request.user.is_superuser:
-            context_dict['groups'] = [group for group in GroupProfile.objects.all()]
-        else:
-            context_dict['groups'] = [group for group in request.user.group_list_all()]
-
     register_event(request, 'view', layer)
-    context_dict['map_datasets'] = [map_dataset for map_dataset in layer.maps() if request.user.has_perm('view_resourcebase', map_dataset.map.get_self_resource())]
     return TemplateResponse(request, template, context=context_dict)
 
 
@@ -852,43 +510,11 @@ def dataset_metadata(
     config["title"] = layer.title
     config["queryable"] = True
 
-    if layer.subtype in ['tileStore', 'remote']:
-        service = layer.remote_service
-        source_params = {}
-        if service.type in ('REST_MAP', 'REST_IMG'):
-            source_params = {
-                "ptype": service.ptype,
-                "remote": True,
-                "url": service.service_url,
-                "name": service.name,
-                "title": f"[R] {service.title}"}
-        maplayer = GXPLayer(
-            name=layer.alternate,
-            ows_url=layer.ows_url,
-            dataset_params=json.dumps(config),
-            source_params=json.dumps(source_params)
-        )
-    else:
-        maplayer = GXPLayer(
-            name=layer.alternate,
-            ows_url=layer.ows_url,
-            dataset_params=json.dumps(config))
-
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     if request.user != layer.owner and not request.user.is_superuser:
         Dataset.objects.filter(
             id=layer.id).update(popular_count=F('popular_count') + 1)
-
-    # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(
-        projection=getattr(
-            settings,
-            'DEFAULT_MAP_CRS',
-            'EPSG:3857'))
-
-    NON_WMS_BASE_LAYERS = [
-        la for la in default_map_config(request)[1] if la.ows_url is None]
 
     if request.method == "POST":
         if layer.metadata_uploaded_preserve:  # layer metadata cannot be edited
@@ -1146,9 +772,6 @@ def dataset_metadata(
         author_form = ProfileForm(prefix="author")
         author_form.hidden = False
 
-    viewer = json.dumps(map_obj.viewer_json(
-        request, * (NON_WMS_BASE_LAYERS + [maplayer])))
-
     metadata_author_groups = get_user_visible_groups(request.user)
 
     register_event(request, 'view_metadata', layer)
@@ -1161,7 +784,6 @@ def dataset_metadata(
         "attribute_form": attribute_form,
         "category_form": category_form,
         "tkeywords_form": tkeywords_form,
-        "viewer": viewer,
         "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         "metadataxsl": getattr(settings, 'GEONODE_CATALOGUE_METADATA_XSL', True),

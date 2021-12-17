@@ -46,7 +46,6 @@ from ..base.models import (
     HierarchicalKeyword,
     SpatialRepresentationType)
 
-from ..maps.models import Map
 from ..layers.models import Dataset
 from ..documents.models import Document
 from ..documents.enumerations import (
@@ -205,15 +204,6 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
 
     if isinstance(instance, Dataset):
         for _key in ('workspace', 'store', 'subtype', 'alternate', 'typename'):
-            if hasattr(instance, _key):
-                if _key in defaults:
-                    to_update[_key] = defaults.pop(_key)
-                else:
-                    to_update[_key] = getattr(instance, _key)
-            elif _key in defaults:
-                defaults.pop(_key)
-    if isinstance(instance, Map):
-        for _key in ('center_x', 'center_y', 'zoom'):
             if hasattr(instance, _key):
                 if _key in defaults:
                     to_update[_key] = defaults.pop(_key)
