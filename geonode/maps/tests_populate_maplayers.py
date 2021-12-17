@@ -21,31 +21,31 @@ from geonode import geoserver  # noqa
 from geonode.maps.models import Map, MapLayer
 
 maplayers = [{
-              "map": 'GeoNode Default Map',
-              "name": "geonode:CA",
-              "current_style": "",
-              "ows_url": "http://localhost:8080/geoserver/wms",
-              },
-             {
-              "map": 'GeoNode Default Map',
-              "name": None,
-              "current_style": "",
-              },
-             {
-              "map": 'GeoNode Default Map',
-              "name": None,
-              "current_style": "",
-              },
-             {
-              "map": 'GeoNode Default Map',
-              "name": "SATELLITE",
-              "current_style": "",
-              },
-             {
-              "map": 'GeoNode Default Map',
-              "name": None,
-              "current_style": "",
-              }]
+    "map": 'GeoNode Default Map',
+    "name": "geonode:CA",
+    "current_style": "",
+    "ows_url": "http://localhost:8080/geoserver/wms",
+},
+    {
+    "map": 'GeoNode Default Map',
+    "name": None,
+    "current_style": "",
+},
+    {
+    "map": 'GeoNode Default Map',
+    "name": None,
+    "current_style": "",
+},
+    {
+    "map": 'GeoNode Default Map',
+    "name": "SATELLITE",
+    "current_style": "",
+},
+    {
+    "map": 'GeoNode Default Map',
+    "name": None,
+    "current_style": "",
+}]
 
 
 def create_maplayers():

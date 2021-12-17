@@ -626,14 +626,6 @@ def inverse_mercator(xy):
     return (lon, lat)
 
 
-class GXPMapBase:
-    pass
-
-
-class GXPLayerBase:
-    pass
-
-
 def resolve_object(request, model, query, permission='base.view_resourcebase',
                    user=None, permission_required=True, permission_msg=None):
     """Resolve an object using the provided query and check the optional
