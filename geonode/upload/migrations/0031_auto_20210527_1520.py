@@ -19,7 +19,7 @@ def copy_uploaded_files(apps, _):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('upload', '0030_upload_create_date'),
+        ('upload', '0031_upload_resume_url'),
     ]
 
     operations = [

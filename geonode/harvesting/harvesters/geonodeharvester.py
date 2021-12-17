@@ -890,10 +890,6 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             api_record: typing.Dict
     ) -> typing.Dict:
         return {
-            "zoom": api_record.get("zoom", 5),
-            "center_x": api_record.get("center_x", 0),
-            "center_y": api_record.get("center_y", 0),
-            "projection": api_record.get("projection", "EPSG:3857"),
             "last_modified": api_record.get("last_modified")
         }
 

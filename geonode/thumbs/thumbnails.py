@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import logging
 
 from io import BytesIO
@@ -109,7 +108,7 @@ def create_thumbnail(
     is_map_with_datasets = True
 
     if isinstance(instance, Map):
-        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(dataset=None).count() > 0
+        is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).count() > 0
     if bbox:
         bbox = utils.clean_bbox(bbox, target_crs)
     elif instance.ll_bbox_polygon:
@@ -275,14 +274,8 @@ def _datasets_locations(
                 bbox = utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
         map_datasets = instance.datasets.copy()
-        # ensure correct order of datasets in the map (higher stack_order are printed on top of lower)
-        map_datasets.sort(key=lambda l: l.stack_order)
 
         for map_dataset in map_datasets:
-
-            if not map_dataset.visibility:
-                logger.debug("Skipping not visible dataset in the thumbnail generation.")
-                continue
 
             if not map_dataset.local and not map_dataset.ows_url:
                 logger.warning(
@@ -294,10 +287,7 @@ def _datasets_locations(
             name = get_dataset_name(map_dataset)
             store = map_dataset.store
             workspace = get_dataset_workspace(map_dataset)
-            try:
-                map_dataset_style = json.loads(map_dataset.dataset_params).get('style')
-            except json.decoder.JSONDecodeError:
-                map_dataset_style = None
+            map_dataset_style = map_dataset.current_style
 
             if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
                 dataset = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()

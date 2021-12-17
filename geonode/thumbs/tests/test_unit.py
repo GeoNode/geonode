@@ -165,11 +165,8 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         MapLayer(
             map=map,
             name="Meteorite_Landings_from_NASA_Open_Data_Portal1",
-            stack_order=1,
-            visibility=True,
+            current_style="test_style",
             ows_url="https://maps.geo-solutions.it/geoserver/wms",
-            dataset_params="""{\"id\": 1, \"title\": \"Open Street Map\", \"style\": \"test_style\", \"type\": \"osm\", \"singleTile\": false, \"dimensions\": [], \"hideLoading\": false,
-            \"handleClickOnLayer\": false, \"useForElevation\": false, \"hidden\": false, \"extraParams\": {\"msId\": \"mapnik__0\"}, \"wrapDateLine\": true, \"displayOutsideMaxExtent\": true}"""
         ).save()
         locations, bbox = thumbnails._datasets_locations(map)
 
@@ -193,9 +190,9 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             [
                 settings.GEOSERVER_LOCATION,
                 [
-                    'geonode:theaters_nyc',
+                    'rt_geologia.dbg_risorse_minerarie',
                     'geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1',
-                    'rt_geologia.dbg_risorse_minerarie'
+                    'geonode:theaters_nyc',
                 ],
                 []
             ]
