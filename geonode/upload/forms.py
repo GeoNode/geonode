@@ -21,6 +21,10 @@ import logging
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.template.defaultfilters import filesizeformat
+from django.utils.translation import ugettext_lazy as _
+
+from geonode.upload.models import UploadSizeLimit, DEFAULT_MAX_UPLOAD_SIZE
 
 from .. import geoserver
 from ..utils import check_ogc_backend
@@ -28,19 +32,74 @@ from ..layers.forms import JSONField
 
 from .upload_validators import validate_uploaded_files
 
+
 logger = logging.getLogger(__name__)
 
 
+class SizeRestrictedFileField(forms.FileField):
+    """
+    Same as FileField, but checks file max_size based on the value stores on `field_slug`.
+        * field_slug - a slug indicating the database object from where the max_size will be retrieved.
+            * max_size - a number indicating the maximum file size allowed for upload.
+                2.5MB -  2621440
+                5MB   -  5242880
+                10MB  - 10485760
+                20MB  - 20971520
+                50MB  - 52428800
+                100MB - 104857600
+                250MB - 214958080
+                500MB - 429916160
+    """
+    def __init__(self, *args, **kwargs):
+        self.field_slug = kwargs.pop("field_slug")
+
+        super(SizeRestrictedFileField, self).__init__(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        data = super(SizeRestrictedFileField, self).clean(*args, **kwargs)
+        if data is None:
+            return data
+
+        file_size = self._get_file_size(data)
+
+        if file_size is not None:
+            # Only query the DB for a max_size when there is a file_size
+            max_size = self._get_max_size()
+            # Validate
+            if file_size > max_size:
+                raise forms.ValidationError(_(
+                    f'"{data.name}" size is {filesizeformat(file_size)}. '
+                    f'Please keep it under {filesizeformat(max_size)}.'
+                ))
+
+        return data
+
+    def _get_file_size(self, data):
+        try:
+            file_size = data.size
+        except AttributeError:
+            file_size = None
+        return file_size
+
+    def _get_max_size(self):
+        try:
+            max_size_db_obj = UploadSizeLimit.objects.get(slug=self.field_slug)
+            max_size = max_size_db_obj.max_size
+        except UploadSizeLimit.DoesNotExist:
+            max_size = DEFAULT_MAX_UPLOAD_SIZE
+        return max_size
+
+
 class LayerUploadForm(forms.Form):
-    base_file = forms.FileField()
-    dbf_file = forms.FileField(required=False)
-    shx_file = forms.FileField(required=False)
-    prj_file = forms.FileField(required=False)
-    xml_file = forms.FileField(required=False)
+    base_file = SizeRestrictedFileField(field_slug="base_file",)
+    dbf_file = SizeRestrictedFileField(field_slug="dbf_file", required=False)
+    shx_file = SizeRestrictedFileField(field_slug="shx_file", required=False)
+    prj_file = SizeRestrictedFileField(field_slug="prj_file", required=False)
+    xml_file = SizeRestrictedFileField(field_slug="xml_file", required=False)
     charset = forms.CharField(required=False)
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        sld_file = forms.FileField(required=False)
+        sld_file = SizeRestrictedFileField(field_slug="sld_file", required=False)
 
     time = forms.BooleanField(required=False)
 
@@ -77,6 +136,10 @@ class LayerUploadForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
+        if "base_file" not in cleaned:
+            # base_file field is required by validate_uploaded_files,
+            # we should not continue the validation without it, something already went wrong
+            return cleaned
         uploaded_files = self._get_uploaded_files()
         valid_extensions = validate_uploaded_files(
             cleaned=cleaned,

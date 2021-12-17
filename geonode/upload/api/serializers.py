@@ -20,9 +20,15 @@ import os
 
 from rest_framework import serializers
 
-from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
+from dynamic_rest.fields.fields import (
+    DynamicRelationField,
+    DynamicComputedField,
+    DynamicMethodField,
+)
 
-from geonode.upload.models import Upload
+from django.template.defaultfilters import filesizeformat
+
+from geonode.upload.models import Upload, UploadSizeLimit
 from geonode.base.models import ResourceBase
 from geonode.utils import build_absolute_uri
 from geonode.layers.api.serializers import DatasetSerializer
@@ -232,3 +238,20 @@ class UploadSerializer(BaseDynamicModelSerializer):
     import_url = ProgressUrlField('import', read_only=True)
     detail_url = ProgressUrlField('detail', read_only=True)
     uploadfile_set = UploadFileField(source='resource', read_only=True)
+
+
+class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
+    class Meta:
+        model = UploadSizeLimit
+        name = 'upload-size-limit'
+        view_name = 'upload-size-limits-list'
+        fields = (
+            'slug',
+            'max_size',
+            'max_size_label',
+        )
+
+    max_size_label = DynamicMethodField(requires=("max_size",))
+
+    def get_max_size_label(self, object):
+        return filesizeformat(object.max_size)

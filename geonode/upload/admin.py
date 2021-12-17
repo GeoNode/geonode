@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from geonode.upload.models import Upload
+from geonode.upload.models import Upload, UploadSizeLimit
 
 from django.contrib import admin
 
@@ -47,3 +47,4 @@ class UploadAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Upload, UploadAdmin)
+admin.site.register(UploadSizeLimit)

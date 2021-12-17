@@ -35,7 +35,7 @@ from django.contrib.auth import get_user_model
 
 from geonode.base.models import Link
 from geonode.layers.models import Dataset
-from geonode.upload.models import Upload
+from geonode.upload.models import Upload, UploadSizeLimit
 from geonode.catalogue import get_catalogue
 from geonode.tests.utils import upload_step, Client
 from geonode.upload.utils import _ALLOW_TIME_STEP
@@ -632,6 +632,19 @@ class TestUpload(UploaderBase):
             self.assertTrue('success' in data)
             self.assertTrue(data['success'])
             self.assertTrue(data['redirect_to'], "/upload/csv")
+
+    def test_csv_with_size_limit(self):
+        '''make sure a csv upload fails gracefully/normally when not activated'''
+        upload_size_limit_obj = UploadSizeLimit.objects.get(slug='base_file')
+        upload_size_limit_obj.max_size = 1
+        upload_size_limit_obj.save()
+
+        csv_file = self.make_csv(
+            ['lat', 'lon', 'thing'], {'lat': -100, 'lon': -40, 'thing': 'foo'})
+        with self.assertRaises(HTTPError) as error:
+            self.client.upload_file(csv_file)
+        excepect_error = ".csv&quot; size is 29\\u00a0bytes. Please keep it under 1\\u00a0byte."
+        self.assertIn(excepect_error, error.exception.msg)
 
 
 @unittest.skipUnless(ogc_server_settings.datastore_db,

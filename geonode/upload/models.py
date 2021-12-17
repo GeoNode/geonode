@@ -28,6 +28,10 @@ from django.utils.timezone import now
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
+from django.core.validators import MinLengthValidator
+from django.template.defaultfilters import filesizeformat
+from django.utils.translation import ugettext_lazy as _
+
 from geonode import GeoNodeException
 from geonode.base import enumerations
 from geonode.base.models import ResourceBase
@@ -35,6 +39,8 @@ from geonode.storage.manager import storage_manager
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_MAX_UPLOAD_SIZE = 2621440
 
 
 class UploadManager(models.Manager):
@@ -253,3 +259,24 @@ class Upload(models.Model):
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'
+
+
+class UploadSizeLimit(models.Model):
+    slug = models.SlugField(
+        primary_key=True,
+        max_length=255,
+        unique=True,
+        null=False,
+        blank=False,
+        validators=[MinLengthValidator(limit_value=3)],
+    )
+    max_size = models.PositiveBigIntegerField(
+        help_text=_("The maximum file size allowed for upload (bytes)."),
+        default=DEFAULT_MAX_UPLOAD_SIZE,
+    )
+
+    def __str__(self):
+        return f'UploadSizeLimit for "{self.slug}" (max_size: {filesizeformat(self.max_size)})'
+
+    class Meta:
+        ordering = ("slug",)

@@ -34,13 +34,13 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from django.utils.translation import ugettext as _
 
 from geonode.base.api.filters import DynamicSearchFilter
-from geonode.base.api.permissions import IsOwnerOrReadOnly
+from geonode.base.api.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 
-from .serializers import UploadSerializer
+from .serializers import UploadSerializer, UploadSizeLimitSerializer
 from .permissions import UploadPermissionsFilter
 
-from ..models import Upload
+from ..models import Upload, UploadSizeLimit
 from ..views import view as upload_view
 
 import logging
@@ -110,3 +110,11 @@ class UploadViewSet(DynamicModelViewSet):
             data = json.loads(content)
             return Response(data=data, status=status.HTTP_201_CREATED)
         return Response(status=response.status_code)
+
+
+class UploadSizeLimitViewSet(DynamicModelViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsAdminOrReadOnly]
+    queryset = UploadSizeLimit.objects.all()
+    serializer_class = UploadSizeLimitSerializer
+    pagination_class = GeoNodeApiPagination
