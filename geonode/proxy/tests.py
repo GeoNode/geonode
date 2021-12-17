@@ -23,15 +23,21 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
+import json
+import os
+import io
+import gisdata
+import zipfile
+
 from urllib.parse import urljoin
 
 from django.conf import settings
 from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
 from django.test.client import RequestFactory
-from unittest.mock import patch
-from geonode.upload.models import Upload
-import json
 from django.core.files.uploadedfile import SimpleUploadedFile
+from unittest.mock import patch
+
+from geonode.upload.models import Upload
 
 try:
     from unittest.mock import MagicMock
@@ -45,6 +51,7 @@ from django.test.utils import override_settings
 from geonode import geoserver
 from geonode.base.models import Link
 from geonode.layers.models import Dataset
+from geonode.layers.utils import file_upload
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import create_models, create_single_dataset
@@ -233,6 +240,36 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
         self.assertEqual('application/zip', response.headers.get('Content-Type'))
         self.assertEqual('attachment; filename="CA.zip"', response.headers.get('Content-Disposition'))
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_download_files(self):
+        admin = get_user_model().objects.get(username="admin")
+        # upload a shapefile
+        shp_file = os.path.join(
+            gisdata.VECTOR_DATA,
+            'san_andres_y_providencia_poi.shp')
+        layer = file_upload(
+            shp_file,
+            name="san_andres_y_providencia_poi",
+            user=admin,
+            overwrite=True,
+        )
+        self.client.login(username='admin', password='admin')
+
+        response = self.client.get(reverse('download', args=(layer.id,)))
+        # headers and status assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('content-type'), "application/zip")
+        self.assertEqual(response.get('content-disposition'), 'attachment; filename="san_andres_y_providencia_poi.zip"')
+        # Inspect content
+        zip_content = io.BytesIO(b"".join(response.streaming_content))
+        zip = zipfile.ZipFile(zip_content)
+        zip_files = zip.namelist()
+        self.assertEqual(len(zip_files), 11)
+        self.assertIn(".shp", "".join(zip_files))
+        self.assertIn(".dbf", "".join(zip_files))
+        self.assertIn(".shx", "".join(zip_files))
+        self.assertIn(".prj", "".join(zip_files))
 
 
 class OWSApiTestCase(GeoNodeBaseTestSupport):
