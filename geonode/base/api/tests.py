@@ -1250,8 +1250,7 @@ class BaseApiTests(APITestCase):
         resource = Dataset.objects.first()
         url = reverse('base-resources-ratings', args=[resource.pk])
         data = {
-            "rating": 3,
-            "category": "dataset"
+            "rating": 3
         }
         # Anonymous user
         response = self.client.get(url)

@@ -1128,7 +1128,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         ct = ContentType.objects.get_for_model(resource)
         if request.method == 'POST':
             rating_input = int(request.data.get("rating"))
-            category = request.data.get("category", "")
+            category = resource._meta.object_name.lower()
+            # check if category is configured in settings.PINAX_RATINGS_CATEGORY_CHOICES
             cat_choice = category_value(resource, category)
 
             # Check for errors and bail early
