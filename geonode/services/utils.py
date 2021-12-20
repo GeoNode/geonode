@@ -197,4 +197,4 @@ def get_service_type_choices():
         # (enumerations.HGL, _('Harvard Geospatial Library')),
     ]
 
-    return list(set(parsed+default))
+    return list(set(parsed + default))
