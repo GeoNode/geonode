@@ -6559,10 +6559,10 @@ msgstr ""
 "arquivos compatíveis para eles."
 
 msgid ""
-"\"{data.name}\" size is {filesizeformat(file_size)}. Please keep it under "
+"The total upload size is {filesizeformat(total_size)}. Please keep it under "
 "{filesizeformat(max_size)}."
 msgstr ""
-"O tamanho de \"{data.name}\" é {filesizeformat(file_size)}. Por favor, "
+"O tamanho total do upload é de {filesizeformat(total_size)}. Por favor, "
 "mantenha-o abaixo de {filesizeformat(max_size)}."
 
 msgid "The maximum file size allowed for upload (bytes)."

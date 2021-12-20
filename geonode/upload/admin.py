@@ -46,5 +46,9 @@ class UploadAdmin(admin.ModelAdmin):
             obj.delete()
 
 
+class UploadSizeLimitAdmin(admin.ModelAdmin):
+    list_display = ('slug', 'description', 'max_size', 'max_size_label')
+
+
 admin.site.register(Upload, UploadAdmin)
-admin.site.register(UploadSizeLimit)
+admin.site.register(UploadSizeLimit, UploadSizeLimitAdmin)

@@ -635,7 +635,13 @@ class TestUpload(UploaderBase):
 
     def test_csv_with_size_limit(self):
         '''make sure a csv upload fails gracefully/normally when not activated'''
-        upload_size_limit_obj = UploadSizeLimit.objects.get(slug='base_file')
+        upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="total_upload_size_sum",
+            defaults={
+                "description": "The sum of sizes for the files of a dataset upload.",
+                "max_size": 1,
+            }
+        )
         upload_size_limit_obj.max_size = 1
         upload_size_limit_obj.save()
 
@@ -643,7 +649,7 @@ class TestUpload(UploaderBase):
             ['lat', 'lon', 'thing'], {'lat': -100, 'lon': -40, 'thing': 'foo'})
         with self.assertRaises(HTTPError) as error:
             self.client.upload_file(csv_file)
-        excepect_error = ".csv&quot; size is 29\\u00a0bytes. Please keep it under 1\\u00a0byte."
+        excepect_error = "The total upload size is 29\\u00a0bytes. Please keep it under 1\\u00a0byte."
         self.assertIn(excepect_error, error.exception.msg)
 
 

@@ -48,6 +48,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from geonode.base import enumerations
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.upload.models import UploadSizeLimit
 
 GEONODE_USER = 'admin'
 GEONODE_PASSWD = 'admin'
@@ -489,6 +490,16 @@ class UploadSizeLimitTests(APITestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.admin = get_user_model().objects.get(username="admin")
+        UploadSizeLimit.objects.create(
+            slug="some-size-limit",
+            description="some description",
+            max_size=104857600,  # 100 MB
+        )
+        UploadSizeLimit.objects.create(
+            slug="some-other-size-limit",
+            description="some other description",
+            max_size=52428800,  # 50 MB
+        )
 
     def test_list_size_limits(self):
         url = reverse('upload-size-limits-list')
@@ -513,18 +524,14 @@ class UploadSizeLimitTests(APITestCase):
             for size_limit in response.json()['upload-size-limits']
         ]
         expected_size_limits = [
-            ('base_file', 104857600, '100.0\xa0MB'),
-            ('dbf_file', 104857600, '100.0\xa0MB'),
-            ('prj_file', 104857600, '100.0\xa0MB'),
-            ('shx_file', 104857600, '100.0\xa0MB'),
-            ('sld_file', 104857600, '100.0\xa0MB'),
-            ('xml_file', 104857600, '100.0\xa0MB')
+            ('some-size-limit', 104857600, '100.0\xa0MB'),
+            ('some-other-size-limit', 52428800, '50.0\xa0MB'),
         ]
-        self.assertEqual(response.json()['total'], 6)
-        self.assertListEqual(size_limits, expected_size_limits)
+        for size_limit in expected_size_limits:
+            self.assertIn(size_limit, size_limits)
 
     def test_retrieve_size_limit(self):
-        url = reverse('upload-size-limits-detail', args=('shx_file',))
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
 
         # List as an admin user
         self.client.force_authenticate(user=self.admin)
@@ -542,12 +549,12 @@ class UploadSizeLimitTests(APITestCase):
         self.assertEqual(response.json(), anonymous_response.json())
         # Response Content
         size_limit = response.json()['upload-size-limit']
-        self.assertEqual(size_limit['slug'], 'shx_file')
+        self.assertEqual(size_limit['slug'], 'some-size-limit')
         self.assertEqual(size_limit['max_size'], 104857600)
         self.assertEqual(size_limit['max_size_label'], '100.0\xa0MB')
 
     def test_patch_size_limit(self):
-        url = reverse('upload-size-limits-detail', args=('shx_file',))
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
 
         # List as an admin user
         self.client.force_authenticate(user=self.admin)
@@ -564,20 +571,20 @@ class UploadSizeLimitTests(APITestCase):
         self.assertTrue(anonymous_response.wsgi_request.user.is_anonymous)
         # Response Content
         size_limit = response.json()['upload-size-limit']
-        self.assertEqual(size_limit['slug'], 'shx_file')
+        self.assertEqual(size_limit['slug'], 'some-size-limit')
         self.assertEqual(size_limit['max_size'], 5242880)
         self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
 
     def test_put_size_limit(self):
-        url = reverse('upload-size-limits-detail', args=('shx_file',))
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
 
         # List as an admin user
         self.client.force_authenticate(user=self.admin)
-        response = self.client.put(url, data={"slug": "shx_file", "max_size": 5242880})
+        response = self.client.put(url, data={"slug": "some-size-limit", "max_size": 5242880})
 
         # List as an Anonymous user
         self.client.force_authenticate(user=None)
-        anonymous_response = self.client.put(url, data={"slug": "shx_file", "max_size": 2621440})
+        anonymous_response = self.client.put(url, data={"slug": "some-size-limit", "max_size": 2621440})
 
         # Assertions
         self.assertEqual(response.status_code, 200)
@@ -586,7 +593,7 @@ class UploadSizeLimitTests(APITestCase):
         self.assertTrue(anonymous_response.wsgi_request.user.is_anonymous)
         # Response Content
         size_limit = response.json()['upload-size-limit']
-        self.assertEqual(size_limit['slug'], 'shx_file')
+        self.assertEqual(size_limit['slug'], 'some-size-limit')
         self.assertEqual(size_limit['max_size'], 5242880)
         self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
 
@@ -595,11 +602,11 @@ class UploadSizeLimitTests(APITestCase):
 
         # List as an admin user
         self.client.force_authenticate(user=self.admin)
-        response = self.client.post(url, data={"slug": "some_slug", "max_size": 5242880})
+        response = self.client.post(url, data={"slug": "some-new-slug", "max_size": 5242880})
 
         # List as an Anonymous user
         self.client.force_authenticate(user=None)
-        anonymous_response = self.client.post(url, data={"slug": "some_other_slug", "max_size": 2621440})
+        anonymous_response = self.client.post(url, data={"slug": "other-new-slug", "max_size": 2621440})
 
         # Assertions
         self.assertEqual(response.status_code, 201)
@@ -608,13 +615,13 @@ class UploadSizeLimitTests(APITestCase):
         self.assertTrue(anonymous_response.wsgi_request.user.is_anonymous)
         # Response Content
         size_limit = response.json()['upload-size-limit']
-        self.assertEqual(size_limit['slug'], 'some_slug')
+        self.assertEqual(size_limit['slug'], 'some-new-slug')
         self.assertEqual(size_limit['max_size'], 5242880)
         self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
 
     def test_delete_size_limit(self):
-        url = reverse('upload-size-limits-detail', args=('shx_file',))
-        other_url = reverse('upload-size-limits-detail', args=('sld_file',))
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
+        other_url = reverse('upload-size-limits-detail', args=('some-other-size-limit',))
 
         # List as an admin user
         self.client.force_authenticate(user=self.admin)

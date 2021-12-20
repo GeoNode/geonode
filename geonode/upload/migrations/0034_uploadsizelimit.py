@@ -6,12 +6,11 @@ from django.db import migrations, models
 DEFAULT_MAX_UPLOAD_SIZE = 104857600  # 100MB
 
 UPLOAD_SIZE_LIMIT_OBJECTS = [
-    {"slug": "base_file", "max_size": DEFAULT_MAX_UPLOAD_SIZE},
-    {"slug": "dbf_file", "max_size": DEFAULT_MAX_UPLOAD_SIZE},
-    {"slug": "shx_file", "max_size": DEFAULT_MAX_UPLOAD_SIZE},
-    {"slug": "prj_file", "max_size": DEFAULT_MAX_UPLOAD_SIZE},
-    {"slug": "xml_file", "max_size": DEFAULT_MAX_UPLOAD_SIZE},
-    {"slug": "sld_file", "max_size": DEFAULT_MAX_UPLOAD_SIZE},
+    {
+        "slug": "total_upload_size_sum",
+        "description": "The sum of sizes for the files of a dataset upload.",
+        "max_size": DEFAULT_MAX_UPLOAD_SIZE
+    },
 ]
 
 def create_upload_size_limit_objects(apps, schema_editor):
@@ -35,7 +34,8 @@ class Migration(migrations.Migration):
             name='UploadSizeLimit',
             fields=[
                 ('slug', models.SlugField(max_length=255, primary_key=True, serialize=False, unique=True, validators=[django.core.validators.MinLengthValidator(limit_value=3)])),
-                ('max_size', models.PositiveBigIntegerField(default=2621440, help_text='The maximum file size allowed for upload (bytes).')),
+                ('description', models.TextField(blank=True, default=None, max_length=255, null=True)),
+                ('max_size', models.PositiveBigIntegerField(default=104857600, help_text='The maximum file size allowed for upload (bytes).')),
             ],
             options={
                 'ordering': ('slug',),

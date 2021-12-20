@@ -270,13 +270,23 @@ class UploadSizeLimit(models.Model):
         blank=False,
         validators=[MinLengthValidator(limit_value=3)],
     )
+    description = models.TextField(
+        max_length=255,
+        default=None,
+        null=True,
+        blank=True,
+    )
     max_size = models.PositiveBigIntegerField(
         help_text=_("The maximum file size allowed for upload (bytes)."),
         default=DEFAULT_MAX_UPLOAD_SIZE,
     )
 
+    @property
+    def max_size_label(self):
+        return filesizeformat(self.max_size)
+
     def __str__(self):
-        return f'UploadSizeLimit for "{self.slug}" (max_size: {filesizeformat(self.max_size)})'
+        return f'UploadSizeLimit for "{self.slug}" (max_size: {self.max_size_label})'
 
     class Meta:
         ordering = ("slug",)
