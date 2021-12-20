@@ -623,9 +623,10 @@ class ResourceManager(ResourceManagerInterface):
                         _perm_spec = set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
 
                         # Anonymous User group
-                        if 'users' in _permissions and "AnonymousUser" in _permissions['users']:
+                        if 'users' in _permissions and ("AnonymousUser" in _permissions['users'] or get_anonymous_user() in _permissions['users']):
+                            anonymous_user = "AnonymousUser" if "AnonymousUser" in _permissions['users'] else get_anonymous_user()
                             anonymous_group = Group.objects.get(name='anonymous')
-                            for perm in _permissions['users']['AnonymousUser']:
+                            for perm in _permissions['users'][anonymous_user]:
                                 if _resource_type == 'dataset' and perm in (
                                         'change_dataset_data', 'change_dataset_style',
                                         'add_dataset', 'change_dataset', 'delete_dataset'):
@@ -641,7 +642,7 @@ class ResourceManager(ResourceManagerInterface):
                         if 'users' in _permissions and len(_permissions['users']) > 0:
                             for user, perms in _permissions['users'].items():
                                 _user = get_user_model().objects.get(username=user)
-                                if _user != _resource.owner and user != "AnonymousUser":
+                                if _user != _resource.owner and user != "AnonymousUser" and user != get_anonymous_user():
                                     for perm in perms:
                                         if _resource_type == 'dataset' and perm in (
                                                 'change_dataset_data', 'change_dataset_style',
