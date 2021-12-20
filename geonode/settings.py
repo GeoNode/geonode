@@ -1458,22 +1458,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
 
-    MAPSTORE_CATALOGUE_SERVICES = {
-        "Demo WMS Service": {
-            "url": "https://demo.geo-solutions.it/geoserver/wms",
-            "type": "wms",
-            "title": "Demo WMS Service",
-            "autoload": False
-        },
-        "Demo WMTS Service": {
-            "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
-            "type": "wmts",
-            "title": "Demo WMTS Service",
-            "autoload": False
-        }
-    }
+    MAPSTORE_CATALOGUE_SERVICES = {}
 
-    MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
+    MAPSTORE_CATALOGUE_SELECTED_SERVICE = ""
 
     if GEONODE_CATALOGUE_SERVICE:
         MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]  # noqa
@@ -1544,6 +1531,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
         DEFAULT_MS2_BACKGROUNDS = [BASEMAP, ] + DEFAULT_MS2_BACKGROUNDS
 
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
+    # MAPSTORE_BASELAYERS_SOURCES allow to configure tilematrix sets for wmts layers
+    MAPSTORE_BASELAYERS_SOURCES = os.environ.get('MAPSTORE_BASELAYERS_SOURCES', {})
 
 # -- END Client Hooksets Setup
 
