@@ -1984,11 +1984,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 },
             ),
         ]
-        for permissions, expected in use_cases:
+        for counter, item in enumerate(use_cases):
+            permissions, expected = item
             self.resource.set_permissions(permissions)
             for authorized_subject, expected_perms in expected.items():
                 perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #{counter} - user: {authorized_subject.username}")
 
     @override_settings(RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
@@ -2043,11 +2044,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 },
             ),
         ]
-        for permissions, expected in use_cases:
+        for counter, item in enumerate(use_cases):
+            permissions, expected = item
             self.resource.set_permissions(permissions)
             for authorized_subject, expected_perms in expected.items():
                 perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #{counter} - user: {authorized_subject.username}")
 
     @override_settings(RESOURCE_PUBLISHING=False)
     @override_settings(ADMIN_MODERATE_UPLOADS=False)
@@ -2083,18 +2085,19 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: [],
+                    self.group_manager: ["view_resourcebase"],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: ["view_resourcebase", "change_resourcebase"],
                     self.anonymous_user: ["view_resourcebase"],
                 },
             ),
         ]
-        for permissions, expected in use_cases:
+        for counter, item in enumerate(use_cases):
+            permissions, expected = item
             self.resource.set_permissions(permissions)
             for authorized_subject, expected_perms in expected.items():
                 perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #{counter} - user: {authorized_subject.username}")
 
     @override_settings(RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
@@ -2136,7 +2139,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         try:
             for authorized_subject, expected_perms in expected.items():
                 perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}")
         finally:
             sut.demote()
 
@@ -2163,7 +2166,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         }
         for authorized_subject, expected_perms in expected.items():
             perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}")
 
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_permissions_on_user_role_demote_to_member_only_RESOURCE_PUBLISHING_active(self):
@@ -2189,7 +2192,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         }
         for authorized_subject, expected_perms in expected.items():
             perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}")
 
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_permissions_on_user_role_promote_to_manager_only_RESOURCE_PUBLISHING_active(self):
@@ -2231,4 +2234,4 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         }
         for authorized_subject, expected_perms in expected.items():
             perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"user: {authorized_subject.username}")
+            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}")
