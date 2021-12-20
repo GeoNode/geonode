@@ -1078,7 +1078,7 @@ def sync_resources_with_guardian(resource=None):
                             user = get_user_model().objects.get(username=user)
                             # Set the GeoFence User Rules
                             geofence_user = str(user)
-                            if "AnonymousUser" in geofence_user:
+                            if "AnonymousUser" in geofence_user or get_anonymous_user() in geofence_user:
                                 geofence_user = None
                             sync_geofence_with_guardian(layer, perms, user=geofence_user)
                     # All the other groups

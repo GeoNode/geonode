@@ -289,9 +289,10 @@ class PermissionLevelMixin(object):
                     set_owner_permissions(self)
 
                     # Anonymous User group
-                    if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
+                    if 'users' in perm_spec and ("AnonymousUser" in perm_spec['users'] or get_anonymous_user() in perm_spec['users']):
+                        anonymous_user = "AnonymousUser" if "AnonymousUser" in perm_spec['users'] else get_anonymous_user()
                         anonymous_group = Group.objects.get(name='anonymous')
-                        for perm in perm_spec['users']['AnonymousUser']:
+                        for perm in perm_spec['users'][anonymous_user]:
                             if self.polymorphic_ctype.name == 'layer' and perm in ('change_layer_data', 'change_layer_style',
                                                                                    'add_layer', 'change_layer', 'delete_layer',):
                                 assign_perm(perm, anonymous_group, self.layer)
@@ -302,7 +303,7 @@ class PermissionLevelMixin(object):
                     if 'users' in perm_spec and len(perm_spec['users']) > 0:
                         for user, perms in perm_spec['users'].items():
                             _user = get_user_model().objects.get(username=user)
-                            if _user != self.owner and user != "AnonymousUser":
+                            if _user != self.owner and user != "AnonymousUser" and user != get_anonymous_user():
                                 for perm in perms:
                                     if self.polymorphic_ctype.name == 'layer' and perm in (
                                             'change_layer_data', 'change_layer_style',
@@ -325,9 +326,10 @@ class PermissionLevelMixin(object):
 
                     # AnonymousUser
                     if 'users' in perm_spec and len(perm_spec['users']) > 0:
-                        if "AnonymousUser" in perm_spec['users']:
+                        if "AnonymousUser" in perm_spec['users'] or get_anonymous_user() in perm_spec['users']:
                             _user = get_anonymous_user()
-                            perms = perm_spec['users']["AnonymousUser"]
+                            anonymous_user = "AnonymousUser" if "AnonymousUser" in perm_spec['users'] else get_anonymous_user()
+                            perms = perm_spec['users'][anonymous_user]
                             for perm in perms:
                                 if self.polymorphic_ctype.name == 'layer' and perm in (
                                         'change_layer_data', 'change_layer_style',
@@ -384,9 +386,10 @@ class PermissionLevelMixin(object):
 
                             # AnonymousUser
                             if 'users' in perm_spec and len(perm_spec['users']) > 0:
-                                if "AnonymousUser" in perm_spec['users']:
+                                if "AnonymousUser" in perm_spec['users'] or get_anonymous_user() in perm_spec['users']:
                                     _user = get_anonymous_user()
-                                    perms = perm_spec['users']["AnonymousUser"]
+                                    anonymous_user = "AnonymousUser" if "AnonymousUser" in perm_spec['users'] else get_anonymous_user()
+                                    perms = perm_spec['users'][anonymous_user]
                                     sync_geofence_with_guardian(self.layer, perms, geofence_uow=geofence_uow)
                                     gf_services = _get_gf_services(self.layer, perms)
                                     _, _, _disable_layer_cache, _, _, _ = get_user_geolimits(self.layer, _user, None, gf_services)
