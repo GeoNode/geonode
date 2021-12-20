@@ -80,5 +80,5 @@ class DatasetViewSet(DynamicModelViewSet):
     @action(detail=True, methods=["get"])
     def maps(self, request, pk=None):
         dataset = self.get_object()
-        resources = dataset.dataset_maps
+        resources = dataset.maps
         return Response(SimpleMapSerializer(many=True).to_representation(resources))

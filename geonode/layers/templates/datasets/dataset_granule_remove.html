@@ -25,14 +25,14 @@
       </div>
     </form>
   </div>
-  {% if dataset.maps %}
+  {% if dataset.maplayers %}
     <div class="col-md-4">
     <ul class="nav nav-list">
     <li class="nav-header">{% trans "This action affects the following maps:" %}</li>
-    {% for map_layer in dataset.maps %}
-      <li><a href="{{ map_dataset.map.get_absolute_url }}">{{ map_dataset.map.title }}</a></li>
+    {% for map_layer in dataset.maplayers %}
+      <li><a href="{{ map_layer.map.get_absolute_url }}">{{ map_layer.map.title }}</a></li>
     {% empty %}
-      <li>{% trans "No maps are using this layer" %}</li>
+      <li>{% trans "No maps are using this dataset" %}</li>
     {% endfor %}
     </ul>
     </div>

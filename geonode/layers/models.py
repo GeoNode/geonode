@@ -314,12 +314,8 @@ class Dataset(ResourceBase):
     LEVEL_WRITE = 'dataset_readwrite'
     LEVEL_ADMIN = 'dataset_admin'
 
-    def maps(self):
-        from geonode.maps.models import MapLayer
-        return MapLayer.objects.filter(name=self.alternate)
-
     @property
-    def dataset_maps(self):
+    def maps(self):
         from geonode.maps.models import Map
         map_ids = list(self.maplayers.values_list('map__id', flat=True))
         return Map.objects.filter(id__in=map_ids)
