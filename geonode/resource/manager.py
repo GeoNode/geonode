@@ -672,9 +672,10 @@ class ResourceManager(ResourceManagerInterface):
 
                         # AnonymousUser
                         if 'users' in _permissions and len(_permissions['users']) > 0:
-                            if "AnonymousUser" in _permissions['users']:
+                            if "AnonymousUser" in _permissions['users'] or get_anonymous_user() in _permissions['users']:
                                 _user = get_anonymous_user()
-                                perms = _permissions['users']["AnonymousUser"]
+                                anonymous_user = "AnonymousUser" if "AnonymousUser" in _permissions['users'] else get_anonymous_user()
+                                perms = _permissions['users'][anonymous_user]
                                 for perm in perms:
                                     if _resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
