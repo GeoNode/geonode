@@ -482,8 +482,11 @@ class ResourceBaseForm(TranslationModelForm):
     regions.widget.attrs = {"size": 20}
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         for field in self.fields:
+            if field == 'featured' and self.user and not self.user.is_superuser:
+                self.fields[field].disabled = True
             help_text = self.fields[field].help_text
             if help_text != '':
                 self.fields[field].widget.attrs.update(
@@ -609,37 +612,6 @@ class BatchEditForm(forms.Form):
         choices=LANGUAGES,
     )
     keywords = forms.CharField(required=False)
-    ids = forms.CharField(required=False, widget=forms.HiddenInput())
-
-
-class BatchPermissionsForm(forms.Form):
-    group = forms.ModelChoiceField(
-        label=_('Group'),
-        queryset=Group.objects.all(),
-        required=False)
-    user = forms.ModelChoiceField(
-        label=_('User'),
-        queryset=get_user_model().objects.all(),
-        required=False)
-    permission_type = forms.MultipleChoiceField(
-        label=_('Permission Type'),
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        choices=(
-            ('r', 'Read'),
-            ('w', 'Write'),
-            ('d', 'Download'),
-        ),
-    )
-    mode = forms.ChoiceField(
-        label=_('Mode'),
-        required=True,
-        widget=forms.RadioSelect,
-        choices=(
-            ('set', 'Set'),
-            ('unset', 'Unset'),
-        ),
-    )
     ids = forms.CharField(required=False, widget=forms.HiddenInput())
 
 

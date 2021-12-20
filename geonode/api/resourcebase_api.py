@@ -901,16 +901,8 @@ class MapResource(CommonModelApi):
             formatted_datasets = []
             map_dataset_fields = [
                 'id',
-                'stack_order',
-                'format',
                 'name',
-                'opacity',
-                'group',
-                'visibility',
-                'transparent',
                 'ows_url',
-                'dataset_params',
-                'source_params',
                 'local'
             ]
             for layer in map_datasets:

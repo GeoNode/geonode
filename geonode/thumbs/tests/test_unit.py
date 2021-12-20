@@ -20,8 +20,9 @@
 import re
 import uuid
 
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch, PropertyMock, MagicMock
 from django.conf import settings
+from django.contrib.gis.geos import Polygon
 
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
@@ -164,11 +165,8 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         MapLayer(
             map=map,
             name="Meteorite_Landings_from_NASA_Open_Data_Portal1",
-            stack_order=1,
-            visibility=True,
+            current_style="test_style",
             ows_url="https://maps.geo-solutions.it/geoserver/wms",
-            dataset_params="""{\"id\": 1, \"title\": \"Open Street Map\", \"style\": \"test_style\", \"type\": \"osm\", \"singleTile\": false, \"dimensions\": [], \"hideLoading\": false,
-            \"handleClickOnLayer\": false, \"useForElevation\": false, \"hidden\": false, \"extraParams\": {\"msId\": \"mapnik__0\"}, \"wrapDateLine\": true, \"displayOutsideMaxExtent\": true}"""
         ).save()
         locations, bbox = thumbnails._datasets_locations(map)
 
@@ -188,14 +186,13 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], ["theaters_nyc"]]])
 
     def test_datasets_locations_composition_map_default_bbox(self):
-        expected_bbox = [-20033947.41086791, 1414810.0631394347, -20041642.2309585, 16329038.485056704, 'EPSG:3857']
         expected_locations = [
             [
                 settings.GEOSERVER_LOCATION,
                 [
-                    'geonode:theaters_nyc',
+                    'rt_geologia.dbg_risorse_minerarie',
                     'geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1',
-                    'rt_geologia.dbg_risorse_minerarie'
+                    'geonode:theaters_nyc',
                 ],
                 []
             ]
@@ -205,5 +202,19 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         locations, bbox = thumbnails._datasets_locations(map, compute_bbox=True)
 
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
-        self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
         self.assertEqual(locations, expected_locations, "Expected calculated locations to match pre-computed.")
+
+    def test_create_map_thumbnail_using_ll_bbox_polygon(self):
+        map = Map.objects.get(title_en="theaters_nyc_map")
+
+        with patch("geonode.thumbs.thumbnails._datasets_locations") as _mck:
+            _mck.return_value = [MagicMock(), MagicMock()]
+            if not map.ll_bbox_polygon:
+                thumbnails.create_thumbnail(map, overwrite=True)
+                _mck.assert_called_with(map, compute_bbox=True, target_crs="EPSG:3857")
+
+            ll_bbox_polygon = Polygon.from_bbox((0, 22, 0, 22))
+            map.ll_bbox_polygon = ll_bbox_polygon
+            map.save()
+            thumbnails.create_thumbnail(map, overwrite=True)
+            _mck.assert_called_with(map, compute_bbox=False, target_crs="EPSG:3857")

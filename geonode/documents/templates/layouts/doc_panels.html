@@ -598,10 +598,12 @@ span.grippy::after {
                         <span><label for="{{ document_form.is_published|id }}">{{ document_form.is_published.label }}</label></span>
                         {{ document_form.is_published }}
                     </div>
+                    {% if user.is_superuser %}
                     <div>
                         <span><label for="{{ document_form.featured|id }}">{{ document_form.featured.label }}</label></span>
                         {{ document_form.featured }}
                     </div>
+                    {% endif %}
                   </div>
                 </div>
               </div>

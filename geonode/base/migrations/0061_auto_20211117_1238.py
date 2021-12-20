@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0073_resourcebase_thumbnail_path'),
+        ('base', '0060_auto_20210512_1658'),
     ]
 
     operations = [

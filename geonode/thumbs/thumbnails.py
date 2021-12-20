@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
-import re
 import logging
 
 from io import BytesIO
@@ -28,6 +26,7 @@ from django.conf import settings
 from django.templatetags.static import static
 from django.utils.module_loading import import_string
 
+from geonode.base.bbox_utils import BBOXHelper
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Dataset
 from geonode.utils import OGC_Servers_Handler
@@ -109,26 +108,16 @@ def create_thumbnail(
     is_map_with_datasets = True
 
     if isinstance(instance, Map):
-        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(dataset=None).count() > 0
+        is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).count() > 0
     if bbox:
-        # make sure BBOX is provided with the CRS in a correct format
-        source_crs = bbox[-1]
-
-        srid_regex = re.match(r"EPSG:\d+", source_crs)
-        if not srid_regex:
-            logger.error(f"Thumbnail bbox is in a wrong format: {bbox}")
-            raise ThumbnailError("Wrong BBOX format")
-
-        # for the EPSG:3857 (default thumb's CRS) - make sure received BBOX can be transformed to the target CRS;
-        # if it can't be (original coords are outside of the area of use of EPSG:3857), thumbnail generation with
-        # the provided bbox is impossible.
-        if target_crs == 'EPSG:3857' and bbox[-1].upper() != 'EPSG:3857':
-            bbox = utils.crop_to_3857_area_of_use(bbox)
-
-        bbox = utils.transform_bbox(bbox, target_crs=target_crs)
+        bbox = utils.clean_bbox(bbox, target_crs)
+    elif instance.ll_bbox_polygon:
+        _bbox = BBOXHelper(instance.ll_bbox_polygon.extent)
+        srid = instance.ll_bbox_polygon.srid
+        bbox = [_bbox.xmin, _bbox.xmax, _bbox.ymin, _bbox.ymax, f"EPSG:{srid}"]
+        bbox = utils.clean_bbox(bbox, target_crs)
     else:
         compute_bbox_from_datasets = True
-
     # --- define dataset locations ---
     locations, datasets_bbox = _datasets_locations(instance, compute_bbox=compute_bbox_from_datasets, target_crs=target_crs)
 
@@ -285,14 +274,8 @@ def _datasets_locations(
                 bbox = utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
         map_datasets = instance.datasets.copy()
-        # ensure correct order of datasets in the map (higher stack_order are printed on top of lower)
-        map_datasets.sort(key=lambda l: l.stack_order)
 
         for map_dataset in map_datasets:
-
-            if not map_dataset.visibility:
-                logger.debug("Skipping not visible dataset in the thumbnail generation.")
-                continue
 
             if not map_dataset.local and not map_dataset.ows_url:
                 logger.warning(
@@ -304,10 +287,7 @@ def _datasets_locations(
             name = get_dataset_name(map_dataset)
             store = map_dataset.store
             workspace = get_dataset_workspace(map_dataset)
-            try:
-                map_dataset_style = json.loads(map_dataset.dataset_params).get('style')
-            except json.decoder.JSONDecodeError:
-                map_dataset_style = None
+            map_dataset_style = map_dataset.current_style
 
             if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
                 dataset = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()

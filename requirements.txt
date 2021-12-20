@@ -1,6 +1,6 @@
 # native dependencies
 Pillow==8.4.0
-lxml==4.6.4
+lxml==4.6.5
 psycopg2==2.9.2
 Django==3.2.7
 
@@ -21,9 +21,10 @@ tqdm==4.62.3
 Deprecated==1.2.13
 wrapt==1.13.3
 jsonschema==4.2.1
+zipstream-new==1.1.8
 
 # Django Apps
-django-allauth==0.46.0
+django-allauth==0.47.0
 django-appconf==1.0.5
 django-celery-results==2.2.0
 django-filter==21.1
@@ -49,7 +50,7 @@ pyopenssl==21.0.0
 pyproj==3.3.0
 OWSLib==0.25.0
 pycsw==2.6.1
-SQLAlchemy==1.4.27 # required by PyCSW
+SQLAlchemy==1.4.28 # required by PyCSW
 Shapely==1.8.0
 mercantile==1.2.1
 geoip2==4.5.0
@@ -105,7 +106,7 @@ django-storages==1.12.3
 dropbox==11.25.0
 google-cloud-storage==1.43.0
 google-cloud-core==2.2.1
-boto3==1.20.20
+boto3==1.20.23
 
 # Django Caches
 python-memcached<=1.59
@@ -147,8 +148,8 @@ pytest==6.2.5
 pytest-bdd==5.0.0
 splinter==0.16.0
 pytest-splinter==3.3.1
-pytest-django==4.5.1
-setuptools==59.5.0
+pytest-django==4.5.2
+setuptools==59.6.0
 pip==21.3.1
 Twisted==21.7.0
 pixelmatch==0.2.3

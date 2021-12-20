@@ -130,6 +130,8 @@ class GeoAppSerializer(ResourceBaseSerializer):
         return self._create_and_update(self._sanitize_validated_data(validated_data))
 
     def update(self, instance, validated_data):
+        if instance.resource_type:
+            validated_data['resource_type'] = instance.resource_type
         # Sanity checks
         _mandatory_fields = ['resource_type', ]
         if not all([_x in validated_data for _x in _mandatory_fields]):

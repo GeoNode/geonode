@@ -124,7 +124,6 @@ class MapLayerDatasetSerializer(ResourceBaseToRepresentationSerializerMixin):
 
 
 class MapLayerSerializer(DynamicModelSerializer):
-    styles = DynamicListAsStringField(required=False)
     dataset = DynamicRelationField(MapLayerDatasetSerializer, embed=True)
 
     class Meta:
@@ -134,7 +133,6 @@ class MapLayerSerializer(DynamicModelSerializer):
             "pk",
             "extra_params",
             "current_style",
-            "styles",
             "dataset",
             "name",
         )
@@ -150,10 +148,6 @@ class MapSerializer(ResourceBaseSerializer):
         fields = (
             "pk",
             "uuid",
-            "zoom",
-            "projection",
-            "center_x",
-            "center_y",
             "urlsuffix",
             "featuredurl",
             "data",
