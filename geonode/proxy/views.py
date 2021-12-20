@@ -16,46 +16,43 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import io
-import os
-import re
 import gzip
+import io
 import json
-import shutil
 import logging
-import tempfile
+import re
 import traceback
+from distutils.version import StrictVersion
+from urllib.parse import urljoin, urlparse, urlsplit
 
+import zipstream
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.forms.models import model_to_dict
+from django.http import HttpResponse, StreamingHttpResponse
+from django.http.request import validate_host
+from django.template import loader
+from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import requires_csrf_token
+from django.views.generic import View
 from hyperlink import URL
 from slugify import slugify
-from urllib.parse import urlparse, urlsplit, urljoin
-
-from django.conf import settings
-from django.template import loader
-from django.http import HttpResponse
-from django.views.generic import View
-from distutils.version import StrictVersion
-from django.http.request import validate_host
-from django.forms.models import model_to_dict
-from django.utils.translation import ugettext as _
-from django.core.files.storage import FileSystemStorage
-from django.views.decorators.csrf import requires_csrf_token
-
-from geonode.base.models import Link
-from geonode.layers.models import Layer, LayerFile
-from geonode.utils import (
-    resolve_object,
-    check_ogc_backend,
-    get_dir_time_suffix,
-    zip_dir,
-    get_headers,
-    http_client,
-    json_response,
-    json_serializer_producer)
-from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver  # noqa
 from geonode.base import register_event
+from geonode.base.enumerations import LINK_TYPES as _LT
+from geonode.base.models import Link
+from geonode.layers.models import Layer, LayerFile
+from geonode.utils import (
+    check_ogc_backend,
+    get_headers,
+    http_client,
+    json_response,
+    json_serializer_producer,
+    resolve_object,
+)
+
+BUFFER_CHUNK_SIZE = 64 * 1024
 
 TIMEOUT = 30
 
@@ -280,14 +277,8 @@ def download(request, resourceid, sender=Layer):
                               permission_msg=_not_permitted)
 
     if isinstance(instance, Layer):
-        # Create Target Folder
-        dirpath = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-        dir_time_suffix = get_dir_time_suffix()
-        target_folder = os.path.join(dirpath, dir_time_suffix)
-        if not os.path.exists(target_folder):
-            os.makedirs(target_folder)
-
         layer_files = []
+        file_list = []  # Store file info to be returned
         try:
             upload_session = instance.get_upload_session()
             if upload_session:
@@ -298,7 +289,11 @@ def download(request, resourceid, sender=Layer):
                     for lyr in layer_files:
                         if storage.exists(str(lyr.file)):
                             geonode_layer_path = storage.path(str(lyr.file))
-                            shutil.copy2(geonode_layer_path, target_folder)
+                            file_list.append({
+                                "zip_folder": "",
+                                "name": lyr.file.name.split('/')[-1],
+                                "data_src_file": geonode_layer_path,
+                            })
                         else:
                             return HttpResponse(
                                 loader.render_to_string(
@@ -323,9 +318,12 @@ def download(request, resourceid, sender=Layer):
             # Let's check for associated SLD files (if any)
             try:
                 for s in instance.styles.all():
-                    sld_file_path = os.path.join(target_folder, "".join([s.name, ".sld"]))
-                    with open(sld_file_path, "w") as sld_file:
-                        sld_file.write(s.sld_body.strip())
+                    sld_file_name = "".join([s.name, ".sld"])
+                    file_list.append({
+                        "zip_folder": "",
+                        "name": sld_file_name,
+                        "data_str": s.sld_body.strip(),
+                    })
                     try:
                         # Collecting headers and cookies
                         headers, access_token = get_headers(request, urlsplit(s.sld_url), s.sld_url)
@@ -336,9 +334,12 @@ def download(request, resourceid, sender=Layer):
                             timeout=TIMEOUT,
                             user=request.user)
                         sld_remote_content = response.text
-                        sld_file_path = os.path.join(target_folder, "".join([s.name, "_remote.sld"]))
-                        with open(sld_file_path, "w") as sld_file:
-                            sld_file.write(sld_remote_content.strip())
+                        remote_sld_file_name = "".join([s.name, "_remote.sld"])
+                        file_list.append({
+                            "zip_folder": "",
+                            "name": remote_sld_file_name,
+                            "data_str": sld_remote_content,
+                        })
                     except Exception:
                         traceback.print_exc()
                         tb = traceback.format_exc()
@@ -349,46 +350,56 @@ def download(request, resourceid, sender=Layer):
                 logger.debug(tb)
 
             # Let's dump metadata
-            target_md_folder = os.path.join(target_folder, ".metadata")
-            if not os.path.exists(target_md_folder):
-                os.makedirs(target_md_folder)
-
             try:
-                dump_file = os.path.join(target_md_folder, "".join([instance.name, ".dump"]))
-                with open(dump_file, 'w') as outfile:
-                    serialized_obj = json_serializer_producer(model_to_dict(instance))
-                    json.dump(serialized_obj, outfile)
-
+                dump_file_name = "".join([instance.name, ".dump"])
+                serialized_obj = json_serializer_producer(model_to_dict(instance))
+                file_list.append({
+                    "zip_folder": ".metadata/",
+                    "name": dump_file_name,
+                    "data_str": json.dumps(serialized_obj),
+                })
                 links = Link.objects.filter(resource=instance.resourcebase_ptr)
                 for link in links:
                     link_name = slugify(link.name)
-                    link_file = os.path.join(target_md_folder, "".join([link_name, f".{link.extension}"]))
+                    link_file_name = "".join([link_name, f".{link.extension}"])
+                    link_file_obj = None
+
                     if link.link_type in ('data'):
                         # Skipping 'data' download links
                         continue
                     elif link.link_type in ('metadata', 'image'):
                         # Dumping metadata files and images
-                        with open(link_file, "wb"):
-                            try:
-                                # Collecting headers and cookies
-                                headers, access_token = get_headers(request, urlsplit(link.url), link.url)
+                        try:
+                            # Collecting headers and cookies
+                            headers, access_token = get_headers(request, urlsplit(link.url), link.url)
 
-                                response, raw = http_client.get(
-                                    link.url,
-                                    stream=True,
-                                    headers=headers,
-                                    timeout=TIMEOUT,
-                                    user=request.user)
-                                raw.decode_content = True
-                                shutil.copyfileobj(raw, link_file)
-                            except Exception:
-                                traceback.print_exc()
-                                tb = traceback.format_exc()
-                                logger.debug(tb)
+                            response, raw = http_client.get(
+                                link.url,
+                                stream=True,
+                                headers=headers,
+                                timeout=TIMEOUT,
+                                user=request.user)
+                            raw.decode_content = True
+                            if raw and raw is not None:
+                                link_file_obj = {
+                                    "zip_folder": ".metadata/",
+                                    "name": link_file_name,
+                                    "data_iter": raw,
+                                }
+                        except Exception:
+                            traceback.print_exc()
+                            tb = traceback.format_exc()
+                            logger.debug(tb)
                     elif link.link_type.startswith('OGC'):
                         # Dumping OGC/OWS links
-                        with open(link_file, "w") as link_file:
-                            link_file.write(link.url.strip())
+                        link_file_obj = {
+                            "zip_folder": ".metadata/",
+                            "name": link_file_name,
+                            "data_str": link.url.strip(),
+                        }
+                    # Add file_info to the file list
+                    if link_file_obj is not None:
+                        file_list.append(link_file_obj)
             except Exception:
                 traceback.print_exc()
                 tb = traceback.format_exc()
@@ -396,13 +407,32 @@ def download(request, resourceid, sender=Layer):
 
             # ZIP everything and return
             target_file_name = "".join([instance.name, ".zip"])
-            target_file = os.path.join(dirpath, target_file_name)
-            zip_dir(target_folder, target_file)
+
+            target_zip = zipstream.ZipFile(mode='w', compression=zipstream.ZIP_DEFLATED, allowZip64=True)
+
+            # Iterable: Needed when the file_info has it's data as a stream
+            def _iterable(source_iter):
+                while True:
+                    buf = source_iter.read(BUFFER_CHUNK_SIZE)
+                    if not buf:
+                        break
+                    yield buf
+
+            # Add files to zip
+            for file_info in file_list:
+                zip_file_name = "".join([file_info['zip_folder'], file_info['name']])
+                # The zip can be built from 3 data sources: str, iterable or a file path
+                if 'data_str' in file_info and file_info['data_str'] is not None:
+                    target_zip.writestr(arcname=zip_file_name, data=bytes(file_info['data_str'], 'utf-8'))
+                elif 'data_iter' in file_info and file_info['data_iter'] is not None:
+                    target_zip.write_iter(arcname=zip_file_name, iterable=_iterable(file_info['data_iter']))
+                elif 'data_src_file' in file_info and file_info['data_src_file'] is not None:
+                    target_zip.write(filename=file_info['data_src_file'], arcname=zip_file_name)
+
             register_event(request, 'download', instance)
-            response = HttpResponse(
-                content=open(target_file, mode='rb'),
-                status=200,
-                content_type="application/zip")
+
+            # Streaming content response
+            response = StreamingHttpResponse(target_zip, content_type='application/zip')
             response['Content-Disposition'] = f'attachment; filename="{target_file_name}"'
             return response
         except NotImplementedError:
@@ -417,9 +447,6 @@ def download(request, resourceid, sender=Layer):
                         'error_message': _no_files_found
                     },
                     request=request), status=404)
-        finally:
-            if target_folder is not None:
-                shutil.rmtree(target_folder, ignore_errors=True)
     return HttpResponse(
         loader.render_to_string(
             '401.html',
