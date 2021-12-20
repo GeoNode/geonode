@@ -40,7 +40,7 @@ from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MAX_UPLOAD_SIZE = 2621440
+DEFAULT_MAX_UPLOAD_SIZE = 104857600  # 100MB
 
 
 class UploadManager(models.Manager):

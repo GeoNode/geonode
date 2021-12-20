@@ -411,7 +411,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         url = reverse('uploads-list')
         # Anonymous
-        self.client.force_authenticate(user=None)
+        self.client.logout()
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)

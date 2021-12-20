@@ -68,8 +68,7 @@ class SizeRestrictedFileField(forms.FileField):
             # Validate
             if file_size > max_size:
                 raise forms.ValidationError(_(
-                    f'"{data.name}" size is {filesizeformat(file_size)}. '
-                    f'Please keep it under {filesizeformat(max_size)}.'
+                    f'"{data.name}" size is {filesizeformat(file_size)}. Please keep it under {filesizeformat(max_size)}.'
                 ))
 
         return data
