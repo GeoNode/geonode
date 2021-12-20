@@ -24,6 +24,11 @@ from PIL import Image
 from io import BytesIO
 from urllib.parse import urlparse
 from unittest.mock import patch, Mock
+
+from django.apps import apps
+
+from geonode.apps import AppConfig
+from geonode.geoapps.models import GeoApp
 from imagekit.cachefiles.backends import Simple
 
 from guardian.shortcuts import assign_perm, get_perms
@@ -983,6 +988,14 @@ class TestThesaurusAvailableForm(TestCase):
 
 
 class TestFacets(TestCase):
+    class TestGeoApp:
+        def __init__(self):
+            self.type="GEONODE_APP"
+            self.default_model = "GeoApp"
+
+        def get_model(self, model_name, require_ready=True):
+            return GeoApp
+
     def setUp(self):
         self.user = get_user_model().objects.create(username='test', email='test@test.com')
         Layer.objects.create(
@@ -1010,6 +1023,17 @@ class TestFacets(TestCase):
         Layer.objects.create(
             owner=self.user, title='test_boxes', storeType='coverageStore', is_approved=True
         )
+        apps.app_configs["test_app"] = TestFacets.TestGeoApp()
+        GeoApp.objects.create(
+            owner=self.user, title='test_geoapp_1', name='test_geoapp_1', is_approved=True
+        )
+        GeoApp.objects.create(
+            owner=self.user, title='test_geoapp_2', name='test_geoapp_2', is_approved=True
+        )
+        GeoApp.objects.create(
+            owner=self.user, title='test_geoapp_3', name='test_geoapp_3', is_approved=True
+        )
+
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
 
@@ -1029,6 +1053,7 @@ class TestFacets(TestCase):
         results = facets({'request': self.request_mock})
         self.assertEqual(results['vector'], 3)
         self.assertEqual(results['raster'], 4)
+        self.assertEqual(results['GeoApp'], 3)
 
 
 class TestGenerateThesaurusReference(TestCase):
