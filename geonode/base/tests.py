@@ -27,7 +27,6 @@ from unittest.mock import patch, Mock
 
 from django.apps import apps
 
-from geonode.apps import AppConfig
 from geonode.geoapps.models import GeoApp
 from imagekit.cachefiles.backends import Simple
 
@@ -990,7 +989,7 @@ class TestThesaurusAvailableForm(TestCase):
 class TestFacets(TestCase):
     class TestGeoApp:
         def __init__(self):
-            self.type="GEONODE_APP"
+            self.type = "GEONODE_APP"
             self.default_model = "GeoApp"
 
         def get_model(self, model_name, require_ready=True):
@@ -1033,7 +1032,6 @@ class TestFacets(TestCase):
         GeoApp.objects.create(
             owner=self.user, title='test_geoapp_3', name='test_geoapp_3', is_approved=True
         )
-
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
 
