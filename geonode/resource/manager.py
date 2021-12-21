@@ -449,7 +449,7 @@ class ResourceManager(ResourceManagerInterface):
                             _attribute.dataset = _resource.get_real_instance()
                             _attribute.save()
                     if isinstance(instance.get_real_instance(), Map):
-                        for maplayer in instance.get_real_instance().maplayers:
+                        for maplayer in instance.get_real_instance().maplayers.iterator():
                             _maplayer = copy.copy(maplayer)
                             _maplayer.pk = _maplayer.id = None
                             _maplayer.map = _resource.get_real_instance()
@@ -919,8 +919,6 @@ class ResourceManager(ResourceManagerInterface):
                 return True
             except Exception as e:
                 logger.exception(e)
-                _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.set_dirty_state()
         return False
 
 

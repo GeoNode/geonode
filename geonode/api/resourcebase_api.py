@@ -905,7 +905,7 @@ class MapResource(CommonModelApi):
                 'ows_url',
                 'local'
             ]
-            for layer in map_datasets:
+            for layer in map_datasets.iterator():
                 formatted_map_dataset = model_to_dict(
                     layer, fields=map_dataset_fields)
                 formatted_datasets.append(formatted_map_dataset)

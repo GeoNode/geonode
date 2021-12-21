@@ -219,7 +219,7 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
 
     elif isinstance(instance, Map):
         # if a Map is empty - nothing to do here
-        if not instance.maplayers:
+        if not instance.maplayers or not instance.maplayers.count():
             logger.debug(f"Thumbnail generation skipped - Map {instance.title} has no defined datasets")
             return None
 
@@ -273,9 +273,7 @@ def _datasets_locations(
             else:
                 bbox = utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
-        map_datasets = instance.maplayers.copy()
-
-        for map_dataset in map_datasets:
+        for map_dataset in instance.maplayers.iterator():
 
             if not map_dataset.local and not map_dataset.ows_url:
                 logger.warning(

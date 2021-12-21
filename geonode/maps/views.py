@@ -414,7 +414,7 @@ def map_download(request, mapid, template="maps/map_download.html"):
     remote_datasets = []
     downloadable_datasets = []
 
-    for lyr in map_obj.maplayers.all():
+    for lyr in map_obj.maplayers.iterator():
         if lyr.group != "background":
             if not lyr.local:
                 remote_datasets.append(lyr)

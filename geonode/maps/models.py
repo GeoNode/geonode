@@ -54,11 +54,6 @@ class Map(ResourceBase):
         return f'{self.title} by {(self.owner.username if self.owner else "<Anonymous>")}'
 
     @property
-    def maplayers(self):
-        layers = MapLayer.objects.filter(map=self.id)
-        return [layer for layer in layers]
-
-    @property
     def datasets(self):
         dataset_names = MapLayer.objects.filter(map__id=self.id).values("name")
         return Dataset.objects.filter(alternate__in=dataset_names) | Dataset.objects.filter(name__in=dataset_names)
