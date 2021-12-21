@@ -37,7 +37,6 @@ from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer
 from geonode.base.models import License, Region
 from geonode.tests.utils import NotificationsTestsHelper
-from geonode.utils import check_ogc_backend
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.resource.manager import resource_manager
 
