@@ -34,7 +34,6 @@ from geonode.maps import MapsAppConfig
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.decorators import on_ogc_backend
-from geonode.maps.utils.layers import fix_baselayers
 from geonode.maps.models import Map, MapLayer
 from geonode.base.models import License, Region
 from geonode.tests.utils import NotificationsTestsHelper
@@ -477,19 +476,6 @@ community."
         self.assertIsNotNone(response.context['access_token'])
         self.assertEqual(response.context['is_embed'], 'true')
 
-    def test_fix_baselayers(self):
-        """Test fix_baselayers function, used by the fix_baselayers command
-        """
-        map_obj = Map.objects.all().first()
-        map_id = map_obj.id
-
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # number of base layers (we remove the local geoserver entry from the total)
-            n_baselayers = len(settings.MAP_BASELAYERS) - 1
-            # number of local layers
-            n_locallayers = map_obj.maplayers.filter(local=True).count()
-            fix_baselayers(map_id)
-            self.assertEqual(1, n_baselayers + n_locallayers)
 
     def test_batch_edit(self):
         Model = Map
