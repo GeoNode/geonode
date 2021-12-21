@@ -113,14 +113,14 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         new_upload_path = utils.get_unique_upload_path(thumbnail_name)
         self.assertNotEqual(upload_path, new_upload_path)
 
-    @patch("geonode.maps.models.Map.datasets", new_callable=PropertyMock)
+    @patch("geonode.maps.models.Map.maplayers", new_callable=PropertyMock)
     def test_generate_thumbnail_name_map_empty(self, layers_mock):
         layers_mock.return_value = []
 
         map_name = thumbnails._generate_thumbnail_name(Map.objects.first())
         self.assertIsNone(map_name, "Map name for maps without layers should return None.")
 
-    @patch("geonode.maps.models.Map.datasets", new_callable=PropertyMock)
+    @patch("geonode.maps.models.Map.maplayers", new_callable=PropertyMock)
     @patch("geonode.maps.models.Map.uuid", new_callable=PropertyMock)
     def test_generate_thumbnail_name_map(self, uuid_mock, layers_mock):
 
