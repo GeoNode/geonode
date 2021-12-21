@@ -219,7 +219,7 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
 
     elif isinstance(instance, Map):
         # if a Map is empty - nothing to do here
-        if not instance.maplayers or not instance.maplayers.count():
+        if not instance.maplayers:
             logger.debug(f"Thumbnail generation skipped - Map {instance.title} has no defined datasets")
             return None
 
