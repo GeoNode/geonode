@@ -897,7 +897,7 @@ class MapResource(CommonModelApi):
             formatted_obj['online'] = True
 
             # get map layers
-            map_datasets = obj.datasets
+            map_datasets = obj.maplayers
             formatted_datasets = []
             map_dataset_fields = [
                 'id',

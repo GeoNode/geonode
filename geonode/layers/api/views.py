@@ -16,17 +16,23 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from drf_spectacular.utils import extend_schema
+
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework.response import Response
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.layers.models import Dataset
+from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSerializer
 
 from .serializers import DatasetSerializer, DatasetListSerializer
 from .permissions import DatasetPermissionsFilter
@@ -54,3 +60,25 @@ class DatasetViewSet(DynamicModelViewSet):
         if self.action == 'list':
             return DatasetListSerializer
         return DatasetSerializer
+
+    @extend_schema(
+    methods=["get"],
+    responses={200: SimpleMapLayerSerializer(many=True)},
+    description="API endpoint allowing to retrieve the MapLayers list.",
+    )
+    @action(detail=True, methods=["get"])
+    def maplayers(self, request, pk=None):
+        dataset = self.get_object()
+        resources = dataset.maplayers
+        return Response(SimpleMapLayerSerializer(many=True).to_representation(resources))
+
+    @extend_schema(
+        methods=["get"],
+        responses={200: SimpleMapSerializer(many=True)},
+        description="API endpoint allowing to retrieve maps using the dataset.",
+    )
+    @action(detail=True, methods=["get"])
+    def maps(self, request, pk=None):
+        dataset = self.get_object()
+        resources = dataset.maps
+        return Response(SimpleMapSerializer(many=True).to_representation(resources))

@@ -449,11 +449,11 @@ class ResourceManager(ResourceManagerInterface):
                             _attribute.dataset = _resource.get_real_instance()
                             _attribute.save()
                     if isinstance(instance.get_real_instance(), Map):
-                        for dataset in instance.get_real_instance().datasets:
-                            _dataset = copy.copy(dataset)
-                            _dataset.pk = _dataset.id = None
-                            _dataset.map = _resource.get_real_instance()
-                            _dataset.save()
+                        for maplayer in instance.get_real_instance().maplayers:
+                            _maplayer = copy.copy(maplayer)
+                            _maplayer.pk = _maplayer.id = None
+                            _maplayer.map = _resource.get_real_instance()
+                            _maplayer.save()
                     to_update = storage_manager.copy(_resource).copy()
                     _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
                 if _resource:
