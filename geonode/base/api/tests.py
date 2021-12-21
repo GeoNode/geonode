@@ -47,6 +47,7 @@ from geonode.security.utils import get_resources_with_perms
 from geonode.base.models import (
     CuratedThumbnail,
     HierarchicalKeyword,
+    Link,
     Region,
     ResourceBase,
     TopicCategory,
@@ -275,6 +276,22 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertTrue(self.client.login(username='norman', password='norman'))
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
+        # response has links property
+        # create link
+        Link.objects.get_or_create(
+            resource=resource,
+            url='http://fake',
+            name='Legend',
+            defaults={
+                'extension': 'png',
+                'name': 'Test link',
+                "url": 'http://fake',
+                "mime": 'image/png',
+                "link_type": 'metadata',
+            }
+        )
+        response = self.client.get(f"{url}/{resource.id}/", format='json')
+        self.assertTrue('links' in response.data['resource'].keys())
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
