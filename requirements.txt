@@ -20,7 +20,7 @@ vine==5.0.0
 tqdm==4.62.3
 Deprecated==1.2.13
 wrapt==1.13.3
-jsonschema==4.2.1
+jsonschema==4.3.1
 zipstream-new==1.1.8
 
 # Django Apps
@@ -149,7 +149,7 @@ pytest-bdd==5.0.0
 splinter==0.16.0
 pytest-splinter==3.3.1
 pytest-django==4.5.2
-setuptools==59.6.0
+setuptools==60.0.0
 pip==21.3.1
 Twisted==21.7.0
 pixelmatch==0.2.3

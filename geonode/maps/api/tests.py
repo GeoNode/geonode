@@ -302,18 +302,6 @@ DUMMY_MAPDATA = {
     "widgetsConfig": {"layouts": {"md": [], "xxs": []}},
     "catalogServices": {
         "services": {
-            "Demo WMS Service": {
-                "url": "https://demo.geo-solutions.it/geoserver/wms",
-                "type": "wms",
-                "title": "Demo WMS Service",
-                "autoload": False,
-            },
-            "Demo WMTS Service": {
-                "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
-                "type": "wmts",
-                "title": "Demo WMTS Service",
-                "autoload": False,
-            },
             "GeoNode Catalogue": {
                 "url": "http://localhost:8000/catalogue/csw",
                 "type": "csw",
