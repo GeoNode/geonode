@@ -476,7 +476,6 @@ community."
         self.assertIsNotNone(response.context['access_token'])
         self.assertEqual(response.context['is_embed'], 'true')
 
-
     def test_batch_edit(self):
         Model = Map
         view = 'map_batch_metadata'
