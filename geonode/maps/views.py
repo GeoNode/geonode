@@ -462,6 +462,7 @@ def map_wmc(request, mapid, template="maps/wmc.xml"):
         template,
         context={
             "map": map_obj,
+            "maplayers": map_obj.maplayers.all(),
             "siteurl": site_url,
         },
         content_type="text/xml",
