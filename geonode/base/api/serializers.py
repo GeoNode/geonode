@@ -96,7 +96,10 @@ class ResourceBaseToRepresentationSerializerMixin(DynamicModelSerializer):
                 'url'
             ]
 
-            links = Link.objects.filter(resource_id=int(obj_id), link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS', 'image'])
+            links = Link.objects.filter(
+                resource_id=int(obj_id),
+                link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS', 'image', 'metadata']
+            )
             for lnk in links:
                 formatted_link = model_to_dict(lnk, fields=link_fields)
                 dehydrated.append(formatted_link)
