@@ -43,6 +43,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.permissions import (
+    PermSpecCompact,
     VIEW_PERMISSIONS,
     ADMIN_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
@@ -613,14 +614,19 @@ class ResourceManager(ResourceManagerInterface):
                             ]
                         }
                         """
+                        if PermSpecCompact.validate(permissions):
+                            _permissions = PermSpecCompact(copy.deepcopy(permissions), _resource).extended
+                        else:
+                            _permissions = copy.deepcopy(permissions)
 
                         # default permissions for resource owner
                         _perm_spec = set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
 
                         # Anonymous User group
-                        if 'users' in permissions and "AnonymousUser" in permissions['users']:
+                        if 'users' in _permissions and ("AnonymousUser" in _permissions['users'] or get_anonymous_user() in _permissions['users']):
+                            anonymous_user = "AnonymousUser" if "AnonymousUser" in _permissions['users'] else get_anonymous_user()
                             anonymous_group = Group.objects.get(name='anonymous')
-                            for perm in permissions['users']['AnonymousUser']:
+                            for perm in _permissions['users'][anonymous_user]:
                                 if _resource_type == 'dataset' and perm in (
                                         'change_dataset_data', 'change_dataset_style',
                                         'add_dataset', 'change_dataset', 'delete_dataset'):
@@ -633,10 +639,10 @@ class ResourceManager(ResourceManagerInterface):
                                     _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # All the other users
-                        if 'users' in permissions and len(permissions['users']) > 0:
-                            for user, perms in permissions['users'].items():
+                        if 'users' in _permissions and len(_permissions['users']) > 0:
+                            for user, perms in _permissions['users'].items():
                                 _user = get_user_model().objects.get(username=user)
-                                if _user != _resource.owner and user != "AnonymousUser":
+                                if _user != _resource.owner and user != "AnonymousUser" and user != get_anonymous_user():
                                     for perm in perms:
                                         if _resource_type == 'dataset' and perm in (
                                                 'change_dataset_data', 'change_dataset_style',
@@ -650,8 +656,8 @@ class ResourceManager(ResourceManagerInterface):
                                             _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # All the other groups
-                        if 'groups' in permissions and len(permissions['groups']) > 0:
-                            for group, perms in permissions['groups'].items():
+                        if 'groups' in _permissions and len(_permissions['groups']) > 0:
+                            for group, perms in _permissions['groups'].items():
                                 _group = Group.objects.get(name=group)
                                 for perm in perms:
                                     if _resource_type == 'dataset' and perm in (
@@ -666,10 +672,11 @@ class ResourceManager(ResourceManagerInterface):
                                         _perm_spec["groups"][_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # AnonymousUser
-                        if 'users' in permissions and len(permissions['users']) > 0:
-                            if "AnonymousUser" in permissions['users']:
+                        if 'users' in _permissions and len(_permissions['users']) > 0:
+                            if "AnonymousUser" in _permissions['users'] or get_anonymous_user() in _permissions['users']:
                                 _user = get_anonymous_user()
-                                perms = permissions['users']["AnonymousUser"]
+                                anonymous_user = "AnonymousUser" if "AnonymousUser" in _permissions['users'] else get_anonymous_user()
+                                perms = _permissions['users'][anonymous_user]
                                 for perm in perms:
                                     if _resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
@@ -816,8 +823,16 @@ class ResourceManager(ResourceManagerInterface):
             - Group MEMBERS have always access to the resource, except for the AUTOPUBLISH, where everybody has access to it.
         """
         _resource = instance or ResourceManager._get_instance(uuid)
+
+        _permissions = None
+        if permissions:
+            if PermSpecCompact.validate(permissions):
+                _permissions = PermSpecCompact(copy.deepcopy(permissions), _resource).extended
+            else:
+                _permissions = copy.deepcopy(permissions)
+
         if _resource:
-            perm_spec = permissions or copy.deepcopy(_resource.get_all_level_info())
+            perm_spec = _permissions or copy.deepcopy(_resource.get_all_level_info())
 
             # Sanity checks
             if isinstance(perm_spec, str):
@@ -887,7 +902,7 @@ class ResourceManager(ResourceManagerInterface):
 
             return self._concrete_resource_manager.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=perm_spec)
 
-        return permissions
+        return _permissions
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
