@@ -26,6 +26,7 @@ from rest_framework.exceptions import ParseError, ValidationError
 
 from geonode.base.api.serializers import (
     DetailUrlField,
+    BaseDynamicModelSerializer,
     ResourceBaseSerializer,
     ResourceBaseToRepresentationSerializerMixin,
 )
@@ -167,7 +168,7 @@ class MapSerializer(ResourceBaseSerializer):
         )
 
 
-class SimpleMapSerializer(serializers.ModelSerializer):
+class SimpleMapSerializer(BaseDynamicModelSerializer):
     detail_url = DetailUrlField(read_only=True)
 
     class Meta:
