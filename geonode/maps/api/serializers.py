@@ -147,7 +147,9 @@ class SimpleMapLayerSerializer(serializers.ModelSerializer):
         name = "maplayer"
         fields = (
             "pk",
-            "name"
+            "name",
+            "extra_params",
+            "current_style",
         )
 
 
