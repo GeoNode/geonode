@@ -36,7 +36,7 @@ from guardian.shortcuts import get_anonymous_user
 
 from geonode import geoserver
 from geonode.layers.models import Layer
-from geonode.utils import check_ogc_backend
+from geonode.utils import check_ogc_backend, set_resource_default_links
 from geonode.favorite.models import Favorite
 from geonode.documents.models import Document
 from geonode.base.utils import build_absolute_uri
@@ -47,7 +47,6 @@ from geonode.security.utils import get_resources_with_perms
 from geonode.base.models import (
     CuratedThumbnail,
     HierarchicalKeyword,
-    Link,
     Region,
     ResourceBase,
     TopicCategory,
@@ -278,20 +277,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
         # response has links property
         # create link
-        Link.objects.get_or_create(
-            resource=resource,
-            url='http://fake',
-            name='Legend',
-            defaults={
-                'extension': 'png',
-                'name': 'Test link',
-                "url": 'http://fake',
-                "mime": 'image/png',
-                "link_type": 'metadata',
-            }
-        )
-        response = self.client.get(f"{url}/{resource.id}/", format='json')
-        self.assertTrue('links' in response.data['resource'].keys())
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            layer = Layer.objects.first()
+            set_resource_default_links(layer, layer)
+            response = self.client.get(f"{url}/{layer.id}/", format='json')
+            self.assertTrue('links' in response.data['resource'].keys())
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
