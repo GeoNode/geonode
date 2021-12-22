@@ -1,1 +1,1 @@
-{% load i18n %}{% autoescape off%}{% blocktrans with site_name=current_site.name %}Please confirm email address for {{ site_name }}{% endblocktrans %}{% endautoescape %}
+{% load i18n %}{% autoescape off%}{% blocktrans with site_name=current_site.name %}Please confirm email address for {{ site_name|urlencode }}{% endblocktrans %}{% endautoescape %}

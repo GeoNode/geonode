@@ -1,11 +1,11 @@
 {% load i18n %}
 <p>{% blocktrans %}Dear Sir/Madam,{% endblocktrans %}</p>
-<p><strong>{{ inviter_name }}</strong> {% blocktrans %}is inviting you to join ({{ site_name }}).{% endblocktrans %}</p>
+<p><strong>{{ inviter_name }}</strong> {% blocktrans %}is inviting you to join ({{ site_name|urlencode }}).{% endblocktrans %}</p>
 <p>
-    {% blocktrans %}To do so, please register at <a href="{{ invite_url }}">{{ site_name }} Registration</a>.{% endblocktrans %}
+    {% blocktrans %}To do so, please register at <a href="{{ invite_url }}">{{ site_name|urlencode }} Registration</a>.{% endblocktrans %}
 </p>
 <p>
-    {% blocktrans %}Once you receive the confirmation that your account is activated, you can notify{% endblocktrans %} <strong>{{ inviter_name }}</strong> {% blocktrans %}that you wish to join her/his group(s) through{% endblocktrans %} <a href="{{ SITEURL }}{% url 'message_create' inviter_id %}?subject=Request%20to%20join%20your%20group&content=Dear%20group%20manager%2C%0A%0AI%20am%20now%20a%20member%20of%20{{ site_name }}%2C%20and%20I%20would%20like%20to%20join%20the%20group%20that%20you%20are%20managing.%0APlease%20add%20me%20to%20your%20group.%0A%0AThank%20you.">{% blocktrans %}this link{% endblocktrans %}</a>.
+    {% blocktrans %}Once you receive the confirmation that your account is activated, you can notify{% endblocktrans %} <strong>{{ inviter_name }}</strong> {% blocktrans %}that you wish to join her/his group(s) through{% endblocktrans %} <a href="{{ SITEURL }}{% url 'message_create' inviter_id %}?subject=Request%20to%20join%20your%20group&content=Dear%20group%20manager%2C%0A%0AI%20am%20now%20a%20member%20of%20{{ site_name|urlencode }}%2C%20and%20I%20would%20like%20to%20join%20the%20group%20that%20you%20are%20managing.%0APlease%20add%20me%20to%20your%20group.%0A%0AThank%20you.">{% blocktrans %}this link{% endblocktrans %}</a>.
 </p>
 <p>{% blocktrans %}<strong>{{ inviter_name }}</strong> is a member of the following group(s):{% endblocktrans %}</p>
 <ul>
