@@ -45,7 +45,7 @@ from geonode.base.models import (
 
 from geonode import geoserver
 from geonode.favorite.models import Favorite
-from geonode.utils import check_ogc_backend
+from geonode.utils import check_ogc_backend, set_resource_default_links
 from geonode.layers.models import Layer
 from geonode.base.utils import build_absolute_uri
 from geonode.base.populate_test_data import create_models
@@ -273,6 +273,13 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertTrue(self.client.login(username='norman', password='norman'))
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
+        # response has links property
+        # create link
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            layer = Layer.objects.first()
+            set_resource_default_links(layer, layer)
+            response = self.client.get(f"{url}/{layer.id}/", format='json')
+            self.assertTrue('links' in response.data['resource'].keys())
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
