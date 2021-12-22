@@ -29,7 +29,9 @@ class SizeRestrictedDataUploadFileUploadHandler(FileUploadHandler):
         We use the content_length to signal whether or not this handler should be used.
         """
         # Check the content-length header and url_name to see if we should
-        self.is_view_elegible_for_size_restriction = self.request.resolver_match.url_name in self.elegible_url_names
+        self.is_view_elegible_for_size_restriction = (
+            self.request.resolver_match and self.request.resolver_match.url_name in self.elegible_url_names
+        )
         self.max_size_allowed = 0
         self.activated = False
 
