@@ -2,13 +2,13 @@
 {% autoescape off %}
 {% blocktrans %}Dear Sir/Madam,{% endblocktrans %}
 
-{{ inviter_name }} {% blocktrans %}is inviting you to join{% endblocktrans %} ({{ site_name }}).
+{{ inviter_name }} {% blocktrans %}is inviting you to join{% endblocktrans %} ({{ site_name|urlencode }}).
 
 {% blocktrans %}To do so, please register at{% endblocktrans %} {{ invite_url }} .
 
 {% blocktrans %}Once you receive the confirmation that your account is activated, you can notify{% endblocktrans %} {{ inviter_name }} {% blocktrans %}that you wish to join her/his group(s) through this link{% endblocktrans %}
 
-{{ SITEURL }}{% url 'message_create' inviter_id %}?subject=Request%20to%20join%20your%20group&content=Dear%20group%20manager%2C%0A%0AI%20am%20now%20a%20member%20of%20{{ site_name }}%2C%20and%20I%20would%20like%20to%20join%20the%20group%20that%20you%20are%20managing.%0APlease%20add%20me%20to%20your%20group.%0A%0AThank%20you.
+{{ SITEURL }}{% url 'message_create' inviter_id %}?subject=Request%20to%20join%20your%20group&content=Dear%20group%20manager%2C%0A%0AI%20am%20now%20a%20member%20of%20{{ site_name|urlencode }}%2C%20and%20I%20would%20like%20to%20join%20the%20group%20that%20you%20are%20managing.%0APlease%20add%20me%20to%20your%20group.%0A%0AThank%20you.
 
 {{ inviter_name }} {% blocktrans %}is a member of the following group(s){% endblocktrans %}:
 {% for group in groups %}
