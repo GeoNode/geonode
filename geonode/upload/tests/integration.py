@@ -649,8 +649,11 @@ class TestUpload(UploaderBase):
             ['lat', 'lon', 'thing'], {'lat': -100, 'lon': -40, 'thing': 'foo'})
         with self.assertRaises(HTTPError) as error:
             self.client.upload_file(csv_file)
-        excepect_error = "The total upload size is 29\\u00a0bytes. Please keep it under 1\\u00a0byte."
-        self.assertIn(excepect_error, error.exception.msg)
+        expected_error = (
+            "Total upload size exceeds 1\\u00a0byte. "
+            "Please try again with smaller files."
+        )
+        self.assertIn(expected_error, error.exception.msg)
 
 
 @unittest.skipUnless(ogc_server_settings.datastore_db,

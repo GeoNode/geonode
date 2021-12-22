@@ -2067,3 +2067,10 @@ MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set([
     "importlayers",
     "set_all_datasets_metadata",
 ] + ast.literal_eval(os.getenv('MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ', '[]')))
+
+
+FILE_UPLOAD_HANDLERS = [
+    'geonode.upload.uploadhandler.SizeRestrictedDataUploadFileUploadHandler',
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]

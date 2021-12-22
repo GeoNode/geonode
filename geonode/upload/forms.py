@@ -82,6 +82,9 @@ class LayerUploadForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
+        if self.errors:
+            # Something already went wrong
+            return cleaned
         self.validate_files_sum_of_sizes()
         uploaded_files = self._get_uploaded_files()
         valid_extensions = validate_uploaded_files(
@@ -97,7 +100,7 @@ class LayerUploadForm(forms.Form):
         total_size = sum([django_file.size for django_file in self.files.values()])
         if total_size > max_size:
             raise forms.ValidationError(_(
-                f'The total upload size is {filesizeformat(total_size)}. Please keep it under {filesizeformat(max_size)}.'
+                f'Total upload size exceeds {filesizeformat(max_size)}. Please try again with smaller files.'
             ))
 
     def _get_uploads_max_size(self):
