@@ -55,11 +55,6 @@ class Map(ResourceBase):
 
     @property
     def datasets(self):
-        layers = MapLayer.objects.filter(map=self.id)
-        return [layer for layer in layers]
-
-    @property
-    def local_datasets(self):
         dataset_names = MapLayer.objects.filter(map__id=self.id).values("name")
         return Dataset.objects.filter(alternate__in=dataset_names) | Dataset.objects.filter(name__in=dataset_names)
 

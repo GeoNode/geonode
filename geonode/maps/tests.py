@@ -37,7 +37,6 @@ from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer
 from geonode.base.models import License, Region
 from geonode.tests.utils import NotificationsTestsHelper
-from geonode.utils import check_ogc_backend
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.resource.manager import resource_manager
 
@@ -475,7 +474,6 @@ community."
         self.assertEqual(response.context['resource'], map_obj)
         self.assertIsNotNone(response.context['access_token'])
         self.assertEqual(response.context['is_embed'], 'true')
-
 
     def test_batch_edit(self):
         Model = Map

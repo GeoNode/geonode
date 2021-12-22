@@ -95,7 +95,7 @@ class MapViewSet(DynamicModelViewSet):
     @action(detail=True, methods=["get"])
     def maplayers(self, request, pk=None):
         map = self.get_object()
-        resources = map.datasets
+        resources = map.maplayers
         return Response(MapLayerSerializer(embed=True, many=True).to_representation(resources))
 
     @extend_schema(
@@ -104,9 +104,9 @@ class MapViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve the local MapLayers.",
     )
     @action(detail=True, methods=["get"])
-    def local_datasets(self, request, pk=None):
+    def datasets(self, request, pk=None):
         map = self.get_object()
-        resources = map.local_datasets
+        resources = map.datasets
         return Response(DatasetSerializer(embed=True, many=True).to_representation(resources))
 
     def perform_create(self, serializer):
@@ -139,7 +139,7 @@ class MapViewSet(DynamicModelViewSet):
         # Thumbnail will be handled later
         post_change_data = {
             "thumbnail": serializer.validated_data.pop("thumbnail_url", ""),
-            "dataset_names_before_changes": [lyr.alternate for lyr in instance.local_datasets],
+            "dataset_names_before_changes": [lyr.alternate for lyr in instance.datasets],
         }
 
         instance = serializer.save()
@@ -155,7 +155,7 @@ class MapViewSet(DynamicModelViewSet):
         # Step 1: Handle Maplayers signals if this is and update action
         if not create_action_perfomed:
             dataset_names_before_changes = additional_data.pop("dataset_names_before_changes", [])
-            dataset_names_after_changes = [lyr.alternate for lyr in instance.local_datasets]
+            dataset_names_after_changes = [lyr.alternate for lyr in instance.datasets]
             if dataset_names_before_changes != dataset_names_after_changes:
                 map_changed_signal.send_robust(sender=instance, what_changed="datasets")
         # Step 2: Register Event

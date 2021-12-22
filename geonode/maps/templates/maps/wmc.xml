@@ -40,8 +40,8 @@
         {% endwith %}
     </General>
     <LayerList>
-    {% for layer in map.datasets %}        
-        {% if layer.ows_url != None %}        
+    {% for layer in maplayers %}
+        {% if layer.ows_url != None %}
         {% with layer.layer_config as lc %}
         <Layer queryable="{{ lc.capability.queryable|lower }}" hidden="{% if lc.visibility == False %}true{%else%}false{%endif%}">
             <Server service="OGC:WMS" version="1.1.1">

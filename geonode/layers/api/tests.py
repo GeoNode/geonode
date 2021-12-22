@@ -25,6 +25,7 @@ from rest_framework.test import APITestCase
 
 from geonode.layers.models import Dataset, Attribute
 from geonode.base.populate_test_data import create_models
+from geonode.maps.models import Map, MapLayer
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +115,41 @@ class DatasetsApiTests(APITestCase):
             _dataset.featureinfo_custom_template = None
             _dataset.use_featureinfo_custom_template = False
             _dataset.save()
+
+    def test_get_dataset_related_maps_and_maplayers(self):
+        dataset = Dataset.objects.first()
+        url = reverse('datasets-detail', kwargs={'pk': dataset.pk})
+        response = self.client.get(f'{url}/maplayers', format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 0)
+
+        response = self.client.get(f'{url}/maplayers', format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 0)
+
+        response = self.client.get(f'{url}/maps', format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 0)
+        map = Map.objects.first()
+        map_layer = MapLayer.objects.create(
+                map=map,
+                extra_params={},
+                name=dataset.alternate,
+                store=None,
+                current_style=None,
+                ows_url=None,
+                local=True,
+                dataset=dataset
+            )
+        response = self.client.get(f'{url}/maplayers', format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0]['pk'], map_layer.pk)
+
+        response = self.client.get(f'{url}/maps', format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0]['pk'], map.pk)
 
     def test_raw_HTML_stripped_properties(self):
         """

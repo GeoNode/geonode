@@ -1150,14 +1150,14 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         user_rating = None
         if request.user.is_authenticated:
             user_rating = Rating.objects.filter(
-                    object_id=resource.pk,
-                    content_type=ct,
-                    user=request.user
-                ).first()
-        overall_rating = OverallRating.objects.filter(
                 object_id=resource.pk,
-                content_type=ct
-            ).aggregate(r=models.Avg("rating"))["r"]
+                content_type=ct,
+                user=request.user
+            ).first()
+        overall_rating = OverallRating.objects.filter(
+            object_id=resource.pk,
+            content_type=ct
+        ).aggregate(r=models.Avg("rating"))["r"]
         overall_rating = Decimal(str(overall_rating or "0"))
 
         return Response(

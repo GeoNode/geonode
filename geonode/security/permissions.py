@@ -18,6 +18,7 @@
 #########################################################################
 import json
 import pprint
+import jsonschema
 import collections
 
 from avatar.templatetags.avatar_tags import avatar_url
@@ -97,6 +98,122 @@ COMPACT_RIGHT_MODES = (
     (MANAGE_RIGHTS, "manage"),
     (OWNER_RIGHTS, "owner"),
 )
+
+
+PERM_SPEC_COMPACT_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "users": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "first_name": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "integer"
+                        },
+                        "last_name": {
+                            "type": "string"
+                        },
+                        "permissions": {
+                            "type": "string",
+                            "enum": ["none", "view", "download", "edit", "manage", "owner"]
+                        },
+                        "username": {
+                            "type": "string"
+                        },
+                        "is_staff": {
+                            "type": "boolean"
+                        },
+                        "is_superuser": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "avatar",
+                        "first_name",
+                        "id",
+                        "last_name",
+                        "permissions",
+                        "username",
+                        "is_staff",
+                        "is_superuser"
+                    ]
+                }
+            ]
+        },
+        "organizations": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "permissions": {
+                            "type": "string",
+                            "enum": ["none", "view", "download", "edit", "manage", "owner"]
+                        },
+                        "title": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "name",
+                        "permissions",
+                        "title"
+                    ]
+                }
+            ]
+        },
+        "groups": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "permissions": {
+                            "type": "string",
+                            "enum": ["none", "view", "download", "edit", "manage", "owner"]
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "title",
+                        "name",
+                        "permissions"
+                    ]
+                }
+            ]
+        }
+    },
+    "required": [
+        "users",
+        "organizations",
+        "groups"
+    ]
+}
 
 
 def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False) -> list:
@@ -473,6 +590,14 @@ class PermSpecCompact(PermSpecConverterBase):
         _binding('groups', expected=False, binding=PermSpecGroupCompact),
     )
 
+    @classmethod
+    def validate(cls, perm_spec):
+        try:
+            jsonschema.validate(perm_spec, PERM_SPEC_COMPACT_SCHEMA)
+            return True
+        except jsonschema.ValidationError:
+            return False
+
     @property
     def extended(self):
         """Converts a 'perm_spec' in 'compact mode' into standard and verbose one.
@@ -544,6 +669,9 @@ class PermSpecCompact(PermSpecConverterBase):
 
 
 def get_compact_perms_list(perms: list, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False, is_none_allowed: bool = True) -> list:
+    """
+    Transforms an extended "perm_spec" into a list of compact perms.
+    """
     _perms_list = []
     _perm = _to_compact_perms(perms, resource_type, resource_subtype, is_owner)
     if _perm:
