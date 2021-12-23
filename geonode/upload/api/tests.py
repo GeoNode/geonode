@@ -20,6 +20,7 @@ import os
 import shutil
 import logging
 import tempfile
+from unittest import mock
 
 from io import IOBase
 from gisdata import GOOD_DATA
@@ -304,7 +305,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         try:
             logger.error(f" -- response: {response.status_code} / {response.json()}")
             return response, response.json()
-        except ValueError:
+        except (ValueError, TypeError):
             logger.exception(
                 ValueError(
                     f"probably not json, status {response.status_code} / {response.content}"))
@@ -479,6 +480,88 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             # Pagination
             self.assertEqual(len(response.data['uploads']), 0)
             logger.debug(response.data)
+
+    @mock.patch("geonode.upload.forms.forms.ValidationError")
+    @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
+    def test_rest_uploads_with_size_limit(self, mocked_uploaded_file, mocked_validation_error):
+        """
+        Try to upload a file larger than allowed by ``total_upload_size_sum``
+        but not larger than ``file_upload_handler`` max_size.
+        """
+
+        upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="total_upload_size_sum",
+            defaults={
+                "description": "The sum of sizes for the files of a dataset upload.",
+                "max_size": 1,
+            }
+        )
+        upload_size_limit_obj.max_size = 1
+        upload_size_limit_obj.save()
+
+        handler_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="file_upload_handler",
+            defaults={
+                "description": (
+                    "Request total size, validated before the upload process. "
+                    'This should be greater than "total_upload_size_sum".'
+                ),
+                "max_size": 209715200,
+            },
+        )
+        handler_upload_size_limit_obj.max_size = 209715200  # Greater than 173708 bytes (test request size)
+        handler_upload_size_limit_obj.save()
+
+        # Try to upload and verify if it passed only by the form size validation
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        resp, data = self.rest_upload_file(fname)
+        self.assertEqual(resp.status_code, 400)
+        expected_error = 'Total upload size exceeds 1\xa0byte. Please try again with smaller files.'
+        mocked_validation_error.assert_called_once_with(expected_error)
+        mocked_uploaded_file.assert_not_called()
+
+    @mock.patch("geonode.upload.forms.forms.ValidationError")
+    @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
+    def test_rest_uploads_with_size_limit_before_upload(self, mocked_uploaded_file, mocked_validation_error):
+        """
+        Try to upload a file larger than allowed by ``file_upload_handler``.
+        """
+
+        upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="total_upload_size_sum",
+            defaults={
+                "description": "The sum of sizes for the files of a dataset upload.",
+                "max_size": 1,
+            }
+        )
+        upload_size_limit_obj.max_size = 1
+        upload_size_limit_obj.save()
+
+        handler_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="file_upload_handler",
+            defaults={
+                "description": (
+                    "Request total size, validated before the upload process. "
+                    'This should be greater than "total_upload_size_sum".'
+                ),
+                "max_size": 2,
+            },
+        )
+        handler_upload_size_limit_obj.max_size = 2
+        handler_upload_size_limit_obj.save()
+
+        # Try to upload and verify if it passed by both size validations
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        resp, data = self.rest_upload_file(fname)
+        # Assertions
+        self.assertEqual(resp.status_code, 400)
+        expected_error = 'Total upload size exceeds 1\xa0byte. Please try again with smaller files.'
+        mocked_validation_error.assert_called_once_with(expected_error)
+        mocked_uploaded_file.assert_called_with(
+            name='relief_san_andres.tif',
+            content=b'',
+            content_type='image/tiff'
+        )
 
 
 class UploadSizeLimitTests(APITestCase):

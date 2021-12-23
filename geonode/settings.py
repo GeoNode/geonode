@@ -2070,7 +2070,7 @@ MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set([
 
 
 FILE_UPLOAD_HANDLERS = [
-    'geonode.upload.uploadhandler.SizeRestrictedDataUploadFileUploadHandler',
+    'geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler',
     'django.core.files.uploadhandler.MemoryFileUploadHandler',
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]

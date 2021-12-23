@@ -16,13 +16,13 @@ from geonode.upload.models import UploadSizeLimit
 DEFAULT_MAX_BEFORE_UPLOAD_SIZE = 209715200  # 200 MB
 
 
-class SizeRestrictedDataUploadFileUploadHandler(FileUploadHandler):
+class SizeRestrictedFileUploadHandler(FileUploadHandler):
     """
     Upload handler that avoid streaming data when the file is bigged than a given size.
     It only applies for elegible urls set in ``elegible_url_names`` property.
     """
 
-    elegible_url_names = ("data_upload",)
+    elegible_url_names = ("data_upload", "uploads-upload",)
 
     def handle_raw_input(self, input_data, META, content_length, boundary, encoding=None):
         """
