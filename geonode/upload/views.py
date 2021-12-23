@@ -42,7 +42,6 @@ import gsimporter
 
 from http.client import BadStatusLine
 
-from django.contrib import auth
 from django.conf import settings
 from django.shortcuts import render
 from django.utils.html import escape
