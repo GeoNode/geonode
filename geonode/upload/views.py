@@ -42,7 +42,6 @@ import gsimporter
 
 from http.client import BadStatusLine
 
-from django.contrib import auth
 from django.conf import settings
 from django.shortcuts import render
 from django.utils.html import escape
@@ -651,8 +650,6 @@ _steps = {
 @logged_in_or_basicauth(realm="GeoNode")
 def view(req, step=None):
     """Main uploader view"""
-    if not auth.get_user(req).is_authenticated:
-        return error_response(req, errors=["Not Authorized"])
 
     config = Configuration.load()
     if config.read_only or config.maintenance:
