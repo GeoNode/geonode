@@ -20,7 +20,7 @@ vine==5.0.0
 tqdm==4.62.3
 Deprecated==1.2.13
 wrapt==1.13.3
-jsonschema==4.3.1
+jsonschema==4.3.2
 zipstream-new==1.1.8
 
 # Django Apps
