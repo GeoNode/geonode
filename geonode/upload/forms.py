@@ -24,7 +24,7 @@ from django.core.exceptions import ValidationError
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 
-from geonode.upload.models import UploadSizeLimit, DEFAULT_MAX_UPLOAD_SIZE
+from geonode.upload.models import UploadSizeLimit
 
 from .. import geoserver
 from ..utils import check_ogc_backend
@@ -104,13 +104,10 @@ class LayerUploadForm(forms.Form):
             ))
 
     def _get_uploads_max_size(self):
-        max_size_db_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="total_upload_size_sum",
-            defaults={
-                "description": "The sum of sizes for the files of a dataset upload.",
-                "max_size": DEFAULT_MAX_UPLOAD_SIZE,
-            }
-        )
+        try:
+            max_size_db_obj = UploadSizeLimit.objects.get(slug="total_upload_size_sum")
+        except UploadSizeLimit.DoesNotExist:
+            max_size_db_obj = UploadSizeLimit.objects.create_default_limit()
         return max_size_db_obj.max_size
 
     def _get_uploaded_files(self):

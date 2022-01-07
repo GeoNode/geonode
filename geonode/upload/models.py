@@ -40,8 +40,6 @@ from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MAX_UPLOAD_SIZE = 104857600  # 100 MB
-
 
 class UploadManager(models.Manager):
 
@@ -71,6 +69,28 @@ class UploadManager(models.Manager):
     def get_incomplete_uploads(self, user):
         return self.filter(user=user).exclude(
             state=enumerations.STATE_PROCESSED)
+
+
+class UploadSizeLimitManager(models.Manager):
+
+    def create_default_limit(self):
+        max_size_db_obj = self.create(
+            slug="total_upload_size_sum",
+            description="The sum of sizes for the files of a dataset upload.",
+            max_size=settings.DEFAULT_MAX_UPLOAD_SIZE,
+        )
+        return max_size_db_obj
+
+    def create_default_limit_for_upload_handler(self):
+        max_size_db_obj = UploadSizeLimit.objects.create(
+            slug="file_upload_handler",
+            description=(
+                'Request total size, validated before the upload process. '
+                'This should be greater than "total_upload_size_sum".'
+            ),
+            max_size=settings.DEFAULT_MAX_BEFORE_UPLOAD_SIZE,
+        )
+        return max_size_db_obj
 
 
 class Upload(models.Model):
@@ -262,6 +282,9 @@ class Upload(models.Model):
 
 
 class UploadSizeLimit(models.Model):
+
+    objects = UploadSizeLimitManager()
+
     slug = models.SlugField(
         primary_key=True,
         max_length=255,
@@ -278,7 +301,7 @@ class UploadSizeLimit(models.Model):
     )
     max_size = models.PositiveBigIntegerField(
         help_text=_("The maximum file size allowed for upload (bytes)."),
-        default=DEFAULT_MAX_UPLOAD_SIZE,
+        default=settings.DEFAULT_MAX_UPLOAD_SIZE,
     )
 
     @property

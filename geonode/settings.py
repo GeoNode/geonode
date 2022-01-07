@@ -2074,3 +2074,6 @@ FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.MemoryFileUploadHandler',
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
+
+DEFAULT_MAX_UPLOAD_SIZE = os.getenv('DEFAULT_MAX_UPLOAD_SIZE', 104857600)  # 100 MB
+DEFAULT_MAX_BEFORE_UPLOAD_SIZE = os.getenv('DEFAULT_MAX_BEFORE_UPLOAD_SIZE', 209715200)  # 200 MB

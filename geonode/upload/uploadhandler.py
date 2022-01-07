@@ -13,8 +13,6 @@ from django.utils.encoding import force_str
 
 from geonode.upload.models import UploadSizeLimit
 
-DEFAULT_MAX_BEFORE_UPLOAD_SIZE = 209715200  # 200 MB
-
 
 class SizeRestrictedFileUploadHandler(FileUploadHandler):
     """
@@ -173,16 +171,10 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
         return file_name
 
     def _get_max_size(self):
-        max_size_db_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="file_upload_handler",
-            defaults={
-                "description": (
-                    "Request total size, validated before the upload process. "
-                    'This should be greater than "total_upload_size_sum".'
-                ),
-                "max_size": DEFAULT_MAX_BEFORE_UPLOAD_SIZE,
-            },
-        )
+        try:
+            max_size_db_obj = UploadSizeLimit.objects.get(slug="file_upload_handler")
+        except UploadSizeLimit.DoesNotExist:
+            max_size_db_obj = UploadSizeLimit.objects.create_default_limit_for_upload_handler()
         return max_size_db_obj.max_size
 
     def receive_data_chunk(self, raw_data, start):
