@@ -1,7 +1,7 @@
 # native dependencies
 Pillow==8.4.0
 lxml==4.7.1
-psycopg2==2.9.2
+psycopg2==2.9.3
 Django==3.2.7
 
 # Other
@@ -73,7 +73,7 @@ djangorestframework-gis==0.17
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.6.3
-drf-spectacular==0.21.0
+drf-spectacular==0.21.1
 dynamic-rest==2.1.1
 Markdown==3.3.6
 
@@ -124,7 +124,7 @@ pylibmc==1.6.1
 sherlock==0.3.2
 
 # required by monitoring
-psutil==5.8.0
+psutil==5.9.0
 django-cors-headers==3.10.1
 user-agents
 django-user-agents
