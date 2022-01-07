@@ -104,14 +104,8 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         create_dataset_data(dt.resourcebase_ptr_id)
         res = self.rm.delete(doc.uuid, instance=doc)
         self.assertTrue(res)
-        # Before dataset delete
-        self.assertEqual(MapLayer.objects.filter(name='geonode:test_delete_dataset').count(), 1)
-        self.assertEqual(OverallRating.objects.filter(object_id=dt.id).count(), 1)
-        # try deleting with no default style, havest_job withalternate as resource_id, with uploads
-        # TODO
         res = self.rm.delete(dt.uuid, instance=dt)
         self.assertTrue(res)
-
         # After dataset delete
         self.assertEqual(MapLayer.objects.filter(name='geonode:test_delete_dataset').count(), 0)
         self.assertEqual(OverallRating.objects.filter(object_id=dt.id).count(), 0)
