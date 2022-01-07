@@ -1426,7 +1426,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             return ''
 
     def get_absolute_url(self):
-        return self.get_real_instance().get_absolute_url()
+        try:
+            return self.get_real_instance().get_absolute_url()
+        except Exception as e:
+            logger.exception(e)
+            return None
 
     def set_bbox_polygon(self, bbox, srid):
         """
