@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==8.4.0
+Pillow==9.0.0
 lxml==4.7.1
 psycopg2==2.9.3
 Django==3.2.7
@@ -149,7 +149,7 @@ pytest-bdd==5.0.0
 splinter==0.17.0
 pytest-splinter==3.3.1
 pytest-django==4.5.2
-setuptools==60.2.0
+setuptools==60.3.1
 pip==21.3.1
 Twisted==21.7.0
 pixelmatch==0.2.3
