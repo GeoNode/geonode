@@ -54,7 +54,7 @@ SQLAlchemy==1.4.29 # required by PyCSW
 Shapely==1.8.0
 mercantile==1.2.1
 geoip2==4.5.0
-numpy==1.21.*
+numpy==1.22.*
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
@@ -106,7 +106,7 @@ django-storages==1.12.3
 dropbox==11.25.0
 google-cloud-storage==1.43.0
 google-cloud-core==2.2.1
-boto3==1.20.25
+boto3==1.20.30
 
 # Django Caches
 python-memcached<=1.59
