@@ -57,6 +57,7 @@ from geonode.favorite.models import Favorite
 from geonode.base.models import Configuration
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
+from geonode.thumbs.utils import _decode_base64
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
@@ -72,6 +73,7 @@ from geonode.security.utils import (
 
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
+from geonode.resource.manager import resource_manager
 
 from guardian.shortcuts import get_objects_for_user
 
@@ -1166,3 +1168,29 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 "overall_rating": overall_rating
             }
         )
+
+    @extend_schema(
+        methods=['put', 'patch'],
+        responses={200},
+        description="API endpoint allowing to set thumbnail of the Resource.")
+    @action(
+        detail=True,
+        url_path="set_thumbnail",
+        url_name="set_thumbnail",
+        methods=['put', 'patch'],
+        permission_classes=[
+            IsAuthenticated,
+        ])
+    def set_thumbnail(self, request, pk=None):
+        resource = self.get_object()
+        thumbnail = request.data.get('thumbnail')
+        try:
+            thumbnail, _thumbnail_format = _decode_base64(thumbnail)
+            resource_manager.set_thumbnail(resource, thumbnail=thumbnail)
+        except Exception:
+            # thumbnail is a link
+            if thumbnail:
+                resource.thumnail_url = thumbnail
+                resource.save()
+
+        return Response({"message": "Thumbnail set successfully"})

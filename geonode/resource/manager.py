@@ -40,6 +40,7 @@ from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
+from geonode.thumbs.thumbnails import _generate_thumbnail_name
 
 from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.permissions import (
@@ -916,17 +917,21 @@ class ResourceManager(ResourceManagerInterface):
 
         return _permissions
 
-    def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
+    def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True, thumbnail=None) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
-                    if instance and instance.files and isinstance(instance.get_real_instance(), Document):
-                        if overwrite or instance.thumbnail_url == static(MISSING_THUMB):
-                            from geonode.documents.tasks import create_document_thumbnail
-                            create_document_thumbnail.apply((instance.id,))
-                    self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
+                    if thumbnail:
+                        file_name = _generate_thumbnail_name(_resource.get_real_instance())
+                        _resource.save_thumbnail(file_name, thumbnail)
+                    else:
+                        if instance and instance.files and isinstance(instance.get_real_instance(), Document):
+                            if overwrite or instance.thumbnail_url == static(MISSING_THUMB):
+                                from geonode.documents.tasks import create_document_thumbnail
+                                create_document_thumbnail.apply((instance.id,))
+                        self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:

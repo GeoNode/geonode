@@ -27,6 +27,8 @@ from django.templatetags.static import static
 from django.utils.module_loading import import_string
 
 from geonode.base.bbox_utils import BBOXHelper
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Dataset
 from geonode.utils import OGC_Servers_Handler
@@ -204,7 +206,7 @@ def create_thumbnail(
     return instance.thumbnail_url
 
 
-def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
+def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp]) -> Optional[str]:
     """
     Method returning file name for the thumbnail.
     If provided instance is a Map, and doesn't have any defined datasets, None is returned.
@@ -224,9 +226,15 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
             return None
 
         file_name = f"map-{instance.uuid}-thumb.png"
+
+    elif isinstance(instance, Document):
+        file_name = f"document-{instance.uuid}-thumb.png"
+
+    elif isinstance(instance, GeoApp):
+        file_name = f"geoapp-{instance.uuid}-thumb.png"
     else:
         raise ThumbnailError(
-            "Thumbnail generation didn't recognize the provided instance: it's neither a Dataset nor a Map."
+            "Thumbnail generation didn't recognize the provided instance."
         )
 
     return file_name
