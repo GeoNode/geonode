@@ -1022,21 +1022,22 @@ class TestFacets(TestCase):
         Layer.objects.create(
             owner=self.user, title='test_boxes', storeType='coverageStore', is_approved=True
         )
-        apps.app_configs["test_app"] = TestFacets.TestGeoApp()
-        GeoApp.objects.create(
-            owner=self.user, title='test_geoapp_1', name='test_geoapp_1', is_approved=True
-        )
-        GeoApp.objects.create(
-            owner=self.user, title='test_geoapp_2', name='test_geoapp_2', is_approved=True
-        )
-        GeoApp.objects.create(
-            owner=self.user, title='test_geoapp_3', name='test_geoapp_3', is_approved=True
-        )
+        # GeoApp.objects.create(
+        #     owner=self.user, title='test_geoapp_1', name='test_geoapp_1', is_approved=True
+        # )
+        # GeoApp.objects.create(
+        #     owner=self.user, title='test_geoapp_2', name='test_geoapp_2', is_approved=True
+        # )
+        # GeoApp.objects.create(
+        #     owner=self.user, title='test_geoapp_3', name='test_geoapp_3', is_approved=True
+        # )
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
 
     def test_facets_filter_layers_returns_correctly(self):
+        # apps.app_configs["test_app"] = TestFacets.TestGeoApp()
         ResourceBase.objects.all().update(dirty_state=False)
+        # apps.app_configs.pop("test_app")
         self.request_mock.GET.get.side_effect = lambda key, self: {
             'title__icontains': 'boxes',
             'abstract__icontains': 'boxes',
@@ -1051,7 +1052,7 @@ class TestFacets(TestCase):
         results = facets({'request': self.request_mock})
         self.assertEqual(results['vector'], 3)
         self.assertEqual(results['raster'], 4)
-        self.assertEqual(results['GeoApp'], 3)
+        # self.assertEqual(results['GeoApp'], 3)
 
 
 class TestGenerateThesaurusReference(TestCase):

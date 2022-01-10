@@ -205,14 +205,23 @@ def facets(context):
             'vector_time': count_dict.get('vectorTimeSeries', 0),
             'remote': count_dict.get('remoteStore', 0),
             'wms': count_dict.get('wmsStore', 0),
-            **_facets_geoapps(request, category_filter, regions_filter, owner_filter, date_gte_filter,
-                              date_lte_filter, date_range_filter, extent_filter, keywords_filter, authorized),
         }
 
         # Break early if only_layers is set.
         if facet_type == 'layers':
             return facets
 
+
+        facet_geoapp = {}
+        if facet_type == 'all':
+            facet_geoapp = _facets_geoapps(request, category_filter, regions_filter, owner_filter, date_gte_filter,
+                                           date_lte_filter, date_range_filter, extent_filter, keywords_filter,
+                                           authorized)
+
+        facets = {
+            **facets,
+            **facet_geoapp
+        }
         maps = Map.objects.filter(title__icontains=title_filter)
         documents = Document.objects.filter(title__icontains=title_filter)
 
