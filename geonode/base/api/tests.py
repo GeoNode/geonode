@@ -19,6 +19,7 @@
 import sys
 import json
 import logging
+import re
 
 from PIL import Image
 from io import BytesIO
@@ -1285,6 +1286,31 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.json()['rating'], 1)
         self.assertEqual(response.json()['overall_rating'], 2.0)
         self.assertEqual(response.status_code, 200)
+
+    def test_set_resource_thumbanil(self):
+        re_uuid = "[0-F]{8}-([0-F]{4}-){3}[0-F]{12}"
+        resource = Dataset.objects.first()
+        url = reverse('base-resources-set_thumbnail', args=[resource.pk])
+        data = {
+            "thumbnail": "http://thumb_url/"
+        }
+        # Anonymous user
+        response = self.client.patch(url, data=data)
+        self.assertEqual(response.status_code, 403)
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.patch(url, data=data)
+        self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, data['thumbnail'])
+        self.assertEqual(response.status_code, 200)
+
+        # using Base64 data as an ASCII byte string
+        data['thumbnail'] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgIfAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAANSURBVAiZYzAxMfkPAALYAZzx61+bAAAAAElFTkSuQmCC"
+        with patch("geonode.base.models.is_monochromatic_image") as _mck:
+            _mck.return_value = False
+            response = self.client.patch(url, data=data)
+            self.assertEqual(response.status_code, 200)
+            self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.png", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
 
     def test_set_thumbnail_from_bbox_from_Anonymous_user_raise_permission_error(self):
         """

@@ -1190,7 +1190,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         except Exception:
             # thumbnail is a link
             if thumbnail:
-                resource.thumnail_url = thumbnail
+                resource.thumbnail_url = thumbnail
                 resource.save()
 
         return Response({"message": "Thumbnail set successfully"})
