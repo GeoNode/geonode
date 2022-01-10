@@ -1186,7 +1186,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         thumbnail = request.data.get('thumbnail')
         try:
             thumbnail, _thumbnail_format = _decode_base64(thumbnail)
-            resource_manager.set_thumbnail(resource, thumbnail=thumbnail)
+            resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
         except Exception:
             # thumbnail is a link
             if thumbnail:
