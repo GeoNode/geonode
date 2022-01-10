@@ -209,7 +209,7 @@ class UpdateProfileTestCase(TestCase):
         self.assertTrue(self.mock_extractor.extract_zipcode.called)
         args_list = mock_user_field.call_args_list
         expected_call = mock.call(
-            self.fake_user, self.fake_zipcode)
+            self.fake_user, "zipcode", self.fake_zipcode)
         self.assertIn(expected_call, args_list)
 
 
