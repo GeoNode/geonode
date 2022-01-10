@@ -258,9 +258,10 @@ def purge_geofence_dataset_rules(resource):
                     msg = msg + str(dataset_name)
                     e = Exception(msg)
                     logger.debug(f"Response [{r.status_code}] : {r.text}")
-                    raise e
-    except Exception as e:
-        logger.exception(e)
+                    logger.exception(e)
+    except Exception:
+        tb = traceback.format_exc()
+        logger.debug(tb)
 
 
 def set_geofence_invalidate_cache():

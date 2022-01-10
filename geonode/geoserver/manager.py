@@ -113,15 +113,18 @@ class GeoServerResourceManager(ResourceManagerInterface):
         # cascading_delete should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if instance and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-            _real_instance = instance.get_real_instance()
-            if isinstance(_real_instance, Dataset) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
-                if not hasattr(_real_instance, 'remote_service') or _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
-                    geoserver_cascading_delete.apply_async((_real_instance.alternate,))
-                    if "geonode.upload" in settings.INSTALLED_APPS:
-                        from geonode.upload.models import Upload
-                        Upload.objects.filter(resource_id=_real_instance.id).delete()
-            elif isinstance(_real_instance, Map):
-                geoserver_delete_map.apply_async((_real_instance.id, ))
+            try:
+                _real_instance = instance.get_real_instance()
+                if isinstance(_real_instance, Dataset) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
+                    if not hasattr(_real_instance, 'remote_service') or _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
+                        geoserver_cascading_delete.apply_async((_real_instance.alternate,))
+                        if "geonode.upload" in settings.INSTALLED_APPS:
+                            from geonode.upload.models import Upload
+                            Upload.objects.filter(resource_id=_real_instance.id).delete()
+                elif isinstance(_real_instance, Map):
+                    geoserver_delete_map.apply_async((_real_instance.id, ))
+            except Exception as e:
+                logger.exception(e)
 
     def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
         _resource = resource_type.objects.get(uuid=uuid)
@@ -215,23 +218,19 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 import_session = _gs_import_session_info.import_session
                 if import_session and import_session.state == enumerations.STATE_COMPLETE:
                     _alternate = f'{_gs_import_session_info.workspace}:{_gs_import_session_info.dataset_name}'
+                    _to_update = {
+                        'name': _gs_import_session_info.dataset_name,
+                        'title': instance.title or _gs_import_session_info.dataset_name,
+                        'files': kwargs.get('files', None),
+                        'workspace': _gs_import_session_info.workspace,
+                        'alternate': _alternate,
+                        'typename': _alternate,
+                        'store': _gs_import_session_info.target_store or _gs_import_session_info.dataset_name,
+                        'subtype': _gs_import_session_info.spatial_files_type.dataset_type
+                    }
                     if 'defaults' in kwargs:
-                        kwargs['defaults']['name'] = _gs_import_session_info.dataset_name
-                        kwargs['defaults']['title'] = instance.title or _gs_import_session_info.dataset_name
-                        kwargs['defaults']['files'] = kwargs.get('files', None)
-                        kwargs['defaults']['workspace'] = _gs_import_session_info.workspace
-                        kwargs['defaults']['alternate'] = _alternate
-                        kwargs['defaults']['typename'] = _alternate
-                        kwargs['defaults']['store'] = _gs_import_session_info.target_store or _gs_import_session_info.dataset_name
-                        kwargs['defaults']['subtype'] = _gs_import_session_info.spatial_files_type.dataset_type
-                    instance.get_real_instance().name = _gs_import_session_info.dataset_name
-                    instance.get_real_instance().title = instance.title or _gs_import_session_info.dataset_name
-                    instance.get_real_instance().files = kwargs.get('files', None)
-                    instance.get_real_instance().workspace = _gs_import_session_info.workspace
-                    instance.get_real_instance().alternate = _alternate
-                    instance.get_real_instance().typename = _alternate
-                    instance.get_real_instance().store = _gs_import_session_info.target_store or _gs_import_session_info.dataset_name
-                    instance.get_real_instance().subtype = _gs_import_session_info.spatial_files_type.dataset_type
+                        kwargs['defaults'].update(_to_update)
+                    instance.get_real_instance_class().objects.filter(uuid=instance.uuid).update(**_to_update)
                     if kwargs.get('action_type', 'create') == 'create':
                         set_styles(instance.get_real_instance(), gs_catalog)
                         set_attributes_from_geoserver(instance.get_real_instance(), overwrite=True)
