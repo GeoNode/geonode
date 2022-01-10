@@ -214,9 +214,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                 # allow for that
                 if os.path.exists(file_path):
                     params[spatial_file] = open(file_path, 'rb')
-        elif ext.lower() == '.tif':
-            file_path = base + ext
-            params['tif_file'] = open(file_path, 'rb')
 
         with open(_file, 'rb') as base_file:
             params['base_file'] = base_file
@@ -241,9 +238,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         for spatial_file in spatial_files:
             if isinstance(params.get(spatial_file), IOBase):
                 params[spatial_file].close()
-
-        if isinstance(params.get("tif_file"), IOBase):
-            params['tif_file'].close()
 
         try:
             logger.error(f" -- response: {response.status_code} / {response.json()}")
@@ -277,9 +271,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                 # allow for that
                 if os.path.exists(file_path):
                     params[spatial_file] = open(file_path, 'rb')
-        elif ext.lower() == '.tif':
-            file_path = base + ext
-            params['tif_file'] = open(file_path, 'rb')
 
         with open(_file, 'rb') as base_file:
             params['base_file'] = base_file
@@ -296,9 +287,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         for spatial_file in spatial_files:
             if isinstance(params.get(spatial_file), IOBase):
                 params[spatial_file].close()
-
-        if isinstance(params.get("tif_file"), IOBase):
-            params['tif_file'].close()
 
         try:
             logger.error(f" -- response: {response.status_code} / {response.json()}")
