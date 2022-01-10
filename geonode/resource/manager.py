@@ -436,7 +436,7 @@ class ResourceManager(ResourceManagerInterface):
                 _resource = None
                 instance.set_processing_state(enumerations.STATE_RUNNING)
                 _owner = owner or instance.get_real_instance().owner
-                _perms = instance.get_real_instance().get_all_level_info()
+                _perms = copy.copy(instance.get_real_instance().get_all_level_info())
                 _resource = copy.copy(instance.get_real_instance())
                 _resource.pk = _resource.id = None
                 _resource.uuid = uuid or str(uuid1())
@@ -473,6 +473,13 @@ class ResourceManager(ResourceManagerInterface):
                 to_update.update(defaults)
                 if 'user' in to_update:
                     to_update.pop('user')
+                # We need to remove any public access to the cloned dataset here
+                if 'users' in _perms and ("AnonymousUser" in _perms['users'] or get_anonymous_user() in _perms['users']):
+                    anonymous_user = "AnonymousUser" if "AnonymousUser" in _perms['users'] else get_anonymous_user()
+                    _perms['users'].pop(anonymous_user)
+                if 'groups' in _perms and ("anonymous" in _perms['groups'] or Group.objects.get(name='anonymous') in _perms['groups']):
+                    anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
+                    _perms['groups'].pop(anonymous_group)
                 self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
                 return self.update(_resource.uuid, _resource, vals=to_update)
         return instance
