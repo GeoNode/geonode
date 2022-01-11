@@ -1305,7 +1305,8 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         # using Base64 data as an ASCII byte string
-        data['thumbnail'] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgIfAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAANSURBVAiZYzAxMfkPAALYAZzx61+bAAAAAElFTkSuQmCC"
+        data['thumbnail'] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgI\
+        fAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAANSURBVAiZYzAxMfkPAALYAZzx61+bAAAAAElFTkSuQmCC"
         with patch("geonode.base.models.is_monochromatic_image") as _mck:
             _mck.return_value = False
             response = self.client.patch(url, data=data)
