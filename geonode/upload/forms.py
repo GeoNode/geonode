@@ -97,7 +97,7 @@ class LayerUploadForm(forms.Form):
 
     def validate_files_sum_of_sizes(self):
         max_size = self._get_uploads_max_size()
-        total_size = sum([django_file.size for django_file in self.files.values()])
+        total_size = self._get_uploaded_files_total_size()
         if total_size > max_size:
             raise forms.ValidationError(_(
                 f'Total upload size exceeds {filesizeformat(max_size)}. Please try again with smaller files.'
@@ -114,6 +114,16 @@ class LayerUploadForm(forms.Form):
         """Return a list with all of the uploaded files"""
         return [django_file for field_name, django_file in self.files.items()
                 if field_name != "base_file"]
+
+    def _get_uploaded_files_total_size(self):
+        """Return a list with all of the uploaded files"""
+        excluded_files = ("zip_file", )
+        uploaded_files_sizes = [
+            django_file.size for field_name, django_file in self.files.items()
+            if field_name not in excluded_files
+        ]
+        total_size = sum(uploaded_files_sizes)
+        return total_size
 
 
 class TimeForm(forms.Form):
