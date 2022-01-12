@@ -219,13 +219,10 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         Ensures the doc_file or the doc_url field is populated.
         """
         cleaned_data = super().clean()
-        if self.errors:
-            # Something already went wrong
-            return cleaned_data
         doc_file = self.cleaned_data.get('doc_file')
         doc_url = self.cleaned_data.get('doc_url')
 
-        if not doc_file and not doc_url:
+        if not doc_file and not doc_url and "doc_file" not in self.errors and "doc_url" not in self.errors:
             logger.error("Document must be a file or url.")
             raise forms.ValidationError(_("Document must be a file or url."))
 

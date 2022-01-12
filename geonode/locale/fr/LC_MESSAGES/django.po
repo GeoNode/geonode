@@ -6708,6 +6708,13 @@ msgid "The maximum file size allowed for upload (bytes)."
 msgstr ""
 "La taille de fichier maximale autorisée pour le téléchargement (octets)."
 
+msgid ""
+"File size size exceeds {filesizeformat(max_size)}. Please try again with a "
+"smaller file."
+msgstr ""
+"La taille du fichier dépasse {filesizeformat(max_size)}. Veuillez réessayer "
+"avec un fichier plus petit."
+
 msgid "Layer already exists"
 msgstr "La couche existe déjà"
 

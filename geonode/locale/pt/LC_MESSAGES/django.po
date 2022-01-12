@@ -6796,6 +6796,13 @@ msgid "The maximum file size allowed for upload (bytes)."
 msgstr ""
 "O tamanho de arquivo máximo permitido para upload (bytes)."
 
+msgid ""
+"File size size exceeds {filesizeformat(max_size)}. Please try again with a "
+"smaller file."
+msgstr ""
+"O tamanho do arquivo excede {filesizeformat(max_size)}. Tente novamente com "
+"um arquivo menor."
+
 #, fuzzy
 #| msgid "Layer Created"
 msgid "Layer already exists"
