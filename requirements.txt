@@ -118,7 +118,7 @@ jdcal==1.4.1
 mock<5.0.0
 python-dateutil==2.8.2
 pytz==2021.3
-requests==2.26.0
+requests==2.27.1
 timeout-decorator==0.5.0
 pylibmc==1.6.1
 sherlock==0.3.2
