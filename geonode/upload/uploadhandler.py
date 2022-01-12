@@ -20,7 +20,7 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
     It only applies for elegible urls set in ``elegible_url_names`` property.
     """
 
-    elegible_url_names = ("data_upload", "uploads-upload",)
+    elegible_url_names = ("data_upload", "uploads-upload", "document_upload",)
 
     def handle_raw_input(self, input_data, META, content_length, boundary, encoding=None):
         """
