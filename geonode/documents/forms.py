@@ -30,6 +30,7 @@ from django.conf import settings
 from django.forms import HiddenInput
 from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
+from django.template.defaultfilters import filesizeformat
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
@@ -37,8 +38,48 @@ from geonode.resource.utils import get_related_resources
 from geonode.documents.models import (
     Document,
     DocumentResourceLink)
+from geonode.upload.models import UploadSizeLimit
 
 logger = logging.getLogger(__name__)
+
+
+class SizeRestrictedFileField(forms.FileField):
+    """
+    Same as FileField, but checks file max_size based on the value stored on `field_slug`.
+        * field_slug - a slug indicating the database object from where the max_size will be retrieved.
+    """
+    def __init__(self, *args, **kwargs):
+        self.field_slug = kwargs.pop("field_slug")
+        super(SizeRestrictedFileField, self).__init__(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        data = super(SizeRestrictedFileField, self).clean(*args, **kwargs)
+        if data is None:
+            return data
+        file_size = self._get_file_size(data)
+        if file_size is not None:
+            # Only query the DB for a max_size when there is a file_size
+            max_size = self._get_max_size()
+            # Validate
+            if file_size > max_size:
+                raise forms.ValidationError(_(
+                    f'File size size exceeds {filesizeformat(max_size)}. Please try again with a smaller file.'
+                ))
+        return data
+
+    def _get_file_size(self, data):
+        try:
+            file_size = data.size
+        except AttributeError:
+            file_size = None
+        return file_size
+
+    def _get_max_size(self):
+        try:
+            max_size_db_obj = UploadSizeLimit.objects.get(slug=self.field_slug)
+        except UploadSizeLimit.DoesNotExist:
+            max_size_db_obj = UploadSizeLimit.objects.create_default_limit_with_slug(slug=self.field_slug)
+        return max_size_db_obj.max_size
 
 
 class DocumentFormMixin:
@@ -145,9 +186,11 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         label=_("Link to"),
         required=False)
 
-    doc_file = forms.FileField(
+    doc_file = SizeRestrictedFileField(
         label=_("File"),
-        required=False)
+        required=False,
+        field_slug="document_upload_size"
+    )
 
     class Meta:
         model = Document
@@ -176,6 +219,9 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         Ensures the doc_file or the doc_url field is populated.
         """
         cleaned_data = super().clean()
+        if self.errors:
+            # Something already went wrong
+            return cleaned_data
         doc_file = self.cleaned_data.get('doc_file')
         doc_url = self.cleaned_data.get('doc_url')
 

@@ -92,6 +92,14 @@ class UploadSizeLimitManager(models.Manager):
         )
         return max_size_db_obj
 
+    def create_default_limit_with_slug(self, slug):
+        max_size_db_obj = self.create(
+            slug=slug,
+            description="Size limit.",
+            max_size=settings.DEFAULT_MAX_UPLOAD_SIZE,
+        )
+        return max_size_db_obj
+
 
 class Upload(models.Model):
 
