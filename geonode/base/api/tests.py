@@ -1291,16 +1291,17 @@ class BaseApiTests(APITestCase):
         re_uuid = "[0-F]{8}-([0-F]{4}-){3}[0-F]{12}"
         resource = Dataset.objects.first()
         url = reverse('base-resources-set_thumbnail', args=[resource.pk])
+        headers = {"Content-Disposition:attachment;filename=thumbnail"}
         data = {
             "thumbnail": "http://thumb_url/"
         }
         # Anonymous user
-        response = self.client.patch(url, data=data)
+        response = self.client.put(url, data=data, headers=headers)
         self.assertEqual(response.status_code, 403)
 
         # Authenticated user
         self.assertTrue(self.client.login(username='admin', password='admin'))
-        response = self.client.patch(url, data=data)
+        response = self.client.put(url, data=data, header=headers)
         self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, data['thumbnail'])
         self.assertEqual(response.status_code, 200)
 
@@ -1309,7 +1310,7 @@ class BaseApiTests(APITestCase):
         fAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAANSURBVAiZYzAxMfkPAALYAZzx61+bAAAAAElFTkSuQmCC"
         with patch("geonode.base.models.is_monochromatic_image") as _mck:
             _mck.return_value = False
-            response = self.client.patch(url, data=data)
+            response = self.client.put(url, data=data, header=headers)
             self.assertEqual(response.status_code, 200)
             self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.png", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
 

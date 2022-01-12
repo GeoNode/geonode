@@ -40,8 +40,9 @@ from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
-from geonode.thumbs.thumbnails import _generate_thumbnail_name
 
+from geonode.thumbs.thumbnails import _generate_thumbnail_name
+from geonode.documents.tasks import create_document_thumbnail
 from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.permissions import (
     PermSpecCompact,
@@ -929,7 +930,6 @@ class ResourceManager(ResourceManagerInterface):
                     else:
                         if instance and instance.files and isinstance(instance.get_real_instance(), Document):
                             if overwrite or instance.thumbnail_url == static(MISSING_THUMB):
-                                from geonode.documents.tasks import create_document_thumbnail
                                 create_document_thumbnail.apply((instance.id,))
                         self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)

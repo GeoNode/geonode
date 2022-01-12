@@ -22,11 +22,14 @@ import json
 from decimal import Decimal
 from uuid import uuid1
 from urllib.parse import urljoin
+from PIL import Image
 
 from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
+from django.core.validators import URLValidator
 from django.db import models
 from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings
 from django.db.models import Subquery
@@ -44,8 +47,10 @@ from pinax.ratings.models import OverallRating, Rating
 from pinax.ratings.views import NUM_OF_RATINGS
 
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.parsers import FileUploadParser
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -1170,27 +1175,42 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         )
 
     @extend_schema(
-        methods=['put', 'patch'],
+        methods=['put'],
         responses={200},
         description="API endpoint allowing to set thumbnail of the Resource.")
     @action(
         detail=True,
         url_path="set_thumbnail",
         url_name="set_thumbnail",
-        methods=['put', 'patch'],
+        methods=['put'],
         permission_classes=[
             IsAuthenticated,
-        ])
+        ],
+        parser_classes=[FileUploadParser, ]
+    )
     def set_thumbnail(self, request, pk=None):
-        resource = self.get_object()
-        thumbnail = request.data.get('thumbnail')
-        try:
-            thumbnail, _thumbnail_format = _decode_base64(thumbnail)
-            resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
-        except Exception:
-            # thumbnail is a link
-            if thumbnail:
-                resource.thumbnail_url = thumbnail
-                resource.save()
+        from PIL import Image
+        resource = get_object_or_404(ResourceBase, pk=pk)
+        if not request.data.get('file'):
+            raise ValidationError("No data provided")
 
+        file_obj = request.data['file']
+        # Validate size
+        if file_obj.size > 1000000:
+            raise ValidationError('File must not exceed 1MB')
+        thumbnail = file_obj.read()
+        # try:
+        #     # Check if raw data is uploaded
+        #     data = thumbnail.decode()
+        #     # check if imageurl
+        #     validator = URLValidator()
+        #     try:
+        #         validator(data)
+        #         thumbnail = Image.open(requests.get(data, stream=True).raw)
+        #     except Exception:
+        #         thumbnail, _thumbnail_format = _decode_base64(data)
+        # except Exception:
+        #     pass
+        im = Image.open()
+        resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
         return Response({"message": "Thumbnail set successfully"})
