@@ -30,6 +30,7 @@ from urllib.parse import urljoin
 
 from django.urls import reverse
 from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
@@ -1324,14 +1325,12 @@ class BaseApiTests(APITestCase):
             # File upload
             with patch('PIL.Image.open') as _mck:
                 _mck.return_value = test_image
-                client = self.client
-                client.credentials(HTTP_CONTENT_DISPOSITION="attachment;filename=thumbnail")
-                f = BytesIO(test_image.tobytes())
                 # rest thumbnail_url to None
                 resource.thumbnail_url = None
                 resource.save()
                 self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, None)
-                response = self.client.put(url, data=f.read(), content_type='application/octet-stream')
+                f = SimpleUploadedFile('test_image.png', BytesIO(test_image.tobytes()).read(),'image/png')
+                response = self.client.put(url, data={"file": f})
                 self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.png", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
                 self.assertEqual(response.status_code, 200)
 
