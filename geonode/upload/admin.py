@@ -20,6 +20,7 @@
 from geonode.upload.models import Upload, UploadSizeLimit
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import ugettext as _
 
@@ -51,8 +52,12 @@ class UploadAdmin(admin.ModelAdmin):
 class UploadSizeLimitAdminForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(UploadSizeLimitAdminForm, self).clean()
-        slug = cleaned_data.get('slug', self.instance.slug)
-        max_size = cleaned_data.get('max_size', self.instance.max_size)
+
+        default_slug = self.instance.slug if self.instance else None
+        default_max_size = self.instance.max_size if self.instance else settings.DEFAULT_MAX_UPLOAD_SIZE
+        slug = cleaned_data.get('slug', default_slug)
+        max_size = cleaned_data.get('max_size', default_max_size)
+
         after_upload_slugs_list = ['total_upload_size_sum', 'document_upload_size']
 
         if slug == 'file_upload_handler':

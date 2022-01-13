@@ -20,6 +20,7 @@ import os
 
 from rest_framework import serializers
 
+from django.conf import settings
 from django.utils.translation import ugettext as _
 
 from dynamic_rest.fields.fields import (
@@ -254,11 +255,14 @@ class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
     def validate(self, data):
         validated_data = super(UploadSizeLimitSerializer, self).validate(data)
 
-        slug = validated_data.get('slug', self.instance.slug)
-        max_size = validated_data.get("max_size", self.instance.max_size)
-        after_upload_slugs_list = ['total_upload_size_sum', 'document_upload_size']
-        if slug == 'file_upload_handler':
+        default_slug = self.instance.slug if self.instance else None
+        default_max_size = self.instance.max_size if self.instance else settings.DEFAULT_MAX_UPLOAD_SIZE
+        slug = validated_data.get('slug', default_slug)
+        max_size = validated_data.get("max_size", default_max_size)
 
+        after_upload_slugs_list = ['total_upload_size_sum', 'document_upload_size']
+
+        if slug == 'file_upload_handler':
             after_upload_sizes = UploadSizeLimit.objects.filter(
                 slug__in=after_upload_slugs_list
             ).values_list('max_size', flat=True)
