@@ -1203,7 +1203,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     thumbnail, _thumbnail_format = _decode_base64(file_data)
                 except Exception:
                     return Response(
-                        'The request body is not a valid base64 string',
+                        'The request body is not a valid base64 string or the image format is not PNG or JPEG',
                         status=status.HTTP_400_BAD_REQUEST
                     )
                     # Check if file_data is a valid url and set it as thumbail_url
