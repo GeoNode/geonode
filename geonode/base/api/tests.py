@@ -1291,28 +1291,49 @@ class BaseApiTests(APITestCase):
         re_uuid = "[0-F]{8}-([0-F]{4}-){3}[0-F]{12}"
         resource = Dataset.objects.first()
         url = reverse('base-resources-set_thumbnail', args=[resource.pk])
-        headers = {"Content-Disposition:attachment;filename=thumbnail"}
-        data = {
-            "thumbnail": "http://thumb_url/"
-        }
+        data = {"file": "http://localhost:8000/thumb.png"}
+
         # Anonymous user
-        response = self.client.put(url, data=data, headers=headers)
+        response = self.client.put(url, data=data, format="json")
         self.assertEqual(response.status_code, 403)
 
         # Authenticated user
         self.assertTrue(self.client.login(username='admin', password='admin'))
-        response = self.client.put(url, data=data, header=headers)
-        self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, data['thumbnail'])
+        response = self.client.put(url, data=data, format="json")
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, data['file'])
+        # set with invalid image url
+        data = {"file": "invali url"}
+        response = self.client.put(url, data=data, format="json")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), ['file is either a file upload, ASCII byte string or a valid image url string'])
+        # Test with non image url
+        data = {"file": "http://localhost:8000/thumb.txt"}
+        response = self.client.put(url, data=data, format="json")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'The url must be of an image with format (png, jpeg or jpg)')
 
         # using Base64 data as an ASCII byte string
-        data['thumbnail'] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgI\
+        data['file'] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgI\
         fAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAANSURBVAiZYzAxMfkPAALYAZzx61+bAAAAAElFTkSuQmCC"
         with patch("geonode.base.models.is_monochromatic_image") as _mck:
             _mck.return_value = False
-            response = self.client.put(url, data=data, header=headers)
+            response = self.client.put(url, data=data, format="json")
             self.assertEqual(response.status_code, 200)
             self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.png", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
+            # File upload
+            with patch('PIL.Image.open') as _mck:
+                _mck.return_value = test_image
+                client = self.client
+                client.credentials(HTTP_CONTENT_DISPOSITION="attachment;filename=thumbnail")
+                f = BytesIO(test_image.tobytes())
+                # rest thumbnail_url to None
+                resource.thumbnail_url = None
+                resource.save()
+                self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, None)
+                response = self.client.put(url, data=f.read(), content_type='application/octet-stream')
+                self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.png", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
+                self.assertEqual(response.status_code, 200)
 
     def test_set_thumbnail_from_bbox_from_Anonymous_user_raise_permission_error(self):
         """

@@ -50,7 +50,7 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.parsers import FileUploadParser
+from rest_framework.parsers import FileUploadParser, JSONParser
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -1186,41 +1186,43 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         permission_classes=[
             IsAuthenticated,
         ],
-        parser_classes=[FileUploadParser, ]
+        parser_classes=[JSONParser, FileUploadParser]
     )
     def set_thumbnail(self, request, pk=None):
         resource = get_object_or_404(ResourceBase, pk=pk)
 
         if not request.data.get('file'):
-            raise ValidationError("No data provided")
+            raise ValidationError("Field file is required")
 
-        file_obj = request.data['file']
-        # Validate size
-        if file_obj.size > 1000000:
-            raise ValidationError('File must not exceed 1MB')
+        file_data = request.data['file']
 
-        thumbnail = file_obj.read()
-        try:
-            file_obj.seek(0)
-            Image.open(file_obj)
-        except Exception:
+        if isinstance(file_data, str):
             try:
-                data = thumbnail.decode()
+                thumbnail, _thumbnail_format = _decode_base64(file_data)
+            except Exception:
+                # Check if file_data is a valid url and set it as thumbail_url
                 try:
-                    thumbnail, _thumbnail_format = _decode_base64(data)
-                except Exception:
-                    # Check if data is a valid url and set it as thumbail_url
                     validate = URLValidator()
-                    validate(data)
-                    if urlparse(data).path.rsplit('.')[-1] not in ['png', 'jpeg', 'jpg']:
+                    validate(file_data)
+                    if urlparse(file_data).path.rsplit('.')[-1] not in ['png', 'jpeg', 'jpg']:
                         return Response(
-                            'The url must be of an image of format (png, jpeg or jpg)',
+                            'The url must be of an image with format (png, jpeg or jpg)',
                             status=status.HTTP_400_BAD_REQUEST
                         )
-
-                    resource.thumbnail_url = data
+                    resource.thumbnail_url = file_data
                     resource.save()
                     return Response({"message": "Thumbnail set successfully"})
+                except Exception:
+                    raise ValidationError('file is either a file upload, ASCII byte string or a valid image url string')
+        else:
+            # Validate size
+            if file_data.size > 1000000:
+                raise ValidationError('File must not exceed 1MB')
+
+            thumbnail = file_data.read()
+            try:
+                file_data.seek(0)
+                Image.open(file_data)
             except Exception:
                 raise ValidationError('Invalid data provided')
         if thumbnail:
