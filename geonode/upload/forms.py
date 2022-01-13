@@ -117,7 +117,7 @@ class LayerUploadForm(forms.Form):
 
     def _get_uploaded_files_total_size(self):
         """Return a list with all of the uploaded files"""
-        excluded_files = ("zip_file", )
+        excluded_files = ("zip_file", "shp_file", )
         uploaded_files_sizes = [
             django_file.size for field_name, django_file in self.files.items()
             if field_name not in excluded_files

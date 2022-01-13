@@ -6715,6 +6715,25 @@ msgstr ""
 "La taille du fichier dépasse {filesizeformat(max_size)}. Veuillez réessayer "
 "avec un fichier plus petit."
 
+msgid ""
+"To avoid errors, max size should be at least 2 times "
+"greater than the value of others size limits."
+msgstr ""
+"Pour éviter les erreurs, la taille maximale doit être au moins 2 fois "
+"supérieure à la valeur des autres limites de taille."
+
+msgid ""
+"To avoid errors, max size should be at least 2 times "
+"smaller than the value of 'file_upload_handler'."
+msgstr ""
+"Pour éviter les erreurs, la taille maximale doit être au moins 2 fois "
+"inférieure à la valeur de 'file_upload_handler'."
+
+msgid ""
+"The limit `{instance.slug}` should not be deleted."
+msgstr ""
+"La limite `{instance.slug}` ne doit pas être supprimée."
+
 msgid "Layer already exists"
 msgstr "La couche existe déjà"
 

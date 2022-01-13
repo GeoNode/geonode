@@ -6578,6 +6578,25 @@ msgstr ""
 "File size size exceeds {filesizeformat(max_size)}. Please try again with a "
 "smaller file."
 
+msgid ""
+"To avoid errors, max size should be at least 2 times "
+"greater than the value of others size limits."
+msgstr ""
+"To avoid errors, max size should be at least 2 times "
+"greater than the value of others size limits."
+
+msgid ""
+"To avoid errors, max size should be at least 2 times "
+"smaller than the value of 'file_upload_handler'."
+msgstr ""
+"To avoid errors, max size should be at least 2 times "
+"smaller than the value of 'file_upload_handler'."
+
+msgid ""
+"The limit `{instance.slug}` should not be deleted."
+msgstr ""
+"The limit `{instance.slug}` should not be deleted."
+
 #, fuzzy
 #| msgid "Layer Created"
 msgid "Layer already exists"
