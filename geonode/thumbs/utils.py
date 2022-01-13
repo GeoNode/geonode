@@ -390,6 +390,7 @@ def get_unique_upload_path(filename):
     upload_path = thumb_path(unique_file_name)
     return upload_path
 
+BASE64_PATTERN = 'data:image/jpeg;base64'
 
 def _decode_base64(data):
     """Decode base64, padding being optional.

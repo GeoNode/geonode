@@ -18,6 +18,7 @@
 #########################################################################
 import ast
 import json
+import re
 
 from decimal import Decimal
 from uuid import uuid1
@@ -50,7 +51,7 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.parsers import FileUploadParser, JSONParser
+from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -62,7 +63,7 @@ from geonode.favorite.models import Favorite
 from geonode.base.models import Configuration
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
-from geonode.thumbs.utils import _decode_base64
+from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
@@ -1186,7 +1187,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         permission_classes=[
             IsAuthenticated,
         ],
-        parser_classes=[JSONParser, FileUploadParser]
+        parser_classes=[JSONParser, MultiPartParser]
     )
     def set_thumbnail(self, request, pk=None):
         resource = get_object_or_404(ResourceBase, pk=pk)
@@ -1197,10 +1198,16 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         file_data = request.data['file']
 
         if isinstance(file_data, str):
-            try:
-                thumbnail, _thumbnail_format = _decode_base64(file_data)
-            except Exception:
-                # Check if file_data is a valid url and set it as thumbail_url
+            if re.match(BASE64_PATTERN, file_data):
+                try:
+                    thumbnail, _thumbnail_format = _decode_base64(file_data)
+                except Exception:
+                    return Response(
+                        'The request body is not a valid base64 string',
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                    # Check if file_data is a valid url and set it as thumbail_url
+            else:
                 try:
                     validate = URLValidator()
                     validate(file_data)
