@@ -81,7 +81,7 @@
               <li class="active"><a href="#permissions_tab1" data-toggle="tab">{% trans "People and Groups" %}</a></li>
               {% if is_layer and storeType != "remoteStore" and GEONODE_SECURITY_ENABLED and OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
                 {% if user.is_superuser or "change_resourcebase_permissions" in perms_list %}
-                  <li><a href="#permissions_tab2" data-toggle="tab">{% trans "Geo Limits" %}</a></li>
+                  <li id="geolimits-tab"><a href="#permissions_tab2" data-toggle="tab">{% trans "Geo Limits" %}</a></li>
                 {% endif %}
               {% endif %}
             </ul>
@@ -433,347 +433,360 @@
       }
     );
 
-    /* OpenLayers */
-    {% if resource.ll_bbox %}
-      var bbox = [{{ resource.ll_bbox_string }}];
-    {% else %}
-      var bbox = null;
-    {% endif %}
-    var source = null;
-    {% if resource.ptype == 'gxp_wmscsource' %}
-      {% if access_token %}
-        var url = '{{ resource.ows_url|safe }}?access_token={{access_token}}';
+    function initGeoLimitsMap() {
+      /* OpenLayers */
+      {% if resource.ll_bbox %}
+        var bbox = [{{ resource.ll_bbox_string }}];
       {% else %}
-        var url = '{{ resource.ows_url|safe }}';
+        var bbox = null;
       {% endif %}
+      var source = null;
+      {% if resource.ptype == 'gxp_wmscsource' %}
+        {% if access_token %}
+          var url = '{{ resource.ows_url|safe }}?access_token={{access_token}}';
+        {% else %}
+          var url = '{{ resource.ows_url|safe }}';
+        {% endif %}
 
-      source = new OpenLayers.Layer.WMS("{{ resource.title|safe }}",
-        url,
-        {layers: '{{ resource.alternate }}', transparent: true},
-        {isBaseLayer: false}
-      );
-    {% elif resource.ptype == 'gxp_arcrestsource' %}
-      {% if access_token %}
-        var url = '{{ resource.ows_url|safe }}?access_token={{access_token}}';
-      {% else %}
-        var url = '{{ resource.ows_url|safe }}';
-      {% endif %}
-        source = new OpenLayers.Layer.ArcGISCache("{{ resource.title|safe }}",
+        source = new OpenLayers.Layer.WMS("{{ resource.title|safe }}",
           url,
-          {layers: '{{ resource.alternate }}', transparent: true},
-          {isBaseLayer: false}
+          {layers: '{{ resource.alternate }}', transparent: true, TILED: true},
+          {isBaseLayer: false, tileSize: new OpenLayers.Size(512, 512)}
         );
-    {% endif %}
+      {% elif resource.ptype == 'gxp_arcrestsource' %}
+        {% if access_token %}
+          var url = '{{ resource.ows_url|safe }}?access_token={{access_token}}';
+        {% else %}
+          var url = '{{ resource.ows_url|safe }}';
+        {% endif %}
+          source = new OpenLayers.Layer.ArcGISCache("{{ resource.title|safe }}",
+            url,
+            {layers: '{{ resource.alternate }}', transparent: true},
+            {isBaseLayer: false}
+          );
+      {% endif %}
 
-    //Snippet comes from http://osgeo-org.1560.x6.nabble.com/OL-2-13-1-latest-Proj4js-td5081636.html
-    /* window.Proj4js = {
-      Proj: function(code) {
-        return proj4(Proj4js.defs[code]);
-      },
-      defs: proj4.defs,
-      transform: proj4
-    }; */
+      //Snippet comes from http://osgeo-org.1560.x6.nabble.com/OL-2-13-1-latest-Proj4js-td5081636.html
+      /* window.Proj4js = {
+        Proj: function(code) {
+          return proj4(Proj4js.defs[code]);
+        },
+        defs: proj4.defs,
+        transform: proj4
+      }; */
 
-    var crs = 'EPSG:4326';  // resource.ll_bbox is always 4326
-    if (source != null) {
-      var vectors = new OpenLayers.Layer.Vector("Simple Geometry", {
-        styleMap: new OpenLayers.StyleMap({'default':{
-          strokeColor: "#00FF00",
-          strokeOpacity: 1,
-          strokeWidth: 3,
-          fillColor: "#FF5500",
-          fillOpacity: 0.5,
-          pointRadius: 6,
-          pointerEvents: "visiblePainted",
-          // label with \n linebreaks
-          // label : "name: ${name}\n\nage: ${age}",
-          fontColor: "${favColor}",
-          fontSize: "12px",
-          fontFamily: "Courier New, monospace",
-          fontWeight: "bold",
-          labelAlign: "${align}",
-          labelXOffset: "${xOffset}",
-          labelYOffset: "${yOffset}",
-          labelOutlineColor: "white",
-          labelOutlineWidth: 3
-        }})
-      });
-    	var layers = [
-        new OpenLayers.Layer.OSM("OpenCycleMap",
-          ["https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
-        source,
-        vectors
-    	];
+      var crs = 'EPSG:4326';  // resource.ll_bbox is always 4326
+      if (source != null) {
+        var vectors = new OpenLayers.Layer.Vector("Simple Geometry", {
+          styleMap: new OpenLayers.StyleMap({'default':{
+            strokeColor: "#00FF00",
+            strokeOpacity: 1,
+            strokeWidth: 3,
+            fillColor: "#FF5500",
+            fillOpacity: 0.5,
+            pointRadius: 6,
+            pointerEvents: "visiblePainted",
+            // label with \n linebreaks
+            // label : "name: ${name}\n\nage: ${age}",
+            fontColor: "${favColor}",
+            fontSize: "12px",
+            fontFamily: "Courier New, monospace",
+            fontWeight: "bold",
+            labelAlign: "${align}",
+            labelXOffset: "${xOffset}",
+            labelYOffset: "${yOffset}",
+            labelOutlineColor: "white",
+            labelOutlineWidth: 3
+          }})
+        });
+        var layers = [
+          new OpenLayers.Layer.OSM("OpenCycleMap",
+            ["https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+              "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+              "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
+          source,
+          vectors
+        ];
 
-    	var map = new OpenLayers.Map({
-        div: 'gis_limits_map',
-        projection: new OpenLayers.Projection('EPSG:900913'),
-        layers: layers,
-        center: [0, 0],
-        zoom: 2
-    	});
+        var map = new OpenLayers.Map({
+          div: 'gis_limits_map',
+          projection: new OpenLayers.Projection('EPSG:900913'),
+          layers: layers,
+          center: [0, 0],
+          zoom: 2
+        });
 
-      map.addControl(new OpenLayers.Control.EditingToolbar(vectors));
+        map.addControl(new OpenLayers.Control.EditingToolbar(vectors));
 
-    	if (bbox != null) {
-    	  if (crs != 'EPSG:900913') {
-          bbox = new OpenLayers.Bounds(bbox).transform(
-            new OpenLayers.Projection(crs),
-            new OpenLayers.Projection("EPSG:900913"));
+        if (bbox != null) {
+          if (crs != 'EPSG:900913') {
+            bbox = new OpenLayers.Bounds(bbox).transform(
+              new OpenLayers.Projection(crs),
+              new OpenLayers.Projection("EPSG:900913"));
+          }
+          map.zoomToExtent(bbox);
         }
-    		map.zoomToExtent(bbox);
-    	}
 
-      function loadShpZip() {
-        var epsg = ($('#epsg').val() == '') ? 4326 : $('#epsg').val(),
-        encoding = ($('#encoding').val() == '') ? 'UTF-8' : $('#encoding').val();
-        if(file.name.split('.')[1] == 'zip') {
-          loadshp({
-            url: file,
-            encoding: encoding,
-            EPSG: epsg
-          }, function(data) {
-            var geojson_format = new OpenLayers.Format.GeoJSON();
-            var features = geojson_format.read(data);
-            var features_arr = [];
-            for (l=0; l<features.length; l++) {
-              var geom = features[l].geometry.clone();
-              geom.transform(
-                new OpenLayers.Projection("EPSG:" + epsg),
-                new OpenLayers.Projection("EPSG:900913"));
-              features_arr.push(new OpenLayers.Feature.Vector(geom));
+        function loadShpZip() {
+          var epsg = ($('#epsg').val() == '') ? 4326 : $('#epsg').val(),
+          encoding = ($('#encoding').val() == '') ? 'UTF-8' : $('#encoding').val();
+          if(file.name.split('.')[1] == 'zip') {
+            loadshp({
+              url: file,
+              encoding: encoding,
+              EPSG: epsg
+            }, function(data) {
+              var geojson_format = new OpenLayers.Format.GeoJSON();
+              var features = geojson_format.read(data);
+              var features_arr = [];
+              for (l=0; l<features.length; l++) {
+                var geom = features[l].geometry.clone();
+                geom.transform(
+                  new OpenLayers.Projection("EPSG:" + epsg),
+                  new OpenLayers.Projection("EPSG:900913"));
+                features_arr.push(new OpenLayers.Feature.Vector(geom));
+              }
+              vectors.removeAllFeatures();
+              vectors.addFeatures(features_arr);
+
+              var bbox = new OpenLayers.Bounds(data.bbox).transform(
+                  new OpenLayers.Projection("EPSG:" + epsg),
+                  new OpenLayers.Projection("EPSG:900913"));
+              map.zoomToExtent(bbox);
+
+              $('#epsg').val('');
+              $('#encoding').val('');
+              $('#dataInfo').text(' ');
+              $('#option').slideUp(500);
+              $("#_add_shp_zip").modal("hide");
+            });
+          } else {
+            $('.modal').modal('show');
+          }
+        }
+
+        $('#loadShpZip').click(function() {
+          $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Load SHP-ZIP" %}');
+          $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will remove the Geo Limits currently drawn on the map.</p><p>In order to store the Geo Limits you will need to <strong>save</strong> them anyway.</p><p>Do you want to proceed?</p>" %}');
+          $("#confirmMsgBoxModalOK_control_field").val('loadShpZip');
+          $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
+          var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_loadShpZip', class:'btn btn-danger confirm' });
+          $('#confirmMsgBoxModalOK').find('.modal-footer').append(confirm_button);
+          $("#confirmMsgBoxModalOK").modal("show");
+          $('#confirm_loadShpZip').html('{% trans "OK" %}');
+          $('#confirm_loadShpZip').prop('value', '{% trans "OK" %}');
+
+          $('#confirm_loadShpZip').on('click', function(e) {
+            e.stopImmediatePropagation();
+            if ($("#confirmMsgBoxModalOK_control_field").val() == 'loadShpZip') {
+              $("#confirmMsgBoxModalOK_control_field").val();
+              $("#confirmMsgBoxModalOK").modal("hide");
+              loadShpZip();
             }
-            vectors.removeAllFeatures();
-            vectors.addFeatures(features_arr);
-
-            var bbox = new OpenLayers.Bounds(data.bbox).transform(
-                new OpenLayers.Projection("EPSG:" + epsg),
-                new OpenLayers.Projection("EPSG:900913"));
-            map.zoomToExtent(bbox);
-
-            $('#epsg').val('');
-            $('#encoding').val('');
-            $('#dataInfo').text(' ');
-            $('#option').slideUp(500);
-            $("#_add_shp_zip").modal("hide");
           });
-        } else {
-          $('.modal').modal('show');
-        }
-      }
-
-      $('#loadShpZip').click(function() {
-        $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Load SHP-ZIP" %}');
-        $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will remove the Geo Limits currently drawn on the map.</p><p>In order to store the Geo Limits you will need to <strong>save</strong> them anyway.</p><p>Do you want to proceed?</p>" %}');
-        $("#confirmMsgBoxModalOK_control_field").val('loadShpZip');
-        $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
-        var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_loadShpZip', class:'btn btn-danger confirm' });
-        $('#confirmMsgBoxModalOK').find('.modal-footer').append(confirm_button);
-        $("#confirmMsgBoxModalOK").modal("show");
-        $('#confirm_loadShpZip').html('{% trans "OK" %}');
-        $('#confirm_loadShpZip').prop('value', '{% trans "OK" %}');
-
-        $('#confirm_loadShpZip').on('click', function(e) {
-          e.stopImmediatePropagation();
-          if ($("#confirmMsgBoxModalOK_control_field").val() == 'loadShpZip') {
-            $("#confirmMsgBoxModalOK_control_field").val();
-            $("#confirmMsgBoxModalOK").modal("hide");
-            loadShpZip();
-          }
         });
-      });
 
-      function serializeGeoLimit(ID) {
-        $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Save Geo Limits" %}');
-        $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will override the current stored Geo Limits on the DB.</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button anyway.</p><p><strong>WARNING:</strong> This operation cannot be reverted!</p><p>Do you want to proceed?</p>" %}');
-        $("#confirmMsgBoxModalOK_control_field").val('serializeGeoLimit');
-        $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
-        var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_serializeGeoLimit', class:'btn btn-danger confirm' });
-        $('#confirmMsgBoxModalOK').find('.modal-footer').append(confirm_button);
-        $("#confirmMsgBoxModalOK").modal("show");
-        $('#confirm_serializeGeoLimit').html('{% trans "OK" %}');
-        $('#confirm_serializeGeoLimit').prop('value', '{% trans "OK" %}');
+        function serializeGeoLimit(ID) {
+          $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Save Geo Limits" %}');
+          $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will override the current stored Geo Limits on the DB.</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button anyway.</p><p><strong>WARNING:</strong> This operation cannot be reverted!</p><p>Do you want to proceed?</p>" %}');
+          $("#confirmMsgBoxModalOK_control_field").val('serializeGeoLimit');
+          $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
+          var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_serializeGeoLimit', class:'btn btn-danger confirm' });
+          $('#confirmMsgBoxModalOK').find('.modal-footer').append(confirm_button);
+          $("#confirmMsgBoxModalOK").modal("show");
+          $('#confirm_serializeGeoLimit').html('{% trans "OK" %}');
+          $('#confirm_serializeGeoLimit').prop('value', '{% trans "OK" %}');
 
-        $('#confirm_serializeGeoLimit').on('click', function(e) {
-          e.stopImmediatePropagation();
-          if ($("#confirmMsgBoxModalOK_control_field").val() == 'serializeGeoLimit') {
-            $("#confirmMsgBoxModalOK_control_field").val();
-            $("#confirmMsgBoxModalOK").modal("hide");
+          $('#confirm_serializeGeoLimit').on('click', function(e) {
+            e.stopImmediatePropagation();
+            if ($("#confirmMsgBoxModalOK_control_field").val() == 'serializeGeoLimit') {
+              $("#confirmMsgBoxModalOK_control_field").val();
+              $("#confirmMsgBoxModalOK").modal("hide");
 
-            var pretty = false;
-            var out_options = {
-              'internalProjection': map.projection,
-              'externalProjection': new OpenLayers.Projection("EPSG:4326")
-            };
-            var wkt = new OpenLayers.Format.WKT(out_options);
+              var pretty = false;
+              var out_options = {
+                'internalProjection': map.projection,
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+              };
+              var wkt = new OpenLayers.Format.WKT(out_options);
 
-            var query_param = "";
-            if(ID.startsWith("user-save")) {
-              query_param = "user_id=" + ID.substring("user-save".length);
-            } else if(ID.startsWith("group-save")) {
-              query_param = "group_id=" + ID.substring("group-save".length);
-            }
-
-            var data = null;
-            if (vectors.features.length > 0) {
-              var polygonList = [];
-              for (i=0;i<vectors.features.length;i++) {
-                var polygon = new OpenLayers.Geometry.Polygon(new OpenLayers.Geometry.LinearRing(vectors.features[i].geometry.getVertices()));
-                polygonList.push(polygon);
+              var query_param = "";
+              if(ID.startsWith("user-save")) {
+                query_param = "user_id=" + ID.substring("user-save".length);
+              } else if(ID.startsWith("group-save")) {
+                query_param = "group_id=" + ID.substring("group-save".length);
               }
-              multuPolygonGeometry = new OpenLayers.Geometry.MultiPolygon(polygonList);
-              multiPolygonFeature = new OpenLayers.Feature.Vector(multuPolygonGeometry);
-              data = wkt.write(multiPolygonFeature, pretty);
-            }
-            $.ajax({
-              type: "POST",
-              url: '{% url "resource_geolimits" resource.id %}?' + query_param,
-              data: data,
-              success: function(data, status, xhr) {
-                $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Save Geo Limit" %}');
-                $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button.</p>" %}');
-                $("#_thumbnail_feedbacks").modal("show");
-              },
-              error: function(xhr, status, error) {
-                $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Save Geo Limit" %}');
-                $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p><strong>Error</strong> while trying to save the Geometry!</p>" %}');
-                $("#_thumbnail_feedbacks").modal("show");
-              }
-            });
-            return false;
-          }
-        });
-      }
 
-      $(document).on('click', '.serialize-geo-limit', function() {
-        serializeGeoLimit($(this).attr('id'));
-      });
-
-      function deserializeGeoLimit(ID) {
-        $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Load Geo Limits" %}');
-        $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will remove the Geo Limits currently drawn on the map.</p><p>In order to store the Geo Limits you will need to <strong>save</strong> them anyway.</p><p>Do you want to proceed?</p>" %}');
-        $("#confirmMsgBoxModalOK_control_field").val('deserializeGeoLimit');
-        $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
-        var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_deserializeGeoLimit', class:'btn btn-danger confirm' });
-        $('#confirmMsgBoxModalOK').find('.modal-footer').append(confirm_button);
-        $("#confirmMsgBoxModalOK").modal("show");
-        $('#confirm_deserializeGeoLimit').html('{% trans "OK" %}');
-        $('#confirm_deserializeGeoLimit').prop('value', '{% trans "OK" %}');
-
-        $('#confirm_deserializeGeoLimit').on('click', function(e) {
-          e.stopImmediatePropagation();
-          if ($("#confirmMsgBoxModalOK_control_field").val() == 'deserializeGeoLimit') {
-            $("#confirmMsgBoxModalOK_control_field").val();
-            $("#confirmMsgBoxModalOK").modal("hide");
-
-            var in_options = {
-              'internalProjection': map.projection,
-              'externalProjection': new OpenLayers.Projection("EPSG:4326")
-            };
-            var wkt = new OpenLayers.Format.WKT(in_options);
-
-            var query_param = "";
-            if(ID.startsWith("user-load")) {
-              query_param = "user_id=" + ID.substring("user-load".length);
-            } else if(ID.startsWith("group-load")) {
-              query_param = "group_id=" + ID.substring("group-load".length);
-            }
-
-            $.ajax({
-              type: "GET",
-              url: '{% url "resource_geolimits" resource.id %}?' + query_param,
-              success: function(data, status, xhr) {
-                var features = wkt.read(data);
-                var bounds;
-                if(features) {
-                    if(features.constructor != Array) {
-                        features = [features];
-                    }
-                    for(var i=0; i<features.length; ++i) {
-                        if (!bounds) {
-                            bounds = features[i].geometry.getBounds();
-                        } else {
-                            bounds.extend(features[i].geometry.getBounds());
-                        }
-
-                    }
-                    vectors.removeAllFeatures();
-                    vectors.addFeatures(features);
-                    map.zoomToExtent(bounds);
-                } else {
-                    element.value = 'Bad input ' + type;
+              var data = null;
+              if (vectors.features.length > 0) {
+                var polygonList = [];
+                for (i=0;i<vectors.features.length;i++) {
+                  var polygon = new OpenLayers.Geometry.Polygon(new OpenLayers.Geometry.LinearRing(vectors.features[i].geometry.getVertices()));
+                  polygonList.push(polygon);
                 }
-                return;
-              },
-              error: function(xhr, status, error) {
-                $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Load Geo Limit" %}');
-                $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p><strong>No Geometry</strong> found!</p>" %}');
-                $("#_thumbnail_feedbacks").modal("show");
+                multuPolygonGeometry = new OpenLayers.Geometry.MultiPolygon(polygonList);
+                multiPolygonFeature = new OpenLayers.Feature.Vector(multuPolygonGeometry);
+                data = wkt.write(multiPolygonFeature, pretty);
               }
-            });
-            return false;
-          }
-        });
-      }
-
-      $(document).on('click', '.deserialize-geo-limit', function(event) {
-        console.log($(this).attr('id'));
-        deserializeGeoLimit($(this).attr('id'));
-      });
-
-      function deleteGeoLimit(ID) {
-        $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Delete Geo Limits" %}');
-        $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB.</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button.</p><p>Do you want to proceed?</p>" %}');
-        $("#confirmMsgBoxModalOK_control_field").val('deleteGeoLimit');
-        $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
-        var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_deleteGeoLimit', class:'btn btn-danger confirm' });
-        $('#confirmMsgBoxModalOK').find('.modal-footer').append(confirm_button);
-        $("#confirmMsgBoxModalOK").modal("show");
-        $('#confirm_deleteGeoLimit').html('{% trans "OK" %}');
-        $('#confirm_deleteGeoLimit').prop('value', '{% trans "OK" %}');
-
-        $('#confirm_deleteGeoLimit').on('click', function(e) {
-          e.stopImmediatePropagation();
-          if ($("#confirmMsgBoxModalOK_control_field").val() == 'deleteGeoLimit') {
-            $("#confirmMsgBoxModalOK_control_field").val();
-            $("#confirmMsgBoxModalOK").modal("hide");
-
-            var query_param = "";
-            if(ID.startsWith("user-remove")) {
-              query_param = "user_id=" + ID.substring("user-remove".length);
-            } else if(ID.startsWith("group-remove")) {
-              query_param = "group_id=" + ID.substring("group-remove".length);
+              $.ajax({
+                type: "POST",
+                url: '{% url "resource_geolimits" resource.id %}?' + query_param,
+                data: data,
+                success: function(data, status, xhr) {
+                  $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Save Geo Limit" %}');
+                  $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button.</p>" %}');
+                  $("#_thumbnail_feedbacks").modal("show");
+                },
+                error: function(xhr, status, error) {
+                  $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Save Geo Limit" %}');
+                  $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p><strong>Error</strong> while trying to save the Geometry!</p>" %}');
+                  $("#_thumbnail_feedbacks").modal("show");
+                }
+              });
+              return false;
             }
+          });
+        }
 
-            $.ajax({
-              type: "DELETE",
-              url: '{% url "resource_geolimits" resource.id %}?' + query_param,
-              success: function(data, status, xhr) {
-                $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Delete Geo Limit" %}');
-                $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p><strong>Geo Limitsy</strong> successfully deleted!</p>" %}');
-                $("#_thumbnail_feedbacks").modal("show");
+        $(document).on('click', '.serialize-geo-limit', function() {
+          serializeGeoLimit($(this).attr('id'));
+        });
 
-                vectors.removeAllFeatures();
-                return;
-              },
-              error: function(xhr, status, error) {
-                $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Delete Geo Limit" %}');
-                $("#_thumbnail_feedbacks").find('.modal-body').html(
-                  "{% trans '<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>' %}" + '<q>' + xhr.responseText + '</q>');
-                $("#_thumbnail_feedbacks").modal("show");
+        function deserializeGeoLimit(ID) {
+          $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Load Geo Limits" %}');
+          $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will remove the Geo Limits currently drawn on the map.</p><p>In order to store the Geo Limits you will need to <strong>save</strong> them anyway.</p><p>Do you want to proceed?</p>" %}');
+          $("#confirmMsgBoxModalOK_control_field").val('deserializeGeoLimit');
+          $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
+          var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_deserializeGeoLimit', class:'btn btn-danger confirm' });
+          $('#confirmMsgBoxModalOK').find('.modal-footer').append(confirm_button);
+          $("#confirmMsgBoxModalOK").modal("show");
+          $('#confirm_deserializeGeoLimit').html('{% trans "OK" %}');
+          $('#confirm_deserializeGeoLimit').prop('value', '{% trans "OK" %}');
+
+          $('#confirm_deserializeGeoLimit').on('click', function(e) {
+            e.stopImmediatePropagation();
+            if ($("#confirmMsgBoxModalOK_control_field").val() == 'deserializeGeoLimit') {
+              $("#confirmMsgBoxModalOK_control_field").val();
+              $("#confirmMsgBoxModalOK").modal("hide");
+
+              var in_options = {
+                'internalProjection': map.projection,
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+              };
+              var wkt = new OpenLayers.Format.WKT(in_options);
+
+              var query_param = "";
+              if(ID.startsWith("user-load")) {
+                query_param = "user_id=" + ID.substring("user-load".length);
+              } else if(ID.startsWith("group-load")) {
+                query_param = "group_id=" + ID.substring("group-load".length);
               }
-            });
-            return false;
-          }
+
+              $.ajax({
+                type: "GET",
+                url: '{% url "resource_geolimits" resource.id %}?' + query_param,
+                success: function(data, status, xhr) {
+                  var features = wkt.read(data);
+                  var bounds;
+                  if(features) {
+                      if(features.constructor != Array) {
+                          features = [features];
+                      }
+                      for(var i=0; i<features.length; ++i) {
+                          if (!bounds) {
+                              bounds = features[i].geometry.getBounds();
+                          } else {
+                              bounds.extend(features[i].geometry.getBounds());
+                          }
+
+                      }
+                      vectors.removeAllFeatures();
+                      vectors.addFeatures(features);
+                      map.zoomToExtent(bounds);
+                  } else {
+                      element.value = 'Bad input ' + type;
+                  }
+                  return;
+                },
+                error: function(xhr, status, error) {
+                  $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Load Geo Limit" %}');
+                  $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p><strong>No Geometry</strong> found!</p>" %}');
+                  $("#_thumbnail_feedbacks").modal("show");
+                }
+              });
+              return false;
+            }
+          });
+        }
+
+        $(document).on('click', '.deserialize-geo-limit', function(event) {
+          console.log($(this).attr('id'));
+          deserializeGeoLimit($(this).attr('id'));
+        });
+
+        function deleteGeoLimit(ID) {
+          $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Delete Geo Limits" %}');
+          $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB.</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button.</p><p>Do you want to proceed?</p>" %}');
+          $("#confirmMsgBoxModalOK_control_field").val('deleteGeoLimit');
+          $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
+          var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_deleteGeoLimit', class:'btn btn-danger confirm' });
+          $('#confirmMsgBoxModalOK').find('.modal-footer').append(confirm_button);
+          $("#confirmMsgBoxModalOK").modal("show");
+          $('#confirm_deleteGeoLimit').html('{% trans "OK" %}');
+          $('#confirm_deleteGeoLimit').prop('value', '{% trans "OK" %}');
+
+          $('#confirm_deleteGeoLimit').on('click', function(e) {
+            e.stopImmediatePropagation();
+            if ($("#confirmMsgBoxModalOK_control_field").val() == 'deleteGeoLimit') {
+              $("#confirmMsgBoxModalOK_control_field").val();
+              $("#confirmMsgBoxModalOK").modal("hide");
+
+              var query_param = "";
+              if(ID.startsWith("user-remove")) {
+                query_param = "user_id=" + ID.substring("user-remove".length);
+              } else if(ID.startsWith("group-remove")) {
+                query_param = "group_id=" + ID.substring("group-remove".length);
+              }
+
+              $.ajax({
+                type: "DELETE",
+                url: '{% url "resource_geolimits" resource.id %}?' + query_param,
+                success: function(data, status, xhr) {
+                  $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Delete Geo Limit" %}');
+                  $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p><strong>Geo Limitsy</strong> successfully deleted!</p>" %}');
+                  $("#_thumbnail_feedbacks").modal("show");
+
+                  vectors.removeAllFeatures();
+                  return;
+                },
+                error: function(xhr, status, error) {
+                  $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Delete Geo Limit" %}');
+                  $("#_thumbnail_feedbacks").find('.modal-body').html(
+                    "{% trans '<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>' %}" + '<q>' + xhr.responseText + '</q>');
+                  $("#_thumbnail_feedbacks").modal("show");
+                }
+              });
+              return false;
+            }
+          });
+        }
+
+        $(document).on('click', '.delete-geo-limit', function() {
+          deleteGeoLimit($(this).attr('id'));
         });
       }
-
-      $(document).on('click', '.delete-geo-limit', function() {
-        deleteGeoLimit($(this).attr('id'));
-      });
     }
+
+    var geoLimitsInitialized = false;
+    $('#geolimits-tab a').click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+      if (!geoLimitsInitialized) {
+        geoLimitsInitialized = true;
+        initGeoLimitsMap();
+      }
+    });
+
   });
 </script>
 {% endif %}
