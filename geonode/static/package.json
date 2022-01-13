@@ -6,7 +6,7 @@
   "dependencies": {
     "@yaireo/tagify": "^3.6.2",
     "angular": "^1.8.2",
-    "angular-cookies": "1.4.0",
+    "angular-cookies": "1.8.2",
     "angular-openlayers-directive": "^2.1.0",
     "angular-sanitize": "^1.7.9",
     "bootstrap": "3.4.1",
