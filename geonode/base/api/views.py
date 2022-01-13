@@ -21,7 +21,7 @@ import json
 
 from decimal import Decimal
 from uuid import uuid1
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from PIL import Image
 
 from django.apps import apps
@@ -1189,8 +1189,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         parser_classes=[FileUploadParser, ]
     )
     def set_thumbnail(self, request, pk=None):
-        from PIL import Image
         resource = get_object_or_404(ResourceBase, pk=pk)
+
         if not request.data.get('file'):
             raise ValidationError("No data provided")
 
@@ -1198,19 +1198,35 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         # Validate size
         if file_obj.size > 1000000:
             raise ValidationError('File must not exceed 1MB')
+
         thumbnail = file_obj.read()
-        # try:
-        #     # Check if raw data is uploaded
-        #     data = thumbnail.decode()
-        #     # check if imageurl
-        #     validator = URLValidator()
-        #     try:
-        #         validator(data)
-        #         thumbnail = Image.open(requests.get(data, stream=True).raw)
-        #     except Exception:
-        #         thumbnail, _thumbnail_format = _decode_base64(data)
-        # except Exception:
-        #     pass
-        im = Image.open()
-        resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
-        return Response({"message": "Thumbnail set successfully"})
+        try:
+            file_obj.seek(0)
+            Image.open(file_obj)
+        except Exception:
+            try:
+                data = thumbnail.decode()
+                try:
+                    thumbnail, _thumbnail_format = _decode_base64(data)
+                except Exception:
+                    # Check if data is a valid url and set it as thumbail_url
+                    validate = URLValidator()
+                    validate(data)
+                    if urlparse(data).path.rsplit('.')[-1] not in ['png', 'jpeg', 'jpg']:
+                        return Response(
+                            'The url must be of an image of format (png, jpeg or jpg)',
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+
+                    resource.thumbnail_url = data
+                    resource.save()
+                    return Response({"message": "Thumbnail set successfully"})
+            except Exception:
+                raise ValidationError('Invalid data provided')
+        if thumbnail:
+            resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
+            return Response({"message": "Thumbnail set successfully"})
+        return Response(
+            'Unable to set thumbnail',
+            status=status.HTTP_400_BAD_REQUEST
+        )
