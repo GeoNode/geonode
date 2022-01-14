@@ -1329,7 +1329,7 @@ class BaseApiTests(APITestCase):
                 resource.thumbnail_url = None
                 resource.save()
                 self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, None)
-                f = SimpleUploadedFile('test_image.png', BytesIO(test_image.tobytes()).read(),'image/png')
+                f = SimpleUploadedFile('test_image.png', BytesIO(test_image.tobytes()).read(), 'image/png')
                 response = self.client.put(url, data={"file": f})
                 self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.png", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
                 self.assertEqual(response.status_code, 200)
