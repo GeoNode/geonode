@@ -22,7 +22,11 @@ import uuid
 
 from unittest.mock import patch, PropertyMock, MagicMock
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Polygon
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
+from geonode.resource.manager import resource_manager
 
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
@@ -130,6 +134,36 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         map_name = thumbnails._generate_thumbnail_name(Map.objects.first())
         self.assertIsNotNone(
             re.match(f"map-{self.re_uuid}-thumb.png", map_name, re.I), "Map name should meet a provided pattern"
+        )
+
+    def test_generate_thumbnail_name_document(self):
+        doc = resource_manager.create(
+            None,
+            resource_type=Document,
+            defaults=dict(
+                doc_url="http://geonode.org/map.pdf",
+                owner=get_user_model().objects.get(username='admin'),
+                title="Test doc",
+            ))
+        name = thumbnails._generate_thumbnail_name(doc)
+        self.assertIsNotNone(
+            re.match(f"document-{self.re_uuid}-thumb.png", name, re.I), "Document name should meet a provided pattern"
+        )
+
+    def test_generate_thumbnail_name_geoapp(self):
+
+        geo_app = resource_manager.create(
+            None,
+            resource_type=GeoApp,
+            defaults=dict(
+                title="Test GeoApp",
+                owner=get_user_model().objects.get(username='admin'),
+                blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}'
+            )
+        )
+        name = thumbnails._generate_thumbnail_name(geo_app)
+        self.assertIsNotNone(
+            re.match(f"geoapp-{self.re_uuid}-thumb.png", name, re.I), "GeoApp name should meet a provided pattern"
         )
 
     def test_datasets_locations_dataset(self):

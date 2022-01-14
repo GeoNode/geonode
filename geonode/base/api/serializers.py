@@ -245,12 +245,6 @@ class ThumbnailUrlField(DynamicComputedField):
 
     def get_attribute(self, instance):
         thumbnail_url = instance.thumbnail_url
-        if hasattr(instance, 'curatedthumbnail'):
-            try:
-                if hasattr(instance.curatedthumbnail.img_thumbnail, 'url'):
-                    thumbnail_url = instance.curatedthumbnail.thumbnail_url
-            except Exception as e:
-                logger.exception(e)
 
         return build_absolute_uri(thumbnail_url)
 
@@ -378,7 +372,7 @@ class ResourceBaseSerializer(
         self.fields['sourcetype'] = serializers.CharField(read_only=True)
 
         self.fields['embed_url'] = EmbedUrlField(required=False)
-        self.fields['thumbnail_url'] = ThumbnailUrlField(required=False)
+        self.fields['thumbnail_url'] = ThumbnailUrlField(read_only=True)
         self.fields['keywords'] = DynamicRelationField(
             SimpleHierarchicalKeywordSerializer, embed=False, many=True)
         self.fields['regions'] = DynamicRelationField(

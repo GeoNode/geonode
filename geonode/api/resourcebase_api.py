@@ -572,14 +572,6 @@ class CommonModelApi(ModelResource):
             formatted_obj['owner__username'] = obj.owner.username
             formatted_obj['owner_name'] = obj.owner.get_full_name() or obj.owner.username
 
-            # replace thumbnail_url with curated_thumbs
-            if hasattr(obj, 'curatedthumbnail'):
-                try:
-                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-                except Exception as e:
-                    logger.exception(e)
-
             formatted_objects.append(formatted_obj)
 
         return formatted_objects
@@ -759,14 +751,6 @@ class LayerResource(CommonModelApi):
 
             formatted_obj['gtype'] = self.dehydrate_gtype(bundle)
 
-            # replace thumbnail_url with curated_thumbs
-            if hasattr(obj, 'curatedthumbnail'):
-                try:
-                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-                except Exception as e:
-                    logger.exception(e)
-
             formatted_obj['processed'] = obj.instance_is_processed
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
@@ -911,14 +895,6 @@ class MapResource(CommonModelApi):
                 formatted_datasets.append(formatted_map_dataset)
             formatted_obj['layers'] = formatted_datasets
 
-            # replace thumbnail_url with curated_thumbs
-            if hasattr(obj, 'curatedthumbnail'):
-                try:
-                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-                except Exception as e:
-                    logger.exception(e)
-
             formatted_objects.append(formatted_obj)
         return formatted_objects
 
@@ -968,14 +944,6 @@ class GeoAppResource(CommonModelApi):
             # Probe Remote Services
             formatted_obj['store_type'] = 'geoapp'
             formatted_obj['online'] = True
-
-            # replace thumbnail_url with curated_thumbs
-            if hasattr(obj, 'curatedthumbnail'):
-                try:
-                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-                except Exception as e:
-                    logger.exception(e)
 
             formatted_objects.append(formatted_obj)
         return formatted_objects
@@ -1035,14 +1003,6 @@ class DocumentResource(CommonModelApi):
             # Probe Remote Services
             formatted_obj['store_type'] = 'dataset'
             formatted_obj['online'] = True
-
-            # replace thumbnail_url with curated_thumbs
-            if hasattr(obj, 'curatedthumbnail'):
-                try:
-                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-                except Exception as e:
-                    logger.exception(e)
 
             formatted_objects.append(formatted_obj)
         return formatted_objects
