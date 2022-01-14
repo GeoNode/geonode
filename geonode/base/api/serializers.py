@@ -372,7 +372,7 @@ class ResourceBaseSerializer(
         self.fields['sourcetype'] = serializers.CharField(read_only=True)
 
         self.fields['embed_url'] = EmbedUrlField(required=False)
-        self.fields['thumbnail_url'] = ThumbnailUrlField(required=False)
+        self.fields['thumbnail_url'] = ThumbnailUrlField(read_only=True)
         self.fields['keywords'] = DynamicRelationField(
             SimpleHierarchicalKeywordSerializer, embed=False, many=True)
         self.fields['regions'] = DynamicRelationField(

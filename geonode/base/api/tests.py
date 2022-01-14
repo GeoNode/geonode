@@ -29,7 +29,6 @@ from unittest.mock import patch
 from urllib.parse import urljoin
 
 from django.urls import reverse
-from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -42,7 +41,6 @@ from geonode.base import enumerations
 from geonode.groups.models import GroupProfile
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.base.models import (
-    CuratedThumbnail,
     HierarchicalKeyword,
     Region,
     ResourceBase,
@@ -1049,8 +1047,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.data['total'], 1)
         self.assertEqual(len(response.data['resources']), 1)
 
-    @patch('PIL.Image.open', return_value=test_image)
-    def test_thumbnail_urls(self, img):
+    def test_thumbnail_urls(self):
         """
         Ensure the thumbnail url reflects the current active Thumb on the resource.
         """
@@ -1064,17 +1061,6 @@ class BaseApiTests(APITestCase):
         self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
         thumbnail_url = response.data['resource']['thumbnail_url']
         self.assertIsNone(thumbnail_url)
-
-        f = BytesIO(test_image.tobytes())
-        f.name = 'test_image.jpeg'
-        curated_thumbnail = CuratedThumbnail.objects.create(resource=resource, img=File(f))
-
-        url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
-        thumbnail_url = response.data['resource']['thumbnail_url']
-        self.assertTrue(curated_thumbnail.thumbnail_url in thumbnail_url)
 
     def test_embed_urls(self):
         """
