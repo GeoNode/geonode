@@ -40,6 +40,7 @@ from geonode.storage.manager import storage_manager
 logger = logging.getLogger(__name__)
 
 MISSING_THUMB = settings.MISSING_THUMBNAIL
+BASE64_PATTERN = 'data:image/(jpeg|png|jpg);base64'
 
 
 def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[List, Tuple]) -> Callable:
@@ -389,3 +390,21 @@ def get_unique_upload_path(filename):
     unique_file_name = f'{filename}-{uuid4()}{ext}'
     upload_path = thumb_path(unique_file_name)
     return upload_path
+
+
+def _decode_base64(data):
+    """Decode base64, padding being optional.
+
+    :param data: Base64 data as an ASCII byte string
+    :returns: The decoded byte string.
+
+    """
+    _thumbnail_format = "png"
+    _invalid_padding = data.find(";base64,")
+    if _invalid_padding:
+        _thumbnail_format = data[data.find("image/") + len("image/"):_invalid_padding]
+        data = data[_invalid_padding + len(";base64,"):]
+    missing_padding = len(data) % 4
+    if missing_padding != 0:
+        data += b"=" * (4 - missing_padding)
+    return (base64.b64decode(data), _thumbnail_format)

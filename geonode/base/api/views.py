@@ -18,15 +18,19 @@
 #########################################################################
 import ast
 import json
+import re
 
 from decimal import Decimal
 from uuid import uuid1
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
+from PIL import Image
 
 from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
+from django.core.validators import URLValidator
 from django.db import models
 from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings
 from django.db.models import Subquery
@@ -44,8 +48,10 @@ from pinax.ratings.models import OverallRating, Rating
 from pinax.ratings.views import NUM_OF_RATINGS
 
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -57,6 +63,7 @@ from geonode.favorite.models import Favorite
 from geonode.base.models import Configuration
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
+from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
@@ -72,6 +79,7 @@ from geonode.security.utils import (
 
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
+from geonode.resource.manager import resource_manager
 
 from guardian.shortcuts import get_objects_for_user
 
@@ -1165,4 +1173,69 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 "rating": user_rating.rating if user_rating else 0,
                 "overall_rating": overall_rating
             }
+        )
+
+    @extend_schema(
+        methods=['put'],
+        responses={200},
+        description="API endpoint allowing to set thumbnail of the Resource.")
+    @action(
+        detail=True,
+        url_path="set_thumbnail",
+        url_name="set_thumbnail",
+        methods=['put'],
+        permission_classes=[
+            IsAuthenticated,
+        ],
+        parser_classes=[JSONParser, MultiPartParser]
+    )
+    def set_thumbnail(self, request, pk=None):
+        resource = get_object_or_404(ResourceBase, pk=pk)
+
+        if not request.data.get('file'):
+            raise ValidationError("Field file is required")
+
+        file_data = request.data['file']
+
+        if isinstance(file_data, str):
+            if re.match(BASE64_PATTERN, file_data):
+                try:
+                    thumbnail, _thumbnail_format = _decode_base64(file_data)
+                except Exception:
+                    return Response(
+                        'The request body is not a valid base64 string or the image format is not PNG or JPEG',
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                    # Check if file_data is a valid url and set it as thumbail_url
+            else:
+                try:
+                    validate = URLValidator()
+                    validate(file_data)
+                    if urlparse(file_data).path.rsplit('.')[-1] not in ['png', 'jpeg', 'jpg']:
+                        return Response(
+                            'The url must be of an image with format (png, jpeg or jpg)',
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    resource.thumbnail_url = file_data
+                    resource.save()
+                    return Response({"message": "Thumbnail set successfully"})
+                except Exception:
+                    raise ValidationError('file is either a file upload, ASCII byte string or a valid image url string')
+        else:
+            # Validate size
+            if file_data.size > 1000000:
+                raise ValidationError('File must not exceed 1MB')
+
+            thumbnail = file_data.read()
+            try:
+                file_data.seek(0)
+                Image.open(file_data)
+            except Exception:
+                raise ValidationError('Invalid data provided')
+        if thumbnail:
+            resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
+            return Response({"message": "Thumbnail set successfully"})
+        return Response(
+            'Unable to set thumbnail',
+            status=status.HTTP_400_BAD_REQUEST
         )
