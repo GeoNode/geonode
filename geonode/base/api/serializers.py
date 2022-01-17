@@ -17,6 +17,7 @@
 #
 #########################################################################
 import json
+from slugify import slugify
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -44,6 +45,7 @@ from geonode.base.models import (
     TopicCategory,
     SpatialRepresentationType,
     ThesaurusKeyword,
+    ThesaurusKeywordLabel
 )
 from geonode.groups.models import (
     GroupCategory,
@@ -61,14 +63,15 @@ class BaseDynamicModelSerializer(DynamicModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        try:
-            path = reverse(self.Meta.view_name)
-            if not path.endswith('/'):
-                path = f"{path}/"
-            url = urljoin(path, str(instance.pk))
-            data['link'] = build_absolute_uri(url)
-        except NoReverseMatch as e:
-            logger.exception(e)
+        if not isinstance(data, int):
+            try:
+                path = reverse(self.Meta.view_name)
+                if not path.endswith('/'):
+                    path = f"{path}/"
+                url = urljoin(path, str(instance.pk))
+                data['link'] = build_absolute_uri(url)
+            except (TypeError, NoReverseMatch) as e:
+                logger.exception(e)
         return data
 
 
@@ -160,6 +163,33 @@ class SimpleHierarchicalKeywordSerializer(DynamicModelSerializer):
 
     def to_representation(self, value):
         return {'name': value.name, 'slug': value.slug}
+
+
+class _ThesaurusKeywordSerializerMixIn:
+
+    def to_representation(self, value):
+        _i18n = {}
+        for _i18n_label in ThesaurusKeywordLabel.objects.filter(keyword__id=value.id).iterator():
+            _i18n[_i18n_label.lang] = _i18n_label.label
+        return {
+            'name': value.alt_label,
+            'slug': slugify(value.about),
+            'uri': value.about,
+            'thesaurus': {
+                'name': value.thesaurus.title,
+                'slug': value.thesaurus.identifier,
+                'uri': value.thesaurus.about
+            },
+            'i18n': _i18n
+        }
+
+
+class SimpleThesaurusKeywordSerializer(_ThesaurusKeywordSerializerMixIn, DynamicModelSerializer):
+
+    class Meta:
+        model = ThesaurusKeyword
+        name = 'ThesaurusKeyword'
+        fields = ('alt_label', )
 
 
 class SimpleRegionSerializer(DynamicModelSerializer):
@@ -375,6 +405,8 @@ class ResourceBaseSerializer(
         self.fields['thumbnail_url'] = ThumbnailUrlField(read_only=True)
         self.fields['keywords'] = DynamicRelationField(
             SimpleHierarchicalKeywordSerializer, embed=False, many=True)
+        self.fields['tkeywords'] = DynamicRelationField(
+            SimpleThesaurusKeywordSerializer, embed=False, many=True)
         self.fields['regions'] = DynamicRelationField(
             SimpleRegionSerializer, embed=True, many=True, read_only=True)
         self.fields['category'] = DynamicRelationField(
@@ -395,7 +427,7 @@ class ResourceBaseSerializer(
         fields = (
             'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id', 'perms',
             'owner', 'poc', 'metadata_author',
-            'keywords', 'regions', 'category',
+            'keywords', 'tkeywords', 'regions', 'category',
             'title', 'abstract', 'attribution', 'alternate', 'doi', 'bbox_polygon', 'll_bbox_polygon', 'srid',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',
             'restriction_code_type', 'constraints_other', 'license', 'language',
@@ -493,9 +525,13 @@ class BaseResourceCountSerializer(BaseDynamicModelSerializer):
                 'title_filter': request.query_params.get('title__icontains')
             }
         data = super().to_representation(instance)
-        count_filter = {self.Meta.count_type: instance}
-        data['count'] = get_resources_with_perms(
-            request.user, filter_options).filter(**count_filter).count()
+        if not isinstance(data, int):
+            try:
+                count_filter = {self.Meta.count_type: instance}
+                data['count'] = get_resources_with_perms(
+                    request.user, filter_options).filter(**count_filter).count()
+            except (TypeError, NoReverseMatch) as e:
+                logger.exception(e)
         return data
 
 
@@ -509,7 +545,7 @@ class HierarchicalKeywordSerializer(BaseResourceCountSerializer):
         fields = '__all__'
 
 
-class ThesaurusKeywordSerializer(BaseResourceCountSerializer):
+class ThesaurusKeywordSerializer(_ThesaurusKeywordSerializerMixIn, BaseResourceCountSerializer):
 
     class Meta:
         model = ThesaurusKeyword
