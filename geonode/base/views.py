@@ -44,7 +44,6 @@ from geonode.base import register_event
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 from geonode.tasks.tasks import set_permissions
-from geonode.base.forms import CuratedThumbnailForm
 from geonode.resource.manager import resource_manager
 from geonode.security.utils import get_visible_resources
 from geonode.notifications_helper import send_notification
@@ -217,43 +216,6 @@ def batch_modify(request, model):
             'model': model,
         }
     )
-
-
-def thumbnail_upload(
-        request,
-        res_id,
-        template='base/thumbnail_upload.html'):
-    try:
-        res = resolve_object(
-            request, ResourceBase, {
-                'id': res_id}, 'base.change_resourcebase')
-    except PermissionDenied:
-        return HttpResponse(
-            'You are not allowed to change permissions for this resource',
-            status=401,
-            content_type='text/plain')
-
-    form = CuratedThumbnailForm()
-
-    if request.method == 'POST':
-        if 'remove-thumb' in request.POST:
-            if hasattr(res, 'curatedthumbnail'):
-                res.curatedthumbnail.delete()
-        else:
-            form = CuratedThumbnailForm(request.POST, request.FILES)
-            if form.is_valid():
-                ct = form.save(commit=False)
-                # remove existing thumbnail if any
-                if hasattr(res, 'curatedthumbnail'):
-                    res.curatedthumbnail.delete()
-                ct.resource = res
-                ct.save()
-        return HttpResponseRedirect(request.path_info)
-
-    return render(request, template, context={
-        'resource': res,
-        'form': form
-    })
 
 
 class SimpleSelect2View(autocomplete.Select2QuerySetView):

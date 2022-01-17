@@ -494,7 +494,7 @@
                   {% if resource.subtype != "remote" %}
                     <a class="btn btn-default btn-block btn-xs" href="#" id="set_thumbnail">{% trans "Set" %}</a>
                   {% endif %}
-                  <a class="btn btn-default btn-block btn-xs" href="{% url "thumbnail_upload" resource.resourcebase_ptr.id %}">{% trans "Upload" %}</a>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "set_thumbnail" resource.resourcebase_ptr.id %}">{% trans "Upload" %}</a>
                 </div>
                 {% endif %}
                 {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_dataset_data" in dataset_perms %}

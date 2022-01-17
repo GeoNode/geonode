@@ -1981,32 +1981,6 @@ class MenuItem(models.Model):
         ordering = ['order']
 
 
-class CuratedThumbnail(models.Model):
-    resource = models.OneToOneField(ResourceBase, on_delete=models.CASCADE)
-    img = models.ImageField(upload_to='curated_thumbs', storage=storage_manager)
-    # TOD read thumb size from settings
-    img_thumbnail = ImageSpecField(source='img',
-                                   cachefile_storage=storage_manager,
-                                   processors=[ResizeToFill(240, 180)],
-                                   format='PNG',
-                                   options={'quality': 60})
-
-    @property
-    def thumbnail_url(self):
-        try:
-            if not Simple()._exists(self.img_thumbnail):
-                Simple().generate(self.img_thumbnail, force=True)
-        except SuspiciousFileOperation:
-            '''
-            we must rely to the storage_manager, if the storage is changed, we will ignore this
-            '''
-            return ''
-        except Exception as e:
-            logger.exception(e)
-
-        return self.img_thumbnail.url or ''
-
-
 class Configuration(SingletonModel):
     """
     A model used for managing the Geonode instance's global configuration,

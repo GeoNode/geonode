@@ -40,7 +40,7 @@ from taggit.forms import TagField
 from tinymce.widgets import TinyMCE
 from django.contrib.admin.utils import flatten
 from geonode.base.enumerations import ALL_LANGUAGES
-from geonode.base.models import (CuratedThumbnail, HierarchicalKeyword,
+from geonode.base.models import (HierarchicalKeyword,
                                  License, Region, ResourceBase, Thesaurus,
                                  ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel,
                                  TopicCategory)
@@ -645,12 +645,6 @@ class UserAndGroupPermissionsForm(forms.Form):
     @staticmethod
     def label_from_instance(obj):
         return obj.title
-
-
-class CuratedThumbnailForm(ModelForm):
-    class Meta:
-        model = CuratedThumbnail
-        fields = ['img']
 
 
 class OwnerRightsRequestForm(forms.Form):
