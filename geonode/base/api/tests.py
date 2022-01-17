@@ -283,6 +283,46 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
             response = self.client.get(f"{url}/{layer.id}/", format='json')
             self.assertTrue('links' in response.data['resource'].keys())
 
+        # test 'tkeywords'
+        try:
+            for _tkw in ThesaurusKeyword.objects.all()[:2]:
+                resource.tkeywords.add(_tkw)
+            self.assertEqual(2, resource.tkeywords.count())
+            # Admin
+            self.assertTrue(self.client.login(username='admin', password='admin'))
+            response = self.client.get(f"{url}/{resource.id}/", format='json')
+            self.assertIsNotNone(response.data['resource']['tkeywords'])
+            self.assertEqual(2, len(response.data['resource']['tkeywords']))
+            self.assertListEqual(
+                [
+                    {
+                        'name': '',
+                        'slug': 'http-inspire-ec-europa-eu-theme-37',
+                        'uri': 'http://inspire.ec.europa.eu/theme#37',
+                        'thesaurus': {
+                            'name': 'GEMET - INSPIRE themes, version 1.0',
+                            'slug': 'inspire-theme',
+                            'uri': 'http://inspire.ec.europa.eu/theme'
+                        },
+                        'i18n': {}},
+                    {
+                        'name': '',
+                        'slug': 'http-localhost-8000-thesaurus-no-about-thesauro-38',
+                        'uri': 'http://localhost:8000//thesaurus/no-about-thesauro#38',
+                        'thesaurus': {
+                            'name': 'Thesauro without the about',
+                            'slug': 'no-about-thesauro',
+                            'uri': ''
+                        },
+                        'i18n': {}
+                    }
+                ],
+                response.data['resource']['tkeywords']
+            )
+        finally:
+            resource.tkeywords.set(ThesaurusKeyword.objects.none())
+            self.assertEqual(0, resource.tkeywords.count())
+
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
         Layer(
