@@ -61,7 +61,7 @@ class SizeRestrictedFileField(forms.FileField):
             # Only query the DB for a max_size when there is a file_size
             max_size = self._get_max_size()
             # Validate
-            if file_size > max_size:
+            if file_size is not None and file_size > max_size:
                 raise forms.ValidationError(_(
                     f'File size size exceeds {filesizeformat(max_size)}. Please try again with a smaller file.'
                 ))
