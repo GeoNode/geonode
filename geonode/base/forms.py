@@ -28,7 +28,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core import validators
 from django.db.models import Prefetch, Q
-from django.forms import ModelForm, models
+from django.forms import models
 from django.forms.fields import ChoiceField, MultipleChoiceField
 from django.forms.utils import flatatt
 from django.utils.encoding import force_text
