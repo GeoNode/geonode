@@ -21,12 +21,17 @@ import logging
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.template.defaultfilters import filesizeformat
+from django.utils.translation import ugettext_lazy as _
+
+from geonode.upload.models import UploadSizeLimit
 
 from .. import geoserver
 from ..utils import check_ogc_backend
 from ..layers.forms import JSONField
 
 from .upload_validators import validate_uploaded_files
+
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +82,10 @@ class LayerUploadForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
+        if self.errors:
+            # Something already went wrong
+            return cleaned
+        self.validate_files_sum_of_sizes()
         uploaded_files = self._get_uploaded_files()
         valid_extensions = validate_uploaded_files(
             cleaned=cleaned,
@@ -86,10 +95,35 @@ class LayerUploadForm(forms.Form):
         cleaned["valid_extensions"] = valid_extensions
         return cleaned
 
+    def validate_files_sum_of_sizes(self):
+        max_size = self._get_uploads_max_size()
+        total_size = self._get_uploaded_files_total_size()
+        if total_size > max_size:
+            raise forms.ValidationError(_(
+                f'Total upload size exceeds {filesizeformat(max_size)}. Please try again with smaller files.'
+            ))
+
+    def _get_uploads_max_size(self):
+        try:
+            max_size_db_obj = UploadSizeLimit.objects.get(slug="total_upload_size_sum")
+        except UploadSizeLimit.DoesNotExist:
+            max_size_db_obj = UploadSizeLimit.objects.create_default_limit()
+        return max_size_db_obj.max_size
+
     def _get_uploaded_files(self):
         """Return a list with all of the uploaded files"""
         return [django_file for field_name, django_file in self.files.items()
                 if field_name != "base_file"]
+
+    def _get_uploaded_files_total_size(self):
+        """Return a list with all of the uploaded files"""
+        excluded_files = ("zip_file", "shp_file", )
+        uploaded_files_sizes = [
+            django_file.size for field_name, django_file in self.files.items()
+            if field_name not in excluded_files
+        ]
+        total_size = sum(uploaded_files_sizes)
+        return total_size
 
 
 class TimeForm(forms.Form):

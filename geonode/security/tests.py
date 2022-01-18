@@ -1036,7 +1036,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertTrue(response.status_code, 404)
         self.assertEqual(
             response.headers.get('Content-Type'),
-            'text/html;charset=utf-8'
+            'text/html; charset=utf-8'
         )
 
         # test change_dataset_style

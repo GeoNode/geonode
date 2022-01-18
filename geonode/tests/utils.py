@@ -176,6 +176,7 @@ class Client(DjangoTestClient):
                 message = ex.message[ex.message.index(':') + 2:]
             else:
                 message = str(ex)
+            message = f"{message} (Content: {response.content.decode()}"
             raise HTTPError(url, response.status_code, message, response.headers, None)
 
         logger.error(f" make_request ----------> response: {response}")
