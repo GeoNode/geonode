@@ -326,6 +326,94 @@ class BaseApiTests(APITestCase):
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
 
+        # test 'tkeywords'
+        try:
+            for _tkw in ThesaurusKeyword.objects.filter(pk__gte=34):
+                resource.tkeywords.add(_tkw)
+            self.assertEqual(6, resource.tkeywords.count())
+            # Admin
+            self.assertTrue(self.client.login(username='admin', password='admin'))
+            response = self.client.get(f"{url}/{resource.id}/", format='json')
+            self.assertIsNotNone(response.data['resource']['tkeywords'])
+            self.assertEqual(6, len(response.data['resource']['tkeywords']))
+            self.assertListEqual(
+                [
+                    {
+                        'name': '',
+                        'slug': 'http-inspire-ec-europa-eu-theme-37',
+                        'uri': 'http://inspire.ec.europa.eu/theme#37',
+                        'thesaurus': {
+                            'name': 'GEMET - INSPIRE themes, version 1.0',
+                            'slug': 'inspire-theme',
+                            'uri': 'http://inspire.ec.europa.eu/theme'
+                        },
+                        'i18n': {}
+                    },
+                    {
+                        'name': '',
+                        'slug': 'http-localhost-8001-thesaurus-no-about-thesauro-38',
+                        'uri': 'http://localhost:8001//thesaurus/no-about-thesauro#38',
+                        'thesaurus': {
+                            'name': 'Thesauro without the about',
+                            'slug': 'no-about-thesauro',
+                            'uri': ''
+                        },
+                        'i18n': {}
+                    },
+                    {
+                        'name': 'bar_keyword',
+                        'slug': 'http-localhost-8001-thesaurus-no-about-thesauro-bar-keyword',
+                        'uri': 'http://localhost:8001//thesaurus/no-about-thesauro#bar_keyword',
+                        'thesaurus': {
+                            'name': 'Thesauro without the about',
+                            'slug': 'no-about-thesauro', 'uri': ''
+                        },
+                        'i18n': {}
+                    },
+                    {
+                        'name': 'foo_keyword',
+                        'slug': 'http-inspire-ec-europa-eu-theme-foo-keyword',
+                        'uri': 'http://inspire.ec.europa.eu/theme#foo_keyword',
+                        'thesaurus': {
+                            'name': 'GEMET - INSPIRE themes, version 1.0',
+                            'slug': 'inspire-theme',
+                            'uri': 'http://inspire.ec.europa.eu/theme'
+                        },
+                        'i18n': {}
+                    },
+                    {
+                        'name': 'mf',
+                        'slug': 'http-inspire-ec-europa-eu-theme-mf',
+                        'uri': 'http://inspire.ec.europa.eu/theme/mf',
+                        'thesaurus': {
+                            'name': 'GEMET - INSPIRE themes, version 1.0',
+                            'slug': 'inspire-theme',
+                            'uri': 'http://inspire.ec.europa.eu/theme'
+                        },
+                        'i18n': {
+                            'en': 'Meteorological geographical features'
+                        }
+                    },
+                    {
+                        'name': 'us',
+                        'slug': 'http-inspire-ec-europa-eu-theme-us',
+                        'uri': 'http://inspire.ec.europa.eu/theme/us',
+                        'thesaurus': {
+                            'name': 'GEMET - INSPIRE themes, version 1.0',
+                            'slug': 'inspire-theme',
+                            'uri': 'http://inspire.ec.europa.eu/theme'
+                        },
+                        'i18n': {
+                            'en': 'Utility and governmental services'
+                        }
+                    }
+                ],
+                response.data['resource']['tkeywords']
+            )
+        finally:
+            resource.tkeywords.set(ThesaurusKeyword.objects.none())
+            self.assertEqual(0, resource.tkeywords.count())
+
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
         Dataset(
@@ -1225,8 +1313,8 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())
-        # response has link to the response
-        self.assertTrue('link' in response.data['tkeywords'][0].keys())
+        # response has uri to the response
+        self.assertTrue('uri' in response.data['tkeywords'][0].keys())
 
         # Authenticated user
         self.assertTrue(self.client.login(username='bobby', password='bob'))

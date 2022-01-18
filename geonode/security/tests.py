@@ -1035,8 +1035,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         response = requests.get(url, auth=HTTPBasicAuth(username='norman', password='norman'))
         self.assertTrue(response.status_code, 404)
         self.assertEqual(
-            response.headers.get('Content-Type'),
-            'text/html; charset=utf-8'
+            response.headers.get('Content-Type').strip().replace(" ", ""),
+            'text/html;charset=utf-8'
         )
 
         # test change_dataset_style

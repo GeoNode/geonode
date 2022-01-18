@@ -51,7 +51,8 @@ def set_metadata(xml, identifier="", vals={}, regions=[], keywords=[], custom={}
 
     if tagname == 'GetRecordByIdResponse':  # strip CSW element
         LOGGER.debug('stripping CSW root element')
-        tagname = get_tagname(exml[0])
+        exml = list(exml)[0]
+        tagname = get_tagname(exml)
 
     if tagname == 'MD_Metadata':  # ISO
         identifier, vals, regions, keywords = iso2dict(exml)
