@@ -1,8 +1,4 @@
-import os
-import shutil
-
 from django.db import migrations, connection
-from django.conf import settings
 
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import storage_manager
@@ -30,12 +26,6 @@ def update_thumbnail_urls_and_delete_curated_thumbs_folder(apps, schema_editor):
             filename = _generate_thumbnail_name(resource.get_real_instance())
             resource.save_thumbnail(filename, bytes_file)
 
-    # delete curated_thumbs folder
-    curated_thumbs_folder= os.path.abspath(f"{settings.MEDIA_ROOT}/curated_thumbs")
-    try:
-        shutil.rmtree(curated_thumbs_folder)
-    except OSError as e:
-        print(f"Error deleting curated_thumbs folder: {e}.")
 
 class Migration(migrations.Migration):
 
