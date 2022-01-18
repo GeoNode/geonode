@@ -37,13 +37,17 @@ class IsSelf(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        """ Always return True here.
+        """ Always return False here.
         The fine-grained permissions are handled in has_object_permission().
         """
-        return True
+        return False
 
     def has_object_permission(self, request, view, obj):
-        return obj.id == request.user.id
+        user = request.user
+        if user and isinstance(obj, get_user_model()) and obj.pk == user.pk:
+            return True
+
+        return False
 
 
 class IsSelfOrReadOnly(IsSelf):
@@ -63,9 +67,16 @@ class IsSelfOrAdmin(IsSelf):
 
     """ Grant R/W to self and superusers/staff members. Deny others. """
 
+    def has_permission(self, request, view):
+        user = request.user
+        if user and (user.is_superuser or user.is_staff):
+            return True
+
+        return IsSelf.has_permission(self, request, view)
+
     def has_object_permission(self, request, view, obj):
         user = request.user
-        if user.is_superuser or user.is_staff:
+        if user and (user.is_superuser or user.is_staff):
             return True
 
         return IsSelf.has_object_permission(self, request, view, obj)
@@ -74,6 +85,12 @@ class IsSelfOrAdmin(IsSelf):
 class IsSelfOrAdminOrReadOnly(IsSelfOrAdmin):
 
     """ Grant R/W to self and superusers/staff members, R/O to others. """
+
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return IsSelfOrAdmin.has_permission(self, request, view)
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:

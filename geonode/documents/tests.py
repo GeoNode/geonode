@@ -35,6 +35,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.template.defaultfilters import filesizeformat
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -235,6 +236,28 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         form = DocumentCreateForm(form_data, file_data)
         self.assertFalse(form.is_valid())
         self.assertTrue('__all__' in form.errors)
+
+    def test_upload_document_form_size_limit(self):
+        form_data = {
+            'title': 'GeoNode Map',
+            'permissions': '{"anonymous":"document_readonly","authenticated":"resourcebase_readwrite","users":[]}',
+        }
+        test_file = SimpleUploadedFile(
+            'test_img_file.gif',
+            self.imgfile.read(),
+            'image/gif'
+        )
+        test_file.size = settings.DEFAULT_MAX_UPLOAD_SIZE * 5  # Set as a large file
+
+        file_data = {'doc_file': test_file}
+        form = DocumentCreateForm(form_data, file_data)
+
+        self.assertFalse(form.is_valid())
+        expected_error = (
+            f"File size size exceeds {filesizeformat(settings.DEFAULT_MAX_UPLOAD_SIZE)}. "
+            f"Please try again with a smaller file."
+        )
+        self.assertEqual(form.errors, {'doc_file': [expected_error]})
 
     def test_document_embed(self):
         """/documents/1 -> Test accessing the embed view of a document"""

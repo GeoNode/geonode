@@ -20,9 +20,15 @@ import os
 
 from rest_framework import serializers
 
-from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
+from django.conf import settings
+from django.utils.translation import ugettext as _
 
-from geonode.upload.models import Upload
+from dynamic_rest.fields.fields import (
+    DynamicRelationField,
+    DynamicComputedField,
+)
+
+from geonode.upload.models import Upload, UploadSizeLimit
 from geonode.base.models import ResourceBase
 from geonode.utils import build_absolute_uri
 from geonode.layers.api.serializers import DatasetSerializer
@@ -232,3 +238,48 @@ class UploadSerializer(BaseDynamicModelSerializer):
     import_url = ProgressUrlField('import', read_only=True)
     detail_url = ProgressUrlField('detail', read_only=True)
     uploadfile_set = UploadFileField(source='resource', read_only=True)
+
+
+class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
+    class Meta:
+        model = UploadSizeLimit
+        name = 'upload-size-limit'
+        view_name = 'upload-size-limits-list'
+        fields = (
+            'slug',
+            'description',
+            'max_size',
+            'max_size_label',
+        )
+
+    def validate(self, data):
+        validated_data = super(UploadSizeLimitSerializer, self).validate(data)
+
+        default_slug = self.instance.slug if self.instance else None
+        default_max_size = self.instance.max_size if self.instance else settings.DEFAULT_MAX_UPLOAD_SIZE
+        slug = validated_data.get('slug', default_slug)
+        max_size = validated_data.get("max_size", default_max_size)
+
+        after_upload_slugs_list = ['total_upload_size_sum', 'document_upload_size']
+
+        if slug == 'file_upload_handler':
+            after_upload_sizes = UploadSizeLimit.objects.filter(
+                slug__in=after_upload_slugs_list
+            ).values_list('max_size', flat=True)
+            if after_upload_sizes and max_size <= max(after_upload_sizes) * 2:
+                raise serializers.ValidationError(_(
+                    "To avoid errors, max size should be at least 2 times "
+                    "greater than the value of others size limits."
+                ))
+
+        if slug in after_upload_slugs_list:
+            handler_max_size = UploadSizeLimit.objects.filter(
+                slug='file_upload_handler'
+            ).values_list('max_size', flat=True)
+            if handler_max_size and max_size * 2 >= max(handler_max_size):
+                raise serializers.ValidationError(_(
+                    "To avoid errors, max size should be at least 2 times "
+                    "smaller than the value of 'file_upload_handler'."
+                ))
+
+        return validated_data
