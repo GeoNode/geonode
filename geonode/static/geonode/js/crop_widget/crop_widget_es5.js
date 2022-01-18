@@ -4,7 +4,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var IDS_VALUT = {
   SEND_B_ID: 'id_crop_save_button',
@@ -31,12 +31,12 @@ var ThumbnailService = /*#__PURE__*/function () {
     key: "postThumbnail",
     value: function postThumbnail(base64_url) {
       var formData = new FormData();
-      formData.append("img", this._b64toBlob(base64_url), 'blob.png');
-      var url = location.origin + '/base/' + String(this.document_id) + '/thumbnail_upload';
+      formData.append("file", this._b64toBlob(base64_url), 'blob.png');
+      var url = location.origin + '/api/v2/resources/' + String(this.document_id) + '/set_thumbnail';
       $.ajax({
         url: url,
         data: formData,
-        type: 'POST',
+        type: 'PUT',
         contentType: false,
         processData: false,
         headers: {

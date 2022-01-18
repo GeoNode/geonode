@@ -26,7 +26,6 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from io import BytesIO
 from PIL import Image
-from imagekit.cachefiles.backends import Simple
 from guardian.shortcuts import assign_perm, get_perms
 
 from geonode.maps.models import Map
@@ -45,7 +44,6 @@ from geonode.base.models import (
     MenuItem,
     Configuration,
     TopicCategory,
-    CuratedThumbnail,
     Thesaurus,
     ThesaurusKeyword,
     generate_thesaurus_reference
@@ -142,25 +140,8 @@ class TestThumbnailUrl(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        rb = ResourceBase.objects.create(owner=get_user_model().objects.get(username='admin'))
         f = BytesIO(test_image.tobytes())
         f.name = 'test_image.jpeg'
-        self.curated_thumbnail = CuratedThumbnail.objects.create(resource=rb, img=File(f))
-
-    @patch('PIL.Image.open', return_value=test_image)
-    def test_cached_image_generation(self, img):
-        """
-        Test that the 'thumbnail_url' property method generates a new cached image
-        """
-        self.curated_thumbnail.thumbnail_url
-        self.assertTrue(Simple()._exists(self.curated_thumbnail.img_thumbnail))
-
-    @patch('PIL.Image.open', return_value=test_image)
-    def test_non_existent_cached_image(self, img):
-        """
-        Test that the cached image does not exist before 'thumbnail_url' property method is called
-        """
-        self.assertFalse(Simple()._exists(self.curated_thumbnail.img_thumbnail))
 
 
 class TestCreationOfMissingMetadataAuthorsOrPOC(ThumbnailTests):

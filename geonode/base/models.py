@@ -40,7 +40,7 @@ from django.db.models.fields.json import JSONField
 from django.utils.functional import cached_property, classproperty
 from django.contrib.gis.geos import Polygon, Point
 from django.contrib.gis.db.models import PolygonField
-from django.core.exceptions import SuspiciousFileOperation, ValidationError
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.templatetags.static import static
@@ -48,9 +48,6 @@ from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image, ImageOps
-
-from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
 
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
@@ -89,7 +86,6 @@ from geonode.notifications_helper import (
 from geonode.people.enumerations import ROLE_VALUES
 
 from urllib.parse import urlsplit, urljoin
-from imagekit.cachefiles.backends import Simple
 from geonode.storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
@@ -1979,32 +1975,6 @@ class MenuItem(models.Model):
             ('menu', 'title'),
         )
         ordering = ['order']
-
-
-class CuratedThumbnail(models.Model):
-    resource = models.OneToOneField(ResourceBase, on_delete=models.CASCADE)
-    img = models.ImageField(upload_to='curated_thumbs', storage=storage_manager)
-    # TOD read thumb size from settings
-    img_thumbnail = ImageSpecField(source='img',
-                                   cachefile_storage=storage_manager,
-                                   processors=[ResizeToFill(240, 180)],
-                                   format='PNG',
-                                   options={'quality': 60})
-
-    @property
-    def thumbnail_url(self):
-        try:
-            if not Simple()._exists(self.img_thumbnail):
-                Simple().generate(self.img_thumbnail, force=True)
-        except SuspiciousFileOperation:
-            '''
-            we must rely to the storage_manager, if the storage is changed, we will ignore this
-            '''
-            return ''
-        except Exception as e:
-            logger.exception(e)
-
-        return self.img_thumbnail.url or ''
 
 
 class Configuration(SingletonModel):

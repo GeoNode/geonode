@@ -35,7 +35,6 @@ from . import version
 
 from geonode.api.urls import api, router
 from geonode.api.views import verify_token, user_info, roles, users, admin_role
-from geonode.base.views import thumbnail_upload
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -172,10 +171,6 @@ urlpatterns += [
     url(r'^api/v2/', include('geonode.management_commands_http.urls')),
     url(r'^api/v2/api-auth/', include('rest_framework.urls', namespace='geonode_rest_framework')),
     url(r'', include(api.urls)),
-
-    # Curated Thumbnail
-    url(r'^base/(?P<res_id>[^/]+)/thumbnail_upload$', thumbnail_upload,
-        name='thumbnail_upload'),
 
     # tinymce WYSIWYG HTML Editor
     url(r'^tinymce/', include('tinymce.urls')),
