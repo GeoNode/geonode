@@ -34,5 +34,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(update_thumbnail_urls_and_delete_curated_thumbs_folder)
+        migrations.RunPython(update_thumbnail_urls_and_delete_curated_thumbs_folder, migrations.RunPython.noop)
     ]
