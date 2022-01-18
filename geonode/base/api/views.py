@@ -1206,9 +1206,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                         'The request body is not a valid base64 string or the image format is not PNG or JPEG',
                         status=status.HTTP_400_BAD_REQUEST
                     )
-                    # Check if file_data is a valid url and set it as thumbail_url
             else:
                 try:
+                    # Check if file_data is a valid url and set it as thumbail_url
                     validate = URLValidator()
                     validate(file_data)
                     if urlparse(file_data).path.rsplit('.')[-1] not in ['png', 'jpeg', 'jpg']:
@@ -1218,7 +1218,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                         )
                     resource.thumbnail_url = file_data
                     resource.save()
-                    return Response({"message": "Thumbnail set successfully"})
+                    return Response({"thumbnail_url": resource.thumbnail_url})
                 except Exception:
                     raise ValidationError('file is either a file upload, ASCII byte string or a valid image url string')
         else:
@@ -1234,7 +1234,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 raise ValidationError('Invalid data provided')
         if thumbnail:
             resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
-            return Response({"message": "Thumbnail set successfully"})
+            return Response({"thumbnail_url": resource.thumbnail_url})
         return Response(
             'Unable to set thumbnail',
             status=status.HTTP_400_BAD_REQUEST
