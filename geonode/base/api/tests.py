@@ -1376,6 +1376,7 @@ class BaseApiTests(APITestCase):
         self.assertTrue(self.client.login(username='admin', password='admin'))
         response = self.client.put(url, data=data, format="json")
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['thumbnail_url'], data['file'])
         self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, data['file'])
         # set with invalid image url
         data = {"file": "invali url"}
