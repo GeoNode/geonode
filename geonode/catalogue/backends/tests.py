@@ -26,7 +26,7 @@ class TestGeoNodeRepository(TestCase):
     def test_if_pycsw_filter_is_not_set_should_return_only_the_dataset_by_default(self):
         response = csw_global_dispatch(self.request)
         root = etree.fromstring(response.content)
-        child = [x.attrib for x in root.getchildren() if 'numberOfRecordsMatched' in x.attrib]
+        child = [x.attrib for x in root if 'numberOfRecordsMatched' in x.attrib]
         returned_results = ast.literal_eval(child[0].get('numberOfRecordsMatched', '0')) if child else 0
         self.assertEqual(1, returned_results)
 
@@ -34,7 +34,7 @@ class TestGeoNodeRepository(TestCase):
     def test_if_pycsw_filter_is_set_should_return_only_datasets_and_map(self):
         response = csw_global_dispatch(self.request)
         root = etree.fromstring(response.content)
-        child = [x.attrib for x in root.getchildren() if 'numberOfRecordsMatched' in x.attrib]
+        child = [x.attrib for x in root if 'numberOfRecordsMatched' in x.attrib]
         returned_results = ast.literal_eval(child[0].get('numberOfRecordsMatched', '0')) if child else 0
         self.assertEqual(2, returned_results)
 
@@ -42,7 +42,7 @@ class TestGeoNodeRepository(TestCase):
     def test_if_pycsw_filter_is_set_should_return_all_datasets_map_doc(self):
         response = csw_global_dispatch(self.request)
         root = etree.fromstring(response.content)
-        child = [x.attrib for x in root.getchildren() if 'numberOfRecordsMatched' in x.attrib]
+        child = [x.attrib for x in root if 'numberOfRecordsMatched' in x.attrib]
         returned_results = ast.literal_eval(child[0].get('numberOfRecordsMatched', '0')) if child else 0
         self.assertEqual(3, returned_results)
 

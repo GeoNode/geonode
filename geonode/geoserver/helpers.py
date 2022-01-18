@@ -315,7 +315,7 @@ def get_sld_for(gs_catalog, layer):
         res.fetch()
         ft = res.store.get_resources(name=res.name)
         ft.fetch()
-        for attr in ft.dom.find("attributes").getchildren():
+        for attr in ft.dom.find("attributes"):
             attr_binding = attr.find("binding")
             if "jts.geom" in attr_binding.text:
                 if "Polygon" in attr_binding.text:
