@@ -2067,3 +2067,13 @@ MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set([
     "importlayers",
     "set_all_datasets_metadata",
 ] + ast.literal_eval(os.getenv('MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ', '[]')))
+
+
+FILE_UPLOAD_HANDLERS = [
+    'geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler',
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
+DEFAULT_MAX_UPLOAD_SIZE = int(os.getenv('DEFAULT_MAX_UPLOAD_SIZE', 104857600))  # 100 MB
+DEFAULT_MAX_BEFORE_UPLOAD_SIZE = int(os.getenv('DEFAULT_MAX_BEFORE_UPLOAD_SIZE', 524288000))  # 500 MB
