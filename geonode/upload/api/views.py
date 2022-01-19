@@ -152,6 +152,53 @@ class UploadViewSet(DynamicModelViewSet):
         # After performing 7 steps if we don't get any final response
         return response
 
+    @extend_schema(methods=['put'],
+                   responses={201: None},
+                   description="""
+        Starts an upload session based on the Dataset Upload Form.
+
+        the form params look like:
+        ```
+            'csrfmiddlewaretoken': self.csrf_token,
+            'permissions': '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            'time': 'false',
+            'charset': 'UTF-8',
+            'base_file': base_file,
+            'dbf_file': dbf_file,
+            'shx_file': shx_file,
+            'prj_file': prj_file,
+            'tif_file': tif_file
+        ```
+        """)
+    @action(detail=False, methods=['post'])
+    def upload_legacy(self, request, format=None):
+        if not getattr(request, 'FILES', None):
+            raise ParseError(_("Empty content"))
+
+        user = request.user
+        if not user or not user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        response = upload_view(request, None)
+        if response.status_code == 200:
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            data = json.loads(content)
+
+            import_id = int(data["redirect_to"].split("?id=")[1].split("&")[0])
+            request.method = 'GET'
+            request.GET['id'] = import_id
+
+            upload_view(request, 'check')
+            response = upload_view(request, 'final')
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            data = json.loads(content)
+            return Response(data=data, status=status.HTTP_201_CREATED)
+        return Response(status=response.status_code)
+
 
 class UploadSizeLimitViewSet(DynamicModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
