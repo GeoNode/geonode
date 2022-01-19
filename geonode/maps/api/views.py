@@ -118,12 +118,14 @@ class MapViewSet(DynamicModelViewSet):
             uuid=str(uuid4()),
         )
 
-        # thumbnail, events and resouce routines
+        # events and resouce routines
         self._post_change_routines(
             instance=instance,
             create_action_perfomed=True,
             additional_data=post_creation_data,
         )
+        # Handle thumbnail generation
+        resource_manager.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
 
     def perform_update(self, serializer):
         # Check instance permissions with resolve_object
