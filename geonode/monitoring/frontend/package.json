@@ -49,7 +49,7 @@
     "datamaps": "0.5.9",
     "flag-icon-css": "3.3.0",
     "i18n-iso-countries": "4.3.1",
-    "isomorphic-fetch": "2.2.1",
+    "isomorphic-fetch": "3.0.0",
     "material-ui": "0.20.2",
     "mkdirp": "^1.0.4",
     "moment": "2.24.0",
