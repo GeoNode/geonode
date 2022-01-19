@@ -313,8 +313,6 @@ def layer_style_upload(request):
         sld = request.FILES['sld_file'].read()
 
         set_layer_style(layer, data.get('layer_title'), sld)
-        from geonode.geoserver.tasks import geoserver_create_thumbnail
-        geoserver_create_thumbnail.apply_async(((layer.resourcebase_ptr.id, True, True)))
         body['url'] = layer.get_absolute_url()
         body['bbox'] = layer.bbox_string
         body['crs'] = {
