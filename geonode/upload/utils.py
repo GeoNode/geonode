@@ -19,6 +19,7 @@
 import re
 import os
 import json
+import shutil
 import logging
 import zipfile
 import tempfile
@@ -522,37 +523,48 @@ def _get_time_dimensions(layer, upload_session, values=None):
 
 
 def _fixup_base_file(absolute_base_file, tempdir=None):
-    if not tempdir:
+    tempdir_was_created = False
+    if not tempdir or not os.path.exists(tempdir):
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-    if not os.path.isfile(absolute_base_file):
-        tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
-        for f in tmp_files:
-            if zipfile.is_zipfile(os.path.join(tempdir, f)):
-                absolute_base_file = unzip_file(os.path.join(tempdir, f), '.shp', tempdir=tempdir)
-                absolute_base_file = os.path.join(tempdir,
-                                                  absolute_base_file)
-    elif zipfile.is_zipfile(absolute_base_file):
-        absolute_base_file = unzip_file(absolute_base_file,
-                                        '.shp', tempdir=tempdir)
-        absolute_base_file = os.path.join(tempdir,
-                                          absolute_base_file)
-    if os.path.exists(absolute_base_file):
-        return absolute_base_file
-    else:
-        raise Exception(_(f'File does not exist: {absolute_base_file}'))
+        tempdir_was_created = True
+    try:
+        if not os.path.isfile(absolute_base_file):
+            tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
+            for f in tmp_files:
+                if zipfile.is_zipfile(os.path.join(tempdir, f)):
+                    absolute_base_file = unzip_file(os.path.join(tempdir, f), '.shp', tempdir=tempdir)
+                    absolute_base_file = os.path.join(tempdir,
+                                                      absolute_base_file)
+        elif zipfile.is_zipfile(absolute_base_file):
+            absolute_base_file = unzip_file(absolute_base_file,
+                                            '.shp', tempdir=tempdir)
+            absolute_base_file = os.path.join(tempdir,
+                                              absolute_base_file)
+        if os.path.exists(absolute_base_file):
+            return absolute_base_file
+        else:
+            raise Exception(_(f'File does not exist: {absolute_base_file}'))
+    finally:
+        if tempdir_was_created:
+            # Get rid if temporary files that have been uploaded via Upload form
+            try:
+                logger.debug(f"... Cleaning up the temporary folders {tempdir}")
+                shutil.rmtree(tempdir)
+            except Exception as e:
+                logger.warning(e)
 
 
 def _get_dataset_values(layer, upload_session, expand=0):
     dataset_values = []
     if upload_session:
-        absolute_base_file = _fixup_base_file(
-            upload_session.base_file[0].base_file,
-            upload_session.tempdir)
-
-        inDataSource = ogr.Open(absolute_base_file)
-        lyr = inDataSource.GetLayer(str(layer.name))
-        limit = 10
         try:
+            absolute_base_file = _fixup_base_file(
+                upload_session.base_file[0].base_file,
+                upload_session.tempdir)
+
+            inDataSource = ogr.Open(absolute_base_file)
+            lyr = inDataSource.GetLayer(str(layer.name))
+            limit = 10
             for feat in islice(lyr, 0, limit):
                 feat_values = json_loads_byteified(
                     feat.ExportToJson(),
