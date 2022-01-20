@@ -16,11 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from slugify import slugify
 from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.forms.models import model_to_dict
 
 from rest_framework import serializers
 from rest_framework_gis import fields
@@ -41,6 +43,7 @@ from geonode.base.models import (
     TopicCategory,
     SpatialRepresentationType,
     ThesaurusKeyword,
+    ThesaurusKeywordLabel
 )
 from geonode.groups.models import (
     GroupCategory,
@@ -48,6 +51,7 @@ from geonode.groups.models import (
 
 from geonode.base.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms
+from geonode.base.models import Link
 
 import logging
 
@@ -58,14 +62,51 @@ class BaseDynamicModelSerializer(DynamicModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        try:
-            path = reverse(self.Meta.view_name)
-            if not path.endswith('/'):
-                path = f"{path}/"
-            url = urljoin(path, str(instance.pk))
-            data['link'] = build_absolute_uri(url)
-        except NoReverseMatch as e:
-            logger.exception(e)
+        if not isinstance(data, int):
+            try:
+                path = reverse(self.Meta.view_name)
+                if not path.endswith('/'):
+                    path = f"{path}/"
+                url = urljoin(path, str(instance.pk))
+                data['link'] = build_absolute_uri(url)
+            except (TypeError, NoReverseMatch) as e:
+                logger.exception(e)
+        return data
+
+
+class ResourceBaseToRepresentationSerializerMixin(DynamicModelSerializer):
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        data = super(ResourceBaseToRepresentationSerializerMixin, self).to_representation(instance)
+        if request:
+            data['perms'] = instance.get_user_perms(request.user).union(
+                instance.get_self_resource().get_user_perms(request.user)
+            )
+            if not request.user.is_anonymous and getattr(settings, "FAVORITE_ENABLED", False):
+                favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
+                data['favorite'] = favorite > 0
+        # Adding links to resource_base api
+        obj_id = data.get('pk', None)
+        if obj_id:
+            dehydrated = []
+            link_fields = [
+                'extension',
+                'link_type',
+                'name',
+                'mime',
+                'url'
+            ]
+
+            links = Link.objects.filter(
+                resource_id=int(obj_id),
+                link_type__in=['OGC:WMS', 'OGC:WFS', 'OGC:WCS', 'image', 'metadata']
+            )
+            for lnk in links:
+                formatted_link = model_to_dict(lnk, fields=link_fields)
+                dehydrated.append(formatted_link)
+            if len(dehydrated) > 0:
+                data['links'] = dehydrated
         return data
 
 
@@ -121,6 +162,33 @@ class SimpleHierarchicalKeywordSerializer(DynamicModelSerializer):
 
     def to_representation(self, value):
         return {'name': value.name, 'slug': value.slug}
+
+
+class _ThesaurusKeywordSerializerMixIn:
+
+    def to_representation(self, value):
+        _i18n = {}
+        for _i18n_label in ThesaurusKeywordLabel.objects.filter(keyword__id=value.id).iterator():
+            _i18n[_i18n_label.lang] = _i18n_label.label
+        return {
+            'name': value.alt_label,
+            'slug': slugify(value.about),
+            'uri': value.about,
+            'thesaurus': {
+                'name': value.thesaurus.title,
+                'slug': value.thesaurus.identifier,
+                'uri': value.thesaurus.about
+            },
+            'i18n': _i18n
+        }
+
+
+class SimpleThesaurusKeywordSerializer(_ThesaurusKeywordSerializerMixIn, DynamicModelSerializer):
+
+    class Meta:
+        model = ThesaurusKeyword
+        name = 'ThesaurusKeyword'
+        fields = ('alt_label', )
 
 
 class SimpleRegionSerializer(DynamicModelSerializer):
@@ -243,7 +311,10 @@ class ContactRoleField(DynamicComputedField):
         return UserSerializer(embed=True, many=False).to_representation(value)
 
 
-class ResourceBaseSerializer(BaseDynamicModelSerializer):
+class ResourceBaseSerializer(
+    ResourceBaseToRepresentationSerializerMixin,
+    BaseDynamicModelSerializer
+):
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
@@ -297,6 +368,8 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
         self.fields['thumbnail_url'] = ThumbnailUrlField()
         self.fields['keywords'] = DynamicRelationField(
             SimpleHierarchicalKeywordSerializer, embed=False, many=True)
+        self.fields['tkeywords'] = DynamicRelationField(
+            SimpleThesaurusKeywordSerializer, embed=False, many=True)
         self.fields['regions'] = DynamicRelationField(
             SimpleRegionSerializer, embed=True, many=True, read_only=True)
         self.fields['category'] = DynamicRelationField(
@@ -315,7 +388,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
         fields = (
             'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id', 'perms',
             'owner', 'poc', 'metadata_author',
-            'keywords', 'regions', 'category',
+            'keywords', 'tkeywords', 'regions', 'category',
             'title', 'abstract', 'attribution', 'doi', 'alternate', 'bbox_polygon', 'll_bbox_polygon', 'srid',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',
             'restriction_code_type', 'constraints_other', 'license', 'language',
@@ -330,18 +403,6 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
             # users_geolimits, groups_geolimits
         )
-
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        data = super().to_representation(instance)
-        if request:
-            data['perms'] = instance.get_user_perms(request.user).union(
-                instance.get_self_resource().get_user_perms(request.user)
-            )
-            if not request.user.is_anonymous and getattr(settings, "FAVORITE_ENABLED", False):
-                favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
-                data['favorite'] = favorite > 0
-        return data
 
 
 class FavoriteSerializer(DynamicModelSerializer):
@@ -372,9 +433,13 @@ class BaseResourceCountSerializer(BaseDynamicModelSerializer):
                 'title_filter': request.query_params.get('title__icontains')
             }
         data = super().to_representation(instance)
-        count_filter = {self.Meta.count_type: instance}
-        data['count'] = get_resources_with_perms(
-            request.user, filter_options).filter(**count_filter).count()
+        if not isinstance(data, int):
+            try:
+                count_filter = {self.Meta.count_type: instance}
+                data['count'] = get_resources_with_perms(
+                    request.user, filter_options).filter(**count_filter).count()
+            except (TypeError, NoReverseMatch) as e:
+                logger.exception(e)
         return data
 
 
@@ -388,7 +453,7 @@ class HierarchicalKeywordSerializer(BaseResourceCountSerializer):
         fields = '__all__'
 
 
-class ThesaurusKeywordSerializer(BaseResourceCountSerializer):
+class ThesaurusKeywordSerializer(_ThesaurusKeywordSerializerMixIn, BaseResourceCountSerializer):
 
     class Meta:
         model = ThesaurusKeyword

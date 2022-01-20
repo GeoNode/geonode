@@ -1,4 +1,4 @@
 {% load i18n %}
 {% autoescape off %}
-{{ inviter_name }} is inviting you to join {{ site_name }}
+{{ inviter_name }} is inviting you to join {{ site_name|urlencode }}
 {% endautoescape %}

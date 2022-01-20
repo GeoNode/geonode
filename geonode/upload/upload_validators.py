@@ -105,6 +105,8 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
                 valid_extensions.append(extension)
             except AttributeError:
                 pass
+    if not valid_extensions:
+        valid_extensions = [f"{base_ext.lower()}"]
     return valid_extensions
 
 
