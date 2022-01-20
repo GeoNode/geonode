@@ -17,6 +17,7 @@
 #
 #########################################################################
 import json
+from urllib.parse import parse_qsl, urlparse
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
@@ -97,16 +98,24 @@ class UploadViewSet(DynamicModelViewSet):
                 return response, None, True
 
             # Prepare next step
-            next_step = redirect_to.split("?")[0].split(reverse("data_upload"))[1]
+            parsed_redirect_to = urlparse(redirect_to)
+            if reverse("data_upload") not in parsed_redirect_to.path:
+                # Error, next step cannot be performed by `upload_view`
+                return response, None, True
+            next_step = parsed_redirect_to.path.split(reverse("data_upload"))[1]
+            query_params = parse_qsl(parsed_redirect_to.query)
             request.method = 'GET'
-            query_params = {_param.split('=')[0]: _param.split('=')[1] for _param in redirect_to.split("?")[1].split("&")}
             request.GET.clear()
-            for key, value in query_params.items():
+            for key, value in query_params:
                 request.GET[key] = value
             return response, next_step, False
         elif response.status_code == status.HTTP_302_FOUND:
             # Get next step, should be final
-            next_step = response.url.split(reverse("data_upload"))[1].split("?id=")[0]
+            parsed_redirect_to = urlparse(response.url)
+            if reverse("data_upload") not in parsed_redirect_to.path:
+                # Error, next step cannot be performed by `upload_view`
+                return response, None, True
+            next_step = parsed_redirect_to.path.split(reverse("data_upload"))[1]
             return response, next_step, False
         else:
             return response, None, True
