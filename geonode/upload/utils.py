@@ -70,7 +70,7 @@ _SUPPORTED_EXT = getattr(settings, 'UPLOADER', None)
 if _SUPPORTED_EXT:
     _SUPPORTED_EXT = _SUPPORTED_EXT.get('SUPPORTED_EXT',
                                         ['.shp', '.csv', '.kml', '.kmz', '.json',
-                                         '.geojson', '.tif', '.tiff', '.geotiff',
+                                         '.tif', '.tiff', '.geotiff',
                                          '.gml', '.xml'])
 
 _ALLOW_TIME_STEP = getattr(settings, 'UPLOADER', False)

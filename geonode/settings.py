@@ -1074,7 +1074,6 @@ UPLOADER = {
         '.kml',
         '.kmz',
         '.json',
-        '.geojson',
         '.tif',
         '.tiff',
         '.geotiff',
