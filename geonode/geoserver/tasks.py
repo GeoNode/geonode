@@ -23,7 +23,6 @@ from django.core.management import call_command
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from django.dispatch import Signal
 
 from geonode.celery_app import app
 from geonode.tasks.tasks import (
