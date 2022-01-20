@@ -246,9 +246,6 @@ class Client(DjangoTestClient):
                 # allow for that
                 if os.path.exists(file_path):
                     params[spatial_file] = open(file_path, 'rb')
-        elif ext.lower() == '.tif':
-            file_path = base + ext
-            params['tif_file'] = open(file_path, 'rb')
 
         with open(_file, 'rb') as base_file:
             params['base_file'] = base_file
@@ -262,9 +259,6 @@ class Client(DjangoTestClient):
         for spatial_file in spatial_files:
             if isinstance(params.get(spatial_file), IOBase):
                 params[spatial_file].close()
-
-        if isinstance(params.get("tif_file"), IOBase):
-            params['tif_file'].close()
 
         try:
             return resp, resp.json()
@@ -333,8 +327,7 @@ def get_web_page(url, username=None, password=None, login_url=None):
     try:
         pagehandle = urlopen(url)
     except HTTPError as e:
-        msg = ('The server couldn\'t fulfill the request. '
-               'Error code: %s' % e.status_code)
+        msg = f'The server couldn\'t fulfill the request. Error code: {e.status_code}'
         e.args = (msg,)
         raise
     except URLError as e:
