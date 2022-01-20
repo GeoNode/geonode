@@ -178,7 +178,7 @@ class Upload(models.Model):
         if "COMPLETE" == self.state:
             self.complete = True
         if self.resource and self.resource.processed:
-            self.state = enumerations.STATE_PROCESSED
+            self.state = enumerations.STATE_RUNNING
         elif self.state in (enumerations.STATE_READY, enumerations.STATE_PENDING):
             self.state = upload_session.import_session.state
         self.save()
@@ -195,6 +195,10 @@ class Upload(models.Model):
         elif self.state == enumerations.STATE_PROCESSED:
             return 100.0
         elif self.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING):
+            if self.resource and self.resource.processed and self.resource.state == enumerations.STATE_PROCESSED:
+                self.state = enumerations.STATE_PROCESSED
+                self.save()
+                return 90.0
             return 80.0
 
     def set_resume_url(self, resume_url):
@@ -229,7 +233,7 @@ class Upload(models.Model):
             return None
 
     def get_detail_url(self):
-        if self.resource and self.state == enumerations.STATE_PROCESSED:
+        if self.resource and self.resource.processed and self.resource.state == enumerations.STATE_PROCESSED:
             return getattr(self.resource, 'detail_url', None)
         else:
             return None
