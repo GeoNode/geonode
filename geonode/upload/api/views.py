@@ -94,7 +94,6 @@ class UploadViewSet(DynamicModelViewSet):
             response_success = data.get('success', False)
             redirect_to = data.get('redirect_to', '')
             if required_input or not response_success or not redirect_to or response_status == 'finished':
-                response = Response(data=data, status=response.status_code)
                 return response, None, True
 
             # Prepare next step
@@ -110,7 +109,6 @@ class UploadViewSet(DynamicModelViewSet):
             next_step = response.url.split(reverse("data_upload"))[1].split("?id=")[0]
             return response, next_step, False
         else:
-            response = Response(status=response.status_code)
             return response, None, True
 
     @extend_schema(methods=['put'],
