@@ -60,7 +60,7 @@ from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
 from geoserver.support import DimensionInfo
 from geoserver.workspace import Workspace
 from gsimporter import Client
-from lxml import etree
+from lxml import etree, objectify
 from defusedxml import lxml as dlxml
 from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
@@ -190,6 +190,22 @@ LAYER_SUBTYPES = {
     "remoteStore": "remote",
     "vectorTimeSeries": "vector_time"
 }
+
+STYLES_VERSION = {
+    "1.0.0" : "sld10",
+    "1.1.0" : "sld11"
+}
+
+def _extract_style_version_from_sld(sld):
+    """
+        Assume: SLD as a byte
+    """
+    root = objectify.fromstring(sld)
+    try:
+        return STYLES_VERSION[root.attrib["version"].strip()]
+    except Exception:
+        return STYLES_VERSION["1.0.0"]
+
 
 
 def _style_name(resource):
@@ -386,6 +402,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
                     overwrite=True, raw=True,
                     workspace=saved_layer.workspace)
             elif sld:
+                style.style_format = _extract_style_version_from_sld(sld)
                 style.update_body(sld)
         except Exception as e:
             logger.exception(e)
