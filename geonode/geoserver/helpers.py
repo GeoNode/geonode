@@ -193,9 +193,10 @@ LAYER_SUBTYPES = {
 }
 
 STYLES_VERSION = {
-    "1.0.0" : "sld10",
-    "1.1.0" : "sld11"
+    "1.0.0": "sld10",
+    "1.1.0": "sld11"
 }
+
 
 def _extract_style_version_from_sld(sld):
     """
@@ -206,7 +207,6 @@ def _extract_style_version_from_sld(sld):
         return STYLES_VERSION[root.attrib["version"].strip()]
     except Exception:
         return STYLES_VERSION["1.0.0"]
-
 
 
 def _style_name(resource):
