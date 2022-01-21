@@ -42,7 +42,7 @@ from .tasks import geoserver_cascading_delete, geoserver_post_save_datasets
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
-geoserver_style_visual_mode = Signal(providing_args=['instance'])
+geoserver_automatic_default_style_set = Signal(providing_args=['instance'])
 
 
 def geoserver_delete(typename):

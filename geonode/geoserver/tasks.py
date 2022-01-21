@@ -130,7 +130,7 @@ def geoserver_create_style(
     """
     Sets or create styles from Upload Session.
     """
-    from geonode.geoserver.signals import geoserver_style_visual_mode
+    from geonode.geoserver.signals import geoserver_automatic_default_style_set
     instance = None
     try:
         instance = Dataset.objects.get(id=instance_id)
@@ -181,8 +181,8 @@ def geoserver_create_style(
             else:
                 get_sld_for(gs_catalog, instance)
             if not f:
-                # trigger signal to set geoserver style visual_mode automatically
-                geoserver_style_visual_mode.send_robust(sender=instance, instance=instance)
+                # this signal is used by the mapstore client to set the style in visual mode
+                geoserver_automatic_default_style_set.send_robust(sender=instance, instance=instance)
 
 
 @app.task(
