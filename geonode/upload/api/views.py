@@ -25,7 +25,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import ParseError
+from rest_framework.exceptions import ParseError, ValidationError
 from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -34,13 +34,13 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from django.utils.translation import ugettext as _
 
 from geonode.base.api.filters import DynamicSearchFilter
-from geonode.base.api.permissions import IsOwnerOrReadOnly
+from geonode.base.api.permissions import IsOwnerOrReadOnly, IsSelfOrAdminOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 
-from .serializers import UploadSerializer
+from .serializers import UploadSerializer, UploadSizeLimitSerializer
 from .permissions import UploadPermissionsFilter
 
-from ..models import Upload
+from ..models import Upload, UploadSizeLimit
 from ..views import view as upload_view
 
 import logging
@@ -99,3 +99,24 @@ class UploadViewSet(DynamicModelViewSet):
             data = json.loads(content)
             return Response(data=data, status=status.HTTP_201_CREATED)
         return Response(status=response.status_code)
+
+
+class UploadSizeLimitViewSet(DynamicModelViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsSelfOrAdminOrReadOnly]
+    queryset = UploadSizeLimit.objects.all()
+    serializer_class = UploadSizeLimitSerializer
+    pagination_class = GeoNodeApiPagination
+
+    def destroy(self, request, *args, **kwargs):
+        protected_objects = [
+            'total_upload_size_sum',
+            'document_upload_size',
+            'file_upload_handler',
+        ]
+        instance = self.get_object()
+        if instance.slug in protected_objects:
+            detail = _(f"The limit `{instance.slug}` should not be deleted.")
+            raise ValidationError(detail)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -31,6 +31,9 @@ from django.conf import settings
 from django.core.files import File
 from django.utils.timezone import now
 from django.core.files.storage import FileSystemStorage
+from django.core.validators import MinLengthValidator, MinValueValidator
+from django.template.defaultfilters import filesizeformat
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
@@ -66,6 +69,36 @@ class UploadManager(models.Manager):
     def get_incomplete_uploads(self, user):
         return self.filter(user=user).exclude(
             state=Upload.STATE_PROCESSED)
+
+
+class UploadSizeLimitManager(models.Manager):
+
+    def create_default_limit(self):
+        max_size_db_obj = self.create(
+            slug="total_upload_size_sum",
+            description="The sum of sizes for the files of a dataset upload.",
+            max_size=settings.DEFAULT_MAX_UPLOAD_SIZE,
+        )
+        return max_size_db_obj
+
+    def create_default_limit_for_upload_handler(self):
+        max_size_db_obj = UploadSizeLimit.objects.create(
+            slug="file_upload_handler",
+            description=(
+                'Request total size, validated before the upload process. '
+                'This should be greater than "total_upload_size_sum".'
+            ),
+            max_size=settings.DEFAULT_MAX_BEFORE_UPLOAD_SIZE,
+        )
+        return max_size_db_obj
+
+    def create_default_limit_with_slug(self, slug):
+        max_size_db_obj = self.create(
+            slug=slug,
+            description="Size limit.",
+            max_size=settings.DEFAULT_MAX_UPLOAD_SIZE,
+        )
+        return max_size_db_obj
 
 
 class Upload(models.Model):
@@ -333,3 +366,38 @@ class UploadFile(models.Model):
     def delete(self, *args, **kwargs):
         self.file.delete(False)
         super().delete(*args, **kwargs)
+
+
+class UploadSizeLimit(models.Model):
+
+    objects = UploadSizeLimitManager()
+
+    slug = models.SlugField(
+        primary_key=True,
+        max_length=255,
+        unique=True,
+        null=False,
+        blank=False,
+        validators=[MinLengthValidator(limit_value=3)],
+    )
+    description = models.TextField(
+        max_length=255,
+        default=None,
+        null=True,
+        blank=True,
+    )
+    max_size = models.BigIntegerField(
+        help_text=_("The maximum file size allowed for upload (bytes)."),
+        default=settings.DEFAULT_MAX_UPLOAD_SIZE,
+        validators=[MinValueValidator(limit_value=0)],
+    )
+
+    @property
+    def max_size_label(self):
+        return filesizeformat(self.max_size)
+
+    def __str__(self):
+        return f'UploadSizeLimit for "{self.slug}" (max_size: {self.max_size_label})'
+
+    class Meta:
+        ordering = ("slug",)
