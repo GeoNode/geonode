@@ -248,6 +248,11 @@ if not _ALLOW_MOSAIC_STEP:
         _pages[t] = tuple(steps)
 
 
+def get_max_amount_of_steps():
+    # We add 1 here to count the save step (implied as first step)
+    return max([len(page) for page in _pages.values()]) + 1
+
+
 def get_next_step(upload_session, offset=1):
     assert upload_session.upload_type is not None
 
