@@ -2,31 +2,5 @@
 <html lang="en">
     <head></head>
     <body>
-        <div class="imgContainer">
-            <img id="imgDocument" src="{{ image_url }}" />
-        </div>
-        {% block extra_script %}
-        <script>
-            var vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
-            const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-            var elem = document.getElementById('imgDocument');
-            elem.style.maxHeight = (vh) +"px";
-            elem.style.maxWidth = (vw) +"px";
-        </script>
-        <style>
-            body{
-                margin: 0;
-                padding: 0;
-            }
-
-            .imgContainer{
-                margin: 0;
-                padding: 0;
-                text-align: center;
-                height: auto;
-                width: auto;
-            }
-        </style>
-        {% endblock extra_script %}
     </body>
 </html>
