@@ -610,7 +610,7 @@ except ValueError:
         'bm', 'bmp', 'dwg', 'dxf', 'fif', 'gif', 'jpg', 'jpe', 'jpeg', 'png', 'tif',
         'tiff', 'pbm', 'odp', 'ppt', 'pptx', 'pdf', 'tar', 'tgz', 'rar', 'gz', '7z',
         'zip', 'aif', 'aifc', 'aiff', 'au', 'mp3', 'mpga', 'wav', 'afl', 'avi', 'avs',
-        'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo'
+        'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo', 'glb', 'pcd', 'gltf'
     ] if os.getenv('ALLOWED_DOCUMENT_TYPES') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
 
@@ -1516,6 +1516,16 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
     # MAPSTORE_BASELAYERS_SOURCES allow to configure tilematrix sets for wmts layers
     MAPSTORE_BASELAYERS_SOURCES = os.environ.get('MAPSTORE_BASELAYERS_SOURCES', {})
+
+    MAPSTORE_DEFAULT_LANGUAGES = """(
+        ('de-de', 'Deutsch'),
+        ('en-us', 'English'),
+        ('es-es', 'Español'),
+        ('fr-fr', 'Français'),
+        ('it-it', 'Italiano'),
+    )"""
+
+    LANGUAGES = ast.literal_eval(os.getenv('LANGUAGES', MAPSTORE_DEFAULT_LANGUAGES))
 
 # -- END Client Hooksets Setup
 
