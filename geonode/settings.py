@@ -302,9 +302,25 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
                         os.path.join(PROJECT_ROOT, 'static_root')
                         )
 
+# Cache Bustin Settings: enable WhiteNoise compression and caching support
+# ref: http://whitenoise.evans.io/en/stable/django.html#add-compression-and-caching-support
+CACHE_BUSTING_STATIC_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_STATIC_ENABLED', 'False'))
+
+if not DEBUG and CACHE_BUSTING_STATIC_ENABLED:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# Optionally Use a Content-Delivery Network
+# ref: http://whitenoise.evans.io/en/stable/django.html#use-a-content-delivery-network
+STATIC_HOST = os.environ.get('STATIC_URL', '')
+
 # URL that handles the static files like app media.
 # Example: "http://media.lawrence.com"
-STATIC_URL = os.getenv('STATIC_URL', f'{FORCE_SCRIPT_NAME}/{STATICFILES_LOCATION}/')
+if FORCE_SCRIPT_NAME:
+    STATIC_URL = f"{STATIC_HOST}/{FORCE_SCRIPT_NAME}/{STATICFILES_LOCATION}/"
+else:
+    STATIC_URL = f"{STATIC_HOST}/{STATICFILES_LOCATION}/"
 
 # Additional directories which hold static files
 _DEFAULT_STATICFILES_DIRS = [
@@ -320,38 +336,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-
-# AWS S3 Settings
-S3_STATIC_ENABLED = ast.literal_eval(os.environ.get('S3_STATIC_ENABLED', 'False'))
-S3_MEDIA_ENABLED = ast.literal_eval(os.environ.get('S3_MEDIA_ENABLED', 'False'))
-
-# Required to run Sync Media to S3
-AWS_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
-
-AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
-AWS_S3_BUCKET_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-
-AWS_QUERYSTRING_AUTH = False
-if not DEBUG and S3_STATIC_ENABLED:
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    STATIC_URL = f"https://{AWS_S3_BUCKET_DOMAIN}/{STATICFILES_LOCATION}/"
-
-if not DEBUG and S3_MEDIA_ENABLED:
-    MEDIAFILES_LOCATION = 'media'
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    MEDIA_URL = f"https://{AWS_S3_BUCKET_DOMAIN}/{MEDIAFILES_LOCATION}/"
-
-# Cache Bustin Settings
-CACHE_BUSTING_STATIC_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_STATIC_ENABLED', 'False'))
-
-if not DEBUG and not S3_STATIC_ENABLED and not S3_MEDIA_ENABLED:
-    if CACHE_BUSTING_STATIC_ENABLED:
-        from django.contrib.staticfiles import storage
-        storage.ManifestStaticFilesStorage.manifest_strict = False
-    if CACHE_BUSTING_STATIC_ENABLED:
-        STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
@@ -626,7 +610,7 @@ except ValueError:
         'bm', 'bmp', 'dwg', 'dxf', 'fif', 'gif', 'jpg', 'jpe', 'jpeg', 'png', 'tif',
         'tiff', 'pbm', 'odp', 'ppt', 'pptx', 'pdf', 'tar', 'tgz', 'rar', 'gz', '7z',
         'zip', 'aif', 'aifc', 'aiff', 'au', 'mp3', 'mpga', 'wav', 'afl', 'avi', 'avs',
-        'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo'
+        'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo', 'glb', 'pcd', 'gltf'
     ] if os.getenv('ALLOWED_DOCUMENT_TYPES') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
 
@@ -774,6 +758,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',   # ref to: http://whitenoise.evans.io/en/stable/django.html#enable-whitenoise
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
     'geonode.base.middleware.MaintenanceMiddleware',
@@ -1531,6 +1516,16 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
     # MAPSTORE_BASELAYERS_SOURCES allow to configure tilematrix sets for wmts layers
     MAPSTORE_BASELAYERS_SOURCES = os.environ.get('MAPSTORE_BASELAYERS_SOURCES', {})
+
+    MAPSTORE_DEFAULT_LANGUAGES = """(
+        ('de-de', 'Deutsch'),
+        ('en-us', 'English'),
+        ('es-es', 'Español'),
+        ('fr-fr', 'Français'),
+        ('it-it', 'Italiano'),
+    )"""
+
+    LANGUAGES = ast.literal_eval(os.getenv('LANGUAGES', MAPSTORE_DEFAULT_LANGUAGES))
 
 # -- END Client Hooksets Setup
 
