@@ -130,6 +130,7 @@ def geoserver_create_style(
     """
     Sets or create styles from Upload Session.
     """
+    from geonode.geoserver.signals import geoserver_automatic_default_style_set
     instance = None
     try:
         instance = Dataset.objects.get(id=instance_id)
@@ -140,8 +141,8 @@ def geoserver_create_style(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True and instance:
+            f = None
             if sld_file and os.path.exists(sld_file) and os.access(sld_file, os.R_OK):
-                f = None
                 if os.path.isfile(sld_file):
                     try:
                         f = open(sld_file)
@@ -179,6 +180,9 @@ def geoserver_create_style(
                     get_sld_for(gs_catalog, instance)
             else:
                 get_sld_for(gs_catalog, instance)
+            if not f:
+                # this signal is used by the mapstore client to set the style in visual mode
+                geoserver_automatic_default_style_set.send_robust(sender=instance, instance=instance)
 
 
 @app.task(
