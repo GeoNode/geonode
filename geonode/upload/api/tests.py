@@ -49,7 +49,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from geonode.base import enumerations
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.upload.models import UploadSizeLimit
+from geonode.upload.models import Upload, UploadSizeLimit
 
 GEONODE_USER = 'admin'
 GEONODE_PASSWD = 'admin'
@@ -468,6 +468,28 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             # Pagination
             self.assertEqual(len(response.data['uploads']), 0)
             logger.debug(response.data)
+
+    def test_upload_temp_folder_deleted(self):
+        """
+        Ensure that temp folders are deleted on deleting a resource
+        """
+        # Try to upload a good raster file and check the session IDs
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        resp, data = self.rest_upload_file(fname)
+        self.assertEqual(resp.status_code, 201)
+        resource_id = data['url'].split('/')[-1]
+        upload = Upload.objects.get(resource_id=resource_id)
+        # temp folder is deleted after successful upload
+        self.assertFalse(os.path.exists(upload.upload_dir))
+
+        # delete resource with temp foler
+        delete_resource_url = reverse('base-resources-detail', kwargs={'pk': resource_id})
+        os.mkdir(upload.upload_dir, mode=777)
+        self.assertTrue(os.path.exists(upload.upload_dir))
+
+        response = self.client.delete(f"{delete_resource_url}/delete")
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(os.path.exists(upload.upload_dir))
 
     @mock.patch("geonode.upload.forms.forms.ValidationError")
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
