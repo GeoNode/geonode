@@ -18,6 +18,8 @@
 #########################################################################
 import copy
 import json
+import os
+import shutil
 import typing
 import logging
 import importlib
@@ -285,9 +287,11 @@ class ResourceManager(ResourceManagerInterface):
                             if 'geonode.upload' in settings.INSTALLED_APPS and \
                                     settings.UPLOADER['BACKEND'] == 'geonode.importer':
                                 from geonode.upload.models import Upload
-                                # Need to call delete one by one in ordee to invoke the
+                                # Need to call delete one by one in order to invoke the
                                 #  'delete' overridden method
                                 for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
+                                    if upload.upload_dir and os.path.exists(upload.upload_dir):
+                                        shutil.rmtree(upload.upload_dir)
                                     upload.delete()
                         except Exception as e:
                             logger.exception(e)
