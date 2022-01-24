@@ -1,4 +1,4 @@
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models
 from geonode.geoserver.tasks import geoserver_create_style
@@ -42,8 +42,10 @@ class TasksTest(GeoNodeBaseTestSupport):
         handler = create_autospec(self.mock_signal_callback)
 
         geoserver_automatic_default_style_set.connect(handler)
-        geoserver_create_style(dataset.id, dataset.name,  sld_file=sld_file, tempdir=None)
-        self.assertEqual(handler.call_count, 0)
+        with patch('geoserver.catalog.Catalog.get_style') as style_mck:
+            style_mck.return_value = True
+            geoserver_create_style(dataset.id, dataset.name,  sld_file=sld_file, tempdir=None)
+            self.assertEqual(handler.call_count, 0)
 
     def test_geoserver_style_visual_mode_automatically_without_sld_file(self):
         dataset = Dataset.objects.first()
