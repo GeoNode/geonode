@@ -127,7 +127,7 @@ class AsynchronousHarvestingSessionAdminTestCase(GeoNodeBaseTestSupport):
         }
         response = self.client.post(reverse('admin:harvesting_harvester_add'), data, follow=True)
         print(response.redirect_chain)
-        self.assertRedirects(response, "/en/admin/login/?next=/en/admin/harvesting/harvester/add/")
+        self.assertRedirects(response, "/en-us/admin/login/?next=/en-us/admin/harvesting/harvester/add/")
 
 
 class HarvestableResourceAdminTestCase(GeoNodeBaseTestSupport):

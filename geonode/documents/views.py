@@ -114,6 +114,7 @@ def document_embed(request, docid):
             imageurl = reverse('document_link', args=(document.id,))
         context_dict = {
             "image_url": imageurl,
+            "resource": document.get_self_resource(),
         }
         return render(
             request,
@@ -123,7 +124,15 @@ def document_embed(request, docid):
     if document.doc_url:
         return HttpResponseRedirect(document.doc_url)
     else:
-        return get_download_response(request, docid)
+        context_dict = {
+            "document_link": reverse('document_link', args=(document.id,)),
+            "resource": document.get_self_resource(),
+        }
+        return render(
+            request,
+            "documents/document_embed.html",
+            context_dict
+        )
 
 
 class DocumentUploadView(CreateView):
