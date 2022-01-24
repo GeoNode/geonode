@@ -21,7 +21,7 @@ import logging
 from urllib.error import HTTPError
 from geonode.services.enumerations import WMS, INDEXED
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.test import Client
+from django.test import Client, override_settings
 from selenium import webdriver
 from unittest import TestCase as StandardTestCase
 from flaky import flaky
@@ -37,7 +37,7 @@ from owslib.map.wms111 import ContentMetadata
 
 from geonode.layers.models import Layer
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.services.utils import test_resource_table_status
+from geonode.services.utils import test_resource_table_status, parse_services_types, get_service_type_choices
 from . import enumerations, forms
 from .models import HarvestJob, Service
 from .serviceprocessors import (
@@ -935,6 +935,12 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
                 # self.selenium.find_element_by_tag_name('form').submit()
 
 
+SERVICES_TYPE_MODULES = [
+    "geonode.services.tests.dummy_services_type",
+    "geonode.services.tests.dummy_services_type2",
+]
+
+
 class TestServiceViews(GeoNodeBaseTestSupport):
     def setUp(self):
         self.user = 'admin'
@@ -958,3 +964,47 @@ class TestServiceViews(GeoNodeBaseTestSupport):
     def test_anonymous_user_can_see_the_services(self):
         response = self.client.get(reverse('services'))
         self.assertEqual(response.status_code, 200)
+
+    @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
+    def test_will_use_multiple_service_types_defined(self):
+        elems = parse_services_types()
+        expected = {
+            "test": {"OWS": True, "handler": "TestHandler", "label": "Test Number 1", "management_view": "path.to.view1"},
+            "test2": {"OWS": False, "handler": "TestHandler2", "label": "Test Number 2", "management_view": "path.to.view2"},
+            "test3": {"OWS": True, "handler": "TestHandler3", "label": "Test Number 3", "management_view": "path.to.view3"},
+            "test4": {"OWS": False, "handler": "TestHandler4", "label": "Test Number 4", "management_view": "path.to.view4"},
+        }
+        self.assertDictEqual(expected, elems)
+
+    @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
+    def test_will_use_multiple_service_types_defined_for_choices(self):
+        elems = set(get_service_type_choices())
+        expected = {
+            ("test", "Test Number 1"),
+            ("test2", "Test Number 2"),
+            ("test3", "Test Number 3"),
+            ("test4", "Test Number 4"),
+            (enumerations.WMS, 'Web Map Service'),
+            (enumerations.GN_WMS, 'GeoNode (Web Map Service)'),
+            (enumerations.REST_MAP, 'ArcGIS REST MapServer'),
+        }
+        self.assertSetEqual(expected, elems)
+
+
+'''
+Just a dummy function required for the smoke test above
+'''
+
+
+class dummy_services_type:
+    services_type = {
+        "test": {"OWS": True, "handler": "TestHandler", "label": "Test Number 1", "management_view": "path.to.view1"},
+        "test2": {"OWS": False, "handler": "TestHandler2", "label": "Test Number 2", "management_view": "path.to.view2"},
+    }
+
+
+class dummy_services_type2:
+    services_type = {
+        "test3": {"OWS": True, "handler": "TestHandler3", "label": "Test Number 3", "management_view": "path.to.view3"},
+        "test4": {"OWS": False, "handler": "TestHandler4", "label": "Test Number 4", "management_view": "path.to.view4"},
+    }

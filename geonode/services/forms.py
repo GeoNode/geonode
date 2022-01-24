@@ -27,6 +27,7 @@ import taggit
 from . import enumerations
 from .models import Service
 from .serviceprocessors import get_service_handler
+from .utils import get_service_type_choices
 
 logger = logging.getLogger(__name__)
 
@@ -47,18 +48,7 @@ class CreateServiceForm(forms.Form):
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
-        choices=(
-            # (enumerations.AUTO, _('Auto-detect')),
-            # (enumerations.OWS, _('Paired WMS/WFS/WCS')),
-            (enumerations.WMS, _('Web Map Service')),
-            (enumerations.GN_WMS, _('GeoNode (Web Map Service)')),
-            # (enumerations.GN_CSW, _('GeoNode (Catalogue Service)')),
-            # (enumerations.CSW, _('Catalogue Service')),
-            (enumerations.REST_MAP, _('ArcGIS REST MapServer')),
-            # (enumerations.REST_IMG, _('ArcGIS REST ImageServer')),
-            # (enumerations.OGP, _('OpenGeoPortal')),
-            # (enumerations.HGL, _('Harvard Geospatial Library')),
-        ),
+        choices=tuple(get_service_type_choices()),
         initial='AUTO',
     )
 
