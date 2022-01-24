@@ -32,7 +32,7 @@ def get_service_handler(base_url, service_type=enumerations.AUTO):
     If the service type is not explicitly passed in it will be guessed from
     """
     handlers = get_available_service_type()
-    
+
     if service_type in (enumerations.AUTO, enumerations.OWS):
         if service_type == enumerations.AUTO:
             to_check = handlers.keys()

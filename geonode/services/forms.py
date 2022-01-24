@@ -48,7 +48,7 @@ class CreateServiceForm(forms.Form):
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
-        choices=[(k, v["label"]) for k, v in get_available_service_type().items()], #from dictionary to tuple
+        choices=[(k, v["label"]) for k, v in get_available_service_type().items()],  # from dictionary to tuple
         initial='AUTO',
     )
 

@@ -984,14 +984,14 @@ class TestServiceViews(GeoNodeBaseTestSupport):
     def test_will_use_multiple_service_types_defined_for_choices(self):
         elems = get_available_service_type()
         expected = {
-            'WMS':{'OWS': True, 'handler': WmsServiceHandler, 'label': 'Web Map Service'},
-            'GN_WMS':{'OWS': True, 'handler': GeoNodeServiceHandler, 'label': 'GeoNode (Web Map Service)'},
-            'REST_MAP':{'OWS': False, 'handler': ArcMapServiceHandler, 'label': 'ArcGIS REST MapServer'},
-            'REST_IMG':{'OWS': False, 'handler': ArcImageServiceHandler, 'label': 'ArcGIS REST ImageServer'},
-            'test':{'OWS': True, 'handler': 'TestHandler', 'label': 'Test Number 1', 'management_view': 'path.to.view1'},
-            'test2':{'OWS': False, 'handler': 'TestHandler2', 'label': 'Test Number 2', 'management_view': 'path.to.view2'},
-            'test3':{'OWS': True, 'handler': 'TestHandler3', 'label': 'Test Number 3', 'management_view': 'path.to.view3'},
-            'test4':{'OWS': False, 'handler': 'TestHandler4', 'label': 'Test Number 4', 'management_view': 'path.to.view4'}
+            'WMS': {'OWS': True, 'handler': WmsServiceHandler, 'label': 'Web Map Service'},
+            'GN_WMS': {'OWS': True, 'handler': GeoNodeServiceHandler, 'label': 'GeoNode (Web Map Service)'},
+            'REST_MAP': {'OWS': False, 'handler': ArcMapServiceHandler, 'label': 'ArcGIS REST MapServer'},
+            'REST_IMG': {'OWS': False, 'handler': ArcImageServiceHandler, 'label': 'ArcGIS REST ImageServer'},
+            'test': {'OWS': True, 'handler': 'TestHandler', 'label': 'Test Number 1', 'management_view': 'path.to.view1'},
+            'test2': {'OWS': False, 'handler': 'TestHandler2', 'label': 'Test Number 2', 'management_view': 'path.to.view2'},
+            'test3': {'OWS': True, 'handler': 'TestHandler3', 'label': 'Test Number 3', 'management_view': 'path.to.view3'},
+            'test4': {'OWS': False, 'handler': 'TestHandler4', 'label': 'Test Number 4', 'management_view': 'path.to.view4'}
         }
         self.assertDictEqual(expected, elems)
 
