@@ -20,10 +20,13 @@
 import re
 import math
 import logging
+from typing import OrderedDict
 from django.conf import settings as django_settings
 from django.utils.translation import ugettext as _
 
 from geonode.services import enumerations
+from geonode.services.serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler
+from geonode.services.serviceprocessors.wms import GeoNodeServiceHandler, WmsServiceHandler
 
 logger = logging.getLogger(__name__)
 
@@ -181,19 +184,17 @@ def parse_services_types():
     return custom_services_types
 
 
-def get_service_type_choices():
-    parsed = [(key, value["label"]) for key, value in parse_services_types().items()]
-    default = [
-        # (enumerations.AUTO, _('Auto-detect')),
-        # (enumerations.OWS, _('Paired WMS/WFS/WCS')),
-        (enumerations.WMS, _('Web Map Service')),
-        (enumerations.GN_WMS, _('GeoNode (Web Map Service)')),
-        # (enumerations.GN_CSW, _('GeoNode (Catalogue Service)')),
-        # (enumerations.CSW, _('Catalogue Service')),
-        (enumerations.REST_MAP, _('ArcGIS REST MapServer')),
-        # (enumerations.REST_IMG, _('ArcGIS REST ImageServer')),
-        # (enumerations.OGP, _('OpenGeoPortal')),
-        # (enumerations.HGL, _('Harvard Geospatial Library')),
-    ]
+def get_available_service_type():
+    default = OrderedDict({
+        enumerations.WMS: {"OWS": True, "handler": WmsServiceHandler, "label": _('Web Map Service')},
+        enumerations.GN_WMS: {"OWS": True, "handler": GeoNodeServiceHandler, "label": _('GeoNode (Web Map Service)')},
+        # enumerations.WFS: {"OWS": True, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
+        # enumerations.TMS: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
+        enumerations.REST_MAP: {"OWS": False, "handler": ArcMapServiceHandler, "label": _('ArcGIS REST MapServer')},
+        enumerations.REST_IMG: {"OWS": False, "handler": ArcImageServiceHandler, "label": _('ArcGIS REST ImageServer')},
+        # enumerations.CSW: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Catalogue Service')},
+        # enumerations.OGP: {"OWS": True, "handler": ServiceHandlerBase, "label": _('OpenGeoPortal')},  # TODO: verify this
+        # enumerations.HGL: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Harvard Geospatial Library')},  # TODO: verify this
+    })
 
-    return list(set(parsed + default))
+    return OrderedDict({**default, **parse_services_types()})

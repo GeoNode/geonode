@@ -27,7 +27,7 @@ import taggit
 from . import enumerations
 from .models import Service
 from .serviceprocessors import get_service_handler
-from .utils import get_service_type_choices
+from .utils import get_available_service_type
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class CreateServiceForm(forms.Form):
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
-        choices=tuple(get_service_type_choices()),
+        choices=[(k, v["label"]) for k, v in get_available_service_type().items()], #from dictionary to tuple
         initial='AUTO',
     )
 
@@ -71,7 +71,8 @@ class CreateServiceForm(forms.Form):
             try:
                 service_handler = get_service_handler(
                     base_url=url, service_type=service_type)
-            except Exception:
+            except Exception as e:
+                logger.error(f"CreateServiceForm cleaning error: {e}")
                 raise ValidationError(
                     _("Could not connect to the service at %(url)s"),
                     params={"url": url}
