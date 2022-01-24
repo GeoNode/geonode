@@ -175,7 +175,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
                 'X-XSS-Protection': '1; mode=block',
                 'Referrer-Policy': 'same-origin',
                 'X-Frame-Options': 'SAMEORIGIN',
-                'Content-Language': 'en',
+                'Content-Language': 'en-us',
                 'Content-Length': '119',
                 'Content-Disposition': 'attachment; filename="filename.tif"'
             }

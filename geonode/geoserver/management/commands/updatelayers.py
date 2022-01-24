@@ -16,13 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import ast
+import sys
+import traceback
 from django.core.management.base import BaseCommand
 from geonode.people.utils import get_valid_user
 from geonode.geoserver.helpers import gs_slurp
-import traceback
-import sys
-import ast
 
 
 class Command(BaseCommand):
