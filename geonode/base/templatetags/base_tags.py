@@ -92,7 +92,6 @@ def facets(context):
             pass
 
     if facet_type == 'geoapps':
-        facets = {}
         return _facets_geoapps(
             request,
             category_filter,
