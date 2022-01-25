@@ -258,9 +258,10 @@ def purge_geofence_dataset_rules(resource):
                     msg = msg + str(dataset_name)
                     e = Exception(msg)
                     logger.debug(f"Response [{r.status_code}] : {r.text}")
-                    raise e
-    except Exception as e:
-        logger.exception(e)
+                    logger.exception(e)
+    except Exception:
+        tb = traceback.format_exc()
+        logger.debug(tb)
 
 
 def set_geofence_invalidate_cache():
@@ -599,7 +600,7 @@ def sync_resources_with_guardian(resource=None):
                             user = get_user_model().objects.get(username=user)
                             # Set the GeoFence User Rules
                             geofence_user = str(user)
-                            if "AnonymousUser" in geofence_user:
+                            if "AnonymousUser" in geofence_user or get_anonymous_user() in geofence_user:
                                 geofence_user = None
                             sync_geofence_with_guardian(layer, perms, user=geofence_user)
                     # All the other groups

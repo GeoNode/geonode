@@ -23,15 +23,19 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
+import json
+import io
+import zipfile
+
 from urllib.parse import urljoin
 
 from django.conf import settings
 from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
 from django.test.client import RequestFactory
-from unittest.mock import patch
-from geonode.upload.models import Upload
-import json
 from django.core.files.uploadedfile import SimpleUploadedFile
+from unittest.mock import patch
+
+from geonode.upload.models import Upload
 
 try:
     from unittest.mock import MagicMock
@@ -171,7 +175,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
                 'X-XSS-Protection': '1; mode=block',
                 'Referrer-Policy': 'same-origin',
                 'X-Frame-Options': 'SAMEORIGIN',
-                'Content-Language': 'en',
+                'Content-Language': 'en-us',
                 'Content-Length': '119',
                 'Content-Disposition': 'attachment; filename="filename.tif"'
             }
@@ -233,6 +237,46 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
         self.assertEqual('application/zip', response.headers.get('Content-Type'))
         self.assertEqual('attachment; filename="CA.zip"', response.headers.get('Content-Disposition'))
+
+    @patch('geonode.storage.manager.storage_manager.exists')
+    @patch('geonode.storage.manager.storage_manager.open')
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_download_files(self, fopen, fexists):
+        fexists.return_value = True
+        fopen.return_value = SimpleUploadedFile('foo_file.shp', b'scc')
+        dataset = Dataset.objects.all().first()
+
+        dataset.files = [
+            "/tmpe1exb9e9/foo_file.dbf",
+            "/tmpe1exb9e9/foo_file.prj",
+            "/tmpe1exb9e9/foo_file.shp",
+            "/tmpe1exb9e9/foo_file.shx"
+        ]
+
+        dataset.save()
+
+        dataset.refresh_from_db()
+
+        Upload.objects.create(
+            state='COMPLETE',
+            resource=dataset
+        )
+
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('download', args=(dataset.id,)))
+        # headers and status assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('content-type'), "application/zip")
+        self.assertEqual(response.get('content-disposition'), f'attachment; filename="{dataset.name}.zip"')
+        # Inspect content
+        zip_content = io.BytesIO(b"".join(response.streaming_content))
+        zip = zipfile.ZipFile(zip_content)
+        zip_files = zip.namelist()
+        self.assertEqual(len(zip_files), 4)
+        self.assertIn(".shp", "".join(zip_files))
+        self.assertIn(".dbf", "".join(zip_files))
+        self.assertIn(".shx", "".join(zip_files))
+        self.assertIn(".prj", "".join(zip_files))
 
 
 class OWSApiTestCase(GeoNodeBaseTestSupport):

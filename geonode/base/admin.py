@@ -45,7 +45,6 @@ from geonode.base.models import (
     MenuPlaceholder,
     Menu,
     MenuItem,
-    CuratedThumbnail,
     Configuration,
     Thesaurus, ThesaurusLabel, ThesaurusKeyword, ThesaurusKeywordLabel,
 )
@@ -224,11 +223,6 @@ class MenuItemAdmin(admin.ModelAdmin):
     list_display = ('title', 'menu', 'order', 'blank_target', 'url')
 
 
-class CuratedThumbnailAdmin(admin.ModelAdmin):
-    model = CuratedThumbnail
-    list_display = ('id', 'resource', 'img', 'img_thumbnail')
-
-
 class ConfigurationAdmin(admin.ModelAdmin):
     model = Configuration
 
@@ -342,7 +336,6 @@ admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 admin.site.register(MenuPlaceholder, MenuPlaceholderAdmin)
 admin.site.register(Menu, MenuAdmin)
 admin.site.register(MenuItem, MenuItemAdmin)
-admin.site.register(CuratedThumbnail, CuratedThumbnailAdmin)
 admin.site.register(Configuration, ConfigurationAdmin)
 admin.site.register(Thesaurus, ThesaurusAdmin)
 admin.site.register(ThesaurusLabel, ThesaurusLabelAdmin)

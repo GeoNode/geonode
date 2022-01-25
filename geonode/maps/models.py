@@ -16,15 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import ast
 import json
 import logging
-import uuid
 
 from deprecated import deprecated
-from django.conf import settings
-from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
@@ -33,38 +28,18 @@ from django.utils.translation import ugettext_lazy as _
 from geonode import geoserver  # noqa
 from geonode.base.models import ResourceBase
 from geonode.client.hooks import hookset
-from geonode.compat import ensure_string
 from geonode.layers.models import Dataset, Style
-from geonode.maps.signals import map_changed_signal
-from geonode.utils import GXPLayerBase, GXPMapBase, check_ogc_backend, dataset_from_viewer_config, default_map_config
+from geonode.utils import check_ogc_backend
 
 logger = logging.getLogger("geonode.maps.models")
 
 
-class Map(ResourceBase, GXPMapBase):
+class Map(ResourceBase):
 
     """
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
     """
-
-    # viewer configuration
-    zoom = models.IntegerField(_("zoom"), null=True, blank=True)
-    # The zoom level to use when initially loading this map.  Zoom levels start
-    # at 0 (most zoomed out) and each increment doubles the resolution.
-
-    projection = models.CharField(_("projection"), max_length=32, null=True, blank=True)
-    # The projection used for this map.  This is stored as a string with the
-    # projection's SRID.
-
-    center_x = models.FloatField(_("center X"), null=True, blank=True)
-    # The x coordinate to center on when loading this map.  Its interpretation
-    # depends on the projection.
-
-    center_y = models.FloatField(_("center Y"), null=True, blank=True)
-    # The y coordinate to center on when loading this map.  Its interpretation
-    # depends on the projection.
-
     last_modified = models.DateTimeField(auto_now_add=True)
     # The last time the map was modified.
 
@@ -79,20 +54,7 @@ class Map(ResourceBase, GXPMapBase):
         return f'{self.title} by {(self.owner.username if self.owner else "<Anonymous>")}'
 
     @property
-    def center(self):
-        """
-        A handy shortcut for the center_x and center_y properties as a tuple
-        (read only)
-        """
-        return (self.center_x, self.center_y)
-
-    @property
     def datasets(self):
-        layers = MapLayer.objects.filter(map=self.id)
-        return [layer for layer in layers]
-
-    @property
-    def local_datasets(self):
         dataset_names = MapLayer.objects.filter(map__id=self.id).values("name")
         return Dataset.objects.filter(alternate__in=dataset_names) | Dataset.objects.filter(name__in=dataset_names)
 
@@ -139,84 +101,6 @@ class Map(ResourceBase, GXPMapBase):
 
         return json.dumps(map_config)
 
-    def update_from_viewer(self, conf, context=None):
-        """
-        Update this Map's details by parsing a JSON object as produced by
-        a GXP Viewer.
-
-        This method automatically persists to the database!
-        """
-
-        template_name = hookset.update_from_viewer(conf, context=context)
-        if not isinstance(context, dict):
-            try:
-                context = json.loads(ensure_string(context))
-            except Exception:
-                pass
-
-        conf = context.get("config", {})
-        if not isinstance(conf, dict) or isinstance(conf, bytes):
-            try:
-                conf = json.loads(ensure_string(conf))
-            except Exception:
-                conf = {}
-
-        about = conf.get("about", {})
-        self.title = conf.get("title", about.get("title", ""))
-        self.abstract = conf.get("abstract", about.get("abstract", ""))
-
-        _map = conf.get("map", {})
-        center = _map.get("center", settings.DEFAULT_MAP_CENTER)
-        self.zoom = _map.get("zoom", settings.DEFAULT_MAP_ZOOM)
-
-        if isinstance(center, dict):
-            self.center_x = center.get("x")
-            self.center_y = center.get("y")
-        else:
-            self.center_x, self.center_y = center
-
-        projection = _map.get("projection", settings.DEFAULT_MAP_CRS)
-        bbox = _map.get("bbox", None)
-
-        if bbox:
-            self.set_bounds_from_bbox(bbox, projection)
-        else:
-            self.set_bounds_from_center_and_zoom(self.center_x, self.center_y, self.zoom)
-
-        if self.projection is None or self.projection == "":
-            self.projection = projection
-
-        if self.uuid is None or self.uuid == "":
-            self.uuid = str(uuid.uuid1())
-
-        def source_for(layer):
-            try:
-                return conf["sources"][layer["source"]]
-            except Exception:
-                if "url" in layer:
-                    return {"url": layer["url"]}
-                else:
-                    return {}
-
-        layers = [lyr for lyr in _map.get("layers", [])]
-        dataset_names = {lyr.alternate for lyr in self.local_datasets}
-
-        self.maplayers.all().delete()
-        self.keywords.add(*_map.get("keywords", []))
-
-        for ordering, layer in enumerate(layers):
-            self.maplayers.add(dataset_from_viewer_config(self.id, MapLayer, layer, source_for(layer), ordering))
-
-        from geonode.resource.manager import resource_manager
-
-        resource_manager.update(self.uuid, instance=self, notify=True)
-        resource_manager.set_thumbnail(self.uuid, instance=self, overwrite=False)
-
-        if dataset_names != {lyr.alternate for lyr in self.local_datasets}:
-            map_changed_signal.send_robust(sender=self, what_changed="datasets")
-
-        return template_name
-
     def keyword_list(self):
         keywords_qs = self.keywords.all()
         if keywords_qs:
@@ -249,56 +133,6 @@ class Map(ResourceBase, GXPMapBase):
                 bbox[3] = max(bbox[3], dataset_bbox[3])
 
         return bbox
-
-    def create_from_dataset_list(self, user, layers, title, abstract):
-        self.owner = user
-        self.title = title
-        self.abstract = abstract
-        self.projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
-        self.zoom = 0
-        self.center_x = 0
-        self.center_y = 0
-
-        if self.uuid is None or self.uuid == "":
-            self.uuid = str(uuid.uuid1())
-
-        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(None)
-
-        _datasets = []
-        for layer in layers:
-            if not isinstance(layer, Dataset):
-                try:
-                    layer = Dataset.objects.get(alternate=layer)
-                except ObjectDoesNotExist:
-                    raise Exception(f"Could not find layer with name {layer}")
-
-            if not user.has_perm("base.view_resourcebase", obj=layer.resourcebase_ptr):
-                # invisible layer, skip inclusion or raise Exception?
-                logger.error(f"User {user} tried to create a map with layer {layer} without having premissions")
-            else:
-                _datasets.append(layer)
-
-        # Set bounding box based on all layers extents.
-        # bbox format: [xmin, xmax, ymin, ymax]
-        bbox = self.get_bbox_from_datasets(_datasets)
-        self.set_bounds_from_bbox(bbox, self.projection)
-
-        # Save the map in order to create an id in the database
-        # used below for the maplayers.
-        self.save()
-
-        if _datasets and len(_datasets) > 0:
-            index = 0
-            for layer in _datasets:
-                MapLayer.objects.create(
-                    map=self, name=layer.alternate, ows_url=layer.get_ows_url(), stack_order=index, visibility=True
-                )
-                index += 1
-
-        # Save again to persist the zoom and bbox changes and
-        # to generate the thumbnail.
-        self.set_missing_info()
-        self.save(notify=True)
 
     @property
     def sender(self):
@@ -381,7 +215,7 @@ class Map(ResourceBase, GXPMapBase):
         pass
 
 
-class MapLayer(models.Model, GXPLayerBase):
+class MapLayer(models.Model):
 
     """
     The MapLayer model represents a layer included in a map.  This doesn't just
@@ -401,14 +235,6 @@ class MapLayer(models.Model, GXPLayerBase):
     # will be the "msid", which is set by the client to match the maplayer with
     # the layer inside the mapconfig blob.
 
-    stack_order = models.IntegerField(_("stack order"), default=0, blank=True)
-    # The z-index of this layer in the map; layers with a higher stack_order will
-    # be drawn on top of others.
-
-    format = models.TextField(_("format"), null=True, blank=True)
-    # The content_type of the image format to use for tiles (image/png, image/jpeg,
-    # image/gif...)
-
     name = models.TextField(_("name"), null=True, blank=True)
     # The name of the layer to load.
 
@@ -418,91 +244,20 @@ class MapLayer(models.Model, GXPLayerBase):
     # has a fixed set of names, WMS services publish a list of available layers
     # in their capabilities documents, etc.)
 
-    opacity = models.FloatField(_("opacity"), default=1.0, blank=True)
-    # The opacity with which to render this layer, on a scale from 0 to 1.
-
-    styles = models.TextField(_("styles"), null=True, blank=True)
-    # The name of the style to use for this layer (only useful for WMS layers.)
-
     current_style = models.TextField(_("current style"), null=True, blank=True)
-    # `styles` stores a list of styles as a string, here in `current_style` we store the selected style.
-
-    transparent = models.BooleanField(_("transparent"), default=False, blank=True)
-    # A boolean value, true if we should request tiles with a transparent
-    # background.
-
-    fixed = models.BooleanField(_("fixed"), default=False, blank=True)
-    # A boolean value, true if we should prevent the user from dragging and
-    # dropping this layer in the layer chooser.
-
-    group = models.TextField(_("group"), null=True, blank=True)
-    # A group label to apply to this layer.  This affects the hierarchy displayed
-    # in the map viewer's layer tree.
+    # Here in `current_style` we store the selected style.
 
     ows_url = models.URLField(_("ows URL"), null=True, blank=True)
     # The URL of the OWS service providing this layer, if any exists.
 
-    visibility = models.BooleanField(_("visibility"), default=True, blank=True)
-    # A boolean value, true if this layer should be visible when the map loads.
-
-    dataset_params = models.TextField(_("dataset params"), default="{}", blank=True)
-    # A JSON-encoded dictionary of arbitrary parameters for the layer itself when
-    # passed to the GXP viewer.
-
-    # If this dictionary conflicts with options that are stored in other fields
-    # (such as format, styles, etc.) then the fields override.
-
-    source_params = models.TextField(_("source params"), default="{}", blank=True)
-    # A JSON-encoded dictionary of arbitrary parameters for the GXP layer source
-    # configuration for this layer.
-
-    # If this dictionary conflicts with options that are stored in other fields
-    # (such as ows_url) then the fields override.
-
     local = models.BooleanField(default=False, blank=True)
     # True if this layer is served by the local geoserver
 
-    def dataset_config(self, user=None):
-        # Try to use existing user-specific cache of layer config
-        if self.id:
-            cfg = cache.get(f"dataset_config{str(self.id)}_{str(0 if user is None else user.id)}")
-            if cfg is not None:
-                return cfg
-
-        cfg = GXPLayerBase.dataset_config(self, user=user)
-        # if this is a local layer, get the attribute configuration that
-        # determines display order & attribute labels
-        layer = self.dataset
-        if layer:
-            try:
-                attribute_cfg = layer.attribute_config()
-                if "ftInfoTemplate" in attribute_cfg:
-                    cfg["ftInfoTemplate"] = attribute_cfg["ftInfoTemplate"]
-                if "getFeatureInfo" in attribute_cfg:
-                    cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
-                if not user.has_perm("base.view_resourcebase", obj=layer.resourcebase_ptr):
-                    cfg["disabled"] = True
-                    cfg["visibility"] = False
-            except Exception:
-                # shows maplayer with pink tiles,
-                # and signals that there is problem
-                # TODO: clear orphaned MapLayers
-                layer = None
-
-        if self.id:
-            # Create temporary cache of maplayer config, should not last too long in case
-            # local layer permissions or configuration values change (default
-            # is 5 minutes)
-            cache.set(f"dataset_config{str(self.id)}_{str(0 if user is None else user.id)}", cfg)
-        return cfg
-
-    @property
-    def styles_set(self):
-        styles = ast.literal_eval(self.styles) if isinstance(self.styles, str) else self.styles
-        return styles
-
     @property
     def dataset_title(self):
+        """
+            Used by geonode/maps/templates/maps/map_download.html
+        """
         if self.dataset:
             title = self.dataset.title
         else:
@@ -511,6 +266,9 @@ class MapLayer(models.Model, GXPLayerBase):
 
     @property
     def local_link(self):
+        """
+            Used by geonode/maps/templates/maps/map_download.html
+        """
         layer = self.dataset if self.local else None
         if layer:
             link = f'<a href="{layer.get_absolute_url()}">{layer.title}</a>'
@@ -520,31 +278,25 @@ class MapLayer(models.Model, GXPLayerBase):
 
     @property
     def get_legend(self):
-        try:
-            dataset_params = json.loads(self.dataset_params)
-
-            capability = dataset_params.get("capability", {})
-            # Use '' to represent default layer style
-            style_name = capability.get("style", "")
-            href = None
-            dataset_obj = self.dataset
-            if dataset_obj:
-                if ":" in style_name:
-                    style_name = style_name.split(":")[1]
-                elif dataset_obj.default_style:
-                    style_name = dataset_obj.default_style.name
-                href = dataset_obj.get_legend_url(style_name=style_name)
-                style = Style.objects.filter(name=style_name).first()
-                if style:
-                    # replace map-legend display name if style has a title
-                    style_name = style.sld_title or style_name
-            return {style_name: href}
-        except Exception as e:
-            logger.exception(e)
+        # Get style name or return None
+        if self.dataset and self.dataset.default_style:
+            style_name = self.dataset.default_style.name
+        elif self.current_style and ":" in self.current_style:
+            style_name = self.current_style.split(":")[1]
+        elif self.current_style:
+            style_name = self.current_style
+        else:
             return None
 
+        href = self.dataset.get_legend_url(style_name=style_name)
+        style = Style.objects.filter(name=style_name).first()
+        if style:
+            # replace map-legend display name if style has a title
+            style_name = style.sld_title or style_name
+        return {style_name: href}
+
     class Meta:
-        ordering = ["stack_order"]
+        ordering = ["-pk"]
 
     def __str__(self):
         return f"{self.ows_url}?datasets={self.name}"

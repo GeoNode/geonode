@@ -40,7 +40,7 @@ from django.db.models.fields.json import JSONField
 from django.utils.functional import cached_property, classproperty
 from django.contrib.gis.geos import Polygon, Point
 from django.contrib.gis.db.models import PolygonField
-from django.core.exceptions import SuspiciousFileOperation, ValidationError
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.templatetags.static import static
@@ -48,9 +48,6 @@ from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image, ImageOps
-
-from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
 
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
@@ -88,10 +85,7 @@ from geonode.notifications_helper import (
     get_notification_recipients)
 from geonode.people.enumerations import ROLE_VALUES
 
-from pyproj import transform, Proj
-
 from urllib.parse import urlsplit, urljoin
-from imagekit.cachefiles.backends import Simple
 from geonode.storage.manager import storage_manager
 
 logger = logging.getLogger(__name__)
@@ -1428,7 +1422,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             return ''
 
     def get_absolute_url(self):
-        return self.get_real_instance().get_absolute_url()
+        try:
+            return self.get_real_instance().get_absolute_url()
+        except Exception as e:
+            logger.exception(e)
+            return None
 
     def set_bbox_polygon(self, bbox, srid):
         """
@@ -1462,49 +1460,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             except Exception as e:
                 logger.error(e)
                 self.ll_bbox_polygon = bbox_polygon
-
-    def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
-        """
-        Calculate zoom level and center coordinates in mercator.
-        """
-        self.center_x = center_x
-        self.center_y = center_y
-        self.zoom = zoom
-
-        deg_len_equator = 40075160.0 / 360.0
-
-        # covert center in lat lon
-        def get_lon_lat():
-            wgs84 = Proj(init='epsg:4326')
-            mercator = Proj(init='epsg:3857')
-            lon, lat = transform(mercator, wgs84, center_x, center_y)
-            return lon, lat
-
-        # calculate the degree length at this latitude
-        def deg_len():
-            lon, lat = get_lon_lat()
-            return math.cos(lat) * deg_len_equator
-
-        lon, lat = get_lon_lat()
-
-        # taken from http://wiki.openstreetmap.org/wiki/Zoom_levels
-        # it might be not precise but enough for the purpose
-        distance_per_pixel = 40075160 * math.cos(lat) / 2 ** (zoom + 8)
-
-        # calculate the distance from the center of the map in degrees
-        # we use the calculated degree length on the x axis and the
-        # normal degree length on the y axis assumin that it does not change
-
-        # Assuming a map of 1000 px of width and 700 px of height
-        distance_x_degrees = distance_per_pixel * 500.0 / deg_len()
-        distance_y_degrees = distance_per_pixel * 350.0 / deg_len_equator
-
-        bbox_x0 = lon - distance_x_degrees
-        bbox_x1 = lon + distance_x_degrees
-        bbox_y0 = lat - distance_y_degrees
-        bbox_y1 = lat + distance_y_degrees
-        self.srid = 'EPSG:4326'
-        self.set_bbox_polygon((bbox_x0, bbox_y0, bbox_x1, bbox_y1), self.srid)
 
     def set_bounds_from_bbox(self, bbox, srid):
         """
@@ -2020,32 +1975,6 @@ class MenuItem(models.Model):
             ('menu', 'title'),
         )
         ordering = ['order']
-
-
-class CuratedThumbnail(models.Model):
-    resource = models.OneToOneField(ResourceBase, on_delete=models.CASCADE)
-    img = models.ImageField(upload_to='curated_thumbs', storage=storage_manager)
-    # TOD read thumb size from settings
-    img_thumbnail = ImageSpecField(source='img',
-                                   cachefile_storage=storage_manager,
-                                   processors=[ResizeToFill(240, 180)],
-                                   format='PNG',
-                                   options={'quality': 60})
-
-    @property
-    def thumbnail_url(self):
-        try:
-            if not Simple()._exists(self.img_thumbnail):
-                Simple().generate(self.img_thumbnail, force=True)
-        except SuspiciousFileOperation:
-            '''
-            we must rely to the storage_manager, if the storage is changed, we will ignore this
-            '''
-            return ''
-        except Exception as e:
-            logger.exception(e)
-
-        return self.img_thumbnail.url or ''
 
 
 class Configuration(SingletonModel):

@@ -22,7 +22,11 @@ import uuid
 
 from unittest.mock import patch, PropertyMock, MagicMock
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Polygon
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
+from geonode.resource.manager import resource_manager
 
 from geonode.thumbs import utils
 from geonode.thumbs import thumbnails
@@ -113,14 +117,14 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         new_upload_path = utils.get_unique_upload_path(thumbnail_name)
         self.assertNotEqual(upload_path, new_upload_path)
 
-    @patch("geonode.maps.models.Map.datasets", new_callable=PropertyMock)
+    @patch("geonode.maps.models.Map.maplayers", new_callable=PropertyMock)
     def test_generate_thumbnail_name_map_empty(self, layers_mock):
         layers_mock.return_value = []
 
         map_name = thumbnails._generate_thumbnail_name(Map.objects.first())
         self.assertIsNone(map_name, "Map name for maps without layers should return None.")
 
-    @patch("geonode.maps.models.Map.datasets", new_callable=PropertyMock)
+    @patch("geonode.maps.models.Map.maplayers", new_callable=PropertyMock)
     @patch("geonode.maps.models.Map.uuid", new_callable=PropertyMock)
     def test_generate_thumbnail_name_map(self, uuid_mock, layers_mock):
 
@@ -130,6 +134,36 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         map_name = thumbnails._generate_thumbnail_name(Map.objects.first())
         self.assertIsNotNone(
             re.match(f"map-{self.re_uuid}-thumb.png", map_name, re.I), "Map name should meet a provided pattern"
+        )
+
+    def test_generate_thumbnail_name_document(self):
+        doc = resource_manager.create(
+            None,
+            resource_type=Document,
+            defaults=dict(
+                doc_url="http://geonode.org/map.pdf",
+                owner=get_user_model().objects.get(username='admin'),
+                title="Test doc",
+            ))
+        name = thumbnails._generate_thumbnail_name(doc)
+        self.assertIsNotNone(
+            re.match(f"document-{self.re_uuid}-thumb.png", name, re.I), "Document name should meet a provided pattern"
+        )
+
+    def test_generate_thumbnail_name_geoapp(self):
+
+        geo_app = resource_manager.create(
+            None,
+            resource_type=GeoApp,
+            defaults=dict(
+                title="Test GeoApp",
+                owner=get_user_model().objects.get(username='admin'),
+                blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}'
+            )
+        )
+        name = thumbnails._generate_thumbnail_name(geo_app)
+        self.assertIsNotNone(
+            re.match(f"geoapp-{self.re_uuid}-thumb.png", name, re.I), "GeoApp name should meet a provided pattern"
         )
 
     def test_datasets_locations_dataset(self):
@@ -165,11 +199,8 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         MapLayer(
             map=map,
             name="Meteorite_Landings_from_NASA_Open_Data_Portal1",
-            stack_order=1,
-            visibility=True,
+            current_style="test_style",
             ows_url="https://maps.geo-solutions.it/geoserver/wms",
-            dataset_params="""{\"id\": 1, \"title\": \"Open Street Map\", \"style\": \"test_style\", \"type\": \"osm\", \"singleTile\": false, \"dimensions\": [], \"hideLoading\": false,
-            \"handleClickOnLayer\": false, \"useForElevation\": false, \"hidden\": false, \"extraParams\": {\"msId\": \"mapnik__0\"}, \"wrapDateLine\": true, \"displayOutsideMaxExtent\": true}"""
         ).save()
         locations, bbox = thumbnails._datasets_locations(map)
 
@@ -193,9 +224,9 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             [
                 settings.GEOSERVER_LOCATION,
                 [
-                    'geonode:theaters_nyc',
+                    'rt_geologia.dbg_risorse_minerarie',
                     'geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1',
-                    'rt_geologia.dbg_risorse_minerarie'
+                    'geonode:theaters_nyc',
                 ],
                 []
             ]

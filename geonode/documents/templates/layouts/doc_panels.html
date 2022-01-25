@@ -291,7 +291,7 @@ span.grippy::after {
                                         const image = document.getElementById('image');
                                         const path = location.pathname.split('/');
                                         const id = path[path.length - 2];
-                                        const prefetch_url = "{{ resource.curatedthumbnail.thumbnail_url|default:resource.thumbnail_url }}";
+                                        const prefetch_url = "{{ resource.thumbnail_url }}";
                                         const c_widget = new CropWidget(image,
                                             parseInt(
                                                 id

@@ -19,6 +19,7 @@
 import sys
 import json
 import logging
+import re
 
 from PIL import Image
 from io import BytesIO
@@ -28,7 +29,7 @@ from unittest.mock import patch
 from urllib.parse import urljoin
 
 from django.urls import reverse
-from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
@@ -40,7 +41,6 @@ from geonode.base import enumerations
 from geonode.groups.models import GroupProfile
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.base.models import (
-    CuratedThumbnail,
     HierarchicalKeyword,
     Region,
     ResourceBase,
@@ -325,6 +325,94 @@ class BaseApiTests(APITestCase):
         self.assertTrue(self.client.login(username='norman', password='norman'))
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
+
+        # test 'tkeywords'
+        try:
+            for _tkw in ThesaurusKeyword.objects.filter(pk__gte=34):
+                resource.tkeywords.add(_tkw)
+            self.assertEqual(6, resource.tkeywords.count())
+            # Admin
+            self.assertTrue(self.client.login(username='admin', password='admin'))
+            response = self.client.get(f"{url}/{resource.id}/", format='json')
+            self.assertIsNotNone(response.data['resource']['tkeywords'])
+            self.assertEqual(6, len(response.data['resource']['tkeywords']))
+            self.assertListEqual(
+                [
+                    {
+                        'name': '',
+                        'slug': 'http-inspire-ec-europa-eu-theme-37',
+                        'uri': 'http://inspire.ec.europa.eu/theme#37',
+                        'thesaurus': {
+                            'name': 'GEMET - INSPIRE themes, version 1.0',
+                            'slug': 'inspire-theme',
+                            'uri': 'http://inspire.ec.europa.eu/theme'
+                        },
+                        'i18n': {}
+                    },
+                    {
+                        'name': '',
+                        'slug': 'http-localhost-8001-thesaurus-no-about-thesauro-38',
+                        'uri': 'http://localhost:8001//thesaurus/no-about-thesauro#38',
+                        'thesaurus': {
+                            'name': 'Thesauro without the about',
+                            'slug': 'no-about-thesauro',
+                            'uri': ''
+                        },
+                        'i18n': {}
+                    },
+                    {
+                        'name': 'bar_keyword',
+                        'slug': 'http-localhost-8001-thesaurus-no-about-thesauro-bar-keyword',
+                        'uri': 'http://localhost:8001//thesaurus/no-about-thesauro#bar_keyword',
+                        'thesaurus': {
+                            'name': 'Thesauro without the about',
+                            'slug': 'no-about-thesauro', 'uri': ''
+                        },
+                        'i18n': {}
+                    },
+                    {
+                        'name': 'foo_keyword',
+                        'slug': 'http-inspire-ec-europa-eu-theme-foo-keyword',
+                        'uri': 'http://inspire.ec.europa.eu/theme#foo_keyword',
+                        'thesaurus': {
+                            'name': 'GEMET - INSPIRE themes, version 1.0',
+                            'slug': 'inspire-theme',
+                            'uri': 'http://inspire.ec.europa.eu/theme'
+                        },
+                        'i18n': {}
+                    },
+                    {
+                        'name': 'mf',
+                        'slug': 'http-inspire-ec-europa-eu-theme-mf',
+                        'uri': 'http://inspire.ec.europa.eu/theme/mf',
+                        'thesaurus': {
+                            'name': 'GEMET - INSPIRE themes, version 1.0',
+                            'slug': 'inspire-theme',
+                            'uri': 'http://inspire.ec.europa.eu/theme'
+                        },
+                        'i18n': {
+                            'en': 'Meteorological geographical features'
+                        }
+                    },
+                    {
+                        'name': 'us',
+                        'slug': 'http-inspire-ec-europa-eu-theme-us',
+                        'uri': 'http://inspire.ec.europa.eu/theme/us',
+                        'thesaurus': {
+                            'name': 'GEMET - INSPIRE themes, version 1.0',
+                            'slug': 'inspire-theme',
+                            'uri': 'http://inspire.ec.europa.eu/theme'
+                        },
+                        'i18n': {
+                            'en': 'Utility and governmental services'
+                        }
+                    }
+                ],
+                response.data['resource']['tkeywords']
+            )
+        finally:
+            resource.tkeywords.set(ThesaurusKeyword.objects.none())
+            self.assertEqual(0, resource.tkeywords.count())
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
@@ -1047,8 +1135,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.data['total'], 1)
         self.assertEqual(len(response.data['resources']), 1)
 
-    @patch('PIL.Image.open', return_value=test_image)
-    def test_thumbnail_urls(self, img):
+    def test_thumbnail_urls(self):
         """
         Ensure the thumbnail url reflects the current active Thumb on the resource.
         """
@@ -1062,17 +1149,6 @@ class BaseApiTests(APITestCase):
         self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
         thumbnail_url = response.data['resource']['thumbnail_url']
         self.assertIsNone(thumbnail_url)
-
-        f = BytesIO(test_image.tobytes())
-        f.name = 'test_image.jpeg'
-        curated_thumbnail = CuratedThumbnail.objects.create(resource=resource, img=File(f))
-
-        url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
-        thumbnail_url = response.data['resource']['thumbnail_url']
-        self.assertTrue(curated_thumbnail.thumbnail_url in thumbnail_url)
 
     def test_embed_urls(self):
         """
@@ -1237,14 +1313,101 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())
-        # response has link to the response
-        self.assertTrue('link' in response.data['tkeywords'][0].keys())
+        # response has uri to the response
+        self.assertTrue('uri' in response.data['tkeywords'][0].keys())
 
         # Authenticated user
         self.assertTrue(self.client.login(username='bobby', password='bob'))
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], ThesaurusKeyword.objects.count())
+
+    def test_rating_resource(self):
+        resource = Dataset.objects.first()
+        url = reverse('base-resources-ratings', args=[resource.pk])
+        data = {
+            "rating": 3
+        }
+        # Anonymous user
+        response = self.client.get(url)
+        self.assertEqual(response.json()['rating'], 0)
+        self.assertEqual(response.json()['overall_rating'], 0)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 403)
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.get(url)
+        self.assertEqual(response.json()['rating'], 0)
+        self.assertEqual(response.json()['overall_rating'], 0)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.json()['rating'], 3)
+        self.assertEqual(response.json()['overall_rating'], 3.0)
+        self.assertEqual(response.status_code, 200)
+
+        # Authenticated user2
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url)
+        self.assertEqual(response.json()['rating'], 0)
+        self.assertEqual(response.json()['overall_rating'], 3.0)
+        self.assertEqual(response.status_code, 200)
+
+        data['rating'] = 1
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.json()['rating'], 1)
+        self.assertEqual(response.json()['overall_rating'], 2.0)
+        self.assertEqual(response.status_code, 200)
+
+    def test_set_resource_thumbanil(self):
+        re_uuid = "[0-F]{8}-([0-F]{4}-){3}[0-F]{12}"
+        resource = Dataset.objects.first()
+        url = reverse('base-resources-set_thumbnail', args=[resource.pk])
+        data = {"file": "http://localhost:8000/thumb.png"}
+
+        # Anonymous user
+        response = self.client.put(url, data=data, format="json")
+        self.assertEqual(response.status_code, 403)
+
+        # Authenticated user
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        response = self.client.put(url, data=data, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['thumbnail_url'], data['file'])
+        self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, data['file'])
+        # set with invalid image url
+        data = {"file": "invali url"}
+        response = self.client.put(url, data=data, format="json")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), ['file is either a file upload, ASCII byte string or a valid image url string'])
+        # Test with non image url
+        data = {"file": "http://localhost:8000/thumb.txt"}
+        response = self.client.put(url, data=data, format="json")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'The url must be of an image with format (png, jpeg or jpg)')
+
+        # using Base64 data as an ASCII byte string
+        data['file'] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgI\
+        fAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAANSURBVAiZYzAxMfkPAALYAZzx61+bAAAAAElFTkSuQmCC"
+        with patch("geonode.base.models.is_monochromatic_image") as _mck:
+            _mck.return_value = False
+            response = self.client.put(url, data=data, format="json")
+            self.assertEqual(response.status_code, 200)
+            self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.png", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
+            # File upload
+            with patch('PIL.Image.open') as _mck:
+                _mck.return_value = test_image
+                # rest thumbnail_url to None
+                resource.thumbnail_url = None
+                resource.save()
+                self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, None)
+                f = SimpleUploadedFile('test_image.png', BytesIO(test_image.tobytes()).read(), 'image/png')
+                response = self.client.put(url, data={"file": f})
+                self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.png", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
+                self.assertEqual(response.status_code, 200)
 
     def test_set_thumbnail_from_bbox_from_Anonymous_user_raise_permission_error(self):
         """

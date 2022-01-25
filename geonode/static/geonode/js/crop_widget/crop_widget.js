@@ -21,12 +21,12 @@ class ThumbnailService {
 
     postThumbnail(base64_url) {
         const formData = new FormData();
-        formData.append("img", this._b64toBlob(base64_url), 'blob.png');
-        const url = location.origin + '/base/' + String(this.document_id) + '/thumbnail_upload';
+        formData.append("file", this._b64toBlob(base64_url), 'blob.png');
+        const url = location.origin + '/api/v2/resources/' + String(this.document_id) + '/set_thumbnail';
         $.ajax({
             url: url,
             data: formData,
-            type: 'POST',
+            type: 'PUT',
             contentType: false,
             processData: false,
             headers: {

@@ -41,8 +41,11 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
 
+from geonode.thumbs.thumbnails import _generate_thumbnail_name
+from geonode.documents.tasks import create_document_thumbnail
 from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.permissions import (
+    PermSpecCompact,
     VIEW_PERMISSIONS,
     ADMIN_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
@@ -246,54 +249,58 @@ class ResourceManager(ResourceManagerInterface):
     @transaction.atomic
     def delete(self, uuid: str, /, instance: ResourceBase = None) -> int:
         _resource = instance or ResourceManager._get_instance(uuid)
+        uuid = uuid or _resource.uuid
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
                 _resource.set_processing_state(enumerations.STATE_RUNNING)
                 self._concrete_resource_manager.delete(uuid, instance=_resource)
-                if isinstance(_resource.get_real_instance(), Dataset):
-                    """
-                    - Remove any associated style to the layer, if it is not used by other layers.
-                    - Default style will be deleted in post_delete_dataset.
-                    - Remove the layer from any associated map, if any.
-                    - Remove the layer default style.
-                    """
-                    try:
-                        from geonode.maps.models import MapLayer
-                        logger.debug(
-                            "Going to delete associated maplayers for [%s]", _resource.get_real_instance().name)
-                        MapLayer.objects.filter(
-                            name=_resource.get_real_instance().alternate,
-                            ows_url=_resource.get_real_instance().ows_url).delete()
-                    except Exception as e:
-                        logger.exception(e)
+                try:
+                    if isinstance(_resource.get_real_instance(), Dataset):
+                        """
+                        - Remove any associated style to the layer, if it is not used by other layers.
+                        - Default style will be deleted in post_delete_dataset.
+                        - Remove the layer from any associated map, if any.
+                        - Remove the layer default style.
+                        """
+                        try:
+                            from geonode.maps.models import MapLayer
+                            logger.debug(
+                                "Going to delete associated maplayers for [%s]", _resource.get_real_instance().name)
+                            MapLayer.objects.filter(
+                                name=_resource.get_real_instance().alternate,
+                                ows_url=_resource.get_real_instance().ows_url).delete()
+                        except Exception as e:
+                            logger.exception(e)
 
-                    try:
-                        from pinax.ratings.models import OverallRating
-                        ct = ContentType.objects.get_for_model(_resource.get_real_instance())
-                        OverallRating.objects.filter(
-                            content_type=ct,
-                            object_id=_resource.get_real_instance().id).delete()
-                    except Exception as e:
-                        logger.exception(e)
+                        try:
+                            from pinax.ratings.models import OverallRating
+                            ct = ContentType.objects.get_for_model(_resource.get_real_instance())
+                            OverallRating.objects.filter(
+                                content_type=ct,
+                                object_id=_resource.get_real_instance().id).delete()
+                        except Exception as e:
+                            logger.exception(e)
 
-                    try:
-                        if 'geonode.upload' in settings.INSTALLED_APPS and \
-                                settings.UPLOADER['BACKEND'] == 'geonode.importer':
-                            from geonode.upload.models import Upload
-                            # Need to call delete one by one in ordee to invoke the
-                            #  'delete' overridden method
-                            for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
-                                upload.delete()
-                    except Exception as e:
-                        logger.exception(e)
+                        try:
+                            if 'geonode.upload' in settings.INSTALLED_APPS and \
+                                    settings.UPLOADER['BACKEND'] == 'geonode.importer':
+                                from geonode.upload.models import Upload
+                                # Need to call delete one by one in ordee to invoke the
+                                #  'delete' overridden method
+                                for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
+                                    upload.delete()
+                        except Exception as e:
+                            logger.exception(e)
 
-                    try:
-                        _resource.get_real_instance().styles.delete()
-                        _resource.get_real_instance().default_style.delete()
-                    except Exception as e:
-                        logger.debug(f"Error occurred while trying to delete the Dataset Styles: {e}")
+                        try:
+                            _resource.get_real_instance().styles.delete()
+                            _resource.get_real_instance().default_style.delete()
+                        except Exception as e:
+                            logger.debug(f"Error occurred while trying to delete the Dataset Styles: {e}")
+                        self.remove_permissions(_resource.get_real_instance().uuid, instance=_resource.get_real_instance())
+                except Exception as e:
+                    logger.exception(e)
 
-                self.remove_permissions(_resource.get_real_instance().uuid, instance=_resource.get_real_instance())
                 try:
                     if _resource.remote_typename and Service.objects.filter(name=_resource.remote_typename).exists():
                         _service = Service.objects.filter(name=_resource.remote_typename).get()
@@ -309,6 +316,8 @@ class ResourceManager(ResourceManagerInterface):
                 return 1
             except Exception as e:
                 logger.exception(e)
+            finally:
+                ResourceBase.objects.filter(uuid=uuid).delete()
         return 0
 
     def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
@@ -428,47 +437,53 @@ class ResourceManager(ResourceManagerInterface):
             try:
                 _resource = None
                 instance.set_processing_state(enumerations.STATE_RUNNING)
-                with transaction.atomic():
-                    _owner = owner or instance.get_real_instance().owner
-                    _perms = instance.get_real_instance().get_all_level_info()
-                    _resource = copy.copy(instance.get_real_instance())
-                    _resource.pk = _resource.id = None
-                    _resource.uuid = uuid or str(uuid1())
-                    _resource.save()
-                    if isinstance(instance.get_real_instance(), Document):
-                        for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
-                            _resource_link = copy.copy(resource_link)
-                            _resource_link.pk = _resource_link.id = None
-                            _resource_link.document = _resource.get_real_instance()
-                            _resource_link.save()
-                    if isinstance(instance.get_real_instance(), Dataset):
-                        for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
-                            _attribute = copy.copy(attribute)
-                            _attribute.pk = _attribute.id = None
-                            _attribute.dataset = _resource.get_real_instance()
-                            _attribute.save()
-                    if isinstance(instance.get_real_instance(), Map):
-                        for dataset in instance.get_real_instance().datasets:
-                            _dataset = copy.copy(dataset)
-                            _dataset.pk = _dataset.id = None
-                            _dataset.map = _resource.get_real_instance()
-                            _dataset.save()
-                    to_update = storage_manager.copy(_resource).copy()
-                    _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
-                if _resource:
-                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
-                    _resource.save(notify=False)
-                    to_update.update(defaults)
-                    if 'user' in to_update:
-                        to_update.pop('user')
-                    self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
-                    return self.update(_resource.uuid, _resource, vals=to_update)
+                _owner = owner or instance.get_real_instance().owner
+                _perms = copy.copy(instance.get_real_instance().get_all_level_info())
+                _resource = copy.copy(instance.get_real_instance())
+                _resource.pk = _resource.id = None
+                _resource.uuid = uuid or str(uuid1())
+                _resource.save()
+                if isinstance(instance.get_real_instance(), Document):
+                    for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
+                        _resource_link = copy.copy(resource_link)
+                        _resource_link.pk = _resource_link.id = None
+                        _resource_link.document = _resource.get_real_instance()
+                        _resource_link.save()
+                if isinstance(instance.get_real_instance(), Dataset):
+                    for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
+                        _attribute = copy.copy(attribute)
+                        _attribute.pk = _attribute.id = None
+                        _attribute.dataset = _resource.get_real_instance()
+                        _attribute.save()
+                if isinstance(instance.get_real_instance(), Map):
+                    for maplayer in instance.get_real_instance().maplayers.iterator():
+                        _maplayer = copy.copy(maplayer)
+                        _maplayer.pk = _maplayer.id = None
+                        _maplayer.map = _resource.get_real_instance()
+                        _maplayer.save()
+                to_update = storage_manager.copy(_resource).copy()
+                _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
             except Exception as e:
                 logger.exception(e)
+                _resource = None
             finally:
                 instance.set_processing_state(enumerations.STATE_PROCESSED)
                 instance.save(notify=False)
-            resourcebase_post_save(instance.get_real_instance())
+            if _resource:
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                _resource.save(notify=False)
+                to_update.update(defaults)
+                if 'user' in to_update:
+                    to_update.pop('user')
+                # We need to remove any public access to the cloned dataset here
+                if 'users' in _perms and ("AnonymousUser" in _perms['users'] or get_anonymous_user() in _perms['users']):
+                    anonymous_user = "AnonymousUser" if "AnonymousUser" in _perms['users'] else get_anonymous_user()
+                    _perms['users'].pop(anonymous_user)
+                if 'groups' in _perms and ("anonymous" in _perms['groups'] or Group.objects.get(name='anonymous') in _perms['groups']):
+                    anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
+                    _perms['groups'].pop(anonymous_group)
+                self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                return self.update(_resource.uuid, _resource, vals=to_update)
         return instance
 
     def append(self, instance: ResourceBase, vals: dict = {}):
@@ -613,14 +628,19 @@ class ResourceManager(ResourceManagerInterface):
                             ]
                         }
                         """
+                        if PermSpecCompact.validate(permissions):
+                            _permissions = PermSpecCompact(copy.deepcopy(permissions), _resource).extended
+                        else:
+                            _permissions = copy.deepcopy(permissions)
 
                         # default permissions for resource owner
                         _perm_spec = set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
 
                         # Anonymous User group
-                        if 'users' in permissions and "AnonymousUser" in permissions['users']:
+                        if 'users' in _permissions and ("AnonymousUser" in _permissions['users'] or get_anonymous_user() in _permissions['users']):
+                            anonymous_user = "AnonymousUser" if "AnonymousUser" in _permissions['users'] else get_anonymous_user()
                             anonymous_group = Group.objects.get(name='anonymous')
-                            for perm in permissions['users']['AnonymousUser']:
+                            for perm in _permissions['users'][anonymous_user]:
                                 if _resource_type == 'dataset' and perm in (
                                         'change_dataset_data', 'change_dataset_style',
                                         'add_dataset', 'change_dataset', 'delete_dataset'):
@@ -633,10 +653,10 @@ class ResourceManager(ResourceManagerInterface):
                                     _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # All the other users
-                        if 'users' in permissions and len(permissions['users']) > 0:
-                            for user, perms in permissions['users'].items():
+                        if 'users' in _permissions and len(_permissions['users']) > 0:
+                            for user, perms in _permissions['users'].items():
                                 _user = get_user_model().objects.get(username=user)
-                                if _user != _resource.owner and user != "AnonymousUser":
+                                if _user != _resource.owner and user != "AnonymousUser" and user != get_anonymous_user():
                                     for perm in perms:
                                         if _resource_type == 'dataset' and perm in (
                                                 'change_dataset_data', 'change_dataset_style',
@@ -650,8 +670,8 @@ class ResourceManager(ResourceManagerInterface):
                                             _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # All the other groups
-                        if 'groups' in permissions and len(permissions['groups']) > 0:
-                            for group, perms in permissions['groups'].items():
+                        if 'groups' in _permissions and len(_permissions['groups']) > 0:
+                            for group, perms in _permissions['groups'].items():
                                 _group = Group.objects.get(name=group)
                                 for perm in perms:
                                     if _resource_type == 'dataset' and perm in (
@@ -666,10 +686,11 @@ class ResourceManager(ResourceManagerInterface):
                                         _perm_spec["groups"][_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # AnonymousUser
-                        if 'users' in permissions and len(permissions['users']) > 0:
-                            if "AnonymousUser" in permissions['users']:
+                        if 'users' in _permissions and len(_permissions['users']) > 0:
+                            if "AnonymousUser" in _permissions['users'] or get_anonymous_user() in _permissions['users']:
                                 _user = get_anonymous_user()
-                                perms = permissions['users']["AnonymousUser"]
+                                anonymous_user = "AnonymousUser" if "AnonymousUser" in _permissions['users'] else get_anonymous_user()
+                                perms = _permissions['users'][anonymous_user]
                                 for perm in perms:
                                     if _resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
@@ -816,8 +837,16 @@ class ResourceManager(ResourceManagerInterface):
             - Group MEMBERS have always access to the resource, except for the AUTOPUBLISH, where everybody has access to it.
         """
         _resource = instance or ResourceManager._get_instance(uuid)
+
+        _permissions = None
+        if permissions:
+            if PermSpecCompact.validate(permissions):
+                _permissions = PermSpecCompact(copy.deepcopy(permissions), _resource).extended
+            else:
+                _permissions = copy.deepcopy(permissions)
+
         if _resource:
-            perm_spec = permissions or copy.deepcopy(_resource.get_all_level_info())
+            perm_spec = _permissions or copy.deepcopy(_resource.get_all_level_info())
 
             # Sanity checks
             if isinstance(perm_spec, str):
@@ -887,25 +916,26 @@ class ResourceManager(ResourceManagerInterface):
 
             return self._concrete_resource_manager.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=perm_spec)
 
-        return permissions
+        return _permissions
 
-    def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
+    def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True, thumbnail=None) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
-                    if instance and instance.files and isinstance(instance.get_real_instance(), Document):
-                        if overwrite or instance.thumbnail_url == static(MISSING_THUMB):
-                            from geonode.documents.tasks import create_document_thumbnail
-                            create_document_thumbnail.apply((instance.id,))
-                    self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
+                    if thumbnail:
+                        file_name = _generate_thumbnail_name(_resource.get_real_instance())
+                        _resource.save_thumbnail(file_name, thumbnail)
+                    else:
+                        if instance and instance.files and isinstance(instance.get_real_instance(), Document):
+                            if overwrite or instance.thumbnail_url == static(MISSING_THUMB):
+                                create_document_thumbnail.apply((instance.id,))
+                        self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
                 logger.exception(e)
-                _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.set_dirty_state()
         return False
 
 

@@ -24,6 +24,7 @@ from geoserver.layer import Layer as GsLayer
 
 from django.db.models import Q
 from django.templatetags.static import static
+from django.dispatch import Signal
 
 # use different name to avoid module clash
 from geonode.utils import is_monochromatic_image
@@ -40,6 +41,8 @@ from . import BACKEND_PACKAGE
 from .tasks import geoserver_cascading_delete, geoserver_post_save_datasets
 
 logger = logging.getLogger("geonode.geoserver.signals")
+
+geoserver_automatic_default_style_set = Signal(providing_args=['instance'])
 
 
 def geoserver_delete(typename):

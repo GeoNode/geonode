@@ -35,7 +35,7 @@ from django.contrib.auth import get_user_model
 
 from geonode.base.models import Link
 from geonode.layers.models import Dataset
-from geonode.upload.models import Upload
+from geonode.upload.models import Upload, UploadSizeLimit
 from geonode.catalogue import get_catalogue
 from geonode.tests.utils import upload_step, Client
 from geonode.upload.utils import _ALLOW_TIME_STEP
@@ -632,6 +632,76 @@ class TestUpload(UploaderBase):
             self.assertTrue('success' in data)
             self.assertTrue(data['success'])
             self.assertTrue(data['redirect_to'], "/upload/csv")
+
+    def test_csv_with_size_limit(self):
+        '''make sure a upload fails gracefully/normally with big files'''
+        upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="total_upload_size_sum",
+            defaults={
+                "description": "The sum of sizes for the files of a dataset upload.",
+                "max_size": 1,
+            }
+        )
+        upload_size_limit_obj.max_size = 1
+        upload_size_limit_obj.save()
+
+        handler_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="file_upload_handler",
+            defaults={
+                "description": (
+                    "Request total size, validated before the upload process. "
+                    'This should be greater than "total_upload_size_sum".'
+                ),
+                "max_size": 1024,
+            },
+        )
+        handler_upload_size_limit_obj.max_size = 1024  # Greater than 689 bytes (test csv request size)
+        handler_upload_size_limit_obj.save()
+
+        csv_file = self.make_csv(
+            ['lat', 'lon', 'thing'], {'lat': -100, 'lon': -40, 'thing': 'foo'})
+        with self.assertRaises(HTTPError) as error:
+            self.client.upload_file(csv_file)
+        expected_error = (
+            "Total upload size exceeds 1\\u00a0byte. "
+            "Please try again with smaller files."
+        )
+        self.assertIn(expected_error, error.exception.msg)
+
+    def test_csv_with_upload_handler_size_limit(self):
+        '''make sure a upload fails gracefully/normally with big files'''
+        # Set ``total_upload_size_sum`` to 3 and to ``file_upload_handler`` 2
+        # In production ``total_upload_size_sum`` should not be greater than ``file_upload_handler``
+        # It's used here to make sure that the uploadhandler is called
+        total_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="total_upload_size_sum",
+            defaults={
+                "description": "The sum of sizes for the files of a dataset upload.",
+                "max_size": 1024,
+            }
+        )
+        total_upload_size_limit_obj.max_size = 1024  # Greater than 689 bytes (test csv request size)
+        total_upload_size_limit_obj.save()
+
+        handler_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="file_upload_handler",
+            defaults={
+                "description": (
+                    "Request total size, validated before the upload process. "
+                    'This should be greater than "total_upload_size_sum".'
+                ),
+                "max_size": 2,
+            },
+        )
+        handler_upload_size_limit_obj.max_size = 2
+        handler_upload_size_limit_obj.save()
+
+        csv_file = self.make_csv(
+            ['lat', 'lon', 'thing'], {'lat': -100, 'lon': -40, 'thing': 'foo'})
+        with self.assertRaises(HTTPError) as error:
+            self.client.upload_file(csv_file)
+        expected_error = "Unexpected exception Expecting value: line 1 column 1 (char 0)"
+        self.assertIn(expected_error, error.exception.msg)
 
 
 @unittest.skipUnless(ogc_server_settings.datastore_db,

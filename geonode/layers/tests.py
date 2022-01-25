@@ -59,7 +59,6 @@ from geonode.resource.manager import resource_manager
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
 from geonode.layers.forms import JSONField, LayerUploadForm
-from geonode.maps.tests_populate_maplayers import maplayers as ml
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.utils import check_ogc_backend, set_resource_default_links
@@ -1165,7 +1164,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.user = get_user_model().objects.create(username='dybala', email='dybala@gmail.com')
         self.user.set_password('very-secret')
         self.admin = get_user_model().objects.get(username='admin')
-        self.map = Map.objects.create(owner=self.admin, title='test', is_approved=True, zoom=0, center_x=0.0, center_y=0.0)
+        self.map = Map.objects.create(owner=self.admin, title='test', is_approved=True)
         self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
         self.not_admin.set_password('very-secret')
         self.not_admin.save()
@@ -1174,16 +1173,8 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         create_dataset_data(self.layer.resourcebase_ptr_id)
         with DisableDjangoSignals():
             self.map_dataset = MapLayer.objects.create(
-                fixed=ml[0]['fixed'],
-                group=ml[0]['group'],
                 name=self.layer.alternate,
-                dataset_params=ml[0]['dataset_params'],
                 map=self.map,
-                source_params=ml[0]['source_params'],
-                stack_order=ml[0]['stack_order'],
-                opacity=ml[0]['opacity'],
-                transparent=True,
-                visibility=True
             )
 
     def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
@@ -1289,7 +1280,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
             self.assertFalse(response.context['form']['keywords'].field.disabled, self.test_dataset.alternate)
 
         response = self.client.get(reverse('dataset_embed', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_datasets'], [])
+        self.assertIsNotNone(response.context['resource'])
 
     def test_that_only_users_with_permissions_can_view_maps_in_dataset_view(self):
         """
@@ -1298,7 +1289,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         resource_manager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('dataset_embed', args=(self.layer.alternate,)))
-        self.assertEqual(response.context['map_datasets'], [self.map_dataset])
+        self.assertEqual(response.context['resource'].alternate, self.map_dataset.name)
 
     def test_update_with_a_comma_in_title_is_replaced_by_undescore(self):
         """

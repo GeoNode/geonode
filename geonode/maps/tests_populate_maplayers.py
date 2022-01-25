@@ -20,64 +20,32 @@
 from geonode import geoserver  # noqa
 from geonode.maps.models import Map, MapLayer
 
-maplayers = [{"fixed": False,
-              "group": "background",
-              "dataset_params": "",
-              "map": 'GeoNode Default Map',
-              "name": "geonode:CA",
-              "ows_url": "http://localhost:8080/geoserver/wms",
-              "source_params": "",
-              "transparent": False,
-              "stack_order": 0,
-              "visibility": True,
-              "opacity": 1,
-              },
-             {"fixed": True,
-              "group": "background",
-              "dataset_params": "{\"args\": [\"bluemarble\", \"http://maps.opengeo.org/geowebcache/service/wms\", \
-              {\"layers\": [\"bluemarble\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34],\
-              \"format\": \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
-              "map": 'GeoNode Default Map',
-              "name": None,
-              "opacity": 1,
-              "source_params": "{\"ptype\": \"gxp_olsource\"}",
-              "stack_order": 0,
-              "transparent": False,
-              "visibility": True},
-             {"fixed": True,
-              "group": "background",
-              "dataset_params": "{\"args\": [\"geonode:CA\", \"http://localhost:8080/geoserver/wms\", {\"layers\": \
-              [\"geonode:CA\"], \"tiled\": true, \"tilesOrigin\": [-20037508.34, -20037508.34], \"format\":\
-               \"image/png\"}, {\"buffer\": 0}], \"type\": \"OpenLayers.Layer.WMS\"}",
-              "map": 'GeoNode Default Map',
-              "name": None,
-              "opacity": 1,
-              "source_params": "{\"ptype\": \"gxp_olsource\"}",
-              "stack_order": 1,
-              "transparent": False,
-              "visibility": False},
-             {"fixed": True,
-              "group": "background",
-              "dataset_params": "{}",
-              "map": 'GeoNode Default Map',
-              "name": "SATELLITE",
-              "opacity": 1,
-              "source_params": "{\"apiKey\":\
-               \"ABQIAAAAkofooZxTfcCv9Wi3zzGTVxTnme5EwnLVtEDGnh-lFVzRJhbdQhQgAhB1eT_2muZtc0dl-ZSWrtzmrw\", \"ptype\":\
-                \"gxp_googlesource\"}",
-              "stack_order": 2,
-              "transparent": False,
-              "visibility": False},
-             {"fixed": True,
-              "group": "background",
-              "dataset_params": "{\"args\": [\"No background\"], \"type\": \"OpenLayers.Layer\"}",
-              "map": 'GeoNode Default Map',
-              "name": None,
-              "opacity": 1,
-              "source_params": "{\"ptype\": \"gxp_olsource\"}",
-              "stack_order": 3,
-              "transparent": False,
-              "visibility": False}]
+maplayers = [{
+    "map": 'GeoNode Default Map',
+    "name": "geonode:CA",
+    "current_style": "",
+    "ows_url": "http://localhost:8080/geoserver/wms",
+},
+    {
+    "map": 'GeoNode Default Map',
+    "name": None,
+    "current_style": "",
+},
+    {
+    "map": 'GeoNode Default Map',
+    "name": None,
+    "current_style": "",
+},
+    {
+    "map": 'GeoNode Default Map',
+    "name": "SATELLITE",
+    "current_style": "",
+},
+    {
+    "map": 'GeoNode Default Map',
+    "name": None,
+    "current_style": "",
+}]
 
 
 def create_maplayers():
@@ -85,14 +53,7 @@ def create_maplayers():
     with DisableDjangoSignals():
         for ml in maplayers:
             MapLayer.objects.create(
-                fixed=ml['fixed'],
-                group=ml['group'],
                 name=ml['name'],
-                dataset_params=ml['dataset_params'],
+                current_style=ml['current_style'],
                 map=Map.objects.get(title=ml['map']),
-                source_params=ml['source_params'],
-                stack_order=ml['stack_order'],
-                opacity=ml['opacity'],
-                transparent=True,
-                visibility=True
             )

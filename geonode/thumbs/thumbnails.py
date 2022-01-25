@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import logging
 
 from io import BytesIO
@@ -28,6 +27,8 @@ from django.templatetags.static import static
 from django.utils.module_loading import import_string
 
 from geonode.base.bbox_utils import BBOXHelper
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Dataset
 from geonode.utils import OGC_Servers_Handler
@@ -109,7 +110,7 @@ def create_thumbnail(
     is_map_with_datasets = True
 
     if isinstance(instance, Map):
-        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(dataset=None).count() > 0
+        is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).count() > 0
     if bbox:
         bbox = utils.clean_bbox(bbox, target_crs)
     elif instance.ll_bbox_polygon:
@@ -205,7 +206,7 @@ def create_thumbnail(
     return instance.thumbnail_url
 
 
-def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
+def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp]) -> Optional[str]:
     """
     Method returning file name for the thumbnail.
     If provided instance is a Map, and doesn't have any defined datasets, None is returned.
@@ -220,14 +221,20 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map]) -> Optional[str]:
 
     elif isinstance(instance, Map):
         # if a Map is empty - nothing to do here
-        if not instance.datasets:
+        if not instance.maplayers:
             logger.debug(f"Thumbnail generation skipped - Map {instance.title} has no defined datasets")
             return None
 
         file_name = f"map-{instance.uuid}-thumb.png"
+
+    elif isinstance(instance, Document):
+        file_name = f"document-{instance.uuid}-thumb.png"
+
+    elif isinstance(instance, GeoApp):
+        file_name = f"geoapp-{instance.uuid}-thumb.png"
     else:
         raise ThumbnailError(
-            "Thumbnail generation didn't recognize the provided instance: it's neither a Dataset nor a Map."
+            "Thumbnail generation didn't recognize the provided instance."
         )
 
     return file_name
@@ -274,15 +281,7 @@ def _datasets_locations(
             else:
                 bbox = utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
-        map_datasets = instance.datasets.copy()
-        # ensure correct order of datasets in the map (higher stack_order are printed on top of lower)
-        map_datasets.sort(key=lambda l: l.stack_order)
-
-        for map_dataset in map_datasets:
-
-            if not map_dataset.visibility:
-                logger.debug("Skipping not visible dataset in the thumbnail generation.")
-                continue
+        for map_dataset in instance.maplayers.iterator():
 
             if not map_dataset.local and not map_dataset.ows_url:
                 logger.warning(
@@ -294,10 +293,7 @@ def _datasets_locations(
             name = get_dataset_name(map_dataset)
             store = map_dataset.store
             workspace = get_dataset_workspace(map_dataset)
-            try:
-                map_dataset_style = json.loads(map_dataset.dataset_params).get('style')
-            except json.decoder.JSONDecodeError:
-                map_dataset_style = None
+            map_dataset_style = map_dataset.current_style
 
             if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
                 dataset = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()

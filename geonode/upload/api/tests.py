@@ -20,6 +20,7 @@ import os
 import shutil
 import logging
 import tempfile
+from unittest import mock
 
 from io import IOBase
 from gisdata import GOOD_DATA
@@ -28,7 +29,7 @@ from urllib.request import urljoin
 from django.conf import settings
 
 from django.urls import reverse
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.test.utils import override_settings
 
 from requests_toolbelt.multipart.encoder import MultipartEncoder
@@ -48,6 +49,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from geonode.base import enumerations
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.upload.models import UploadSizeLimit
 
 GEONODE_USER = 'admin'
 GEONODE_PASSWD = 'admin'
@@ -214,9 +216,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                 # allow for that
                 if os.path.exists(file_path):
                     params[spatial_file] = open(file_path, 'rb')
-        elif ext.lower() == '.tif':
-            file_path = base + ext
-            params['tif_file'] = open(file_path, 'rb')
 
         with open(_file, 'rb') as base_file:
             params['base_file'] = base_file
@@ -241,9 +240,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         for spatial_file in spatial_files:
             if isinstance(params.get(spatial_file), IOBase):
                 params[spatial_file].close()
-
-        if isinstance(params.get("tif_file"), IOBase):
-            params['tif_file'].close()
 
         try:
             logger.error(f" -- response: {response.status_code} / {response.json()}")
@@ -277,9 +273,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                 # allow for that
                 if os.path.exists(file_path):
                     params[spatial_file] = open(file_path, 'rb')
-        elif ext.lower() == '.tif':
-            file_path = base + ext
-            params['tif_file'] = open(file_path, 'rb')
 
         with open(_file, 'rb') as base_file:
             params['base_file'] = base_file
@@ -297,13 +290,10 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             if isinstance(params.get(spatial_file), IOBase):
                 params[spatial_file].close()
 
-        if isinstance(params.get("tif_file"), IOBase):
-            params['tif_file'].close()
-
         try:
             logger.error(f" -- response: {response.status_code} / {response.json()}")
             return response, response.json()
-        except ValueError:
+        except (ValueError, TypeError):
             logger.exception(
                 ValueError(
                     f"probably not json, status {response.status_code} / {response.content}"))
@@ -407,7 +397,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
         resp, data = self.rest_upload_file(fname)
-        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.status_code, 200)
 
         url = reverse('uploads-list')
         # Anonymous
@@ -478,3 +468,285 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             # Pagination
             self.assertEqual(len(response.data['uploads']), 0)
             logger.debug(response.data)
+
+    @mock.patch("geonode.upload.forms.forms.ValidationError")
+    @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
+    def test_rest_uploads_with_size_limit(self, mocked_uploaded_file, mocked_validation_error):
+        """
+        Try to upload a file larger than allowed by ``total_upload_size_sum``
+        but not larger than ``file_upload_handler`` max_size.
+        """
+
+        upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="total_upload_size_sum",
+            defaults={
+                "description": "The sum of sizes for the files of a dataset upload.",
+                "max_size": 1,
+            }
+        )
+        upload_size_limit_obj.max_size = 1
+        upload_size_limit_obj.save()
+
+        handler_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="file_upload_handler",
+            defaults={
+                "description": (
+                    "Request total size, validated before the upload process. "
+                    'This should be greater than "total_upload_size_sum".'
+                ),
+                "max_size": 209715200,
+            },
+        )
+        handler_upload_size_limit_obj.max_size = 209715200  # Greater than 173708 bytes (test request size)
+        handler_upload_size_limit_obj.save()
+
+        # Try to upload and verify if it passed only by the form size validation
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        resp, data = self.rest_upload_file(fname)
+        self.assertEqual(resp.status_code, 400)
+        expected_error = 'Total upload size exceeds 1\xa0byte. Please try again with smaller files.'
+        mocked_validation_error.assert_called_once_with(expected_error)
+        mocked_uploaded_file.assert_not_called()
+
+    @mock.patch("geonode.upload.forms.forms.ValidationError")
+    @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
+    def test_rest_uploads_with_size_limit_before_upload(self, mocked_uploaded_file, mocked_validation_error):
+        """
+        Try to upload a file larger than allowed by ``file_upload_handler``.
+        """
+
+        upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="total_upload_size_sum",
+            defaults={
+                "description": "The sum of sizes for the files of a dataset upload.",
+                "max_size": 1,
+            }
+        )
+        upload_size_limit_obj.max_size = 1
+        upload_size_limit_obj.save()
+
+        handler_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
+            slug="file_upload_handler",
+            defaults={
+                "description": (
+                    "Request total size, validated before the upload process. "
+                    'This should be greater than "total_upload_size_sum".'
+                ),
+                "max_size": 2,
+            },
+        )
+        handler_upload_size_limit_obj.max_size = 2
+        handler_upload_size_limit_obj.save()
+
+        # Try to upload and verify if it passed by both size validations
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        resp, data = self.rest_upload_file(fname)
+        # Assertions
+        self.assertEqual(resp.status_code, 400)
+        expected_error = 'Total upload size exceeds 1\xa0byte. Please try again with smaller files.'
+        mocked_validation_error.assert_called_once_with(expected_error)
+        mocked_uploaded_file.assert_called_with(
+            name='relief_san_andres.tif',
+            content=b'',
+            content_type='image/tiff'
+        )
+
+
+class UploadSizeLimitTests(APITestCase):
+    fixtures = [
+        'group_test_data.json',
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.admin = get_user_model().objects.get(username="admin")
+        UploadSizeLimit.objects.create(
+            slug="some-size-limit",
+            description="some description",
+            max_size=104857600,  # 100 MB
+        )
+        UploadSizeLimit.objects.create(
+            slug="some-other-size-limit",
+            description="some other description",
+            max_size=52428800,  # 50 MB
+        )
+
+    def test_list_size_limits_admin_user(self):
+        url = reverse('upload-size-limits-list')
+
+        # List as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+        # Response Content
+        size_limits = [
+            (size_limit['slug'], size_limit['max_size'], size_limit['max_size_label'])
+            for size_limit in response.json()['upload-size-limits']
+        ]
+        expected_size_limits = [
+            ('some-size-limit', 104857600, '100.0\xa0MB'),
+            ('some-other-size-limit', 52428800, '50.0\xa0MB'),
+        ]
+        for size_limit in expected_size_limits:
+            self.assertIn(size_limit, size_limits)
+
+    def test_list_size_limits_anonymous_user(self):
+        url = reverse('upload-size-limits-list')
+
+        # List as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.get(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+        # Response Content
+        size_limits = [
+            (size_limit['slug'], size_limit['max_size'], size_limit['max_size_label'])
+            for size_limit in response.json()['upload-size-limits']
+        ]
+        expected_size_limits = [
+            ('some-size-limit', 104857600, '100.0\xa0MB'),
+            ('some-other-size-limit', 52428800, '50.0\xa0MB'),
+        ]
+        for size_limit in expected_size_limits:
+            self.assertIn(size_limit, size_limits)
+
+    def test_retrieve_size_limit_admin_user(self):
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
+
+        # List as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+        # Response Content
+        size_limit = response.json()['upload-size-limit']
+        self.assertEqual(size_limit['slug'], 'some-size-limit')
+        self.assertEqual(size_limit['max_size'], 104857600)
+        self.assertEqual(size_limit['max_size_label'], '100.0\xa0MB')
+
+    def test_retrieve_size_limit_anonymous_user(self):
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
+
+        # List as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.get(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+        # Response Content
+        size_limit = response.json()['upload-size-limit']
+        self.assertEqual(size_limit['slug'], 'some-size-limit')
+        self.assertEqual(size_limit['max_size'], 104857600)
+        self.assertEqual(size_limit['max_size_label'], '100.0\xa0MB')
+
+    def test_patch_size_limit_admin_user(self):
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
+
+        # List as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.patch(url, data={"max_size": 5242880})
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+        # Response Content
+        size_limit = response.json()['upload-size-limit']
+        self.assertEqual(size_limit['slug'], 'some-size-limit')
+        self.assertEqual(size_limit['max_size'], 5242880)
+        self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
+
+    def test_patch_size_limit_anonymous_user(self):
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
+
+        # List as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.patch(url, data={"max_size": 2621440})
+
+        # Assertions
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+
+    def test_put_size_limit_admin_user(self):
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
+
+        # List as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.put(url, data={"slug": "some-size-limit", "max_size": 5242880})
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+        # Response Content
+        size_limit = response.json()['upload-size-limit']
+        self.assertEqual(size_limit['slug'], 'some-size-limit')
+        self.assertEqual(size_limit['max_size'], 5242880)
+        self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
+
+    def test_put_size_limit_anonymous_user(self):
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
+
+        # List as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.put(url, data={"slug": "some-size-limit", "max_size": 2621440})
+
+        # Assertions
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+
+    def test_post_size_limit_admin_user(self):
+        url = reverse('upload-size-limits-list')
+
+        # List as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.post(url, data={"slug": "some-new-slug", "max_size": 5242880})
+
+        # Assertions
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+        # Response Content
+        size_limit = response.json()['upload-size-limit']
+        self.assertEqual(size_limit['slug'], 'some-new-slug')
+        self.assertEqual(size_limit['max_size'], 5242880)
+        self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
+
+    def test_post_size_limit_anonymous_user(self):
+        url = reverse('upload-size-limits-list')
+
+        # List as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.post(url, data={"slug": "other-new-slug", "max_size": 2621440})
+
+        # Assertions
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+
+    def test_delete_size_limit_admin_user(self):
+        url = reverse('upload-size-limits-detail', args=('some-size-limit',))
+
+        # List as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.delete(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+
+    def test_delete_size_limit_anonymous_user(self):
+        url = reverse('upload-size-limits-detail', args=('some-other-size-limit',))
+
+        # List as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.delete(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)

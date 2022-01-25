@@ -302,9 +302,25 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
                         os.path.join(PROJECT_ROOT, 'static_root')
                         )
 
+# Cache Bustin Settings: enable WhiteNoise compression and caching support
+# ref: http://whitenoise.evans.io/en/stable/django.html#add-compression-and-caching-support
+CACHE_BUSTING_STATIC_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_STATIC_ENABLED', 'False'))
+
+if not DEBUG and CACHE_BUSTING_STATIC_ENABLED:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# Optionally Use a Content-Delivery Network
+# ref: http://whitenoise.evans.io/en/stable/django.html#use-a-content-delivery-network
+STATIC_HOST = os.environ.get('STATIC_URL', '')
+
 # URL that handles the static files like app media.
 # Example: "http://media.lawrence.com"
-STATIC_URL = os.getenv('STATIC_URL', f'{FORCE_SCRIPT_NAME}/{STATICFILES_LOCATION}/')
+if FORCE_SCRIPT_NAME:
+    STATIC_URL = f"{STATIC_HOST}/{FORCE_SCRIPT_NAME}/{STATICFILES_LOCATION}/"
+else:
+    STATIC_URL = f"{STATIC_HOST}/{STATICFILES_LOCATION}/"
 
 # Additional directories which hold static files
 _DEFAULT_STATICFILES_DIRS = [
@@ -320,38 +336,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-
-# AWS S3 Settings
-S3_STATIC_ENABLED = ast.literal_eval(os.environ.get('S3_STATIC_ENABLED', 'False'))
-S3_MEDIA_ENABLED = ast.literal_eval(os.environ.get('S3_MEDIA_ENABLED', 'False'))
-
-# Required to run Sync Media to S3
-AWS_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
-
-AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
-AWS_S3_BUCKET_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-
-AWS_QUERYSTRING_AUTH = False
-if not DEBUG and S3_STATIC_ENABLED:
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    STATIC_URL = f"https://{AWS_S3_BUCKET_DOMAIN}/{STATICFILES_LOCATION}/"
-
-if not DEBUG and S3_MEDIA_ENABLED:
-    MEDIAFILES_LOCATION = 'media'
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    MEDIA_URL = f"https://{AWS_S3_BUCKET_DOMAIN}/{MEDIAFILES_LOCATION}/"
-
-# Cache Bustin Settings
-CACHE_BUSTING_STATIC_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_STATIC_ENABLED', 'False'))
-
-if not DEBUG and not S3_STATIC_ENABLED and not S3_MEDIA_ENABLED:
-    if CACHE_BUSTING_STATIC_ENABLED:
-        from django.contrib.staticfiles import storage
-        storage.ManifestStaticFilesStorage.manifest_strict = False
-    if CACHE_BUSTING_STATIC_ENABLED:
-        STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
@@ -626,7 +610,7 @@ except ValueError:
         'bm', 'bmp', 'dwg', 'dxf', 'fif', 'gif', 'jpg', 'jpe', 'jpeg', 'png', 'tif',
         'tiff', 'pbm', 'odp', 'ppt', 'pptx', 'pdf', 'tar', 'tgz', 'rar', 'gz', '7z',
         'zip', 'aif', 'aifc', 'aiff', 'au', 'mp3', 'mpga', 'wav', 'afl', 'avi', 'avs',
-        'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo'
+        'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo', 'glb', 'pcd', 'gltf'
     ] if os.getenv('ALLOWED_DOCUMENT_TYPES') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
 
@@ -774,6 +758,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',   # ref to: http://whitenoise.evans.io/en/stable/django.html#enable-whitenoise
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
     'geonode.base.middleware.MaintenanceMiddleware',
@@ -1434,8 +1419,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
 
     if 'geonode_mapstore_client' not in INSTALLED_APPS:
         INSTALLED_APPS += (
-            'mapstore2_adapter',
-            'mapstore2_adapter.geoapps',
             'geonode_mapstore_client',)
 
     def get_geonode_catalogue_service():
@@ -1458,22 +1441,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
 
-    MAPSTORE_CATALOGUE_SERVICES = {
-        "Demo WMS Service": {
-            "url": "https://demo.geo-solutions.it/geoserver/wms",
-            "type": "wms",
-            "title": "Demo WMS Service",
-            "autoload": False
-        },
-        "Demo WMTS Service": {
-            "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
-            "type": "wmts",
-            "title": "Demo WMTS Service",
-            "autoload": False
-        }
-    }
+    MAPSTORE_CATALOGUE_SERVICES = {}
 
-    MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
+    MAPSTORE_CATALOGUE_SELECTED_SERVICE = ""
 
     if GEONODE_CATALOGUE_SERVICE:
         MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]  # noqa
@@ -1544,6 +1514,18 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
         DEFAULT_MS2_BACKGROUNDS = [BASEMAP, ] + DEFAULT_MS2_BACKGROUNDS
 
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
+    # MAPSTORE_BASELAYERS_SOURCES allow to configure tilematrix sets for wmts layers
+    MAPSTORE_BASELAYERS_SOURCES = os.environ.get('MAPSTORE_BASELAYERS_SOURCES', {})
+
+    MAPSTORE_DEFAULT_LANGUAGES = """(
+        ('de-de', 'Deutsch'),
+        ('en-us', 'English'),
+        ('es-es', 'Español'),
+        ('fr-fr', 'Français'),
+        ('it-it', 'Italiano'),
+    )"""
+
+    LANGUAGES = ast.literal_eval(os.getenv('LANGUAGES', MAPSTORE_DEFAULT_LANGUAGES))
 
 # -- END Client Hooksets Setup
 
@@ -1568,10 +1550,11 @@ SEARCH_FILTERS = {
 TINYMCE_DEFAULT_CONFIG = {
     "theme": "silver",
     "height": 200,
-    "plugins": 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',  # noqa
+    "plugins": 'preview paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars',  # noqa
     "imagetools_cors_hosts": ['picsum.photos'],
-    "menubar": 'file edit view insert format tools table help',
-    "toolbar": 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save | insertfile image media template link anchor codesample | ltr rtl',  # noqa
+    "menubar": False,
+    "statusbar": False,
+    "toolbar": 'bold italic underline | formatselect removeformat | outdent indent |  numlist bullist | insertfile image media link codesample | preview',  # noqa
     "toolbar_sticky": "true",
     "autosave_ask_before_unload": "true",
     "autosave_interval": "30s",
@@ -2080,3 +2063,13 @@ MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set([
     "importlayers",
     "set_all_datasets_metadata",
 ] + ast.literal_eval(os.getenv('MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ', '[]')))
+
+
+FILE_UPLOAD_HANDLERS = [
+    'geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler',
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
+DEFAULT_MAX_UPLOAD_SIZE = int(os.getenv('DEFAULT_MAX_UPLOAD_SIZE', 104857600))  # 100 MB
+DEFAULT_MAX_BEFORE_UPLOAD_SIZE = int(os.getenv('DEFAULT_MAX_BEFORE_UPLOAD_SIZE', 524288000))  # 500 MB

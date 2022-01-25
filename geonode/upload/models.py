@@ -28,6 +28,10 @@ from django.utils.timezone import now
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
+from django.core.validators import MinLengthValidator
+from django.template.defaultfilters import filesizeformat
+from django.utils.translation import ugettext_lazy as _
+
 from geonode import GeoNodeException
 from geonode.base import enumerations
 from geonode.base.models import ResourceBase
@@ -65,6 +69,36 @@ class UploadManager(models.Manager):
     def get_incomplete_uploads(self, user):
         return self.filter(user=user).exclude(
             state=enumerations.STATE_PROCESSED)
+
+
+class UploadSizeLimitManager(models.Manager):
+
+    def create_default_limit(self):
+        max_size_db_obj = self.create(
+            slug="total_upload_size_sum",
+            description="The sum of sizes for the files of a dataset upload.",
+            max_size=settings.DEFAULT_MAX_UPLOAD_SIZE,
+        )
+        return max_size_db_obj
+
+    def create_default_limit_for_upload_handler(self):
+        max_size_db_obj = UploadSizeLimit.objects.create(
+            slug="file_upload_handler",
+            description=(
+                'Request total size, validated before the upload process. '
+                'This should be greater than "total_upload_size_sum".'
+            ),
+            max_size=settings.DEFAULT_MAX_BEFORE_UPLOAD_SIZE,
+        )
+        return max_size_db_obj
+
+    def create_default_limit_with_slug(self, slug):
+        max_size_db_obj = self.create(
+            slug=slug,
+            description="Size limit.",
+            max_size=settings.DEFAULT_MAX_UPLOAD_SIZE,
+        )
+        return max_size_db_obj
 
 
 class Upload(models.Model):
@@ -144,7 +178,7 @@ class Upload(models.Model):
         if "COMPLETE" == self.state:
             self.complete = True
         if self.resource and self.resource.processed:
-            self.state = enumerations.STATE_PROCESSED
+            self.state = enumerations.STATE_RUNNING
         elif self.state in (enumerations.STATE_READY, enumerations.STATE_PENDING):
             self.state = upload_session.import_session.state
         self.save()
@@ -161,6 +195,10 @@ class Upload(models.Model):
         elif self.state == enumerations.STATE_PROCESSED:
             return 100.0
         elif self.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING):
+            if self.resource and self.resource.processed and self.resource.state == enumerations.STATE_PROCESSED:
+                self.state = enumerations.STATE_PROCESSED
+                self.save()
+                return 90.0
             return 80.0
 
     def set_resume_url(self, resume_url):
@@ -195,7 +233,7 @@ class Upload(models.Model):
             return None
 
     def get_detail_url(self):
-        if self.resource and self.state == enumerations.STATE_PROCESSED:
+        if self.resource and self.resource.processed and self.resource.state == enumerations.STATE_PROCESSED:
             return getattr(self.resource, 'detail_url', None)
         else:
             return None
@@ -253,3 +291,37 @@ class Upload(models.Model):
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'
+
+
+class UploadSizeLimit(models.Model):
+
+    objects = UploadSizeLimitManager()
+
+    slug = models.SlugField(
+        primary_key=True,
+        max_length=255,
+        unique=True,
+        null=False,
+        blank=False,
+        validators=[MinLengthValidator(limit_value=3)],
+    )
+    description = models.TextField(
+        max_length=255,
+        default=None,
+        null=True,
+        blank=True,
+    )
+    max_size = models.PositiveBigIntegerField(
+        help_text=_("The maximum file size allowed for upload (bytes)."),
+        default=settings.DEFAULT_MAX_UPLOAD_SIZE,
+    )
+
+    @property
+    def max_size_label(self):
+        return filesizeformat(self.max_size)
+
+    def __str__(self):
+        return f'UploadSizeLimit for "{self.slug}" (max_size: {self.max_size_label})'
+
+    class Meta:
+        ordering = ("slug",)

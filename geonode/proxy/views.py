@@ -20,17 +20,16 @@ import io
 import os
 import re
 import gzip
-import shutil
 import logging
-import tempfile
 import traceback
+import zipstream
 
 from hyperlink import URL
 from urllib.parse import urlparse, urlsplit, urljoin
 
 from django.conf import settings
 from django.template import loader
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from django.views.generic import View
 from distutils.version import StrictVersion
 from django.http.request import validate_host
@@ -44,8 +43,6 @@ from geonode.storage.manager import storage_manager
 from geonode.utils import (
     resolve_object,
     check_ogc_backend,
-    get_dir_time_suffix,
-    zip_dir,
     get_headers,
     http_client,
     json_response)
@@ -53,6 +50,8 @@ from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver  # noqa
 from geonode.base import register_event
+
+BUFFER_CHUNK_SIZE = 64 * 1024
 
 TIMEOUT = 30
 
@@ -276,14 +275,8 @@ def download(request, resourceid, sender=Dataset):
                               permission_msg=_not_permitted)
 
     if isinstance(instance, ResourceBase):
-        # Create Target Folder
-        dirpath = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-        dir_time_suffix = get_dir_time_suffix()
-        target_folder = os.path.join(dirpath, dir_time_suffix)
-        if not os.path.exists(target_folder):
-            os.makedirs(target_folder)
-
         dataset_files = []
+        file_list = []  # Store file info to be returned
         try:
             files = instance.resourcebase_ptr.files
             # Copy all Dataset related files into a temporary folder
@@ -291,8 +284,10 @@ def download(request, resourceid, sender=Dataset):
                 if storage_manager.exists(file_path):
                     dataset_files.append(file_path)
                     filename = os.path.basename(file_path)
-                    with open(f"{target_folder}/{filename}", 'wb+') as f:
-                        f.write(storage_manager.open(file_path).read())
+                    file_list.append({
+                        "name": filename,
+                        "data_iter": storage_manager.open(file_path),
+                    })
                 else:
                     return HttpResponse(
                         loader.render_to_string(
@@ -316,13 +311,25 @@ def download(request, resourceid, sender=Dataset):
 
             # ZIP everything and return
             target_file_name = "".join([instance.name, ".zip"])
-            target_file = os.path.join(dirpath, target_file_name)
-            zip_dir(target_folder, target_file)
+
+            target_zip = zipstream.ZipFile(mode='w', compression=zipstream.ZIP_DEFLATED, allowZip64=True)
+
+            # Iterable: Needed when the file_info has it's data as a stream
+            def _iterable(source_iter):
+                while True:
+                    buf = source_iter.read(BUFFER_CHUNK_SIZE)
+                    if not buf:
+                        break
+                    yield buf
+
+            # Add files to zip
+            for file_info in file_list:
+                target_zip.write_iter(arcname=file_info['name'], iterable=_iterable(file_info['data_iter']))
+
             register_event(request, 'download', instance)
-            response = HttpResponse(
-                content=open(target_file, mode='rb'),
-                status=200,
-                content_type="application/zip")
+
+            # Streaming content response
+            response = StreamingHttpResponse(target_zip, content_type='application/zip')
             response['Content-Disposition'] = f'attachment; filename="{target_file_name}"'
             return response
         except (NotImplementedError, Upload.DoesNotExist):
@@ -337,9 +344,6 @@ def download(request, resourceid, sender=Dataset):
                         'error_message': _no_files_found
                     },
                     request=request), status=404)
-        finally:
-            if target_folder is not None:
-                shutil.rmtree(target_folder, ignore_errors=True)
     return HttpResponse(
         loader.render_to_string(
             '401.html',
