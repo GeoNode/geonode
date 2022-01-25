@@ -24,6 +24,8 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 
 from geonode.base.models import ResourceBase
+from geonode.utils import get_geonode_app_types
+from geonode.geoapps.models import GeoApp
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +79,23 @@ class RecentActivity(ListView):
             id__in=_filter_actions('document', self.request))[:15]
         context['action_list_comments'] = Action.objects.filter(
             id__in=_filter_actions('comment', self.request))[:15]
+        context['action_list_geoapps'] = self.get_geoapp_actions(
+            _filter_actions('geoapp', self.request))
         return context
+
+    def get_geoapp_actions(self, _action_ids):
+        _actions = Action.objects.filter(id__in=_action_ids)
+        _grouped_actions = {}
+        apps = [app.lower() for app in get_geonode_app_types()]
+        # For Geoapps, return a dict mapping of each app with its actions
+        for app in apps:
+            data = []
+            for action in _actions:
+                resource_type = GeoApp.objects.get(id=action.action_object_object_id).resource_type
+                if resource_type == app:
+                    data.append(action)
+            _grouped_actions[app] = data[:15]
+        return _grouped_actions
 
 
 class UserActivity(ListView):
