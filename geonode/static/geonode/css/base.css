@@ -7969,6 +7969,12 @@ footer form {
 .activity-item .map:before {
   content: "\f041";
 }
+.activity-item .geoapp {
+  content: "\f085";
+}
+.activity-item .geoapp:before {
+  content: "\f085";
+}
 .activity-item .upload {
   content: "\f093";
 }

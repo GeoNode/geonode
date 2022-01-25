@@ -25,26 +25,29 @@ Replace this with more appropriate tests for your application.
 """
 import json
 
+from rest_framework import status
+
 from actstream import registry
 from actstream.models import Action, actor_stream
 
-from dialogos.models import Comment
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
 
-from geonode.layers.models import Dataset
+from dialogos.models import Comment
+
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.social.templatetags.social_tags import activity_item
-
+from geonode.layers.models import Dataset
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
     remove_models)
 
 
-class SocialAppsTest(GeoNodeBaseTestSupport):
+class RecentActivityTest(GeoNodeBaseTestSupport):
 
     integration = True
 
@@ -66,7 +69,7 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
         remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
-        super().setUp()
+        super(RecentActivityTest, self).setUp()
 
         registry.register(Dataset)
         registry.register(Comment)
@@ -162,3 +165,13 @@ class SocialAppsTest(GeoNodeBaseTestSupport):
 
         # Pre-fecthing actstream breaks the actor stream
         self.assertIn(action, actor_stream(self.user))
+
+    def test_get_recent_activities(self):
+        url = reverse('recent-activity')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(response.context_data['action_list_geoapps'])
+        self.assertIsNotNone(response.context_data['action_list_datasets'])
+        self.assertIsNotNone(response.context_data['action_list_maps'])
+        self.assertIsNotNone(response.context_data['action_list_documents'])
+        self.assertIsNotNone(response.context_data['action_list_comments'])

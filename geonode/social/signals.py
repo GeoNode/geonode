@@ -29,8 +29,7 @@ from django.conf import settings
 from django.db.models import signals
 from django.utils.translation import ugettext_lazy as _
 
-# from actstream.exceptions import ModelNotActionable
-
+from geonode.geoapps.models import GeoApp
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.documents.models import Document
@@ -108,6 +107,12 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     except Exception as e:
         logger.exception(e)
 
+    if obj_type not in ['document', 'dataset', 'map', 'comment']:
+        try:
+            action_settings[obj_type].update(object_name=getattr(instance, 'title', None),)
+        except Exception as e:
+            logger.exception(e)
+
     try:
         action = action_settings[obj_type]
         if created:
@@ -119,7 +124,8 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                 # object was saved.
                 if not isinstance(instance, Dataset) and \
                         not isinstance(instance, Document) and \
-                        not isinstance(instance, Map):
+                        not isinstance(instance, Map) and \
+                        not isinstance(instance, GeoApp):
                     verb = action.get('updated_verb')
                     raw_action = 'updated'
 
@@ -168,6 +174,8 @@ if activity:
 
     signals.post_save.connect(activity_post_modify_object, sender=Document)
     signals.post_delete.connect(activity_post_modify_object, sender=Document)
+    signals.post_save.connect(activity_post_modify_object, sender=GeoApp)
+    signals.post_delete.connect(activity_post_modify_object, sender=GeoApp)
 
 
 def rating_post_save(instance, sender, created, **kwargs):

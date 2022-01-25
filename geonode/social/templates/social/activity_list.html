@@ -21,6 +21,11 @@
       <li><a href="#layers" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Layers" %}</a></li>
       <li><a href="#maps" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
       <li><a href="#documents" data-toggle="tab"><i class="fa fa-newspaper-o"></i> {% trans "Documents" %}</a></li>
+      {% for app in GEONODE_APPS_TYPES %}
+        <li><a href="#{{app}}" data-toggle="tab"><i class="fa fa-gears"></i> 
+          {% trans app|title %}
+        </a></li>
+      {% endfor %}
       <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
     </ul>
     <div class="tab-content">
@@ -35,7 +40,7 @@
       </article>
       <article id="layers" class="tab-pane">
         <ul class="no-style-list">
-        {% for action in action_list_layers %}
+        {% for action in action_list_datasets %}
           {% activity_item action %}
           {% empty %}
           <p>{% trans "No actions yet" %}</p>
@@ -69,6 +74,17 @@
         {% endfor %}
         </ul>
       </article>
+      {% for app_name, app_action_list in action_list_geoapps.items %}
+      <article id="{{app_name}}" class="tab-pane">
+        <ul class="no-style-list">
+        {% for action in app_action_list %}
+          {% activity_item action %}
+          {% empty %}
+          <p>{% trans "No actions yet" %}</p>
+        {% endfor %}
+        </ul>
+      </article>
+      {% endfor %}
     </div>
   </div>
 </div>
