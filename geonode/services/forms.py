@@ -27,6 +27,7 @@ import taggit
 from . import enumerations
 from .models import Service
 from .serviceprocessors import get_service_handler
+from geonode.services.serviceprocessors.handler import get_available_service_type
 
 logger = logging.getLogger(__name__)
 
@@ -47,18 +48,7 @@ class CreateServiceForm(forms.Form):
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
-        choices=(
-            # (enumerations.AUTO, _('Auto-detect')),
-            # (enumerations.OWS, _('Paired WMS/WFS/WCS')),
-            (enumerations.WMS, _('Web Map Service')),
-            (enumerations.GN_WMS, _('GeoNode (Web Map Service)')),
-            # (enumerations.GN_CSW, _('GeoNode (Catalogue Service)')),
-            # (enumerations.CSW, _('Catalogue Service')),
-            (enumerations.REST_MAP, _('ArcGIS REST MapServer')),
-            (enumerations.REST_IMG, _('ArcGIS REST ImageServer')),
-            # (enumerations.OGP, _('OpenGeoPortal')),
-            # (enumerations.HGL, _('Harvard Geospatial Library')),
-        ),
+        choices=[(k, v["label"]) for k, v in get_available_service_type().items()],  # from dictionary to tuple
         initial='AUTO',
     )
 
@@ -81,7 +71,8 @@ class CreateServiceForm(forms.Form):
             try:
                 service_handler = get_service_handler(
                     base_url=url, service_type=service_type)
-            except Exception:
+            except Exception as e:
+                logger.error(f"CreateServiceForm cleaning error: {e}")
                 raise ValidationError(
                     _("Could not connect to the service at %(url)s"),
                     params={"url": url}
