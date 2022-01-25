@@ -20,6 +20,7 @@
 import re
 import math
 import logging
+from django.conf import settings as django_settings
 
 logger = logging.getLogger(__name__)
 
@@ -158,3 +159,20 @@ def test_resource_table_status(test_cls, table, is_row_filtered):
         test_cls.assertEqual(result["filter_row_count"], 0)
         test_cls.assertEqual(result["visible_rows_count"], 20)
         test_cls.assertEqual(result["hidden_row_count"], 0)
+
+
+def parse_services_types():
+    from django.utils.module_loading import import_string
+    services_type_modules = (
+        django_settings.SERVICES_TYPE_MODULES
+        if hasattr(django_settings, "SERVICES_TYPE_MODULES")
+        else []
+    )
+    custom_services_types = {}
+    for services_type_path in services_type_modules:
+        custom_services_type_module = import_string(services_type_path)
+        custom_services_types = {
+            **custom_services_types,
+            **custom_services_type_module.services_type
+        }
+    return custom_services_types
