@@ -19,10 +19,14 @@
 
 """Remote service handling base classes and helpers."""
 
+from collections import OrderedDict
 import logging
 
 from geonode.services import enumerations
-from geonode.services.utils import get_available_service_type
+from geonode.services.serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler
+from geonode.services.serviceprocessors.wms import GeoNodeServiceHandler, WmsServiceHandler
+from geonode.services.utils import parse_services_types
+from django.utils.translation import ugettext as _
 
 logger = logging.getLogger(__name__)
 
@@ -33,28 +37,27 @@ def get_service_handler(base_url, service_type=enumerations.AUTO):
     """
     handlers = get_available_service_type()
 
-    if service_type in (enumerations.AUTO, enumerations.OWS):
-        if service_type == enumerations.AUTO:
-            to_check = handlers.keys()
-        else:
-            to_check = (k for k, v in handlers.items() if v["OWS"])
-        for type_ in to_check:
-            logger.debug(f"Checking {type_}...")
-            try:
-                service = get_service_handler(base_url, type_)
-            except Exception:
-                pass  # move on to the next service type
-            else:
-                break
-        else:
-            raise RuntimeError(f"Could not parse service {base_url} with any of the "
-                               "available service handlers")
-    else:
-        handler = handlers.get(service_type, {}).get("handler")
-        try:
-            service = handler(base_url)
-        except Exception:
-            logger.exception(
-                msg=f"Could not parse service {base_url}")
-            raise
+    handler = handlers.get(service_type, {}).get("handler")
+    try:
+        service = handler(base_url)
+    except Exception:
+        logger.exception(
+            msg=f"Could not parse service {base_url}")
+        raise
     return service
+
+
+def get_available_service_type():
+    default = OrderedDict({
+        enumerations.WMS: {"OWS": True, "handler": WmsServiceHandler, "label": _('Web Map Service')},
+        enumerations.GN_WMS: {"OWS": True, "handler": GeoNodeServiceHandler, "label": _('GeoNode (Web Map Service)')},
+        # enumerations.WFS: {"OWS": True, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
+        # enumerations.TMS: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
+        enumerations.REST_MAP: {"OWS": False, "handler": ArcMapServiceHandler, "label": _('ArcGIS REST MapServer')},
+        enumerations.REST_IMG: {"OWS": False, "handler": ArcImageServiceHandler, "label": _('ArcGIS REST ImageServer')},
+        # enumerations.CSW: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Catalogue Service')},
+        # enumerations.OGP: {"OWS": True, "handler": ServiceHandlerBase, "label": _('OpenGeoPortal')},  # TODO: verify this
+        # enumerations.HGL: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Harvard Geospatial Library')},  # TODO: verify this
+    })
+
+    return OrderedDict({**default, **parse_services_types()})

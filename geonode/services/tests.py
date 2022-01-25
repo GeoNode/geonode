@@ -38,7 +38,7 @@ from owslib.map.wms111 import ContentMetadata
 
 from geonode.layers.models import Layer
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.services.utils import test_resource_table_status, parse_services_types, get_available_service_type
+from geonode.services.utils import test_resource_table_status, parse_services_types
 from . import enumerations, forms
 from .models import HarvestJob, Service
 from .serviceprocessors import (
@@ -982,7 +982,7 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
     def test_will_use_multiple_service_types_defined_for_choices(self):
-        elems = get_available_service_type()
+        elems = handler.get_available_service_type()
         expected = {
             'WMS': {'OWS': True, 'handler': WmsServiceHandler, 'label': 'Web Map Service'},
             'GN_WMS': {'OWS': True, 'handler': GeoNodeServiceHandler, 'label': 'GeoNode (Web Map Service)'},

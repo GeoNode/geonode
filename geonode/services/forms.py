@@ -27,7 +27,7 @@ import taggit
 from . import enumerations
 from .models import Service
 from .serviceprocessors import get_service_handler
-from .utils import get_available_service_type
+from geonode.services.serviceprocessors.handler import get_available_service_type
 
 logger = logging.getLogger(__name__)
 
