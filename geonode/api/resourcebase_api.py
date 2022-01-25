@@ -80,6 +80,7 @@ LAYER_SUBTYPES = {
 FILTER_TYPES.update(LAYER_SUBTYPES)
 GEONODE_APPS_INSTALLED = [x.lower() for x in get_subclasses_by_model('GeoApp')]
 
+
 class CommonMetaApi:
     authorization = GeoNodeAuthorization()
     allowed_methods = ['get']
