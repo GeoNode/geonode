@@ -20,6 +20,7 @@ import os
 import argparse
 import datetime
 import requests
+import traceback
 
 from urllib.parse import urljoin
 from io import BufferedReader, IOBase
@@ -136,7 +137,7 @@ class GeoNodeUploader:
                             params[name] = os.path.basename(value.name)
 
                     response = client.post(
-                        urljoin(self.host, "/api/v2/uploads/upload/"),
+                        urljoin(self.host, "/api/v2/uploads/upload_legacy/"),
                         auth=HTTPBasicAuth(self.username, self.password),
                         data=params,
                         files=files,
@@ -146,21 +147,25 @@ class GeoNodeUploader:
                 if isinstance(params.get("tif_file"), IOBase):
                     params["tif_file"].close()
 
-                data = response.json()
-                if data['status'] == 'finished':
-                    if data['success']:
+                try:
+                    data = response.json()
+                    if data['status'] == 'finished':
+                        if data['success']:
+                            success.append(file)
+                        else:
+                            errors.append(file)
+                    elif 'redirect_to' in data:
+                        import_id = int(data["redirect_to"].split("?id=")[1].split("&")[0])
+                        upload_response = client.get(f"{self.host}/api/v2/uploads/")
+                        upload_id = self._get_upload_id(upload_response, import_id)
+                        client.get(f"{self.host}/api/v2/uploads/{upload_id}")
+                        client.get(f"{self.host}/upload/check?id={import_id}")
+                        client.get(f"{self.host}/upload/final?id={import_id}")
                         success.append(file)
                     else:
                         errors.append(file)
-                elif 'redirect_to' in data:
-                    import_id = int(data["redirect_to"].split("?id=")[1].split("&")[0])
-                    upload_response = client.get(f"{self.host}/api/v2/uploads/")
-                    upload_id = self._get_upload_id(upload_response, import_id)
-                    client.get(f"{self.host}/api/v2/uploads/{upload_id}")
-                    client.get(f"{self.host}/upload/check?id={import_id}")
-                    client.get(f"{self.host}/upload/final?id={import_id}")
-                    success.append(file)
-                else:
+                except requests.exceptions.JSONDecodeError:
+                    traceback.print_exc()
                     errors.append(file)
         return success, errors
 
