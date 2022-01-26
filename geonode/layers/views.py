@@ -853,8 +853,7 @@ def layer_metadata(
             logger.error(f"Layer Metadata form is not valid: {layer_form.errors}")
             out = {
                 'success': False,
-                'errors': [
-                    re.sub(re.compile('<.*?>'), '', str(err)) for err in layer_form.errors]
+                "errors": [f"{x}: {y[0].messages[0]}" for x, y in layer_form.errors.as_data().items()]
             }
             return HttpResponse(
                 json.dumps(out),

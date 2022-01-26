@@ -43,6 +43,7 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.core.files.storage import default_storage as storage
 from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
+from django_jsonfield_backport.models import JSONField
 
 from PIL import Image, ImageOps
 
@@ -960,6 +961,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("Metadata"),
         default=False,
         help_text=_('If true, will be excluded from search'))
+
+    extra_metadata = JSONField(null=True, default=list, blank=True)
 
     objects = ResourceBaseManager()
 

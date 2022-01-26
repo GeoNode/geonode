@@ -16,6 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
+from schema import Schema
 import re
 import html
 import logging
@@ -477,6 +479,8 @@ class ResourceBaseForm(TranslationModelForm):
 
     regions.widget.attrs = {"size": 20}
 
+    extra_metadata = forms.CharField(required=False, widget=forms.Textarea)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
@@ -523,6 +527,34 @@ class ResourceBaseForm(TranslationModelForm):
         if title:
             title = title.replace(",", "_")
         return title
+
+    def clean_extra_metadata(self):
+        cleaned_data = self.cleaned_data
+        if not cleaned_data.get('extra_metadata', []):
+            return cleaned_data
+
+        # starting validation of extra metadata passed via JSON
+        # if schema for metadata validation is not defined, an error is raised
+        resource_type = self.instance.polymorphic_ctype.model
+        extra_metadata_validation_schema = settings.EXTRA_METADATA_SCHEMA.get(resource_type, None)
+        if not extra_metadata_validation_schema:
+            raise forms.ValidationError(
+                f"EXTRA_METADATA_SCHEMA validation schema is not available for resource {self.instance.polymorphic_ctype.model}"
+            )
+        # starting json structure validation. The Field can contain multiple metadata
+
+        try:
+            _extra_as_json = json.loads(cleaned_data.get('extra_metadata'))
+        except Exception:
+            raise forms.ValidationError("The value provided for the Extra metadata field is not a valid JSON")
+
+        # looping on all the single metadata provided. If it doen't match the schema an error is raised
+        for _index, _metadata in enumerate(_extra_as_json):
+            try:
+                Schema(extra_metadata_validation_schema).validate(_metadata)
+            except Exception as e:
+                raise forms.ValidationError(f"{e} at index {_index} for input json: {json.dumps(_metadata)}")
+        return cleaned_data.get('extra_metadata')
 
     class Meta:
         exclude = (
