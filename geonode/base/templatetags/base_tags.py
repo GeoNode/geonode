@@ -17,6 +17,8 @@
 #
 #########################################################################
 
+import logging
+
 from django import template
 from django.db.models import Q
 from django.conf import settings
@@ -40,6 +42,8 @@ from geonode.base.models import (
 )
 from geonode.security.utils import get_visible_resources
 from collections import OrderedDict
+
+logger = logging.getLogger(__name__)
 
 register = template.Library()
 
@@ -290,6 +294,9 @@ def facets(context):
 
         facet_geoapp = _facets_geoapps(
             request,
+            title_filter,
+            abstract_filter,
+            purpose_filter,
             category_filter,
             regions_filter,
             owner_filter,
@@ -308,8 +315,20 @@ def facets(context):
     return facets
 
 
-def _facets_geoapps(request, category_filter, regions_filter, owner_filter, date_gte_filter,
-                    date_lte_filter, date_range_filter, extent_filter, keywords_filter, authorized):
+def _facets_geoapps(
+        request,
+        title_filter,
+        abstract_filter,
+        purpose_filter,
+        category_filter,
+        regions_filter,
+        owner_filter,
+        date_gte_filter,
+        date_lte_filter,
+        date_range_filter,
+        extent_filter,
+        keywords_filter,
+        authorized):
     result = {}
     from django.apps import apps
     for label, app in apps.app_configs.items():
@@ -335,6 +354,15 @@ def _facets_geoapps(request, category_filter, regions_filter, owner_filter, date
                 geoapp_filters['date__range'] = date_range_filter.split(',')
 
             geoapps = geoapps.filter(**geoapp_filters)
+
+            try:
+                geoapps = geoapps.filter(
+                    Q(title__icontains=title_filter) |
+                    Q(abstract__icontains=abstract_filter) |
+                    Q(purpose__icontains=purpose_filter)
+                )
+            except Exception as e:
+                logger.exception(e)
 
             if extent_filter:
                 geoapps = filter_bbox(geoapps, extent_filter)
