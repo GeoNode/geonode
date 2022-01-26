@@ -180,10 +180,22 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         user_data = {
             'username': 'new_user',
         }
+        self.client.login(username='admin', password="admin")
         response = self.client.post(url, data=user_data, format='json')
         self.assertEqual(response.status_code, 201)
         # default contributor group_perm is returned in perms
         self.assertIn('add_resource', response.data['user']['perms'])
+
+    def test_register_users_anonymous(self):
+        """
+        Ensure users are created with default groups.
+        """
+        url = reverse('users-list')
+        user_data = {
+            'username': 'new_user',
+        }
+        response = self.client.post(url, data=user_data, format='json')
+        self.assertEqual(response.status_code, 403)
 
     def test_base_resources(self):
         """
