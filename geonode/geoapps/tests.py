@@ -36,7 +36,7 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
             owner=self.user
         )
         self.sut = GeoAppForm
-        
+
     def test_update_geoapp_metadata(self):
         bobby = get_user_model().objects.get(username='bobby')
         gep_app = GeoApp.objects.create(
@@ -89,7 +89,7 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
         })
         expected = {"success": False, "errors": ["extra_metadata: EXTRA_METADATA_SCHEMA validation schema is not available for resource geoapp"]}
         self.assertDictEqual(expected, response.json())
- 
+
     def test_resource_form_is_invalid_extra_metadata_invalids_schema_entry(self):
         self.client.login(username="admin", password="admin")
         url = reverse("geoapp_metadata", args=(self.geoapp.id,))
@@ -103,7 +103,7 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
         })
         expected = "extra_metadata: Missing keys: \'category\', \'field_type\', \'help_text\', \'name\', \'slug\', \'value\' at index 0"
         self.assertIn(expected, response.json()['errors'][0])
- 
+
     @override_settings(EXTRA_METADATA_SCHEMA={
         "geoapp": {
             "name": str,
@@ -124,4 +124,3 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
             "extra_metadata": '[{"name": "object", "slug": "object", "help_text": "object", "field_type": "object", "value": "object", "category": "object"}]'
         })
         self.assertTrue(form.is_valid())
- 

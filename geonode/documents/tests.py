@@ -22,7 +22,6 @@ This file demonstrates writing tests using the unittest module. These will pass
 when you run "manage.py test".
 
 """
-from django.test import override_settings
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
@@ -41,7 +40,7 @@ from django.template.defaultfilters import filesizeformat
 
 from guardian.shortcuts import get_perms, get_anonymous_user
 
-from .forms import DocumentCreateForm, DocumentForm
+from .forms import DocumentCreateForm
 
 from geonode.groups.models import (
     GroupProfile,
@@ -54,7 +53,7 @@ from geonode.base.models import License, Region
 from geonode.documents import DocumentsAppConfig
 from geonode.documents.forms import DocumentFormMixin
 from geonode.tests.utils import NotificationsTestsHelper
-from geonode.base.populate_test_data import create_models, create_single_doc
+from geonode.base.populate_test_data import create_models
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.documents.models import Document, DocumentResourceLink
 

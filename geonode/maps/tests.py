@@ -1136,7 +1136,7 @@ class TestMapForm(GeoNodeBaseTestSupport):
         })
         expected = {"success": False, "errors": ["extra_metadata: EXTRA_METADATA_SCHEMA validation schema is not available for resource map"]}
         self.assertDictEqual(expected, response.json())
- 
+
     def test_resource_form_is_invalid_extra_metadata_invalids_schema_entry(self):
         self.client.login(username="admin", password="admin")
         url = reverse("map_metadata", args=(self.map.id,))
@@ -1150,8 +1150,7 @@ class TestMapForm(GeoNodeBaseTestSupport):
         })
         expected = "extra_metadata: Missing keys: \'category\', \'field_type\', \'help_text\', \'name\', \'slug\', \'value\' at index 0"
         self.assertIn(expected, response.json()['errors'][0])
- 
- 
+
     def test_resource_form_is_valid_extra_metadata(self):
         form = self.sut(data={
             "owner": self.map.owner.id,
@@ -1162,4 +1161,3 @@ class TestMapForm(GeoNodeBaseTestSupport):
             "extra_metadata": '[{"name": "object", "slug": "object", "help_text": "object", "field_type": "object", "value": "object", "category": "object"}]'
         })
         self.assertTrue(form.is_valid())
- 
