@@ -535,7 +535,11 @@ class ResourceBaseForm(TranslationModelForm):
 
         # starting validation of extra metadata passed via JSON
         # if schema for metadata validation is not defined, an error is raised
-        resource_type = self.instance.polymorphic_ctype.model
+        resource_type = (
+            self.instance.polymorphic_ctype.model
+            if self.instance.polymorphic_ctype
+            else self.instance.class_name.lower()
+        )
         extra_metadata_validation_schema = settings.EXTRA_METADATA_SCHEMA.get(resource_type, None)
         if not extra_metadata_validation_schema:
             raise forms.ValidationError(

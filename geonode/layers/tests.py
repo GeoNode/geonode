@@ -1996,3 +1996,15 @@ class TestLayerForm(GeoNodeBaseTestSupport):
         expected = "extra_metadata: Missing keys: \'category\', \'field_type\', \'help_text\', \'name\', \'slug\', \'value\' at index 0"
         self.assertIn(expected, response.json()['errors'][0])
  
+ 
+    def test_resource_form_is_valid_extra_metadata(self):
+        form = self.sut(data={
+            "owner": self.layer.owner.id,
+            "title": "layer_title",
+            "date": "2022-01-24 16:38 pm",
+            "date_type": "creation",
+            "language": "eng",
+            "extra_metadata": '[{"name": "object", "slug": "object", "help_text": "object", "field_type": "object", "value": "object", "category": "object"}]'
+        })
+        self.assertTrue(form.is_valid())
+ 
