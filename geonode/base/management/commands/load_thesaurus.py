@@ -141,7 +141,6 @@ class Command(BaseCommand):
                 if store:
                     tkl.save()
 
-
     def create_fake_thesaurus(self, name):
         thesaurus = Thesaurus()
         thesaurus.identifier = name

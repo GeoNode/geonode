@@ -115,6 +115,6 @@ class Command(BaseCommand):
             if keyword.alt_label:
                 g.add((concept, SKOS.altLabel, Literal(keyword.alt_label, lang=default_lang)))
             for label in ThesaurusKeywordLabel.objects.filter(keyword=keyword).all():
-                g.add((concept, SKOS.prefLabel, Literal(label.label, lang = label.lang)))
+                g.add((concept, SKOS.prefLabel, Literal(label.label, lang=label.lang)))
 
         self.stdout.write(g.serialize(format=fmt))

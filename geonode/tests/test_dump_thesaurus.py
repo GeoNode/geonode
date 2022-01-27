@@ -77,4 +77,3 @@ class TestDumpThesaurus(TestCase):
             stdout=out,
         )
         return out.getvalue().strip()
-

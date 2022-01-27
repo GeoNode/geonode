@@ -119,7 +119,7 @@ class TestExtractLanguages(SimpleTestCase):
     def test_determinate_title_should_return_the_title_whithout_lang_even_if_localized_is_available(self):
         titles = [
             Literal("Italian register of the reference data sets", lang="it"),
-            Literal("Register of the reference data sets",lang="en"),
+            Literal("Register of the reference data sets", lang="en"),
             Literal("Mocked Title", lang=None),
         ]
         actual = value_for_language(titles, "it")
