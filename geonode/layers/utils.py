@@ -523,13 +523,16 @@ def file_upload(filename,
                 the_file = upload_session.layerfile_set.all()[0].file.name
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
-    # Get a bounding box
-    *bbox, srid = get_bbox(filename)
-    bbox_polygon = BBOXHelper.from_xy(bbox).as_polygon()
-
-    if srid:
-        srid_url = f"http://www.spatialreference.org/ref/{srid.replace(':', '/').lower()}/"  # noqa
-        bbox_polygon.srid = int(srid.split(':')[1])
+    # Getting a bounding box
+    if layer and layer.bbox_polygon:
+        bbox_polygon = layer.bbox_polygon
+        srid = bbox_polygon.srid
+    else:
+        *bbox, srid = get_bbox(filename)
+        bbox_polygon = BBOXHelper.from_xy(bbox).as_polygon()
+        if srid:
+            srid_url = f"http://www.spatialreference.org/ref/{srid.replace(':', '/').lower()}/"  # noqa
+            bbox_polygon.srid = int(srid.split(':')[1])
 
     defaults = {
         'upload_session': upload_session,
