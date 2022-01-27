@@ -527,7 +527,6 @@ def file_upload(filename,
     # Getting a bounding box
     if layer and layer.bbox_polygon:
         bbox_polygon = layer.bbox_polygon
-        srid = bbox_polygon.srid
     else:
         *bbox, srid = get_bbox(filename)
         bbox_polygon = BBOXHelper.from_xy(bbox).as_polygon()
