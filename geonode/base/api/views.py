@@ -70,6 +70,8 @@ from .serializers import (
     ThesaurusKeywordSerializer,
 )
 from .pagination import GeoNodeApiPagination
+from geonode.base.api.serializers import ExtraMetadataSerializer
+from geonode.base.utils import validate_extra_metadata
 
 import logging
 
@@ -466,3 +468,34 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             traceback.print_exc()
             logger.error(e)
             return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
+
+
+def common_extra_metadata_handler(request, _obj):
+    if request.method == "GET":
+        # get list of available metadata
+        return Response(ExtraMetadataSerializer().to_representation(_obj.extra_metadata))
+
+    try:
+        extra_metadata = validate_extra_metadata(request.data, _obj)
+    except Exception as e:
+        return Response(status=500, data=e.args[0])
+
+    if request.method == "PUT":
+        # update all metadata
+        ResourceBase.objects.filter(id=_obj.id).update(extra_metadata=extra_metadata)
+        logger.info("metadata updated for the selected resource")
+        return Response(ExtraMetadataSerializer().to_representation(extra_metadata))
+    elif request.method == "DELETE":
+        # delete single metadata
+        metadata_to_keep = [dict(sorted(x.items())) for x in _obj.extra_metadata]
+        old_metadata = metadata_to_keep.copy()
+        for _metadata in extra_metadata:
+            _m = dict(sorted(_metadata.items()))
+            if _m in old_metadata:
+                metadata_to_keep.remove(_m)
+        ResourceBase.objects.filter(id=_obj.id).update(extra_metadata=metadata_to_keep)
+        return Response(ExtraMetadataSerializer().to_representation(metadata_to_keep))
+    elif request.method == "POST":
+        # add new metadata
+        ResourceBase.objects.filter(id=_obj.id).update(extra_metadata=_obj.extra_metadata + extra_metadata)
+        return Response(ExtraMetadataSerializer().to_representation(_obj.extra_metadata + extra_metadata), status=201)

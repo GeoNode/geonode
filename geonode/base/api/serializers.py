@@ -271,8 +271,6 @@ class ExtraMetadataSerializer(DynamicComputedField):
     def get_attribute(self, instance):
         return json.loads(instance.extra_metadata)
 
-    def to_representation(self, value):
-        return json.loads(value)
     
 class ThumbnailUrlField(DynamicComputedField):
 
