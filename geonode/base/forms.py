@@ -558,7 +558,8 @@ class ResourceBaseForm(TranslationModelForm):
                 Schema(extra_metadata_validation_schema).validate(_metadata)
             except Exception as e:
                 raise forms.ValidationError(f"{e} at index {_index} for input json: {json.dumps(_metadata)}")
-        return cleaned_data.get('extra_metadata')
+        # conerted because in this case, we can store a well formated json instead of the user input
+        return json.dumps(json.loads(cleaned_data.get('extra_metadata')), indent=4)
 
     class Meta:
         exclude = (
