@@ -1526,6 +1526,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     )"""
 
     LANGUAGES = ast.literal_eval(os.getenv('LANGUAGES', MAPSTORE_DEFAULT_LANGUAGES))
+    # The default mapstore client compiles the translations json files in the /static/mapstore directory
+    # gn-translations are the custom translations for the client and ms-translations are the translations from the core framework
+    MAPSTORE_TRANSLATIONS_PATH = os.environ.get('MAPSTORE_TRANSLATIONS_PATH', ['/static/mapstore/ms-translations', '/static/mapstore/gn-translations'])
 
 # -- END Client Hooksets Setup
 

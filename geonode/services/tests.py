@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+from unittest.mock import MagicMock
 import mock
 import logging
 
@@ -28,7 +29,7 @@ from arcrest import MapService as ArcMapService
 from unittest import TestCase as StandardTestCase
 from owslib.wms import WebMapService as OwsWebMapService
 
-from django.test import Client
+from django.test import Client, override_settings
 from django.urls import reverse
 from django.db.utils import IntegrityError
 from django.contrib.auth import get_user_model
@@ -42,7 +43,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
 from geonode.base import enumerations as base_enumerations
 from geonode.harvesting.harvesters.wms import WebMapService
-from geonode.services.utils import test_resource_table_status
+from geonode.services.utils import parse_services_types, test_resource_table_status
 
 from . import enumerations, forms
 from .models import Service
@@ -51,7 +52,7 @@ from .serviceprocessors import (
     handler,
     wms,
     arcgis)
-from .serviceprocessors.arcgis import MapLayer
+from .serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
 
 logger = logging.getLogger(__name__)
 
@@ -107,12 +108,16 @@ class ModuleFunctionsTestCase(StandardTestCase):
             f"http://www.geonode.org/{mock_settings.CASCADE_WORKSPACE}"
         )
 
-    @mock.patch("geonode.services.serviceprocessors.handler.WmsServiceHandler",
+    @mock.patch("geonode.services.serviceprocessors.handler.get_available_service_type",
                 autospec=True)
     def test_get_service_handler_wms(self, mock_wms_handler):
+        _handler = MagicMock()
+        mock_wms_handler.return_value = {
+            enumerations.WMS: {"OWS": True, "handler": _handler, "label": 'Web Map Service'}
+        }
         phony_url = "http://fake"
         handler.get_service_handler(phony_url, service_type=enumerations.WMS)
-        mock_wms_handler.assert_called_with(phony_url, None)
+        _handler.assert_called_with(phony_url, None)
 
     @mock.patch("arcrest.MapService",
                 autospec=True)
@@ -955,3 +960,79 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
                 self.selenium.find_element_by_id('btn-id-filter').click()
                 # self.selenium.find_element_by_id('option_atlantis:tiger_roads_tiger_roads').click()
                 # self.selenium.find_element_by_tag_name('form').submit()
+
+
+SERVICES_TYPE_MODULES = [
+    "geonode.services.tests.dummy_services_type",
+    "geonode.services.tests.dummy_services_type2",
+]
+
+
+class TestServiceViews(GeoNodeBaseTestSupport):
+    def setUp(self):
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self.admin = get_user_model().objects.get(username='admin')
+        self.sut, _ = Service.objects.get_or_create(
+            type=enumerations.WMS,
+            name='Bogus',
+            title='Pocus',
+            owner=self.admin,
+            method=enumerations.INDEXED,
+            metadata_only=True,
+            base_url='http://bogus.pocus.com/ows')
+        self.sut.clear_dirty_state()
+
+    def test_user_admin_can_access_to_page(self):
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(reverse('services'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_anonymous_user_can_see_the_services(self):
+        response = self.client.get(reverse('services'))
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
+    def test_will_use_multiple_service_types_defined(self):
+        elems = parse_services_types()
+        expected = {
+            "test": {"OWS": True, "handler": "TestHandler", "label": "Test Number 1", "management_view": "path.to.view1"},
+            "test2": {"OWS": False, "handler": "TestHandler2", "label": "Test Number 2", "management_view": "path.to.view2"},
+            "test3": {"OWS": True, "handler": "TestHandler3", "label": "Test Number 3", "management_view": "path.to.view3"},
+            "test4": {"OWS": False, "handler": "TestHandler4", "label": "Test Number 4", "management_view": "path.to.view4"},
+        }
+        self.assertDictEqual(expected, elems)
+
+    @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
+    def test_will_use_multiple_service_types_defined_for_choices(self):
+        elems = handler.get_available_service_type()
+        expected = {
+            'WMS': {'OWS': True, 'handler': wms.WmsServiceHandler, 'label': 'Web Map Service'},
+            'GN_WMS': {'OWS': True, 'handler': wms.GeoNodeServiceHandler, 'label': 'GeoNode (Web Map Service)'},
+            'REST_MAP': {'OWS': False, 'handler': ArcMapServiceHandler, 'label': 'ArcGIS REST MapServer'},
+            'REST_IMG': {'OWS': False, 'handler': ArcImageServiceHandler, 'label': 'ArcGIS REST ImageServer'},
+            'test': {'OWS': True, 'handler': 'TestHandler', 'label': 'Test Number 1', 'management_view': 'path.to.view1'},
+            'test2': {'OWS': False, 'handler': 'TestHandler2', 'label': 'Test Number 2', 'management_view': 'path.to.view2'},
+            'test3': {'OWS': True, 'handler': 'TestHandler3', 'label': 'Test Number 3', 'management_view': 'path.to.view3'},
+            'test4': {'OWS': False, 'handler': 'TestHandler4', 'label': 'Test Number 4', 'management_view': 'path.to.view4'}
+        }
+        self.assertDictEqual(expected, elems)
+
+
+'''
+Just a dummy function required for the smoke test above
+'''
+
+
+class dummy_services_type:
+    services_type = {
+        "test": {"OWS": True, "handler": "TestHandler", "label": "Test Number 1", "management_view": "path.to.view1"},
+        "test2": {"OWS": False, "handler": "TestHandler2", "label": "Test Number 2", "management_view": "path.to.view2"},
+    }
+
+
+class dummy_services_type2:
+    services_type = {
+        "test3": {"OWS": True, "handler": "TestHandler3", "label": "Test Number 3", "management_view": "path.to.view3"},
+        "test4": {"OWS": False, "handler": "TestHandler4", "label": "Test Number 4", "management_view": "path.to.view4"},
+    }
