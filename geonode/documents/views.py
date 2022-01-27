@@ -229,6 +229,8 @@ class DocumentUploadView(CreateView):
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
             self.object.was_published = False
+        
+        self.object.extra_metadata = json.loads(self.object.extra_metadata)
 
         self.object.save()
         form.save_many2many()

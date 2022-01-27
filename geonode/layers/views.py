@@ -1003,6 +1003,7 @@ def layer_metadata(
             la.visible = form["visible"]
             la.display_order = form["display_order"]
             la.featureinfo_type = form["featureinfo_type"]
+            
             la.save()
 
         if new_poc is not None or new_author is not None:
@@ -1021,6 +1022,8 @@ def layer_metadata(
         if new_regions:
             layer.regions.add(*new_regions)
         layer.category = new_category
+
+        layer.extra_metadata = json.loads(layer_form.cleaned_data['extra_metadata'])
 
         up_sessions = UploadSession.objects.filter(layer=layer)
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:

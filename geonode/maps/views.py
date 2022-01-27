@@ -333,6 +333,7 @@ def map_metadata(
         map_obj.regions.clear()
         map_obj.regions.add(*new_regions)
         map_obj.category = new_category
+        map_obj.extra_metadata = json.loads(map_form.cleaned_data['extra_metadata'])
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, map_obj)
         if not ajax:
@@ -369,7 +370,8 @@ def map_metadata(
         map_obj.save(notify=True)
 
         return HttpResponse(json.dumps({'message': message}))
-    else:
+    elif request.method == "POST" and (not map_form.is_valid(
+    ) or not category_form.is_valid() or not tkeywords_form.is_valid()):
         errors_list = {**map_form.errors.as_data(), **category_form.errors.as_data(), **tkeywords_form.errors.as_data()}
         logger.error(f"GeoApp Metadata form is not valid: {errors_list}")
         out = {

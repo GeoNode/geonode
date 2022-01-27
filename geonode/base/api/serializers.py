@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 from slugify import slugify
 from urllib.parse import urljoin
 
@@ -262,7 +263,17 @@ class DetailUrlField(DynamicComputedField):
     def get_attribute(self, instance):
         return build_absolute_uri(instance.detail_url)
 
+class ExtraMetadataSerializer(DynamicComputedField):
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        return json.loads(instance.extra_metadata)
+
+    def to_representation(self, value):
+        return json.loads(value)
+    
 class ThumbnailUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):

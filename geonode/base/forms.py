@@ -17,7 +17,6 @@
 #
 #########################################################################
 import json
-from schema import Schema
 import re
 import html
 import logging
@@ -46,6 +45,7 @@ from geonode.base.models import (CuratedThumbnail, HierarchicalKeyword,
                                  License, Region, ResourceBase, Thesaurus,
                                  ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel,
                                  TopicCategory)
+from geonode.base.utils import validate_extra_metadata
 from geonode.base.widgets import TaggitSelect2Custom
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
@@ -529,37 +529,8 @@ class ResourceBaseForm(TranslationModelForm):
         return title
 
     def clean_extra_metadata(self):
-        cleaned_data = self.cleaned_data
-        if not cleaned_data.get('extra_metadata', []):
-            return cleaned_data
-
-        # starting validation of extra metadata passed via JSON
-        # if schema for metadata validation is not defined, an error is raised
-        resource_type = (
-            self.instance.polymorphic_ctype.model
-            if self.instance.polymorphic_ctype
-            else self.instance.class_name.lower()
-        )
-        extra_metadata_validation_schema = settings.EXTRA_METADATA_SCHEMA.get(resource_type, None)
-        if not extra_metadata_validation_schema:
-            raise forms.ValidationError(
-                f"EXTRA_METADATA_SCHEMA validation schema is not available for resource {resource_type}"
-            )
-        # starting json structure validation. The Field can contain multiple metadata
-
-        try:
-            _extra_as_json = json.loads(cleaned_data.get('extra_metadata'))
-        except Exception:
-            raise forms.ValidationError("The value provided for the Extra metadata field is not a valid JSON")
-
-        # looping on all the single metadata provided. If it doen't match the schema an error is raised
-        for _index, _metadata in enumerate(_extra_as_json):
-            try:
-                Schema(extra_metadata_validation_schema).validate(_metadata)
-            except Exception as e:
-                raise forms.ValidationError(f"{e} at index {_index} for input json: {json.dumps(_metadata)}")
-        # conerted because in this case, we can store a well formated json instead of the user input
-        return json.dumps(json.loads(cleaned_data.get('extra_metadata')), indent=4)
+        cleaned_data = self.cleaned_data.get('extra_metadata', [])
+        return json.dumps(validate_extra_metadata(cleaned_data, self.instance), indent=4)
 
     class Meta:
         exclude = (

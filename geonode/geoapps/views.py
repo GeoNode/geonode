@@ -451,6 +451,9 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
         geoapp_obj.regions.clear()
         geoapp_obj.regions.add(*new_regions)
         geoapp_obj.category = new_category
+
+        geoapp_obj.extra_metadata = json.loads(geoapp_form.cleaned_data['extra_metadata'])
+        
         geoapp_obj.save(notify=True)
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
@@ -486,7 +489,8 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             logger.error(tb)
 
         return HttpResponse(json.dumps({'message': message}))
-    else:
+    elif request.method == "POST" and (not geoapp_form.is_valid(
+    ) or not category_form.is_valid() or not tkeywords_form.is_valid()):
         errors_list = {**geoapp_form.errors.as_data(), **category_form.errors.as_data(), **tkeywords_form.errors.as_data()}
         logger.error(f"GeoApp Metadata form is not valid: {errors_list}")
         out = {
