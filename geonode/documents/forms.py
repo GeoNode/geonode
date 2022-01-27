@@ -44,6 +44,7 @@ logger = logging.getLogger(__name__)
 
 class DocumentFormMixin(object):
 
+
     def generate_link_choices(self, resources=None):
 
         if resources is None:
