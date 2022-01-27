@@ -51,7 +51,7 @@ from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
 from geonode.base.bbox_utils import filter_bbox
 from geonode.groups.models import GroupProfile
-from geonode.utils import check_ogc_backend
+from geonode.utils import check_ogc_backend, get_subclasses_by_model
 from geonode.security.utils import get_visible_resources
 from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
@@ -79,6 +79,7 @@ LAYER_SUBTYPES = {
     'vector_time': 'vectorTimeSeries',
 }
 FILTER_TYPES.update(LAYER_SUBTYPES)
+GEONODE_APPS_INSTALLED = [x.lower() for x in get_subclasses_by_model('GeoApp')]
 
 
 class CommonMetaApi:
@@ -165,7 +166,7 @@ class CommonModelApi(ModelResource):
         if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'app_type__in' in filters:
-            orm_filters.update({'polymorphic_ctype__model': filters['app_type__in'].lower()})
+            orm_filters.update({'polymorphic_ctype__model__in': [filt.lower() for filt in filters.getlist('app_type__in')]})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
         orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'
@@ -185,6 +186,7 @@ class CommonModelApi(ModelResource):
         keywords = applicable_filters.pop('keywords__slug__in', None)
         metadata_only = applicable_filters.pop('metadata_only', False)
         filtering_method = applicable_filters.pop('f_method', 'and')
+        polyphormic_model = applicable_filters.pop('polymorphic_ctype__model__in', None)
         if filtering_method == 'or':
             filters = Q()
             for f in applicable_filters.items():
@@ -223,6 +225,9 @@ class CommonModelApi(ModelResource):
                         filtered = filtered | semi_filtered.filter(polymorphic_ctype__model=_type_filter)
                     else:
                         filtered = semi_filtered.filter(polymorphic_ctype__model=_type_filter)
+        elif polyphormic_model:
+            _type_list = [_t for _t in polyphormic_model if _t in GEONODE_APPS_INSTALLED]
+            filtered = semi_filtered.filter(polymorphic_ctype__model__in=_type_list)
         else:
             filtered = semi_filtered
 
