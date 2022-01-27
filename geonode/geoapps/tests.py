@@ -16,8 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.test import override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from geonode.geoapps.forms import GeoAppForm
 
 from geonode.geoapps.models import GeoApp
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -25,6 +27,16 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 class TestGeoAppViews(GeoNodeBaseTestSupport):
 
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.get(username='admin')
+        self.geoapp = GeoApp.objects.create(
+            name="name",
+            title="geoapp_titlte",
+            thumbnail_url='initial',
+            owner=self.user
+        )
+        self.sut = GeoAppForm
+        
     def test_update_geoapp_metadata(self):
         bobby = get_user_model().objects.get(username='bobby')
         gep_app = GeoApp.objects.create(
@@ -48,3 +60,68 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
         self.assertEqual(GeoApp.objects.get(id=gep_app.id).title, 'New title')
         #   Check uuid is populate
         self.assertTrue(GeoApp.objects.get(id=gep_app.id).uuid)
+
+    def test_resource_form_is_invalid_extra_metadata_not_json_format(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("geoapp_metadata", args=(self.geoapp.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.geoapp.owner.id,
+            "resource-title": "geoapp_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": "not-a-json"
+        })
+        expected = {"success": False, "errors": ["extra_metadata: The value provided for the Extra metadata field is not a valid JSON"]}
+        self.assertDictEqual(expected, response.json())
+
+    @override_settings(EXTRA_METADATA_SCHEMA={"key": "value"})
+    def test_resource_form_is_invalid_extra_metadata_not_schema_in_settings(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("geoapp_metadata", args=(self.geoapp.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.geoapp.owner.id,
+            "resource-title": "geoapp_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": "[{'key': 'value'}]"
+        })
+        expected = {"success": False, "errors": ["extra_metadata: EXTRA_METADATA_SCHEMA validation schema is not available for resource geoapp"]}
+        self.assertDictEqual(expected, response.json())
+ 
+    def test_resource_form_is_invalid_extra_metadata_invalids_schema_entry(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("geoapp_metadata", args=(self.geoapp.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.geoapp.owner.id,
+            "resource-title": "geoapp_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": '[{"key": "value"},{"name": "object", "slug": "object", "help_text": "object", "field_type": "object", "value": "object", "category": "object"}]'
+        })
+        expected = "extra_metadata: Missing keys: \'category\', \'field_type\', \'help_text\', \'name\', \'slug\', \'value\' at index 0"
+        self.assertIn(expected, response.json()['errors'][0])
+ 
+    @override_settings(EXTRA_METADATA_SCHEMA={
+        "geoapp": {
+            "name": str,
+            "slug": str,
+            "help_text": str,
+            "field_type": object,
+            "value": object,
+            "category": str
+            }
+        })
+    def test_resource_form_is_valid_extra_metadata(self):
+        form = self.sut(data={
+            "owner": self.geoapp.owner.id,
+            "title": "geoapp_title",
+            "date": "2022-01-24 16:38 pm",
+            "date_type": "creation",
+            "language": "eng",
+            "extra_metadata": '[{"name": "object", "slug": "object", "help_text": "object", "field_type": "object", "value": "object", "category": "object"}]'
+        })
+        self.assertTrue(form.is_valid())
+ 

@@ -30,6 +30,8 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
+from geonode.base.populate_test_data import create_single_map
+from geonode.maps.forms import MapForm
 
 from geonode.maps.models import Map, MapLayer
 from geonode.settings import on_travis
@@ -1098,3 +1100,66 @@ class MapsNotificationsTestCase(NotificationsTestsHelper):
                                 rating=5)
                 rating.save()
                 self.assertTrue(self.check_notification_out('map_rated', self.u))
+
+
+class TestMapForm(GeoNodeBaseTestSupport):
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.get(username='admin')
+        self.map = create_single_map("single_map", owner=self.user)
+        self.sut = MapForm
+
+    def test_resource_form_is_invalid_extra_metadata_not_json_format(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("map_metadata", args=(self.map.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.map.owner.id,
+            "resource-title": "map_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": "not-a-json"
+        })
+        expected = {"success": False, "errors": ["extra_metadata: The value provided for the Extra metadata field is not a valid JSON"]}
+        self.assertDictEqual(expected, response.json())
+
+    @override_settings(EXTRA_METADATA_SCHEMA={"key": "value"})
+    def test_resource_form_is_invalid_extra_metadata_not_schema_in_settings(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("map_metadata", args=(self.map.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.map.owner.id,
+            "resource-title": "map_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": "[{'key': 'value'}]"
+        })
+        expected = {"success": False, "errors": ["extra_metadata: EXTRA_METADATA_SCHEMA validation schema is not available for resource map"]}
+        self.assertDictEqual(expected, response.json())
+ 
+    def test_resource_form_is_invalid_extra_metadata_invalids_schema_entry(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("map_metadata", args=(self.map.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.map.owner.id,
+            "resource-title": "map_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": '[{"key": "value"},{"name": "object", "slug": "object", "help_text": "object", "field_type": "object", "value": "object", "category": "object"}]'
+        })
+        expected = "extra_metadata: Missing keys: \'category\', \'field_type\', \'help_text\', \'name\', \'slug\', \'value\' at index 0"
+        self.assertIn(expected, response.json()['errors'][0])
+ 
+ 
+    def test_resource_form_is_valid_extra_metadata(self):
+        form = self.sut(data={
+            "owner": self.map.owner.id,
+            "title": "map_title",
+            "date": "2022-01-24 16:38 pm",
+            "date_type": "creation",
+            "language": "eng",
+            "extra_metadata": '[{"name": "object", "slug": "object", "help_text": "object", "field_type": "object", "value": "object", "category": "object"}]'
+        })
+        self.assertTrue(form.is_valid())
+ 

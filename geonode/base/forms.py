@@ -543,7 +543,7 @@ class ResourceBaseForm(TranslationModelForm):
         extra_metadata_validation_schema = settings.EXTRA_METADATA_SCHEMA.get(resource_type, None)
         if not extra_metadata_validation_schema:
             raise forms.ValidationError(
-                f"EXTRA_METADATA_SCHEMA validation schema is not available for resource {self.instance.polymorphic_ctype.model}"
+                f"EXTRA_METADATA_SCHEMA validation schema is not available for resource {resource_type}"
             )
         # starting json structure validation. The Field can contain multiple metadata
 

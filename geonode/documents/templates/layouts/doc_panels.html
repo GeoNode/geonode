@@ -539,7 +539,13 @@ span.grippy::after {
                         <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
                         {{ document_form.spatial_representation_type }}
                     </div>
-                      {% endblock doc_spatial_representation_type %}
+                    {% endblock doc_spatial_representation_type %}
+                    {% block doc_extra_metadata %}
+                    <div style="margin-top: 5px">
+                        <span><label for="{{ document_form.extra_metadata|id }}">{{ document_form.extra_metadata.label }}</label></span>
+                        {{ document_form.extra_metadata }}
+                    </div>
+                    {% endblock doc_extra_metadata %}
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">

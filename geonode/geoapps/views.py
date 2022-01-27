@@ -486,7 +486,17 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             logger.error(tb)
 
         return HttpResponse(json.dumps({'message': message}))
-
+    else:
+        errors_list = {**geoapp_form.errors.as_data(), **category_form.errors.as_data(), **tkeywords_form.errors.as_data()}
+        logger.error(f"GeoApp Metadata form is not valid: {errors_list}")
+        out = {
+            'success': False,
+            "errors": [f"{x}: {y[0].messages[0]}" for x, y in errors_list.items()]
+        }
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=400)
     # - POST Request Ends here -
 
     # Request.GET
