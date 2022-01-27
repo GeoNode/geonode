@@ -99,6 +99,9 @@ def facets(context):
     if facet_type == 'geoapps':
         return _facets_geoapps(
             request,
+            title_filter,
+            abstract_filter,
+            purpose_filter,
             category_filter,
             regions_filter,
             owner_filter,
