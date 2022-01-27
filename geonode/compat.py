@@ -36,6 +36,9 @@ def ensure_string(payload_bytes):
         # when payload is a byte-like object (e.g bytearray)
         # primarily used in when _payload is an image
         return _payload
-    if re.match(r'b\'(.*)\'', _payload):
-        _payload = re.match(r'b\'(.*)\'', _payload).groups()[0]
+    try:
+        if re.match(r'b\'(.*)\'', _payload):
+            _payload = re.match(r'b\'(.*)\'', _payload).groups()[0]
+    except TypeError:
+        pass
     return _payload

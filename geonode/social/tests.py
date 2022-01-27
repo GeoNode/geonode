@@ -26,25 +26,29 @@ Replace this with more appropriate tests for your application.
 """
 import json
 
-from geonode.tests.base import GeoNodeBaseTestSupport
+from rest_framework import status
 
 from actstream import registry
 from actstream.models import Action, actor_stream
-from dialogos.models import Comment
+
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
+from django.urls import reverse
+
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.social.templatetags.social_tags import activity_item
 from geonode.layers.models import Layer
+from dialogos.models import Comment
 
 
-class SimpleTest(GeoNodeBaseTestSupport):
+class RecentActivityTest(GeoNodeBaseTestSupport):
 
     integration = True
 
     def setUp(self):
-        super(SimpleTest, self).setUp()
+        super(RecentActivityTest, self).setUp()
 
         registry.register(Layer)
         registry.register(Comment)
@@ -140,3 +144,13 @@ class SimpleTest(GeoNodeBaseTestSupport):
 
         # Pre-fecthing actstream breaks the actor stream
         self.assertIn(action, actor_stream(self.user))
+
+    def test_get_recent_activities(self):
+        url = reverse('recent-activity')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(response.context_data['action_list_geoapps'])
+        self.assertIsNotNone(response.context_data['action_list_layers'])
+        self.assertIsNotNone(response.context_data['action_list_maps'])
+        self.assertIsNotNone(response.context_data['action_list_documents'])
+        self.assertIsNotNone(response.context_data['action_list_comments'])

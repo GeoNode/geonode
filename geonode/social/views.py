@@ -25,6 +25,7 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 
 from geonode.base.models import ResourceBase
+from geonode.utils import get_subclasses_by_model
 
 logger = logging.getLogger(__name__)
 
@@ -37,36 +38,32 @@ class RecentActivity(ListView):
     template_name = 'social/activity_list.html'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(RecentActivity, self).get_context_data(*args, **kwargs)
+        context = super().get_context_data(*args, **kwargs)
 
         def _filter_actions(action, request):
+            geoapps_actions = {}
             if action == 'all':
                 _actions = Action.objects.filter(public=True)[:100]
+            elif action == 'geoapp':
+                # Create a dictionary mapping for each app
+                apps = [app.lower() for app in get_subclasses_by_model('GeoApp')]
+                for app in apps:
+                    app_actions = Action.objects.filter(
+                        public=True, action_object_content_type__model=app)[:100]
+                    geoapps_actions[app] = app_actions
+                _actions = geoapps_actions
             else:
                 _actions = Action.objects.filter(
                     public=True, action_object_content_type__model=action)[:100]
-            _filtered_actions = []
-            for _action in _actions:
-                if _action.target_object_id:
-                    action_object_filter = {
-                        'id': _action.target_object_id
-                    }
-                elif _action.action_object_object_id:
-                    action_object_filter = {
-                        'id': _action.action_object_object_id
-                    }
-                try:
-                    obj = get_object_or_404(ResourceBase, **action_object_filter)
-                    resource = obj.get_self_resource()
-                    user = request.user
-                    if user.has_perm('base.view_resourcebase', resource) or \
-                            user.has_perm('view_resourcebase', resource):
-                        _filtered_actions.append(_action.id)
-                except ResourceBase.DoesNotExist:
-                    _filtered_actions.append(_action.id)
-                except (PermissionDenied, Exception) as e:
-                    logger.debug(e)
-            return _filtered_actions
+            if isinstance(_actions, dict):
+                # For Geoapps, return a dict mapping of each app with its actions
+                _filtered_actions = {}
+                for app_name, actions, in _actions.items():
+                    filtered = self.get_filtered_actions(request.user, actions)
+                    _filtered_actions[app_name] = Action.objects.filter(id__in=filtered)[:15]
+                return _filtered_actions
+            else:
+                return self.get_filtered_actions(request.user, _actions)
 
         context['action_list'] = Action.objects.filter(
             id__in=_filter_actions('all', self.request))[:15]
@@ -78,7 +75,31 @@ class RecentActivity(ListView):
             id__in=_filter_actions('document', self.request))[:15]
         context['action_list_comments'] = Action.objects.filter(
             id__in=_filter_actions('comment', self.request))[:15]
+        context['action_list_geoapps'] = _filter_actions('geoapp', self.request)
         return context
+
+    def get_filtered_actions(self, user, _actions):
+        _filtered_actions = []
+        for _action in _actions:
+            if _action.target_object_id:
+                action_object_filter = {
+                    'id': _action.target_object_id
+                }
+            elif _action.action_object_object_id:
+                action_object_filter = {
+                    'id': _action.action_object_object_id
+                }
+            try:
+                obj = get_object_or_404(ResourceBase, **action_object_filter)
+                resource = obj.get_self_resource()
+                if user.has_perm('base.view_resourcebase', resource) or \
+                        user.has_perm('view_resourcebase', resource):
+                    _filtered_actions.append(_action.id)
+            except ResourceBase.DoesNotExist:
+                _filtered_actions.append(_action.id)
+            except (PermissionDenied, Exception) as e:
+                logger.debug(e)
+        return _filtered_actions
 
 
 class UserActivity(ListView):
@@ -95,6 +116,6 @@ class UserActivity(ListView):
                 if x and x.actor and x.actor.username == self.kwargs['actor']]
 
     def get_context_data(self, *args, **kwargs):
-        context = super(UserActivity, self).get_context_data(*args, **kwargs)
+        context = super().get_context_data(*args, **kwargs)
         context['actor'] = self.kwargs['actor']
         return context
