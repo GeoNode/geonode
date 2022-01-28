@@ -703,6 +703,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     data_quality_statement_help_text = _(
         'general explanation of the data producer\'s knowledge about the lineage of a'
         ' dataset')
+    extra_metadata_help_text = _(
+        'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]')
     # internal fields
     uuid = models.CharField(max_length=36)
     title = models.CharField(_('title'), max_length=255, help_text=_(
@@ -967,7 +969,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         "ExtraMetadata",
         verbose_name=_('Extra Metadata'),
         null=True,
-        blank=True)
+        blank=True,
+        help_text=extra_metadata_help_text)
 
     objects = ResourceBaseManager()
 

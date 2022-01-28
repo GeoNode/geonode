@@ -60,6 +60,7 @@ from geonode.upload.upload import _update_layer_with_xml_info
 from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify, get_url_for_model
 from geonode.base.models import (
+    ExtraMetadata,
     Thesaurus,
     TopicCategory)
 from geonode.base.enumerations import CHARSETS
@@ -1023,8 +1024,15 @@ def layer_metadata(
             layer.regions.add(*new_regions)
         layer.category = new_category
 
+        # clearing old metadata from the resource
+        layer.metadata.all().delete()
+        # creating new metadata for the resource
         for _m in json.loads(layer_form.cleaned_data['extra_metadata']):
-            layer.metadata.add(**_m)
+            new_m = ExtraMetadata.objects.create(
+                resource=layer,
+                metadata=_m
+            )
+            layer.metadata.add(new_m)
 
         up_sessions = UploadSession.objects.filter(layer=layer)
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:

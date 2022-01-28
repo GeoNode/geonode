@@ -45,6 +45,7 @@ from geonode.base.auth import get_or_create_token
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 from geonode.base.models import (
+    ExtraMetadata,
     Thesaurus,
     TopicCategory)
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
@@ -229,8 +230,6 @@ class DocumentUploadView(CreateView):
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
             self.object.was_published = False
-        
-        self.object.extra_metadata = json.loads(self.object.extra_metadata)
 
         self.object.save()
         form.save_many2many()
@@ -465,6 +464,17 @@ def document_metadata(
         document.regions.clear()
         document.regions.add(*new_regions)
         document.category = new_category
+
+        # deleting old metadata from the resource
+        document.metadata.all().delete()
+        # creating new metadata for the resource
+        for _m in json.loads(document_form.cleaned_data['extra_metadata']):
+            new_m = ExtraMetadata.objects.create(
+                resource=document,
+                metadata=_m
+            )
+            document.metadata.add(new_m)
+
         document.save(notify=True)
         document_form.save_many2many()
 
@@ -500,7 +510,18 @@ def document_metadata(
             logger.error(tb)
 
         return HttpResponse(json.dumps({'message': message}))
-
+    elif request.method == "POST" and (not document_form.is_valid(
+    ) or not category_form.is_valid() or not tkeywords_form.is_valid()):
+        errors_list = {**document_form.errors.as_data(), **category_form.errors.as_data(), **tkeywords_form.errors.as_data()}
+        logger.error(f"GeoApp Metadata form is not valid: {errors_list}")
+        out = {
+            'success': False,
+            "errors": [f"{x}: {y[0].messages[0]}" for x, y in errors_list.items()]
+        }
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=400)
     # - POST Request Ends here -
 
     # Request.GET

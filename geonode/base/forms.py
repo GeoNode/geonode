@@ -29,7 +29,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core import validators
 from django.db.models import Prefetch, Q
-from django.forms import ModelForm, models
+from django.forms import ModelForm, model_to_dict, models
 from django.forms.fields import ChoiceField, MultipleChoiceField
 from django.forms.utils import flatatt
 from django.utils.encoding import force_text
@@ -479,10 +479,19 @@ class ResourceBaseForm(TranslationModelForm):
 
     regions.widget.attrs = {"size": 20}
 
-    extra_metadata = forms.CharField(required=False, widget=forms.Textarea)
+    extra_metadata = forms.CharField(
+        required=False,
+        widget=forms.Textarea,
+        help_text=_('Additional metadata, must be in format [\
+            {"metadata_key": "metadata_value"},\
+            {"metadata_key": "metadata_value"} \
+        ]')
+)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.metadata.exists():
+            self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]
         for field in self.fields:
             help_text = self.fields[field].help_text
             if help_text != '':

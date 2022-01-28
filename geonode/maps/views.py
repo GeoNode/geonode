@@ -59,6 +59,7 @@ from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 from geonode.base.models import (
+    ExtraMetadata,
     Thesaurus,
     TopicCategory)
 from geonode import geoserver
@@ -333,7 +334,16 @@ def map_metadata(
         map_obj.regions.clear()
         map_obj.regions.add(*new_regions)
         map_obj.category = new_category
-        map_obj.extra_metadata = json.loads(map_form.cleaned_data['extra_metadata'])
+
+        # clearing old metadata from the resource
+        map_obj.metadata.all().delete()
+        # creating new metadata for the resource
+        for _m in json.loads(map_form.cleaned_data['extra_metadata']):
+            new_m = ExtraMetadata.objects.create(
+                resource=map_obj,
+                metadata=_m
+            )
+            map_obj.metadata.add(new_m)
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, map_obj)
         if not ajax:

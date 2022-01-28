@@ -347,8 +347,6 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
 
     else:
         geoapp_form = GeoAppForm(instance=geoapp_obj, prefix="resource")
-        if geoapp_obj.metadata.exists():
-            geoapp_form.fields['extra_metadata'].initial = [json.dumps(x.metadata, indent=4) for x in geoapp_obj.metadata.all()]
 
         geoapp_form.disable_keywords_widget_for_non_superuser(request.user)
         category_form = CategoryForm(
@@ -454,7 +452,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
 
         geoapp_obj.save(notify=True)
         # clearing old metadata from the resource
-        geoapp_obj.metadata.clear()
+        geoapp_obj.metadata.all().delete()
         # creating new metadata for the resource
         for _m in json.loads(geoapp_form.cleaned_data['extra_metadata']):
             new_m = ExtraMetadata.objects.create(
