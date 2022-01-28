@@ -21,9 +21,11 @@
 from typing import List
 
 from django.conf import settings
+from django.core.files.uploadedfile import UploadedFile
 from django.core.management.base import BaseCommand, CommandError
 from rdflib import Graph, Literal
 from rdflib.namespace import RDF, SKOS, DC, DCTERMS
+from rdflib.util import guess_format
 
 from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel
 
@@ -72,7 +74,16 @@ class Command(BaseCommand):
 
     def load_thesaurus(self, input_file, name, store):
         g = Graph()
-        g.parse(input_file)
+
+        # if the input_file is an UploadedFile object rather than a file path the Graph.parse()
+        # method may not have enough info to correctly guess the type; in this case supply the
+        # name, which should include the extension, to guess_format manually...
+        rdf_format = None
+        if isinstance(input_file, UploadedFile):
+            self.stderr.write(self.style.WARNING(f"Guessing RDF format from {input_file.name}..."))
+            rdf_format = guess_format(input_file.name)
+
+        g.parse(input_file, format=rdf_format)
 
         # An error will be thrown here there is more than one scheme in the file
         scheme = g.value(None, RDF.type, SKOS.ConceptScheme, any=False)
