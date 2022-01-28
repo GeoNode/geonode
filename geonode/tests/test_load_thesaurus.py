@@ -97,7 +97,6 @@ class TestLoadThesaurus(TestCase):
             with self.assertRaises(ParserError):
                 management.call_command("load_thesaurus", file=uf, name="alt_name", stdout="out", stderr=None)
 
-
     @staticmethod
     def __get_last_thesaurus():
         return Thesaurus.objects.all().order_by("-id")[0]
