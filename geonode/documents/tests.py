@@ -242,15 +242,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
     def test_replace_document(self):
         self.client.login(username='admin', password='admin')
-        response = self.client.post(
-            reverse('document_upload'),
-            data={
-                'title': 'Url Doc',
-                'permissions': '{"users":{"AnonymousUser": ["view_resourcebase"]},"groups":{}}',
-                'doc_url': 'http://www.geonode.org/map.pdf'
-            }
-        )
-        self.assertEqual(response.status_code, 302)
 
         f = SimpleUploadedFile(
             'test_img_file.gif',
@@ -265,21 +256,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             follow=True)
         self.assertEqual(response.status_code, 200)
 
-        # Replace url
-        d = Document.objects.get(title='Url Doc')
-        self.assertEqual(d.doc_url, 'http://www.geonode.org/map.pdf')
-        form_data = {
-            'doc_url': 'http://www.geonode.org/mapz.pdf'
-        }
-        response = self.client.post(
-            reverse('document_replace', args=(d.id,)),
-            data=form_data
-        )
-        self.assertEqual(response.status_code, 302)
-        d = Document.objects.get(title='Url Doc')
-        self.assertEqual(d.doc_url, 'http://www.geonode.org/mapz.pdf')
-
-        # Replace File
+        # Replace Document
         d = Document.objects.get(title='File Doc')
         test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
         f = SimpleUploadedFile('test_image.png', BytesIO(test_image.tobytes()).read(), 'image/png')
@@ -288,6 +265,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             data={'doc_file': f}
         )
         self.assertEqual(response.status_code, 302)
+        # Remove document
+        d.delete()
 
     def test_upload_document_form_size_limit(self):
         form_data = {

@@ -254,28 +254,23 @@ class DocumentReplaceForm(forms.ModelForm):
     """
     doc_file = SizeRestrictedFileField(
         label=_("File"),
-        required=False,
+        required=True,
         field_slug="document_upload_size"
     )
 
     class Meta:
         model = Document
-        fields = ['doc_file', 'doc_url']
+        fields = ['doc_file']
 
     def clean(self):
         """
-        Ensures the doc_file or the doc_url field is populated.
+        Ensures the doc_file field is populated.
         """
         cleaned_data = super().clean()
         doc_file = self.cleaned_data.get('doc_file')
-        doc_url = self.cleaned_data.get('doc_url')
 
-        if not doc_file and not doc_url:
-            raise forms.ValidationError(_("Document must be a file or url."))
-
-        if doc_file and doc_url:
-            raise forms.ValidationError(
-                _("A document cannot have both a file and a url."))
+        if not doc_file:
+            raise forms.ValidationError(_("Document must be a file."))
 
         return cleaned_data
 

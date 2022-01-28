@@ -292,14 +292,7 @@ class DocumentUpdateView(UpdateView):
             )
             if tempdir != os.path.dirname(storage_path):
                 shutil.rmtree(tempdir, ignore_errors=True)
-        else:
-            self.object = resource_manager.update(
-                self.object.uuid,
-                instance=self.object,
-                vals=dict(
-                    doc_url=doc_form.pop('doc_url', None)
-                )
-            )
+
         register_event(self.request, EventType.EVENT_CHANGE, self.object)
         url = hookset.document_detail_url(self.object)
         return HttpResponseRedirect(url)
