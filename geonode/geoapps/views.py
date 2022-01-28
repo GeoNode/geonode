@@ -44,10 +44,7 @@ from geonode.monitoring.models import EventType
 from geonode.people.forms import ProfileForm
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 
-from geonode.base.models import (
-    Thesaurus,
-    TopicCategory
-)
+from geonode.base.models import ExtraMetadata, Thesaurus, TopicCategory
 
 from geonode.utils import (
     resolve_object,
@@ -350,6 +347,9 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
 
     else:
         geoapp_form = GeoAppForm(instance=geoapp_obj, prefix="resource")
+        if geoapp_obj.metadata.exists():
+            geoapp_form.fields['extra_metadata'].initial = [json.dumps(x.metadata, indent=4) for x in geoapp_obj.metadata.all()]
+
         geoapp_form.disable_keywords_widget_for_non_superuser(request.user)
         category_form = CategoryForm(
             prefix="category_choice_field",
@@ -452,10 +452,17 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
         geoapp_obj.regions.add(*new_regions)
         geoapp_obj.category = new_category
 
-        geoapp_obj.extra_metadata = json.loads(geoapp_form.cleaned_data['extra_metadata'])
-        
         geoapp_obj.save(notify=True)
-
+        # clearing old metadata from the resource
+        geoapp_obj.metadata.clear()
+        # creating new metadata for the resource
+        for _m in json.loads(geoapp_form.cleaned_data['extra_metadata']):
+            new_m = ExtraMetadata.objects.create(
+                resource=geoapp_obj,
+                metadata=_m
+            )
+            geoapp_obj.metadata.add(new_m)
+            
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
         if not ajax:
             return HttpResponseRedirect(

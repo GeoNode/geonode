@@ -53,6 +53,7 @@ from imagekit.processors import ResizeToFill
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from pinax.ratings.models import OverallRating
+from sqlalchemy import JSON
 
 from taggit.models import TagBase, ItemBase
 from taggit.managers import TaggableManager, _TaggableManager
@@ -962,7 +963,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         default=False,
         help_text=_('If true, will be excluded from search'))
 
-    extra_metadata = JSONField(null=True, default=list, blank=True)
+    metadata = models.ManyToManyField(
+        "ExtraMetadata",
+        verbose_name=_('Extra Metadata'),
+        null=True,
+        blank=True)
 
     objects = ResourceBaseManager()
 
@@ -2088,3 +2093,12 @@ def rating_post_save(instance, *args, **kwargs):
 
 
 signals.post_save.connect(rating_post_save, sender=OverallRating)
+
+
+class ExtraMetadata(models.Model):
+    resource = models.ForeignKey(
+        ResourceBase,
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    metadata = JSONField(null=True, default=dict, blank=True)

@@ -66,4 +66,4 @@ class LayerViewSet(DynamicModelViewSet):
         url_name="extra-metadata",
     )
     def extra_metadata(self, request, pk=None):
-        return common_extra_metadata_handler(request, self.get_object())
+        return common_extra_metadata_handler(request, self.get_object(), self.queryset)

@@ -1023,7 +1023,8 @@ def layer_metadata(
             layer.regions.add(*new_regions)
         layer.category = new_category
 
-        layer.extra_metadata = json.loads(layer_form.cleaned_data['extra_metadata'])
+        for _m in json.loads(layer_form.cleaned_data['extra_metadata']):
+            layer.metadata.add(**_m)
 
         up_sessions = UploadSession.objects.filter(layer=layer)
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
