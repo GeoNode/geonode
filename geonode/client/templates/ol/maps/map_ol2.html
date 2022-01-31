@@ -14,9 +14,9 @@
   document.addEventListener("DOMContentLoaded", function(event) {
     var config = {{ config|safe }};
     var model_crs = config['map']['projection'];
-    var zoom = {{ map.zoom }};
-    var center_x = {{ map.center_x|safe }};
-    var center_y = {{ map.center_y|safe }};
+    var zoom = config['map']['zoom'];
+    var center_x = config['map']['center']['x'];
+    var center_y = config['map']['center']['y'];
     var center = [center_x, center_y];
     var settings_crs = '{{ crs }}';
     if (settings_crs != 'EPSG:4326') {
@@ -36,10 +36,10 @@
             "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"])
     ];
     {% for layer in layers %}
-        {% if layer.ows_url != None and layer.local %}
+        {% if layer.dataset.ows_url != None and layer.local %}
             var source = new OpenLayers.Layer.WMS(
                 "{{ layer.name|safe }}",
-                '{{ layer.ows_url|safe }}',
+                '{{ layer.dataset.ows_url|safe }}',
                 {layers: '{{ layer.name|safe }}', transparent: true},
                 {isBaseLayer: false}
             );
