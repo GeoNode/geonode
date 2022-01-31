@@ -827,6 +827,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='create',
+                geonode_resource=resource,
                 input_params={
                     "uuid": uuid,
                     "resource_type": resource_type,
