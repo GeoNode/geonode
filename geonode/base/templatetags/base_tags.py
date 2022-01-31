@@ -295,21 +295,22 @@ def facets(context):
 
             facets['layer'] = facets['raster'] + facets['vector'] + facets['remote'] + facets['wms']
 
-        facet_geoapp = _facets_geoapps(
-            request,
-            title_filter,
-            abstract_filter,
-            purpose_filter,
-            category_filter,
-            regions_filter,
-            owner_filter,
-            date_gte_filter,
-            date_lte_filter,
-            date_range_filter,
-            extent_filter,
-            keywords_filter,
-            authorized
-        )
+        if settings.GEONODE_APPS_ENABLE:
+            facet_geoapp = _facets_geoapps(
+                request,
+                title_filter,
+                abstract_filter,
+                purpose_filter,
+                category_filter,
+                regions_filter,
+                owner_filter,
+                date_gte_filter,
+                date_lte_filter,
+                date_range_filter,
+                extent_filter,
+                keywords_filter,
+                authorized
+            )
 
         facets = {
             **facets,
