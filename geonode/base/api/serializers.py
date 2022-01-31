@@ -35,17 +35,9 @@ from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedFiel
 from avatar.templatetags.avatar_tags import avatar_url
 
 from geonode.favorite.models import Favorite
-from geonode.base.models import (
-    ResourceBase,
-    HierarchicalKeyword,
-    Region,
-    RestrictionCodeType,
-    License,
-    TopicCategory,
-    SpatialRepresentationType,
-    ThesaurusKeyword,
-    ThesaurusKeywordLabel
-)
+from geonode.base.models import (ExtraMetadata, HierarchicalKeyword, License, Region, ResourceBase,
+    RestrictionCodeType, SpatialRepresentationType, ThesaurusKeyword, ThesaurusKeywordLabel,
+    TopicCategory)
 from geonode.groups.models import (
     GroupCategory,
     GroupProfile)
@@ -199,7 +191,6 @@ class SimpleRegionSerializer(DynamicModelSerializer):
         name = 'Region'
         fields = ('code', 'name')
 
-
 class SimpleTopicCategorySerializer(DynamicModelSerializer):
 
     class Meta:
@@ -263,15 +254,18 @@ class DetailUrlField(DynamicComputedField):
     def get_attribute(self, instance):
         return build_absolute_uri(instance.detail_url)
 
-class ExtraMetadataSerializer(DynamicComputedField):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+class ExtraMetadataSerializer(DynamicModelSerializer):
 
-    def get_attribute(self, instance):
-        return json.loads(instance.extra_metadata)
-
+    class Meta:
+        model = ExtraMetadata
+        name = 'ExtraMetadata'
+        fields = ('metadata',)
     
+    def to_representation(self, obj):
+        return obj.metadata
+
+
 class ThumbnailUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):
@@ -389,6 +383,8 @@ class ResourceBaseSerializer(
             LicenseSerializer, embed=True, many=False)
         self.fields['spatial_representation_type'] = DynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False)
+        self.fields['metadata'] = DynamicRelationField(
+            ExtraMetadataSerializer, embed=False, many=True)
 
     class Meta:
         model = ResourceBase
@@ -406,7 +402,7 @@ class ResourceBaseSerializer(
             'popular_count', 'share_count', 'rating', 'featured', 'is_published', 'is_approved',
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
-            'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed'
+            'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', "metadata"
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
