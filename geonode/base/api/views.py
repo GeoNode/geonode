@@ -550,6 +550,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name='remove_permissions',
+                    geonode_resource=resource,
                     input_params={
                         "uuid": request_params.get('uuid', resource.uuid)
                     }
@@ -560,6 +561,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name='set_permissions',
+                    geonode_resource=resource,
                     input_params={
                         "uuid": request_params.get('uuid', resource.uuid),
                         "owner": request_params.get('owner', resource.owner.username),
@@ -575,6 +577,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name='set_permissions',
+                    geonode_resource=resource,
                     input_params={
                         "uuid": request_params.get('uuid', resource.uuid),
                         "owner": request_params.get('owner', resource.owner.username),
@@ -717,11 +720,17 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             request_params = QueryDict(request.body, mutable=True)
+            uuid = request_params.get('uuid', str(uuid1()))
+            try:
+                resource = ResourceBase.objects.get(uuid=uuid)
+            except Exception:
+                resource = None
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='ingest',
+                geonode_resource=resource,
                 input_params={
-                    "uuid": request_params.get('uuid', str(uuid1())),
+                    "uuid": uuid,
                     "files": request_params.get('files', '[]'),
                     "resource_type": resource_type,
                     "defaults": request_params.get('defaults', f"{{\"owner\":\"{request.user.username}\"}}")
@@ -810,11 +819,16 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             request_params = QueryDict(request.body, mutable=True)
+            uuid = request_params.get('uuid', str(uuid1()))
+            try:
+                resource = ResourceBase.objects.get(uuid=uuid)
+            except Exception:
+                resource = None
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='create',
                 input_params={
-                    "uuid": request_params.get('uuid', str(uuid1())),
+                    "uuid": uuid,
                     "resource_type": resource_type,
                     "defaults": request_params.get('defaults', f"{{\"owner\":\"{request.user.username}\"}}")
                 }
@@ -893,6 +907,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='delete',
+                geonode_resource=resource,
                 input_params={
                     "uuid": resource.uuid
                 }
@@ -999,6 +1014,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='update',
+                geonode_resource=resource,
                 input_params={
                     "uuid": request_params.get('uuid', resource.uuid),
                     "xml_file": request_params.get('xml_file', None),
@@ -1096,6 +1112,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='copy',
+                geonode_resource=resource,
                 input_params={
                     "instance": resource.id,
                     "owner": request_params.get('owner', request.user.username),

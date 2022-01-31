@@ -53,6 +53,7 @@ from geonode.groups.models import (
 
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms
+from geonode.resource.models import ExecutionRequest
 
 import logging
 
@@ -346,6 +347,30 @@ class DataBlobSerializer(DynamicModelSerializer):
         return {}
 
 
+class ResourceExecutionRequestSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = ResourceBase
+        fields = ('pk',)
+
+    def to_representation(self, instance):
+        executions = ExecutionRequest.objects.filter(geonode_resource_id=instance)
+        data = []
+        for execution in executions:
+            data.append({
+                'user': execution.user.username,
+                'status': execution.status,
+                'func_name': execution.func_name,
+                'created': execution.created,
+                'finished': execution.finished,
+                'last_updated': execution.last_updated,
+                'input_params': execution.input_params,
+                'output_params': execution.output_params
+            },
+        )
+        return data
+
+
 class ResourceBaseSerializer(
     ResourceBaseToRepresentationSerializerMixin,
     BaseDynamicModelSerializer,
@@ -438,7 +463,7 @@ class ResourceBaseSerializer(
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
             'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', 'state',
             'data', 'subtype', 'sourcetype',
-            'blob',
+            'blob', 'executions'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
@@ -489,6 +514,18 @@ class ResourceBaseSerializer(
     """
     data = DataBlobField(
         DataBlobSerializer,
+        source='id',
+        many=False,
+        embed=False,
+        deferred=True,
+        required=False,
+    )
+
+    """
+     - Deferred / not Embedded --> ?include[]=executions
+    """
+    executions = DynamicRelationField(
+        ResourceExecutionRequestSerializer,
         source='id',
         many=False,
         embed=False,
