@@ -246,3 +246,43 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
             raise forms.ValidationError(_("This file type is not allowed"))
 
         return doc_file
+
+
+class DocumentReplaceForm(forms.ModelForm):
+    """
+    The form used to replace a document.
+    """
+    doc_file = SizeRestrictedFileField(
+        label=_("File"),
+        required=True,
+        field_slug="document_upload_size"
+    )
+
+    class Meta:
+        model = Document
+        fields = ['doc_file']
+
+    def clean(self):
+        """
+        Ensures the doc_file field is populated.
+        """
+        cleaned_data = super().clean()
+        doc_file = self.cleaned_data.get('doc_file')
+
+        if not doc_file:
+            raise forms.ValidationError(_("Document must be a file."))
+
+        return cleaned_data
+
+    def clean_doc_file(self):
+        """
+        Ensures the doc_file is valid.
+        """
+        doc_file = self.cleaned_data.get('doc_file')
+
+        if doc_file and not os.path.splitext(
+                doc_file.name)[1].lower()[
+                1:] in settings.ALLOWED_DOCUMENT_TYPES:
+            raise forms.ValidationError(_("This file type is not allowed"))
+
+        return doc_file
