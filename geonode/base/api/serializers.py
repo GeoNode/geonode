@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
+from django.db.models.query import QuerySet
 from slugify import slugify
 from urllib.parse import urljoin
 
@@ -256,15 +256,21 @@ class DetailUrlField(DynamicComputedField):
 
 
 class ExtraMetadataSerializer(DynamicModelSerializer):
-
     class Meta:
         model = ExtraMetadata
         name = 'ExtraMetadata'
-        fields = ('metadata',)
-    
-    def to_representation(self, obj):
-        return obj.metadata
+        fields = ('pk', 'metadata')
 
+    def to_representation(self, obj):
+        
+        if isinstance(obj, QuerySet):
+            out = []
+            for el in obj:
+                out.append({**{"id": el.id}, **el.metadata})
+            return out
+        elif isinstance(obj, list):
+            return obj
+        return {**{"id": obj.id}, **obj.metadata}
 
 class ThumbnailUrlField(DynamicComputedField):
 
@@ -383,8 +389,8 @@ class ResourceBaseSerializer(
             LicenseSerializer, embed=True, many=False)
         self.fields['spatial_representation_type'] = DynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False)
-        self.fields['metadata'] = DynamicRelationField(
-            ExtraMetadataSerializer, embed=False, many=True)
+    
+    metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
     class Meta:
         model = ResourceBase

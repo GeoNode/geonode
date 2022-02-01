@@ -2167,7 +2167,10 @@ DEFAULT_MAX_BEFORE_UPLOAD_SIZE = int(os.getenv('DEFAULT_MAX_BEFORE_UPLOAD_SIZE',
 '''
 Default schema used to store extra and dynamic metadata for the resource
 '''
+from schema import Optional
+
 DEFAULT_EXTRA_METADATA_SCHEMA = {
+  Optional("id"): int,
   "name": str,
   "slug": str,
   "help_text": str,
