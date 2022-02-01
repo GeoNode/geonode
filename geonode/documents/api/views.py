@@ -27,9 +27,8 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.permissions import IsOwnerOrAdmin, IsOwnerOrReadOnly
+from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.base.api.views import common_extra_metadata_handler
 from geonode.documents.models import Document
 
 from geonode.base.models import ResourceBase
@@ -75,18 +74,3 @@ class DocumentViewSet(DynamicModelViewSet):
         result_page = paginator.paginate_queryset(resources, request)
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
         return paginator.get_paginated_response({"resources": serializer.data})
-
-    @extend_schema(
-        methods=["get", "put", "delete", "post"], description="Get or update extra metadata for each resource"
-    )
-    @action(
-        detail=True,
-        methods=["get", "put", "delete", "post"],
-        permission_classes=[
-            IsOwnerOrAdmin,
-        ],
-        url_path=r"extra_metadata",  # noqa
-        url_name="extra_metadata",
-    )
-    def extra_metadata(self, request, pk=None):
-        return common_extra_metadata_handler(request, self.get_object())

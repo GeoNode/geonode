@@ -27,9 +27,8 @@ from rest_framework.test import APITestCase, URLPatternsTestCase
 from geonode.documents.models import Document
 
 from geonode import geoserver
-from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.utils import check_ogc_backend
-from geonode.base.populate_test_data import create_models, create_single_doc
+from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
 
@@ -90,62 +89,3 @@ class DocumentsApiTests(APITestCase, URLPatternsTestCase):
 
         # import json
         # logger.error(f"{json.dumps(layers_data)}")
-
-
-class TestExtraMetadataUploadApi(GeoNodeBaseTestSupport):
-    def setUp(self):
-        self.doc = create_single_doc('document')
-        self.metadata = {
-            "name": "metadata-name",
-            "slug": "metadata-slug",
-            "help_text": "this is the help text",
-            "field_type": "str",
-            "value": "my value",
-            "category": "cat1"
-        }
-        self.doc.extra_metadata = [self.metadata]
-        self.doc.save()
-
-    def test_get_will_return_the_list_of_extra_metadata(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse('documents-extra_metadata', args=[self.doc.id])
-        response = self.client.get(url, content_type='application/json')
-        self.assertTrue(200, response.status_code)
-        self.assertEqual([self.metadata], response.json())
-
-    def test_put_will_update_the_whole_metadata(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse('documents-extra_metadata', args=[self.doc.id])
-        input_metadata = {
-            "name": "metadata-updated",
-            "slug": "metadata-slug-updated",
-            "help_text": "this is the help text-updated",
-            "field_type": "str-updated",
-            "value": "my value-updated",
-            "category": "cat1-updated"
-        }
-        response = self.client.put(url, data=[input_metadata], content_type='application/json')
-        self.assertTrue(200, response.status_code)
-        self.assertEqual([input_metadata], response.json())
-
-    def test_post_will_add_new_metadata(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse('documents-extra_metadata', args=[self.doc.id])
-        input_metadata = {
-            "name": "metadata-new",
-            "slug": "metadata-slug-new",
-            "help_text": "this is the help text-new",
-            "field_type": "str-new",
-            "value": "my value-new",
-            "category": "cat1-new"
-        }
-        response = self.client.post(url, data=[input_metadata], content_type='application/json')
-        self.assertTrue(201, response.status_code)
-        self.assertEqual(2, len(response.json()))
-
-    def test_delete_will_delete_single_metadata(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse('documents-extra_metadata', args=[self.doc.id])
-        response = self.client.delete(url, data=[self.metadata], content_type='application/json')
-        self.assertTrue(200, response.status_code)
-        self.assertEqual([], response.json())

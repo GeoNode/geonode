@@ -28,9 +28,8 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.permissions import IsOwnerOrAdmin, IsOwnerOrReadOnly
+from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.base.api.views import common_extra_metadata_handler
 from geonode.layers.api.serializers import LayerSerializer
 from geonode.maps.models import Map
 
@@ -71,18 +70,3 @@ class MapViewSet(DynamicModelViewSet):
         map = self.get_object()
         resources = map.local_layers
         return Response(LayerSerializer(embed=True, many=True).to_representation(resources))
-
-    @extend_schema(
-        methods=["get", "put", "delete", "post"], description="Get or update extra metadata for each resource"
-    )
-    @action(
-        detail=True,
-        methods=["get", "put", "delete", "post"],
-        permission_classes=[
-            IsOwnerOrAdmin,
-        ],
-        url_path=r"extra_metadata",  # noqa
-        url_name="extra-metadata",
-    )
-    def extra_metadata(self, request, pk=None):
-        return common_extra_metadata_handler(request, self.get_object())
