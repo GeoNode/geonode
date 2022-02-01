@@ -515,7 +515,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 _id = _m.pop('id')
                 ResourceBase.objects.filter(id=_obj.id).first().metadata.filter(id=_id).update(metadata=_m)
             logger.info("metadata updated for the selected resource")
-            return Response(ExtraMetadataSerializer().to_representation(extra_metadata))
+            _obj.refresh_from_db()
+            return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()))
         elif request.method == "DELETE":
             # delete single metadata
             '''

@@ -47,6 +47,7 @@ from geonode.security.utils import get_resources_with_perms
 
 from geonode.base.models import (
     CuratedThumbnail,
+    ExtraMetadata,
     HierarchicalKeyword,
     Region,
     ResourceBase,
@@ -1024,7 +1025,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(expected, response.json())
 
 
-class TestExtraMetadataLayersApi(GeoNodeBaseTestSupport):
+class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
     def setUp(self):
         self.layer = create_single_layer('single_layer')
         self.metadata = {
@@ -1035,19 +1036,28 @@ class TestExtraMetadataLayersApi(GeoNodeBaseTestSupport):
             "value": "my value",
             "category": "cat1"
         }
-        Layer.objects.filter(id=self.layer.id).update(extra_metadata=[self.metadata])
+        m = ExtraMetadata.objects.create(
+            resource=self.layer,
+            metadata=self.metadata
+        )
+        self.layer.metadata.add(m)
+        self.mdata = ExtraMetadata.objects.first()
 
     def test_get_will_return_the_list_of_extra_metadata(self):
         self.client.login(username="admin", password="admin")
-        url = reverse('resources-extra-metadata', args=[self.layer.id])
+        url = reverse('base-resources-extra-metadata', args=[self.layer.id])
         response = self.client.get(url, content_type='application/json')
         self.assertTrue(200, response.status_code)
-        self.assertEqual([self.metadata], response.json())
+        expected = [
+            {**{"id": self.mdata.id}, **self.metadata}
+        ]
+        self.assertEqual(expected, response.json())
 
     def test_put_will_update_the_whole_metadata(self):
         self.client.login(username="admin", password="admin")
-        url = reverse('resources-extra-metadata', args=[self.layer.id])
+        url = reverse('base-resources-extra-metadata', args=[self.layer.id])
         input_metadata = {
+            "id": self.mdata.id,
             "name": "metadata-updated",
             "slug": "metadata-slug-updated",
             "help_text": "this is the help text-updated",
@@ -1061,7 +1071,7 @@ class TestExtraMetadataLayersApi(GeoNodeBaseTestSupport):
 
     def test_post_will_add_new_metadata(self):
         self.client.login(username="admin", password="admin")
-        url = reverse('resources-extra-metadata', args=[self.layer.id])
+        url = reverse('base-resources-extra-metadata', args=[self.layer.id])
         input_metadata = {
             "name": "metadata-new",
             "slug": "metadata-slug-new",
@@ -1076,7 +1086,7 @@ class TestExtraMetadataLayersApi(GeoNodeBaseTestSupport):
 
     def test_delete_will_delete_single_metadata(self):
         self.client.login(username="admin", password="admin")
-        url = reverse('resources-extra-metadata', args=[self.layer.id])
-        response = self.client.delete(url, data=[self.metadata], content_type='application/json')
+        url = reverse('base-resources-extra-metadata', args=[self.layer.id])
+        response = self.client.delete(url, data=[self.mdata.id], content_type='application/json')
         self.assertTrue(200, response.status_code)
         self.assertEqual([], response.json())
