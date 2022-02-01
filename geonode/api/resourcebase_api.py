@@ -190,9 +190,9 @@ class CommonModelApi(ModelResource):
         metadata_only = applicable_filters.pop('metadata_only', False)
         filtering_method = applicable_filters.pop('f_method', 'and')
         polyphormic_model = applicable_filters.pop('polymorphic_ctype__model__in', None)
-        
+
         metadata_filters = applicable_filters.pop('metadata_filters', None)
-        
+
         if filtering_method == 'or':
             filters = Q()
             for f in applicable_filters.items():
@@ -243,7 +243,7 @@ class CommonModelApi(ModelResource):
 
         if metadata_filters:
             filtered = filtered.filter(**metadata_filters)
-        
+
         # return filtered
         return get_visible_resources(
             filtered,
@@ -601,7 +601,7 @@ class CommonModelApi(ModelResource):
 
             if formatted_obj.get('metadata', None):
                 formatted_obj['metadata'] = [model_to_dict(_m) for _m in formatted_obj['metadata']]
-            
+
             formatted_objects.append(formatted_obj)
 
         return formatted_objects
