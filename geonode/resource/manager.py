@@ -359,9 +359,9 @@ class ResourceManager(ResourceManagerInterface):
                             logger.exception(e)
                             _md_file = open(xml_file)
 
-                        _resource.metadata_xml = _md_file.read()
-                        _md_file.seek(0)
-                        _uuid, vals, regions, keywords, custom = parse_metadata(_md_file.read())
+                        _md_file_content = _md_file.read()
+                        _resource.metadata_xml = _md_file_content
+                        _uuid, vals, regions, keywords, custom = parse_metadata(_md_file_content)
                         if uuid and uuid != _uuid:
                             raise ValidationError("The UUID identifier from the XML Metadata is different from the {_resource} one.")
                         else:
