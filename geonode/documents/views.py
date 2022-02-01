@@ -148,8 +148,11 @@ class DocumentUploadView(CreateView):
     def form_invalid(self, form):
         messages.error(self.request, f"{form.errors}")
         if self.request.GET.get('no__redirect', False):
+            plaintext_errors = []
+            for field in form.errors.values():
+                plaintext_errors.append(field.data[0].message)
             out = {'success': False}
-            out['message'] = f"{form.errors}"
+            out['message'] = '.'.join(plaintext_errors)
             status_code = 400
             return HttpResponse(
                 json.dumps(out),
