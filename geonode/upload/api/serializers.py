@@ -260,7 +260,7 @@ class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
         slug = validated_data.get('slug', default_slug)
         max_size = validated_data.get("max_size", default_max_size)
 
-        after_upload_slugs_list = ['total_upload_size_sum', 'document_upload_size']
+        after_upload_slugs_list = ['dataset_upload_size', 'document_upload_size']
 
         if slug == 'file_upload_handler':
             after_upload_sizes = UploadSizeLimit.objects.filter(

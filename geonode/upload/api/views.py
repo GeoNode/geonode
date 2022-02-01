@@ -216,7 +216,7 @@ class UploadSizeLimitViewSet(DynamicModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         protected_objects = [
-            'total_upload_size_sum',
+            'dataset_upload_size',
             'document_upload_size',
             'file_upload_handler',
         ]
