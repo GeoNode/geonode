@@ -460,7 +460,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
                 metadata=_m
             )
             geoapp_obj.metadata.add(new_m)
-            
+
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
         if not ajax:
             return HttpResponseRedirect(

@@ -35,9 +35,18 @@ from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedFiel
 from avatar.templatetags.avatar_tags import avatar_url
 
 from geonode.favorite.models import Favorite
-from geonode.base.models import (ExtraMetadata, HierarchicalKeyword, License, Region, ResourceBase,
-    RestrictionCodeType, SpatialRepresentationType, ThesaurusKeyword, ThesaurusKeywordLabel,
-    TopicCategory)
+from geonode.base.models import (
+    ExtraMetadata,
+    HierarchicalKeyword,
+    License,
+    Region,
+    ResourceBase,
+    RestrictionCodeType,
+    SpatialRepresentationType,
+    ThesaurusKeyword,
+    ThesaurusKeywordLabel,
+    TopicCategory,
+)
 from geonode.groups.models import (
     GroupCategory,
     GroupProfile)
@@ -191,6 +200,7 @@ class SimpleRegionSerializer(DynamicModelSerializer):
         name = 'Region'
         fields = ('code', 'name')
 
+
 class SimpleTopicCategorySerializer(DynamicModelSerializer):
 
     class Meta:
@@ -262,7 +272,7 @@ class ExtraMetadataSerializer(DynamicModelSerializer):
         fields = ('pk', 'metadata')
 
     def to_representation(self, obj):
-        
+
         if isinstance(obj, QuerySet):
             out = []
             for el in obj:
@@ -271,6 +281,7 @@ class ExtraMetadataSerializer(DynamicModelSerializer):
         elif isinstance(obj, list):
             return obj
         return {**{"id": obj.id}, **obj.metadata}
+
 
 class ThumbnailUrlField(DynamicComputedField):
 
@@ -389,7 +400,7 @@ class ResourceBaseSerializer(
             LicenseSerializer, embed=True, many=False)
         self.fields['spatial_representation_type'] = DynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False)
-    
+
     metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
     class Meta:

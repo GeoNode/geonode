@@ -474,7 +474,7 @@ def common_extra_metadata_handler(request, _obj):
     if request.method == "GET":
         # get list of available metadata
         queryset = _obj.metadata.all()
-        _filters = [{f"metadata__{key}": value} for key,value in request.query_params.items()]
+        _filters = [{f"metadata__{key}": value} for key, value in request.query_params.items()]
         if _filters:
             queryset = queryset.filter(**_filters[0])
         return Response(ExtraMetadataSerializer().to_representation(queryset))

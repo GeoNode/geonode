@@ -102,10 +102,10 @@ class TestExtraMetadataUploadApi(GeoNodeBaseTestSupport):
             "field_type": "str",
             "value": "my value",
             "category": "cat1"
-        }        
+        }
         self.doc.extra_metadata = [self.metadata]
         self.doc.save()
-     
+
     def test_get_will_return_the_list_of_extra_metadata(self):
         self.client.login(username="admin", password="admin")
         url = reverse('documents-extra_metadata', args=[self.doc.id])

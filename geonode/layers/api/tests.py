@@ -27,7 +27,6 @@ from geonode.layers.models import Layer
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.utils import check_ogc_backend
 from geonode.base.populate_test_data import create_models, create_single_layer
-from geonode.geoserver.createlayer.utils import create_layer
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +111,7 @@ class TestExtraMetadataLayersApi(GeoNodeBaseTestSupport):
             "category": "cat1"
         }
         Layer.objects.filter(id=self.layer.id).update(extra_metadata=[self.metadata])
-     
+
     def test_get_will_return_the_list_of_extra_metadata(self):
         self.client.login(username="admin", password="admin")
         url = reverse('layers-extra-metadata', args=[self.layer.id])

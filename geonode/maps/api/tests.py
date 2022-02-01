@@ -132,7 +132,7 @@ class TestExtraMetadataMapsApi(GeoNodeBaseTestSupport):
             "category": "cat1"
         }
         Map.objects.filter(id=self.map.id).update(extra_metadata=[self.metadata])
-     
+
     def test_get_will_return_the_list_of_extra_metadata(self):
         self.client.login(username="admin", password="admin")
         url = reverse('maps-extra-metadata', args=[self.map.id])

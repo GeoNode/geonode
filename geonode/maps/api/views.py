@@ -72,7 +72,6 @@ class MapViewSet(DynamicModelViewSet):
         resources = map.local_layers
         return Response(LayerSerializer(embed=True, many=True).to_representation(resources))
 
-
     @extend_schema(
         methods=["get", "put", "delete", "post"], description="Get or update extra metadata for each resource"
     )

@@ -37,6 +37,7 @@ from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
 
+from schema import Optional
 from . import serializer
 
 SILENCED_SYSTEM_CHECKS = [
@@ -2167,7 +2168,6 @@ DEFAULT_MAX_BEFORE_UPLOAD_SIZE = int(os.getenv('DEFAULT_MAX_BEFORE_UPLOAD_SIZE',
 '''
 Default schema used to store extra and dynamic metadata for the resource
 '''
-from schema import Optional
 
 DEFAULT_EXTRA_METADATA_SCHEMA = {
   Optional("id"): int,

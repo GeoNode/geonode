@@ -53,7 +53,6 @@ from imagekit.processors import ResizeToFill
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from pinax.ratings.models import OverallRating
-from sqlalchemy import JSON
 
 from taggit.models import TagBase, ItemBase
 from taggit.managers import TaggableManager, _TaggableManager

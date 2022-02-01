@@ -203,10 +203,10 @@ class TestExtraMetadataGeoAppApi(GeoNodeBaseTestSupport):
             "field_type": "str",
             "value": "my value",
             "category": "cat1"
-        }        
+        }
         self.geo_app.extra_metadata = [self.metadata]
         self.geo_app.save()
-     
+
     def test_get_will_return_the_list_of_extra_metadata(self):
         self.client.login(username="admin", password="admin")
         url = reverse('geoapps-extra-metadata', args=[self.geo_app.id])

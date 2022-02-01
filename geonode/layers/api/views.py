@@ -52,7 +52,6 @@ class LayerViewSet(DynamicModelViewSet):
     serializer_class = LayerSerializer
     pagination_class = GeoNodeApiPagination
 
-
     @extend_schema(
         methods=["get", "put", "delete", "post"], description="Get or update extra metadata for each resource"
     )
