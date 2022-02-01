@@ -271,6 +271,7 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
     return render(request, template, context={
         "resource": map_obj,
         "map": map_obj,
+        "config": json.dumps(map_obj.blob),
         "map_form": map_form,
         "poc_form": poc_form,
         "author_form": author_form,
