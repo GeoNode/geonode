@@ -58,7 +58,7 @@ class UploadSizeLimitAdminForm(forms.ModelForm):
         slug = cleaned_data.get('slug', default_slug)
         max_size = cleaned_data.get('max_size', default_max_size)
 
-        after_upload_slugs_list = ['total_upload_size_sum', 'document_upload_size']
+        after_upload_slugs_list = ['dataset_upload_size', 'document_upload_size']
 
         if slug == 'file_upload_handler':
             after_upload_sizes = UploadSizeLimit.objects.filter(
@@ -93,7 +93,7 @@ class UploadSizeLimitAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         protected_objects = [
-            'total_upload_size_sum',
+            'dataset_upload_size',
             'document_upload_size',
             'file_upload_handler',
         ]
