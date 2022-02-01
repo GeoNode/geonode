@@ -51,9 +51,9 @@ from geonode.security.utils import (
 from guardian.shortcuts import get_objects_for_user
 
 from .permissions import (
-    IsSelfOrAdmin,
     IsOwnerOrAdmin,
     IsOwnerOrReadOnly,
+    IsSelfOrAdminOrReadOnly,
     ResourceBasePermissionsFilter
 )
 from .serializers import (
@@ -83,7 +83,7 @@ class UserViewSet(DynamicModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsSelfOrAdmin, ]
+    permission_classes = [IsSelfOrAdminOrReadOnly, ]
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     pagination_class = GeoNodeApiPagination

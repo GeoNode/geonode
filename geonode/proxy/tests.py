@@ -32,7 +32,7 @@ import zipfile
 try:
     from unittest.mock import MagicMock
 except ImportError:
-    from unittest.mock import MagicMock
+    from mock import MagicMock
 
 from django.urls import reverse
 from django.contrib.auth import get_user_model
