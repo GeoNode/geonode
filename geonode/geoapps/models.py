@@ -17,6 +17,7 @@
 #
 #########################################################################
 import logging
+from django.conf import settings
 
 from django.db import models
 from django.urls import reverse
@@ -124,7 +125,10 @@ class GeoApp(ResourceBase):
             return []
 
     def get_absolute_url(self):
-        return reverse('geoapp_detail', None, [str(self.id)])
+        geoapp_view = (
+            reverse("geoapp_detail", None, [str(self.id)]) if settings.GEONODE_APPS_ENABLE else reverse("home")
+        )
+        return geoapp_view
 
     @property
     def embed_url(self):

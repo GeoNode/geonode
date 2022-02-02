@@ -237,8 +237,7 @@ class CommonModelApi(ModelResource):
         if not settings.GEONODE_APPS_ENABLE:
             geoapps_model = get_geoapps_models()
             filtered = filtered.exclude(resource_type__in=[list(x.models.items())[0][0] for x in geoapps_model])
-        
-        
+
         # return filtered
         return get_visible_resources(
             filtered,

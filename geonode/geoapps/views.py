@@ -102,12 +102,6 @@ def new_geoapp(request, template='apps/app_new.html'):
 
     return HttpResponseRedirect(reverse("apps_browse"))
 
-def geoapp_404(request, geoappid=None):
-    """
-    Dummy view to return error 404
-    """
-    raise Http404(_("Not found"))
-
 
 def geoapp_detail(request, geoappid, template='apps/app_detail.html'):
     """

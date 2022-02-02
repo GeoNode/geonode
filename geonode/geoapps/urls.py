@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.conf import settings
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
 
@@ -30,8 +29,6 @@ js_info_dict = {
 
 apps_list = register_url_event()(TemplateView.as_view(template_name='apps/app_list.html'))
 
-def is_enabled(view):
-    return view if settings.GEONODE_APPS_ENABLE else views.geoapp_404
 
 urlpatterns = [
     # 'geonode.geoapps.views',
@@ -39,21 +36,21 @@ urlpatterns = [
         apps_list,
         {'facet_type': 'geoapps'},
         name='apps_browse'),
-    url(r'^new$', is_enabled(views.new_geoapp), name="new_geoapp"),
-    url(r'^preview/(?P<geoappid>[^/]*)$', is_enabled(views.geoapp_detail), name="geoapp_detail"),
-    url(r'^preview/(?P<geoappid>\d+)/metadata$', is_enabled(views.geoapp_metadata), name='geoapp_metadata'),
+    url(r'^new$', views.new_geoapp, name="new_geoapp"),
+    url(r'^preview/(?P<geoappid>[^/]*)$', views.geoapp_detail, name="geoapp_detail"),
+    url(r'^preview/(?P<geoappid>\d+)/metadata$', views.geoapp_metadata, name='geoapp_metadata'),
     url(r'^preview/(?P<geoappid>[^/]*)/metadata_detail$',
-        is_enabled(views.geoapp_metadata_detail), name='geoapp_metadata_detail'),
+        views.geoapp_metadata_detail, name='geoapp_metadata_detail'),
     url(r'^preview/(?P<geoappid>\d+)/metadata_advanced$',
-        is_enabled(views.geoapp_metadata_advanced), name='geoapp_metadata_advanced'),
-    url(r'^(?P<geoappid>\d+)/remove$', is_enabled(views.geoapp_remove), name="geoapp_remove"),
-    url(r'^(?P<geoappid>[^/]+)/view$', is_enabled(views.geoapp_edit), name='geoapp_view'),
-    url(r'^(?P<geoappid>[^/]+)/edit$', is_enabled(views.geoapp_edit), name='geoapp_edit'),
-    url(r'^(?P<geoappid>[^/]+)/update$', is_enabled(views.geoapp_edit),
+        views.geoapp_metadata_advanced, name='geoapp_metadata_advanced'),
+    url(r'^(?P<geoappid>\d+)/remove$', views.geoapp_remove, name="geoapp_remove"),
+    url(r'^(?P<geoappid>[^/]+)/view$', views.geoapp_edit, name='geoapp_view'),
+    url(r'^(?P<geoappid>[^/]+)/edit$', views.geoapp_edit, name='geoapp_edit'),
+    url(r'^(?P<geoappid>[^/]+)/update$', views.geoapp_edit,
         {'template': 'apps/app_update.html'}, name='geoapp_update'),
-    url(r'^(?P<geoappid>[^/]+)/embed$', is_enabled(views.geoapp_edit),
+    url(r'^(?P<geoappid>[^/]+)/embed$', views.geoapp_edit,
         {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
-    url(r'^(?P<geoappid>[^/]+)/download$', is_enabled(views.geoapp_edit),
+    url(r'^(?P<geoappid>[^/]+)/download$', views.geoapp_edit,
         {'template': 'apps/app_download.html'}, name='geoapp_download'),
     url(r'^', include('geonode.geoapps.api.urls')),
 ]
