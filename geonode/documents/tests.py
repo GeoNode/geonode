@@ -818,7 +818,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
         self.test_doc.refresh_from_db()
         self.assertEqual('doc', self.test_doc.title)
-        
+
     def test_that_non_admin_user_cannot_create_edit_keyword(self):
         """
         Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
@@ -862,8 +862,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
             self.assertFalse(self.not_admin.is_superuser)
             self.assertEqual(response.status_code, 200)
         self.test_doc.refresh_from_db()
-        self.assertEqual("doc", self.test_doc.title)    
-        
+        self.assertEqual("doc", self.test_doc.title)
 
     def test_document_link_with_permissions(self):
         self.test_doc.set_permissions(self.perm_spec)
