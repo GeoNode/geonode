@@ -473,12 +473,12 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
     def test_rest_uploads_with_size_limit(self, mocked_uploaded_file, mocked_validation_error):
         """
-        Try to upload a file larger than allowed by ``total_upload_size_sum``
+        Try to upload a file larger than allowed by ``dataset_upload_size``
         but not larger than ``file_upload_handler`` max_size.
         """
 
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="total_upload_size_sum",
+            slug="dataset_upload_size",
             defaults={
                 "description": "The sum of sizes for the files of a dataset upload.",
                 "max_size": 1,
@@ -492,7 +492,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             defaults={
                 "description": (
                     "Request total size, validated before the upload process. "
-                    'This should be greater than "total_upload_size_sum".'
+                    'This should be greater than "dataset_upload_size".'
                 ),
                 "max_size": 209715200,
             },
@@ -516,7 +516,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
 
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="total_upload_size_sum",
+            slug="dataset_upload_size",
             defaults={
                 "description": "The sum of sizes for the files of a dataset upload.",
                 "max_size": 1,
@@ -530,7 +530,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             defaults={
                 "description": (
                     "Request total size, validated before the upload process. "
-                    'This should be greater than "total_upload_size_sum".'
+                    'This should be greater than "dataset_upload_size".'
                 ),
                 "max_size": 2,
             },
