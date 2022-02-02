@@ -2170,13 +2170,11 @@ Default schema used to store extra and dynamic metadata for the resource
 '''
 
 DEFAULT_EXTRA_METADATA_SCHEMA = {
-  Optional("id"): int,
-  "name": str,
-  "slug": str,
-  "help_text": str,
-  "field_type": object,
-  "value": object,
-  "category": str
+    Optional("id"): int,
+    "filter_header": object,
+    "field_name": object,
+    "field_label": object,
+    "field_value": object,
 }
 
 '''
