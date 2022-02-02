@@ -478,9 +478,17 @@ community."
         url = reverse('map_metadata', args=(test_map.pk,))
 
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.post(url)
+            response = self.client.post(url, data={
+                "resource-owner": self.not_admin.id,
+                "resource-title": "doc",
+                "resource-date": "2022-01-24 16:38 pm",
+                "resource-date_type": "creation",
+                "resource-language": "eng"
+            })
             self.assertFalse(self.not_admin.is_superuser)
             self.assertEqual(response.status_code, 200)
+        test_map.refresh_from_db()
+        self.assertEqual("doc", test_map.title)
 
     def test_that_keyword_multiselect_is_enabled_for_non_admin_users_when_freetext_keywords_readonly_istrue(self):
         """

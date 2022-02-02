@@ -490,7 +490,7 @@ class ResourceBaseForm(TranslationModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.metadata.exists():
+        if self.instance and self.instance.id and self.instance.metadata.exists():
             self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]
         for field in self.fields:
             help_text = self.fields[field].help_text

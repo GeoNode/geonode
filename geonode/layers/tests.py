@@ -1964,7 +1964,7 @@ class TestLayerForm(GeoNodeBaseTestSupport):
             "resource-language": "eng",
             "resource-extra_metadata": "not-a-json"
         })
-        expected = {"success": False, "errors": ["extra_metadata: The value insered for the Extra metadata field is not a valid JSON"]}
+        expected = {"success": False, "errors": ["extra_metadata: The value provided for the Extra metadata field is not a valid JSON"]}
         self.assertDictEqual(expected, response.json())
 
     @override_settings(EXTRA_METADATA_SCHEMA={"key": "value"})
@@ -1997,7 +1997,7 @@ class TestLayerForm(GeoNodeBaseTestSupport):
         self.assertIn(expected, response.json()['errors'][0])
 
     def test_resource_form_is_valid_extra_metadata(self):
-        form = self.sut(data={
+        form = self.sut(instance=self.layer, data={
             "owner": self.layer.owner.id,
             "title": "layer_title",
             "date": "2022-01-24 16:38 pm",
