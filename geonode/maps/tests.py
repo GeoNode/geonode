@@ -557,8 +557,15 @@ community."
         self.assertEqual(response.status_code, 200)
 
         # Now test with a valid user using POST method
+        user = get_user_model().objects.first()
         self.client.login(username=self.user, password=self.passwd)
-        response = self.client.post(url)
+        response = self.client.post(url, data={
+            "resource-owner": user.id,
+            "resource-title": "map_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+        })
         self.assertEqual(response.status_code, 200)
 
         # TODO: only invalid mapform is tested

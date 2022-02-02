@@ -38,7 +38,7 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
         self.sut = GeoAppForm
 
     def test_update_geoapp_metadata(self):
-        bobby = get_user_model().objects.get(username='bobby')
+        bobby = get_user_model().objects.get(username='admin')
         gep_app = GeoApp.objects.create(
             title="App",
             thumbnail_url='initial',
@@ -53,7 +53,7 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
             "resource-date_type": 'publication',
             'resource-language': gep_app.language
         }
-        self.client.login(username=bobby.username, password='bob')
+        self.client.login(username=bobby.username, password='admin')
         response = self.client.post(url, data=data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(gep_app.thumbnail_url, GeoApp.objects.get(id=gep_app.id).thumbnail_url)
