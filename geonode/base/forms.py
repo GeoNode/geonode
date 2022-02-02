@@ -551,6 +551,8 @@ class ResourceBaseForm(TranslationModelForm):
             'users_geolimits',
             'groups_geolimits',
             'dirty_state'
+            'was_approved',
+            'was_published'
         )
 
 
