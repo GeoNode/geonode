@@ -520,7 +520,7 @@ def dynamic_metadata_filters(context):
     if not metadata_available.exists():
         return []
 
-    categories = metadata_available.values_list('metadata__category', flat=True).distinct()
+    categories = metadata_available.values_list('metadata__filter_header', flat=True).distinct()
 
     output = {}
 
@@ -531,6 +531,6 @@ def dynamic_metadata_filters(context):
 
 def _get_filter_by_category(category, metadata_available):
     metadata_for_category = metadata_available.filter(
-        metadata__category=category
-    )        
+        metadata__filter_header=category
+    ).distinct()
     return [_el.metadata for _el in metadata_for_category]
