@@ -44,7 +44,7 @@ class TasksTest(GeoNodeBaseTestSupport):
         geoserver_automatic_default_style_set.connect(handler)
         with patch('geoserver.catalog.Catalog.get_style') as style_mck:
             style_mck.return_value = True
-            geoserver_create_style(dataset.id, dataset.name,  sld_file=sld_file, tempdir=None)
+            geoserver_create_style(dataset.id, dataset.name, sld_file=sld_file, tempdir=None)
             self.assertEqual(handler.call_count, 0)
 
     def test_geoserver_style_visual_mode_automatically_without_sld_file(self):
@@ -52,5 +52,5 @@ class TasksTest(GeoNodeBaseTestSupport):
         handler = create_autospec(self.mock_signal_callback)
 
         geoserver_automatic_default_style_set.connect(handler)
-        geoserver_create_style(dataset.id, dataset.name,  sld_file=None, tempdir=None)
+        geoserver_create_style(dataset.id, dataset.name, sld_file=None, tempdir=None)
         handler.assert_called_once_with(signal=geoserver_automatic_default_style_set, sender=dataset, instance=dataset)

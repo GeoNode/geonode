@@ -132,15 +132,15 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(len(response.json()), 0)
         map = Map.objects.first()
         map_layer = MapLayer.objects.create(
-                map=map,
-                extra_params={},
-                name=dataset.alternate,
-                store=None,
-                current_style=None,
-                ows_url=None,
-                local=True,
-                dataset=dataset
-            )
+            map=map,
+            extra_params={},
+            name=dataset.alternate,
+            store=None,
+            current_style=None,
+            ows_url=None,
+            local=True,
+            dataset=dataset
+        )
         response = self.client.get(f'{url}/maplayers', format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
