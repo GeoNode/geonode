@@ -527,10 +527,10 @@ class ResourceBaseSerializer(
     executions = DynamicRelationField(
         ResourceExecutionRequestSerializer,
         source='id',
-        many=False,
         embed=False,
         deferred=True,
         required=False,
+        read_only=False,
     )
 
 

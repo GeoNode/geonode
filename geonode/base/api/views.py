@@ -721,14 +721,11 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         try:
             request_params = QueryDict(request.body, mutable=True)
             uuid = request_params.get('uuid', str(uuid1()))
-            try:
-                resource = ResourceBase.objects.get(uuid=uuid)
-            except Exception:
-                resource = None
+            resource_filter = ResourceBase.objects.filter(uuid=uuid)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='ingest',
-                geonode_resource=resource,
+                geonode_resource=resource_filter.get() if resource_filter.exists() else None,
                 input_params={
                     "uuid": uuid,
                     "files": request_params.get('files', '[]'),
@@ -820,14 +817,12 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         try:
             request_params = QueryDict(request.body, mutable=True)
             uuid = request_params.get('uuid', str(uuid1()))
-            try:
-                resource = ResourceBase.objects.get(uuid=uuid)
-            except Exception:
-                resource = None
+            resource_filter = ResourceBase.objects.filter(uuid=uuid)
+
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='create',
-                geonode_resource=resource,
+                geonode_resource=resource_filter.get() if resource_filter.exists() else None,
                 input_params={
                     "uuid": uuid,
                     "resource_type": resource_type,
