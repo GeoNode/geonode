@@ -515,9 +515,19 @@ community."
         url = reverse('map_metadata', args=(test_map.pk,))
 
         with self.settings(FREETEXT_KEYWORDS_READONLY=False):
-            response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
+            response = self.client.post(url, data={
+                "resource-owner": self.not_admin.id,
+                "resource-title": "map",
+                "resource-date": "2022-01-24 16:38 pm",
+                "resource-date_type": "creation",
+                "resource-language": "eng",
+                'resource-keywords': 'wonderful-keyword'
+            })
             self.assertFalse(self.not_admin.is_superuser)
             self.assertEqual(response.status_code, 200)
+        test_map.refresh_from_db()
+        self.assertEqual("map", test_map.title)
+
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
     def test_map_metadata(self, thumbnail_mock):
@@ -557,7 +567,7 @@ community."
         self.assertEqual(response.status_code, 200)
 
         # Now test with a valid user using POST method
-        user = get_user_model().objects.first()
+        user = get_user_model().objects.filter(username='admin').first()
         self.client.login(username=self.user, password=self.passwd)
         response = self.client.post(url, data={
             "resource-owner": user.id,
