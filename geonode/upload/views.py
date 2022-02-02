@@ -37,12 +37,10 @@ import re
 import json
 import logging
 import zipfile
-import tempfile
 import gsimporter
 
 from http.client import BadStatusLine
 
-from django.conf import settings
 from django.shortcuts import render
 from django.utils.html import escape
 from django.shortcuts import get_object_or_404
@@ -60,9 +58,7 @@ from geonode.decorators import logged_in_or_basicauth
 from geonode.base import register_event
 from geonode.monitoring.models import EventType
 
-from geonode.geoserver.helpers import (
-    select_relevant_files,
-    write_uploaded_files_to_disk)
+from geonode.geoserver.helpers import select_relevant_files
 from .forms import (
     LayerUploadForm,
     SRSForm,
@@ -72,7 +68,8 @@ from .models import (
     Upload)
 from .files import (
     get_scan_hint,
-    scan_file)
+    scan_file
+)
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
@@ -146,15 +143,14 @@ def save_step_view(req, session):
     overwrite = req.path_info.endswith('/replace')
     target_store = None
     if form.is_valid():
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         logger.debug(f"valid_extensions: {form.cleaned_data['valid_extensions']}")
+        data_retriever_group = form.cleaned_data["data_retriever_group"]
         relevant_files = select_relevant_files(
             form.cleaned_data["valid_extensions"],
-            iter(req.FILES.values())
+            data_retriever_group.get_paths(allow_transfer=False)
         )
         logger.debug(f"relevant_files: {relevant_files}")
-        write_uploaded_files_to_disk(tempdir, relevant_files)
-        base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
+        base_file = data_retriever_group.get("base_file").get_path(allow_transfer=False)
         name, ext = os.path.splitext(os.path.basename(base_file))
         logger.debug(f'Name: {name}, ext: {ext}')
         logger.debug(f"base_file: {base_file}")
@@ -193,18 +189,18 @@ def save_step_view(req, session):
         sld = None
         if spatial_files[0].sld_files:
             sld = spatial_files[0].sld_files[0]
-        if not os.path.isfile(os.path.join(tempdir, spatial_files[0].base_file)):
-            tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
+        if not os.path.isfile(os.path.join(data_retriever_group.temporary_folder, spatial_files[0].base_file)):
+            tmp_files = [f for f in os.listdir(data_retriever_group.temporary_folder) if os.path.isfile(os.path.join(data_retriever_group.temporary_folder, f))]
             for f in tmp_files:
-                if zipfile.is_zipfile(os.path.join(tempdir, f)):
-                    fixup_shp_columnnames(os.path.join(tempdir, f),
+                if zipfile.is_zipfile(os.path.join(data_retriever_group.temporary_folder, f)):
+                    fixup_shp_columnnames(os.path.join(data_retriever_group.temporary_folder, f),
                                           form.cleaned_data["charset"],
-                                          tempdir=tempdir)
+                                          tempdir=data_retriever_group.temporary_folder)
 
         _log(f'provided sld is {sld}')
         # upload_type = get_upload_type(base_file)
         upload_session = UploaderSession(
-            tempdir=tempdir,
+            tempdir=data_retriever_group.temporary_folder,
             base_file=spatial_files,
             name=upload.name,
             charset=form.cleaned_data["charset"],
@@ -225,6 +221,8 @@ def save_step_view(req, session):
         Upload.objects.update_from_session(upload_session)
         return next_step_response(req, upload_session, force_ajax=True)
     else:
+        if hasattr(form, "data_retriever_group"):
+            form.data_retriever_group.delete_files()
         errors = []
         for e in form.errors.values():
             errors.extend([escape(v) for v in e])

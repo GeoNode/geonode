@@ -23,6 +23,7 @@ wrapt==1.13.3
 jsonschema==4.4.0
 zipstream-new==1.1.8
 rdflib==6.1.1
+smart_open==5.2.1
 
 # Django Apps
 django-allauth==0.47.0
