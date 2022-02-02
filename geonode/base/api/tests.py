@@ -1029,12 +1029,10 @@ class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
     def setUp(self):
         self.layer = create_single_layer('single_layer')
         self.metadata = {
-            "name": "metadata-name",
-            "slug": "metadata-slug",
-            "help_text": "this is the help text",
-            "field_type": "str",
-            "value": "my value",
-            "category": "cat1"
+            "filter_header": "Foo Filter header",
+            "field_name": "metadata-name",
+            "field_label": "this is the help text",
+            "field_value": "foo"
         }
         m = ExtraMetadata.objects.create(
             resource=self.layer,
@@ -1058,12 +1056,10 @@ class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
         url = reverse('base-resources-extra-metadata', args=[self.layer.id])
         input_metadata = {
             "id": self.mdata.id,
-            "name": "metadata-updated",
-            "slug": "metadata-slug-updated",
-            "help_text": "this is the help text-updated",
-            "field_type": "str-updated",
-            "value": "my value-updated",
-            "category": "cat1-updated"
+            "filter_header": "Foo Filter header",
+            "field_name": "metadata-updated",
+            "field_label": "this is the help text",
+            "field_value": "foo"
         }
         response = self.client.put(url, data=[input_metadata], content_type='application/json')
         self.assertTrue(200, response.status_code)
@@ -1073,12 +1069,10 @@ class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
         url = reverse('base-resources-extra-metadata', args=[self.layer.id])
         input_metadata = {
-            "name": "metadata-new",
-            "slug": "metadata-slug-new",
-            "help_text": "this is the help text-new",
-            "field_type": "str-new",
-            "value": "my value-new",
-            "category": "cat1-new"
+            "filter_header": "Foo Filter header",
+            "field_name": "metadata-updated",
+            "field_label": "this is the help text",
+            "field_value": "foo"
         }
         response = self.client.post(url, data=[input_metadata], content_type='application/json')
         self.assertTrue(201, response.status_code)

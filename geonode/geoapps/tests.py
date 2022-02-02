@@ -99,21 +99,20 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
             "resource-date": "2022-01-24 16:38 pm",
             "resource-date_type": "creation",
             "resource-language": "eng",
-            "resource-extra_metadata": '[{"key": "value"},{"name": "object", "slug": "object", "help_text": "object", "field_type": "object", "value": "object", "category": "object"}]'
+            "resource-extra_metadata": '[{"key": "value"},{"id": "int", "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
         })
-        expected = "extra_metadata: Missing keys: \'category\', \'field_type\', \'help_text\', \'name\', \'slug\', \'value\' at index 0"
+        expected = "extra_metadata: Missing keys: \'field_label\', \'field_name\', \'field_value\', \'filter_header\' at index 0 "
         self.assertIn(expected, response.json()['errors'][0])
 
     @override_settings(EXTRA_METADATA_SCHEMA={
         "geoapp": {
-            "name": str,
-            "slug": str,
-            "help_text": str,
-            "field_type": object,
-            "value": object,
-            "category": str
-            }
-        })
+            "id": int,
+            "filter_header": object,
+            "field_name": object,
+            "field_label": object,
+            "field_value": object
+        }
+    })
     def test_resource_form_is_valid_extra_metadata(self):
         form = self.sut(data={
             "owner": self.geoapp.owner.id,
@@ -121,6 +120,6 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
             "date": "2022-01-24 16:38 pm",
             "date_type": "creation",
             "language": "eng",
-            "extra_metadata": '[{"name": "object", "slug": "object", "help_text": "object", "field_type": "object", "value": "object", "category": "object"}]'
+            "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
         })
         self.assertTrue(form.is_valid())
