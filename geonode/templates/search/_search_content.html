@@ -48,6 +48,7 @@
             {% if SEARCH_FILTERS.EXTENT_ENABLED %}
               {% include "search/_extent_filter.html" %}
             {% endif %}
+            {% include "search/_dynamic_metadata_filter.html" %}
           {% endblock search_facet_lists %}
         </div>
       {% endif %}

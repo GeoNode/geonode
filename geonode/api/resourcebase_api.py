@@ -169,7 +169,7 @@ class CommonModelApi(ModelResource):
             orm_filters.update({'polymorphic_ctype__model__in': [filt.lower() for filt in filters.getlist('app_type__in')]})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
-        _metadata = {f"metadata__{_k}": _v for _k, _v in filters.items() if _k.startswith('metadata')}
+        _metadata = {f"metadata__{_k}": _v for _k, _v in filters.items() if _k.startswith('metadata__')}
         if _metadata:
             orm_filters.update({"metadata_filters": _metadata})
         orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'

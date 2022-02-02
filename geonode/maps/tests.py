@@ -528,7 +528,6 @@ community."
         test_map.refresh_from_db()
         self.assertEqual("map", test_map.title)
 
-
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
     def test_map_metadata(self, thumbnail_mock):
         """Test that map metadata can be properly rendered

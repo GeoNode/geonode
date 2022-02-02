@@ -17,12 +17,14 @@
 #
 #########################################################################
 
+from enum import Enum
 import logging
 
 from django import template
 from django.db.models import Q
 from django.conf import settings
 from django.db.models import Count
+from django.forms import model_to_dict
 from django.utils.translation import ugettext
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
@@ -31,7 +33,7 @@ from django.contrib.contenttypes.models import ContentType
 from pinax.ratings.models import Rating
 from guardian.shortcuts import get_objects_for_user
 
-from geonode.base.models import ResourceBase
+from geonode.base.models import ExtraMetadata, ResourceBase
 from geonode.base.bbox_utils import filter_bbox
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -54,6 +56,12 @@ FACETS = {
     'remote': _('Remote Layer'),
     'wms': _('WMS Cascade Layer')
 }
+
+class FACET_TO_RESOURCE_TYPE(Enum):
+    layers = 'layer'
+    maps = 'map'
+    documents = 'document'
+    geoapps = 'geoapp'
 
 
 @register.filter(name='template_trans')
@@ -495,3 +503,34 @@ def get_layer_count_by_services(service_id, user):
         queryset=Layer.objects.filter(remote_service=service_id),
         user=user
     ).count()
+
+
+@register.simple_tag(takes_context=True)
+def dynamic_metadata_filters(context):
+
+    facet_type = context.get('facet_type', 'all')
+
+    metadata_available = ExtraMetadata.objects.all()
+    
+    if facet_type != 'all':
+        resource_type = getattr(FACET_TO_RESOURCE_TYPE, facet_type).value
+        metadata_available = metadata_available\
+            .filter(resource__polymorphic_ctype__model=resource_type)
+
+    if not metadata_available.exists():
+        return []
+
+    categories = metadata_available.values_list('metadata__category', flat=True).distinct()
+
+    output = {}
+
+    for _cat in categories:
+        output[_cat] = _get_filter_by_category(_cat, metadata_available)
+    
+    return output
+
+def _get_filter_by_category(category, metadata_available):
+    metadata_for_category = metadata_available.filter(
+        metadata__category=category
+    )        
+    return [_el.metadata for _el in metadata_for_category]
