@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load base_tags %}
+<div id="dynamic_filters">
+  {% dynamic_metadata_filters as data %}
+  {% for key, values in data.items %}
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-down"></i>{{key}}</a></h4>
+  <ul class="nav closed" id="dynamic_filter_{{ key }}">
+    {% for el in values %}
+    <li>
+      <a id="dynamic_filter_{{ el.id }}" data-value="{{ el.value }}" data-filter="metadata__name" ng-click="multiple_choice_listener($event)">
+          {{ el.name }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+</div>
