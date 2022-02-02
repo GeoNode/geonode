@@ -32,12 +32,14 @@ from owslib.etree import etree as dlxml
 from django.conf import settings
 from django.urls import reverse
 from django.shortcuts import render
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse, HttpResponseRedirect
 
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 
 from geonode.upload import UploadException
+from geonode.upload.models import UploadSizeLimit
 from geonode.utils import json_response as do_json_response, unzip_file
 from geonode.geoserver.helpers import (
     gs_catalog,
@@ -650,6 +652,14 @@ def run_response(req, upload_session):
         return progress_redirect(next, upload_session.import_session.id)
 
     return next_step_response(req, upload_session)
+
+
+def get_max_upload_size(slug):
+    try:
+        max_size = UploadSizeLimit.objects.get(slug=slug).max_size
+    except ObjectDoesNotExist:
+        max_size = getattr(settings, "DEFAULT_MAX_UPLOAD_SIZE", 104857600)
+    return max_size
 
 
 """
