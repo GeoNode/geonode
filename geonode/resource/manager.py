@@ -354,14 +354,14 @@ class ResourceManager(ResourceManagerInterface):
                     if metadata_uploaded and xml_file:
                         _md_file = None
                         try:
-                            _md_file = storage_manager.open(xml_file)
+                            _md_file = storage_manager.open(xml_file, mode='r')
                         except Exception as e:
                             logger.exception(e)
                             _md_file = open(xml_file)
 
-                        _resource.metadata_xml = _md_file.read()
-
-                        _uuid, vals, regions, keywords, custom = parse_metadata(_md_file.read())
+                        _md_file_content = _md_file.read()
+                        _resource.metadata_xml = _md_file_content
+                        _uuid, vals, regions, keywords, custom = parse_metadata(_md_file_content)
                         if uuid and uuid != _uuid:
                             raise ValidationError("The UUID identifier from the XML Metadata is different from the {_resource} one.")
                         else:
