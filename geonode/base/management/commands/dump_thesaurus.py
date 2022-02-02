@@ -1,6 +1,7 @@
 #########################################################################
 #
-# Copyright (C) 2021 OSGeo
+# Copyright (C) 2020 OSGeo
+# Copyright (C) 2022 King's College London
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,36 +18,42 @@
 #
 #########################################################################
 
-from lxml import etree
-
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from rdflib import Graph, URIRef, Literal
+from rdflib.namespace import DC, DCTERMS, RDF, SKOS
 
 from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel
-
-RDF_URI = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-XML_URI = 'http://www.w3.org/XML/1998/namespace'
-SKOS_URI = 'http://www.w3.org/2004/02/skos/core#'
-DC_URI = 'http://purl.org/dc/elements/1.1/'
-DCTERMS_URI = 'http://purl.org/dc/terms/'
-
-RDF_NS = f'{{{RDF_URI}}}'
-XML_NS = f'{{{XML_URI}}}'
-SKOS_NS = f'{{{SKOS_URI}}}'
-DC_NS = f'{{{DC_URI}}}'
-DCTERMS_NS = f'{{{DCTERMS_URI}}}'
 
 
 class Command(BaseCommand):
 
     help = 'Dump a thesaurus in RDF format'
+    formats = sorted(['ttl', 'xml', 'pretty-xml', 'json-ld', 'nt', 'n3', 'trig'])
 
     def add_arguments(self, parser):
 
         # Named (optional) arguments
         parser.add_argument(
+            '-n',
             '--name',
             dest='name',
             help='Dump the thesaurus with the given name')
+
+        parser.add_argument(
+            '-f',
+            '--format',
+            dest='format',
+            default='pretty-xml',
+            help=f'Format string supported by rdflib, e.g.: pretty-xml (default), {", ".join(self.formats)}'
+        )
+
+        parser.add_argument(
+            '--default-lang',
+            dest='lang',
+            default=getattr(settings, 'THESAURUS_DEFAULT_LANG', None),
+            help='Default language code for untagged string literals'
+        )
 
         # Named (optional) arguments
         parser.add_argument(
@@ -65,14 +72,17 @@ class Command(BaseCommand):
         if not name and not list:
             raise CommandError("Missing identifier name for the thesaurus (--name)")
 
+        if options.get('format') not in self.formats:
+            raise CommandError(f"Invalid output format: supported formats are {', '.join(self.formats)}")
+
         if list:
             self.list_thesauri()
             return
 
-        self.dump_thesaurus(name)
+        self.dump_thesaurus(name, options.get('format'), options.get('lang'))
 
     def list_thesauri(self):
-        print('LISTING THESAURI')
+        self.stderr.write(self.style.SUCCESS('LISTING THESAURI'))
         max_id_len = len(max(Thesaurus.objects.values_list('identifier', flat=True), key=len))
 
         for t in Thesaurus.objects.order_by('order').all():
@@ -82,55 +92,29 @@ class Command(BaseCommand):
                 # DISABLED
                 # [0..n]
                 card = f'[{t.card_min}..{t.card_max if t.card_max!=-1 else "N"}]  '
-            print(f'id:{t.id:2} sort:{t.order:3} {card} name={t.identifier.ljust(max_id_len)} title="{t.title}" URI:{t.about}')
+            self.stdout.write(f'id:{t.id:2} sort:{t.order:3} {card} name={t.identifier.ljust(max_id_len)} title="{t.title}" URI:{t.about}\n')
 
-    def dump_thesaurus(self, name):
+    def dump_thesaurus(self, name: str, fmt: str, default_lang: str):
+
+        g = Graph()
         thesaurus = Thesaurus.objects.filter(identifier=name).get()
+        scheme = URIRef(thesaurus.about)
+        g.add((scheme, RDF.type, SKOS.ConceptScheme))
+        g.add((scheme, DC.title, Literal(thesaurus.title, lang=default_lang)))
+        g.add((scheme, DC.description, Literal(thesaurus.description, lang=default_lang)))
+        g.add((scheme, DCTERMS.issued, Literal(thesaurus.date)))
 
-        ns = {
-            None: SKOS_URI,
-            'rdf': RDF_URI,
-            'xml': XML_URI,
-            'dc': DC_URI,
-            'dcterms': DCTERMS_URI
-        }
-
-        root = etree.Element(f"{RDF_NS}RDF", nsmap=ns)
-        concept_scheme = etree.SubElement(root, f"{SKOS_NS}ConceptScheme")
-        concept_scheme.set(f"{RDF_NS}about", thesaurus.about)
-
-        # Default title
-        # <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">GEMET - INSPIRE themes, version 1.0</dc:title>
-        title = etree.SubElement(concept_scheme, f"{DC_NS}title")
-        title.text = thesaurus.title
-
-        # Localized titles
-        # <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">Limitations on public access</dc:title>
-        for ltitle in ThesaurusLabel.objects.filter(thesaurus=thesaurus).all():
-            title = etree.SubElement(concept_scheme, f"{DC_NS}title")
-            title.set(f"{XML_NS}lang", ltitle.lang)
-            title.text = ltitle.label
-
-        d = etree.SubElement(concept_scheme, f"{DCTERMS_NS}issued")
-        d.text = thesaurus.date
-        d = etree.SubElement(concept_scheme, f"{DCTERMS_NS}modified")
-        d.text = thesaurus.date
+        for title_label in ThesaurusLabel.objects.filter(thesaurus=thesaurus).all():
+            g.add((scheme, DC.title, Literal(title_label.label, lang=title_label.lang)))
 
         # Concepts
         for keyword in ThesaurusKeyword.objects.filter(thesaurus=thesaurus).all():
-            concept = etree.SubElement(concept_scheme, f"{SKOS_NS}Concept")
-            if keyword.about:
-                concept.set(f"{RDF_NS}about", keyword.about)
-
+            concept = URIRef(keyword.about)
+            g.add((concept, RDF.type, SKOS.Concept))
+            g.add((concept, SKOS.inScheme, scheme))
             if keyword.alt_label:
-                # <skos:altLabel>cp</skos:altLabel>
-                label = etree.SubElement(concept, f"{SKOS_NS}altLabel")
-                label.text = keyword.alt_label
-
+                g.add((concept, SKOS.altLabel, Literal(keyword.alt_label, lang=default_lang)))
             for label in ThesaurusKeywordLabel.objects.filter(keyword=keyword).all():
-                # <skos:prefLabel xml:lang="en">Geographical grid systems</skos:prefLabel>
-                pref_label = etree.SubElement(concept, f"{SKOS_NS}prefLabel")
-                pref_label.set(f"{XML_NS}lang", label.lang)
-                pref_label.text = label.label
+                g.add((concept, SKOS.prefLabel, Literal(label.label, lang=label.lang)))
 
-        etree.dump(root, pretty_print=True)
+        self.stdout.write(g.serialize(format=fmt))

@@ -1,6 +1,7 @@
 #########################################################################
 #
 # Copyright (C) 2020 OSGeo
+# Copyright (C) 2022 King's College London
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,13 +18,19 @@
 #
 #########################################################################
 
-from django.test.testcases import SimpleTestCase
-from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel
-from django.test import TestCase
-from django.core import management
-from owslib.etree import etree as dlxml
-from geonode.base.management.commands.load_thesaurus import get_all_lang_available_with_title, determinate_value
 import os
+from typing import List
+
+from django.core import management
+from django.core.files.uploadedfile import UploadedFile
+from django.test import TestCase
+from django.test.testcases import SimpleTestCase
+from rdflib import Graph, Literal
+from rdflib.exceptions import ParserError
+from rdflib.namespace import DC, RDF, SKOS
+
+from geonode.base.management.commands.load_thesaurus import value_for_language
+from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel
 
 
 class TestLoadThesaurus(TestCase):
@@ -38,7 +45,7 @@ class TestLoadThesaurus(TestCase):
 
     def setUp(self):
         self.rdf_path = f"{os.path.dirname(os.path.abspath(__file__))}/data/thesaurus.rdf"
-        self.Thesaurus = Thesaurus(
+        self.thesaurus = Thesaurus(
             identifier="foo_name",
             title="Mocked Title",
             date="2018-05-23T10:25:56",
@@ -51,29 +58,44 @@ class TestLoadThesaurus(TestCase):
         with self.assertRaises(OSError):
             management.call_command("load_thesaurus", file="abc", name="foo_name", stdout="out")
 
-    def test_give_a_valid_name_should_save_the_expected_Thesaurus(self):
+    def test_expected_Thesaurus(self):
         actual = self.__get_last_thesaurus()
-        self.assertEqual(self.Thesaurus.identifier, actual.identifier)
-        self.assertEqual(self.Thesaurus.title, actual.title)
-        self.assertEqual(self.Thesaurus.date, actual.date)
-        self.assertEqual(self.Thesaurus.description, actual.description)
-        self.assertEqual(self.Thesaurus.slug, actual.slug)
-        self.assertEqual(self.Thesaurus.about, actual.about)
+        self.assertEqual(self.thesaurus.identifier, actual.identifier)
+        self.assertEqual(self.thesaurus.title, actual.title)
+        self.assertEqual(self.thesaurus.date, actual.date)
+        self.assertEqual(self.thesaurus.description, actual.description)
+        self.assertEqual(self.thesaurus.slug, actual.slug)
+        self.assertEqual(self.thesaurus.about, actual.about)
 
-    def test_give_a_valid_name_should_save_the_expected_ThesaurusKeyword(self):
+    def test_expected_ThesaurusKeyword(self):
         tid = self.__get_last_thesaurus()
         actual = ThesaurusKeyword.objects.filter(thesaurus=tid)
         self.assertEqual(2, len(actual))
 
-    def test_give_a_valid_name_should_save_the_expected_ThesaurusKeywordLabel(self):
-        tkey = ThesaurusKeyword.objects.filter(thesaurus=self.__get_last_thesaurus())[0]
+    def test_expected_ThesaurusKeywordLabel(self):
+        tid = self.__get_last_thesaurus()
+        tkey = ThesaurusKeyword.objects.filter(thesaurus=tid)[0]
         actual = ThesaurusKeywordLabel.objects.filter(keyword=tkey)
         self.assertEqual(2, len(actual))
 
-    def test_give_a_valid_name_should_save_the_expected_ThesaurusLabel(self):
+    def test_expected_ThesaurusLabel(self):
         tid = self.__get_last_thesaurus()
         actual = ThesaurusLabel.objects.all().filter(thesaurus=tid)
         self.assertEqual(2, len(actual))
+
+    def test_load_from_UploadedFile(self):
+        with open(self.rdf_path) as f:
+            uf = UploadedFile(f, name=self.rdf_path)
+            management.call_command("load_thesaurus", file=uf, name="alt_name", stdout="out")
+            alt = Thesaurus.objects.get(identifier="alt_name")
+            keywords = ThesaurusKeyword.objects.filter(thesaurus=alt)
+            self.assertEqual(2, len(keywords))
+
+    def test_load_from_UploadedFile_fails_with_no_extension(self):
+        with open(self.rdf_path) as f:
+            uf = UploadedFile(f, name="bad_extension.ext")
+            with self.assertRaises(ParserError):
+                management.call_command("load_thesaurus", file=uf, name="alt_name", stdout="out", stderr=None)
 
     @staticmethod
     def __get_last_thesaurus():
@@ -84,64 +106,52 @@ class TestExtractLanguages(SimpleTestCase):
     def setUp(self):
         self.rdf_path = f"{os.path.dirname(os.path.abspath(__file__))}/data/thesaurus.rdf"
 
-    def test_get_all_lang_available_should_return_all_the_lang_available_int_the_file(self):
+    def test_get_all_lang_available_should_return_all_the_lang_available_in_the_file(self):
         titles = self.__load_titles()
-        XML_URI = "http://www.w3.org/XML/1998/namespace"
-        LANG_ATTRIB = f"{{{XML_URI}}}lang"
-        actual = get_all_lang_available_with_title(titles, LANG_ATTRIB)
         expected = [
-            ("it", "Italian register of the reference data sets"),
-            ("en", "Register of the reference data sets"),
-            (None, "Mocked Title"),
+            Literal("Italian register of the reference data sets", lang="it"),
+            Literal("Register of the reference data sets", lang="en"),
+            Literal("Mocked Title", lang=None),
         ]
-        self.assertListEqual(expected, actual)
+        self.assertListEqual(expected, titles)
 
     def test_determinate_title_should_return_the_title_without_lang_if_available(self):
         titles = [
-            ("it", "Italian register of the reference data sets"),
-            ("en", "Register of the reference data sets"),
-            (None, "Mocked Title"),
+            Literal("Italian register of the reference data sets", lang="it"),
+            Literal("Register of the reference data sets", lang="en"),
+            Literal("Mocked Title", lang=None),
         ]
-        actual = determinate_value(titles, None)
+        actual = value_for_language(titles, default_lang="")
         self.assertEqual("Mocked Title", actual)
 
     def test_determinate_title_should_return_the_italian_lang_if_none_is_not_available(self):
         titles = [
-            ("it", "Italian register of the reference data sets"),
-            ("en", "Register of the reference data sets"),
+            Literal("Italian register of the reference data sets", lang="it"),
+            Literal("Register of the reference data sets", lang="en")
         ]
-        actual = determinate_value(titles, "it")
+        actual = value_for_language(titles, "it")
         self.assertEqual("Italian register of the reference data sets", actual)
 
     def test_determinate_title_should_return_the_title_whithout_lang_even_if_localized_is_available(self):
         titles = [
-            ("it", "Italian register of the reference data sets"),
-            ("en", "Register of the reference data sets"),
-            (None, "Mocked Title"),
+            Literal("Italian register of the reference data sets", lang="it"),
+            Literal("Register of the reference data sets", lang="en"),
+            Literal("Mocked Title", lang=None),
         ]
-        actual = determinate_value(titles, "it")
+        actual = value_for_language(titles, "it")
         self.assertEqual("Mocked Title", actual)
 
     def test_determinate_title_should_take_the_first_localized_title_when_default_one_is_not_available(self):
         titles = [
-            ("it", "Italian register of the reference data sets"),
-            ("en", "Register of the reference data sets"),
+            Literal("Italian register of the reference data sets", lang="it"),
+            Literal("Register of the reference data sets", lang="en"),
         ]
-        actual = determinate_value(titles, "not-existing")
+        actual = value_for_language(titles, "not-existing")
         self.assertEqual("Italian register of the reference data sets", actual)
 
-    def __load_titles(self):
-        RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-        ns = {
-            "rdf": RDF_URI,
-            "foaf": "http://xmlns.com/foaf/0.1/",
-            "dc": "http://purl.org/dc/elements/1.1/",
-            "dcterms": "http://purl.org/dc/terms/",
-            "skos": "http://www.w3.org/2004/02/skos/core#",
-        }
+    def __load_titles(self) -> List[Literal]:
+        g = Graph()
+        g.parse(self.rdf_path)
 
-        tfile = dlxml.parse(self.rdf_path)
-        root = tfile.getroot()
-
-        scheme = root.find("skos:ConceptScheme", ns)
-        return scheme.findall("dc:title", ns)
+        scheme = g.value(None, RDF.type, SKOS.ConceptScheme, any=False)
+        return [t for t in g.objects(scheme, DC.title) if isinstance(t, Literal)]

@@ -105,7 +105,7 @@ class LayerUploadForm(forms.Form):
 
     def _get_uploads_max_size(self):
         try:
-            max_size_db_obj = UploadSizeLimit.objects.get(slug="total_upload_size_sum")
+            max_size_db_obj = UploadSizeLimit.objects.get(slug="dataset_upload_size")
         except UploadSizeLimit.DoesNotExist:
             max_size_db_obj = UploadSizeLimit.objects.create_default_limit()
         return max_size_db_obj.max_size

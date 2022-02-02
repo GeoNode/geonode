@@ -33,7 +33,7 @@ from django.forms.utils import ErrorList
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.template import loader
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
@@ -63,6 +63,7 @@ from .models import Document
 from .forms import (
     DocumentForm,
     DocumentCreateForm,
+    DocumentReplaceForm
 )
 
 logger = logging.getLogger("geonode.documents.views")
@@ -147,8 +148,11 @@ class DocumentUploadView(CreateView):
     def form_invalid(self, form):
         messages.error(self.request, f"{form.errors}")
         if self.request.GET.get('no__redirect', False):
+            plaintext_errors = []
+            for field in form.errors.values():
+                plaintext_errors.append(field.data[0].message)
             out = {'success': False}
-            out['message'] = f"{form.errors}"
+            out['message'] = '.'.join(plaintext_errors)
             status_code = 400
             return HttpResponse(
                 json.dumps(out),
@@ -256,6 +260,45 @@ class DocumentUploadView(CreateView):
                 status=status_code)
         else:
             return HttpResponseRedirect(url)
+
+
+class DocumentUpdateView(UpdateView):
+    template_name = 'documents/document_replace.html'
+    pk_url_kwarg = 'docid'
+    form_class = DocumentReplaceForm
+    queryset = Document.objects.all()
+    context_object_name = 'document'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
+        return context
+
+    def form_valid(self, form):
+        """
+        If the form is valid, save the associated model.
+        """
+        doc_form = form.cleaned_data
+
+        file = doc_form.pop('doc_file', None)
+        if file:
+            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+            dirname = os.path.basename(tempdir)
+            filepath = storage_manager.save(f"{dirname}/{file.name}", file)
+            storage_path = storage_manager.path(filepath)
+            self.object = resource_manager.update(
+                self.object.uuid,
+                instance=self.object,
+                vals=dict(
+                    owner=self.request.user,
+                    files=[storage_path])
+            )
+            if tempdir != os.path.dirname(storage_path):
+                shutil.rmtree(tempdir, ignore_errors=True)
+
+        register_event(self.request, EventType.EVENT_CHANGE, self.object)
+        url = hookset.document_detail_url(self.object)
+        return HttpResponseRedirect(url)
 
 
 @login_required

@@ -542,7 +542,7 @@ class ThesaurusKeywordLabel(models.Model):
     """
 
     # read from the RDF file
-    lang = models.CharField(max_length=3)
+    lang = models.CharField(max_length=10)
     # read from the RDF file
     label = models.CharField(max_length=255)
     # note  = models.CharField(max_length=511)
@@ -606,7 +606,7 @@ class ThesaurusLabel(models.Model):
     Contains localized version of the thesaurus title
     """
     # read from the RDF file
-    lang = models.CharField(max_length=3)
+    lang = models.CharField(max_length=10)
     # read from the RDF file
     label = models.CharField(max_length=255)
 
