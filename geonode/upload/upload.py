@@ -131,6 +131,9 @@ class UploaderSession:
     # the upload type - see the _pages dict in views
     upload_type = None
 
+    # whether the files have been uploaded or provided locally
+    spatial_files_uploaded = True
+
     # time related info - need to store here until geoserver layer exists
     time_info = None
 
@@ -811,8 +814,9 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
     finally:
         # Get rid if temporary files that have been uploaded via Upload form
         try:
-            logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
-            shutil.rmtree(upload_session.tempdir)
+            if upload_session.spatial_files_uploaded:
+                logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
+                shutil.rmtree(upload_session.tempdir)
         except Exception as e:
             logger.warning(e)
 

@@ -111,6 +111,7 @@ class Upload(models.Model):
     date = models.DateTimeField('date', default=now)
     resource = models.ForeignKey(ResourceBase, null=True, on_delete=models.SET_NULL)
     upload_dir = models.TextField(null=True)
+    spatial_files_uploaded = models.BooleanField(default=True)
     name = models.CharField(max_length=64, null=True)
     complete = models.BooleanField(default=False)
     # hold our serialized session object
@@ -143,6 +144,7 @@ class Upload(models.Model):
         self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
         self.name = upload_session.name
         self.user = upload_session.user
+        self.spatial_files_uploaded = upload_session.spatial_files_uploaded
         self.date = now()
 
         if not self.upload_dir:
@@ -165,7 +167,10 @@ class Upload(models.Model):
                 if self.resource and not self.resource.files:
                     files_to_upload = aux_files + sld_files + xml_files + [uploaded_files.base_file]
                     if len(files_to_upload):
-                        ResourceBase.objects.upload_files(resource_id=self.resource.id, files=files_to_upload)
+                        ResourceBase.objects.upload_files(
+                            resource_id=self.resource.id,
+                            files=files_to_upload,
+                            force=not self.spatial_files_uploaded)
                         self.resource.refresh_from_db()
 
                 # Now we delete the files from local file system

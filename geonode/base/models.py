@@ -644,15 +644,14 @@ class ResourceBaseManager(PolymorphicManager):
         try:
             out = []
             for f in files:
-                if os.path.isfile(f) and os.path.exists(f):
-
+                if force:
+                    out.append(f)
+                elif os.path.isfile(f) and os.path.exists(f):
                     with open(f, 'rb') as ff:
                         folder = os.path.basename(os.path.dirname(f))
                         filename = os.path.basename(f)
                         file_uploaded_path = storage_manager.save(f'{folder}/{filename}', ff)
                         out.append(storage_manager.path(file_uploaded_path))
-                elif force:
-                    out.append(f)
 
             # making an update instead of save in order to avoid others
             # signal like post_save and commiunication with geoserver
