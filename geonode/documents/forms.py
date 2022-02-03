@@ -48,6 +48,7 @@ class SizeRestrictedFileField(forms.FileField):
     Same as FileField, but checks file max_size based on the value stored on `field_slug`.
         * field_slug - a slug indicating the database object from where the max_size will be retrieved.
     """
+
     def __init__(self, *args, **kwargs):
         self.field_slug = kwargs.pop("field_slug")
         super(SizeRestrictedFileField, self).__init__(*args, **kwargs)
