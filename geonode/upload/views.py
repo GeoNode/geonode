@@ -209,7 +209,7 @@ def save_step_view(req, session):
             dataset_title=form.cleaned_data["dataset_title"],
             permissions=form.cleaned_data["permissions"],
             import_sld_file=sld,
-            spatial_files_uploaded=data_retriever.uploaded,
+            spatial_files_uploaded=form.cleaned_data['uploaded'],
             upload_type=spatial_files[0].file_type.code,
             time=form.cleaned_data['time'],
             mosaic=form.cleaned_data['mosaic'],

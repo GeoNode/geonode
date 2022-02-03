@@ -90,6 +90,7 @@ class LayerUploadForm(forms.Form):
     def clean(self):
         cleaned = super().clean()
         uploaded, files = self._get_files_paths_or_objects(cleaned)
+        cleaned["uploaded"] = uploaded
         base_file = files.get('base_file')
 
         if not base_file and "base_file" not in self.errors and "base_file_path" not in self.errors:
@@ -104,7 +105,7 @@ class LayerUploadForm(forms.Form):
         self.validate_files_sum_of_sizes(self.files)
 
         # Get remote files
-        self.data_retriever = DataRetriever(files=files, uploaded=uploaded, tranfer_at_creation=True)
+        self.data_retriever = DataRetriever(files=files, tranfer_at_creation=True)
         cleaned["data_retriever"] = self.data_retriever
         # Validate remote file sizes
         self.validate_files_sum_of_sizes(self.data_retriever)

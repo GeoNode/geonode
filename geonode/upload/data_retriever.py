@@ -27,7 +27,7 @@ from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
 
 
-class DataItemRetriever:
+class DataItemRetriever(object):
 
     def __init__(self, file):
         self.temporary_folder = None
@@ -121,11 +121,10 @@ class DataItemRetriever:
         return os.path.basename(self._smart_open_uri.uri_path)
 
 
-class DataRetriever:
+class DataRetriever(object):
 
-    def __init__(self, files, uploaded=True, tranfer_at_creation=False):
+    def __init__(self, files, tranfer_at_creation=False):
         self.temporary_folder = None
-        self.uploaded = uploaded
         self.file_paths = {}
 
         self.data_items = {
