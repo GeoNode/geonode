@@ -169,7 +169,7 @@ class CommonModelApi(ModelResource):
             orm_filters.update({'polymorphic_ctype__model__in': [filt.lower() for filt in filters.getlist('app_type__in')]})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
-        
+        #  getting metadata filters
         _metadata = {f"metadata__{k}__in": filters.getlist(k) for k in filter(lambda x: x.startswith('metadata__'), filters)}
         if _metadata:
             orm_filters.update({"metadata_filters": _metadata})

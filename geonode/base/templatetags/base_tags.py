@@ -43,7 +43,7 @@ from geonode.base.models import (
     HierarchicalKeyword, Menu, MenuItem
 )
 from geonode.security.utils import get_visible_resources
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 
 logger = logging.getLogger(__name__)
 
@@ -530,7 +530,12 @@ def dynamic_metadata_filters(context):
     return output
 
 def _get_filter_by_category(category, metadata_available):
-    metadata_for_category = metadata_available.filter(
-        metadata__filter_header=category
-    ).distinct()
-    return [_el.metadata for _el in metadata_for_category]
+    metadata_for_category = metadata_available\
+        .filter(metadata__filter_header=category)
+
+    counters = Counter(metadata_for_category.values_list('metadata__field_name', 'metadata__field_value'))
+    out = []
+    for _el in metadata_for_category.distinct("metadata__field_name", "metadata__field_value"):
+        cnt = counters.get((_el.metadata['field_name'], _el.metadata['field_value']), 0)
+        out.append({**{"id": _el.id, "count": cnt}, **_el.metadata})
+    return out
