@@ -28,6 +28,7 @@ import traceback
 from uuid import uuid1
 
 from allauth.account.models import EmailAddress
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.db.models import Q
@@ -117,7 +118,10 @@ def notify_admins_new_signup(sender, **kwargs):
     send_notification(
         users=staff,
         label="account_approve",
-        extra_context={"from_user": kwargs["user"]}
+        extra_context={
+            "from_user": kwargs["user"],
+            "account_approval_required": settings.ACCOUNT_APPROVAL_REQUIRED
+        }
     )
 
     if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_AT == 'registration':
