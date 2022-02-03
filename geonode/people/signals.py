@@ -39,7 +39,7 @@ from geonode.base.auth import (
     set_session_token,
     remove_session_token)
 
-from geonode.notifications_helper import send_notification, queue_notification
+from geonode.notifications_helper import send_notification
 
 from .adapters import get_data_extractor
 
