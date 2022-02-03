@@ -60,6 +60,7 @@ from geonode.upload.upload import _update_layer_with_xml_info
 from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify, get_url_for_model
 from geonode.base.models import (
+    ExtraMetadata,
     Thesaurus,
     TopicCategory)
 from geonode.base.enumerations import CHARSETS
@@ -853,8 +854,7 @@ def layer_metadata(
             logger.error(f"Layer Metadata form is not valid: {layer_form.errors}")
             out = {
                 'success': False,
-                'errors': [
-                    re.sub(re.compile('<.*?>'), '', str(err)) for err in layer_form.errors]
+                "errors": [f"{x}: {y[0].messages[0]}" for x, y in layer_form.errors.as_data().items()]
             }
             return HttpResponse(
                 json.dumps(out),
@@ -1004,6 +1004,7 @@ def layer_metadata(
             la.visible = form["visible"]
             la.display_order = form["display_order"]
             la.featureinfo_type = form["featureinfo_type"]
+
             la.save()
 
         if new_poc is not None or new_author is not None:
@@ -1022,6 +1023,16 @@ def layer_metadata(
         if new_regions:
             layer.regions.add(*new_regions)
         layer.category = new_category
+
+        # clearing old metadata from the resource
+        layer.metadata.all().delete()
+        # creating new metadata for the resource
+        for _m in json.loads(layer_form.cleaned_data['extra_metadata']):
+            new_m = ExtraMetadata.objects.create(
+                resource=layer,
+                metadata=_m
+            )
+            layer.metadata.add(new_m)
 
         up_sessions = UploadSession.objects.filter(layer=layer)
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:

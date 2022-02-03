@@ -37,6 +37,7 @@ from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
 
+from schema import Optional
 from . import serializer
 
 SILENCED_SYSTEM_CHECKS = [
@@ -2163,3 +2164,34 @@ FILE_UPLOAD_HANDLERS = [
 
 DEFAULT_MAX_UPLOAD_SIZE = int(os.getenv('DEFAULT_MAX_UPLOAD_SIZE', 104857600))  # 100 MB
 DEFAULT_MAX_BEFORE_UPLOAD_SIZE = int(os.getenv('DEFAULT_MAX_BEFORE_UPLOAD_SIZE', 524288000))  # 500 MB
+
+'''
+Default schema used to store extra and dynamic metadata for the resource
+'''
+
+DEFAULT_EXTRA_METADATA_SCHEMA = {
+    Optional("id"): int,
+    "filter_header": object,
+    "field_name": object,
+    "field_label": object,
+    "field_value": object,
+}
+
+'''
+If present, will extend the available metadata schema used for store
+new value for each resource. By default overrided the existing one.
+The expected schema is the same as the default
+'''
+CUSTOM_METADATA_SCHEMA = os.getenv('CUSTOM_METADATA_SCHEMA ', {})
+
+'''
+Variable used to actually get the expected metadata schema for each resource_type.
+In this way, each resource type can have a different metadata schema
+'''
+
+EXTRA_METADATA_SCHEMA = {**{
+  "map": os.getenv('MAP_EXTRA_METADATA_SCHEMA', DEFAULT_EXTRA_METADATA_SCHEMA),
+  "layer": os.getenv('DATASET_EXTRA_METADATA_SCHEMA', DEFAULT_EXTRA_METADATA_SCHEMA),
+  "document": os.getenv('DOCUMENT_EXTRA_METADATA_SCHEMA', DEFAULT_EXTRA_METADATA_SCHEMA),
+  "geoapp": os.getenv('GEOAPP_EXTRA_METADATA_SCHEMA', DEFAULT_EXTRA_METADATA_SCHEMA)
+}, **CUSTOM_METADATA_SCHEMA}

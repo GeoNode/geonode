@@ -544,6 +544,12 @@ span.grippy::after {
                         {{ layer_form.spatial_representation_type }}
                     </div>
                     {% endblock layer_spatial_representation_type %}
+                    {% block layer_extra_metadata %}
+                    <div style="margin-top: 5px">
+                        <span><label for="{{ layer_form.extra_metadata|id }}">{{ layer_form.extra_metadata.label }}</label></span>
+                        {{ layer_form.extra_metadata }}
+                    </div>
+                    {% endblock layer_extra_metadata %}
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">

@@ -43,6 +43,7 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from django.core.files.storage import default_storage as storage
 from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
+from django_jsonfield_backport.models import JSONField
 
 from PIL import Image, ImageOps
 
@@ -701,6 +702,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     data_quality_statement_help_text = _(
         'general explanation of the data producer\'s knowledge about the lineage of a'
         ' dataset')
+    extra_metadata_help_text = _(
+        'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]')
     # internal fields
     uuid = models.CharField(max_length=36)
     title = models.CharField(_('title'), max_length=255, help_text=_(
@@ -960,6 +963,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("Metadata"),
         default=False,
         help_text=_('If true, will be excluded from search'))
+
+    metadata = models.ManyToManyField(
+        "ExtraMetadata",
+        verbose_name=_('Extra Metadata'),
+        null=True,
+        blank=True,
+        help_text=extra_metadata_help_text)
 
     objects = ResourceBaseManager()
 
@@ -2085,3 +2095,12 @@ def rating_post_save(instance, *args, **kwargs):
 
 
 signals.post_save.connect(rating_post_save, sender=OverallRating)
+
+
+class ExtraMetadata(models.Model):
+    resource = models.ForeignKey(
+        ResourceBase,
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    metadata = JSONField(null=True, default=dict, blank=True)

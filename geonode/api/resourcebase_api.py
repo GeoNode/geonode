@@ -95,7 +95,8 @@ class CommonMetaApi:
         'date': ALL,
         'purpose': ALL,
         'uuid': ALL_WITH_RELATIONS,
-        'abstract': ALL
+        'abstract': ALL,
+        'metadata': ALL_WITH_RELATIONS
     }
     ordering = ['date', 'title', 'popular_count']
     max_limit = None
@@ -168,6 +169,9 @@ class CommonModelApi(ModelResource):
             orm_filters.update({'polymorphic_ctype__model__in': [filt.lower() for filt in filters.getlist('app_type__in')]})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
+        _metadata = {f"metadata__{_k}": _v for _k, _v in filters.items() if _k.startswith('metadata__')}
+        if _metadata:
+            orm_filters.update({"metadata_filters": _metadata})
         orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'
         if not settings.SEARCH_RESOURCES_EXTENDED:
             return self._remove_additional_filters(orm_filters)
@@ -186,6 +190,9 @@ class CommonModelApi(ModelResource):
         metadata_only = applicable_filters.pop('metadata_only', False)
         filtering_method = applicable_filters.pop('f_method', 'and')
         polyphormic_model = applicable_filters.pop('polymorphic_ctype__model__in', None)
+
+        metadata_filters = applicable_filters.pop('metadata_filters', None)
+
         if filtering_method == 'or':
             filters = Q()
             for f in applicable_filters.items():
@@ -237,6 +244,8 @@ class CommonModelApi(ModelResource):
         if not settings.GEONODE_APPS_ENABLE:
             geoapps_model = get_geoapps_models()
             filtered = filtered.exclude(resource_type__in=[list(x.models.items())[0][0] for x in geoapps_model])
+        if metadata_filters:
+            filtered = filtered.filter(**metadata_filters)
 
         # return filtered
         return get_visible_resources(
@@ -592,6 +601,9 @@ class CommonModelApi(ModelResource):
                         formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
                 except Exception as e:
                     logger.exception(e)
+
+            if formatted_obj.get('metadata', None):
+                formatted_obj['metadata'] = [model_to_dict(_m) for _m in formatted_obj['metadata']]
 
             formatted_objects.append(formatted_obj)
 

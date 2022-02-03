@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 import re
 import html
 import logging
@@ -44,6 +45,7 @@ from geonode.base.models import (CuratedThumbnail, HierarchicalKeyword,
                                  License, Region, ResourceBase, Thesaurus,
                                  ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel,
                                  TopicCategory)
+from geonode.base.utils import validate_extra_metadata
 from geonode.base.widgets import TaggitSelect2Custom
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
@@ -477,8 +479,19 @@ class ResourceBaseForm(TranslationModelForm):
 
     regions.widget.attrs = {"size": 20}
 
+    extra_metadata = forms.CharField(
+        required=False,
+        widget=forms.Textarea,
+        help_text=_('Additional metadata, must be in format [\
+            {"metadata_key": "metadata_value"},\
+            {"metadata_key": "metadata_value"} \
+        ]')
+)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.id and self.instance.metadata.exists():
+            self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]
         for field in self.fields:
             help_text = self.fields[field].help_text
             if help_text != '':
@@ -524,6 +537,10 @@ class ResourceBaseForm(TranslationModelForm):
             title = title.replace(",", "_")
         return title
 
+    def clean_extra_metadata(self):
+        cleaned_data = self.cleaned_data.get('extra_metadata', [])
+        return json.dumps(validate_extra_metadata(cleaned_data, self.instance), indent=4)
+
     class Meta:
         exclude = (
             'contacts',
@@ -551,6 +568,8 @@ class ResourceBaseForm(TranslationModelForm):
             'users_geolimits',
             'groups_geolimits',
             'dirty_state'
+            'was_approved',
+            'was_published'
         )
 
 

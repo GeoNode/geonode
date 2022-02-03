@@ -355,7 +355,7 @@ def create_single_layer(name, keywords=None, owner=None, group=None):
     return layer
 
 
-def create_single_map(name, keywords=None):
+def create_single_map(name, keywords=None, owner=None):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -374,7 +374,7 @@ def create_single_map(name, keywords=None):
         projection='EPSG:4326',
         center_x=42,
         center_y=-73,
-        owner=user,
+        owner=owner or user,
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
@@ -390,7 +390,7 @@ def create_single_map(name, keywords=None):
     return m
 
 
-def create_single_doc(name, keywords=None):
+def create_single_doc(name, keywords=None, owner=None):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -406,7 +406,7 @@ def create_single_doc(name, keywords=None):
     m = Document(
         title=title,
         abstract=abstract,
-        owner=user,
+        owner=owner or user,
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
