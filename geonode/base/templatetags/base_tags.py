@@ -45,6 +45,8 @@ from geonode.base.models import (
 from geonode.security.utils import get_visible_resources
 from collections import OrderedDict, Counter
 
+from geonode.utils import get_geoapps_models
+
 logger = logging.getLogger(__name__)
 
 register = template.Library()
@@ -513,9 +515,11 @@ def dynamic_metadata_filters(context):
     metadata_available = ExtraMetadata.objects.all()
     
     if facet_type != 'all':
-        resource_type = getattr(FACET_TO_RESOURCE_TYPE, facet_type).value
+        resource_type = [getattr(FACET_TO_RESOURCE_TYPE, facet_type).value]
+        if 'geoapp' in resource_type:
+            resource_type = [''.join(list(x.models)) for x in get_geoapps_models()]
         metadata_available = metadata_available\
-            .filter(resource__polymorphic_ctype__model=resource_type)
+            .filter(resource__polymorphic_ctype__model__in=resource_type)
 
     if not metadata_available.exists():
         return []
