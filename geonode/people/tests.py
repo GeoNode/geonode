@@ -16,9 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from unittest.mock import patch
-from allauth.account.signals import user_signed_up
-
 from django.test.utils import override_settings
 from geonode.tests.base import GeoNodeBaseTestSupport
 
@@ -32,6 +29,7 @@ from django.contrib.sites.models import Site
 from geonode.layers import utils
 from geonode.layers.models import Dataset
 from geonode.people import profileextractors
+
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
@@ -406,13 +404,3 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
             result,
             data["lastName"]["localized"]["en_US"]
         )
-
-    def test_admin_notifications_on_signup(self):
-        with patch('geonode.people.signals.send_notification') as _mck:
-            test_user = get_user_model().objects.create(username="test_user_notif")
-            with override_settings(ACCOUNT_APPROVAL_REQUIRED=False):
-                user_signed_up.send(sender=test_user.__class__, user=test_user)
-                self.assertEqual(_mck.call_count, 0)
-            with override_settings(ACCOUNT_APPROVAL_REQUIRED=True):
-                user_signed_up.send(sender=test_user.__class__, user=test_user)
-                self.assertEqual(_mck.call_count, 1)

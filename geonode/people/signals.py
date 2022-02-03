@@ -94,14 +94,14 @@ def update_user_email_addresses(sender, **kwargs):
 
 def notify_admins_new_signup(sender, **kwargs):
     staff = get_user_model().objects.filter(Q(is_active=True) & (Q(is_staff=True) | Q(is_superuser=True)))
-    if settings.ACCOUNT_APPROVAL_REQUIRED:
-        send_notification(
-            users=staff,
-            label="account_approve",
-            extra_context={"from_user": kwargs["user"]}
-        )
-    else:
-        queue_notification(staff, "account_creation", {"from_user": kwargs["user"]})
+    send_notification(
+        users=staff,
+        label="account_approve",
+        extra_context={
+            "from_user": kwargs["user"],
+            "account_approval_required": settings.ACCOUNT_APPROVAL_REQUIRED
+        }
+    )
 
 
 def profile_post_save(instance, sender, **kwargs):
