@@ -24,7 +24,6 @@ from django import template
 from django.db.models import Q
 from django.conf import settings
 from django.db.models import Count
-from django.forms import model_to_dict
 from django.utils.translation import ugettext
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
@@ -58,6 +57,7 @@ FACETS = {
     'remote': _('Remote Layer'),
     'wms': _('WMS Cascade Layer')
 }
+
 
 class FACET_TO_RESOURCE_TYPE(Enum):
     layers = 'layer'
@@ -513,7 +513,7 @@ def dynamic_metadata_filters(context):
     facet_type = context.get('facet_type', 'all')
 
     metadata_available = ExtraMetadata.objects.all()
-    
+
     if facet_type != 'all':
         resource_type = [getattr(FACET_TO_RESOURCE_TYPE, facet_type).value]
         if 'geoapp' in resource_type:
@@ -530,8 +530,9 @@ def dynamic_metadata_filters(context):
 
     for _cat in categories:
         output[_cat] = _get_filter_by_category(_cat, metadata_available)
-    
+
     return output
+
 
 def _get_filter_by_category(category, metadata_available):
     metadata_for_category = metadata_available\
