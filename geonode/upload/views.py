@@ -144,13 +144,13 @@ def save_step_view(req, session):
     target_store = None
     if form.is_valid():
         logger.debug(f"valid_extensions: {form.cleaned_data['valid_extensions']}")
-        data_retriever_group = form.cleaned_data["data_retriever_group"]
+        data_retriever = form.cleaned_data["data_retriever"]
         relevant_files = select_relevant_files(
             form.cleaned_data["valid_extensions"],
-            data_retriever_group.get_paths(allow_transfer=False)
+            data_retriever.get_paths(allow_transfer=False)
         )
         logger.debug(f"relevant_files: {relevant_files}")
-        base_file = data_retriever_group.get("base_file").get_path(allow_transfer=False)
+        base_file = data_retriever.get("base_file").get_path(allow_transfer=False)
         name, ext = os.path.splitext(os.path.basename(base_file))
         logger.debug(f'Name: {name}, ext: {ext}')
         logger.debug(f"base_file: {base_file}")
@@ -189,18 +189,18 @@ def save_step_view(req, session):
         sld = None
         if spatial_files[0].sld_files:
             sld = spatial_files[0].sld_files[0]
-        if not os.path.isfile(os.path.join(data_retriever_group.temporary_folder, spatial_files[0].base_file)):
-            tmp_files = [f for f in os.listdir(data_retriever_group.temporary_folder) if os.path.isfile(os.path.join(data_retriever_group.temporary_folder, f))]
+        if not os.path.isfile(os.path.join(data_retriever.temporary_folder, spatial_files[0].base_file)):
+            tmp_files = [f for f in os.listdir(data_retriever.temporary_folder) if os.path.isfile(os.path.join(data_retriever.temporary_folder, f))]
             for f in tmp_files:
-                if zipfile.is_zipfile(os.path.join(data_retriever_group.temporary_folder, f)):
-                    fixup_shp_columnnames(os.path.join(data_retriever_group.temporary_folder, f),
+                if zipfile.is_zipfile(os.path.join(data_retriever.temporary_folder, f)):
+                    fixup_shp_columnnames(os.path.join(data_retriever.temporary_folder, f),
                                           form.cleaned_data["charset"],
-                                          tempdir=data_retriever_group.temporary_folder)
+                                          tempdir=data_retriever.temporary_folder)
 
         _log(f'provided sld is {sld}')
         # upload_type = get_upload_type(base_file)
         upload_session = UploaderSession(
-            tempdir=data_retriever_group.temporary_folder,
+            tempdir=data_retriever.temporary_folder,
             base_file=spatial_files,
             name=upload.name,
             charset=form.cleaned_data["charset"],
@@ -221,8 +221,8 @@ def save_step_view(req, session):
         Upload.objects.update_from_session(upload_session)
         return next_step_response(req, upload_session, force_ajax=True)
     else:
-        if hasattr(form, "data_retriever_group"):
-            form.data_retriever_group.delete_files()
+        if hasattr(form, "data_retriever"):
+            form.data_retriever.delete_files()
         errors = []
         for e in form.errors.values():
             errors.extend([escape(v) for v in e])

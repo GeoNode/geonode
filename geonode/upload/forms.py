@@ -104,12 +104,12 @@ class LayerUploadForm(forms.Form):
         self.validate_files_sum_of_sizes(self.files)
 
         # Get remote files
-        self.data_retriever_group = DataRetriever(files=files, tranfer_at_creation=True)
-        cleaned["data_retriever_group"] = self.data_retriever_group
+        self.data_retriever = DataRetriever(files=files, tranfer_at_creation=True)
+        cleaned["data_retriever"] = self.data_retriever
         # Validate remote file sizes
-        self.validate_files_sum_of_sizes(self.data_retriever_group)
+        self.validate_files_sum_of_sizes(self.data_retriever)
 
-        file_paths_without_base = self.data_retriever_group.get_paths()
+        file_paths_without_base = self.data_retriever.get_paths()
         base_file_path = file_paths_without_base.pop("base_file")
 
         valid_extensions = validate_uploaded_files(
