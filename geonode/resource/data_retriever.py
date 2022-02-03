@@ -29,7 +29,7 @@ def file_chunks_iterable(file, chunk_size=None):
         yield data
 
 
-class DataRetriever(object):
+class DataItemRetriever(object):
     def __init__(self, file):
         self.temporary_folder = None
         self.file_path = None
@@ -103,22 +103,22 @@ class DataRetriever(object):
         return os.path.basename(self._smart_open_uri.uri_path)
 
 
-class DataRetrieverGroup(object):
+class DataRetriever(object):
     def __init__(self, files, tranfer_at_creation=False):
         self.temporary_folder = None
         self.file_paths = {}
 
-        self.data_retrievers = {
-            key: DataRetriever(value) for key, value in files.items() if value
+        self.data_items = {
+            name: DataItemRetriever(file) for name, file in files.items() if file
         }
         if tranfer_at_creation:
             self.transfer_remote_files()
 
     def transfer_remote_files(self):
         self.temporary_folder = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-        for key, value in self.data_retrievers.items():
-            file_path = value.transfer_remote_file(self.temporary_folder)
-            self.file_paths[key] = file_path
+        for name, data_item_retriever in self.data_items.items():
+            file_path = data_item_retriever.transfer_remote_file(self.temporary_folder)
+            self.file_paths[name] = file_path
 
     def get_paths(self, allow_transfer=False):
         if not self.file_paths:
@@ -138,7 +138,7 @@ class DataRetrieverGroup(object):
         self.file_paths = {}
 
     def get(self, key, default=None):
-        return self.data_retrievers.get(key, default)
+        return self.data_items.get(key, default)
 
     def items(self):
-        return self.data_retrievers.items()
+        return self.data_items.items()

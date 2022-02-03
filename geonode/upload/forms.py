@@ -25,7 +25,7 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.upload.models import UploadSizeLimit
-from geonode.resource.data_retriever import DataRetrieverGroup
+from geonode.resource.data_retriever import DataRetriever
 
 from .. import geoserver
 from ..utils import check_ogc_backend
@@ -104,7 +104,7 @@ class LayerUploadForm(forms.Form):
         self.validate_files_sum_of_sizes(self.files)
 
         # Get remote files
-        self.data_retriever_group = DataRetrieverGroup(files=files, tranfer_at_creation=True)
+        self.data_retriever_group = DataRetriever(files=files, tranfer_at_creation=True)
         cleaned["data_retriever_group"] = self.data_retriever_group
         # Validate remote file sizes
         self.validate_files_sum_of_sizes(self.data_retriever_group)
