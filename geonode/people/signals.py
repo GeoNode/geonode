@@ -28,6 +28,7 @@ import traceback
 from uuid import uuid1
 
 from allauth.account.models import EmailAddress
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.db.models import Q
@@ -38,7 +39,7 @@ from geonode.base.auth import (
     set_session_token,
     remove_session_token)
 
-from geonode.notifications_helper import send_notification
+from geonode.notifications_helper import send_notification, queue_notification
 
 from .adapters import get_data_extractor
 
@@ -93,11 +94,14 @@ def update_user_email_addresses(sender, **kwargs):
 
 def notify_admins_new_signup(sender, **kwargs):
     staff = get_user_model().objects.filter(Q(is_active=True) & (Q(is_staff=True) | Q(is_superuser=True)))
-    send_notification(
-        users=staff,
-        label="account_approve",
-        extra_context={"from_user": kwargs["user"]}
-    )
+    if settings.ACCOUNT_APPROVAL_REQUIRED:
+        send_notification(
+            users=staff,
+            label="account_approve",
+            extra_context={"from_user": kwargs["user"]}
+        )
+    else:
+        queue_notification(staff, "account_creation", {"from_user": kwargs["user"]})
 
 
 def profile_post_save(instance, sender, **kwargs):

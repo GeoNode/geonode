@@ -27,6 +27,8 @@ class PeopleAppConfig(NotificationsAppConfigBase):
                       _("A new user has requested access to the site"),),
                      ("account_active", _("Account activated"),
                       _("This account is now active and can log in the site"),),
+                     ("account_creation", _("Account created"),
+                      _("A new user has created an account and has access to the site"),),
                      )
 
     def ready(self):
