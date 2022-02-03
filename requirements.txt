@@ -29,6 +29,7 @@ jsonfield==3.1.0
 jsonschema==3.2.0
 pyrsistent==0.17.3
 zipstream-new==1.1.8
+schema==0.7.5
 
 # Django Apps
 django-allauth==0.44.0

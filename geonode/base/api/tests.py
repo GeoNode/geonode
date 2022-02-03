@@ -36,16 +36,18 @@ from guardian.shortcuts import get_anonymous_user
 
 from geonode import geoserver
 from geonode.layers.models import Layer
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.utils import check_ogc_backend, set_resource_default_links
 from geonode.favorite.models import Favorite
 from geonode.documents.models import Document
 from geonode.base.utils import build_absolute_uri
 from geonode.thumbs.exceptions import ThumbnailError
-from geonode.base.populate_test_data import create_models
+from geonode.base.populate_test_data import create_models, create_single_layer
 from geonode.security.utils import get_resources_with_perms
 
 from geonode.base.models import (
     CuratedThumbnail,
+    ExtraMetadata,
     HierarchicalKeyword,
     Region,
     ResourceBase,
@@ -1021,3 +1023,64 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         }
         self.assertEqual(response.status_code, 500)
         self.assertEqual(expected, response.json())
+
+
+class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
+    def setUp(self):
+        self.layer = create_single_layer('single_layer')
+        self.metadata = {
+            "filter_header": "Foo Filter header",
+            "field_name": "metadata-name",
+            "field_label": "this is the help text",
+            "field_value": "foo"
+        }
+        m = ExtraMetadata.objects.create(
+            resource=self.layer,
+            metadata=self.metadata
+        )
+        self.layer.metadata.add(m)
+        self.mdata = ExtraMetadata.objects.first()
+
+    def test_get_will_return_the_list_of_extra_metadata(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse('base-resources-extra-metadata', args=[self.layer.id])
+        response = self.client.get(url, content_type='application/json')
+        self.assertTrue(200, response.status_code)
+        expected = [
+            {**{"id": self.mdata.id}, **self.metadata}
+        ]
+        self.assertEqual(expected, response.json())
+
+    def test_put_will_update_the_whole_metadata(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse('base-resources-extra-metadata', args=[self.layer.id])
+        input_metadata = {
+            "id": self.mdata.id,
+            "filter_header": "Foo Filter header",
+            "field_name": "metadata-updated",
+            "field_label": "this is the help text",
+            "field_value": "foo"
+        }
+        response = self.client.put(url, data=[input_metadata], content_type='application/json')
+        self.assertTrue(200, response.status_code)
+        self.assertEqual([input_metadata], response.json())
+
+    def test_post_will_add_new_metadata(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse('base-resources-extra-metadata', args=[self.layer.id])
+        input_metadata = {
+            "filter_header": "Foo Filter header",
+            "field_name": "metadata-updated",
+            "field_label": "this is the help text",
+            "field_value": "foo"
+        }
+        response = self.client.post(url, data=[input_metadata], content_type='application/json')
+        self.assertTrue(201, response.status_code)
+        self.assertEqual(2, len(response.json()))
+
+    def test_delete_will_delete_single_metadata(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse('base-resources-extra-metadata', args=[self.layer.id])
+        response = self.client.delete(url, data=[self.mdata.id], content_type='application/json')
+        self.assertTrue(200, response.status_code)
+        self.assertEqual([], response.json())

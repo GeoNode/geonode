@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.db.models.query import QuerySet
 from slugify import slugify
 from urllib.parse import urljoin
 
@@ -35,15 +36,16 @@ from avatar.templatetags.avatar_tags import avatar_url
 
 from geonode.favorite.models import Favorite
 from geonode.base.models import (
-    ResourceBase,
+    ExtraMetadata,
     HierarchicalKeyword,
-    Region,
-    RestrictionCodeType,
     License,
-    TopicCategory,
+    Region,
+    ResourceBase,
+    RestrictionCodeType,
     SpatialRepresentationType,
     ThesaurusKeyword,
-    ThesaurusKeywordLabel
+    ThesaurusKeywordLabel,
+    TopicCategory,
 )
 from geonode.groups.models import (
     GroupCategory,
@@ -263,6 +265,24 @@ class DetailUrlField(DynamicComputedField):
         return build_absolute_uri(instance.detail_url)
 
 
+class ExtraMetadataSerializer(DynamicModelSerializer):
+    class Meta:
+        model = ExtraMetadata
+        name = 'ExtraMetadata'
+        fields = ('pk', 'metadata')
+
+    def to_representation(self, obj):
+
+        if isinstance(obj, QuerySet):
+            out = []
+            for el in obj:
+                out.append({**{"id": el.id}, **el.metadata})
+            return out
+        elif isinstance(obj, list):
+            return obj
+        return {**{"id": obj.id}, **obj.metadata}
+
+
 class ThumbnailUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):
@@ -381,6 +401,8 @@ class ResourceBaseSerializer(
         self.fields['spatial_representation_type'] = DynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False)
 
+    metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
+
     class Meta:
         model = ResourceBase
         name = 'resource'
@@ -397,7 +419,7 @@ class ResourceBaseSerializer(
             'popular_count', 'share_count', 'rating', 'featured', 'is_published', 'is_approved',
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
-            'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed'
+            'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', "metadata"
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,

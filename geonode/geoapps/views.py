@@ -44,10 +44,7 @@ from geonode.monitoring.models import EventType
 from geonode.people.forms import ProfileForm
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 
-from geonode.base.models import (
-    Thesaurus,
-    TopicCategory
-)
+from geonode.base.models import ExtraMetadata, Thesaurus, TopicCategory
 
 from geonode.utils import (
     resolve_object,
@@ -350,6 +347,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
 
     else:
         geoapp_form = GeoAppForm(instance=geoapp_obj, prefix="resource")
+
         geoapp_form.disable_keywords_widget_for_non_superuser(request.user)
         category_form = CategoryForm(
             prefix="category_choice_field",
@@ -451,7 +449,17 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
         geoapp_obj.regions.clear()
         geoapp_obj.regions.add(*new_regions)
         geoapp_obj.category = new_category
+
         geoapp_obj.save(notify=True)
+        # clearing old metadata from the resource
+        geoapp_obj.metadata.all().delete()
+        # creating new metadata for the resource
+        for _m in json.loads(geoapp_form.cleaned_data['extra_metadata']):
+            new_m = ExtraMetadata.objects.create(
+                resource=geoapp_obj,
+                metadata=_m
+            )
+            geoapp_obj.metadata.add(new_m)
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
         if not ajax:
@@ -486,7 +494,18 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             logger.error(tb)
 
         return HttpResponse(json.dumps({'message': message}))
-
+    elif request.method == "POST" and (not geoapp_form.is_valid(
+    ) or not category_form.is_valid() or not tkeywords_form.is_valid()):
+        errors_list = {**geoapp_form.errors.as_data(), **category_form.errors.as_data(), **tkeywords_form.errors.as_data()}
+        logger.error(f"GeoApp Metadata form is not valid: {errors_list}")
+        out = {
+            'success': False,
+            "errors": [f"{x}: {y[0].messages[0]}" for x, y in errors_list.items()]
+        }
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=400)
     # - POST Request Ends here -
 
     # Request.GET

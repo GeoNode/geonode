@@ -30,6 +30,7 @@ from django.test.utils import override_settings
 from guardian.shortcuts import get_anonymous_user
 
 from geonode import geoserver
+from geonode.base.models import ExtraMetadata
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.utils import check_ogc_backend
@@ -359,6 +360,35 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 5)
+
+    def test_metadata_filters(self):
+        """Test category filtering"""
+        _r = Layer.objects.first()
+        _m = ExtraMetadata.objects.create(
+            resource=_r,
+            metadata={
+                "name": "metadata-updated",
+                "slug": "metadata-slug-updated",
+                "help_text": "this is the help text-updated",
+                "field_type": "str-updated",
+                "value": "my value-updated",
+                "category": "category"
+            }
+        )
+        _r.metadata.add(_m)
+        # check we get the correct layers number returnered filtering on one
+        # and then two different categories
+        filter_url = f"{self.list_url}?metadata__category=category"
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
+
+        filter_url = f"{self.list_url}?metadata__category=not-existing-category"
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_tag_filters(self):
         """Test keywords filtering"""
