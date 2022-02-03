@@ -1,5 +1,6 @@
 {% extends "layers/layer_base.html" %}
 {% load i18n %}
+{% load l10n %}
 {% load staticfiles %}
 {% load dialogos_tags %}
 {% load pinax_ratings_tags %}
@@ -249,7 +250,7 @@
         <h4>{% trans 'Average Rating' %}</h4>
         {% overall_rating resource "layer" as layer_rating %}
         {% num_ratings resource as num_votes %}
-        <div class="overall_rating" data-score="{{ layer_rating }}"></div> ({{num_votes}})
+        <div class="overall_rating" data-score="{{ layer_rating|unlocalize }}"></div> ({{num_votes}})
       </article>
       {% endif %}
 
