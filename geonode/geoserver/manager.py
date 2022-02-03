@@ -17,6 +17,7 @@
 #
 #########################################################################
 import os
+import shutil
 import typing
 import logging
 import tempfile
@@ -120,7 +121,10 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         geoserver_cascading_delete.apply_async((_real_instance.alternate,))
                         if "geonode.upload" in settings.INSTALLED_APPS:
                             from geonode.upload.models import Upload
-                            Upload.objects.filter(resource_id=_real_instance.id).delete()
+                            for upload in Upload.objects.filter(resource_id=_real_instance.id):
+                                if upload.upload_dir and os.path.exists(upload.upload_dir):
+                                    shutil.rmtree(upload.upload_dir)
+                                upload.delete()
                 elif isinstance(_real_instance, Map):
                     geoserver_delete_map.apply_async((_real_instance.id, ))
             except Exception as e:

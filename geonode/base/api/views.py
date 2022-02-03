@@ -1147,7 +1147,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 )
             if rating_input not in range(NUM_OF_RATINGS + 1):
                 return HttpResponseForbidden(
-                    "Invalid rating. It must be a value between 0 and {}".format(NUM_OF_RATINGS)
+                    f"Invalid rating. It must be a value between 0 and {NUM_OF_RATINGS}"
                 )
             Rating.update(
                 rating_object=resource,
