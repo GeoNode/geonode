@@ -1,5 +1,6 @@
 {% extends "apps/app_base.html" %}
 {% load i18n %}
+{% load l10n %}
 {% load staticfiles %}
 {% load dialogos_tags %}
 {% load pinax_ratings_tags %}
@@ -75,7 +76,7 @@
           <h3>{% trans 'Average Rating' %}</h3>
           {% overall_rating resource "geoapp" as geoapp_rating %}
           {% num_ratings resource as num_votes %}
-          <div class="overall_rating" style="float:left" data-score="{{ geoapp_rating }}"></div> ({{num_votes}})
+          <div class="overall_rating" style="float:left" data-score="{{ geoapp_rating|unlocalize }}"></div> ({{num_votes}})
         </article>
         {% endif %}
 
