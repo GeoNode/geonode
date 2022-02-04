@@ -29,6 +29,7 @@ from geonode.security.permissions import DEFAULT_PERMS_SPEC
 from .forms import NewDatasetForm
 from .utils import create_dataset
 
+
 @login_required
 def dataset_create(request, template='createlayer/dataset_create.html'):
     """

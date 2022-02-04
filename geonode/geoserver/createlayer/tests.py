@@ -31,6 +31,7 @@ from geonode.geoserver.signals import gs_catalog
 
 from .utils import create_dataset
 
+
 class CreateLayerCoreTest(GeoNodeBaseTestSupport):
 
     """
@@ -42,16 +43,16 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         super().setUp()
         # createlayer must use postgis as a datastore
         # set temporary settings to use a postgis datastore
-        #DATASTORE_URL = 'postgis://geonode:geonode@localhost:5432/datastore'
-        #postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
-        #settings.DATABASES['datastore'] = postgis_db
-        #settings.OGC_SERVER['default']['DATASTORE'] = 'datastore'
+        # DATASTORE_URL = 'postgis://geonode:geonode@localhost:5432/datastore'
+        # postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
+        # settings.DATABASES['datastore'] = postgis_db
+        # settings.OGC_SERVER['default']['DATASTORE'] = 'datastore'
 
     def tearDown(self):
         super(GeoNodeBaseTestSupport, self).tearDown()
         # move to original settings
-        #settings.OGC_SERVER['default']['DATASTORE'] = ''
-        #del settings.DATABASES['datastore']
+        # settings.OGC_SERVER['default']['DATASTORE'] = ''
+        # del settings.DATABASES['datastore']
         # TODO remove stuff from django and geoserver catalog
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -86,7 +87,7 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
             try:
                 self.assertIsNotNone(gs_dataset)
                 self.assertEqual(gs_dataset.name, dataset_name)
-            
+
                 resource = gs_dataset.resource
                 # we must have only one attibute ('the_geom')
                 self.assertEqual(len(resource.attributes), 1)
