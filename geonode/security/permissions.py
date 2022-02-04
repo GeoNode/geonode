@@ -92,7 +92,7 @@ if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
 if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
     DEFAULT_PERMISSIONS += DOWNLOAD_PERMISSIONS
 
-DEFAULT_PERMS_SPEC = json.dumps({"users":{"AnonymousUser":DEFAULT_PERMISSIONS},"groups":{}})
+DEFAULT_PERMS_SPEC = json.dumps({"users": {"AnonymousUser": DEFAULT_PERMISSIONS}, "groups": {}})
 
 NONE_RIGHTS = "none"
 VIEW_RIGHTS = "view"
