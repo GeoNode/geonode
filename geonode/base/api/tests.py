@@ -1664,6 +1664,7 @@ class BaseApiTests(APITestCase):
             }
         )
 
+
 class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
     def setUp(self):
         self.layer = create_single_layer('single_layer')

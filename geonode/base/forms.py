@@ -495,8 +495,10 @@ class ResourceBaseForm(TranslationModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+
         if self.instance and self.instance.id and self.instance.metadata.exists():
-            self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]        
+            self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]
+
         for field in self.fields:
             if field == 'featured' and self.user and not self.user.is_superuser:
                 self.fields[field].disabled = True

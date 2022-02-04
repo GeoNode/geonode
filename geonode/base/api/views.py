@@ -1241,7 +1241,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             'Unable to set thumbnail',
             status=status.HTTP_400_BAD_REQUEST
         )
-    
+
     @extend_schema(
         methods=["get", "put", "delete", "post"], description="Get/Update/Delete/Add extra metadata for resource"
     )

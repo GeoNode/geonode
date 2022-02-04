@@ -364,7 +364,13 @@ class ResourceManager(ResourceManagerInterface):
 
                     logger.debug(f'Update Dataset with information coming from XML File if available {_resource}')
                     _resource.save()
-                    _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
+                    _resource = update_resource(
+                        instance=_resource.get_real_instance(),
+                        regions=regions,
+                        keywords=keywords,
+                        vals=vals,
+                        extra_metadata=extra_metadata
+                    )
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
                     _resource = metadata_storers(_resource.get_real_instance(), custom)
 

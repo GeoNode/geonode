@@ -54,7 +54,6 @@ from geonode.base.forms import (
     TKeywordForm,
     ThesaurusAvailableForm)
 from geonode.base.models import (
-    ExtraMetadata,
     Thesaurus,
     TopicCategory)
 
@@ -444,7 +443,10 @@ def document_metadata(
                 metadata_author=new_author or document.metadata_author,
                 category=new_category
             ),
-            notify=True)
+            notify=True,
+            extra_metadata=json.loads(document_form.cleaned_data['extra_metadata'])
+        )
+
         resource_manager.set_thumbnail(document.uuid, instance=document, overwrite=False)
         document_form.save_many2many()
 

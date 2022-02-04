@@ -58,7 +58,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
-from geonode.layers.forms import JSONField, LayerUploadForm
+from geonode.layers.forms import DatasetForm, JSONField, LayerUploadForm
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.utils import check_ogc_backend, set_resource_default_links
@@ -1679,3 +1679,63 @@ class TestIsSldUploadOnly(TestCase):
             request.FILES['base_file'] = f
         actual = is_sld_upload_only(request)
         self.assertFalse(actual)
+
+class TestDatasetForm(GeoNodeBaseTestSupport):
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.get(username='admin')
+        self.dataset = create_single_dataset("my_single_layer", owner=self.user)
+        self.sut = DatasetForm
+
+    def test_resource_form_is_invalid_extra_metadata_not_json_format(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("layer_metadata", args=(self.dataset.alternate,))
+        response = self.client.post(url, data={
+            "resource-owner": self.dataset.owner.id,
+            "resource-title": "layer_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": "not-a-json"
+        })
+        expected = {"success": False, "errors": ["extra_metadata: The value provided for the Extra metadata field is not a valid JSON"]}
+        self.assertDictEqual(expected, response.json())
+
+    @override_settings(EXTRA_METADATA_SCHEMA={"key": "value"})
+    def test_resource_form_is_invalid_extra_metadata_not_schema_in_settings(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("layer_metadata", args=(self.dataset.alternate,))
+        response = self.client.post(url, data={
+            "resource-owner": self.dataset.owner.id,
+            "resource-title": "layer_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": "[{'key': 'value'}]"
+        })
+        expected = {"success": False, "errors": ["extra_metadata: EXTRA_METADATA_SCHEMA validation schema is not available for resource layer"]}
+        self.assertDictEqual(expected, response.json())
+
+    def test_resource_form_is_invalid_extra_metadata_invalids_schema_entry(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("layer_metadata", args=(self.dataset.alternate,))
+        response = self.client.post(url, data={
+            "resource-owner": self.dataset.owner.id,
+            "resource-title": "layer_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": '[{"key": "value"},{"id": "int", "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
+        })
+        expected = "extra_metadata: Missing keys: \'field_label\', \'field_name\', \'field_value\', \'filter_header\' at index 0 "
+        self.assertIn(expected, response.json()['errors'][0])
+
+    def test_resource_form_is_valid_extra_metadata(self):
+        form = self.sut(instance=self.dataset, data={
+            "owner": self.dataset.owner.id,
+            "title": "layer_title",
+            "date": "2022-01-24 16:38 pm",
+            "date_type": "creation",
+            "language": "eng",
+            "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
+        })
+        self.assertTrue(form.is_valid())

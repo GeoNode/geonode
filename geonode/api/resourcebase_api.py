@@ -166,7 +166,7 @@ class CommonModelApi(ModelResource):
         _metadata = {f"metadata__{_k}": _v for _k, _v in filters.items() if _k.startswith('metadata__')}
         if _metadata:
             orm_filters.update({"metadata_filters": _metadata})
-            
+
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
         orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'

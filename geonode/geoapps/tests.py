@@ -16,8 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from audioop import reverse
 from django.contrib.auth import get_user_model
-
+from django.test import override_settings
+from geonode.geoapps.forms import GeoAppForm
 from geonode.geoapps.models import GeoApp
 from geonode.resource.manager import resource_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -62,3 +64,74 @@ class GeoAppTests(GeoNodeBaseTestSupport):
                 blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}'
             )
         )
+        self.user = get_user_model().objects.get(username='admin')
+        self.geoapp = GeoApp.objects.create(
+            name="name",
+            title="geoapp_titlte",
+            thumbnail_url='initial',
+            owner=self.user
+        )
+        self.sut = GeoAppForm
+    
+    def test_resource_form_is_invalid_extra_metadata_not_json_format(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("geoapp_metadata", args=(self.geoapp.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.geoapp.owner.id,
+            "resource-title": "geoapp_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": "not-a-json"
+        })
+        expected = {"success": False, "errors": ["extra_metadata: The value provided for the Extra metadata field is not a valid JSON"]}
+        self.assertDictEqual(expected, response.json())
+
+    @override_settings(EXTRA_METADATA_SCHEMA={"key": "value"})
+    def test_resource_form_is_invalid_extra_metadata_not_schema_in_settings(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("geoapp_metadata", args=(self.geoapp.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.geoapp.owner.id,
+            "resource-title": "geoapp_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": "[{'key': 'value'}]"
+        })
+        expected = {"success": False, "errors": ["extra_metadata: EXTRA_METADATA_SCHEMA validation schema is not available for resource geoapp"]}
+        self.assertDictEqual(expected, response.json())
+
+    def test_resource_form_is_invalid_extra_metadata_invalids_schema_entry(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("geoapp_metadata", args=(self.geoapp.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.geoapp.owner.id,
+            "resource-title": "geoapp_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": '[{"key": "value"},{"id": "int", "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
+        })
+        expected = "extra_metadata: Missing keys: \'field_label\', \'field_name\', \'field_value\', \'filter_header\' at index 0 "
+        self.assertIn(expected, response.json()['errors'][0])
+
+    @override_settings(EXTRA_METADATA_SCHEMA={
+        "geoapp": {
+            "id": int,
+            "filter_header": object,
+            "field_name": object,
+            "field_label": object,
+            "field_value": object
+        }
+    })
+    def test_resource_form_is_valid_extra_metadata(self):
+        form = self.sut(data={
+            "owner": self.geoapp.owner.id,
+            "title": "geoapp_title",
+            "date": "2022-01-24 16:38 pm",
+            "date_type": "creation",
+            "language": "eng",
+            "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
+        })
+        self.assertTrue(form.is_valid())
