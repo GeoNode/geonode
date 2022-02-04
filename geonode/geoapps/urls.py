@@ -30,6 +30,7 @@ js_info_dict = {
 
 apps_list = register_url_event()(TemplateView.as_view(template_name='apps/app_list.html'))
 
+
 urlpatterns = [
     # 'geonode.geoapps.views',
     url(r'^$',

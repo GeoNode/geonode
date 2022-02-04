@@ -51,7 +51,7 @@ from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
 from geonode.base.bbox_utils import filter_bbox
 from geonode.groups.models import GroupProfile
-from geonode.utils import check_ogc_backend, get_subclasses_by_model
+from geonode.utils import check_ogc_backend, get_geoapps_models, get_subclasses_by_model
 from geonode.security.utils import get_visible_resources
 from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
@@ -237,6 +237,9 @@ class CommonModelApi(ModelResource):
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
 
+        if not settings.GEONODE_APPS_ENABLE:
+            geoapps_model = get_geoapps_models()
+            filtered = filtered.exclude(resource_type__in=[list(x.models.items())[0][0] for x in geoapps_model])
         # return filtered
         return get_visible_resources(
             filtered,

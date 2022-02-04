@@ -107,9 +107,6 @@ urlpatterns += [
     # Documents views
     url(r'^documents/', include('geonode.documents.urls')),
 
-    # Apps views
-    url(r'^apps/', include('geonode.geoapps.urls')),
-
     # Catalogue views
     url(r'^catalogue/', include('geonode.catalogue.urls')),
 
@@ -182,6 +179,9 @@ urlpatterns += [
     # tinymce WYSIWYG HTML Editor
     url(r'^tinymce/', include('tinymce.urls')),
 ]
+
+if settings.GEONODE_APPS_ENABLE:
+    urlpatterns += [url(r'^apps/', include('geonode.geoapps.urls'))]
 
 urlpatterns += i18n_patterns(
     url(r'^grappelli/', include('grappelli.urls')),
