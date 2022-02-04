@@ -88,7 +88,8 @@ class CommonMetaApi:
         'date': ALL,
         'purpose': ALL,
         'uuid': ALL_WITH_RELATIONS,
-        'abstract': ALL
+        'abstract': ALL,
+        'metadata': ALL_WITH_RELATIONS
     }
     ordering = ['date', 'title', 'popular_count']
     max_limit = None
@@ -161,6 +162,11 @@ class CommonModelApi(ModelResource):
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'app_type__in' in filters:
             orm_filters.update({'resource_type': filters['app_type__in'].lower()})
+
+        _metadata = {f"metadata__{_k}": _v for _k, _v in filters.items() if _k.startswith('metadata__')}
+        if _metadata:
+            orm_filters.update({"metadata_filters": _metadata})
+            
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
         orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'
@@ -180,6 +186,7 @@ class CommonModelApi(ModelResource):
         keywords = applicable_filters.pop('keywords__slug__in', None)
         metadata_only = applicable_filters.pop('metadata_only', False)
         filtering_method = applicable_filters.pop('f_method', 'and')
+        metadata_filters = applicable_filters.pop('metadata_filters', None)
         if filtering_method == 'or':
             filters = Q()
             for f in applicable_filters.items():
@@ -224,6 +231,9 @@ class CommonModelApi(ModelResource):
 
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
+
+        if metadata_filters:
+            filtered = filtered.filter(**metadata_filters)
 
         # return filtered
         return get_visible_resources(
@@ -571,6 +581,9 @@ class CommonModelApi(ModelResource):
 
             formatted_obj['owner__username'] = obj.owner.username
             formatted_obj['owner_name'] = obj.owner.get_full_name() or obj.owner.username
+
+            if formatted_obj.get('metadata', None):
+                formatted_obj['metadata'] = [model_to_dict(_m) for _m in formatted_obj['metadata']]
 
             formatted_objects.append(formatted_obj)
 

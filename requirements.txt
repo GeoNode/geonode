@@ -22,6 +22,7 @@ Deprecated==1.2.13
 wrapt==1.13.3
 jsonschema==4.4.0
 zipstream-new==1.1.8
+schema==0.7.5
 
 # Django Apps
 django-allauth==0.47.0

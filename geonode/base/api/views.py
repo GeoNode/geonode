@@ -60,7 +60,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
-from geonode.base.models import Configuration
+from geonode.base.models import Configuration, ExtraMetadata
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
@@ -101,8 +101,10 @@ from .serializers import (
     TopicCategorySerializer,
     RegionSerializer,
     ThesaurusKeywordSerializer,
+    ExtraMetadataSerializer
 )
 from .pagination import GeoNodeApiPagination
+from geonode.base.utils import validate_extra_metadata
 
 import logging
 
@@ -1239,3 +1241,84 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             'Unable to set thumbnail',
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+    @extend_schema(
+        methods=["get", "put", "delete", "post"], description="Get/Update/Delete/Add extra metadata for resource"
+    )
+    @action(
+        detail=True,
+        methods=["get", "put", "delete", "post"],
+        permission_classes=[
+            IsOwnerOrAdmin,
+        ],
+        url_path=r"extra_metadata",  # noqa
+        url_name="extra-metadata",
+    )
+    def extra_metadata(self, request, pk=None):
+        _obj = self.get_object()
+        if request.method == "GET":
+            # get list of available metadata
+            queryset = _obj.metadata.all()
+            _filters = [{f"metadata__{key}": value} for key, value in request.query_params.items()]
+            if _filters:
+                queryset = queryset.filter(**_filters[0])
+            return Response(ExtraMetadataSerializer().to_representation(queryset))
+        if not request.method == "DELETE":
+            try:
+                extra_metadata = validate_extra_metadata(request.data, _obj)
+            except Exception as e:
+                return Response(status=500, data=e.args[0])
+
+        if request.method == "PUT":
+            '''
+            update specific metadata. The ID of the metadata is required to perform the update
+            [
+                {
+                        "id": 1,
+                        "name": "foo_name",
+                        "slug": "foo_sug",
+                        "help_text": "object",
+                        "field_type": "int",
+                        "value": "object",
+                        "category": "object"
+                }
+            ]
+            '''
+            for _m in extra_metadata:
+                _id = _m.pop('id')
+                ResourceBase.objects.filter(id=_obj.id).first().metadata.filter(id=_id).update(metadata=_m)
+            logger.info("metadata updated for the selected resource")
+            _obj.refresh_from_db()
+            return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()))
+        elif request.method == "DELETE":
+            # delete single metadata
+            '''
+            Expect a payload with the IDs of the metadata that should be deleted. Payload be like:
+            [4, 3]
+            '''
+            ResourceBase.objects.filter(id=_obj.id).first().metadata.filter(id__in=request.data).delete()
+            _obj.refresh_from_db()
+            return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()))
+        elif request.method == "POST":
+            # add new metadata
+            '''
+            [
+                {
+                        "name": "foo_name",
+                        "slug": "foo_sug",
+                        "help_text": "object",
+                        "field_type": "int",
+                        "value": "object",
+                        "category": "object"
+                }
+            ]
+            '''
+            for _m in extra_metadata:
+                new_m = ExtraMetadata.objects.create(
+                    resource=_obj,
+                    metadata=_m
+                )
+                new_m.save()
+                _obj.metadata.add(new_m)
+            _obj.refresh_from_db()
+            return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()), status=201)

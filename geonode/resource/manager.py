@@ -342,7 +342,7 @@ class ResourceManager(ResourceManagerInterface):
         return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
-               vals: dict = {}, regions: list = [], keywords: list = [], custom: dict = {}, notify: bool = True) -> ResourceBase:
+               vals: dict = {}, regions: list = [], keywords: list = [], custom: dict = {}, notify: bool = True, extra_metadata: list = []) -> ResourceBase:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
