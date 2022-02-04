@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+from enum import Enum
 import logging
 
 from django import template
@@ -31,7 +32,7 @@ from django.contrib.contenttypes.models import ContentType
 from pinax.ratings.models import Rating
 from guardian.shortcuts import get_objects_for_user
 
-from geonode.base.models import ResourceBase
+from geonode.base.models import ExtraMetadata, ResourceBase
 from geonode.base.bbox_utils import filter_bbox
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -41,7 +42,9 @@ from geonode.base.models import (
     HierarchicalKeyword, Menu, MenuItem
 )
 from geonode.security.utils import get_visible_resources
-from collections import OrderedDict
+from collections import OrderedDict, Counter
+
+from geonode.utils import get_geoapps_models
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +57,13 @@ FACETS = {
     'remote': _('Remote Layer'),
     'wms': _('WMS Cascade Layer')
 }
+
+
+class FACET_TO_RESOURCE_TYPE(Enum):
+    layers = 'layer'
+    maps = 'map'
+    documents = 'document'
+    geoapps = 'geoapp'
 
 
 @register.filter(name='template_trans')
@@ -495,3 +505,42 @@ def get_layer_count_by_services(service_id, user):
         queryset=Layer.objects.filter(remote_service=service_id),
         user=user
     ).count()
+
+
+@register.simple_tag(takes_context=True)
+def dynamic_metadata_filters(context):
+
+    facet_type = context.get('facet_type', 'all')
+
+    metadata_available = ExtraMetadata.objects.all()
+
+    if facet_type != 'all':
+        resource_type = [getattr(FACET_TO_RESOURCE_TYPE, facet_type).value]
+        if 'geoapp' in resource_type:
+            resource_type = [''.join(list(x.models)) for x in get_geoapps_models()]
+        metadata_available = metadata_available\
+            .filter(resource__polymorphic_ctype__model__in=resource_type)
+
+    if not metadata_available.exists():
+        return []
+
+    categories = metadata_available.values_list('metadata__filter_header', flat=True).distinct()
+
+    output = {}
+
+    for _cat in categories:
+        output[_cat] = _get_filter_by_category(_cat, metadata_available)
+
+    return output
+
+
+def _get_filter_by_category(category, metadata_available):
+    metadata_for_category = metadata_available\
+        .filter(metadata__filter_header=category)
+
+    counters = Counter(metadata_for_category.values_list('metadata__field_name', 'metadata__field_value'))
+    out = []
+    for _el in metadata_for_category.distinct("metadata__field_name", "metadata__field_value"):
+        cnt = counters.get((_el.metadata['field_name'], _el.metadata['field_value']), 0)
+        out.append({**{"id": _el.id, "count": cnt}, **_el.metadata})
+    return out
