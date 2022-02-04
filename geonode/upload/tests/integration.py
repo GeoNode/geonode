@@ -636,7 +636,7 @@ class TestUpload(UploaderBase):
     def test_csv_with_size_limit(self):
         '''make sure a upload fails gracefully/normally with big files'''
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="total_upload_size_sum",
+            slug="dataset_upload_size",
             defaults={
                 "description": "The sum of sizes for the files of a dataset upload.",
                 "max_size": 1,
@@ -650,7 +650,7 @@ class TestUpload(UploaderBase):
             defaults={
                 "description": (
                     "Request total size, validated before the upload process. "
-                    'This should be greater than "total_upload_size_sum".'
+                    'This should be greater than "dataset_upload_size".'
                 ),
                 "max_size": 1024,
             },
@@ -670,11 +670,11 @@ class TestUpload(UploaderBase):
 
     def test_csv_with_upload_handler_size_limit(self):
         '''make sure a upload fails gracefully/normally with big files'''
-        # Set ``total_upload_size_sum`` to 3 and to ``file_upload_handler`` 2
-        # In production ``total_upload_size_sum`` should not be greater than ``file_upload_handler``
+        # Set ``dataset_upload_size`` to 3 and to ``file_upload_handler`` 2
+        # In production ``dataset_upload_size`` should not be greater than ``file_upload_handler``
         # It's used here to make sure that the uploadhandler is called
         total_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="total_upload_size_sum",
+            slug="dataset_upload_size",
             defaults={
                 "description": "The sum of sizes for the files of a dataset upload.",
                 "max_size": 1024,
@@ -688,7 +688,7 @@ class TestUpload(UploaderBase):
             defaults={
                 "description": (
                     "Request total size, validated before the upload process. "
-                    'This should be greater than "total_upload_size_sum".'
+                    'This should be greater than "dataset_upload_size".'
                 ),
                 "max_size": 2,
             },

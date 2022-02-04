@@ -1,0 +1,32 @@
+{% extends "documents/document_upload_base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Replace Document" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}documents replace{% endblock body_class %}
+
+{% block head %}
+    {{ block.super }}
+{% endblock %}
+
+{% block body %}
+  <div class="block">
+    <div class="col-md-8">
+      <h2 class="page-title">{% trans "Replace " %}{{ document.title }}</h2>
+      <div id="upload_form">
+        <form method="post" enctype="multipart/form-data" action="{% url "document_replace" document.id %}">
+          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+          {{ form.errors }}
+          {% if not document.doc_url %}
+            <p> Currently: <a>{{ document.href}}</a> </p>
+            {{ form.doc_file }}
+            <section>
+              <button id="clear-button" type="reset" class="btn btn-default">{% trans "Clear" %}</button>
+              <button id="upload-button" type="submit" class="btn btn-primary" value="Update">{% trans "Replace Document" %}</button>
+            </section>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

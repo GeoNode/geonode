@@ -35,7 +35,6 @@ from django.utils.translation import ugettext_lazy as _
 from geonode import GeoNodeException
 from geonode.base import enumerations
 from geonode.base.models import ResourceBase
-from geonode.storage.manager import storage_manager
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
 logger = logging.getLogger(__name__)
@@ -75,7 +74,7 @@ class UploadSizeLimitManager(models.Manager):
 
     def create_default_limit(self):
         max_size_db_obj = self.create(
-            slug="total_upload_size_sum",
+            slug="dataset_upload_size",
             description="The sum of sizes for the files of a dataset upload.",
             max_size=settings.DEFAULT_MAX_UPLOAD_SIZE,
         )
@@ -86,7 +85,7 @@ class UploadSizeLimitManager(models.Manager):
             slug="file_upload_handler",
             description=(
                 'Request total size, validated before the upload process. '
-                'This should be greater than "total_upload_size_sum".'
+                'This should be greater than "dataset_upload_size".'
             ),
             max_size=settings.DEFAULT_MAX_BEFORE_UPLOAD_SIZE,
         )
@@ -254,18 +253,6 @@ class Upload(models.Model):
                 session.delete()
             except Exception:
                 logging.warning('error deleting upload session')
-
-        # we delete directly the folder with the files of the resource
-        if self.resource:
-            for _file in self.resource.files:
-                try:
-                    if storage_manager.exists(_file):
-                        storage_manager.delete(_file)
-                except Exception as e:
-                    logger.warning(e)
-
-            # Do we want to delete the files also from the resource?
-            ResourceBase.objects.filter(id=self.resource.id).update(files={})
 
         for _location in importer_locations:
             try:

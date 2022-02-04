@@ -578,6 +578,8 @@ class ResourceBaseForm(TranslationModelForm):
             'state',
             'blob',
             'files',
+            'was_approved',
+            'was_published'
         )
 
 

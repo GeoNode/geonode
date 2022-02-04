@@ -27,6 +27,9 @@ import io
 import json
 import gisdata
 
+from PIL import Image
+from io import BytesIO
+
 from unittest.mock import patch
 
 from django.urls import reverse
@@ -236,6 +239,34 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         form = DocumentCreateForm(form_data, file_data)
         self.assertFalse(form.is_valid())
         self.assertTrue('__all__' in form.errors)
+
+    def test_replace_document(self):
+        self.client.login(username='admin', password='admin')
+
+        f = SimpleUploadedFile(
+            'test_img_file.gif',
+            self.imgfile.read(),
+            'image/gif')
+        response = self.client.post(
+            reverse('document_upload'),
+            data={
+                'title': 'File Doc',
+                'doc_file': f,
+                'permissions': '{"users":{"AnonymousUser": ["view_resourcebase"]}}'},
+            follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Replace Document
+        d = Document.objects.get(title='File Doc')
+        test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
+        f = SimpleUploadedFile('test_image.png', BytesIO(test_image.tobytes()).read(), 'image/png')
+        response = self.client.post(
+            reverse('document_replace', args=(d.id,)),
+            data={'doc_file': f}
+        )
+        self.assertEqual(response.status_code, 302)
+        # Remove document
+        d.delete()
 
     def test_upload_document_form_size_limit(self):
         form_data = {
