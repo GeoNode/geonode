@@ -2104,6 +2104,8 @@ def is_monochromatic_image(image_url, image_data=None):
 
 
 def get_subclasses_by_model(model: str):
+    if not settings.GEONODE_APPS_ENABLE:
+        return []
     from django.apps import apps
     _app_subclasses = []
     for _model in apps.get_models():
