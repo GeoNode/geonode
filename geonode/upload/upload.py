@@ -807,14 +807,12 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
             Upload.objects.filter(resource=saved_dataset.get_self_resource()).update(complete=True)
             Upload.objects.get(resource=saved_dataset.get_self_resource()).set_processing_state(enumerations.STATE_PROCESSED)
     except Exception as e:
-        saved_dataset.set_processing_state(enumerations.STATE_INVALID)
         raise GeoNodeException(e)
     finally:
         # Get rid if temporary files that have been uploaded via Upload form
         try:
             logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
-            if saved_dataset.processed and upload_session.tempdir and os.path.exists(upload_session.tempdir):
-                shutil.rmtree(upload_session.tempdir)
+            shutil.rmtree(upload_session.tempdir)
         except Exception as e:
             logger.warning(e)
 

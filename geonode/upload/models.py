@@ -35,7 +35,6 @@ from django.utils.translation import ugettext_lazy as _
 from geonode import GeoNodeException
 from geonode.base import enumerations
 from geonode.base.models import ResourceBase
-from geonode.storage.manager import storage_manager
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
 logger = logging.getLogger(__name__)
@@ -254,18 +253,6 @@ class Upload(models.Model):
                 session.delete()
             except Exception:
                 logging.warning('error deleting upload session')
-
-        # we delete directly the folder with the files of the resource
-        if self.resource:
-            for _file in self.resource.files:
-                try:
-                    if storage_manager.exists(_file):
-                        storage_manager.delete(_file)
-                except Exception as e:
-                    logger.warning(e)
-
-            # Do we want to delete the files also from the resource?
-            ResourceBase.objects.filter(id=self.resource.id).update(files={})
 
         for _location in importer_locations:
             try:
