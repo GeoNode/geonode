@@ -740,7 +740,6 @@ def dataset_metadata(
             instance=layer,
             notify=True,
             extra_metadata=json.loads(dataset_form.cleaned_data['extra_metadata'])
-        
         )
         return HttpResponse(json.dumps({'message': message}))
 

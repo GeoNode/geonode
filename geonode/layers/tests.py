@@ -1680,6 +1680,7 @@ class TestIsSldUploadOnly(TestCase):
         actual = is_sld_upload_only(request)
         self.assertFalse(actual)
 
+
 class TestDatasetForm(GeoNodeBaseTestSupport):
     def setUp(self) -> None:
         self.user = get_user_model().objects.get(username='admin')

@@ -72,7 +72,7 @@ class GeoAppTests(GeoNodeBaseTestSupport):
             owner=self.user
         )
         self.sut = GeoAppForm
-    
+
     def test_resource_form_is_invalid_extra_metadata_not_json_format(self):
         self.client.login(username="admin", password="admin")
         url = reverse("geoapp_metadata", args=(self.geoapp.id,))
