@@ -359,7 +359,9 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
         if ResourceBase.objects.filter(pk=instance).count() == 1:
             _resource = ResourceBase.objects.get(pk=instance)
             executions = ExecutionRequest.objects.filter(
-                Q(input_params__uuid=_resource.uuid) | Q(geonode_resource=_resource)
+                Q(input_params__uuid=_resource.uuid) |
+                Q(output_params__output__uuid=_resource.uuid) |
+                Q(geonode_resource=_resource)
             )
 
             for execution in executions:
