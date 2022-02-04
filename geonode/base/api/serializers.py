@@ -20,6 +20,7 @@ import json
 from slugify import slugify
 from urllib.parse import urljoin
 
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
@@ -354,20 +355,25 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
         fields = ('pk',)
 
     def to_representation(self, instance):
-        executions = ExecutionRequest.objects.filter(geonode_resource_id=instance)
         data = []
-        for execution in executions:
-            data.append({
-                'user': execution.user.username,
-                'status': execution.status,
-                'func_name': execution.func_name,
-                'created': execution.created,
-                'finished': execution.finished,
-                'last_updated': execution.last_updated,
-                'input_params': execution.input_params,
-                'output_params': execution.output_params
-            },
-        )
+        if ResourceBase.objects.filter(pk=instance).count() == 1:
+            _resource = ResourceBase.objects.get(pk=instance)
+            executions = ExecutionRequest.objects.filter(
+                Q(input_params__uuid=_resource.uuid) | Q(geonode_resource=_resource)
+            )
+
+            for execution in executions:
+                data.append({
+                    'user': execution.user.username,
+                    'status': execution.status,
+                    'func_name': execution.func_name,
+                    'created': execution.created,
+                    'finished': execution.finished,
+                    'last_updated': execution.last_updated,
+                    'input_params': execution.input_params,
+                    'output_params': execution.output_params
+                },
+            )
         return data
 
 
@@ -497,6 +503,7 @@ class ResourceBaseSerializer(
             "embed_url": {"required": False},
             "thumbnail_url": {"required": False},
             "blob": {"required": False, "write_only": True},
+            "executions": {"required": False, "embed": False, "deferred": True, "read_only": True},
             "owner": {"required": False},
             "resource_type": {"required": False}
         }
