@@ -36,6 +36,10 @@ class JSONField(forms.CharField):
 
     def clean(self, text):
         text = super().clean(text)
+
+        if not self.required and (text is None or text == ''):
+            return None
+
         try:
             return json.loads(text)
         except ValueError:

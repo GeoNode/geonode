@@ -24,11 +24,13 @@ import collections
 from avatar.templatetags.avatar_tags import avatar_url
 from guardian.shortcuts import get_group_perms, get_anonymous_user
 
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from geonode.utils import build_absolute_uri
 from geonode.groups.conf import settings as groups_settings
+
 
 # Permissions mapping
 PERMISSIONS = {
@@ -83,6 +85,14 @@ SERVICE_PERMISSIONS = [
     "change_resourcebase_metadata",
     "add_resourcebase_from_service"
 ]
+
+DEFAULT_PERMISSIONS = []
+if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
+    DEFAULT_PERMISSIONS += VIEW_PERMISSIONS
+if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
+    DEFAULT_PERMISSIONS += DOWNLOAD_PERMISSIONS
+
+DEFAULT_PERMS_SPEC = json.dumps({"users":{"AnonymousUser":DEFAULT_PERMISSIONS},"groups":{}})
 
 NONE_RIGHTS = "none"
 VIEW_RIGHTS = "view"
