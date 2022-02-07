@@ -286,7 +286,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         admin = get_user_model().objects.get(username='admin')
         self.assertTrue(admin.is_authenticated)
         request.user = admin
-        request.path = reverse('dataset_upload')
+        request.path = reverse('get_dataset')
         middleware.process_request(request)
         response = self.client.get(request.path)
         self.assertEqual(response.status_code, 200)

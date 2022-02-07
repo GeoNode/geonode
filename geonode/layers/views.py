@@ -175,9 +175,9 @@ def _resolve_dataset(request, alternate, permission='base.view_resourcebase', ms
 @login_required
 @require_http_methods(["POST"])
 def dataset_upload(request):
-    if request.method == 'POST' and is_xml_upload_only(request):
+    if is_xml_upload_only(request):
         return dataset_upload_metadata(request)
-    elif request.method == 'POST' and is_sld_upload_only(request):
+    elif is_sld_upload_only(request):
         return dataset_style_upload(request)
     out = {"errormsgs": "Please, execute a valid upload request"}
     return HttpResponse(

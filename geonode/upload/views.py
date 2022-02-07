@@ -48,7 +48,6 @@ from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 
-from geonode.base import enumerations
 from geonode.layers.models import Dataset
 from geonode.upload import UploadException
 from geonode.base.models import Configuration
@@ -73,7 +72,6 @@ from .files import (
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
-    _ASYNC_UPLOAD,
     _geoserver_down_error_msg,
     _get_time_dimensions,
     check_import_session_is_valid,
@@ -128,16 +126,7 @@ def data_upload_progress(req):
 
 
 def save_step_view(req, session):
-    if req.method == 'GET':
-        return render(
-            req,
-            'upload/dataset_upload.html',
-            {
-                'async_upload': _ASYNC_UPLOAD,
-                'incomplete': Upload.objects.get_incomplete_uploads(req.user),
-                'charsets': enumerations.CHARSETS
-            }
-        )
+
     form = LayerUploadForm(req.POST, req.FILES)
 
     overwrite = req.path_info.endswith('/replace')
