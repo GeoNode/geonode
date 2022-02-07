@@ -18,7 +18,6 @@
 {% block body_outer %}
 
 <div class="page-header">
-  <a href="{% dataset_list_url %}" class="btn btn-primary pull-right">{% trans "Explore Datasets" %}</a>
   <h2 class="page-title">{% trans "Create an empty dataset" %}</h2>
 </div>
 
@@ -88,8 +87,6 @@
 
     // copy permissions and attributes
     $('#layer-create-form').submit(function(){
-      $('#permissions').val(JSON.stringify(permissionsString($('#permission_form'),'base')));
-
       var attrs = {};
       $('.attr-definition').each(function(i, obj) {
           attr_name = obj.childNodes[0].value;
