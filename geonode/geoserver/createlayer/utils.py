@@ -222,4 +222,5 @@ def create_gs_dataset(name, title, geometry_type, attributes=None):
         logger.error(f'Response was: {req.text}')
         raise Exception(f"Dataset could not be created in GeoServer {req.text}")
 
+    cat.reload()
     return workspace, datastore

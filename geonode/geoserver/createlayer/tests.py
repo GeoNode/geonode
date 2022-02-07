@@ -17,14 +17,12 @@
 #
 #########################################################################
 
-from geonode.tests.base import GeoNodeBaseTestSupport
-
 import os
-import dj_database_url
 
 from django.conf import settings
 from django.urls import reverse
 
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode import geoserver
 from geonode import GeoNodeException
 from geonode.layers.models import Dataset
@@ -32,28 +30,6 @@ from geonode.decorators import on_ogc_backend
 from geonode.geoserver.signals import gs_catalog
 
 from .utils import create_dataset
-
-
-r"""
-How to run the tests
---------------------
-
-Create a user and database for the datastore:
-
-    $ sudo su postgres
-    $ psql
-    postgres=# CREATE USER geonode with password 'geonode';
-    postgres=# ALTER USER geonode WITH LOGIN;
-    postgres=# ALTER USER geonode WITH SUPERUSER;
-    postgres=# CREATE DATABASE datastore WITH OWNER geonode;
-    postgres=# \c datastore
-    datastore=# CREATE EXTENSION postgis;
-
-Add 'geonode.geoserver.createlayer' in GEONODE_INTERNAL_APPS
-
-Then, as usual, run "paver run_tests"
-
-"""
 
 
 class CreateLayerCoreTest(GeoNodeBaseTestSupport):
@@ -67,21 +43,17 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         super().setUp()
         # createlayer must use postgis as a datastore
         # set temporary settings to use a postgis datastore
-        DATASTORE_URL = 'postgis://geonode:geonode@localhost:5432/datastore'
-        postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
-        settings.DATABASES['datastore'] = postgis_db
-        settings.OGC_SERVER['default']['DATASTORE'] = 'datastore'
+        # DATASTORE_URL = 'postgis://geonode:geonode@localhost:5432/datastore'
+        # postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
+        # settings.DATABASES['datastore'] = postgis_db
+        # settings.OGC_SERVER['default']['DATASTORE'] = 'datastore'
 
     def tearDown(self):
         super(GeoNodeBaseTestSupport, self).tearDown()
         # move to original settings
-        settings.OGC_SERVER['default']['DATASTORE'] = ''
-        del settings.DATABASES['datastore']
+        # settings.OGC_SERVER['default']['DATASTORE'] = ''
+        # del settings.DATABASES['datastore']
         # TODO remove stuff from django and geoserver catalog
-
-    def test_dataset_creation_without_postgis(self):
-        # TODO implement this: must raise an error message
-        pass
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_creation(self):
@@ -94,6 +66,9 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         else:
             dataset_name = 'point_dataset'
             dataset_title = 'A layer for points'
+            print(settings.DATABASES['datastore'])
+            print('#######')
+            print(settings.OGC_SERVER['default']['DATASTORE'])
 
             create_dataset(
                 dataset_name,
@@ -109,20 +84,23 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
 
             # check if it is in geoserver
             gs_dataset = cat.get_layer(dataset_name)
-            self.assertIsNotNone(gs_dataset)
-            self.assertEqual(gs_dataset.name, dataset_name)
+            try:
+                self.assertIsNotNone(gs_dataset)
+                self.assertEqual(gs_dataset.name, dataset_name)
 
-            resource = gs_dataset.resource
-            # we must have only one attibute ('the_geom')
-            self.assertEqual(len(resource.attributes), 1)
+                resource = gs_dataset.resource
+                # we must have only one attibute ('the_geom')
+                self.assertEqual(len(resource.attributes), 1)
 
-            # check layer corrispondence between django and geoserver
-            self.assertEqual(resource.title, dataset_title)
-            self.assertEqual(resource.projection, layer.srid)
+                # check layer corrispondence between django and geoserver
+                self.assertEqual(resource.title, dataset_title)
+                self.assertEqual(resource.projection, layer.srid)
 
-            # check if layer detail page is accessible with client
-            response = self.client.get(reverse('dataset_embed', args=(f'geonode:{dataset_name}',)))
-            self.assertEqual(response.status_code, 200)
+                # check if layer detail page is accessible with client
+                response = self.client.get(reverse('dataset_embed', args=(f'geonode:{dataset_name}',)))
+                self.assertEqual(response.status_code, 200)
+            finally:
+                cat.delete(gs_dataset)
 
     def test_dataset_creation_with_wrong_geometry_type(self):
         """
@@ -167,14 +145,10 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
 
             cat = gs_catalog
             gs_dataset = cat.get_layer(dataset_name)
-            resource = gs_dataset.resource
+            try:
+                resource = gs_dataset.resource
 
-            # we must have one attibute for the geometry, and 4 other ones
-            self.assertEqual(len(resource.attributes), 5)
-
-    def test_dataset_creation_with_permissions(self):
-        """
-        Try creating a layer with permissions.
-        """
-        # TODO
-        pass
+                # we must have one attibute for the geometry, and 4 other ones
+                self.assertEqual(len(resource.attributes), 5)
+            finally:
+                cat.delete(gs_dataset)
