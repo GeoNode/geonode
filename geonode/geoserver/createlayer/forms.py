@@ -40,11 +40,12 @@ class NewDatasetForm(forms.Form):
             attrs={
                 'name': 'permissions',
                 'id': 'permissions'}),
-        required=True)
+        required=False)
 
     attributes = forms.CharField(
         widget=forms.HiddenInput(
             attrs={
                 'name': 'attributes',
                 'id': 'attributes'}),
-        required=True)
+        required=False,
+        empty_value='{}')
