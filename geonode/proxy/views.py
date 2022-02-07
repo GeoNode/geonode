@@ -50,7 +50,7 @@ from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver  # noqa
 from geonode.base import register_event
-from geonode.base.auth import get_token_from_auth_header
+from geonode.base.auth import get_auth_user, get_token_from_auth_header
 
 BUFFER_CHUNK_SIZE = 64 * 1024
 
@@ -154,6 +154,7 @@ def proxy(request, url=None, response_callback=None,
                 request.META.get('HTTP_AUTHORIZATION2'))
         if auth_header:
             access_token = get_token_from_auth_header(auth_header, create_if_not_exists=True)
+    user = get_auth_user(access_token)
 
     # Inject access_token if necessary
     parsed = urlparse(raw_url)
@@ -192,7 +193,7 @@ def proxy(request, url=None, response_callback=None,
         data=_data.encode('utf-8'),
         headers=headers,
         timeout=timeout,
-        user=request.user)
+        user=user)
     if response is None:
         return HttpResponse(
             content=content,

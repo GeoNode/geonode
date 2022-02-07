@@ -379,40 +379,24 @@ def style_change_check(request, path, access_token=None):
                         user = get_auth_user(access_token)
                     style = Style.objects.get(name=style_name)
                     for layer in style.dataset_styles.all():
-                        if not user.has_perm(
-                                'change_dataset_style', obj=layer):
+                        if not user.has_perm('change_dataset_style', obj=layer):
                             authorized = False
                             break
                         else:
                             authorized = True
                             break
-                except Exception:
+                except Exception as e:
                     authorized = (request.method == 'POST')  # The user is probably trying to create a new style
-                    logger.warn(
-                        f'There is not a style with such a name: {style_name}.')
+                    logger.warn(f'There is not a style with such a name: {style_name}.')
     return authorized
 
 
-@csrf_exempt
-@cache_control(public=True, must_revalidate=True, max_age=30)
-def geoserver_proxy(request,
-                    proxy_path,
-                    downstream_path,
-                    workspace=None,
-                    layername=None):
-    """
-    WARNING: Decorators are applied in the order they appear in the source.
-    """
-    # AF: No need to authenticate first. We will check if "access_token" is present
-    # or not on session
-
-    # @dismissed
-    # if not request.user.is_authenticated:
-    #     return HttpResponse(
-    #         "You must be logged in to access GeoServer",
-    #         content_type="text/plain",
-    #         status=401)
-
+def check_geoserver_access(request,
+                           proxy_path,
+                           downstream_path,
+                           workspace=None,
+                           layername=None,
+                           allowed_hosts=[]):
     def strip_prefix(path, prefix):
         if prefix not in path:
             _s_prefix = prefix.split('/', 3)
@@ -466,7 +450,6 @@ def geoserver_proxy(request,
         _url = str("".join([ogc_server_settings.LOCATION, '', path[1:]]))
         raw_url = _url
     url = urlsplit(raw_url)
-    affected_datasets = None
 
     if f'{ws}/layers' in path:
         downstream_path = 'rest/layers'
@@ -474,16 +457,38 @@ def geoserver_proxy(request,
         downstream_path = 'rest/styles'
 
     # Collecting headers and cookies
-    allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
     headers, access_token = get_headers(request, url, unquote(raw_url), allowed_hosts=allowed_hosts)
+    return (raw_url, headers, access_token)
+
+
+@csrf_exempt
+@cache_control(public=True, must_revalidate=True, max_age=30)
+def geoserver_proxy(request,
+                    proxy_path,
+                    downstream_path,
+                    workspace=None,
+                    layername=None):
+    """
+    WARNING: Decorators are applied in the order they appear in the source.
+    """
+    affected_datasets = None
+    allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
+
+    raw_url, headers, access_token = check_geoserver_access(
+        request,
+        proxy_path,
+        downstream_path,
+        workspace=workspace,
+        layername=layername,
+        allowed_hosts=allowed_hosts)
+    url = urlsplit(raw_url)
 
     if request.method in ("POST", "PUT", "DELETE"):
         if downstream_path in ('rest/styles', 'rest/layers',
                                'rest/workspaces'):
             if not style_change_check(request, downstream_path, access_token=access_token):
                 return HttpResponse(
-                    _(
-                        "You don't have permissions to change style for this layer"),
+                    _("You don't have permissions to change style for this layer"),
                     content_type="text/plain",
                     status=401)
             elif downstream_path == 'rest/styles':
@@ -500,8 +505,7 @@ def geoserver_proxy(request,
                         not re.match(temp_style_name_regex, _style_name):
                     affected_datasets = style_update(request, raw_url, workspace)
             elif downstream_path == 'rest/layers':
-                logger.debug(
-                    f"[geoserver_proxy] Updating Dataset ---> url {url.geturl()}")
+                logger.debug(f"[geoserver_proxy] Updating Dataset ---> url {url.geturl()}")
                 try:
                     _dataset_name = os.path.splitext(os.path.basename(request.path))[0]
                     _dataset = Dataset.objects.get(name=_dataset_name)
