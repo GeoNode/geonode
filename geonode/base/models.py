@@ -641,18 +641,18 @@ class ResourceBaseManager(PolymorphicManager):
 
     @staticmethod
     def upload_files(resource_id, files, force=False):
+        """Update the ResourceBase model"""
         try:
             out = []
             for f in files:
-                if os.path.isfile(f) and os.path.exists(f):
-
+                if force:
+                    out.append(f)
+                elif os.path.isfile(f) and os.path.exists(f):
                     with open(f, 'rb') as ff:
                         folder = os.path.basename(os.path.dirname(f))
                         filename = os.path.basename(f)
                         file_uploaded_path = storage_manager.save(f'{folder}/{filename}', ff)
                         out.append(storage_manager.path(file_uploaded_path))
-                elif force:
-                    out.append(f)
 
             # making an update instead of save in order to avoid others
             # signal like post_save and commiunication with geoserver
@@ -660,6 +660,52 @@ class ResourceBaseManager(PolymorphicManager):
             return out
         except Exception as e:
             logger.exception(e)
+
+    @staticmethod
+    def cleanup_uploaded_files(resource_id):
+        """Remove uploaded files, if any"""
+        if ResourceBase.objects.filter(id=resource_id).exists():
+            _resource = ResourceBase.objects.filter(id=resource_id).get()
+            _uploaded_folder = None
+            if _resource.files:
+                for _file in _resource.files:
+                    try:
+                        if storage_manager.exists(_file):
+                            if not _uploaded_folder:
+                                _uploaded_folder = os.path.split(storage_manager.path(_file))[0]
+                            storage_manager.delete(_file)
+                    except Exception as e:
+                        logger.warning(e)
+                try:
+                    if _uploaded_folder and storage_manager.exists(_uploaded_folder):
+                        storage_manager.delete(_uploaded_folder)
+                except Exception as e:
+                    logger.warning(e)
+
+                # Do we want to delete the files also from the resource?
+                ResourceBase.objects.filter(id=resource_id).update(files={})
+
+            # Remove generated thumbnails, if any
+            filename = f"{_resource.get_real_instance().resource_type}-{_resource.get_real_instance().uuid}"
+            remove_thumbs(filename)
+
+            # Remove the uploaded sessions, if any
+            try:
+                if 'geonode.upload' in settings.INSTALLED_APPS:
+                    from geonode.upload.models import Upload
+                    # Need to call delete one by one in order to invoke the
+                    #  'delete' overridden method
+                    for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
+                        try:
+                            if upload.upload_dir:
+                                if storage_manager.exists(upload.upload_dir):
+                                    storage_manager.delete(upload.upload_dir)
+                                elif os.path.exists(upload.upload_dir):
+                                    shutil.rmtree(upload.upload_dir, ignore_errors=True)
+                        finally:
+                            upload.delete()
+            except Exception as e:
+                logger.exception(e)
 
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
@@ -1822,49 +1868,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.metadata_author = self.owner
         if not self.poc:
             self.poc = self.owner
-
-    def cleanup_uploaded_files(self):
-        # Remove uploaded files, if any
-        _uploaded_folder = None
-        if self.files:
-            for _file in self.files:
-                try:
-                    if storage_manager.exists(_file):
-                        if not _uploaded_folder:
-                            _uploaded_folder = os.path.split(storage_manager.path(_file))[0]
-                        storage_manager.delete(_file)
-                except Exception as e:
-                    logger.warning(e)
-            try:
-                if _uploaded_folder and storage_manager.exists(_uploaded_folder):
-                    storage_manager.delete(_uploaded_folder)
-            except Exception as e:
-                logger.warning(e)
-
-            # Do we want to delete the files also from the resource?
-            ResourceBase.objects.filter(id=self.id).update(files={})
-
-        # Remove generated thumbnails, if any
-        filename = f"{self.get_real_instance().resource_type}-{self.get_real_instance().uuid}"
-        remove_thumbs(filename)
-
-        # Remove the uploaded sessions, if any
-        try:
-            if 'geonode.upload' in settings.INSTALLED_APPS:
-                from geonode.upload.models import Upload
-                # Need to call delete one by one in order to invoke the
-                #  'delete' overridden method
-                for upload in Upload.objects.filter(resource_id=self.get_real_instance().id):
-                    try:
-                        if upload.upload_dir:
-                            if storage_manager.exists(upload.upload_dir):
-                                storage_manager.delete(upload.upload_dir)
-                            elif os.path.exists(upload.upload_dir):
-                                shutil.rmtree(upload.upload_dir, ignore_errors=True)
-                    finally:
-                        upload.delete()
-        except Exception as e:
-            logger.exception(e)
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
