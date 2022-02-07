@@ -74,6 +74,8 @@ class LayerUploadForm(forms.Form):
     metadata_upload_form = forms.BooleanField(required=False)
     style_upload_form = forms.BooleanField(required=False)
 
+    store_spatial_files = forms.BooleanField(required=False, initial=True)
+
     spatial_files = [
         "base_file",
         "dbf_file",
