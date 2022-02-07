@@ -181,7 +181,7 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
             attrs={
                 'name': 'permissions',
                 'id': 'permissions'}),
-        required=True)
+        required=False)
 
     links = forms.MultipleChoiceField(
         label=_("Link to"),
@@ -209,6 +209,9 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         Ensures the JSON field is JSON.
         """
         permissions = self.cleaned_data['permissions']
+
+        if not self.fields['permissions'].required and (permissions is None or permissions == ''):
+            return None
 
         try:
             return json.loads(permissions)

@@ -24,6 +24,8 @@ from django.shortcuts import render
 from django.template.defaultfilters import slugify
 from django.shortcuts import redirect
 
+from geonode.security.permissions import DEFAULT_PERMS_SPEC
+
 from .forms import NewDatasetForm
 from .utils import create_dataset
 
@@ -43,7 +45,7 @@ def dataset_create(request, template='createlayer/dataset_create.html'):
                 title = form.cleaned_data['title']
                 geometry_type = form.cleaned_data['geometry_type']
                 attributes = form.cleaned_data['attributes']
-                permissions = form.cleaned_data["permissions"]
+                permissions = DEFAULT_PERMS_SPEC
                 layer = create_dataset(name, title, request.user.username, geometry_type, attributes)
                 layer.set_permissions(json.loads(permissions), created=True)
                 return redirect(layer)

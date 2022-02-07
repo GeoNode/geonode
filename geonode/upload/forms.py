@@ -61,7 +61,7 @@ class LayerUploadForm(forms.Form):
 
     abstract = forms.CharField(required=False)
     dataset_title = forms.CharField(required=False)
-    permissions = JSONField()
+    permissions = JSONField(required=False)
 
     metadata_uploaded_preserve = forms.BooleanField(required=False)
     metadata_upload_form = forms.BooleanField(required=False)
