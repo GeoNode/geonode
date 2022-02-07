@@ -46,6 +46,11 @@ def dataset_list_url():
 
 
 @register.simple_tag
+def dataset_upload_url():
+    return hookset.dataset_upload_url()
+
+
+@register.simple_tag
 def dataset_detail_url(layer):
     return hookset.dataset_detail_url(layer)
 

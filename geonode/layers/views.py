@@ -44,6 +44,7 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
@@ -172,34 +173,17 @@ def _resolve_dataset(request, alternate, permission='base.view_resourcebase', ms
 # Basic Dataset Views #
 
 @login_required
-def dataset_upload(request, template='upload/dataset_upload.html'):
-    if request.method == 'GET':
-        return dataset_upload_handle_get(request, template)
-    elif request.method == 'POST' and is_xml_upload_only(request):
+@require_http_methods(["POST"])
+def dataset_upload(request):
+    if request.method == 'POST' and is_xml_upload_only(request):
         return dataset_upload_metadata(request)
     elif request.method == 'POST' and is_sld_upload_only(request):
         return dataset_style_upload(request)
-    out = {"errormsgs": "Please, upload a valid XML file"}
+    out = {"errormsgs": "Please, execute a valid upload request"}
     return HttpResponse(
         json.dumps(out),
         content_type='application/json',
         status=500)
-
-
-def dataset_upload_handle_get(request, template):
-    mosaics = Dataset.objects.filter(is_mosaic=True).order_by('name')
-    ctx = {
-        'mosaics': mosaics,
-        'charsets': CHARSETS,
-        'is_dataset': True,
-    }
-    if 'geonode.upload' in settings.INSTALLED_APPS and \
-            settings.UPLOADER['BACKEND'] == 'geonode.importer':
-        from geonode.upload import utils as upload_utils, models
-        ctx['async_upload'] = upload_utils._ASYNC_UPLOAD
-        ctx['incomplete'] = models.Upload.objects.get_incomplete_uploads(
-            request.user)
-    return render(request, template, context=ctx)
 
 
 def dataset_upload_metadata(request):
