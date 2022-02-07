@@ -394,20 +394,6 @@ def style_change_check(request, path, access_token=None):
 
 
 @csrf_exempt
-@logged_in_or_basicauth(realm="GeoNode")
-def geoserver_protected_proxy(request,
-                              proxy_path,
-                              downstream_path,
-                              workspace=None,
-                              layername=None):
-    return geoserver_proxy(request,
-                           proxy_path,
-                           downstream_path,
-                           workspace=workspace,
-                           layername=layername)
-
-
-@csrf_exempt
 @cache_control(public=True, must_revalidate=True, max_age=30)
 def geoserver_proxy(request,
                     proxy_path,

@@ -55,7 +55,7 @@ def make_token_expiration(seconds=86400):
     return _expire_time + _expire_delta
 
 
-def create_auth_token(user, client="GeoServer"):
+def create_auth_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     if not user or user.is_anonymous:
         return None
     expires = make_token_expiration()
@@ -86,7 +86,7 @@ def extend_token(token):
             logger.debug(tb)
 
 
-def get_auth_token(user, client="GeoServer"):
+def get_auth_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     if not user or user.is_anonymous or not user.is_authenticated:
         return None
     try:
@@ -101,7 +101,7 @@ def get_auth_token(user, client="GeoServer"):
     return None
 
 
-def get_auth_user(access_token, client="GeoServer"):
+def get_auth_user(access_token, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     try:
         Application = get_application_model()
         app = Application.objects.get(name=client)
@@ -114,7 +114,7 @@ def get_auth_user(access_token, client="GeoServer"):
     return None
 
 
-def get_or_create_token(user, client="GeoServer"):
+def get_or_create_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     if not user or user.is_anonymous:
         return None
     try:
@@ -146,7 +146,7 @@ def get_or_create_token(user, client="GeoServer"):
             logger.debug(tb)
 
 
-def delete_old_tokens(user, client='GeoServer'):
+def delete_old_tokens(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     if not user or user.is_anonymous:
         return None
     try:
