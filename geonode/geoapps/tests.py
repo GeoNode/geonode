@@ -16,9 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from audioop import reverse
 from django.contrib.auth import get_user_model
 from django.test import override_settings
+from django.urls import reverse
 from geonode.geoapps.forms import GeoAppForm
 from geonode.geoapps.models import GeoApp
 from geonode.resource.manager import resource_manager

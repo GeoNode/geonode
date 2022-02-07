@@ -55,7 +55,7 @@ from geonode.favorite.models import Favorite
 from geonode.documents.models import Document
 from geonode.utils import build_absolute_uri
 from geonode.resource.api.tasks import ExecutionRequest
-from geonode.base.populate_test_data import create_models, create_single_layer
+from geonode.base.populate_test_data import create_models, create_single_dataset
 from geonode.security.utils import get_resources_with_perms
 
 logger = logging.getLogger(__name__)
@@ -1667,7 +1667,7 @@ class BaseApiTests(APITestCase):
 
 class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
     def setUp(self):
-        self.layer = create_single_layer('single_layer')
+        self.layer = create_single_dataset('single_layer')
         self.metadata = {
             "filter_header": "Foo Filter header",
             "field_name": "metadata-name",

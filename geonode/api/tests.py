@@ -543,16 +543,22 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 "category": "category"
             }
         )
+
+        list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'datasets'})
         _r.metadata.add(_m)
         # check we get the correct layers number returnered filtering on one
         # and then two different categories
-        filter_url = f"{self.list_url}?metadata__category=category"
+        filter_url = f"{list_url}?metadata__category=category"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-        filter_url = f"{self.list_url}?metadata__category=not-existing-category"
+        filter_url = f"{list_url}?metadata__category=not-existing-category"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)

@@ -1689,7 +1689,7 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
 
     def test_resource_form_is_invalid_extra_metadata_not_json_format(self):
         self.client.login(username="admin", password="admin")
-        url = reverse("layer_metadata", args=(self.dataset.alternate,))
+        url = reverse("dataset_metadata", args=(self.dataset.alternate,))
         response = self.client.post(url, data={
             "resource-owner": self.dataset.owner.id,
             "resource-title": "layer_title",
@@ -1704,7 +1704,7 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
     @override_settings(EXTRA_METADATA_SCHEMA={"key": "value"})
     def test_resource_form_is_invalid_extra_metadata_not_schema_in_settings(self):
         self.client.login(username="admin", password="admin")
-        url = reverse("layer_metadata", args=(self.dataset.alternate,))
+        url = reverse("dataset_metadata", args=(self.dataset.alternate,))
         response = self.client.post(url, data={
             "resource-owner": self.dataset.owner.id,
             "resource-title": "layer_title",
@@ -1718,7 +1718,7 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
 
     def test_resource_form_is_invalid_extra_metadata_invalids_schema_entry(self):
         self.client.login(username="admin", password="admin")
-        url = reverse("layer_metadata", args=(self.dataset.alternate,))
+        url = reverse("dataset_metadata", args=(self.dataset.alternate,))
         response = self.client.post(url, data={
             "resource-owner": self.dataset.owner.id,
             "resource-title": "layer_title",
