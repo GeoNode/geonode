@@ -25,7 +25,7 @@ zipstream-new==1.1.8
 rdflib==6.1.1
 
 # Django Apps
-django-allauth==0.47.0
+django-allauth==0.48.0
 django-appconf==1.0.5
 django-celery-results==2.2.0
 django-filter==21.1
