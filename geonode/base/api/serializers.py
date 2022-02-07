@@ -539,7 +539,7 @@ class ResourceBaseSerializer(
         embed=False,
         deferred=True,
         required=False,
-        read_only=False,
+        read_only=True,
     )
 
 
