@@ -385,7 +385,7 @@ def style_change_check(request, path, access_token=None):
                         else:
                             authorized = True
                             break
-                except Exception as e:
+                except Exception:
                     authorized = (request.method == 'POST')  # The user is probably trying to create a new style
                     logger.warn(f'There is not a style with such a name: {style_name}.')
     return authorized
