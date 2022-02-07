@@ -196,9 +196,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # title is required
         self.assertTrue('title' in form.errors)
 
-        # permissions are required
-        self.assertTrue('permissions' in form.errors)
-
         # since neither a doc_file nor a doc_url are included __all__ should be
         # in form.errors.
         self.assertTrue('__all__' in form.errors)

@@ -283,7 +283,8 @@ class ResourceManager(ResourceManagerInterface):
                         except Exception as e:
                             logger.exception(e)
 
-                        _resource.cleanup_uploaded_files()
+                        # Remove uploaded files, if any
+                        ResourceBase.objects.cleanup_uploaded_files(resource_id=_resource.id)
 
                         try:
                             _resource.get_real_instance().styles.delete()

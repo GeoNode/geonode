@@ -20,6 +20,7 @@ import json
 from slugify import slugify
 from urllib.parse import urljoin
 
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
@@ -55,6 +56,7 @@ from geonode.groups.models import (
 
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms
+from geonode.resource.models import ExecutionRequest
 
 import logging
 
@@ -366,6 +368,37 @@ class DataBlobSerializer(DynamicModelSerializer):
         return {}
 
 
+class ResourceExecutionRequestSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = ResourceBase
+        fields = ('pk',)
+
+    def to_representation(self, instance):
+        data = []
+        if ResourceBase.objects.filter(pk=instance).count() == 1:
+            _resource = ResourceBase.objects.get(pk=instance)
+            executions = ExecutionRequest.objects.filter(
+                Q(input_params__uuid=_resource.uuid) |
+                Q(output_params__output__uuid=_resource.uuid) |
+                Q(geonode_resource=_resource)
+            )
+
+            for execution in executions:
+                data.append({
+                    'user': execution.user.username,
+                    'status': execution.status,
+                    'func_name': execution.func_name,
+                    'created': execution.created,
+                    'finished': execution.finished,
+                    'last_updated': execution.last_updated,
+                    'input_params': execution.input_params,
+                    'output_params': execution.output_params
+                },
+            )
+        return data
+
+
 class ResourceBaseSerializer(
     ResourceBaseToRepresentationSerializerMixin,
     BaseDynamicModelSerializer,
@@ -460,7 +493,7 @@ class ResourceBaseSerializer(
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
             'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', 'state',
             'data', 'subtype', 'sourcetype',
-            'blob', "metadata"
+            'blob', "metadata", 'executions'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
@@ -494,6 +527,7 @@ class ResourceBaseSerializer(
             "embed_url": {"required": False},
             "thumbnail_url": {"required": False},
             "blob": {"required": False, "write_only": True},
+            "executions": {"required": False, "embed": False, "deferred": True, "read_only": True},
             "owner": {"required": False},
             "resource_type": {"required": False}
         }
@@ -516,6 +550,18 @@ class ResourceBaseSerializer(
         embed=False,
         deferred=True,
         required=False,
+    )
+
+    """
+     - Deferred / not Embedded --> ?include[]=executions
+    """
+    executions = DynamicRelationField(
+        ResourceExecutionRequestSerializer,
+        source='id',
+        embed=False,
+        deferred=True,
+        required=False,
+        read_only=True,
     )
 
 

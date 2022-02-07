@@ -245,6 +245,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 26)
+        response.data['resources'][0].get('executions')
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
         logger.debug(response.data)
@@ -327,6 +328,37 @@ class BaseApiTests(APITestCase):
         self.assertTrue(self.client.login(username='norman', password='norman'))
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
+        # Check executions are returned when deffered
+        # all resources
+        response = self.client.get(f'{url}?include[]=executions', format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data['resources'][0].get('executions'))
+        # specific resource
+        exec_req = ExecutionRequest.objects.create(
+            user=resource.owner,
+            func_name='test',
+            geonode_resource=resource,
+            input_params={
+                "uuid": resource.uuid,
+                "owner": resource.owner.username,
+                "resource_type": resource.resource_type,
+                "defaults": f"{{\"owner\":\"{resource.owner.username}\"}}"
+            }
+        )
+        expected_executions_results = [{
+            'user': exec_req.user.username,
+            'status': exec_req.status,
+            'func_name': exec_req.func_name,
+            'created': exec_req.created,
+            'finished': exec_req.finished,
+            'last_updated': exec_req.last_updated,
+            'input_params': exec_req.input_params,
+            'output_params': exec_req.output_params
+        }]
+        response = self.client.get(f'{url}/{resource.id}?include[]=executions', format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data['resource'].get('executions'))
+        self.assertEqual(response.data['resource'].get('executions'), expected_executions_results)
 
         # test 'tkeywords'
         try:
