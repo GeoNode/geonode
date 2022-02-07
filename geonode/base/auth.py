@@ -98,6 +98,20 @@ def get_auth_token(user, client="GeoServer"):
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
+    return None
+
+
+def get_auth_user(access_token, client="GeoServer"):
+    try:
+        Application = get_application_model()
+        app = Application.objects.get(name=client)
+        user = AccessToken.objects.filter(token=access_token, application=app).order_by('-expires').first().user
+        return user
+    except Exception:
+        tb = traceback.format_exc()
+        if tb:
+            logger.debug(tb)
+    return None
 
 
 def get_or_create_token(user, client="GeoServer"):
@@ -153,7 +167,8 @@ def delete_old_tokens(user, client='GeoServer'):
 def get_token_from_auth_header(auth_header, create_if_not_exists=False):
     if 'Basic' in auth_header:
         user = basic_auth_authenticate_user(auth_header)
-        return get_auth_token(user) if not create_if_not_exists else get_or_create_token(user)
+        if user and user.is_active:
+            return get_auth_token(user) if not create_if_not_exists else get_or_create_token(user)
     elif 'Bearer' in auth_header:
         return auth_header.replace('Bearer ', '')
     return None
