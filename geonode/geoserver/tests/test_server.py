@@ -24,16 +24,21 @@ import base64
 import shutil
 import tempfile
 
-from urllib.parse import urljoin, urlencode
-from django.core.management import call_command
 from os.path import basename, splitext
+from urllib.parse import urljoin, urlencode, urlsplit
 
 from django.conf import settings
 from django.urls import reverse
+from django.test.client import RequestFactory
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from django.test.utils import override_settings
+from django.contrib.auth.models import AnonymousUser
 
 from guardian.shortcuts import assign_perm
+
+from geonode.geoserver.helpers import ogc_server_settings
+from geonode.geoserver.views import check_geoserver_access, style_change_check
 
 from geonode import geoserver
 from geonode.base.models import Configuration
@@ -725,11 +730,6 @@ class LayerTests(GeoNodeBaseTestSupport):
             f"/gs/rest/workspaces/{settings.DEFAULT_WORKSPACE}/styles/{layer.name}?raw=true")
         logger.debug(f"{change_style_url}")
 
-        from urllib.parse import urlsplit
-        from django.test.client import RequestFactory
-        from geonode.geoserver.helpers import ogc_server_settings
-        from geonode.geoserver.views import check_geoserver_access, style_change_check
-
         rf = RequestFactory()
 
         # Check is 'authorized'
@@ -739,7 +739,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             content_type='application/vnd.ogc.sld+xml',
             **valid_auth_headers
         )
-        post_request.user = bob
+        post_request.user = AnonymousUser()
         raw_url, headers, access_token = check_geoserver_access(
             post_request,
             '/gs/rest/workspaces',
@@ -761,7 +761,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             content_type='application/vnd.ogc.sld+xml',
             **invalid_auth_headers
         )
-        post_request.user = bob
+        post_request.user = AnonymousUser()
         raw_url, headers, access_token = check_geoserver_access(
             post_request,
             '/gs/rest/workspaces',
