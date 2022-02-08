@@ -89,7 +89,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'api_name': 'api',
                 'resource_name': 'datasets'})
 
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         layer.set_permissions(self.perm_spec)
 
         resp = self.api_client.get(list_url)
@@ -108,7 +108,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'resource_name': 'datasets'})
 
         self.api_client.client.login(username=self.user, password=self.passwd)
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         layer.set_permissions(self.perm_spec)
 
         resp = self.api_client.get(list_url)
@@ -127,7 +127,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'resource_name': 'datasets'})
 
         perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         layer.set_permissions(perm_spec)
         resp = self.api_client.get(list_url)
         self.assertEqual(len(self.deserialize(resp)['objects']), 7)
@@ -166,7 +166,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'api_name': 'api',
                 'resource_name': 'datasets'})
 
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         layer.set_permissions(self.perm_spec)
         layer.clear_dirty_state()
         self.assertHttpNotFound(self.api_client.get(
@@ -227,7 +227,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 with self.settings(DELAYED_SECURITY_SIGNALS=True,
                                    OGC_SERVER=_ogc_geofence_enabled,
                                    DEFAULT_ANONYMOUS_VIEW_PERMISSION=True):
-                    layer = Dataset.objects.all()[0]
+                    layer = Dataset.objects.first()
                     layer.set_default_permissions()
                     layer.refresh_from_db()
                     # self.assertTrue(layer.dirty_state)
@@ -265,7 +265,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
-            layer = Dataset.objects.all()[0]
+            layer = Dataset.objects.first()
             layer.set_permissions(perm_spec)
             resp = self.api_client.get(list_url)
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)

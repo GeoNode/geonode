@@ -345,8 +345,8 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Tests the resources method on a Group object.
         """
 
-        layer = Dataset.objects.all()[0]
-        map = Map.objects.all()[0]
+        layer = Dataset.objects.first()
+        map = Map.objects.first()
 
         perm_spec = {'groups': {'bar': ['change_resourcebase']}}
         # Give the self.bar group write perms on the layer
@@ -376,7 +376,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Tests the perms_info function (which passes permissions to the response context).
         """
         # Add test to test perms being sent to the front end.
-        layer = Dataset.objects.all()[0]
+        layer = Dataset.objects.first()
         layer.set_default_permissions()
         perms_info = layer.get_all_level_info()
 
@@ -399,9 +399,9 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
         self.assertTrue(self.client.login(username="admin", password="admin"))
 
-        layer = Dataset.objects.all()[0]
-        document = Document.objects.all()[0]
-        map_obj = Map.objects.all()[0]
+        layer = Dataset.objects.first()
+        document = Document.objects.first()
+        map_obj = Map.objects.first()
         layer.set_default_permissions()
         document.set_default_permissions()
         map_obj.set_default_permissions()
