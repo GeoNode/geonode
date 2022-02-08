@@ -533,8 +533,7 @@ def dataset_metadata(
             logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
             out = {
                 'success': False,
-                'errors': [
-                    re.sub(re.compile('<.*?>'), '', str(err)) for err in dataset_form.errors]
+                'errors': [f"{x}: {y[0].messages[0]}" for x, y in dataset_form.errors.as_data().items()]
             }
             return HttpResponse(
                 json.dumps(out),
@@ -551,7 +550,7 @@ def dataset_metadata(
             logger.error(f"Dataset Attributes form is not valid: {attribute_form.errors}")
             out = {
                 'success': False,
-                "errors": [f"{x}: {y[0].messages[0]}" for x, y in attribute_form.errors.as_data().items()]
+                "errors": [re.sub(re.compile('<.*?>'), '', str(err)) for err in attribute_form.errors]
             }
             return HttpResponse(
                 json.dumps(out),
