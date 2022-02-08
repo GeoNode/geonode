@@ -140,9 +140,6 @@ class UploadViewSet(DynamicModelViewSet):
         """)
     @action(detail=False, methods=['post'])
     def upload(self, request, format=None):
-        if not getattr(request, 'FILES', None):
-            raise ParseError(_("Empty content"))
-
         user = request.user
         if not user or not user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)

@@ -131,6 +131,9 @@ class UploaderSession:
     # the upload type - see the _pages dict in views
     upload_type = None
 
+    # whether the files have been uploaded or provided locally
+    spatial_files_uploaded = True
+
     # time related info - need to store here until geoserver layer exists
     time_info = None
 
@@ -268,8 +271,8 @@ def _check_geoserver_store(store_name, dataset_type, overwrite):
                             raise GeoNodeException(msg)
 
 
-def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
-              append_to_mosaic_opts=None, append_to_mosaic_name=None,
+def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=True,
+              mosaic=False, append_to_mosaic_opts=None, append_to_mosaic_name=None,
               mosaic_time_regex=None, mosaic_time_value=None,
               time_presentation=None, time_presentation_res=None,
               time_presentation_default_value=None,
@@ -311,6 +314,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
             state=enumerations.STATE_READY,
             upload_dir=spatial_files.dirname
         )
+        upload.store_spatial_files = store_spatial_files
 
         # @todo settings for use_url or auto detection if geoserver is
         # on same host

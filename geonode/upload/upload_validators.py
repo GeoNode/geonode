@@ -44,13 +44,14 @@ def _supported_type(ext, supported_types):
     return any([type_.matches(ext) for type_ in supported_types])
 
 
-def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
+def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types, base_file_path):
     logger.debug(f"uploaded_files: {uploaded_files}")
     requires_datastore = () if ogc_server_settings.DATASTORE else (
         'csv',
         'kml')
     types = [t for t in files.types if t.code not in requires_datastore]
-    base_ext = os.path.splitext(cleaned["base_file"].name)[-1].lower()[1:]
+    base_file_name = os.path.basename(base_file_path)
+    base_ext = os.path.splitext(base_file_name)[-1].lower()[1:]
     if not _supported_type(base_ext, types) and base_ext.lower() != "zip":
         raise forms.ValidationError(
             "%(supported)s files are supported. You uploaded a "
@@ -61,35 +62,35 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
             }
         )
     elif base_ext.lower() == "zip":
-        if not zipfile.is_zipfile(cleaned["base_file"]):
+        if not zipfile.is_zipfile(base_file_path):
             raise forms.ValidationError(_("Invalid zip file detected"))
 
         # Let's check if the zip file contains a valid ESRI Shapefile
-        valid_extensions = validate_shapefile(cleaned["base_file"])
+        valid_extensions = validate_shapefile(base_file_path)
         if not valid_extensions:
             # Let's check if the zip file contains a valid KMZ
-            valid_extensions = validate_kmz(cleaned["base_file"])
+            valid_extensions = validate_kmz(base_file_path)
         if not valid_extensions:
             # Let's check if the zip file contains a valid KML
-            valid_extensions = validate_kml_zip(cleaned["base_file"])
+            valid_extensions = validate_kml_zip(base_file_path)
         if not valid_extensions:
             # Let's check if the zip file contains any valid Raster Image
-            valid_extensions = validate_raster_zip(cleaned["base_file"])
+            valid_extensions = validate_raster_zip(base_file_path)
         if not valid_extensions:
             # No suitable data have been found on the ZIP file; raise a ValidationError
             raise forms.ValidationError(
                 _("Could not find any valid spatial file inside the uploaded zip"))
     elif base_ext.lower() == "kmz":
-        if not zipfile.is_zipfile(cleaned["base_file"]):
+        if not zipfile.is_zipfile(base_file_path):
             raise forms.ValidationError(_("Invalid kmz file detected"))
-        valid_extensions = validate_kmz(cleaned["base_file"])
+        valid_extensions = validate_kmz(base_file_path)
         if not valid_extensions:
             raise forms.ValidationError(
                 _("Could not find any kml files inside the uploaded kmz"))
     elif base_ext.lower() == "shp":
-        file_paths = [f.name for f in uploaded_files]
-        if cleaned["base_file"].name not in file_paths:
-            file_paths += [cleaned["base_file"].name]
+        file_paths = list(uploaded_files.values())
+        if base_file_path not in file_paths:
+            file_paths += [base_file_path]
         valid_extensions = _validate_shapefile_components(
             file_paths)
     elif base_ext.lower() == "kml":

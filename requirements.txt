@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==9.0.0
+Pillow==9.0.1
 lxml==4.7.1
 psycopg2==2.9.3
 Django==3.2.12
@@ -7,7 +7,7 @@ Django==3.2.12
 # Other
 amqp==5.0.9
 beautifulsoup4==4.10.0
-httplib2<0.20.3
+httplib2<0.20.5
 hyperlink==21.0.0
 idna>=2.5,<2.11
 urllib3==1.26.8
@@ -23,6 +23,7 @@ wrapt==1.13.3
 jsonschema==4.4.0
 zipstream-new==1.1.8
 rdflib==6.1.1
+smart_open==5.2.1
 
 # Django Apps
 django-allauth==0.48.0
@@ -74,8 +75,8 @@ djangorestframework-gis==0.18
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.6.3
-drf-spectacular==0.21.1
-dynamic-rest==2.1.1
+drf-spectacular==0.21.2
+dynamic-rest==2.1.2
 Markdown==3.3.6
 
 pinax-notifications==6.0.0
@@ -104,10 +105,10 @@ django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
 django-storages==1.12.3
-dropbox==11.26.0
+dropbox==11.27.0
 google-cloud-storage==2.1.0
 google-cloud-core==2.2.2
-boto3==1.20.46
+boto3==1.20.50
 
 # Django Caches
 python-memcached<=1.59
@@ -144,16 +145,16 @@ docker==5.0.3
 invoke==1.6.0
 
 # tests
-coverage==6.3
+coverage==6.3.1
 requests-toolbelt==0.9.1
 flake8==4.0.1
-pytest==6.2.5
+pytest==7.0.0
 pytest-bdd==5.0.0
 splinter==0.17.0
 pytest-splinter==3.3.1
 pytest-django==4.5.2
-setuptools>=59.1.1,<59.7.0
-pip==22.0.2
+setuptools>=59.1.1,<60.9.0
+pip==22.0.3
 Twisted==21.7.0
 pixelmatch==0.2.4
 factory-boy==3.2.1

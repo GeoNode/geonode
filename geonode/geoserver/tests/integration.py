@@ -127,7 +127,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
         """
 
         # a category
-        category = TopicCategory.objects.all()[0]
+        category = TopicCategory.objects.first()
 
         # some users
         norman = get_user_model().objects.get(username="norman")
