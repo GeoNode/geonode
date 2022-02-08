@@ -37,6 +37,7 @@ from geonode.utils import OGC_Servers_Handler
 
 from ..base import enumerations
 from ..base.models import (
+    ExtraMetadata,
     Link,
     Region,
     License,
@@ -139,7 +140,7 @@ class KeywordHandler:
         return [t.alt_label for t in tkeyword]
 
 
-def update_resource(instance: ResourceBase, xml_file: str = None, regions: list = [], keywords: list = [], vals: dict = {}):
+def update_resource(instance: ResourceBase, xml_file: str = None, regions: list = [], keywords: list = [], vals: dict = {}, extra_metadata: list = []):
 
     if xml_file:
         instance.metadata_xml = open(xml_file).read()
@@ -263,6 +264,15 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
         instance.poc = poc
     if metadata_author:
         instance.metadata_author = metadata_author
+
+    if extra_metadata:
+        instance.metadata.all().delete()
+        for _m in extra_metadata:
+            new_m = ExtraMetadata.objects.create(
+                resource=instance,
+                metadata=_m
+            )
+            instance.metadata.add(new_m)
 
     return instance
 

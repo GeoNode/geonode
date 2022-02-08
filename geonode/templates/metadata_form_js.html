@@ -17,6 +17,13 @@
       }
     });
 
+    var _area = $("#id_resource-extra_metadata").val()
+    if (_area) {
+        var areaAsObj = (0, eval)('(' + _area + ')');
+        var _value = JSON.stringify(areaAsObj,null,2);
+        $("#id_resource-extra_metadata").val(_value);
+    }
+
     var metadata_uri = $(location).attr('pathname').split('/').pop();
     var metadata_update_done = false;
     var metadata_preview = false;

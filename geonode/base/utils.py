@@ -22,6 +22,7 @@
 
 # Standard Modules
 import re
+import json
 import logging
 
 from dateutil.parser import isoparse
@@ -30,6 +31,7 @@ from datetime import datetime, timedelta
 # Django functionality
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 # Geonode functionality
 from guardian.shortcuts import get_perms, remove_perm, assign_perm
@@ -40,6 +42,7 @@ from geonode.thumbs.utils import (
     get_thumbs,
     remove_thumb)
 from geonode.utils import get_legend_url
+from schema import Schema
 
 logger = logging.getLogger('geonode.base.utils')
 
@@ -200,3 +203,36 @@ class ManageResourceOwnerPermissions:
                     assign_perm(perm, self.resource.owner, self.resource)
                 elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
                     assign_perm(perm, self.resource.owner, self.resource)
+
+
+def validate_extra_metadata(data, instance):
+    if not data:
+        return data
+
+    # starting validation of extra metadata passed via JSON
+    # if schema for metadata validation is not defined, an error is raised
+    resource_type = (
+        instance.polymorphic_ctype.model
+        if instance.polymorphic_ctype
+        else instance.class_name.lower()
+    )
+    extra_metadata_validation_schema = settings.EXTRA_METADATA_SCHEMA.get(resource_type, None)
+    if not extra_metadata_validation_schema:
+        raise ValidationError(
+            f"EXTRA_METADATA_SCHEMA validation schema is not available for resource {resource_type}"
+        )
+    # starting json structure validation. The Field can contain multiple metadata
+    try:
+        if isinstance(data, str):
+            data = json.loads(data)
+    except Exception:
+        raise ValidationError("The value provided for the Extra metadata field is not a valid JSON")
+
+    # looping on all the single metadata provided. If it doen't match the schema an error is raised
+    for _index, _metadata in enumerate(data):
+        try:
+            Schema(extra_metadata_validation_schema).validate(_metadata)
+        except Exception as e:
+            raise ValidationError(f"{e} at index {_index} for input json: {json.dumps(_metadata)}")
+    # conerted because in this case, we can store a well formated json instead of the user input
+    return data
