@@ -384,7 +384,7 @@ def style_change_check(request, path, access_token=None):
                         user = get_auth_user(access_token)
                     style = Style.objects.get(name=style_name)
                     for layer in style.layer_styles.all():
-                        if not request.user.has_perm('change_layer_style', obj=layer):
+                        if not user.has_perm('change_layer_style', obj=layer):
                             authorized = False
                             break
                         else:
