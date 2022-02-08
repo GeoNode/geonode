@@ -443,7 +443,10 @@ def document_metadata(
                 metadata_author=new_author or document.metadata_author,
                 category=new_category
             ),
-            notify=True)
+            notify=True,
+            extra_metadata=json.loads(document_form.cleaned_data['extra_metadata'])
+        )
+
         resource_manager.set_thumbnail(document.uuid, instance=document, overwrite=False)
         document_form.save_many2many()
 
@@ -475,7 +478,18 @@ def document_metadata(
             logger.error(tb)
 
         return HttpResponse(json.dumps({'message': message}))
-
+    elif request.method == "POST" and (not document_form.is_valid(
+    ) or not category_form.is_valid() or not tkeywords_form.is_valid()):
+        errors_list = {**document_form.errors.as_data(), **category_form.errors.as_data(), **tkeywords_form.errors.as_data()}
+        logger.error(f"GeoApp Metadata form is not valid: {errors_list}")
+        out = {
+            'success': False,
+            "errors": [f"{x}: {y[0].messages[0]}" for x, y in errors_list.items()]
+        }
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=400)
     # - POST Request Ends here -
 
     # Request.GET

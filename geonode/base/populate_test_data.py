@@ -360,7 +360,7 @@ def create_single_dataset(name, keywords=None, owner=None, group=None):
     return dataset
 
 
-def create_single_map(name):
+def create_single_map(name, owner=None):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -375,7 +375,7 @@ def create_single_map(name):
     m = Map(
         title=title,
         abstract=abstract,
-        owner=user,
+        owner=owner or user,
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
@@ -388,7 +388,7 @@ def create_single_map(name):
     return m
 
 
-def create_single_doc(name):
+def create_single_doc(name, owner=None):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -404,7 +404,7 @@ def create_single_doc(name):
     m = Document(
         title=title,
         abstract=abstract,
-        owner=user,
+        owner=owner or user,
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',

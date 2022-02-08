@@ -533,6 +533,12 @@ span.grippy::after {
                         <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
                         {{ map_form.spatial_representation_type }}
                     </div>
+                    {% block map_extra_metadata %}
+                    <div style="margin-top: 5px">
+                        <span><label for="{{ map_form.extra_metadata|id }}">{{ map_form.extra_metadata.label }}</label></span>
+                        {{ map_form.extra_metadata }}
+                    </div>
+                    {% endblock map_extra_metadata %}
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">
