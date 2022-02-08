@@ -485,6 +485,8 @@ class ResourceManager(ResourceManagerInterface):
                     anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
                     _perms['groups'].pop(anonymous_group)
                 self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                # Refresh from DB
+                _resource.refresh_from_db()
                 return self.update(_resource.uuid, _resource, vals=to_update)
         return instance
 
