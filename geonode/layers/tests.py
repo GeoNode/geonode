@@ -1713,7 +1713,7 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
             "resource-language": "eng",
             "resource-extra_metadata": "[{'key': 'value'}]"
         })
-        expected = {"success": False, "errors": ["extra_metadata: EXTRA_METADATA_SCHEMA validation schema is not available for resource layer"]}
+        expected = {"success": False, "errors": ["extra_metadata: EXTRA_METADATA_SCHEMA validation schema is not available for resource dataset"]}
         self.assertDictEqual(expected, response.json())
 
     def test_resource_form_is_invalid_extra_metadata_invalids_schema_entry(self):
