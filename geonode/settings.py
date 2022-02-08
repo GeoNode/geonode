@@ -847,6 +847,8 @@ OAUTH2_PROVIDER_ID_TOKEN_MODEL = "oauth2_provider.IDToken"
 OAUTH2_PROVIDER_GRANT_MODEL = "oauth2_provider.Grant"
 OAUTH2_PROVIDER_REFRESH_TOKEN_MODEL = "oauth2_provider.RefreshToken"
 
+OAUTH2_DEFAULT_BACKEND_CLIENT_NAME = os.environ.get('OAUTH2_DEFAULT_BACKEND_CLIENT_NAME', 'GeoServer')
+
 # In order to protect oauth2 REST endpoints, used by GeoServer to fetch user roles and
 # infos, you should set this key and configure the "geonode REST role service"
 # accordingly. Keep it secret!

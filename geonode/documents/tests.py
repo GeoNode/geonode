@@ -124,7 +124,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             owner=superuser,
             title='theimg')
 
-        m = Map.objects.all()[0]
+        m = Map.objects.first()
         ctype = ContentType.objects.get_for_model(m)
         _d = DocumentResourceLink.objects.create(
             document_id=c.id,
@@ -295,7 +295,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             'test_img_file.gif',
             self.imgfile.read(),
             'image/gif')
-        m = Map.objects.all()[0]
+        m = Map.objects.first()
 
         self.client.login(username='admin', password='admin')
         response = self.client.post(
