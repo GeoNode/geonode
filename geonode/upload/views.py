@@ -37,7 +37,6 @@ import re
 import json
 import logging
 import zipfile
-import tempfile
 import gsimporter
 
 from http.client import BadStatusLine
@@ -70,10 +69,14 @@ from .forms import (
     TimeForm,
     UploadFileForm,
 )
-from .models import Upload, UploadFile
-from .files import (get_scan_hint,
-                    scan_file
-                    )
+from .models import (
+    Upload,
+    UploadFile,
+)
+from .files import (
+    get_scan_hint,
+    scan_file
+)
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
@@ -149,9 +152,10 @@ def _select_relevant_files(allowed_extensions, files):
     """
     result = []
     for django_file in files:
-        extension = os.path.splitext(django_file.name)[-1].lower()[1:]
+        _django_file_name = django_file if isinstance(django_file, str) else django_file.name
+        extension = os.path.splitext(_django_file_name)[-1].lower()[1:]
         if extension in allowed_extensions or get_scan_hint(allowed_extensions):
-            already_selected = django_file.name in (f.name for f in result)
+            already_selected = _django_file_name in (f if isinstance(f, str) else f.name for f in result)
             if not already_selected:
                 result.append(django_file)
     return result
@@ -173,15 +177,14 @@ def save_step_view(req, session):
     overwrite = req.path_info.endswith('/replace')
     target_store = None
     if form.is_valid():
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         logger.debug(f"valid_extensions: {form.cleaned_data['valid_extensions']}")
+        data_retriever = form.cleaned_data["data_retriever"]
         relevant_files = _select_relevant_files(
             form.cleaned_data["valid_extensions"],
-            iter(req.FILES.values())
+            data_retriever.get_paths(allow_transfer=False)
         )
         logger.debug(f"relevant_files: {relevant_files}")
-        _write_uploaded_files_to_disk(tempdir, relevant_files)
-        base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
+        base_file = data_retriever.get("base_file").get_path(allow_transfer=False)
         name, ext = os.path.splitext(os.path.basename(base_file))
         logger.debug(f'Name: {name}, ext: {ext}')
         logger.debug(f"base_file: {base_file}")
@@ -220,18 +223,18 @@ def save_step_view(req, session):
         sld = None
         if spatial_files[0].sld_files:
             sld = spatial_files[0].sld_files[0]
-        if not os.path.isfile(os.path.join(tempdir, spatial_files[0].base_file)):
-            tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
+        if not os.path.isfile(os.path.join(data_retriever.temporary_folder, spatial_files[0].base_file)):
+            tmp_files = [f for f in os.listdir(data_retriever.temporary_folder) if os.path.isfile(os.path.join(data_retriever.temporary_folder, f))]
             for f in tmp_files:
-                if zipfile.is_zipfile(os.path.join(tempdir, f)):
-                    fixup_shp_columnnames(os.path.join(tempdir, f),
+                if zipfile.is_zipfile(os.path.join(data_retriever.temporary_folder, f)):
+                    fixup_shp_columnnames(os.path.join(data_retriever.temporary_folder, f),
                                           form.cleaned_data["charset"],
-                                          tempdir=tempdir)
+                                          tempdir=data_retriever.temporary_folder)
 
         _log(f'provided sld is {sld}')
         # upload_type = get_upload_type(base_file)
         upload_session = UploaderSession(
-            tempdir=tempdir,
+            tempdir=data_retriever.temporary_folder,
             base_file=spatial_files,
             name=upload.name,
             charset=form.cleaned_data["charset"],
@@ -252,6 +255,8 @@ def save_step_view(req, session):
         Upload.objects.update_from_session(upload_session)
         return next_step_response(req, upload_session, force_ajax=True)
     else:
+        if hasattr(form, "data_retriever"):
+            form.data_retriever.delete_files()
         errors = []
         for e in form.errors.values():
             errors.extend([escape(v) for v in e])
