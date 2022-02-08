@@ -971,23 +971,66 @@ class BaseApiTests(APITestCase):
                 },
                 "compact": {
                     "anonymous": [
-                        "none",
-                        "view",
-                        "download"
+                        {
+                            "name": "none",
+                            "label": "None"
+                        },
+                        {
+                            "name": "view",
+                            "label": "View"
+                        },
+                        {
+                            "name": "download",
+                            "label": "Download"
+                        }
                     ],
                     "default": [
-                        "view",
-                        "download",
-                        "edit",
-                        "manage",
-                        "owner"
+                        {
+                            "name": "view",
+                            "label": "View"
+                        },
+                        {
+                            "name": "download",
+                            "label": "Download"
+                        },
+                        {
+                            "name": "edit",
+                            "label": "Edit"
+                        },
+                        {
+                            "name": "manage",
+                            "label": "Manage"
+                        },
+                        {
+                            "name": "owner",
+                            "label": "Owner"
+                        },
+                        {
+                            "name": "owner",
+                            "label": "Owner"
+                        }
                     ],
                     "registered-members": [
-                        "none",
-                        "view",
-                        "download",
-                        "edit",
-                        "manage"
+                        {
+                            "name": "none",
+                            "label": "None"
+                        },
+                        {
+                            "name": "view",
+                            "label": "View"
+                        },
+                        {
+                            "name": "download",
+                            "label": "Download"
+                        },
+                        {
+                            "name": "edit",
+                            "label": "Edit"
+                        },
+                        {
+                            "name": "manage",
+                            "label": "Manage"
+                        }
                     ]
                 }
             }
@@ -1021,23 +1064,66 @@ class BaseApiTests(APITestCase):
                 },
                 "compact": {
                     "anonymous": [
-                        "none",
-                        "view",
-                        "download"
+                        {
+                            "name": "none",
+                            "label": "None"
+                        },
+                        {
+                            "name": "view",
+                            "label": "View Metadata"
+                        },
+                        {
+                            "name": "download",
+                            "label": "View and Download"
+                        }
                     ],
                     "default": [
-                        "view",
-                        "download",
-                        "edit",
-                        "manage",
-                        "owner"
+                        {
+                            "name": "view",
+                            "label": "View Metadata"
+                        },
+                        {
+                            "name": "download",
+                            "label": "View and Download"
+                        },
+                        {
+                            "name": "edit",
+                            "label": "Edit"
+                        },
+                        {
+                            "name": "manage",
+                            "label": "Manage"
+                        },
+                        {
+                            "name": "owner",
+                            "label": "Owner"
+                        },
+                        {
+                            "name": "owner",
+                            "label": "Owner"
+                        }
                     ],
                     "registered-members": [
-                        "none",
-                        "view",
-                        "download",
-                        "edit",
-                        "manage"
+                        {
+                            "name": "none",
+                            "label": "None"
+                        },
+                        {
+                            "name": "view",
+                            "label": "View Metadata"
+                        },
+                        {
+                            "name": "download",
+                            "label": "View and Download"
+                        },
+                        {
+                            "name": "edit",
+                            "label": "Edit"
+                        },
+                        {
+                            "name": "manage",
+                            "label": "Manage"
+                        }
                     ]
                 }
             }
@@ -1068,20 +1154,54 @@ class BaseApiTests(APITestCase):
                 },
                 "compact": {
                     "anonymous": [
-                        "none",
-                        "view",
+                        {
+                            "name": "none",
+                            "label": "None"
+                        },
+                        {
+                            "name": "view",
+                            "label": "View"
+                        }
                     ],
                     "default": [
-                        "view",
-                        "edit",
-                        "manage",
-                        "owner"
+                        {
+                            "name": "view",
+                            "label": "View"
+                        },
+                        {
+                            "name": "edit",
+                            "label": "Edit"
+                        },
+                        {
+                            "name": "manage",
+                            "label": "Manage"
+                        },
+                        {
+                            "name": "owner",
+                            "label": "Owner"
+                        },
+                        {
+                            "name": "owner",
+                            "label": "Owner"
+                        }
                     ],
                     "registered-members": [
-                        "none",
-                        "view",
-                        "edit",
-                        "manage"
+                        {
+                            "name": "none",
+                            "label": "None"
+                        },
+                        {
+                            "name": "view",
+                            "label": "View"
+                        },
+                        {
+                            "name": "edit",
+                            "label": "Edit"
+                        },
+                        {
+                            "name": "manage",
+                            "label": "Manage"
+                        }
                     ]
                 }
             }
