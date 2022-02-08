@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import re
 import base64
 import datetime
 import logging
@@ -55,7 +55,7 @@ def make_token_expiration(seconds=86400):
     return _expire_time + _expire_delta
 
 
-def create_auth_token(user, client="GeoServer"):
+def create_auth_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     if not user or user.is_anonymous:
         return None
     expires = make_token_expiration()
@@ -86,7 +86,7 @@ def extend_token(token):
             logger.debug(tb)
 
 
-def get_auth_token(user, client="GeoServer"):
+def get_auth_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     if not user or user.is_anonymous or not user.is_authenticated:
         return None
     try:
@@ -98,9 +98,23 @@ def get_auth_token(user, client="GeoServer"):
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
+    return None
 
 
-def get_or_create_token(user, client="GeoServer"):
+def get_auth_user(access_token, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
+    try:
+        Application = get_application_model()
+        app = Application.objects.get(name=client)
+        user = AccessToken.objects.filter(token=access_token, application=app).order_by('-expires').first().user
+        return user
+    except Exception:
+        tb = traceback.format_exc()
+        if tb:
+            logger.debug(tb)
+    return None
+
+
+def get_or_create_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     if not user or user.is_anonymous:
         return None
     try:
@@ -132,7 +146,7 @@ def get_or_create_token(user, client="GeoServer"):
             logger.debug(tb)
 
 
-def delete_old_tokens(user, client='GeoServer'):
+def delete_old_tokens(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     if not user or user.is_anonymous:
         return None
     try:
@@ -151,11 +165,12 @@ def delete_old_tokens(user, client='GeoServer'):
 
 
 def get_token_from_auth_header(auth_header, create_if_not_exists=False):
-    if 'Basic' in auth_header:
+    if re.search('Basic', auth_header, re.IGNORECASE):
         user = basic_auth_authenticate_user(auth_header)
-        return get_auth_token(user) if not create_if_not_exists else get_or_create_token(user)
-    elif 'Bearer' in auth_header:
-        return auth_header.replace('Bearer ', '')
+        if user and user.is_active:
+            return get_auth_token(user) if not create_if_not_exists else get_or_create_token(user)
+    elif re.search('Bearer', auth_header, re.IGNORECASE):
+        return re.compile(re.escape('Bearer '), re.IGNORECASE).sub('', auth_header)
     return None
 
 

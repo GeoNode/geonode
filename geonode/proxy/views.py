@@ -50,6 +50,7 @@ from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver  # noqa
 from geonode.base import register_event
+from geonode.base.auth import get_auth_user, get_token_from_auth_header
 
 BUFFER_CHUNK_SIZE = 64 * 1024
 
@@ -67,7 +68,7 @@ ows_regexp = re.compile(
 @requires_csrf_token
 def proxy(request, url=None, response_callback=None,
           sec_chk_hosts=True, sec_chk_rules=True, timeout=None,
-          allowed_hosts=[], **kwargs):
+          allowed_hosts=[], headers=None, access_token=None, **kwargs):
     # Request default timeout
     if not timeout:
         timeout = TIMEOUT
@@ -141,7 +142,19 @@ def proxy(request, url=None, response_callback=None,
         pass
 
     # Collecting headers and cookies
-    headers, access_token = get_headers(request, url, raw_url, allowed_hosts=allowed_hosts)
+    if not headers:
+        headers, access_token = get_headers(request, url, raw_url, allowed_hosts=allowed_hosts)
+    if not access_token:
+        auth_header = None
+        if 'Authorization' in headers:
+            auth_header = headers['Authorization']
+        elif 'HTTP_AUTHORIZATION' in request.META:
+            auth_header = request.META.get(
+                'HTTP_AUTHORIZATION',
+                request.META.get('HTTP_AUTHORIZATION2'))
+        if auth_header:
+            access_token = get_token_from_auth_header(auth_header, create_if_not_exists=True)
+    user = get_auth_user(access_token)
 
     # Inject access_token if necessary
     parsed = urlparse(raw_url)
@@ -180,7 +193,7 @@ def proxy(request, url=None, response_callback=None,
         data=_data.encode('utf-8'),
         headers=headers,
         timeout=timeout,
-        user=request.user)
+        user=user)
     if response is None:
         return HttpResponse(
             content=content,
